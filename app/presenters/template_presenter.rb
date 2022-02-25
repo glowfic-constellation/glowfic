@@ -7,6 +7,6 @@ class TemplatePresenter
 
   def as_json(options={})
     return {} unless template
-    template.as_json_without_presenter({only: [:id, :name]}.reverse_merge(options))
+    template.as_json_without_presenter({ only: [:id, :name] }.reverse_merge(options))
   end
 end

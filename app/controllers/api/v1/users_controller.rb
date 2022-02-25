@@ -20,7 +20,7 @@ class Api::V1::UsersController < Api::ApiController
       queryset = queryset.where.not(id: blocked_users + [current_user.id])
     end
     users = paginate queryset.active, per_page: 25
-    render json: {results: users.as_json(detailed: true)}
+    render json: { results: users.as_json(detailed: true) }
   end
 
   api :GET, '/users/:id/posts', 'Load all posts where the specified user is an author'
@@ -33,6 +33,6 @@ class Api::V1::UsersController < Api::ApiController
     post_ids = Post::Author.where(user: user).pluck(:post_id)
     queryset = Post.privacy_public.where(id: post_ids).with_reply_count.select('posts.*')
     posts = paginate queryset.includes(:board, :joined_authors, :section), per_page: 25
-    render json: {results: posts}
+    render json: { results: posts }
   end
 end

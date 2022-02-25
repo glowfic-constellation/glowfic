@@ -1,17 +1,17 @@
 require 'resque/server'
 
 Rails.application.routes.draw do
-  # For details on the DSL available within this file, see http://guides.rubyonrails.org/routing.html
+  # For details on the DSL available within this file, see https://guides.rubyonrails.org/routing.html
   apipie
 
   root :to => 'sessions#index'
 
   # Accounts
-  match '/login' => 'sessions#new', :as => :login, :via => :get
-  match '/login' => 'sessions#create', :via => :post
-  match '/logout' => 'sessions#destroy', :as => :logout, :via => :delete
-  match '/confirm_tos' => 'sessions#confirm_tos', as: :confirm_tos, via: :patch
-  match '/users/:id/templates' => redirect('/users/%{id}/characters'), via: :get
+  get '/login' => 'sessions#new', as: :login
+  post '/login' => 'sessions#create'
+  delete '/logout' => 'sessions#destroy', as: :logout
+  patch '/confirm_tos' => 'sessions#confirm_tos', as: :confirm_tos
+  get '/users/:id/templates' => redirect('/users/%{id}/characters')
   resources :users, except: :destroy do
     resources :characters, only: :index
     resources :galleries, only: [:index, :show]
@@ -33,7 +33,7 @@ Rails.application.routes.draw do
 
   # Characters
   resources :templates, except: :index do
-    collection { get :search}
+    collection { get :search }
   end
   resources :characters do
     resources :aliases, only: [:new, :create, :destroy]
@@ -64,7 +64,7 @@ Rails.application.routes.draw do
       get :add
       post :icon
     end
-    collection { get :search}
+    collection { get :search }
   end
 
   # Forums
@@ -140,21 +140,21 @@ Rails.application.routes.draw do
         member { get :posts }
       end
 
-      match '/login' => 'sessions#create', as: :login, via: :post
+      post '/login' => 'sessions#create', as: :login
     end
   end
 
   # Legalese
-  match '/tos' => 'about#tos', as: :tos, via: :get
-  match '/privacy' => 'about#privacy', as: :privacy, via: :get
-  match '/contact' => 'about#contact', as: :contact, via: :get
-  match '/dmca' => 'about#dmca', as: :dmca, via: :get
+  get '/tos' => 'about#tos', as: :tos
+  get '/privacy' => 'about#privacy', as: :privacy
+  get '/contact' => 'about#contact', as: :contact
+  get '/dmca' => 'about#dmca', as: :dmca
 
   # Miscellaneous
   resources :reports, only: [:index, :show]
   resources :news
   resources :bugs, only: :create
   resources :favorites, only: [:index, :create, :destroy]
-  match '/contribute' => 'contribute#index', as: :contribute, via: :get
+  get '/contribute' => 'contribute#index', as: :contribute
   mount Resque::Server.new, :at => "/resque_web"
 end

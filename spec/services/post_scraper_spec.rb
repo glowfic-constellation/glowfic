@@ -84,7 +84,7 @@ RSpec.describe PostScraper do
     scraper.instance_variable_set('@html_doc', scraper.send(:doc_from_url, url))
     expect(scraper.send(:page_links)).to eq([
       'https://alicornutopia.dreamwidth.org/22671.html?thread=14705039&style=site#cmt14705039',
-      'https://alicornutopia.dreamwidth.org/22671.html?thread=14711695&style=site#cmt14711695'
+      'https://alicornutopia.dreamwidth.org/22671.html?thread=14711695&style=site#cmt14711695',
     ])
   end
 
@@ -96,7 +96,7 @@ RSpec.describe PostScraper do
     expect(scraper.send(:page_links)).to eq([
       'https://alicornutopia.dreamwidth.org/22671.html?thread=14698383&style=site#cmt14698383',
       'https://alicornutopia.dreamwidth.org/22671.html?thread=14698639&style=site#cmt14698639',
-      'https://alicornutopia.dreamwidth.org/22671.html?thread=14705551&style=site#cmt14705551'
+      'https://alicornutopia.dreamwidth.org/22671.html?thread=14705551&style=site#cmt14705551',
     ])
   end
 
@@ -158,7 +158,7 @@ RSpec.describe PostScraper do
       'https://mind-game.dreamwidth.org/1073.html?style=site'                       => 'scrape_specific_threads',
       'https://mind-game.dreamwidth.org/1073.html?thread=6961&style=site#cmt6961'   => 'scrape_specific_threads_thread1',
       'https://mind-game.dreamwidth.org/1073.html?thread=16689&style=site#cmt16689' => 'scrape_specific_threads_thread2_1',
-      'https://mind-game.dreamwidth.org/1073.html?thread=48177&style=site#cmt48177' => 'scrape_specific_threads_thread2_2'
+      'https://mind-game.dreamwidth.org/1073.html?thread=48177&style=site#cmt48177' => 'scrape_specific_threads_thread2_2',
     }
     stubs.each { |url, file| stub_fixture(url, file) }
     urls = stubs.keys
@@ -168,14 +168,14 @@ RSpec.describe PostScraper do
     kappa = create(:user, username: 'Kappa')
     board = create(:board, creator: alicorn, writers: [kappa])
     characters = [
-      {screenname: 'mind_game', name: 'Jane', user: alicorn},
-      {screenname: 'luminous_regnant', name: 'Isabella Marie Swan Cullen ☼ "Golden"', user: alicorn},
-      {screenname: 'manofmyword', name: 'here\'s my card', user: kappa},
-      {screenname: 'temporal_affairs', name: 'Nathan Corlett | Minister of Temporal Affairs', user: alicorn},
-      {screenname: 'pina_colada', name: 'Kerron Corlett', user: alicorn},
-      {screenname: 'pumpkin_pie', name: 'Aedyt Corlett', user: kappa},
-      {screenname: 'lifes_sake', name: 'Campbell Mark Swan ҂ "Cam"', user: alicorn},
-      {screenname: 'withmypowers', name: 'Matilda Wormwood Honey', user: kappa}
+      { screenname: 'mind_game', name: 'Jane', user: alicorn },
+      { screenname: 'luminous_regnant', name: 'Isabella Marie Swan Cullen ☼ "Golden"', user: alicorn },
+      { screenname: 'manofmyword', name: 'here\'s my card', user: kappa },
+      { screenname: 'temporal_affairs', name: 'Nathan Corlett | Minister of Temporal Affairs', user: alicorn },
+      { screenname: 'pina_colada', name: 'Kerron Corlett', user: alicorn },
+      { screenname: 'pumpkin_pie', name: 'Aedyt Corlett', user: kappa },
+      { screenname: 'lifes_sake', name: 'Campbell Mark Swan ҂ "Cam"', user: alicorn },
+      { screenname: 'withmypowers', name: 'Matilda Wormwood Honey', user: kappa },
     ]
     characters.each { |data| create(:character, data) }
 
@@ -305,7 +305,8 @@ RSpec.describe PostScraper do
 
     html = "<!DOCTYPE html>\n<html></html>\n"
     stub_with_body = double
-    expect(stub_with_body).to receive(:body).and_return(html)
+    allow(stub_with_body).to receive(:body).and_return(html)
+    expect(stub_with_body).to receive(:body)
 
     allow(HTTParty).to receive(:get).with(url).once.and_raise(Net::OpenTimeout, 'example failure')
     allow(HTTParty).to receive(:get).with(url).and_return(stub_with_body)

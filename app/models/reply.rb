@@ -13,16 +13,16 @@ class Reply < ApplicationRecord
   audited associated_with: :post, except: :reply_order, update_with_comment_only: false
 
   after_create :notify_other_authors, :destroy_draft, :update_active_char, :set_last_reply, :update_post, :update_post_authors
-  after_save :update_flat_post
   after_update :update_post
   after_destroy :set_previous_reply_to_last, :remove_post_author
+  after_save :update_flat_post
 
   attr_accessor :skip_notify, :skip_post_update, :is_import, :skip_regenerate
 
   pg_search_scope(
     :search,
     against: %i(content),
-    using: { tsearch: { dictionary: "english", highlight: {MaxFragments: 10} } },
+    using: { tsearch: { dictionary: "english", highlight: { MaxFragments: 10 } } },
   )
 
   scope :visible_to, ->(user) { where(post_id: Post.visible_to(user).select(:id)) }
@@ -67,8 +67,7 @@ class Reply < ApplicationRecord
   end
 
   def destroy_subsequent_replies
-    Reply.where('id > ?', id).where(post_id: post_id).delete_all
-    self.set_previous_reply_to_last
+    Reply.where('reply_order >= ?', reply_order).where(post: post).ordered.reverse_order.destroy_all
   end
 
   def set_previous_reply_to_last

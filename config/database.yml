@@ -1,8 +1,9 @@
 default: &default
   adapter: postgresql
-  host: <%= ENV['GLOWFIC_DATABASE_HOST'] || 'localhost' %>
+  host: <%= (ENV['GLOWFIC_DATABASE_HOST'] || 'localhost') unless ENV['GLOWFIC_DATABASE_PEER'] %>
   username: <%= ENV['GLOWFIC_DATABASE_USER'] || 'postgres' %>
-  password: <%= ENV['GLOWFIC_DATABASE_PASS'] || 'postgres' %>
+  password: <%= (ENV['GLOWFIC_DATABASE_PASS'] || 'postgres') unless ENV['GLOWFIC_DATABASE_PEER'] %>
+  port: <%= (ENV['GLOWFIC_DATABASE_PORT'] || 5432).to_i %>
 
 development:
   <<: *default

@@ -14,10 +14,10 @@ RSpec.describe PostsController do
     let(:user) { create(:user) }
     let(:posts) { create_list(:post, 3) }
 
-    before(:each) {
+    before(:each) do
       login_as(user)
       posts
-    }
+    end
 
     it "does not show access-locked or private threads" do
       create(:post, privacy: :private)
@@ -93,7 +93,7 @@ RSpec.describe PostsController do
 
   describe "GET index" do
     let(:controller_action) { "index" }
-    let(:params) { { } }
+    let(:params) { {} }
     let(:assign_variable) { :posts }
 
     it "has a 200 status code" do
@@ -213,6 +213,15 @@ RSpec.describe PostsController do
         expect(assigns(:search_results)).to match_array([post1, post2])
       end
 
+      it "filters by subject acronym" do
+        post1 = create(:post, subject: 'contains stars')
+        post2 = create(:post, subject: 'contains Stars')
+        post3 = create(:post, subject: 'Case starlight')
+        create(:post, subject: 'unrelated')
+        get :search, params: { commit: true, subject: 'cs', abbrev: true }
+        expect(assigns(:search_results)).to match_array([post1, post2, post3])
+      end
+
       it "does not mix up subject with content" do
         create(:post, subject: 'unrelated', content: 'contains stars')
         get :search, params: { commit: true, subject: 'stars' }
@@ -278,7 +287,7 @@ RSpec.describe PostsController do
       end
 
       it "sorts posts by tagged_at" do
-        posts = Array.new(4) do create(:post) end
+        posts = Array.new(4) { create(:post) }
         create(:reply, post: posts[2])
         create(:reply, post: posts[1])
         get :search, params: { commit: true }
@@ -319,6 +328,7 @@ RSpec.describe PostsController do
       expect(response).to have_http_status(200)
       expect(assigns(:post)).to be_new_record
       expect(assigns(:post).character).to eq(char1)
+      expect(assigns(:post).authors_locked).to eq(true)
 
       # editor_setup:
       expect(assigns(:javascripts)).to include('posts/editor')
@@ -449,11 +459,11 @@ RSpec.describe PostsController do
             character_id: char1.id,
             icon_id: icon.id,
             character_alias_id: calias.id,
-            setting_ids: [setting1.id, '_'+setting2.name, '_other'],
-            content_warning_ids: [warning1.id, '_'+warning2.name, '_other'],
-            label_ids: [label1.id, '_'+label2.name, '_other'],
-            unjoined_author_ids: [user.id, coauthor.id]
-          }
+            setting_ids: [setting1.id, "_ #{setting2.name}", '_other'],
+            content_warning_ids: [warning1.id, "_#{warning2.name}", '_other'],
+            label_ids: [label1.id, "_#{label2.name}", '_other'],
+            unjoined_author_ids: [user.id, coauthor.id],
+          },
         }
         expect(response).to render_template(:preview)
         expect(assigns(:written)).to be_an_instance_of(Post)
@@ -537,8 +547,8 @@ RSpec.describe PostsController do
       tags = ['_atag', '_atag', create(:label).id, '', '_' + existing_name.name, '_' + existing_case.name.upcase]
       login
       expect {
-        post :create, params: { post: {subject: 'a', board_id: create(:board).id, label_ids: tags} }
-      }.to change{Label.count}.by(1)
+        post :create, params: { post: { subject: 'a', board_id: create(:board).id, label_ids: tags } }
+      }.to change { Label.count }.by(1)
       expect(Label.last.name).to eq('atag')
       expect(assigns(:post).labels.count).to eq(4)
     end
@@ -552,12 +562,12 @@ RSpec.describe PostsController do
         create(:setting).id,
         '',
         '_' + existing_name.name,
-        '_' + existing_case.name.upcase
+        '_' + existing_case.name.upcase,
       ]
       login
       expect {
-        post :create, params: { post: {subject: 'a', board_id: create(:board).id, setting_ids: tags} }
-      }.to change{Setting.count}.by(1)
+        post :create, params: { post: { subject: 'a', board_id: create(:board).id, setting_ids: tags } }
+      }.to change { Setting.count }.by(1)
       expect(Setting.last.name).to eq('atag')
       expect(assigns(:post).settings.count).to eq(4)
     end
@@ -571,14 +581,14 @@ RSpec.describe PostsController do
         create(:content_warning).id,
         '',
         '_' + existing_name.name,
-        '_' + existing_case.name.upcase
+        '_' + existing_case.name.upcase,
       ]
       login
       expect {
         post :create, params: {
-          post: {subject: 'a', board_id: create(:board).id, content_warning_ids: tags}
+          post: { subject: 'a', board_id: create(:board).id, content_warning_ids: tags },
         }
-      }.to change{ContentWarning.count}.by(1)
+      }.to change { ContentWarning.count }.by(1)
       expect(ContentWarning.last.name).to eq('atag')
       expect(assigns(:post).content_warnings.count).to eq(4)
     end
@@ -600,8 +610,8 @@ RSpec.describe PostsController do
               user_id: user.id,
               board_id: board.id,
               unjoined_author_ids: [other_user.id],
-              private_note: 'there is a note!'
-            }
+              private_note: 'there is a note!',
+            },
           }
         }.to change { Post::Author.count }.by(2)
       end
@@ -636,8 +646,8 @@ RSpec.describe PostsController do
               subject: 'a',
               user_id: user.id,
               board_id: board.id,
-              unjoined_author_ids: ['']
-            }
+              unjoined_author_ids: [''],
+            },
           }
         }.to change { Post::Author.count }.by(1)
       end
@@ -666,8 +676,8 @@ RSpec.describe PostsController do
             subject: 'a',
             user_id: user.id,
             board_id: board.id,
-            unjoined_author_ids: [user.id, other_user.id, third_user.id]
-          }
+            unjoined_author_ids: [user.id, other_user.id, third_user.id],
+          },
         }
       }.to change { BoardAuthor.count }.by(1)
 
@@ -692,8 +702,8 @@ RSpec.describe PostsController do
             subject: 'a',
             user_id: user.id,
             board_id: board.id,
-            unjoined_author_ids: [user.id, other_user.id]
-          }
+            unjoined_author_ids: [user.id, other_user.id],
+          },
         }
       }.not_to change { BoardAuthor.count }
 
@@ -716,8 +726,8 @@ RSpec.describe PostsController do
           subject: 'a',
           user_id: user.id,
           board_id: board.id,
-          unjoined_author_ids: [user.id, other_user.id]
-        }
+          unjoined_author_ids: [user.id, other_user.id],
+        },
       }
 
       expect(flash[:success]).to eq("You have successfully posted.")
@@ -749,12 +759,12 @@ RSpec.describe PostsController do
         post: {
           subject: 'asubjct',
           content: 'acontnt',
-          setting_ids: [setting1.id, '_'+setting2.name, '_other'],
-          content_warning_ids: [warning1.id, '_'+warning2.name, '_other'],
-          label_ids: [label1.id, '_'+label2.name, '_other'],
+          setting_ids: [setting1.id, "_ #{setting2.name}", '_other'],
+          content_warning_ids: [warning1.id, "_#{warning2.name}", '_other'],
+          label_ids: [label1.id, "_#{label2.name}", '_other'],
           character_id: char1.id,
-          unjoined_author_ids: [user.id, coauthor.id]
-        }
+          unjoined_author_ids: [user.id, coauthor.id],
+        },
       }
 
       expect(response).to render_template(:new)
@@ -825,13 +835,13 @@ RSpec.describe PostsController do
             character_alias_id: calias.id,
             privacy: :access_list,
             viewer_ids: [viewer.id],
-            setting_ids: [setting1.id, '_'+setting2.name, '_other'],
-            content_warning_ids: [warning1.id, '_'+warning2.name, '_other'],
-            label_ids: [label1.id, '_'+label2.name, '_other'],
-            unjoined_author_ids: [coauthor.id]
-          }
+            setting_ids: [setting1.id, "_ #{setting2.name}", '_other'],
+            content_warning_ids: [warning1.id, "_#{warning2.name}", '_other'],
+            label_ids: [label1.id, "_#{label2.name}", '_other'],
+            unjoined_author_ids: [coauthor.id],
+          },
         }
-      }.to change{Post.count}.by(1)
+      }.to change { Post.count }.by(1)
       expect(response).to redirect_to(post_path(assigns(:post)))
       expect(flash[:success]).to eq("You have successfully posted.")
 
@@ -879,7 +889,7 @@ RSpec.describe PostsController do
           board_id: create(:board).id,
           privacy: :registered,
           content: 'content',
-        }
+        },
       }
       post = assigns(:post)
       expect(post.flat_post).not_to be_nil
@@ -890,13 +900,10 @@ RSpec.describe PostsController do
       let(:blocked) { create(:user) }
       let(:blocking) { create(:user) }
       let(:other_user) { create(:user) }
-      let(:memory_store) { ActiveSupport::Cache.lookup_store(:memory_store) }
 
       before(:each) do
         create(:block, blocking_user: user, blocked_user: blocked, hide_me: :posts)
         create(:block, blocking_user: blocking, blocked_user: user, hide_them: :posts)
-        allow(Rails).to receive(:cache).and_return(memory_store)
-        Rails.cache.clear
       end
 
       it "regenerates blocked and hidden posts for poster" do
@@ -912,7 +919,7 @@ RSpec.describe PostsController do
             board_id: create(:board).id,
             authors_locked: true,
             unjoined_author_ids: [other_user.id],
-          }
+          },
         }
 
         expect(Rails.cache.exist?(Block.cache_string_for(blocking.id, 'hidden'))).to be(false)
@@ -936,7 +943,7 @@ RSpec.describe PostsController do
             board_id: create(:board).id,
             authors_locked: true,
             unjoined_author_ids: [user.id],
-          }
+          },
         }
 
         expect(Rails.cache.exist?(Block.cache_string_for(blocking.id, 'hidden'))).to be(false)
@@ -1098,7 +1105,9 @@ RSpec.describe PostsController do
 
       it "renders HAML with additional attributes" do
         post = create(:post, with_icon: true, with_character: true)
-        create(:reply, post: post, with_icon: true, with_character: true)
+        reply = create(:reply, post: post, with_icon: true, with_character: true)
+        calias = create(:alias, character: reply.character)
+        reply.update!(character_alias: calias)
         get :show, params: { id: post.id }
         expect(response.status).to eq(200)
         expect(response.body).to include(post.subject)
@@ -1228,8 +1237,8 @@ RSpec.describe PostsController do
       it "goes to post page if you're behind" do
         post = create(:post)
         reply1 = create(:reply, post: post, user: post.user)
-        Timecop.freeze(reply1.created_at + 1.second) do create(:reply, post: post, user: post.user) end # second reply
-        Timecop.freeze(reply1.created_at + 2.seconds) do create(:reply, post: post, user: post.user) end # third reply
+        Timecop.freeze(reply1.created_at + 1.second) { create(:reply, post: post, user: post.user) } # second reply
+        Timecop.freeze(reply1.created_at + 2.seconds) { create(:reply, post: post, user: post.user) } # third reply
         user = create(:user)
         post.mark_read(user, at_time: reply1.created_at)
         login_as(user)
@@ -1535,7 +1544,7 @@ RSpec.describe PostsController do
       expect(templates.length).to eq(3)
       thread_chars = templates.first
       expect(thread_chars.name).to eq('Thread characters')
-      expected = [char1, char2].sort_by{ |c| c.name.downcase }.map { |c| [c.id, c.name] }
+      expected = [char1, char2].sort_by { |c| c.name.downcase }.map { |c| [c.id, c.name] }
       expect(thread_chars.plucked_characters).to eq(expected)
       template_chars = templates[1]
       expect(template_chars).to eq(char3.template)
@@ -1601,7 +1610,7 @@ RSpec.describe PostsController do
       login_as(admin)
       put :update, params: {
         id: post.id,
-        post: { description: 'b', audit_comment: 'note' }
+        post: { description: 'b', audit_comment: 'note' },
       }
       expect(flash[:success]).to eq("Your post has been updated.")
       expect(post.reload.description).to eq('b')
@@ -1939,8 +1948,8 @@ RSpec.describe PostsController do
           post: {
             setting_ids: setting_ids,
             content_warning_ids: warning_ids,
-            label_ids: label_ids
-          }
+            label_ids: label_ids,
+          },
         }
         expect(response).to render_template(:preview)
         post = assigns(:post)
@@ -1988,12 +1997,12 @@ RSpec.describe PostsController do
             character_id: char1.id,
             icon_id: icon.id,
             character_alias_id: calias.id,
-            setting_ids: [setting1.id, '_'+setting2.name, '_other'],
-            content_warning_ids: [warning1.id, '_'+warning2.name, '_other'],
-            label_ids: [label1.id, '_'+label2.name, '_other'],
+            setting_ids: [setting1.id, "_ #{setting2.name}", '_other'],
+            content_warning_ids: [warning1.id, "_#{warning2.name}", '_other'],
+            label_ids: [label1.id, "_#{label2.name}", '_other'],
             unjoined_author_ids: [coauthor.id],
-            viewer_ids: [viewer.id]
-          }
+            viewer_ids: [viewer.id],
+          },
         }
         expect(response).to render_template(:preview)
         expect(assigns(:written)).to be_an_instance_of(Post)
@@ -2006,7 +2015,7 @@ RSpec.describe PostsController do
         expect(assigns(:post).icon).to eq(icon)
         expect(assigns(:post).character_alias).to eq(calias)
         expect(assigns(:page_title)).to eq('Previewing: test')
-        expect(assigns(:audits)).to eq({post: 1})
+        expect(assigns(:audits)).to eq({ post: 1 })
 
         # editor_setup:
         expect(assigns(:javascripts)).to include('posts/editor')
@@ -2121,8 +2130,8 @@ RSpec.describe PostsController do
           post: {
             setting_ids: setting_ids,
             content_warning_ids: warning_ids,
-            label_ids: label_ids
-          }
+            label_ids: label_ids,
+          },
         }
         expect(response).to redirect_to(post_url(post))
         post = assigns(:post)
@@ -2154,7 +2163,7 @@ RSpec.describe PostsController do
         tag = create(:label, name: 'label')
         put :update, params: {
           id: post.id,
-          post: {setting_ids: setting_ids, content_warning_ids: warning_ids, label_ids: label_ids}
+          post: { setting_ids: setting_ids, content_warning_ids: warning_ids, label_ids: label_ids },
         }
         expect(response).to redirect_to(post_url(post))
         post = assigns(:post)
@@ -2175,8 +2184,8 @@ RSpec.describe PostsController do
             put :update, params: {
               id: post.id,
               post: {
-                unjoined_author_ids: [other_user.id]
-              }
+                unjoined_author_ids: [other_user.id],
+              },
             }
           }.to change { Post::Author.count }.by(1)
         end
@@ -2229,8 +2238,8 @@ RSpec.describe PostsController do
         put :update, params: {
           id: post.id,
           post: {
-            unjoined_author_ids: ['']
-          }
+            unjoined_author_ids: [''],
+          },
         }
         expect(response).to redirect_to(post_url(post))
         expect(flash[:success]).to eq('Your post has been updated.')
@@ -2263,8 +2272,8 @@ RSpec.describe PostsController do
         put :update, params: {
           id: post.id,
           post: {
-            unjoined_author_ids: [other_user.id, third_user.id]
-          }
+            unjoined_author_ids: [other_user.id, third_user.id],
+          },
         }
         post.reload
         board.reload
@@ -2282,8 +2291,8 @@ RSpec.describe PostsController do
         put :update, params: {
           id: post.id,
           post: {
-            unjoined_author_ids: [other_user.id]
-          }
+            unjoined_author_ids: [other_user.id],
+          },
         }
         post.reload
         board.reload
@@ -2309,8 +2318,8 @@ RSpec.describe PostsController do
           post: {
             setting_ids: [setting1, setting2, setting3].map(&:id),
             content_warning_ids: [warning1, warning2, warning3].map(&:id),
-            label_ids: [tag1, tag2, tag3].map(&:id)
-          }
+            label_ids: [tag1, tag2, tag3].map(&:id),
+          },
         }
         expect(response).to redirect_to(post_url(post))
         post = assigns(:post)
@@ -2358,8 +2367,8 @@ RSpec.describe PostsController do
             setting_ids: setting_ids,
             content_warning_ids: warning_ids,
             label_ids: label_ids,
-            unjoined_author_ids: [coauthor.id]
-          }
+            unjoined_author_ids: [coauthor.id],
+          },
         }
 
         expect(response).to render_template(:edit)
@@ -2440,8 +2449,8 @@ RSpec.describe PostsController do
             setting_ids: [setting.id],
             content_warning_ids: [warning.id],
             label_ids: [tag.id],
-            unjoined_author_ids: [coauthor.id]
-          }
+            unjoined_author_ids: [coauthor.id],
+          },
         }
         expect(response).to redirect_to(post_url(post))
         expect(flash[:success]).to eq("Your post has been updated.")
@@ -2476,8 +2485,8 @@ RSpec.describe PostsController do
         put :update, params: {
           id: post.id,
           post: {
-            content: "newtext"
-          }
+            content: "newtext",
+          },
         }
         expect(response).to redirect_to(post_url(post))
         expect(flash[:error]).to eq("You do not have permission to modify this post.")
@@ -2493,8 +2502,8 @@ RSpec.describe PostsController do
         put :update, params: {
           id: post.id,
           post: {
-            subject: "new subject"
-          }
+            subject: "new subject",
+          },
         }
         expect(response).to redirect_to(post_url(post))
         expect(flash[:success]).to eq("Your post has been updated.")
@@ -2510,8 +2519,8 @@ RSpec.describe PostsController do
         put :update, params: {
           id: post.id,
           post: {
-            subject: "new subject"
-          }
+            subject: "new subject",
+          },
         }
         expect(response).to redirect_to(post_url(post))
         expect(flash[:success]).to eq("Your post has been updated.")
@@ -2525,8 +2534,8 @@ RSpec.describe PostsController do
         put :update, params: {
           id: post.id,
           post: {
-            subject: "new subject"
-          }
+            subject: "new subject",
+          },
         }
         expect(response).to redirect_to(post_url(post))
         expect(flash[:error]).to eq("You do not have permission to modify this post.")
@@ -2543,8 +2552,8 @@ RSpec.describe PostsController do
         put :update, params: {
           id: post.id,
           post: {
-            private_note: 'look a note!'
-          }
+            private_note: 'look a note!',
+          },
         }
         expect(Post.find_by_id(post.id).author_for(post.user).private_note).not_to be_nil
       end
@@ -2557,8 +2566,8 @@ RSpec.describe PostsController do
           id: post.id,
           post: {
             private_note: 'look a note!',
-            content: 'new'
-          }
+            content: 'new',
+          },
         }
         expect(Post.find_by_id(post.id).author_for(post.user).private_note).not_to be_nil
         expect(post.reload.content).to eq('new')
@@ -2572,8 +2581,8 @@ RSpec.describe PostsController do
         put :update, params: {
           id: post.id,
           post: {
-            private_note: 'look a note!'
-          }
+            private_note: 'look a note!',
+          },
         }
         expect(Post.find_by_id(post.id).author_for(reply.user).private_note).not_to be_nil
       end
@@ -2584,13 +2593,10 @@ RSpec.describe PostsController do
       let(:blocked) { create(:user) }
       let(:blocking) { create(:user) }
       let(:other_user) { create(:user) }
-      let(:memory_store) { ActiveSupport::Cache.lookup_store(:memory_store) }
 
       before(:each) do
         create(:block, blocking_user: user, blocked_user: blocked, hide_me: :posts)
         create(:block, blocking_user: blocking, blocked_user: user, hide_them: :posts)
-        allow(Rails).to receive(:cache).and_return(memory_store)
-        Rails.cache.clear
       end
 
       it "regenerates blocked and hidden posts for poster" do
@@ -2603,7 +2609,7 @@ RSpec.describe PostsController do
 
         put :update, params: {
           id: post.id,
-          post: { authors_locked: true }
+          post: { authors_locked: true },
         }
 
         expect(Rails.cache.exist?(Block.cache_string_for(blocking.id, 'hidden'))).to be(false)
@@ -2623,7 +2629,7 @@ RSpec.describe PostsController do
 
         put :update, params: {
           id: post.id,
-          post: { authors_locked: true }
+          post: { authors_locked: true },
         }
 
         expect(Rails.cache.exist?(Block.cache_string_for(blocking.id, 'hidden'))).to be(false)
@@ -2644,8 +2650,8 @@ RSpec.describe PostsController do
         put :update, params: {
           id: post.id,
           post: {
-            unjoined_author_ids: [user.id]
-          }
+            unjoined_author_ids: [user.id],
+          },
         }
 
         expect(Rails.cache.exist?(Block.cache_string_for(blocking.id, 'hidden'))).to be(false)
@@ -2666,8 +2672,8 @@ RSpec.describe PostsController do
         put :update, params: {
           id: post.id,
           post: {
-            unjoined_author_ids: ['']
-          }
+            unjoined_author_ids: [''],
+          },
         }
 
         post.reload
@@ -2772,7 +2778,7 @@ RSpec.describe PostsController do
       expect_any_instance_of(Post).to receive(:destroy!).and_raise(ActiveRecord::RecordNotDestroyed, 'fake error')
       delete :destroy, params: { id: post.id }
       expect(response).to redirect_to(post_url(post))
-      expect(flash[:error]).to eq({message: "Post could not be deleted.", array: []})
+      expect(flash[:error]).to eq({ message: "Post could not be deleted.", array: [] })
       expect(reply.reload.post).to eq(post)
     end
   end
@@ -2838,7 +2844,7 @@ RSpec.describe PostsController do
       end
 
       it "shows only hidden with arg" do
-        get :owed, params: {view: 'hidden'}
+        get :owed, params: { view: 'hidden' }
         expect(assigns(:posts)).to eq([hidden_post])
       end
     end
@@ -2847,17 +2853,17 @@ RSpec.describe PostsController do
       let(:user) { create(:user) }
       let(:other_user) { create(:user) }
 
-      before(:each) {
+      before(:each) do
         login_as(user)
         create(:post)
-      }
+      end
 
       it "shows hiatused posts" do
         post = create(:post, user: user)
         create(:reply, post: post, user: other_user)
         post.update!(status: :hiatus)
 
-        get :owed, params: {view: 'hiatused'}
+        get :owed, params: { view: 'hiatused' }
         expect(response.status).to eq(200)
         expect(assigns(:posts)).to eq([post])
       end
@@ -2868,7 +2874,7 @@ RSpec.describe PostsController do
           post = create(:post, user: user)
           create(:reply, post: post, user: other_user)
         end
-        get :owed, params: {view: 'hiatused'}
+        get :owed, params: { view: 'hiatused' }
         expect(response.status).to eq(200)
         expect(assigns(:posts)).to eq([post])
       end
@@ -3014,7 +3020,7 @@ RSpec.describe PostsController do
 
   describe "GET unread" do
     let(:controller_action) { "unread" }
-    let(:params) { { } }
+    let(:params) { {} }
     let(:assign_variable) { :posts }
 
     it "requires login" do

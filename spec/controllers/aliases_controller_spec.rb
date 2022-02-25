@@ -73,7 +73,7 @@ RSpec.describe AliasesController do
     it "fails with invalid params" do
       character = create(:character)
       login_as(character.user)
-      post :create, params: { character_id: character.id, character_alias: {name: ''} }
+      post :create, params: { character_id: character.id, character_alias: { name: '' } }
       expect(response.status).to eq(200)
       expect(flash[:error][:message]).to eq("Alias could not be created.")
       expect(assigns(:page_title)).to eq("New Alias: #{character.name}")
@@ -87,7 +87,7 @@ RSpec.describe AliasesController do
       character = create(:character)
       login_as(character.user)
 
-      post :create, params: { character_id: character.id, character_alias: {name: test_name} }
+      post :create, params: { character_id: character.id, character_alias: { name: test_name } }
 
       expect(response).to redirect_to(edit_character_url(character))
       expect(flash[:success]).to eq("Alias created.")
@@ -160,7 +160,7 @@ RSpec.describe AliasesController do
       expect_any_instance_of(CharacterAlias).to receive(:destroy!).and_raise(ActiveRecord::RecordNotDestroyed, 'fake error')
       delete :destroy, params: { id: calias.id, character_id: calias.character.id }
       expect(response).to redirect_to(edit_character_path(calias.character))
-      expect(flash[:error]).to eq({message: "Alias could not be deleted.", array: []})
+      expect(flash[:error]).to eq({ message: "Alias could not be deleted.", array: [] })
       expect(reply.reload.character_alias).to eq(calias)
     end
   end

@@ -7,7 +7,7 @@
 - else
   - exp_klass += ' hidden'
 
-.post-container{class: col_klass, id: "collapsed-#{message.id}", data: {id: message.id}}
+.post-container{class: col_klass, id: "collapsed-#{message.id}", data: { id: message.id }}
   .padding-10
     .author= message_sender(message)
     .message= generate_short(message.message)
@@ -18,7 +18,7 @@
 .post-container.message-expanded{class: exp_klass, id: "expanded-#{message.id}"}
   - if message.id && local_assigns[:message_counter].present?
     .message-expand
-      .message-menu{data: {id: message.id}}
+      .message-menu{data: { id: message.id }}
         .float-left.text Click to collapse
         .float-right
           - if message.created_at

@@ -71,7 +71,7 @@ class IconsController < UploadingController
     rescue ActiveRecord::RecordInvalid
       flash.now[:error] = {
         message: "Your icon could not be saved due to the following problems:",
-        array: @icon.errors.full_messages
+        array: @icon.errors.full_messages,
       }
       @page_title = 'Edit icon: ' + @icon.keyword_was
       use_javascript('galleries/update_existing')
@@ -80,7 +80,7 @@ class IconsController < UploadingController
       render :edit
     else
       flash[:success] = "Icon updated."
-      redirect_to icon_path(@icon)
+      redirect_to @icon
     end
   end
 
@@ -91,10 +91,10 @@ class IconsController < UploadingController
     else
       current_user.galleryless_icons - [@icon]
     end
-    @alts = all_icons.sort_by{|i| i.keyword.downcase }
+    @alts = all_icons.sort_by { |i| i.keyword.downcase }
     use_javascript('icons')
-    gon.gallery = Hash[all_icons.map { |i| [i.id, {url: i.url, keyword: i.keyword}] }]
-    gon.gallery[''] = {url: view_context.image_path('icons/no-icon.png'), keyword: 'No Icon'}
+    gon.gallery = all_icons.to_h { |i| [i.id, { url: i.url, keyword: i.keyword }] }
+    gon.gallery[''] = { url: view_context.image_path('icons/no-icon.png'), keyword: 'No Icon' }
 
     post_ids = Reply.where(icon_id: @icon.id).select(:post_id).distinct.pluck(:post_id)
     all_posts = Post.where(icon_id: @icon.id) + Post.where(id: post_ids)
@@ -112,14 +112,14 @@ class IconsController < UploadingController
       redirect_to replace_icon_path(@icon) and return
     end
 
-    wheres = {icon_id: @icon.id}
+    wheres = { icon_id: @icon.id }
     wheres[:post_id] = params[:post_ids] if params[:post_ids].present?
-    UpdateModelJob.perform_later(Reply.to_s, wheres, {icon_id: new_icon.try(:id)}, current_user.id)
+    UpdateModelJob.perform_later(Reply.to_s, wheres, { icon_id: new_icon.try(:id) }, current_user.id)
     wheres[:id] = wheres.delete(:post_id) if params[:post_ids].present?
-    UpdateModelJob.perform_later(Post.to_s, wheres, {icon_id: new_icon.try(:id)}, current_user.id)
+    UpdateModelJob.perform_later(Post.to_s, wheres, { icon_id: new_icon.try(:id) }, current_user.id)
 
     flash[:success] = "All uses of this icon will be replaced."
-    redirect_to icon_path(@icon)
+    redirect_to @icon
   end
 
   def destroy
@@ -129,9 +129,9 @@ class IconsController < UploadingController
     rescue ActiveRecord::RecordNotDestroyed
       flash[:error] = {
         message: "Icon could not be deleted.",
-        array: @icon.errors.full_messages
+        array: @icon.errors.full_messages,
       }
-      redirect_to icon_path(@icon)
+      redirect_to @icon
     else
       flash[:success] = "Icon deleted successfully."
       redirect_to gallery_path(gallery) and return if gallery
@@ -145,7 +145,7 @@ class IconsController < UploadingController
     else
       flash[:error] = "Something went wrong."
     end
-    redirect_to icon_path(@icon)
+    redirect_to @icon
   end
 
   private
@@ -196,7 +196,7 @@ class IconsController < UploadingController
         src: @icon.url,
         width: '75',
         height: '75',
-      }
+      },
     }
   end
 

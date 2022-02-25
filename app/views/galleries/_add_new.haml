@@ -31,7 +31,7 @@
         - url = @icons[i].try(:[], :url)
         - keyword = @icons[i].try(:[], :keyword)
         - purl, pkey = url, keyword if s3_key.present?
-        %tr.icon-row{data: {index: i}}
+        %tr.icon-row{data: { index: i }}
           %td.width-15{class: klass, style: 'padding: 0px;'}= icon_mem_tag purl || '', pkey || '', class: 'vmid preview-icon'
           %td.padding-5{class: klass}
             %span.conf{class: ('hidden' unless s3_key.present?)}

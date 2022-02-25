@@ -175,8 +175,8 @@ RSpec.describe BoardsController do
           name: 'TestCreateBoard',
           description: 'Test description',
           coauthor_ids: [user2.id],
-          cameo_ids: [user3.id]
-        }
+          cameo_ids: [user3.id],
+        },
       }
       expect(response).to redirect_to(continuities_url)
       expect(flash[:success]).to eq("Continuity created!")
@@ -340,7 +340,7 @@ RSpec.describe BoardsController do
       user = create(:user)
       board = create(:board, creator: user)
       login_as(user)
-      put :update, params: { id: board.id, board: {name: ''} }
+      put :update, params: { id: board.id, board: { name: '' } }
       expect(response).to render_template('edit')
       expect(flash[:error][:message]).to eq("Continuity could not be created.")
       expect(flash[:error][:array]).to be_present
@@ -359,8 +359,8 @@ RSpec.describe BoardsController do
           name: name + 'edit',
           description: 'New description',
           coauthor_ids: [user2.id],
-          cameo_ids: [user3.id]
-        }
+          cameo_ids: [user3.id],
+        },
       }
       expect(response).to redirect_to(continuity_url(board))
       expect(flash[:success]).to eq("Continuity saved!")
@@ -428,7 +428,7 @@ RSpec.describe BoardsController do
       expect_any_instance_of(Board).to receive(:destroy!).and_raise(ActiveRecord::RecordNotDestroyed, 'fake error')
       delete :destroy, params: { id: board.id }
       expect(response).to redirect_to(continuity_url(board))
-      expect(flash[:error]).to eq({message: "Continuity could not be deleted.", array: []})
+      expect(flash[:error]).to eq({ message: "Continuity could not be deleted.", array: [] })
       expect(post.reload.board).to eq(board)
     end
   end
@@ -539,6 +539,15 @@ RSpec.describe BoardsController do
         expect(assigns(:search_results)).to match_array([board1, board2])
       end
 
+      it "filters by name acronym" do
+        board1 = create(:board, name: 'contains stars')
+        board2 = create(:board, name: 'contains Suns')
+        board3 = create(:board, name: 'Case starlight')
+        create(:board, name: 'unrelated')
+        get :search, params: { commit: true, name: 'cs', abbrev: true }
+        expect(assigns(:search_results)).to match_array([board1, board2, board3])
+      end
+
       it "filters by authors" do
         user = create(:user)
         board1 = create(:board, creator: user)
@@ -557,7 +566,7 @@ RSpec.describe BoardsController do
 
         boards = [create(:board, creator: author1, coauthors: [author2])] # both authors
         boards << create(:board, coauthors: [author1, author2]) # both authors coauthors
-        boards << create(:board, coauthors: [author1], cameos: [author2]) # both authors, one cameo
+        create(:board, coauthors: [author1], cameos: [author2]) # both authors, one cameo
 
         get :search, params: { commit: true, author_id: [author1.id, author2.id] }
         expect(assigns(:search_results)).to match_array(boards)

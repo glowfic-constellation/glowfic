@@ -34,7 +34,7 @@ RSpec.describe TagsController do
 
       it "succeeds with name filter" do
         tags = create_tags
-        get :index, params: {name: 'Empty'}
+        get :index, params: { name: 'Empty' }
         expect(response).to have_http_status(200)
         expect(assigns(:tags)).to match_array([tags[0], tags[4]])
         expect(assigns(:page_title)).to eq('Tags')
@@ -314,7 +314,7 @@ RSpec.describe TagsController do
     it "requires valid params" do
       tag = create(:setting)
       login_as(create(:admin_user))
-      put :update, params: { id: tag.id, tag: {name: nil} }
+      put :update, params: { id: tag.id, tag: { name: nil } }
       expect(response.status).to eq(200)
       expect(flash[:error][:message]).to eq("Tag could not be saved because of the following problems:")
     end
@@ -323,7 +323,7 @@ RSpec.describe TagsController do
       tag = create(:label)
       name = tag.name + 'Edited'
       login_as(create(:admin_user))
-      put :update, params: { id: tag.id, tag: {name: name} }
+      put :update, params: { id: tag.id, tag: { name: name } }
       expect(response).to redirect_to(tag_url(tag))
       expect(flash[:success]).to eq("Tag saved!")
       expect(tag.reload.name).to eq(name)
@@ -334,7 +334,7 @@ RSpec.describe TagsController do
       parent_tag = create(:setting)
       login_as(tag.user)
       expect(tag.parent_settings).to be_empty
-      put :update, params: { id: tag.id, tag: {name: 'newname', parent_setting_ids: ["", parent_tag.id.to_s]} }
+      put :update, params: { id: tag.id, tag: { name: 'newname', parent_setting_ids: ["", parent_tag.id.to_s] } }
       expect(tag.reload.name).to eq('newname')
       expect(Setting.find(tag.id).parent_settings).to eq([parent_tag])
     end
@@ -376,7 +376,7 @@ RSpec.describe TagsController do
       expect_any_instance_of(Tag).to receive(:destroy!).and_raise(ActiveRecord::RecordNotDestroyed, 'fake error')
       delete :destroy, params: { id: tag.id }
       expect(response).to redirect_to(tag_url(tag))
-      expect(flash[:error]).to eq({message: "Tag could not be deleted.", array: []})
+      expect(flash[:error]).to eq({ message: "Tag could not be deleted.", array: [] })
       expect(Tag.find_by(id: tag.id)).not_to be_nil
     end
   end

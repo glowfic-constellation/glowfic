@@ -25,7 +25,7 @@ class NewsController < ApplicationController
     rescue ActiveRecord::RecordInvalid
       flash.now[:error] = {
         message: "News post could not be created.",
-        array: @news.errors.full_messages
+        array: @news.errors.full_messages,
       }
       @page_title = 'Create News Post'
       render :new
@@ -50,7 +50,7 @@ class NewsController < ApplicationController
     rescue ActiveRecord::RecordInvalid
       flash.now[:error] = {
         message: "News post could not be saved because of the following problems:",
-        array: @news.errors.full_messages
+        array: @news.errors.full_messages,
       }
       @page_title = "Edit News Post"
       render :edit
@@ -71,7 +71,7 @@ class NewsController < ApplicationController
     rescue ActiveRecord::RecordNotDestroyed
       flash[:error] = {
         message: "News post could not be deleted.",
-        array: @news.errors.full_messages
+        array: @news.errors.full_messages,
       }
     else
       flash[:success] = "News post deleted."

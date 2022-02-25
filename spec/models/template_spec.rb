@@ -55,7 +55,7 @@ RSpec.describe Template do
       info = [
         [character1.id, character1.name],
         [character2.id, "#{character2.name} | #{character2.nickname}"],
-        [character3.id, "#{character3.name} | #{character3.screenname}"]
+        [character3.id, "#{character3.name} | #{character3.screenname}"],
       ]
       expect(template.plucked_characters).to eq(info)
     end

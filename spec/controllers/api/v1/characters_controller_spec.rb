@@ -21,7 +21,7 @@ RSpec.describe Api::V1::CharactersController do
       it "requires valid post id if provided", show_in_doc: in_doc do
         create(:character)
         get :index, params: { post_id: -1 }
-        expect(response).to have_http_status(:unprocessable_entity)
+        expect(response).to have_http_status(422)
         expect(response.json['errors'].size).to eq(1)
         expect(response.json['errors'][0]['message']).to eq("Post could not be found.")
       end
@@ -29,7 +29,7 @@ RSpec.describe Api::V1::CharactersController do
       it "requires valid template id if provided", show_in_doc: in_doc do
         create(:character)
         get :index, params: { template_id: 999 }
-        expect(response).to have_http_status(:unprocessable_entity)
+        expect(response).to have_http_status(422)
         expect(response.json['errors'].size).to eq(1)
         expect(response.json['errors'][0]['message']).to eq("Template could not be found.")
       end
@@ -37,7 +37,7 @@ RSpec.describe Api::V1::CharactersController do
       it "requires valid user id if provided", show_in_doc: in_doc do
         character = create(:character)
         get :index, params: { user_id: character.user.id + 1 }
-        expect(response).to have_http_status(:unprocessable_entity)
+        expect(response).to have_http_status(422)
         expect(response.json['errors'].size).to eq(1)
         expect(response.json['errors'][0]['message']).to eq("User could not be found.")
       end
@@ -45,7 +45,7 @@ RSpec.describe Api::V1::CharactersController do
       it "requires valid includes if provided", show_in_doc: in_doc do
         create(:character)
         get :index, params: { includes: ['invalid'] }
-        expect(response).to have_http_status(:unprocessable_entity)
+        expect(response).to have_http_status(422)
         expect(response.json['errors'].size).to eq(1)
         expected = "Invalid parameter 'includes' value ['invalid']: Must be an array of ['default_icon', 'aliases', 'nickname']"
         expect(response.json['errors'][0]['message']).to eq(expected)
@@ -54,7 +54,7 @@ RSpec.describe Api::V1::CharactersController do
       it "requires post with permission", show_in_doc: in_doc do
         post = create(:post, privacy: :private, with_character: true)
         get :index, params: { post_id: post.id }
-        expect(response).to have_http_status(:forbidden)
+        expect(response).to have_http_status(403)
         expect(response.json['errors'].size).to eq(1)
         expect(response.json['errors'][0]['message']).to eq("You do not have permission to perform this action.")
       end
@@ -240,7 +240,7 @@ RSpec.describe Api::V1::CharactersController do
     it "requires post to have permission when provided a post_id", :show_in_doc do
       post = create(:post, privacy: :private, with_character: true)
       get :show, params: { id: post.character_id, post_id: post.id }
-      expect(response).to have_http_status(:forbidden)
+      expect(response).to have_http_status(403)
       expect(response.json['errors'].size).to eq(1)
       expect(response.json['errors'][0]['message']).to eq("You do not have permission to perform this action.")
     end
@@ -302,7 +302,7 @@ RSpec.describe Api::V1::CharactersController do
       icon = create(:icon)
       character = create(:character, user: icon.user, default_icon_id: icon.id)
       api_login_as(character.user)
-      put :update, params: { id: character.id, character: {default_icon_id: -1} }
+      put :update, params: { id: character.id, character: { default_icon_id: -1 } }
       expect(response).to have_http_status(422)
       expect(response.json['errors'][0]['message']).to eq("Default icon could not be found")
       expect(character.reload.default_icon_id).to eq(icon.id)
@@ -312,7 +312,7 @@ RSpec.describe Api::V1::CharactersController do
       icon = create(:icon)
       character = create(:character, user: icon.user, default_icon_id: icon.id)
       api_login_as(character.user)
-      put :update, params: { id: character.id, character: {default_icon_id: create(:icon).id} }
+      put :update, params: { id: character.id, character: { default_icon_id: create(:icon).id } }
       expect(response).to have_http_status(422)
       expect(response.json['errors'][0]['message']).to eq("Default icon must be yours")
       expect(character.reload.default_icon_id).to eq(icon.id)
@@ -322,7 +322,7 @@ RSpec.describe Api::V1::CharactersController do
       icon = create(:icon)
       character = create(:character, user: icon.user, default_icon_id: icon.id)
       api_login_as(character.user)
-      put :update, params: { id: character.id, character: {default_icon_id: ''} }
+      put :update, params: { id: character.id, character: { default_icon_id: '' } }
       expect(response.status).to eq(200)
       expect(response.json['name']).to eq(character.name)
       expect(character.reload.default_icon_id).to be_nil
@@ -334,7 +334,7 @@ RSpec.describe Api::V1::CharactersController do
       new_icon = create(:icon, user: icon.user)
       api_login_as(character.user)
 
-      put :update, params: { id: character.id, character: {default_icon_id: new_icon.id} }
+      put :update, params: { id: character.id, character: { default_icon_id: new_icon.id } }
 
       expect(response.status).to eq(200)
       expect(response.json['name']).to eq(character.name)
@@ -347,7 +347,7 @@ RSpec.describe Api::V1::CharactersController do
       new_icon = create(:icon, user: icon.user)
       api_login_as(character.user)
 
-      put :update, params: { id: character.id, character: {default_icon_id: new_icon.id, name: '', user_id: nil} }
+      put :update, params: { id: character.id, character: { default_icon_id: new_icon.id, name: '', user_id: nil } }
 
       expect(response.status).to eq(422)
       expect(response.json['errors'][0]['message']).to eq("Name can't be blank")
@@ -437,7 +437,7 @@ RSpec.describe Api::V1::CharactersController do
       api_login_as(character.user)
       post :reorder, params: { ordered_characters_gallery_ids: section_ids }
       expect(response).to have_http_status(200)
-      expect(response.json).to eq({'characters_gallery_ids' => section_ids})
+      expect(response.json).to eq({ 'characters_gallery_ids' => section_ids })
       expect(char_gal1.reload.section_order).to eq(1)
       expect(char_gal2.reload.section_order).to eq(3)
       expect(char_gal3.reload.section_order).to eq(0)
@@ -465,7 +465,7 @@ RSpec.describe Api::V1::CharactersController do
       api_login_as(character.user)
       post :reorder, params: { ordered_characters_gallery_ids: section_ids }
       expect(response).to have_http_status(200)
-      expect(response.json).to eq({'characters_gallery_ids' => [char_gal3.id, char_gal1.id, char_gal2.id, char_gal4.id]})
+      expect(response.json).to eq({ 'characters_gallery_ids' => [char_gal3.id, char_gal1.id, char_gal2.id, char_gal4.id] })
       expect(char_gal1.reload.section_order).to eq(1)
       expect(char_gal2.reload.section_order).to eq(2)
       expect(char_gal3.reload.section_order).to eq(0)

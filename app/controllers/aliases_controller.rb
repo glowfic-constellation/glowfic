@@ -18,7 +18,7 @@ class AliasesController < ApplicationController
     rescue ActiveRecord::RecordInvalid
       flash.now[:error] = {
         message: "Alias could not be created.",
-        array: @alias.errors.full_messages
+        array: @alias.errors.full_messages,
       }
       @page_title = "New Alias: " + @character.name
       render :new
@@ -34,7 +34,7 @@ class AliasesController < ApplicationController
     rescue ActiveRecord::RecordNotDestroyed
       flash[:error] = {
         message: "Alias could not be deleted.",
-        array: @alias.errors.full_messages
+        array: @alias.errors.full_messages,
       }
     else
       flash[:success] = "Alias removed."

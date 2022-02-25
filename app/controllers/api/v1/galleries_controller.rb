@@ -12,10 +12,10 @@ class Api::V1::GalleriesController < Api::ApiController
     show_galleryless and return if params[:id].to_s == '0'
 
     unless (gallery = Gallery.find_by_id(params[:id]))
-      error = {message: "Gallery could not be found."}
-      render json: {errors: [error]}, status: :not_found and return
+      error = { message: "Gallery could not be found." }
+      render json: { errors: [error] }, status: :not_found and return
     end
-    render json: {name: gallery.name, icons: gallery.icons}
+    render json: { name: gallery.name, icons: gallery.icons }
   end
 
   private
@@ -28,9 +28,9 @@ class Api::V1::GalleriesController < Api::ApiController
     end
 
     unless user
-      error = {message: "Gallery user could not be found."}
-      render json: {errors: [error]}, status: :unprocessable_entity and return true
+      error = { message: "Gallery user could not be found." }
+      render json: { errors: [error] }, status: :unprocessable_entity and return true
     end
-    render json: {name: 'Galleryless', icons: user.galleryless_icons}
+    render json: { name: 'Galleryless', icons: user.galleryless_icons }
   end
 end

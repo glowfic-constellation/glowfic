@@ -1,7 +1,7 @@
 - content_for :breadcrumbs do
   = link_to "Indexes", indexes_path
   &raquo;
-  = link_to @index.name, index_path(@index)
+  = link_to @index.name, @index
   &raquo;
   %b Edit
 
@@ -17,7 +17,7 @@
 
 - content_for :reorder_title do
   Organize Index Sections
-  = link_to new_index_section_path params: {index_id: @index.id} do
+  = link_to new_index_section_path params: { index_id: @index.id } do
     .link-box.action-new + New Section
 = render 'boards/reorder_sections', sections: @index_sections
 

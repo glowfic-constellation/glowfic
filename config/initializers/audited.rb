@@ -2,6 +2,7 @@ module Audited
   module Auditor
     module AuditedInstanceMethods
       private
+
       def write_audit(attrs)
         attrs[:associated] = send(audit_associated_with) unless audit_associated_with.nil?
         self.audit_comment = nil

@@ -8,11 +8,11 @@ class TagsController < ApplicationController
 
   def index
     @tags = TagSearcher.new.search(tag_name: params[:name], tag_type: params[:view], page: page)
-    @post_counts = Post.visible_to(current_user).joins(post_tags: :tag).where(post_tags: {tag_id: @tags.map(&:id)})
+    @post_counts = Post.visible_to(current_user).joins(post_tags: :tag).where(post_tags: { tag_id: @tags.map(&:id) })
     @post_counts = @post_counts.group('post_tags.tag_id').count
     @view = params[:view]
     @page_title = @view.present? ? @view.titlecase.pluralize : 'Tags'
-    @tag_options = (Tag::TYPES - ['GalleryGroup']).sort.reverse.map{|t| [t.titlecase, t]}.to_h
+    @tag_options = (Tag::TYPES - ['GalleryGroup']).sort.reverse.index_by(&:titlecase)
     use_javascript('tags/index')
   rescue InvalidTagType => e
     flash[:error] = e.api_error
@@ -52,7 +52,7 @@ class TagsController < ApplicationController
     rescue ActiveRecord::RecordInvalid
       flash.now[:error] = {
         message: "Tag could not be saved because of the following problems:",
-        array: @tag.errors.full_messages
+        array: @tag.errors.full_messages,
       }
       @page_title = "Edit Tag: #{@tag.name}"
       build_editor
@@ -74,7 +74,7 @@ class TagsController < ApplicationController
     rescue ActiveRecord::RecordNotDestroyed
       flash[:error] = {
         message: "Tag could not be deleted.",
-        array: @tag.errors.full_messages
+        array: @tag.errors.full_messages,
       }
       redirect_to tag_path(@tag)
     else
@@ -113,11 +113,11 @@ class TagsController < ApplicationController
     desc << generate_short(@tag.description) if @tag.description.present?
     stats = []
     post_count = @tag.posts.privacy_public.count
-    stats << "#{post_count} " + "post".pluralize(post_count) if post_count > 0
+    stats << ("#{post_count} " + "post".pluralize(post_count)) if post_count > 0
     gallery_count = @tag.galleries.count
-    stats << "#{gallery_count} " + "gallery".pluralize(gallery_count) if gallery_count > 0
+    stats << ("#{gallery_count} " + "gallery".pluralize(gallery_count)) if gallery_count > 0
     character_count = @tag.characters.count
-    stats << "#{character_count} " + "character".pluralize(character_count) if character_count > 0
+    stats << ("#{character_count} " + "character".pluralize(character_count)) if character_count > 0
     desc << stats.join(', ')
     title = [@tag.name]
     title << @tag.user.username if @tag.owned? && !@tag.user.deleted?

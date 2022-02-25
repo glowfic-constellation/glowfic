@@ -28,7 +28,7 @@ class GenerateFlatPostJob < ApplicationJob
         .ordered
 
       flat_post = post.flat_post || post.build_flat_post
-      flat_post.content = PostsController.render :_generate_flat, layout: false, locals: {replies: replies}
+      flat_post.content = PostsController.render :_generate_flat, layout: false, locals: { replies: replies }
       flat_post.save!
 
       $redis.del(lock_key)

@@ -31,7 +31,7 @@ class Character < ApplicationRecord
   after_destroy :clear_char_ids
 
   scope :ordered, -> { order(name: :asc).order(Arel.sql('lower(screenname) asc'), created_at: :asc, id: :asc) }
-  scope :with_name, -> (charname) { where("lower(concat_ws(' | ', name, nickname, screenname)) LIKE ?", "%#{charname.downcase}%") }
+  scope :with_name, ->(charname) { where("lower(concat_ws(' | ', name, nickname, screenname)) LIKE ?", "%#{charname.downcase}%") }
 
   accepts_nested_attributes_for :template, reject_if: :all_blank
 
@@ -66,8 +66,10 @@ class Character < ApplicationRecord
     @recent ||= Post.where(id: (post_ids + reply_ids).uniq).ordered
   end
 
-  def selector_name
-    [name, nickname, screenname].compact.join(' | ')
+  def selector_name(include_settings: false)
+    parts = [name, nickname, screenname]
+    parts << settings.pluck(:name).join(' & ') if include_settings
+    parts.reject(&:blank?).join(' | ')
   end
 
   def reorder_galleries(_gallery=nil)
@@ -139,12 +141,12 @@ class Character < ApplicationRecord
     @group = CharacterGroup.new(user: user, name: group_name)
     return if @group.valid?
     @group.errors.messages.each do |k, v|
-      v.each { |val| errors.add('group '+k.to_s, val) }
+      v.each { |val| errors.add("group #{k}", val) }
     end
   end
 
   def valid_galleries
-    errors.add(:galleries, "must be yours") if galleries.present? && galleries.detect{|g| g.user_id != user.id}
+    errors.add(:galleries, "must be yours") if galleries.present? && galleries.detect { |g| g.user_id != user.id }
   end
 
   def valid_default_icon
@@ -154,8 +156,8 @@ class Character < ApplicationRecord
   end
 
   def clear_char_ids
-    UpdateModelJob.perform_later(Post.to_s, {character_id: id}, {character_id: nil}, audited_user_id)
-    UpdateModelJob.perform_later(Reply.to_s, {character_id: id}, {character_id: nil}, audited_user_id)
+    UpdateModelJob.perform_later(Post.to_s, { character_id: id }, { character_id: nil }, audited_user_id)
+    UpdateModelJob.perform_later(Reply.to_s, { character_id: id }, { character_id: nil }, audited_user_id)
   end
 
   def strip_spaces

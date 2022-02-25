@@ -38,9 +38,9 @@ class Post < ApplicationRecord
   validates :description, length: { maximum: 255 }
   validate :valid_board, :valid_board_section
 
+  before_validation :set_last_user, on: :create
   before_create :build_initial_flat_post, :set_timestamps
   before_update :set_timestamps
-  before_validation :set_last_user, on: :create
   after_commit :notify_followers, on: :create
   after_commit :invalidate_caches, on: :update
 
@@ -71,7 +71,7 @@ class Post < ApplicationRecord
   # rubocop:disable Style/TrailingCommaInArguments
   scope :with_has_content_warnings, -> {
     select(
-      <<~SQL
+      <<~SQL.squish
         (
           SELECT tags.id IS NOT NULL FROM tags LEFT JOIN post_tags ON tags.id = post_tags.tag_id
           WHERE tags.type = 'ContentWarning' AND post_tags.post_id = posts.id LIMIT 1
@@ -162,7 +162,7 @@ class Post < ApplicationRecord
       .pluck(:character_id)
 
     # add the post's character_id to the last one if it's not over the limit
-    recent_ids << character_id if character_id.present? && user_id == user.id && recent_ids.length < count && !recent_ids.include?(character_id)
+    recent_ids << character_id if character_id.present? && user_id == user.id && recent_ids.length < count && recent_ids.exclude?(character_id)
 
     # fetch the relevant characters and sort by their index in the recent list
     Character.where(id: recent_ids).includes(:default_icon).sort_by do |x|
@@ -216,8 +216,8 @@ class Post < ApplicationRecord
   def total_word_count
     return word_count unless replies.exists?
     contents = replies.pluck(:content)
-    contents[0] = contents[0].split.size
-    word_count + contents.inject{|r, e| r + e.split.size}.to_i
+    full_sanitizer = Rails::Html::FullSanitizer.new
+    word_count + contents.inject(0) { |r, e| r + full_sanitizer.sanitize(e).split.size }.to_i
   end
 
   def word_count_for(user)
@@ -226,19 +226,19 @@ class Post < ApplicationRecord
     return sum unless replies.where(user_id: user.id).exists?
 
     contents = replies.where(user_id: user.id).pluck(:content)
-    contents[0] = contents[0].split.size
-    sum + contents.inject{|r, e| r + e.split.size}.to_i
+    full_sanitizer = Rails::Html::FullSanitizer.new
+    sum + contents.inject(0) { |r, e| r + full_sanitizer.sanitize(e).split.size }.to_i
   end
 
   # only returns for authors who have written in the post (it's zero for authors who have not joined)
   def author_word_counts
-    joined_authors.map { |author| [!author.deleted? ? author.username : '(deleted user)', word_count_for(author)] }.sort_by{|a| -a[1] }
+    joined_authors.map { |author| [author.deleted? ? '(deleted user)' : author.username, word_count_for(author)] }.sort_by { |a| -a[1] }
   end
 
   def character_appearance_counts
     reply_counts = replies.joins(:character).group(:character_id).count
     reply_counts[character_id] = reply_counts[character_id].to_i + 1
-    Character.where(id: reply_counts.keys).map { |c| [c, reply_counts[c.id]]}.sort_by{|a| -a[1] }
+    Character.where(id: reply_counts.keys).map { |c| [c, reply_counts[c.id]] }.sort_by { |a| -a[1] }
   end
 
   def has_content_warnings?
