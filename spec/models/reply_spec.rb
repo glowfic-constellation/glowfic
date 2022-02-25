@@ -49,7 +49,7 @@ RSpec.describe Reply do
   end
 
   describe "#notify_other_authors" do
-    before(:each) do ResqueSpec.reset! end
+    before(:each) { ResqueSpec.reset! }
 
     it "does nothing if skip_notify is set" do
       notified_user = create(:user, email_notifications: true)

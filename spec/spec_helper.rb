@@ -18,7 +18,7 @@
 unless ENV['SKIP_COVERAGE'] || ENV['APIPIE_RECORD'] || RSpec.configuration.files_to_run.count <= 1
   require 'simplecov'
   SimpleCov.start 'rails' do
-    add_group("Controllers") {|src| src.filename.include?('app/controllers') and not src.filename.include?('app/controllers/api') }
+    add_group("Controllers") { |src| src.filename.include?('app/controllers') and src.filename.exclude?('app/controllers/api') }
     add_group "Presenters", "app/presenters"
     add_group "Concerns", "app/concerns"
     add_group "API", "app/controllers/api"
@@ -26,7 +26,7 @@ unless ENV['SKIP_COVERAGE'] || ENV['APIPIE_RECORD'] || RSpec.configuration.files
     add_group "Exceptions", "app/exceptions"
     SimpleCov.groups.delete('Channels')
     changed_files = `git status --untracked=all --porcelain`
-    if changed_files.length > 0
+    unless changed_files.empty?
       add_group 'Changed' do |source_file|
         changed_files.split("\n").detect do |status_and_filename|
           _, filename = status_and_filename.split(' ', 2)
@@ -108,8 +108,8 @@ RSpec.configure do |config|
   # triggering implicit auto-inclusion in groups with matching metadata.
   config.shared_context_metadata_behavior = :apply_to_host_groups
 
-# The settings below are suggested to provide a good initial experience
-# with RSpec, but feel free to customize to your heart's content.
+  # The settings below are suggested to provide a good initial experience
+  # with RSpec, but feel free to customize to your heart's content.
   # This allows you to limit a spec run to individual examples or groups
   # you care about by tagging them with `:focus` metadata. When nothing
   # is tagged with `:focus`, all examples get run. RSpec also provides
@@ -129,17 +129,15 @@ RSpec.configure do |config|
   #   - http://rspec.info/blog/2014/05/notable-changes-in-rspec-3/#zero-monkey-patching-mode
   config.disable_monkey_patching!
 
-=begin
   # Many RSpec users commonly either run the entire suite or an individual
   # file, and it's useful to allow more verbose output when running an
   # individual spec file.
-  if config.files_to_run.one?
+  # if config.files_to_run.one?
     # Use the documentation formatter for detailed output,
     # unless a formatter has already been configured
     # (e.g. via a command-line flag).
-    config.default_formatter = "doc"
-  end
-=end
+    # config.default_formatter = "doc"
+  # end
 
   # Print the 10 slowest examples and example groups at the
   # end of the spec run, to help surface which specs are running
@@ -191,22 +189,26 @@ RSpec::Matchers.define :be_the_same_time_as do |expected|
   end
 
   failure_message do |actual|
-    "expected #{actual} to be the same time as #{expected}\n" +
-    "compared: #{actual.in_time_zone.to_s(:iso8601)}\n" +
-    "    with: #{expected.in_time_zone.to_s(:iso8601)}"
+    <<~FAILURE
+      expected #{actual} to be the same time as #{expected}
+      compared: #{actual.in_time_zone.to_s(:iso8601)}
+          with: #{expected.in_time_zone.to_s(:iso8601)}
+    FAILURE
   end
 
   failure_message_when_negated do |actual|
-    "expected #{actual} not to be the same time as #{expected}\n" +
-    "compared: #{actual.in_time_zone.to_s(:iso8601)}\n" +
-    "    with: #{expected.in_time_zone.to_s(:iso8601)}"
+    <<~FAILURE
+      expected #{actual} not to be the same time as #{expected}
+      compared: #{actual.in_time_zone.to_s(:iso8601)}
+          with: #{expected.in_time_zone.to_s(:iso8601)}
+    FAILURE
   end
 end
 
 RSpec::Matchers.define_negated_matcher :not_change, :change
 
 # Monkey patches the controller response objects to return JSON
-module ActionDispatch
+module ActionDispatch # rubocop:disable Style/ClassAndModuleChildren
   class TestResponse
     def json
       @json ||= JSON.parse(self.body)

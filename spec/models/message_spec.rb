@@ -15,7 +15,7 @@ RSpec.describe Message do
   end
 
   describe "#notify_recipient" do
-    before(:each) do ResqueSpec.reset! end
+    before(:each) { ResqueSpec.reset! }
 
     it "does not send with notifications off" do
       message = create(:message)

@@ -14,10 +14,10 @@ RSpec.describe PostsController do
     let(:user) { create(:user) }
     let(:posts) { create_list(:post, 3) }
 
-    before(:each) {
+    before(:each) do
       login_as(user)
       posts
-    }
+    end
 
     it "does not show access-locked or private threads" do
       create(:post, privacy: :private)
@@ -287,7 +287,7 @@ RSpec.describe PostsController do
       end
 
       it "sorts posts by tagged_at" do
-        posts = Array.new(4) do create(:post) end
+        posts = Array.new(4) { create(:post) }
         create(:reply, post: posts[2])
         create(:reply, post: posts[1])
         get :search, params: { commit: true }
@@ -1237,8 +1237,8 @@ RSpec.describe PostsController do
       it "goes to post page if you're behind" do
         post = create(:post)
         reply1 = create(:reply, post: post, user: post.user)
-        Timecop.freeze(reply1.created_at + 1.second) do create(:reply, post: post, user: post.user) end # second reply
-        Timecop.freeze(reply1.created_at + 2.seconds) do create(:reply, post: post, user: post.user) end # third reply
+        Timecop.freeze(reply1.created_at + 1.second) { create(:reply, post: post, user: post.user) } # second reply
+        Timecop.freeze(reply1.created_at + 2.seconds) { create(:reply, post: post, user: post.user) } # third reply
         user = create(:user)
         post.mark_read(user, at_time: reply1.created_at)
         login_as(user)
@@ -2841,10 +2841,10 @@ RSpec.describe PostsController do
       let(:user) { create(:user) }
       let(:other_user) { create(:user) }
 
-      before(:each) {
+      before(:each) do
         login_as(user)
         create(:post)
-      }
+      end
 
       it "shows hiatused posts" do
         post = create(:post, user: user)
