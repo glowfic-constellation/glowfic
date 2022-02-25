@@ -43,7 +43,7 @@ RSpec.describe GalleriesController do
       expect(flash[:error]).to eq("You must be logged in to view that page.")
     end
 
-    context "with views" do
+    context "with views", bullet: true do
       render_views
       it "successfully loads" do
         login
@@ -60,7 +60,7 @@ RSpec.describe GalleriesController do
       expect(flash[:error]).to eq("You must be logged in to view that page.")
     end
 
-    context "with views" do
+    context "with views", bullet: true do
       render_views
       it "keeps variables on failed save" do
         icon = create(:icon)
@@ -228,7 +228,7 @@ RSpec.describe GalleriesController do
       end
     end
 
-    context "with views" do
+    context "with views", bullet: true do
       let(:user) { create(:user) }
 
       render_views
@@ -298,7 +298,7 @@ RSpec.describe GalleriesController do
       expect(flash[:error]).to eq("That is not your gallery.")
     end
 
-    context "with views" do
+    context "with views", bullet: true do
       render_views
       it "sets relevant fields" do
         user_id = login
@@ -353,7 +353,7 @@ RSpec.describe GalleriesController do
       expect(flash[:error][:message]).to eq('Gallery could not be saved.')
     end
 
-    context "with views" do
+    context "with views", bullet: true do
       render_views
       it "keeps variables on failed save" do
         user = create(:user)

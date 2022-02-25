@@ -181,6 +181,28 @@ RSpec.configure do |config|
       end
     end
   end
+
+  wrap_bullet = ->(example) do
+    Bullet.enable = true
+    Bullet.raise = true
+    Bullet.start_request
+    example.run
+    Bullet.perform_out_of_channel_notifications if Bullet.notification?
+    Bullet.end_request
+    Bullet.enable = false
+  end
+
+  # warn on n+1 queries
+  config.around(:each, bullet: true, &wrap_bullet)
+  config.around(:each, type: :feature, &wrap_bullet)
+end
+
+def skip_bullet
+  previous_value = Bullet.enable?
+  Bullet.enable = false
+  yield
+ensure
+  Bullet.enable = previous_value
 end
 
 RSpec::Matchers.define :be_the_same_time_as do |expected|

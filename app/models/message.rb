@@ -23,10 +23,16 @@ class Message < ApplicationRecord
     user_ids.include?(user.id)
   end
 
-  def unempty_subject
+  def thread_subject
+    return read_attribute(:thread_subject) if has_attribute?(:thread_subject)
     return first_thread.unempty_subject if thread_id != id
-    return '(no title)' if subject.blank?
     subject
+  end
+
+  def unempty_subject
+    subj = thread_subject
+    return '(no title)' if subj.blank?
+    subj
   end
 
   def last_in_thread

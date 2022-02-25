@@ -110,7 +110,7 @@ RSpec.describe ReportsController do
       expect(assigns(:posts).map(&:id)).to eq([valid.id])
     end
 
-    context "with views" do
+    context "with views", bullet: true do
       render_views
 
       it "works" do

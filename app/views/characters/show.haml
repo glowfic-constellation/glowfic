@@ -78,7 +78,7 @@
             Delete Character
 
 - if params[:view] == 'galleries'
-  - galleries = @character.galleries.ordered
+  - galleries = @character.galleries.select('galleries.*').with_gallery_groups.ordered
   %table.character-right-content-box#reorder-galleries-table
     %thead
       %tr
@@ -100,7 +100,7 @@
             .centered.padding-5 — No galleries yet —
 - elsif params[:view] == 'posts'
   - content_for(:posts_title) { 'Recent Threads' }
-  = render 'posts/list', posts: @posts, table_class: 'character-right-content-box'
+  = render 'posts/list', posts: posts_from_relation(@character.recent_posts), table_class: 'character-right-content-box'
 - else
   - reset_cycle
   %table.character-right-content-box

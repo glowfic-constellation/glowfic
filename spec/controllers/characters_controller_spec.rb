@@ -40,12 +40,12 @@ RSpec.describe CharactersController do
       expect(response.status).to eq(200)
     end
 
-    context "with render_views" do
+    context "with render_views", bullet: true do
       render_views
 
       it "successfully renders the page in template group" do
         character = create(:character)
-        create(:template_character, user: character.user) # character2
+        create_list(:template_character, 5, user: character.user)
         get :index, params: { user_id: character.user_id, character_split: 'template' }
         expect(response.status).to eq(200)
       end
@@ -88,7 +88,7 @@ RSpec.describe CharactersController do
       expect(assigns(:character).template).to eq(template)
     end
 
-    context "with views" do
+    context "with views", bullet: true do
       render_views
       it "sets correct variables" do
         user = create(:user)
@@ -183,7 +183,7 @@ RSpec.describe CharactersController do
       expect(assigns(:character).template_id).to eq(Template.first.id)
     end
 
-    context "with views" do
+    context "with views", bullet: true do
       render_views
       it "sets correct variables when invalid" do
         user = create(:user)
@@ -347,7 +347,7 @@ RSpec.describe CharactersController do
       expect(response.status).to eq(200)
     end
 
-    context "with views" do
+    context "with views", bullet: true do
       render_views
       it "sets correct variables" do
         user = create(:user)
@@ -658,7 +658,7 @@ RSpec.describe CharactersController do
       expect(character.galleries).to eq([])
     end
 
-    context "with views" do
+    context "with views", bullet: true do
       render_views
       it "sets correct variables when invalid" do
         user = create(:user)

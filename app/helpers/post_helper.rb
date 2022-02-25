@@ -13,7 +13,9 @@ module PostHelper
       return safe_join([joined_links, "#{num_deleted} #{deleted}"], ' and ')
     end
 
-    first_author = post.user.deleted? ? authors.first : post.user
+    # filter post.user from post.authors to avoid n+1 query over post.user
+    first_author = authors.find { |x| x.id == post.user_id } || authors.first
+
     first_link = linked ? user_link(first_author, colored: colored) : first_author.username
     hovertext = safe_join((authors - [first_author]).map(&:username), ', ')
     others = linked ? link_to("#{total - 1} others", stats_post_path(post), title: hovertext) : "#{total - 1} others"

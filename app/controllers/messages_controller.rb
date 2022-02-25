@@ -5,16 +5,22 @@ class MessagesController < ApplicationController
 
   def index
     blocked_ids = Block.where(blocking_user: current_user).pluck(:blocked_user_id)
+
+    includes = []
     if params[:view] == 'outbox'
       @page_title = 'Outbox'
       from_table = current_user.sent_messages.where(visible_outbox: true).ordered_by_thread.select('distinct on (thread_id) messages.*')
       from_table = from_table.where.not(recipient_id: blocked_ids).joins(:recipient).where.not(users: { deleted: true })
+      includes << :recipient
     else
       @page_title = 'Inbox'
       from_table = current_user.messages.where(visible_inbox: true).ordered_by_thread.select('distinct on (thread_id) messages.*')
       from_table = from_table.where.not(sender_id: blocked_ids).left_outer_joins(:sender).where('users.deleted IS NULL OR users.deleted = false')
+      includes << :sender
     end
-    @messages = Message.from(from_table).select('*').order('subquery.id desc').paginate(page: page)
+    @messages = Message.from(from_table, "messages").joins(:first_thread)
+      .select('*', 'first_threads_messages.subject as thread_subject')
+      .includes(*includes).order('messages.id desc').paginate(page: page)
     @view = @page_title.downcase
   end
 
@@ -72,7 +78,7 @@ class MessagesController < ApplicationController
     @page_title = message.unempty_subject
     @box = message.box(current_user)
 
-    @messages = Message.where(thread_id: message.thread_id).ordered_by_id
+    @messages = Message.where(thread_id: message.thread_id).includes(:sender).ordered_by_id
     if @messages.any? { |m| m.recipient_id == current_user.id && m.unread? }
       @messages.each do |m|
         next unless m.unread?
