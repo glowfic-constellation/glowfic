@@ -124,6 +124,7 @@ rules:
   number-leading-zero: always
 
   # property-case: lower
+  property-no-unknown: true
 
   rule-empty-line-before:
   - always-multi-line
