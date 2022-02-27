@@ -148,7 +148,6 @@ rules:
   selector-class-pattern: '^[_\-a-z0-9]+$'
   selector-id-pattern: '^[_\-a-z]+$'
   selector-attribute-quotes: always
-  scss/selector-no-redundant-nesting-selector: true
   no-duplicate-selectors: true
 
   # shorthand-property-no-redundant-values: true
