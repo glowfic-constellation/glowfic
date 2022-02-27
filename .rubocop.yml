@@ -393,6 +393,9 @@ Rails/RenderPlainText:
 
 Rails/SaveBang:
   Enabled: true
+  Exclude:
+    - 'app/**/*'
+    - 'config/**/*'
 
 Rails/ShortI18n:
   Enabled: true
