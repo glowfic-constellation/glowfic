@@ -589,6 +589,8 @@ RSpec.describe BoardsController do
         login
         get :search
         expect(response).to have_http_status(200)
+        expect(assigns(:page_title)).to eq('Search Continuities')
+        expect(assigns(:search_results)).to be_nil
       end
     end
 
