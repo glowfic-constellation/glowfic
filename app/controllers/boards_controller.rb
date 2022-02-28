@@ -4,7 +4,8 @@ class BoardsController < ApplicationController
   before_action :readonly_forbidden, except: [:index, :show, :search]
   before_action :find_model, only: [:show, :edit, :update, :destroy]
   before_action :editor_setup, only: [:new, :edit]
-  before_action :require_permission, only: [:edit, :update, :destroy]
+  before_action :require_create_permission, only: [:new, :create]
+  before_action :require_edit_permission, only: [:edit, :update, :destroy]
 
   def index
     if params[:user_id].present?
@@ -167,7 +168,13 @@ class BoardsController < ApplicationController
     end
   end
 
-  def require_permission
+  def require_create_permission
+    return unless current_user.read_only?
+    flash[:error] = "You do not have permission to create continuities."
+    redirect_to continuities_path and return
+  end
+
+  def require_edit_permission
     unless @board.editable_by?(current_user)
       flash[:error] = "You do not have permission to edit that continuity."
       redirect_to continuity_path(@board) and return

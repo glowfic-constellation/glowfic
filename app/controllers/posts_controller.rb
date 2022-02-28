@@ -5,8 +5,9 @@ class PostsController < WritableController
   before_action :login_required, except: [:index, :show, :history, :warnings, :search, :stats]
   before_action :readonly_forbidden, except: [:index, :unread, :hidden, :show, :history, :warnings, :search, :stats, :mark, :unhide]
   before_action :find_model, only: [:show, :history, :delete_history, :stats, :warnings, :edit, :update, :destroy]
-  before_action :require_permission, only: [:edit, :delete_history]
+  before_action :require_edit_permission, only: [:edit, :delete_history]
   before_action :require_import_permission, only: [:new, :create]
+  before_action :require_create_permission, only: [:new, :create]
   before_action :editor_setup, only: [:new, :edit]
 
   def index
@@ -205,7 +206,7 @@ class PostsController < WritableController
     mark_unread and return if params[:unread].present?
     mark_hidden and return if params[:hidden].present?
 
-    require_permission
+    require_edit_permission
     return if performed?
 
     change_status and return if params[:status].present?
@@ -443,11 +444,17 @@ class PostsController < WritableController
     @page_title = @post.subject
   end
 
-  def require_permission
+  def require_edit_permission
     unless @post.editable_by?(current_user) || @post.metadata_editable_by?(current_user)
       flash[:error] = "You do not have permission to modify this post."
       redirect_to @post
     end
+  end
+
+  def require_create_permission
+    return unless current_user.read_only?
+    flash[:error] = "You do not have permission to create posts."
+    redirect_to posts_path and return
   end
 
   def require_import_permission

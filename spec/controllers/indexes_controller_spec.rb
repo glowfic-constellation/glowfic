@@ -30,7 +30,7 @@ RSpec.describe IndexesController do
       login_as(create(:reader_user))
       get :new
       expect(response).to redirect_to(continuities_path)
-      expect(flash[:error]).to eq("This feature is not available to read-only accounts.")
+      expect(flash[:error]).to eq("You do not have permission to create indexes.")
     end
 
     it "works logged in" do
@@ -52,7 +52,7 @@ RSpec.describe IndexesController do
       login_as(create(:reader_user))
       post :create
       expect(response).to redirect_to(continuities_path)
-      expect(flash[:error]).to eq("This feature is not available to read-only accounts.")
+      expect(flash[:error]).to eq("You do not have permission to create indexes.")
     end
 
     it "requires valid index" do
