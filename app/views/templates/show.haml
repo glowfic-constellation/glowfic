@@ -46,5 +46,5 @@
       = render 'characters/icon_view', characters: @template.characters
 - if @posts.present?
   %br
-  - content_for :posts_title do 'Posts with Template Instances' end
+  - content_for(:posts_title) { 'Posts with Template Instances' }
   = render 'posts/list', posts: @posts

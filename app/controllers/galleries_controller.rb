@@ -3,6 +3,7 @@ class GalleriesController < UploadingController
   include Taggable
 
   before_action :login_required, except: [:index, :show, :search]
+  before_action :readonly_forbidden, except: [:index, :show, :search]
   before_action :find_model, only: [:destroy, :edit, :update] # assumes login_required
   before_action :require_create_permission, only: [:new, :create]
   before_action :setup_new_icons, only: [:add, :icon]
@@ -186,7 +187,7 @@ class GalleriesController < UploadingController
     elsif icons.all?(&:save)
       flash[:success] = "Icons saved successfully."
       if @gallery
-        icons.each do |icon| @gallery.icons << icon end
+        icons.each { |icon| @gallery.icons << icon }
         redirect_to @gallery and return
       end
       redirect_to user_gallery_path(id: 0, user_id: current_user.id)

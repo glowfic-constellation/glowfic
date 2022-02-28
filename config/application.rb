@@ -7,43 +7,48 @@ require 'rails/all'
 Bundler.require(*Rails.groups)
 
 module Glowfic
-  ALLOWED_TAGS = %w(b i u sub sup del ins hr p br div span pre code h1 h2 h3 h4 h5 h6 ul ol li dl dt dd a img blockquote q table td th tr strike s strong em big small font cite abbr var samp kbd mark ruby rp rt bdo wbr details summary)
+  ALLOWED_TAGS = %w(b i u sub sup del ins hr p br div span pre code h1 h2 h3 h4 h5 h6 ul ol li dl dt dd a img blockquote q table td th tr strike s
+                    strong em big small font cite abbr var samp kbd mark ruby rp rt bdo wbr details summary)
   ALLOWED_ATTRIBUTES = {
-    :all => %w(xml:lang class style title lang dir),
-    "hr" => %w(width),
-    "li" => %w(value),
-    "ol" => %w(reversed start type),
-    "a" => %w(href hreflang rel target type),
-    "del" => %w(cite datetime),
-    "table" => %w(width),
-    "td" => %w(abbr width),
-    "th" => %w(abbr width),
+    :all         => %w(xml:lang class style title lang dir),
+    "hr"         => %w(width),
+    "li"         => %w(value),
+    "ol"         => %w(reversed start type),
+    "a"          => %w(href hreflang rel target type),
+    "del"        => %w(cite datetime),
+    "table"      => %w(width),
+    "td"         => %w(abbr width),
+    "th"         => %w(abbr width),
     "blockquote" => %w(cite),
-    "cite" => %w(href),
+    "cite"       => %w(href),
   }
 
   DISCORD_LINK_GLOWFIC = 'https://discord.gg/Mytf2ruKpv'
   DISCORD_LINK_CONSTELLATION = 'https://discord.gg/RWUPXQD'
 
   module Sanitizers
-    WRITTEN_CONF = Sanitize::Config.merge(Sanitize::Config::RELAXED,
+    WRITTEN_CONF = Sanitize::Config.merge(
+      Sanitize::Config::RELAXED,
       elements: ALLOWED_TAGS,
       attributes: ALLOWED_ATTRIBUTES,
     )
+
     def self.written(text)
-      Sanitize.fragment(text, WRITTEN_CONF).html_safe
+      Sanitize.fragment(text, WRITTEN_CONF).html_safe # rubocop:disable Rails/OutputSafety
     end
 
-    DESCRIPTION_CONF = Sanitize::Config.merge(Sanitize::Config::RELAXED,
+    DESCRIPTION_CONF = Sanitize::Config.merge(
+      Sanitize::Config::RELAXED,
       elements: ['a'],
-      attributes: {'a' => ['href']},
+      attributes: { 'a' => ['href'] },
     )
+
     def self.description(text)
-      Sanitize.fragment(text, DESCRIPTION_CONF).html_safe
+      Sanitize.fragment(text, DESCRIPTION_CONF).html_safe # rubocop:disable Rails/OutputSafety
     end
 
     def self.full(text)
-      Sanitize.fragment(text).html_safe
+      Sanitize.fragment(text).html_safe # rubocop:disable Rails/OutputSafety
     end
   end
 

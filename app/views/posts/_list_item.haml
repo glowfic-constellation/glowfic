@@ -38,7 +38,7 @@
             = link_to 2, post_path(post, page: 2)
             = link_to 3, post_path(post, page: 3)
             \...
-            - (total_pages-2).upto(total_pages) do |index|
+            - (total_pages - 2).upto(total_pages) do |index|
               = link_to index, post_path(post, page: index)
   - unless local_assigns[:hide_continuity]
     %td.post-board.vtop{class: klass}= link_to post.board_name, anchored_continuity_path(post)
@@ -61,7 +61,7 @@
       - if index.editable_by?(current_user)
         = link_to edit_index_post_path(post.index_post_id) do
           = image_tag "icons/pencil.png"
-        = link_to index_post_path(post.index_post_id), method: :delete, data: { confirm: 'Are you sure you want to remove '+post.subject+' from this index?' } do
+        = link_to index_post_path(post.index_post_id), method: :delete, data: { confirm: "Are you sure you want to remove #{post.subject} from this index?" } do
           = image_tag "icons/cross.png"
         &nbsp;
 - if post.respond_to?(:index_description)

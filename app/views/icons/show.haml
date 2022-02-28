@@ -78,7 +78,7 @@
       %tr
         %th.table-title Galleries
     - if @galleries.present?
-      = render partial: 'galleries/single', collection: @galleries, as: :gallery, locals: {klass: 'subber', skip_forms: true, is_owner: @icon.user == current_user}
+      = render partial: 'galleries/single', collection: @galleries, as: :gallery, locals: { klass: 'subber', skip_forms: true, is_owner: @icon.user == current_user }
     - else
       %tbody
         %tr

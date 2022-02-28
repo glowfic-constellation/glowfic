@@ -357,6 +357,13 @@ RSpec.describe CharactersController do
       expect(flash[:error]).to eq("You must be logged in to view that page.")
     end
 
+    it "requires full account" do
+      login_as(create(:reader_user))
+      get :edit, params: { id: -1 }
+      expect(response).to redirect_to(continuities_path)
+      expect(flash[:error]).to eq("This feature is not available to read-only accounts.")
+    end
+
     it "requires valid character id" do
       user_id = login
       get :edit, params: { id: -1 }
@@ -437,6 +444,13 @@ RSpec.describe CharactersController do
       put :update, params: { id: -1 }
       expect(response).to redirect_to(root_url)
       expect(flash[:error]).to eq("You must be logged in to view that page.")
+    end
+
+    it "requires full account" do
+      login_as(create(:reader_user))
+      put :update, params: { id: -1 }
+      expect(response).to redirect_to(continuities_path)
+      expect(flash[:error]).to eq("This feature is not available to read-only accounts.")
     end
 
     it "requires valid character id" do
@@ -819,6 +833,13 @@ RSpec.describe CharactersController do
       expect(flash[:error]).to eq("You must be logged in to view that page.")
     end
 
+    it "requires full account" do
+      login_as(create(:reader_user))
+      delete :destroy, params: { id: -1 }
+      expect(response).to redirect_to(continuities_path)
+      expect(flash[:error]).to eq("This feature is not available to read-only accounts.")
+    end
+
     it "requires valid character" do
       user_id = login
       delete :destroy, params: { id: -1 }
@@ -862,6 +883,13 @@ RSpec.describe CharactersController do
       get :replace, params: { id: -1 }
       expect(response).to redirect_to(root_url)
       expect(flash[:error]).to eq('You must be logged in to view that page.')
+    end
+
+    it "requires full account" do
+      login_as(create(:reader_user))
+      get :replace, params: { id: -1 }
+      expect(response).to redirect_to(continuities_path)
+      expect(flash[:error]).to eq("This feature is not available to read-only accounts.")
     end
 
     it "requires valid character" do
@@ -965,6 +993,13 @@ RSpec.describe CharactersController do
       post :do_replace, params: { id: -1 }
       expect(response).to redirect_to(root_url)
       expect(flash[:error]).to eq('You must be logged in to view that page.')
+    end
+
+    it "requires full account" do
+      login_as(create(:reader_user))
+      post :do_replace, params: { id: -1 }
+      expect(response).to redirect_to(continuities_path)
+      expect(flash[:error]).to eq("This feature is not available to read-only accounts.")
     end
 
     it "requires valid character" do
@@ -1256,41 +1291,39 @@ RSpec.describe CharactersController do
       expect(assigns(:search_results)).to match_array([found])
     end
 
-    context "searching" do
-      before(:each) do
-        @name = create(:character, name: 'a', screenname: 'b', nickname: 'c')
-        @nickname = create(:character, name: 'b', screenname: 'c', nickname: 'a')
-        @screenname = create(:character, name: 'c', screenname: 'a', nickname: 'b')
-      end
+    context "with search" do
+      let!(:name) { create(:character, name: 'a', screenname: 'b', nickname: 'c') }
+      let!(:nickname) { create(:character, name: 'b', screenname: 'c', nickname: 'a') }
+      let!(:screenname) { create(:character, name: 'c', screenname: 'a', nickname: 'b') }
 
       it "searches names correctly" do
         get :search, params: { commit: true, name: 'a', search_name: true }
-        expect(assigns(:search_results)).to match_array([@name])
+        expect(assigns(:search_results)).to match_array([name])
       end
 
       it "searches screenname correctly" do
         get :search, params: { commit: true, name: 'a', search_screenname: true }
-        expect(assigns(:search_results)).to match_array([@screenname])
+        expect(assigns(:search_results)).to match_array([screenname])
       end
 
       it "searches nickname correctly" do
         get :search, params: { commit: true, name: 'a', search_nickname: true }
-        expect(assigns(:search_results)).to match_array([@nickname])
+        expect(assigns(:search_results)).to match_array([nickname])
       end
 
       it "searches name + screenname correctly" do
         get :search, params: { commit: true, name: 'a', search_name: true, search_screenname: true }
-        expect(assigns(:search_results)).to match_array([@name, @screenname])
+        expect(assigns(:search_results)).to match_array([name, screenname])
       end
 
       it "searches name + nickname correctly" do
         get :search, params: { commit: true, name: 'a', search_name: true, search_nickname: true }
-        expect(assigns(:search_results)).to match_array([@name, @nickname])
+        expect(assigns(:search_results)).to match_array([name, nickname])
       end
 
       it "searches nickname + screenname correctly" do
         get :search, params: { commit: true, name: 'a', search_nickname: true, search_screenname: true }
-        expect(assigns(:search_results)).to match_array([@nickname, @screenname])
+        expect(assigns(:search_results)).to match_array([nickname, screenname])
       end
 
       it "searches all correctly" do
@@ -1301,7 +1334,7 @@ RSpec.describe CharactersController do
           search_screenname: true,
           search_nickname: true,
         }
-        expect(assigns(:search_results)).to match_array([@name, @screenname, @nickname])
+        expect(assigns(:search_results)).to match_array([name, screenname, nickname])
       end
 
       it "orders results correctly" do
@@ -1332,6 +1365,13 @@ RSpec.describe CharactersController do
       post :duplicate, params: { id: -1 }
       expect(response).to redirect_to(root_url)
       expect(flash[:error]).to eq('You must be logged in to view that page.')
+    end
+
+    it "requires full account" do
+      login_as(create(:reader_user))
+      post :duplicate, params: { id: -1 }
+      expect(response).to redirect_to(continuities_path)
+      expect(flash[:error]).to eq("This feature is not available to read-only accounts.")
     end
 
     it "requires valid character id" do

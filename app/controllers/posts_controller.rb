@@ -3,7 +3,7 @@ class PostsController < WritableController
   include Taggable
 
   before_action :login_required, except: [:index, :show, :history, :warnings, :search, :stats]
-  before_action :readonly_forbidden, only: [:owed]
+  before_action :readonly_forbidden, except: [:index, :unread, :hidden, :show, :history
   before_action :find_model, only: [:show, :history, :delete_history, :stats, :warnings, :edit, :update, :destroy]
   before_action :require_edit_permission, only: [:edit, :delete_history]
   before_action :require_import_permission, only: [:new, :create]
@@ -104,13 +104,13 @@ class PostsController < WritableController
     if params[:unhide_boards].present?
       board_ids = params[:unhide_boards].map(&:to_i).compact.uniq
       views_to_update = BoardView.where(user_id: current_user.id).where(board_id: board_ids)
-      views_to_update.each do |view| view.update(ignored: false) end
+      views_to_update.each { |view| view.update(ignored: false) }
     end
 
     if params[:unhide_posts].present?
       post_ids = params[:unhide_posts].map(&:to_i).compact.uniq
       views_to_update = Post::View.where(user_id: current_user.id).where(post_id: post_ids)
-      views_to_update.each do |view| view.update(ignored: false) end
+      views_to_update.each { |view| view.update(ignored: false) }
     end
 
     redirect_to hidden_posts_path
@@ -180,6 +180,22 @@ class PostsController < WritableController
   end
 
   def stats
+    post_location = @post.board.name
+    post_location += ' » ' + @post.section.name if @post.section.present?
+    post_location += ' » Stats'
+
+    post_description = generate_short(@post.description)
+    post_description += ' ('
+    post_description += helpers.author_links(@post, linked: false)
+    post_description += ')'
+    post_description.strip!
+
+    @meta_og = {
+      title: @post.subject + ' · ' + post_location,
+      description: post_description,
+      url: stats_post_url(@post),
+    }
+
     fresh_when(etag: @post, last_modified: @post.updated_at, public: false)
   end
 
@@ -268,21 +284,20 @@ class PostsController < WritableController
     @search_results = @search_results.where(board_id: params[:board_id]) if params[:board_id].present?
     @search_results = @search_results.where(id: Setting.find(params[:setting_id]).post_tags.pluck(:post_id)) if params[:setting_id].present?
     if params[:subject].present?
-      @search_results = @search_results.search(params[:subject]).where('LOWER(subject) LIKE ?', "%#{params[:subject].downcase}%")
+      if params[:abbrev].present?
+        search = params[:subject].downcase.chars.join('% ')
+        @search_results = @search_results.where('LOWER(subject) LIKE ?', "%#{search}%")
+      else
+        @search_results = @search_results.search(params[:subject]).where('LOWER(subject) LIKE ?', "%#{params[:subject].downcase}%")
+      end
     end
     @search_results = @search_results.complete if params[:completed].present?
     if params[:author_id].present?
-      post_ids = nil
-      params[:author_id].each do |author_id|
-        author_posts = Post::Author.where(user_id: author_id, joined: true).pluck(:post_id)
-        if post_ids.nil?
-          post_ids = author_posts
-        else
-          post_ids &= author_posts
-        end
-        break if post_ids.empty?
-      end
-      @search_results = @search_results.where(id: post_ids.uniq)
+      # get author matches for posts that have at least one
+      author_posts = Post::Author.where(user_id: params[:author_id]).group(:post_id)
+      # select posts that have all of them
+      author_posts = author_posts.having('COUNT(post_authors.user_id) = ?', params[:author_id].length).pluck(:post_id)
+      @search_results = @search_results.where(id: author_posts)
     end
     if params[:character_id].present?
       post_ids = Reply.where(character_id: params[:character_id]).select(:post_id).distinct.pluck(:post_id)

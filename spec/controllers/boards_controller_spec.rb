@@ -311,6 +311,13 @@ RSpec.describe BoardsController do
       expect(flash[:error]).to eq("You must be logged in to view that page.")
     end
 
+    it "requires full account" do
+      login_as(create(:reader_user))
+      get :edit, params: { id: -1 }
+      expect(response).to redirect_to(continuities_path)
+      expect(flash[:error]).to eq("This feature is not available to read-only accounts.")
+    end
+
     it "requires valid board" do
       login
       get :edit, params: { id: -1 }
@@ -354,6 +361,13 @@ RSpec.describe BoardsController do
       put :update, params: { id: -1 }
       expect(response).to redirect_to(root_url)
       expect(flash[:error]).to eq("You must be logged in to view that page.")
+    end
+
+    it "requires full account" do
+      login_as(create(:reader_user))
+      put :update, params: { id: -1 }
+      expect(response).to redirect_to(continuities_path)
+      expect(flash[:error]).to eq("This feature is not available to read-only accounts.")
     end
 
     it "requires valid board" do
@@ -414,6 +428,13 @@ RSpec.describe BoardsController do
       delete :destroy, params: { id: -1 }
       expect(response).to redirect_to(root_url)
       expect(flash[:error]).to eq("You must be logged in to view that page.")
+    end
+
+    it "requires full account" do
+      login_as(create(:reader_user))
+      delete :destroy, params: { id: -1 }
+      expect(response).to redirect_to(continuities_path)
+      expect(flash[:error]).to eq("This feature is not available to read-only accounts.")
     end
 
     it "requires valid board" do
@@ -586,6 +607,15 @@ RSpec.describe BoardsController do
         expect(assigns(:search_results)).to match_array([board1, board2])
       end
 
+      it "filters by name acronym" do
+        board1 = create(:board, name: 'contains stars')
+        board2 = create(:board, name: 'contains Suns')
+        board3 = create(:board, name: 'Case starlight')
+        create(:board, name: 'unrelated')
+        get :search, params: { commit: true, name: 'cs', abbrev: true }
+        expect(assigns(:search_results)).to match_array([board1, board2, board3])
+      end
+
       it "filters by authors" do
         user = create(:user)
         board1 = create(:board, creator: user)
@@ -604,7 +634,7 @@ RSpec.describe BoardsController do
 
         boards = [create(:board, creator: author1, coauthors: [author2])] # both authors
         boards << create(:board, coauthors: [author1, author2]) # both authors coauthors
-        boards << create(:board, coauthors: [author1], cameos: [author2]) # both authors, one cameo
+        create(:board, coauthors: [author1], cameos: [author2]) # both authors, one cameo
 
         get :search, params: { commit: true, author_id: [author1.id, author2.id] }
         expect(assigns(:search_results)).to match_array(boards)

@@ -6,7 +6,7 @@
       %th.search-params-header
         Search Characters
         - if @search_results
-          = '- '+@search_results.total_entries.to_s+' results'
+          = "- #{@search_results.total_entries} results"
       %th.search-results-header
         - if @search_results
           = render 'posts/paginator', paginated: @search_results, no_per: true
@@ -17,10 +17,12 @@
           %table.search-form
             %tr
               %td= label_tag :author_id, 'Author'
-              %td= select_tag :author_id, options_from_collection_for_select(@users, :id, :username, params[:author_id]), {class: 'chosen-select', prompt: '— Choose Author —'}
+              %td= select_tag :author_id, options_from_collection_for_select(@users, :id, :username, params[:author_id]),
+                { class: 'chosen-select', prompt: '— Choose Author —' }
             %tr
               %td= label_tag :template_id, 'Template'
-              %td= select_tag :template_id, options_from_collection_for_select(@templates, :id, :name, params[:template_id]), {class: 'chosen-select', prompt: '— Choose Template —'}
+              %td= select_tag :template_id, options_from_collection_for_select(@templates, :id, :name, params[:template_id]),
+                { class: 'chosen-select', prompt: '— Choose Template —' }
             %tr
               %td= label_tag :name, 'Name'
               %td= text_field_tag :name, params[:name], style: 'width: 100%; margin: 5px 0px;'
@@ -29,17 +31,17 @@
               %td
                 Searching for name in:
                 %br
-                = check_box_tag :search_name, true, params[:commit] ? params[:search_name] : true, {class: 'vmid no-margin', style: 'margin-bottom: 3px;'}
+                = check_box_tag :search_name, true, params[:commit] ? params[:search_name] : true, { class: 'vmid no-margin', style: 'margin-bottom: 3px;' }
                 = label_tag :search_name, "Name"
                 %br
-                = check_box_tag :search_screenname, true, params[:commit] ? params[:search_screenname] : true, {class: 'vmid no-margin', style: 'margin-bottom: 3px;'}
+                = check_box_tag :search_screenname, true, params[:commit] ? params[:search_screenname] : true, { class: 'vmid no-margin', style: 'margin-bottom: 3px;' }
                 = label_tag :search_screenname, "Screenname"
                 %br
-                = check_box_tag :search_nickname, true, params[:commit] ? params[:search_nickname] : true, {class: 'vmid no-margin', style: 'margin-bottom: 3px;'}
+                = check_box_tag :search_nickname, true, params[:commit] ? params[:search_nickname] : true, { class: 'vmid no-margin', style: 'margin-bottom: 3px;' }
                 = label_tag :search_nickname, "Nickname"
                 - if false # TODO
                   %br
-                  = check_box_tag :search_aliases, true, params[:commit] ? params[:search_aliases] : true, {class: 'vmid no-margin', style: 'margin-bottom: 3px;'}
+                  = check_box_tag :search_aliases, true, params[:commit] ? params[:search_aliases] : true, { class: 'vmid no-margin', style: 'margin-bottom: 3px;' }
                   = label_tag :search_aliases, "Aliases"
             -# TODO: setting search, facecast search
             %tr

@@ -28,7 +28,8 @@ RSpec.describe ApplicationJob do
     expect(ExceptionNotifier).to receive(:notify_exception).with(exc, data: { job: StubJob.name, args: [2, :test] })
 
     job = StubJob.new(2, :test)
-    expect(job).to receive(:perform).and_raise(exc)
+    allow(job).to receive(:perform).and_raise(exc)
+    expect(job).to receive(:perform)
     begin
       job.perform_now
     rescue Exception # rubocop:disable Lint/RescueException

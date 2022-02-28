@@ -149,14 +149,14 @@ RSpec.describe User do
       let(:irrelevant_blocker1) { create(:user) }
       let(:irrelevant_blocker2) { create(:user) }
 
-      before(:each) {
+      before(:each) do
         create(:block, blocking_user: blocking_post_user, blocked_user: user, hide_me: :posts)
         create(:block, blocking_user: blocking_content_user, blocked_user: user, hide_me: :all)
         create(:block, blocking_user: user, blocked_user: blocked_post_user, hide_them: :posts)
         create(:block, blocking_user: user, blocked_user: blocked_content_user, hide_them: :all)
         create(:block, blocking_user: irrelevant_blocker1, blocked_user: user, block_interactions: true)
         create(:block, blocking_user: irrelevant_blocker2, blocked_user: user, hide_them: :posts)
-      }
+      end
 
       it "correctly handles all hidden post users" do
         expect(user.hidden_post_users).to match_array([blocking_post_user, blocking_content_user, blocked_post_user, blocked_content_user].map(&:id))

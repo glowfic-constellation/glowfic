@@ -18,7 +18,7 @@ Rails.application.configure do
     config.action_controller.perform_caching = true
     # config.action_controller.enable_fragment_cache_logging = true
 
-    config.cache_store = :redis_cache_store, {url: ENV['REDIS_URL']}
+    config.cache_store = :redis_cache_store, { url: ENV['REDIS_CACHE_URL'] }
     config.public_file_server.headers = {
       'Cache-Control' => "public, max-age=#{2.days.to_i}",
     }
@@ -32,7 +32,7 @@ Rails.application.configure do
   # config.active_storage.service = :local
 
   # Use a real queuing backend for Active Job (and separate queues per environment)
-  config.active_job.queue_adapter     = :resque
+  config.active_job.queue_adapter = :resque
   # config.active_job.queue_name_prefix = "glowfic_#{Rails.env}"
   config.action_mailer.perform_caching = false
 

@@ -60,7 +60,7 @@ FactoryBot.define do
     end
 
     after(:create) do |post, evaluator|
-      evaluator.num_replies.times do create(:reply, user: post.user, post: post) end
+      evaluator.num_replies.times { create(:reply, user: post.user, post: post) }
     end
   end
 

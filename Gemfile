@@ -1,6 +1,6 @@
 source 'https://rubygems.org'
 
-ruby '2.6.9'
+ruby '2.7.5'
 
 gem 'api-pagination'
 gem 'apipie-rails'
@@ -35,7 +35,6 @@ gem 'pg_search'
 gem 'rack-pratchett'
 gem 'rails', '~> 6.0.0'
 gem 'redis', '~> 4.0'
-gem 'redis-rails'
 gem 'resque'
 gem 'resque_mailer'
 gem 'sanitize'

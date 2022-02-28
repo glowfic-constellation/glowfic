@@ -20,8 +20,8 @@
           type: 'image/png',
           alt: 'Three stars, colored green, purple and blue',
           width: '48',
-          height: '48'
-        })
+          height: '48',
+        }) # rubocop:disable Style/TrailingCommaInArguments
       %meta{property: 'og:image', content: image_hash[:src]}
       - [:type, :alt, :width, :height].each do |prop|
         - if image_hash.key?(prop)
@@ -86,7 +86,7 @@
                 %li= link_to "Galleries", user_galleries_path(current_user)
                 %li= link_to 'Favorites', favorites_path
                 %li= link_to "Post", new_post_path
-              = link_to logout_path, method: :delete, id: :"header-logout" do
+              = link_to logout_path, method: :delete, id: :"header-logout", data: { confirm: 'Press OK to confirm logout' } do
                 = button_tag "Log out", class: 'button'
             - elsif !current_page?(login_path)
               = form_tag login_path, method: :post, id: 'header-form' do

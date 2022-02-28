@@ -14,10 +14,10 @@ RSpec.describe PostsController do
     let(:user) { create(:user) }
     let(:posts) { create_list(:post, 3) }
 
-    before(:each) {
+    before(:each) do
       login_as(user)
       posts
-    }
+    end
 
     it "does not show access-locked or private threads" do
       create(:post, privacy: :private)
@@ -225,6 +225,15 @@ RSpec.describe PostsController do
         expect(assigns(:search_results)).to match_array([post1, post2])
       end
 
+      it "filters by subject acronym" do
+        post1 = create(:post, subject: 'contains stars')
+        post2 = create(:post, subject: 'contains Stars')
+        post3 = create(:post, subject: 'Case starlight')
+        create(:post, subject: 'unrelated')
+        get :search, params: { commit: true, subject: 'cs', abbrev: true }
+        expect(assigns(:search_results)).to match_array([post1, post2, post3])
+      end
+
       it "does not mix up subject with content" do
         create(:post, subject: 'unrelated', content: 'contains stars')
         get :search, params: { commit: true, subject: 'stars' }
@@ -290,7 +299,7 @@ RSpec.describe PostsController do
       end
 
       it "sorts posts by tagged_at" do
-        posts = Array.new(4) do create(:post) end
+        posts = Array.new(4) { create(:post) }
         create(:reply, post: posts[2])
         create(:reply, post: posts[1])
         get :search, params: { commit: true }
@@ -1249,8 +1258,8 @@ RSpec.describe PostsController do
       it "goes to post page if you're behind" do
         post = create(:post)
         reply1 = create(:reply, post: post, user: post.user)
-        Timecop.freeze(reply1.created_at + 1.second) do create(:reply, post: post, user: post.user) end # second reply
-        Timecop.freeze(reply1.created_at + 2.seconds) do create(:reply, post: post, user: post.user) end # third reply
+        Timecop.freeze(reply1.created_at + 1.second) { create(:reply, post: post, user: post.user) } # second reply
+        Timecop.freeze(reply1.created_at + 2.seconds) { create(:reply, post: post, user: post.user) } # third reply
         user = create(:user)
         post.mark_read(user, at_time: reply1.created_at)
         login_as(user)
@@ -1394,6 +1403,13 @@ RSpec.describe PostsController do
       expect(flash[:error]).to eq("You must be logged in to view that page.")
     end
 
+    it "requires full account" do
+      login_as(create(:reader_user))
+      get :delete_history, params: { id: -1 }
+      expect(response).to redirect_to(continuities_path)
+      expect(flash[:error]).to eq("This feature is not available to read-only accounts.")
+    end
+
     it "requires post" do
       login
       get :delete_history, params: { id: -1 }
@@ -1464,6 +1480,18 @@ RSpec.describe PostsController do
       expect(flash[:error]).to eq("Post could not be found.")
     end
 
+    it "calculates OpenGraph meta" do
+      user = create(:user, username: 'example user')
+      board = create(:board, name: 'board')
+      post = create(:post, subject: 'title', user: user, board: board)
+      get :stats, params: { id: post.id }
+
+      meta_og = assigns(:meta_og)
+      expect(meta_og[:url]).to eq(stats_post_url(post))
+      expect(meta_og[:title]).to eq('title · board » Stats')
+      expect(meta_og[:description]).to eq('(example user)')
+    end
+
     it "works logged out" do
       get :stats, params: { id: post.id }
       expect(response.status).to eq(200)
@@ -1487,6 +1515,13 @@ RSpec.describe PostsController do
       get :edit, params: { id: -1 }
       expect(response).to redirect_to(root_url)
       expect(flash[:error]).to eq("You must be logged in to view that page.")
+    end
+
+    it "requires full account" do
+      login_as(create(:reader_user))
+      get :edit, params: { id: -1 }
+      expect(response).to redirect_to(continuities_path)
+      expect(flash[:error]).to eq("This feature is not available to read-only accounts.")
     end
 
     it "requires post" do
@@ -1580,6 +1615,13 @@ RSpec.describe PostsController do
       put :update, params: { id: -1 }
       expect(response).to redirect_to(root_url)
       expect(flash[:error]).to eq("You must be logged in to view that page.")
+    end
+
+    it "requires full account" do
+      login_as(create(:reader_user))
+      put :update, params: { id: -1 }
+      expect(response).to redirect_to(continuities_path)
+      expect(flash[:error]).to eq("This feature is not available to read-only accounts.")
     end
 
     it "requires valid post" do
@@ -2760,6 +2802,13 @@ RSpec.describe PostsController do
       expect(flash[:error]).to eq("You must be logged in to view that page.")
     end
 
+    it "requires full account" do
+      login_as(create(:reader_user))
+      delete :destroy, params: { id: -1 }
+      expect(response).to redirect_to(continuities_path)
+      expect(flash[:error]).to eq("This feature is not available to read-only accounts.")
+    end
+
     it "requires valid post" do
       login
       delete :destroy, params: { id: -1 }
@@ -2886,10 +2935,10 @@ RSpec.describe PostsController do
       let(:user) { create(:user) }
       let(:other_user) { create(:user) }
 
-      before(:each) {
+      before(:each) do
         login_as(user)
         create(:post)
-      }
+      end
 
       it "shows hiatused posts" do
         post = create(:post, user: user)
