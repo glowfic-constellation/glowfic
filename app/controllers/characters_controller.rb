@@ -4,7 +4,6 @@ class CharactersController < ApplicationController
   include CharacterSplit
 
   before_action :login_required, except: [:index, :show, :facecasts, :search]
-  before_action :readonly_forbidden, except: [:index, :show, :facecasts, :search]
   before_action :find_model, only: [:show, :edit, :update, :duplicate, :destroy, :replace, :do_replace]
   before_action :find_group, only: :index
   before_action :require_create_permission, only: [:new, :create]

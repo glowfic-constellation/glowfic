@@ -1,7 +1,6 @@
 # frozen_string_literal: true
 class IndexesController < ApplicationController
   before_action :login_required, except: [:index, :show]
-  before_action :readonly_forbidden, except: [:index, :show]
   before_action :find_model, except: [:index, :new, :create]
   before_action :require_create_permission, only: [:new, :create]
   before_action :require_edit_permission, except: [:index, :new, :create, :show]
