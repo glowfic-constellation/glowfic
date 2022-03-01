@@ -129,7 +129,7 @@ RSpec.describe IndexesController do
     end
 
     it "requires full account" do
-      skip "TODO  relies on inability to create indexes"
+      skip "TODO relies on inability to create indexes"
     end
 
     it "requires valid index" do
