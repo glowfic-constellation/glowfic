@@ -29,7 +29,7 @@ class MessagesController < ApplicationController
   def create
     @message = Message.new(permitted_params)
     @message.sender = current_user
-    @message.recipient = nil if @message.recipient.read_only?
+    @message.recipient = nil if @message.recipient&.read_only?
     set_message_parent(params[:parent_id]) if params[:parent_id].present?
 
     if params[:button_preview]
