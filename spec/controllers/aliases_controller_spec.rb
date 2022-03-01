@@ -12,7 +12,7 @@ RSpec.describe AliasesController do
       login_as(create(:reader_user))
       get :new, params: { character_id: -1 }
       expect(response).to redirect_to(continuities_path)
-      expect(flash[:error]).to eq("This feature is not available to read-only accounts.")
+      expect(flash[:error]).to eq("You do not have permission to create aliases.")
     end
 
     it "requires valid character" do
@@ -54,7 +54,7 @@ RSpec.describe AliasesController do
       login_as(create(:reader_user))
       post :create, params: { character_id: -1 }
       expect(response).to redirect_to(continuities_path)
-      expect(flash[:error]).to eq("This feature is not available to read-only accounts.")
+      expect(flash[:error]).to eq("You do not have permission to create aliases.")
     end
 
     it "requires valid character" do
@@ -122,7 +122,7 @@ RSpec.describe AliasesController do
       login_as(create(:reader_user))
       delete :destroy, params: { id: -1, character_id: -1 }
       expect(response).to redirect_to(continuities_path)
-      expect(flash[:error]).to eq("This feature is not available to read-only accounts.")
+      expect(flash[:error]).to eq("You do not have permission to create aliases.")
     end
 
     it "requires valid character" do

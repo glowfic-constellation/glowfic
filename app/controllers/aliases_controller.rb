@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 class AliasesController < ApplicationController
   before_action :login_required
-  before_action :readonly_forbidden
+  before_action :require_permission
   before_action :find_character
   before_action :find_model, only: :destroy
 
@@ -44,6 +44,12 @@ class AliasesController < ApplicationController
   end
 
   private
+
+  def require_permission
+    return unless current_user&.read_only?
+    flash[:error] = "You do not have permission to create aliases."
+    redirect_to continuities_path
+  end
 
   def find_character
     unless (@character = Character.find_by_id(params[:character_id]))
