@@ -339,7 +339,7 @@ RSpec.describe GalleriesController do
     end
 
     it "requires full account" do
-      skip "Currently relies on inability to create galleries"
+      skip "TODO Currently relies on inability to create galleries"
     end
 
     it "requires valid gallery" do
@@ -379,7 +379,7 @@ RSpec.describe GalleriesController do
     end
 
     it "requires full account" do
-      skip "Currently relies on inability to create galleries"
+      skip "TODO Currently relies on inability to create galleries"
     end
 
     it "requires valid gallery" do
@@ -559,7 +559,7 @@ RSpec.describe GalleriesController do
     end
 
     it "requires full account" do
-      skip "Currently relies on inability to create galleries"
+      skip "TODO Currently relies on inability to create galleries"
     end
 
     it "requires valid gallery" do
