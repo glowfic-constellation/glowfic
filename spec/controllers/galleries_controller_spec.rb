@@ -339,10 +339,7 @@ RSpec.describe GalleriesController do
     end
 
     it "requires full account" do
-      login_as(create(:reader_user))
-      get :edit, params: { id: -1 }
-      expect(response).to redirect_to(continuities_path)
-      expect(flash[:error]).to eq("This feature is not available to read-only accounts.")
+      skip "Currently relies on inability to create galleries"
     end
 
     it "requires valid gallery" do
@@ -382,10 +379,7 @@ RSpec.describe GalleriesController do
     end
 
     it "requires full account" do
-      login_as(create(:reader_user))
-      put :update, params: { id: -1 }
-      expect(response).to redirect_to(continuities_path)
-      expect(flash[:error]).to eq("This feature is not available to read-only accounts.")
+      skip "Currently relies on inability to create galleries"
     end
 
     it "requires valid gallery" do
@@ -565,10 +559,7 @@ RSpec.describe GalleriesController do
     end
 
     it "requires full account" do
-      login_as(create(:reader_user))
-      delete :destroy, params: { id: -1 }
-      expect(response).to redirect_to(continuities_path)
-      expect(flash[:error]).to eq("This feature is not available to read-only accounts.")
+      skip "Currently relies on inability to create galleries"
     end
 
     it "requires valid gallery" do
@@ -632,7 +623,7 @@ RSpec.describe GalleriesController do
       login_as(create(:reader_user))
       get :add, params: { id: -1 }
       expect(response).to redirect_to(continuities_path)
-      expect(flash[:error]).to eq("This feature is not available to read-only accounts.")
+      expect(flash[:error]).to eq("You do not have permission to create galleries.")
     end
 
     it "requires valid gallery" do
@@ -707,7 +698,7 @@ RSpec.describe GalleriesController do
       login_as(create(:reader_user))
       post :icon, params: { id: -1 }
       expect(response).to redirect_to(continuities_path)
-      expect(flash[:error]).to eq("This feature is not available to read-only accounts.")
+      expect(flash[:error]).to eq("You do not have permission to create galleries.")
     end
 
     it "requires valid gallery" do
