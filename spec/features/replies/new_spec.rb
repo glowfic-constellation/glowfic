@@ -72,6 +72,54 @@ RSpec.feature "Creating replies", :type => :feature do
     end
   end
 
+  scenario "User interacts with javascript", js: true do
+    post = create(:post)
+
+    user = login
+    icon = create(:icon, user: user, keyword: "<strong> icon")
+    gallery = create(:gallery, user: user, name: "icons of the <strong>", icons: [icon])
+    icon2 = create(:icon, user: user)
+    gallery2 = create(:gallery, user: user, icons: [icon2])
+    create(:character, user: user, name: "Alice")
+    fred = create(:character, user: user, name: "Fred the <strong>!", galleries: [gallery, gallery2])
+    create(:alias, character: fred, name: "Fred")
+    create(:alias, character: fred, name: "The <strong>!")
+    create(:character, user: user, name: "John")
+
+    visit post_path(post)
+    expect(page).to have_selector('.post-container', count: 1)
+    page.find(".post-expander", text: "+ Join Thread").click
+
+    within('#post-editor') do
+      page.find("#swap-character").click
+      select "Fred the <strong>!", from: "active_character"
+
+      page.find("#swap-alias").click
+      select "The <strong>!", from: "character_alias"
+
+      page.find("#current-icon-holder").click
+      expect(page).to have_text("icons of the <strong>")
+      within(page.find(".gallery-icon", text: "<strong> icon")) do
+        page.find("img").click
+      end
+
+      page.find("#html").click
+
+      fill_in id: "reply_content", with: "test reply!"
+      click_on "Post"
+    end
+
+    expect(page).to have_no_selector('.error')
+    expect(page).to have_selector('.success', exact_text: 'Posted!')
+    expect(page).to have_selector('.post-container', count: 2)
+    within('.post-reply') do
+      expect(page).to have_text(user.username)
+      expect(page).to have_text("test reply!")
+      expect(page).to have_text("The <strong>!")
+      expect(page.find(".post-icon img")[:alt]).to eq("<strong> icon")
+    end
+  end
+
   scenario "User tries to reply to locked post" do
     post = create(:post, authors_locked: true)
 
