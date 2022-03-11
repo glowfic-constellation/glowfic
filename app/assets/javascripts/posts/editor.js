@@ -152,7 +152,7 @@ function setupWritableEditor() {
     // Set the ID
     var id = $(this).val();
     $("#reply_character_alias_id").val(id);
-    $("#post-editor .post-character #name").html($('#character_alias option:selected').text());
+    $("#post-editor .post-character #name").text($('#character_alias option:selected').text());
     $('#alias-selector').hide();
     $("#post-editor .post-character").data('alias-id', id);
   });
@@ -253,29 +253,29 @@ function bindIcon() {
   });
 }
 
-function galleryString(gallery, multiGallery) {
-  var iconsString = "";
+function galleryNode(gallery, multiGallery) {
+  var iconNodes = [];
   var icons = gallery.icons;
 
   for (var i=0; i<icons.length; i++) {
-    iconsString += iconString(icons[i]);
+    iconNodes.push(iconNode(icons[i]));
   }
 
-  if (!multiGallery) return iconsString;
+  if (!multiGallery) return iconNodes;
 
-  var nameString = "<div class='gallery-name'>" + gallery.name + "</div>";
-  return "<div class='gallery-group'>" + nameString + iconsString + "</div>";
+  var nameNode = $("<div class='gallery-name'></div>").text(gallery.name);
+  return $("<div class='gallery-group'>").append(nameNode).append(iconNodes);
 }
 
-function iconString(icon) {
+function iconNode(icon) {
   var imgId = icon.id;
   var imgUrl = icon.url;
   var imgKey = icon.keyword;
   shownIcons.push(icon.id);
 
-  if (!icon.skip_dropdown) $("#icon_dropdown").append($("<option>").attr({value: imgId}).append(imgKey));
+  if (!icon.skip_dropdown) $("#icon_dropdown").append($("<option>").attr({value: imgId}).text(imgKey));
   var iconImg = $("<img>").attr({src: imgUrl, alt: imgKey, title: imgKey, 'class': 'icon img-'+imgId, 'data-icon-id': imgId});
-  return $("<div>").attr('class', 'gallery-icon').append(iconImg).append("<br />").append(imgKey)[0].outerHTML;
+  return $("<div>").attr('class', 'gallery-icon').append(iconImg).append("<br />").append(document.createTextNode(imgKey));
 }
 
 function setupTinyMCE() {
@@ -368,11 +368,11 @@ function setAliases(aliases, name) {
   // Display alias selector if relevant
   var aliasList = $("#character_alias");
   aliasList.empty();
-  aliasList.append($("<option>").attr({value: ''}).append(name));
+  aliasList.append($("<option>").attr({value: ''}).text(name));
   if (aliases.length > 0) {
     $("#swap-alias").show();
     for (var i=0; i<aliases.length; i++) {
-      aliasList.append($("<option>").attr({value: aliases[i].id}).append(aliases[i].name));
+      aliasList.append($("<option>").attr({value: aliases[i].id}).text(aliases[i].name));
     }
   } else {
     $("#swap-alias").hide();
@@ -381,7 +381,7 @@ function setAliases(aliases, name) {
 
 function setAliasFromID(selectedAliasID) {
   var correctName = $("#character_alias option[value=\""+selectedAliasID+"\"]").text();
-  $("#post-editor .post-character #name").html(correctName);
+  $("#post-editor .post-character #name").text(correctName);
   $("#post-editor .post-character").data('alias-id', selectedAliasID);
   $("#character_alias").val(selectedAliasID).trigger("change.select2");
   $("#reply_character_alias_id").val(selectedAliasID);
@@ -407,7 +407,7 @@ function setGalleriesAndDefault(galleries, defaultIcon) {
   // Calculate new galleries
   var multiGallery = galleries.length > 1;
   for (var j = 0; j < galleries.length; j++) {
-    iconSelectBox.append(galleryString(galleries[j], multiGallery));
+    iconSelectBox.append(galleryNode(galleries[j], multiGallery));
   }
 
   // If no default and no icons in any galleries, remove pointer
@@ -416,8 +416,8 @@ function setGalleriesAndDefault(galleries, defaultIcon) {
     return;
   }
 
-  if (defaultIcon && shownIcons.indexOf(defaultIcon.id) < 0) iconSelectBox.append(iconString(defaultIcon));
-  iconSelectBox.append(iconString({id: '', url: gon.no_icon_path, keyword: 'No Icon', skip_dropdown: true}));
+  if (defaultIcon && shownIcons.indexOf(defaultIcon.id) < 0) iconSelectBox.append(iconNode(defaultIcon));
+  iconSelectBox.append(iconNode({id: '', url: gon.no_icon_path, keyword: 'No Icon', skip_dropdown: true}));
   bindGallery();
   bindIcon();
 }
@@ -481,7 +481,7 @@ function setSections() {
       $("#section").show();
       $("#post_section_id").empty().append('<option value="">— Choose Section —</option>');
       for (var i = 0; i < sections.length; i++) {
-        $("#post_section_id").append($("<option>").attr({value: sections[i].id}).append(sections[i].name));
+        $("#post_section_id").append($("<option>").attr({value: sections[i].id}).text(sections[i].name));
       }
       $("#post_section_id").trigger("change.select2");
     } else {
