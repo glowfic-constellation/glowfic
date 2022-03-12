@@ -75,13 +75,13 @@ module PostHelper
       tag.a('more &raquo;'.html_safe, href: '#', id: "expanddesc-#{id}", class: 'expanddesc')
   end
 
-  def unread_post?(post, unread_ids)
+  def unread_post?(post)
     return false unless post
     return false unless unread_ids
     unread_ids.include?(post.id)
   end
 
-  def opened_post?(post, opened_ids)
+  def opened_post?(post)
     return false unless post
     return false unless opened_ids
     opened_ids.include?(post.id)
