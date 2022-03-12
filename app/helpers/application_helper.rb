@@ -126,7 +126,7 @@ module ApplicationHelper
 
   def conditional_tag(tag_name, condition, &block)
     if condition
-      content_tag tag_name, capture(&block)
+      content_tag tag_name, &block
     else
       capture(&block)
     end
