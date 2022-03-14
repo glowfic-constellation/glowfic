@@ -99,7 +99,9 @@ Rails.application.routes.draw do
     end
     collection { get :search }
   end
-  resources :tags, except: [:new, :create]
+  resources :tags, except: [:new, :create] do
+    collection { get :search }
+  end
 
   # Indexes
   resources :indexes
