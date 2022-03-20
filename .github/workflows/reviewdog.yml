@@ -71,3 +71,22 @@ jobs:
           eslint_flags: 'app/assets/javascripts'
           fail_on_error: true
           reporter: github-pr-review
+  stylelint:
+    name: stylelint
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v1
+      - uses: actions/setup-node@v2
+      - run: |
+          npm install stylelint@~14.2.0 \
+            stylelint-config-recommended-scss@5.0.2 \
+            stylelint-scss@~4.1.0 \
+            stylelint-order@~5.0.0 \
+            stylelint-declaration-strict-value@~1.8.0
+      - run: npx stylelint -v
+      - uses: reviewdog/action-stylelint@v1
+        with:
+          github_token: ${{ secrets.github_token }}
+          fail_on_error: true
+          reporter: github-pr-review
+          stylelint_input: 'app/assets/stylesheets/**/*.scss'

@@ -1,0 +1,179 @@
+extends: stylelint-config-recommended-scss
+plugins:
+- stylelint-declaration-strict-value
+- stylelint-order
+- stylelint-scss
+
+rules:
+  no-descending-specificity: null
+
+  scss/at-import-partial-extension: never
+  scss/at-import-no-partial-leading-underscore: true
+  no-invalid-position-at-import-rule: null
+
+  scss/at-function-pattern: '^[\-a-z]+$' # hypenated lowercase
+  scss/at-function-parentheses-space-before: never
+
+  scss/at-mixin-pattern: '^[\-a-z]+$' # hypenated lowercase
+  scss/at-mixin-argumentless-call-parentheses: never
+  scss/at-mixin-parentheses-space-before: never
+  scss/no-duplicate-mixins: true
+
+  scss/at-extend-no-missing-placeholder: null
+
+  scss/dollar-variable-colon-space-after: always
+  scss/dollar-variable-colon-space-before: never
+  scss/dollar-variable-pattern: '^[a-z_0-9]+$' # snakecase
+  scss/no-duplicate-dollar-variables: true
+
+  scss/operator-no-newline-after: true
+  scss/operator-no-newline-before: true
+  scss/operator-no-unspaced: true
+
+  scss/percent-placeholder-pattern: '^[\-a-z]+$' # hypenated lowercase
+
+  scss/no-global-function-names: null # for a version of sass we're not on
+
+  at-rule-empty-line-before: null
+  at-rule-disallowed-list:
+    - warn
+    - debug
+
+  block-closing-brace-empty-line-before: never
+  block-closing-brace-newline-after:
+   - always
+   - ignoreAtRules:
+     - if
+     - else
+  block-closing-brace-newline-before: always-multi-line
+  block-closing-brace-space-before: always-single-line
+  block-opening-brace-newline-after: always-multi-line
+  block-opening-brace-space-after: always-single-line
+  block-opening-brace-space-before: always
+  block-no-empty: true
+
+  color-hex-case: upper
+  color-hex-length: long
+  color-named: never
+
+  comment-empty-line-before:
+  - always
+  - except:
+    - first-nested
+    ignore:
+    - after-comment
+    - stylelint-commands
+    severity: warning
+  scss/comment-no-empty: true
+
+  custom-property-empty-line-before: null
+
+  declaration-block-trailing-semicolon: always
+  declaration-block-semicolon-newline-after: always-multi-line
+  declaration-block-no-duplicate-properties:
+    - true
+    - ignore:
+      - consecutive-duplicates-with-different-values
+
+  declaration-bang-space-after: never
+  declaration-bang-space-before: always
+  declaration-colon-space-after: always
+  declaration-colon-space-before: never
+  declaration-empty-line-before: null
+  declaration-no-important: true
+  declaration-property-unit-allowed-list:
+    font-size: ['em', 'rem', '%']
+  declaration-property-value-disallowed-list:
+    transition: all
+    transition-property: all
+  scale-unlimited/declaration-strict-value:
+  - - "/color$/"
+  - ignoreValues:
+    - inherit
+    - transparent
+    - unset
+
+  function-calc-no-unspaced-operator: true
+  function-comma-newline-before: never-multi-line
+  function-comma-newline-after: always-multi-line
+  function-comma-space-after: always-single-line
+  function-comma-space-before: never
+  #function-max-empty-lines: 0
+  #function-name-case: lower
+  function-parentheses-newline-inside: always-multi-line
+  function-parentheses-space-inside: never-single-line
+  function-url-no-scheme-relative: true
+  function-url-scheme-allowed-list: []
+  function-url-quotes: always
+
+  indentation: 2
+
+  length-zero-no-unit: null
+  # max-empty-lines: 1
+
+  # media-feature-name-case: lower
+  media-feature-range-operator-space-after: always
+  media-feature-range-operator-space-before: always
+  media-query-list-comma-newline-before: never-multi-line
+  media-query-list-comma-newline-after: always-multi-line
+  media-query-list-comma-space-after: always-single-line
+  media-query-list-comma-space-before: never
+  media-feature-parentheses-space-inside: never
+
+  number-no-trailing-zeros: true
+  number-leading-zero: always
+
+  # property-case: lower
+  property-no-unknown: true
+
+  rule-empty-line-before:
+  - always-multi-line
+  - except:
+    - first-nested
+    ignore:
+    - after-comment
+
+  selector-attribute-operator-space-after: never
+  selector-attribute-operator-space-before: never
+  selector-list-comma-newline-before: never-multi-line
+  selector-list-comma-newline-after: always-multi-line
+  selector-list-comma-space-after: always-single-line
+  selector-list-comma-space-before: never
+  # selector-pseudo-class-case: lower
+  # selector-pseudo-element-case: lower
+  selector-pseudo-class-parentheses-space-inside: never
+  selector-pseudo-element-colon-notation: double
+  # selector-type-case: lower
+  selector-max-universal: 0
+  selector-class-pattern: '^[_\-a-z0-9]+$'
+  selector-id-pattern: '^[_\-a-z]+$'
+  selector-attribute-quotes: always
+  no-duplicate-selectors: true
+
+  # shorthand-property-no-redundant-values: true
+
+  string-quotes: single
+
+  # unit-case: lower
+
+  # value-keyword-case: lower
+  value-list-comma-newline-before: never-multi-line
+  value-list-comma-newline-after: always-multi-line
+  value-list-comma-space-after: always-single-line
+  value-list-comma-space-before: never
+  # value-list-max-empty-lines: 0
+
+  no-eol-whitespace: true
+
+  order/order:
+  - - type: at-rule
+      name: extend
+    - type: at-rule
+      name: include
+    - declarations
+    - rules
+  - severity: warning
+
+reportNeedlessDisables: true
+reportInvalidScopeDisables: true
+ignoreFiles: ['app/assets/stylesheets/normalize.scss', 'coverage/**/*', 'spec/support/fixtures/**/*', 'public/**/*']
