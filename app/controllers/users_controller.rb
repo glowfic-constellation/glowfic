@@ -39,6 +39,12 @@ class UsersController < ApplicationController
     end
     @user.tos_version = User::CURRENT_TOS_VERSION
 
+    if params[:addition].to_i != 14
+      signup_prep
+      flash.now[:error] = "Please check your math and try again."
+      render :new and return
+    end
+
     if params[:secret] != "ALLHAILTHECOIN"
       @user.role_id = Permissible::READONLY
     end
