@@ -119,6 +119,14 @@ RSpec.describe MessagesController do
       expect(assigns(:message).recipient_id).to eq(recipient.id)
     end
 
+    it "handles provided read only user" do
+      reader = create(:reader_user)
+      login
+      get :new, params: { recipient_id: reader.id }
+      expect(response.status).to eq(200)
+      expect(assigns(:message).recipient_id).to be_nil
+    end
+
     it "handles provided blocked user" do
       block = create(:block)
       login_as(block.blocking_user)
@@ -182,11 +190,21 @@ RSpec.describe MessagesController do
       expect(flash[:error]).to eq("You must be logged in to view that page.")
     end
 
-    it "requires full account" do
+    it "requires full account as a sender" do
       login_as(create(:reader_user))
       post :create
       expect(response).to redirect_to(continuities_path)
       expect(flash[:error]).to eq("This feature is not available to read-only accounts.")
+    end
+
+    it "requires full account as a recipient" do
+      reader = create(:reader_user)
+      login
+      post :create, params: { message: { recipient_id: reader.id, subject: 'test', message: 'testing' } }
+      expect(flash[:error][:message]).to eq("Your message could not be sent because of the following problems:")
+      expect(assigns(:message)).not_to be_valid
+      expect(assigns(:message).recipient).to be_nil
+      expect(assigns(:page_title)).to eq('Compose Message')
     end
 
     it "fails with invalid params" do
