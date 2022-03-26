@@ -45,9 +45,7 @@ class UsersController < ApplicationController
       render :new and return
     end
 
-    if params[:secret] != "ALLHAILTHECOIN"
-      @user.role_id = Permissible::READONLY
-    end
+    @user.role_id = Permissible::READONLY if params[:secret] != "ALLHAILTHECOIN"
 
     begin
       @user.save!
