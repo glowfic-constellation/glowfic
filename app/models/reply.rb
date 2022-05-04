@@ -14,7 +14,7 @@ class Reply < ApplicationRecord
 
   after_create :notify_other_authors, :destroy_draft, :update_active_char, :set_last_reply, :update_post, :update_post_authors
   after_update :update_post
-  after_destroy :set_previous_reply_to_last, :remove_post_author
+  after_destroy :set_previous_reply_to_last, :remove_post_author, :update_flat_post
   after_save :update_flat_post
 
   attr_accessor :skip_notify, :skip_post_update, :is_import, :skip_regenerate

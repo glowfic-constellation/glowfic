@@ -187,6 +187,39 @@ RSpec.describe Reply do
     end
   end
 
+  describe "#update_flat_post" do
+    include ActiveJob::TestHelper
+
+    let(:user) { create(:user) }
+    let(:reply) { create(:reply, user: user, icon: create(:icon, user: user), character: create(:character, user: user)) }
+
+    before(:each) do
+      perform_enqueued_jobs { reply }
+    end
+
+    it "queues on update" do
+      reply.update!(content: 'new text')
+      expect(GenerateFlatPostJob).to have_been_enqueued.with(reply.post_id).on_queue('high')
+    end
+
+    it "queues on deletion" do
+      reply.destroy!
+      expect(GenerateFlatPostJob).to have_been_enqueued.with(reply.post_id).on_queue('high')
+    end
+
+    it "does not queue on update if 'skip_regenerate' is set" do
+      reply.skip_regenerate = true
+      reply.update!(content: 'new text')
+      expect(GenerateFlatPostJob).not_to have_been_enqueued.with(reply.post_id)
+    end
+
+    it "does not queue on destroy if 'skip_regenerate' is set" do
+      reply.skip_regenerate = true
+      reply.destroy!
+      expect(GenerateFlatPostJob).not_to have_been_enqueued.with(reply.post_id)
+    end
+  end
+
   describe "Writable" do
     describe "#name" do
       let(:user) { create(:user) }
