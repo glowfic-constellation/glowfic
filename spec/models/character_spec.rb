@@ -362,6 +362,48 @@ RSpec.describe Character do
     end
   end
 
+  describe "#update_flat_posts" do
+    include ActiveJob::TestHelper
+
+    let(:user) { create(:user) }
+    let(:character) { create(:character, user: user) }
+    let(:post1) { create(:post, user: user, character: character) }
+    let(:post2) { create(:post, unjoined_authors: [user]) }
+    let(:reply) { create(:reply, post: post2, user: user, character: character) }
+
+    before(:each) do
+      perform_enqueued_jobs do
+        post1
+        reply
+      end
+    end
+
+    it "regenerates flatposts on character name edit" do
+      character.update!(name: 'New Name')
+      expect(GenerateFlatPostJob).to have_been_enqueued.with(post1.id).on_queue('high')
+      expect(GenerateFlatPostJob).to have_been_enqueued.with(post2.id).on_queue('high')
+    end
+
+    it "regenerates flatposts on screenname addition" do
+      character.update!(screenname: 'new_screenname')
+      expect(GenerateFlatPostJob).to have_been_enqueued.with(post1.id).on_queue('high')
+      expect(GenerateFlatPostJob).to have_been_enqueued.with(post2.id).on_queue('high')
+    end
+
+    it "regenerates flatposts on screenname edit" do
+      perform_enqueued_jobs { character.update!(screenname: 'test_character') }
+      character.update!(screenname: 'new_screenname')
+      expect(GenerateFlatPostJob).to have_been_enqueued.with(post1.id).on_queue('high')
+      expect(GenerateFlatPostJob).to have_been_enqueued.with(post2.id).on_queue('high')
+    end
+
+    it "does not regenerate flatposts on description edit" do
+      character.update!(description: 'stuff')
+      expect(GenerateFlatPostJob).not_to have_been_enqueued.with(post1.id)
+      expect(GenerateFlatPostJob).not_to have_been_enqueued.with(post2.id)
+    end
+  end
+
   it "orders icons by default" do
     user = create(:user)
     char = create(:character, user: user)

@@ -28,6 +28,7 @@ class Character < ApplicationRecord
   attr_accessor :group_name
 
   before_validation :strip_spaces
+  after_update :update_flat_posts
   after_destroy :clear_char_ids
 
   scope :ordered, -> { order(name: :asc).order(Arel.sql('lower(screenname) asc'), created_at: :asc, id: :asc) }
@@ -162,5 +163,11 @@ class Character < ApplicationRecord
 
   def strip_spaces
     self.pb = self.pb.strip if self.pb.present?
+  end
+
+  def update_flat_posts
+    return unless saved_change_to_name? || saved_change_to_screenname?
+    post_ids = (Post.where(character_id: id).pluck(:id) + Reply.where(character_id: id).select(:post_id).distinct.pluck(:post_id)).uniq
+    post_ids.each { |id| GenerateFlatPostJob.enqueue(id) }
   end
 end
