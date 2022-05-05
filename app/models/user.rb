@@ -45,6 +45,7 @@ class User < ApplicationRecord
   validate :username_not_reserved
 
   before_validation :encrypt_password, :strip_spaces
+  after_update :update_flat_posts
   after_save :clear_password
 
   scope :ordered, -> { order(username: :asc) }
@@ -164,5 +165,11 @@ class User < ApplicationRecord
       end
       post_ids
     end
+  end
+
+  def update_flat_posts
+    return unless saved_change_to_username? || saved_change_to_deleted?
+    post_ids = Post::Author.where(user_id: id).pluck(:post_id)
+    post_ids.each { |id| GenerateFlatPostJob.enqueue(id) }
   end
 end

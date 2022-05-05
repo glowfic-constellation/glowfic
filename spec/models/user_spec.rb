@@ -1,4 +1,6 @@
 RSpec.describe User do
+  include ActiveJob::TestHelper
+
   describe "password encryption" do
     it "should support nil salt_uuid" do
       user = create(:user)
@@ -169,14 +171,14 @@ RSpec.describe User do
   end
 
   describe "archive" do
+    let(:user) { create(:user, username: 'test') }
+
     it "succeeds" do
-      user = create(:user)
       user.archive
       expect(user.deleted).to be(true)
     end
 
     it "turns off email notifications" do
-      user = create(:user)
       user.update!(email_notifications: true)
       user.archive
       expect(user.deleted).to be(true)
@@ -184,7 +186,6 @@ RSpec.describe User do
     end
 
     it "removes ownership of settings" do
-      user = create(:user)
       setting = create(:setting, user: user, owned: true)
       user.archive
       expect(user.deleted).to be(true)
@@ -192,20 +193,27 @@ RSpec.describe User do
     end
 
     it "does not change username when persisted" do
-      user = create(:user, username: 'test')
       user.archive
       user.reload
       expect(user.send(:[], :username)).to eq('test')
     end
 
     it "removes related blocks" do
-      user = create(:user)
       create(:block, blocking_user: user)
       create(:block, blocked_user: user)
       expect(Block.count).to be(2)
       user.archive
       expect(user.deleted).to be(true)
       expect(Block.count).to be(0)
+    end
+
+    it "regenerates flatposts" do
+      post1 = create(:post, user: user)
+      post2 = create(:post)
+      create(:reply, post: post2, user: user)
+      user.archive
+      expect(GenerateFlatPostJob).to have_been_enqueued.with(post1.id).on_queue('high')
+      expect(GenerateFlatPostJob).to have_been_enqueued.with(post2.id).on_queue('high')
     end
   end
 
@@ -295,6 +303,31 @@ RSpec.describe User do
         visible_post.update!(privacy: :private)
         expect(Post.visible_to(user)).not_to include(visible_post)
       end
+    end
+  end
+
+  describe "#update_flat_posts" do
+    let(:user) { create(:user) }
+    let(:post1) { create(:post, user: user) }
+    let(:post2) { create(:post) }
+
+    before(:each) do
+      perform_enqueued_jobs do
+        post1
+        create(:reply, post: post2, user: user)
+      end
+    end
+
+    it 'regenerates post when username is changed' do
+      user.update!(username: 'foobar')
+      expect(GenerateFlatPostJob).to have_been_enqueued.with(post1.id).on_queue('high')
+      expect(GenerateFlatPostJob).to have_been_enqueued.with(post2.id).on_queue('high')
+    end
+
+    it 'does not regenerate when moiety is changed' do
+      user.update!(moiety: '000000')
+      expect(GenerateFlatPostJob).not_to have_been_enqueued.with(post1.id)
+      expect(GenerateFlatPostJob).not_to have_been_enqueued.with(post2.id)
     end
   end
 end
