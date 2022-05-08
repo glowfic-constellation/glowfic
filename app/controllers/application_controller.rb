@@ -165,6 +165,13 @@ class ApplicationController < ActionController::Base
   end
   helper_method :generate_short
 
+  def readonly_forbidden
+    return unless logged_in?
+    return unless current_user.read_only?
+    flash[:error] = "This feature is not available to read-only accounts."
+    redirect_to continuities_path
+  end
+
   private
 
   def check_forced_logout

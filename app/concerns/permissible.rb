@@ -3,6 +3,7 @@ module Permissible
   MOD = 2
   IMPORTER = 3
   SUSPENDED = 4
+  READONLY = 5
 
   MOD_PERMS = [
     :edit_posts,
@@ -36,5 +37,9 @@ module Permissible
 
   def suspended?
     role_id == SUSPENDED
+  end
+
+  def read_only?
+    role_id == READONLY
   end
 end

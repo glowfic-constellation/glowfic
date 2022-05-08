@@ -3,6 +3,7 @@ class TagsController < ApplicationController
   include Taggable
 
   before_action :login_required, except: [:index, :show]
+  before_action :readonly_forbidden, except: [:index, :show]
   before_action :find_model, except: :index
   before_action :require_permission, except: [:index, :show, :destroy]
 
