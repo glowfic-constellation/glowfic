@@ -1,68 +1,102 @@
 class NotifyFollowersOfNewPostJob < ApplicationJob
   queue_as :notifier
 
-  def perform(post_id, user_id)
+  ACTIONS = ['new', 'join', 'access', 'public', 'active']
+
+  def perform(post_id, user_id, action)
     post = Post.find_by(id: post_id)
-    user = User.find_by(id: user_id)
-    return unless post && user
+    return unless post && ACTIONS.include?(action)
     return if post.privacy_private?
 
-    if post.user_id == user_id
-      notify_of_post_creation(post, user)
-    else
-      notify_of_post_joining(post, user)
+    if ['join', 'access'].include?(action)
+      user = User.find_by(id: user_id)
+      return unless user
+    end
+
+    case action
+      when 'new'
+        notify_of_post_creation(post)
+      when 'join'
+        notify_of_post_joining(post, user)
+      when 'access'
+        notify_of_post_access(post, user)
+      when 'public'
+        notify_of_post_publication(post)
+      when 'active'
+        notify_of_post_activity(post)
     end
   end
 
-  def notify_of_post_creation(post, post_user)
-    favorites = Favorite.where(favorite: post_user).or(Favorite.where(favorite: post.board))
-    user_ids = favorites.select(:user_id).distinct.pluck(:user_id)
-    users = filter_users(post, user_ids)
+  def self.notification_about(post, user, unread_only: false, exclude_resumed: false)
+    previous_types = [:new_favorite_post, :joined_favorite_post, :accessible_favorite_post, :published_favorite_post]
+    previous_types << :resumed_favorite_post unless exclude_resumed
+    notif = Notification.find_by(post: post, notification_type: previous_types)
+    if notif
+      return notif if !unread_only || notif.unread
+    else
+      messages = Message.where(recipient: user, sender_id: 0).where('created_at >= ?', post.created_at)
+      messages = messages.unread if unread_only
+      messages.find_each do |notification|
+        return notification if notification.message.include?(ScrapePostJob.view_post(post.id))
+      end
+    end
+    nil
+  end
 
+  private
+
+  def notify_of_post_creation(post)
+    favorites = favorites_for(post)
+    user_ids = favorites.select(:user_id).distinct.pluck(:user_id)
+    users = filter_users(post, user_ids, skip_previous: true)
     return if users.empty?
 
-    message = "#{post_user.username} has just posted a new post entitled #{post.subject} in the #{post.board.name} continuity"
-    other_authors = post.authors.where.not(id: post_user.id)
-    message += " with #{other_authors.pluck(:username).join(', ')}" if other_authors.exists?
-    message += ". #{ScrapePostJob.view_post(post.id)}"
-
-    users.each { |user| Message.send_site_message(user.id, "New post by #{post_user.username}", message) }
+    users.each { |user| Notification.notify_user(user, :new_favorite_post, post: post) }
   end
 
   def notify_of_post_joining(post, new_user)
     users = filter_users(post, Favorite.where(favorite: new_user).pluck(:user_id))
     return if users.empty?
-
-    subject = "#{new_user.username} has joined a new thread"
-    message = "#{new_user.username} has just joined the post entitled #{post.subject} with "
-    message += post.joined_authors.where.not(id: new_user.id).pluck(:username).join(', ')
-    message += ". #{ScrapePostJob.view_post(post.id)}"
-
-    users.each do |user|
-      next if already_notified_about?(post, user)
-      Message.send_site_message(user.id, subject, message)
-    end
+    users.each { |user| Notification.notify_user(user, :joined_favorite_post, post: post) }
   end
 
-  def filter_users(post, user_ids)
+  def notify_of_post_access(post, viewer)
+    return if filter_users(post, [viewer.id]).empty?
+    return unless favorites_for(post).where(user: viewer).exists?
+    Notification.notify_user(viewer, :accessible_favorite_post, post: post)
+  end
+
+  def notify_of_post_publication(post)
+    favorites = favorites_for(post)
+    users = filter_users(post, favorites.select(:user_id).distinct.pluck(:user_id))
+    return if users.empty?
+    users.each { |user| Notification.notify_user(user, :published_favorite_post, post: post) }
+  end
+
+  def notify_of_post_activity(post)
+    favorites = favorites_for(post).or(Favorite.where(favorite: post))
+    users = filter_users(post, favorites.select(:user_id).distinct.pluck(:user_id), skip_resumed: true)
+    users = users.reject { |user| self.class.notification_about(post, user, unread_only: true).present? }
+    return if users.empty?
+    users.each { |user| Notification.notify_user(user, :resumed_favorite_post, post: post) }
+  end
+
+  def favorites_for(post)
+    Favorite.where(favorite: post.authors).or(Favorite.where(favorite: post.board))
+  end
+
+  def filter_users(post, user_ids, skip_previous: false, skip_resumed: false)
     user_ids &= PostViewer.where(post: post).pluck(:user_id) if post.privacy_access_list?
     user_ids -= post.author_ids
     user_ids -= blocked_user_ids(post)
     return [] unless user_ids.present?
-    User.where(id: user_ids, favorite_notifications: true)
+    users = User.where(id: user_ids, favorite_notifications: true)
+    return users if skip_previous
+    users.reject { |user| already_notified_about?(post, user, exclude_resumed: skip_resumed) }
   end
 
-  def already_notified_about?(post, user)
-    self.class.notification_about(post, user).present?
-  end
-
-  def self.notification_about(post, user, unread_only: false)
-    messages = Message.where(recipient: user, sender_id: 0).where('created_at >= ?', post.created_at)
-    messages = messages.unread if unread_only
-    messages.find_each do |notification|
-      return notification if notification.message.include?(ScrapePostJob.view_post(post.id))
-    end
-    nil
+  def already_notified_about?(post, user, exclude_resumed: false)
+    self.class.notification_about(post, user, exclude_resumed: exclude_resumed).present?
   end
 
   def blocked_user_ids(post)
