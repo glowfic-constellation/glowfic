@@ -52,7 +52,7 @@ RSpec.describe NotifyFollowersOfNewPostJob do
   shared_examples 'authors' do
     it "does not send to authors" do
       Favorite.delete_all
-      authors = [author, coauthor, unjoined].reject{ |u| u == favorite }
+      authors = [author, coauthor, unjoined].reject { |u| u == favorite }
       authors.each { |u| create(:favorite, user: u, favorite: favorite) }
       expect { perform_enqueued_jobs { do_action } }.not_to change { Notification.where.not(notification_type: :coauthor_invitation).count }
     end
@@ -312,7 +312,7 @@ RSpec.describe NotifyFollowersOfNewPostJob do
       include_examples 'general'
       include_examples 'authors'
 
-      it "does not send " do
+      it "does not send" do
         clear_enqueued_jobs
         expect {
           perform_enqueued_jobs do
@@ -340,7 +340,7 @@ RSpec.describe NotifyFollowersOfNewPostJob do
       it "does not send to authors" do
         Favorite.delete_all
         PostViewer.delete_all
-        authors = [author, coauthor, unjoined].reject{ |u| u == favorite }
+        authors = [author, coauthor, unjoined].reject { |u| u == favorite }
 
         authors.each do |user|
           create(:favorite, user: user, favorite: favorite)
@@ -461,7 +461,7 @@ RSpec.describe NotifyFollowersOfNewPostJob do
     let!(:post) { create(:post, user: author, board: board, authors: [coauthor, unjoined], privacy: :access_list) }
     let(:type) { 'published_favorite_post' }
 
-    before(:each) { create(:reply, user: coauthor, post: post)}
+    before(:each) { create(:reply, user: coauthor, post: post) }
 
     [:registered, :public].each do |privacy|
       context "to #{privacy}" do
