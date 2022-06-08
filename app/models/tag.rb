@@ -33,9 +33,7 @@ class Tag < ApplicationRecord
   def editable_by?(user)
     return false unless user
     return true if deletable_by?(user)
-    return true if user.has_permission?(:edit_tags)
-    return false if user.read_only?
-    false
+    user.has_permission?(:edit_tags)
   end
 
   def deletable_by?(user)
