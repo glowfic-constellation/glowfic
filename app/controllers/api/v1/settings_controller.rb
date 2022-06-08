@@ -16,7 +16,7 @@ class Api::V1::SettingsController < Api::ApiController
     queryset = queryset.where.not(id: params[:setting_id]) if params[:setting_id].present?
 
     tags = paginate queryset, per_page: 25
-    render json: {results: tags}
+    render json: { results: tags }
   end
 
   api :GET, '/tags/:id', 'Load a single setting as a JSON resource'
@@ -30,8 +30,8 @@ class Api::V1::SettingsController < Api::ApiController
 
   def find_tag
     unless (@setting = Setting.find_by(id: params[:id]))
-      error = {message: 'Setting could not be found'}
-      render json: {errors: [error]}, status: :not_found and return
+      error = { message: 'Setting could not be found' }
+      render json: { errors: [error] }, status: :not_found and return
     end
   end
 end

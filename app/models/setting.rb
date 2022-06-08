@@ -28,7 +28,7 @@ class Setting < ApplicationRecord
   scope :with_character_counts, -> {
     # rubocop:disable Style/TrailingCommaInArguments
     select(
-      <<~SQL
+      <<~SQL.squish
         (
           SELECT COUNT(DISTINCT setting_characters.character_id)
           FROM setting_characters
@@ -54,7 +54,7 @@ class Setting < ApplicationRecord
   end
 
   def as_json(_options={})
-    {id: self.id, text: self.name}
+    { id: self.id, text: self.name }
   end
 
   def id_for_select

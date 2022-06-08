@@ -36,7 +36,8 @@
     - if @tag.editable_by?(current_user)
       %tr
         %td.centered{class: cycle('even', 'odd')}
-          = link_to (@tag.is_a?(Setting) ? edit_setting_path(@tag) : edit_tag_path(@tag)) do
+          - link_path = @tag.is_a?(Setting) ? edit_setting_path(@tag) : edit_tag_path(@tag)
+          = link_to link_path do
             = image_tag "icons/pencil.png", class: 'vmid', alt: ''
             Edit #{@tag.type.titlecase}
     - if @tag.deletable_by?(current_user)

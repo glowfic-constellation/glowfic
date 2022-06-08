@@ -18,7 +18,7 @@ RSpec.describe SettingsController do
 
       it "succeeds with name filter" do
         settings = create_settings
-        get :index, params: {name: 'Empty'}
+        get :index, params: { name: 'Empty' }
         expect(response).to have_http_status(200)
         expect(assigns(:settings)).to match_array([settings[0]])
         expect(assigns(:page_title)).to eq('Settings')
@@ -214,7 +214,7 @@ RSpec.describe SettingsController do
     it "requires valid params" do
       setting = create(:setting)
       login_as(create(:admin_user))
-      put :update, params: { id: setting.id, setting: {name: nil} }
+      put :update, params: { id: setting.id, setting: { name: nil } }
       expect(response.status).to eq(200)
       expect(flash[:error][:message]).to eq("Setting could not be saved because of the following problems:")
     end
@@ -223,7 +223,7 @@ RSpec.describe SettingsController do
       setting = create(:setting)
       name = setting.name + 'Edited'
       login_as(create(:admin_user))
-      put :update, params: { id: setting.id, setting: {name: name} }
+      put :update, params: { id: setting.id, setting: { name: name } }
       expect(response).to redirect_to(setting_url(setting))
       expect(flash[:success]).to eq("Setting saved!")
       expect(setting.reload.name).to eq(name)
@@ -234,7 +234,7 @@ RSpec.describe SettingsController do
       parent_setting = create(:setting)
       login_as(setting.user)
       expect(setting.parent_settings).to be_empty
-      put :update, params: { id: setting.id, setting: {name: 'newname', parent_setting_ids: ["", parent_setting.id.to_s]} }
+      put :update, params: { id: setting.id, setting: { name: 'newname', parent_setting_ids: ["", parent_setting.id.to_s] } }
       expect(setting.reload.name).to eq('newname')
       expect(setting.reload.parent_settings).to eq([parent_setting])
     end
@@ -273,10 +273,13 @@ RSpec.describe SettingsController do
     it "handles destroy failure" do
       setting = create(:setting)
       login_as(setting.user)
-      expect_any_instance_of(Setting).to receive(:destroy).and_return(false)
+      allow(Setting).to receive(:find_by).and_call_original
+      allow(Setting).to receive(:find_by).with(id: setting.id.to_s).and_return(setting)
+      allow(setting).to receive(:destroy).and_return(false)
+      expect(setting).to receive(:destroy)
       delete :destroy, params: { id: setting.id }
       expect(response).to redirect_to(setting_url(setting))
-      expect(flash[:error]).to eq({message: "Setting could not be deleted.", array: []})
+      expect(flash[:error]).to eq({ message: "Setting could not be deleted.", array: [] })
       expect(Setting.find_by(id: setting.id)).not_to be_nil
     end
   end
