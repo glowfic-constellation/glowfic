@@ -7,8 +7,8 @@ require 'rails/all'
 Bundler.require(*Rails.groups)
 
 module Glowfic
-  ALLOWED_TAGS = %w(b i u sub sup del ins hr p br div span pre code h1 h2 h3 h4 h5 h6 ul ol li dl dt dd a img blockquote q table td th tr strike s
-                    strong em big small font cite abbr var samp kbd mark ruby rp rt bdo wbr details summary)
+  ALLOWED_TAGS = %w(b i u sub sup del ins hr p br div span pre code h1 h2 h3 h4 h5 h6 ul ol li dl dt dd a img blockquote q table tbody td th thead tr
+                    strike s strong em big small font cite abbr var samp kbd mark ruby rp rt bdo wbr details summary)
   ALLOWED_ATTRIBUTES = {
     :all         => %w(xml:lang class style title lang dir),
     "hr"         => %w(width),
@@ -17,8 +17,8 @@ module Glowfic
     "a"          => %w(href hreflang rel target type),
     "del"        => %w(cite datetime),
     "table"      => %w(width),
-    "td"         => %w(abbr width),
-    "th"         => %w(abbr width),
+    "td"         => %w(abbr width colspan rowspan),
+    "th"         => %w(abbr width colspan rowspan),
     "blockquote" => %w(cite),
     "cite"       => %w(href),
   }
