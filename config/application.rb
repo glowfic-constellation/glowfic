@@ -17,8 +17,8 @@ module Glowfic
     "a"          => %w(href hreflang rel target type),
     "del"        => %w(cite datetime),
     "table"      => %w(width),
-    "td"         => %w(abbr width),
-    "th"         => %w(abbr width),
+    "td"         => %w(abbr width colspan rowspan),
+    "th"         => %w(abbr width colspan rowspan),
     "blockquote" => %w(cite),
     "cite"       => %w(href),
   }
