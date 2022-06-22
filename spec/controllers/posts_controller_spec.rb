@@ -80,11 +80,28 @@ RSpec.describe PostsController do
       expect(assigns(assign_variable)).to match_array(posts + [post1, post2])
     end
 
-    it "does not show unlocked posts with full blocking" do
+    it "does not show unlocked posts with full viewer-side blocking" do
       post1 = create(:post)
-      post2 = create(:post)
       create(:block, blocking_user: user, blocked_user: post1.user, hide_them: :all)
-      create(:block, blocking_user: post2.user, blocked_user: user, hide_me: :all)
+      get controller_action, params: params
+      expect(response.status).to eq(200)
+      expect(assigns(assign_variable)).to match_array(posts)
+    end
+
+    it "shows unlocked posts with full viewer-side blocking as author" do
+      post1 = create(:post, authors_locked: false)
+      create(:reply, post: post1, user: user)
+      posts << post1
+      create(:block, blocking_user: user, blocked_user: post1.user, hide_them: :all)
+      get controller_action, params: params
+      expect(response.status).to eq(200)
+      expect(assigns(assign_variable)).to match_array(posts)
+    end
+
+    it "shows unlocked posts with full author-side blocking" do
+      post1 = create(:post, authors_locked: false)
+      posts << post1
+      create(:block, blocking_user: post1.user, blocked_user: user, hide_me: :all)
       get controller_action, params: params
       expect(response.status).to eq(200)
       expect(assigns(assign_variable)).to match_array(posts)
