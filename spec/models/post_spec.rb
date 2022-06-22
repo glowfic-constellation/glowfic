@@ -598,8 +598,8 @@ RSpec.describe Post do
       end
     end
 
-    context "legacy" do
-      let(:post) { create(:post, privacy: :legacy) }
+    context "full accounts" do
+      let(:post) { create(:post, privacy: :full_accounts) }
 
       it "is visible to poster" do
         expect(post).to be_visible_to(post.user)
@@ -615,7 +615,7 @@ RSpec.describe Post do
       end
 
       it "is not visible to readers" do
-        expect(post).to be_visible_to(create(:reader_user))
+        expect(post).not_to be_visible_to(create(:reader_user))
       end
 
       it "is not visible to logged out (nil) users" do
@@ -1033,7 +1033,7 @@ RSpec.describe Post do
       create(:post, privacy: :private)
       create_list(:post, 2, privacy: :access_list)
       create_list(:post, 2, privacy: :registered)
-      create_list(:post, 2, privacy: :legacy)
+      create_list(:post, 2, privacy: :full_accounts)
       posts = create_list(:post, 3, privacy: :public)
       expect(Post.visible_to(nil)).to match_array(posts)
     end
@@ -1046,14 +1046,15 @@ RSpec.describe Post do
         expect(Post.visible_to(user)).to match_array(posts)
       end
 
-      it "shows legacy privacy posts as full user" do
-        posts = create_list(:post, 2, privacy: :legacy)
+      it "shows full account privacy posts as full user" do
+        posts = create_list(:post, 2, privacy: :full_accounts)
         expect(Post.visible_to(user)).to match_array(posts)
       end
 
-      it "does not show legacy privacy posts as reader user" do
+      it "does not show full account privacy posts as reader user" do
         user.update!(role_id: Permissible::READONLY)
         posts = create_list(:post, 2, privacy: :registered)
+        create(:post, privacy: :full_accounts)
         expect(Post.visible_to(user)).to match_array(posts)
       end
 

@@ -285,14 +285,14 @@ RSpec.describe IconsController do
       let(:reply) { create(:reply, icon: icon, user: icon.user, post: create(:post)) }
       let(:private_post) { create(:post, icon: icon, user: icon.user, privacy: :private) }
       let(:registered_post) { create(:post, icon: icon, user: icon.user, privacy: :registered) }
-      let(:legacy_post) { create(:post, icon: icon, user: icon.user, privacy: :legacy) }
+      let(:full_post) { create(:post, icon: icon, user: icon.user, privacy: :full_accounts) }
 
       before(:each) do
         create(:reply, post: post, user: icon.user, icon: icon)
         reply
         private_post
         registered_post
-        legacy_post
+        full_post
       end
 
       it "fetches correct counts for icon owner" do

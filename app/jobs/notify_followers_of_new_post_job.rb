@@ -50,7 +50,7 @@ class NotifyFollowersOfNewPostJob < ApplicationJob
     user_ids -= blocked_user_ids(post)
     return [] unless user_ids.present?
     users = User.where(id: user_ids, favorite_notifications: true)
-    users = users.where.not(role_id: Permissible::READONLY) if post.privacy_legacy?
+    users = users.full if post.privacy_full_accounts?
     users
   end
 

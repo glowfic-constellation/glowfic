@@ -3,7 +3,7 @@ RSpec.describe PostsController do
     it "does not show user-only posts" do
       posts = create_list(:post, 2)
       create_list(:post, 2, privacy: :registered)
-      create_list(:post, 2, privacy: :legacy)
+      create_list(:post, 2, privacy: :full_accounts)
       get controller_action, params: params
       expect(response.status).to eq(200)
       expect(Post.all.count).to eq(4)
@@ -38,14 +38,14 @@ RSpec.describe PostsController do
 
     it "does not show limited access threads to reader accounts" do
       user.update!(role_id: Permissible::READONLY)
-      create(:post, privacy: :legacy)
+      create(:post, privacy: :full_accounts)
       get controller_action, params: params
       expect(response.status).to eq(200)
       expect(assigns(assign_variable)).to match_array(posts)
     end
 
     it "shows limited access threads to full accounts" do
-      posts << create(:post, privacy: :legacy)
+      posts << create(:post, privacy: :full_accounts)
       get controller_action, params: params
       expect(response.status).to eq(200)
       expect(assigns(assign_variable)).to match_array(posts)

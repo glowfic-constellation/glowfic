@@ -38,7 +38,7 @@ module PostHelper
     {
       'Public'              => :public,
       'Constellation Users' => :registered,
-      'Full Users'          => :legacy,
+      'Full Users'          => :full_accounts,
       'Access List'         => :access_list,
       'Private'             => :private,
     }
@@ -47,7 +47,7 @@ module PostHelper
   PRIVACY_MAP = {
     public: ['Public', 'world'],
     registered: ['Constellation Users', 'star'],
-    legacy: ['Full Users', 'pending'],
+    full_accounts: ['Full Users', 'pending'],
     access_list: ['Access List', 'group'],
     private: ['Private', 'lock'],
   }
