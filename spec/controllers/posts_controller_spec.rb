@@ -2900,6 +2900,15 @@ RSpec.describe PostsController do
       expect(assigns(:page_title)).to eq('Replies Owed')
     end
 
+    it "lists number of posts in the title if present" do
+      user = login
+      post = create(:post, user: user)
+      create(:reply, post: post)
+      get :owed
+      expect(response.status).to eq(200)
+      expect(assigns(:page_title)).to eq('[1] Replies Owed')
+    end
+
     context "with views" do
       render_views
 
