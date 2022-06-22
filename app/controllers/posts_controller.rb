@@ -18,6 +18,7 @@ class PostsController < WritableController
   def owed
     @show_unread = true
     @hide_quicklinks = true
+    @page_title = 'Replies Owed'
 
     can_owe = (params[:view] != 'hidden')
     ids = Post::Author.where(user_id: current_user.id, can_owe: can_owe).group(:post_id).pluck(:post_id)
@@ -38,11 +39,7 @@ class PostsController < WritableController
     end
 
     @posts = posts_from_relation(@posts.ordered)
-    if posts.count > 0:
-      @page_title = "[#{posts.count}] Replies Owed"
-    else
-      @page_title = 'Replies Owed'
-    end
+    @page_title = "[#{@posts.count}] Replies Owed" if @posts.count > 0
     fresh_when(etag: @posts, public: false)
   end
 
