@@ -1119,7 +1119,6 @@ RSpec.describe RepliesController do
       reply = Timecop.freeze(DateTime.now.utc - 1.day) { create(:reply) }
       old_created_at = reply.created_at
       reply.destroy!
-      
       login_as(reply.user)
       post :restore, params: { id: reply.id }
 
