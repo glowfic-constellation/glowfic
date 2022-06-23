@@ -235,6 +235,7 @@ class RepliesController < WritableController
     end
 
     new_reply = Reply.new(audit.audited_changes)
+    new_reply.created_at = audit.audited_changes[:created_at]
     unless new_reply.editable_by?(current_user)
       flash[:error] = "You do not have permission to modify this post."
       redirect_to post_path(new_reply.post) and return

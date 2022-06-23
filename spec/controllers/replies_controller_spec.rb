@@ -1115,6 +1115,19 @@ RSpec.describe RepliesController do
       expect(reply.content).to eq('restored right')
     end
 
+    it "correctly restores the reply's created_at date" do
+      reply = Timecop.freeze(DateTime.now.utc - 1.day) { create(:reply) }
+      old_created_at = reply.created_at
+      reply.destroy!
+      
+      login_as(reply.user)
+      post :restore, params: { id: reply.id }
+
+      expect(flash[:success]).to eq("Reply has been restored!")
+      reply = Reply.find(reply.id)
+      expect(reply.created_at).to be_the_same_time_as(old_created_at)
+    end
+
     it "does not update post status" do
       rpost = create(:post)
       reply = create(:reply, post: rpost, user: rpost.user)
