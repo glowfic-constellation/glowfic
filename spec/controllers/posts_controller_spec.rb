@@ -2901,7 +2901,8 @@ RSpec.describe PostsController do
     end
 
     it "lists number of posts in the title if present" do
-      user = login
+      user = create(:user)
+      login_as(user)
       post = create(:post, user: user)
       create(:reply, post: post)
       get :owed
