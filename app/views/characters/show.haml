@@ -78,7 +78,7 @@
             Delete Character
 
 - if params[:view] == 'galleries'
-  - galleries = @character.galleries.ordered
+  - galleries = @character.galleries.select('galleries.*').with_gallery_groups.ordered
   %table.character-right-content-box#reorder-galleries-table
     %thead
       %tr

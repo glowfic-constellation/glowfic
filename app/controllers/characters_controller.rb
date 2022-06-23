@@ -65,7 +65,7 @@ class CharactersController < ApplicationController
 
   def show
     @page_title = @character.name
-    @posts = posts_from_relation(@character.recent_posts)
+    @posts = posts_from_relation(@character.recent_posts) if params[:view] == 'posts'
     @meta_og = og_data
     use_javascript('characters/show') if @character.user_id == current_user.try(:id)
   end
