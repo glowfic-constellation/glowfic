@@ -87,7 +87,7 @@ button, .button {
 .spacer { @extend %shared-spacer; }
 
 .spacer-alt {
-  @extend %spacer;
+  @extend %shared-spacer;
   background-color: $bg_color_spacer_alt;
 }
 
