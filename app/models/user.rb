@@ -49,6 +49,7 @@ class User < ApplicationRecord
 
   scope :ordered, -> { order(username: :asc) }
   scope :active, -> { where(deleted: false) }
+  scope :full, -> { where.not(role_id: Permissible::READONLY).or(where(role_id: nil)) }
 
   nilify_blanks
 
@@ -153,9 +154,14 @@ class User < ApplicationRecord
         authors_locked: true,
         id: Post::Author.where(user_id: post_user_ids).select(:post_id),
       ).pluck(:id)
-      post_ids += Post::Author.where(user_id: full_user_ids).pluck(:post_id)
-      post_ids.uniq!
-      post_ids -= Post::Author.where(user_id: self.id).pluck(:post_id) if keyword == 'blocked'
+      if keyword == 'blocked'
+        post_ids -= Post::Author.where(user_id: self.id).pluck(:post_id)
+      else
+        full_ids = Post::Author.where(user_id: full_user_ids).pluck(:post_id)
+        full_ids -= Post::Author.where(user_id: self.id).pluck(:post_id)
+        post_ids += full_ids
+        post_ids.uniq!
+      end
       post_ids
     end
   end

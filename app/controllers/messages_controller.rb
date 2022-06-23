@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 class MessagesController < ApplicationController
   before_action :login_required
+  before_action :readonly_forbidden
   before_action :editor_setup, only: :new
 
   def index
@@ -20,7 +21,7 @@ class MessagesController < ApplicationController
 
   def new
     @message = Message.new
-    recipient = User.active.find_by_id(params[:recipient_id])
+    recipient = User.active.full.find_by_id(params[:recipient_id])
     @message.recipient = recipient unless recipient && current_user.has_interaction_blocked?(recipient)
     @page_title = 'Compose Message'
   end
@@ -28,6 +29,7 @@ class MessagesController < ApplicationController
   def create
     @message = Message.new(permitted_params)
     @message.sender = current_user
+    @message.recipient = nil if @message.recipient&.read_only?
     set_message_parent(params[:parent_id]) if params[:parent_id].present?
 
     if params[:button_preview]
@@ -125,7 +127,7 @@ class MessagesController < ApplicationController
     use_javascript('messages')
     unless @message.try(:parent)
       recent_ids = Message.where(sender_id: current_user.id).order(Arel.sql('MAX(id) desc')).limit(5).group(:recipient_id).pluck(:recipient_id)
-      base_users = User.active.where.not(id: [current_user.id] + current_user.user_ids_blocked_interaction)
+      base_users = User.active.full.where.not(id: [current_user.id] + current_user.user_ids_blocked_interaction)
       recents = base_users.where(id: recent_ids).pluck(:username, :id).sort_by { |x| recent_ids.index(x[1]) }
       users = base_users.ordered.pluck(:username, :id)
       @select_items = if recents.present?

@@ -8,7 +8,7 @@
 - if characters.try(:exists?)
   - template_ids = characters.group(:template_id).pluck(:template_id).uniq.compact
   - ::Template.where(id: template_ids).ordered.each do |template|
-    - next if skip_grouped_templates && template.characters.where('character_group_id is not null').exists?
+    - next if skip_grouped_templates && template.characters.where.not(character_group_id: nil).exists?
     = render partial_type, name: template, characters: template.characters.ordered
   - if characters.where(template_id: nil).exists?
     = render partial_type, name: 'No Template', characters: characters.where(template_id: nil).ordered, show_new_character_button: @user.id == current_user&.id

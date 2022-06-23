@@ -9,6 +9,13 @@ RSpec.describe GalleriesController do
         expect(flash[:error]).to eq("You must be logged in to view that page.")
       end
 
+      it "requires full user" do
+        login_as(create(:reader_user))
+        get :index
+        expect(response).to redirect_to(continuities_path)
+        expect(flash[:error]).to eq("This feature is not available to read-only accounts.")
+      end
+
       it "successfully loads" do
         user = create(:user)
         login_as(user)
@@ -33,6 +40,20 @@ RSpec.describe GalleriesController do
         expect(flash[:error]).to eq('User could not be found.')
         expect(response).to redirect_to(root_url)
       end
+
+      it "requires specified user to be full user" do
+        user = create(:reader_user)
+        get :index, params: { user_id: user.id }
+        expect(flash[:error]).to eq('User could not be found.')
+        expect(response).to redirect_to(root_url)
+      end
+
+      it "requires specificed user to not be deleted" do
+        user = create(:user, deleted: true)
+        get :index, params: { user_id: user.id }
+        expect(flash[:error]).to eq('User could not be found.')
+        expect(response).to redirect_to(root_url)
+      end
     end
   end
 
@@ -41,6 +62,13 @@ RSpec.describe GalleriesController do
       get :new
       expect(response).to redirect_to(root_url)
       expect(flash[:error]).to eq("You must be logged in to view that page.")
+    end
+
+    it "requires full account" do
+      login_as(create(:reader_user))
+      get :new
+      expect(response).to redirect_to(continuities_path)
+      expect(flash[:error]).to eq("You do not have permission to create galleries.")
     end
 
     context "with views" do
@@ -58,6 +86,13 @@ RSpec.describe GalleriesController do
       post :create
       expect(response).to redirect_to(root_url)
       expect(flash[:error]).to eq("You must be logged in to view that page.")
+    end
+
+    it "requires full account" do
+      login_as(create(:reader_user))
+      post :create
+      expect(response).to redirect_to(continuities_path)
+      expect(flash[:error]).to eq("You do not have permission to create galleries.")
     end
 
     context "with views" do
@@ -133,6 +168,20 @@ RSpec.describe GalleriesController do
           expect(flash[:error]).to eq('User could not be found.')
         end
 
+        it "requires specified user to be full user" do
+          user = create(:reader_user)
+          get :index, params: { user_id: user.id }
+          expect(flash[:error]).to eq('User could not be found.')
+          expect(response).to redirect_to(root_url)
+        end
+
+        it "requires specificed user to not be deleted" do
+          user = create(:user, deleted: true)
+          get :index, params: { user_id: user.id }
+          expect(flash[:error]).to eq('User could not be found.')
+          expect(response).to redirect_to(root_url)
+        end
+
         it "succeeds when logged in" do
           user = create(:user)
           gallery_user = create(:user)
@@ -157,6 +206,13 @@ RSpec.describe GalleriesController do
           get :show, params: { id: '0' }
           expect(response).to redirect_to(root_url)
           expect(flash[:error]).to eq("You must be logged in to view that page.")
+        end
+
+        it "requires full user" do
+          login_as(create(:reader_user))
+          get :show, params: { id: '0' }
+          expect(response).to redirect_to(continuities_path)
+          expect(flash[:error]).to eq("This feature is not available to read-only accounts.")
         end
 
         it "succeeds when logged in" do
@@ -282,6 +338,10 @@ RSpec.describe GalleriesController do
       expect(flash[:error]).to eq("You must be logged in to view that page.")
     end
 
+    it "requires full account" do
+      skip "TODO Currently relies on inability to create galleries"
+    end
+
     it "requires valid gallery" do
       user_id = login
       get :edit, params: { id: -1 }
@@ -316,6 +376,10 @@ RSpec.describe GalleriesController do
       put :update, params: { id: -1 }
       expect(response).to redirect_to(root_url)
       expect(flash[:error]).to eq("You must be logged in to view that page.")
+    end
+
+    it "requires full account" do
+      skip "TODO Currently relies on inability to create galleries"
     end
 
     it "requires valid gallery" do
@@ -494,6 +558,10 @@ RSpec.describe GalleriesController do
       expect(flash[:error]).to eq("You must be logged in to view that page.")
     end
 
+    it "requires full account" do
+      skip "TODO Currently relies on inability to create galleries"
+    end
+
     it "requires valid gallery" do
       user_id = login
       delete :destroy, params: { id: -1 }
@@ -549,6 +617,13 @@ RSpec.describe GalleriesController do
       get :add, params: { id: -1 }
       expect(response).to redirect_to(root_url)
       expect(flash[:error]).to eq("You must be logged in to view that page.")
+    end
+
+    it "requires full account" do
+      login_as(create(:reader_user))
+      get :add, params: { id: -1 }
+      expect(response).to redirect_to(continuities_path)
+      expect(flash[:error]).to eq("You do not have permission to create galleries.")
     end
 
     it "requires valid gallery" do
@@ -617,6 +692,13 @@ RSpec.describe GalleriesController do
       post :icon, params: { id: -1 }
       expect(response).to redirect_to(root_url)
       expect(flash[:error]).to eq("You must be logged in to view that page.")
+    end
+
+    it "requires full account" do
+      login_as(create(:reader_user))
+      post :icon, params: { id: -1 }
+      expect(response).to redirect_to(continuities_path)
+      expect(flash[:error]).to eq("You do not have permission to create galleries.")
     end
 
     it "requires valid gallery" do

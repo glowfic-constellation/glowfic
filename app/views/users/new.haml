@@ -36,6 +36,10 @@
         %th.sub.vtop Secret
         %td.even
           = text_field_tag :secret, params[:secret], placeholder: "Secret"
+      %tr#signup-captcha
+        %th.sub.vtop captcha
+        %td.odd
+          = text_field_tag :addition, params[:addition], placeholder: "Please enter five times two plus four as a number (e.g. 3 not three)"
       %tr#signup-terms
         %th.sub.vtop Terms
         %td.odd

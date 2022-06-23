@@ -11,8 +11,6 @@ plugins:
       - javascript
   fixme:
     enabled: true
-  sass-lint:
-    enabled: true
 checks:
   return-statements:
     config:

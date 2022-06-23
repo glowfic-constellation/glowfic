@@ -3,9 +3,11 @@ class PostsController < WritableController
   include Taggable
 
   before_action :login_required, except: [:index, :show, :history, :warnings, :search, :stats]
+  before_action :readonly_forbidden, only: [:owed]
   before_action :find_model, only: [:show, :history, :delete_history, :stats, :warnings, :edit, :update, :destroy]
-  before_action :require_permission, only: [:edit, :delete_history]
+  before_action :require_edit_permission, only: [:edit, :delete_history]
   before_action :require_import_permission, only: [:new, :create]
+  before_action :require_create_permission, only: [:new, :create]
   before_action :editor_setup, only: [:new, :edit]
 
   def index
@@ -16,7 +18,6 @@ class PostsController < WritableController
   def owed
     @show_unread = true
     @hide_quicklinks = true
-    @page_title = 'Replies Owed'
 
     can_owe = (params[:view] != 'hidden')
     ids = Post::Author.where(user_id: current_user.id, can_owe: can_owe).group(:post_id).pluck(:post_id)
@@ -37,6 +38,8 @@ class PostsController < WritableController
     end
 
     @posts = posts_from_relation(@posts.ordered)
+    @page_title = 'Replies Owed'
+    @page_title = "[#{@posts.count}] Replies Owed" if @posts.count > 0
     fresh_when(etag: @posts, public: false)
   end
 
@@ -75,10 +78,12 @@ class PostsController < WritableController
       posts.each { |post| post.mark_read(current_user) }
       flash[:success] = "#{posts.size} #{'post'.pluralize(posts.size)} marked as read."
     elsif params[:commit] == "Remove from Replies Owed"
+      readonly_forbidden and return if current_user.read_only?
       posts.each { |post| post.opt_out_of_owed(current_user) }
       flash[:success] = "#{posts.size} #{'post'.pluralize(posts.size)} removed from replies owed."
       redirect_to owed_posts_path and return
     elsif params[:commit] == "Show in Replies Owed"
+      readonly_forbidden and return if current_user.read_only?
       posts.each { |post| post.opt_in_to_owed(current_user) }
       flash[:success] = "#{posts.size} #{'post'.pluralize(posts.size)} added to replies owed."
       redirect_to owed_posts_path and return
@@ -202,7 +207,7 @@ class PostsController < WritableController
     mark_unread and return if params[:unread].present?
     mark_hidden and return if params[:hidden].present?
 
-    require_permission
+    require_edit_permission
     return if performed?
 
     change_status and return if params[:status].present?
@@ -440,11 +445,17 @@ class PostsController < WritableController
     @page_title = @post.subject
   end
 
-  def require_permission
+  def require_edit_permission
     unless @post.editable_by?(current_user) || @post.metadata_editable_by?(current_user)
       flash[:error] = "You do not have permission to modify this post."
       redirect_to @post
     end
+  end
+
+  def require_create_permission
+    return unless current_user.read_only?
+    flash[:error] = "You do not have permission to create posts."
+    redirect_to posts_path and return
   end
 
   def require_import_permission

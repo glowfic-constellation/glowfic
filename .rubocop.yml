@@ -1,6 +1,8 @@
+inherit_from: .rubocop_todo.yml
+
 AllCops:
-  TargetRubyVersion: 2.6
-  TargetRailsVersion: 5.1
+  TargetRubyVersion: 2.7
+  TargetRailsVersion: 6.0
   DisabledByDefault: false
   Exclude:
     - 'config/initializers/audited.rb'

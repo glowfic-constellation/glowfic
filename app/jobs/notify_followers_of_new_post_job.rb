@@ -49,7 +49,9 @@ class NotifyFollowersOfNewPostJob < ApplicationJob
     user_ids -= post.author_ids
     user_ids -= blocked_user_ids(post)
     return [] unless user_ids.present?
-    User.where(id: user_ids, favorite_notifications: true)
+    users = User.where(id: user_ids, favorite_notifications: true)
+    users = users.full if post.privacy_full_accounts?
+    users
   end
 
   def already_notified_about?(post, user)
