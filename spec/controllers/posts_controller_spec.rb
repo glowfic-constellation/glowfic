@@ -6,7 +6,7 @@ RSpec.describe PostsController do
       create_list(:post, 2, privacy: :full_accounts)
       get controller_action, params: params
       expect(response.status).to eq(200)
-      expect(Post.all.count).to eq(4)
+      expect(Post.all.count).to eq(6)
       expect(assigns(assign_variable)).to match_array(posts)
     end
   end

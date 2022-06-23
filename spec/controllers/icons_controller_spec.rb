@@ -312,7 +312,7 @@ RSpec.describe IconsController do
       end
 
       it "fetches correct counts when logged in as reader account" do
-        login
+        login_as(create(:reader_user))
         get :show, params: { id: icon.id }
         expect(response).to have_http_status(200)
         expect(assigns(:times_used)).to eq(4)

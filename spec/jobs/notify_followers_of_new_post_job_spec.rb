@@ -44,12 +44,13 @@ RSpec.describe NotifyFollowersOfNewPostJob do
 
       it "does not send to readers for full accounts privacy posts" do
         unnotified = create(:reader_user)
-        create(:favorite, user: unnotified, favorite: favorite)
-        expect {
-          perform_enqueued_jobs do
-            create(:post, user: author, board: board, privacy: :full_accounts)
-          end
-        }.not_to change { Message.count }
+        create(:favorite, user: unnotified, favorite: author)
+        perform_enqueued_jobs do
+          create(:post, user: author, board: board, privacy: :full_accounts)
+        end
+
+        # don't use change format because other non-reader users may be notified
+        expect(Message.where(recipient_id: unnotified.id).count).to eq(0)
       end
 
       it "does not send to non-viewers for access-locked posts" do
