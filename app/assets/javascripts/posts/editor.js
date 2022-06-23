@@ -287,7 +287,7 @@ function setupTinyMCE() {
     tinyMCE.init({
       selector: selector,
       menubar: false,
-      toolbar: ["bold italic underline strikethrough | link image | blockquote hr bullist numlist | undo redo"],
+      toolbar: ["bold italic underline strikethrough forecolor | link image | blockquote hr bullist numlist | undo redo"],
       branding: false,
       plugins: "wordcount,image,hr,link,autoresize,paste",
       paste_as_text: true,
