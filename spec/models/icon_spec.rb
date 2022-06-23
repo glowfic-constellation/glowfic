@@ -178,4 +178,68 @@ RSpec.describe Icon do
       expect(icon.reload.url).to eq("#{asset_host}/users%2F#{icon.user_id}%2Ficons%2Ffake_test.png")
     end
   end
+
+  describe "#update_flat_posts" do
+    def update_uploaded_icon(icon)
+      icon.update!(
+        url: "https://d1anwqy6ci9o1i.cloudfront.net/users%2F#{user.id}%2Ficons%2Fnonsense-fakeimg-800.png",
+        s3_key: "users/#{user.id}/icons/nonsense-fakeimg-800.png",
+      )
+    end
+
+    def update_external_icon(icon)
+      icon.update!(url: "https://www.fakeicon.com/new_icon", s3_key: nil)
+    end
+
+    shared_examples "works" do
+      let(:post1) { create(:post, icon: icon, user: user) }
+      let(:post2) { create(:post, unjoined_authors: [user]) }
+      let(:reply) { create(:reply, icon: icon, post: post2, user: user) }
+
+      before(:each) do
+        perform_enqueued_jobs do
+          post1
+          reply
+        end
+      end
+
+      it "updates posts on update to external icon" do
+        update_external_icon(icon)
+        expect(GenerateFlatPostJob).to have_been_enqueued.with(post1.id).on_queue('high')
+        expect(GenerateFlatPostJob).to have_been_enqueued.with(post2.id).on_queue('high')
+      end
+
+      it "updates posts on update to uploaded icon" do
+        update_uploaded_icon(icon)
+        expect(GenerateFlatPostJob).to have_been_enqueued.with(post1.id).on_queue('high')
+        expect(GenerateFlatPostJob).to have_been_enqueued.with(post2.id).on_queue('high')
+      end
+
+      it "updates posts on keyword edit" do
+        icon.update!(keyword: 'new')
+        expect(GenerateFlatPostJob).to have_been_enqueued.with(post1.id).on_queue('high')
+        expect(GenerateFlatPostJob).to have_been_enqueued.with(post2.id).on_queue('high')
+      end
+
+      it "does not update posts on credit edit" do
+        icon.update!(credit: 'new')
+        expect(GenerateFlatPostJob).not_to have_been_enqueued.with(post1.id)
+        expect(GenerateFlatPostJob).not_to have_been_enqueued.with(post2.id)
+      end
+    end
+
+    context "with uploaded icons" do
+      let(:user) { create(:user) }
+      let(:icon) { create(:uploaded_icon, user: user) }
+
+      include_examples "works"
+    end
+
+    context "with external icons" do
+      let(:user) { create(:user) }
+      let(:icon) { create(:icon, user: user) }
+
+      include_examples "works"
+    end
+  end
 end
