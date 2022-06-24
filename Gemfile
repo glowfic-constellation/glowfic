@@ -59,10 +59,10 @@ group :development do
   gem 'listen'
   gem 'memory_profiler'
   gem 'rack-mini-profiler'
-  gem 'rubocop', '~> 1.23.0', require: false
-  gem 'rubocop-performance', '~> 1.12.0', require: false
-  gem 'rubocop-rails', '~> 2.12.4', require: false
-  gem 'rubocop-rspec', '~> 2.6.0', require: false
+  gem 'rubocop', '~> 1.30.0', require: false
+  gem 'rubocop-performance', '~> 1.14.0', require: false
+  gem 'rubocop-rails', '~> 2.15.0', require: false
+  gem 'rubocop-rspec', '~> 2.11.0', require: false
   gem 'traceroute'
 end
 
