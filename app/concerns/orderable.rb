@@ -27,9 +27,7 @@ module Orderable
         return unless board_checking.ordered?
       end
 
-      other_where = ordered_attributes.to_h do |atr|
-        [atr, is_after ? attribute_before_last_save(atr) : attribute_was(atr)]
-      end
+      other_where = ordered_attributes.index_with { |atr| is_after ? attribute_before_last_save(atr) : attribute_was(atr) }
       others = self.class.where(other_where).ordered_manually
       return unless others.present?
 
@@ -62,7 +60,7 @@ module Orderable
     end
 
     def ordered_items
-      where_attr = ordered_attributes.to_h { |a| [a, self[a]] }
+      where_attr = ordered_attributes.index_with { |a| self[a] }
       self.class.where(where_attr)
     end
   end

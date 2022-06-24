@@ -45,7 +45,7 @@ end
 def find_authors(other_replies)
   # collect user ids for the new post's replies and created_at of first replies of that set for the author
   author_ids = other_replies.except(:order).select(:user_id).distinct.pluck(:user_id)
-  author_ids.to_h { |id| [id, other_replies.find_by(user_id: id).created_at] }
+  author_ids.index_with { |id| other_replies.find_by(user_id: id).created_at }
 end
 
 def migrate_replies(other_replies, new_post:, old_post:, first_reply:)
