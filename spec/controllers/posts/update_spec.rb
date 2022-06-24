@@ -235,8 +235,8 @@ RSpec.describe PostsController, 'PUT update' do
             put :update, params: { id: post.id, status: status }
             expect(response).to redirect_to(post_url(post))
             expect(flash[:success]).to eq("Post has been marked #{status}.")
-            expect(post.reload.send("on_hiatus?")).to eq(true)
-            expect(post.reload.send("hiatus?")).to eq(status == :hiatus)
+            expect(post.reload.send(:on_hiatus?)).to eq(true)
+            expect(post.reload.send(:hiatus?)).to eq(status == :hiatus)
           end
 
           it "works for coauthor" do
@@ -245,8 +245,8 @@ RSpec.describe PostsController, 'PUT update' do
             put :update, params: { id: post.id, status: status }
             expect(response).to redirect_to(post_url(post))
             expect(flash[:success]).to eq("Post has been marked #{status}.")
-            expect(post.reload.send("on_hiatus?")).to eq(true)
-            expect(post.reload.send("hiatus?")).to eq(status == :hiatus)
+            expect(post.reload.send(:on_hiatus?)).to eq(true)
+            expect(post.reload.send(:hiatus?)).to eq(status == :hiatus)
           end
 
           it "works for admin" do
@@ -255,8 +255,8 @@ RSpec.describe PostsController, 'PUT update' do
             put :update, params: { id: post.id, status: status }
             expect(response).to redirect_to(post_url(post))
             expect(flash[:success]).to eq("Post has been marked #{status}.")
-            expect(post.reload.send("on_hiatus?")).to eq(true)
-            expect(post.reload.send("hiatus?")).to eq(status == :hiatus)
+            expect(post.reload.send(:on_hiatus?)).to eq(true)
+            expect(post.reload.send(:hiatus?)).to eq(status == :hiatus)
           end
         end
       end

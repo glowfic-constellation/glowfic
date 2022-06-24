@@ -17,7 +17,7 @@ RSpec.describe PostsController, 'GET index' do
   it "paginates" do
     create_list(:post, 26)
     get :index
-    num_posts_fetched = controller.instance_variable_get('@posts').total_pages
+    num_posts_fetched = controller.instance_variable_get(:@posts).total_pages
     expect(num_posts_fetched).to eq(2)
   end
 
@@ -25,7 +25,7 @@ RSpec.describe PostsController, 'GET index' do
     create_list(:post, 26)
     oldest = Post.ordered_by_id.first
     get :index
-    ids_fetched = controller.instance_variable_get('@posts').map(&:id)
+    ids_fetched = controller.instance_variable_get(:@posts).map(&:id)
     expect(ids_fetched).not_to include(oldest.id)
   end
 
@@ -35,7 +35,7 @@ RSpec.describe PostsController, 'GET index' do
     next_oldest = Post.ordered_by_id.second
     oldest.update!(status: :complete)
     get :index
-    ids_fetched = controller.instance_variable_get('@posts').map(&:id)
+    ids_fetched = controller.instance_variable_get(:@posts).map(&:id)
     expect(ids_fetched.count).to eq(25)
     expect(ids_fetched).not_to include(next_oldest.id)
   end
@@ -47,7 +47,7 @@ RSpec.describe PostsController, 'GET index' do
     post4 = Timecop.freeze(Time.zone.now - 4.minutes) { create(:post) }
     post3 = Timecop.freeze(Time.zone.now - 6.minutes) { create(:post) }
     get :index
-    ids_fetched = controller.instance_variable_get('@posts').map(&:id)
+    ids_fetched = controller.instance_variable_get(:@posts).map(&:id)
     expect(ids_fetched).to eq([post5.id, post4.id, post3.id, post2.id, post1.id])
   end
 

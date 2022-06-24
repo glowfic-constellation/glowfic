@@ -649,7 +649,7 @@ RSpec.describe Post do
   describe "#first_unread_for" do
     it "uses instance variable if set" do
       post = create(:post)
-      post.instance_variable_set('@first_unread', 3)
+      post.instance_variable_set(:@first_unread, 3)
       expect(post).not_to receive(:last_read)
       expect(post.first_unread_for(nil)).to eq(3)
     end

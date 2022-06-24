@@ -294,6 +294,9 @@ Performance/StringInclude:
 Performance/Sum:
   Enabled: true
 
+Performance/StringIdentifierArgument: # new in 1.13
+  Enabled: true
+
 ##################### Rails ##################################
 
 Rails/ActiveRecordCallbacksOrder:
