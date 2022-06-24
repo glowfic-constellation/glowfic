@@ -49,7 +49,7 @@ module PostHelper
   PRIVACY_MAP = {
     public: ['Public', 'world'],
     registered: ['Constellation Users', 'star'],
-    full_accounts: ['Full Users', 'pending'],
+    full_accounts: ['Full Users', 'star'],
     access_list: ['Access List', 'group'],
     private: ['Private', 'lock'],
   }
