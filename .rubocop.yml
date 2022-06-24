@@ -597,6 +597,9 @@ Style/KeywordParametersOrder:
 Style/Lambda:
   Enabled: false
 
+Style/MapToHash: # new in 1.24
+  Enabled: true
+
 Style/MixinUsage:
   Exclude: ['bin/*']
 
