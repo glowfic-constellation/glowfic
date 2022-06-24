@@ -72,7 +72,7 @@ function displayGallery(elem) {
     $.each(resp.icons, function(index, icon) {
       var iconDiv = $("<div>").attr({class: 'gallery-icon'});
       var iconLink = $("<a>").attr({href: "/icons/" + icon.id});
-      var iconImg = $("<img>").attr({src: icon.url, alt: icon.keyword, title: icon.keyword, 'class': 'icon'});
+      var iconImg = $("<img>").attr({src: icon.url, alt: '', title: icon.keyword, 'class': 'icon'});
       iconLink.append(iconImg).append("<br>").append($("<span>").attr({class: 'icon-keyword'}).append(icon.keyword));
       iconDiv.append(iconLink);
 
