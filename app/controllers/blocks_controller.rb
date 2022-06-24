@@ -85,7 +85,7 @@ class BlocksController < ApplicationController
   def find_model
     return if (@block = Block.find_by(id: params[:id]))
     flash[:error] = "Block could not be found."
-    redirect_to blocks_path and return
+    redirect_to blocks_path
   end
 
   def editor_setup

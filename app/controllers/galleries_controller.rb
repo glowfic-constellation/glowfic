@@ -220,13 +220,13 @@ class GalleriesController < UploadingController
 
     return if @gallery.user_id == current_user.id
     flash[:error] = "That is not your gallery."
-    redirect_to user_galleries_path(current_user) and return
+    redirect_to user_galleries_path(current_user)
   end
 
   def require_create_permission
     return unless current_user.read_only?
     flash[:error] = "You do not have permission to create galleries."
-    redirect_to continuities_path and return
+    redirect_to continuities_path
   end
 
   def setup_new_icons

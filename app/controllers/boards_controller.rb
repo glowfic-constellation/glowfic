@@ -169,13 +169,13 @@ class BoardsController < ApplicationController
   def require_create_permission
     return unless current_user.read_only?
     flash[:error] = "You do not have permission to create continuities."
-    redirect_to continuities_path and return
+    redirect_to continuities_path
   end
 
   def require_edit_permission
     return if @board.editable_by?(current_user)
     flash[:error] = "You do not have permission to edit that continuity."
-    redirect_to continuity_path(@board) and return
+    redirect_to continuity_path(@board)
   end
 
   def boards_from_relation(relation)
