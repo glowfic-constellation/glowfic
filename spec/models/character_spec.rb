@@ -170,6 +170,26 @@ RSpec.describe Character do
       expect(character.ungrouped_gallery_ids).to match_array([gallery_manual.id, gallery_both.id])
     end
 
+    it "does not add galleries until character is saved" do
+      character.ungrouped_gallery_ids = [gallery.id]
+      expect(Character.find_by(id: character.id).galleries).to be_empty
+      character.save!
+      expect(character.reload.galleries).to eq([gallery])
+    end
+
+    it "does not update character_galleries until character is saved" do
+      gallery = create(:gallery, gallery_groups: [group], user: user)
+      character = create(:character, gallery_groups: [group], user: user)
+      character.reload
+      expect(character.galleries).to eq([gallery])
+      cg = CharactersGallery.find_by(character: character, gallery: gallery)
+      expect(cg).to be_added_by_group
+      character.ungrouped_gallery_ids = [gallery.id]
+      expect(cg.reload).to be_added_by_group
+      character.save!
+      expect(cg.reload).not_to be_added_by_group
+    end
+
     ['before', 'after'].each do |time|
       context "combined #{time} gallery_group_ids" do
         def process_changes(obj, gallery_group_ids, ungrouped_gallery_ids, time)
