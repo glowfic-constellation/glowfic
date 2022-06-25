@@ -248,7 +248,7 @@ RSpec.describe "#convert_versions" do # rubocop:disable Rspec/DescribeClass
         expect(version.post_id).to eq(post.id)
         changes = {
           content: [old_content, reply.content],
-          character_id: [nil, character.id]
+          character_id: [nil, character.id],
         }.transform_keys(&:to_s)
         expect(version.object_changes.keys).to match_array(changes.keys)
         version.object_changes.each do |key, value|
@@ -334,7 +334,7 @@ RSpec.describe "#convert_versions" do # rubocop:disable Rspec/DescribeClass
         changes = {
           block_interactions: [true, false],
           hide_me: [0, 1],
-          hide_them: [0, 2]
+          hide_them: [0, 2],
         }.transform_keys(&:to_s)
         expect(version.object_changes.keys).to match_array(changes.keys)
         version.object_changes.each do |key, value|

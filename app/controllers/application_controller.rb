@@ -261,7 +261,7 @@ class ApplicationController < ActionController::Base
     {
       comment: params.fetch(controller_name.singularize, {}).fetch(:audit_comment, nil),
       ip: request.remote_ip,
-      request_uuid: request.uuid
+      request_uuid: request.uuid,
     }
   end
 end
