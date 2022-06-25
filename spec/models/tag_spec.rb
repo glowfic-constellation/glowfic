@@ -24,6 +24,25 @@ RSpec.describe Tag do
       expect(mutual.labels.count).to eq(1)
     end
 
+    it "correctly merges content warnings" do
+      good_tag = create(:content_warning)
+      bad_tag = create(:content_warning)
+
+      create_list(:post, 3, content_warnings: [good_tag])
+      create_list(:post, 2, content_warnings: [bad_tag])
+      mutual = create(:post, content_warnings: [good_tag, bad_tag])
+
+      expect(good_tag.posts.count).to eq(4)
+      expect(bad_tag.posts.count).to eq(3)
+
+      good_tag.merge_with(bad_tag)
+
+      expect(Tag.find_by_id(bad_tag.id)).to be_nil
+      expect(bad_tag.posts.count).to eq(0)
+      expect(good_tag.posts.count).to eq(6)
+      expect(mutual.content_warnings.count).to eq(1)
+    end
+
     it "correctly merges settings" do
       good_setting = create(:setting)
       bad_setting = create(:setting)
