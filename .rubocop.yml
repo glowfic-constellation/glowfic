@@ -486,6 +486,9 @@ RSpec/StubbedMock:
 RSpec/SubjectDeclaration: # new in 2.5
   Enabled: true
 
+RSpec/VerifiedDoubleReference: # new in 2.10.0
+  Enabled: true
+
 ################## RSpec/Capybara ##############################
 
 RSpec/Capybara/FeatureMethods:
