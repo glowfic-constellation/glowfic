@@ -80,15 +80,15 @@ RSpec.describe Character do
   end
 
   describe "#ungrouped_gallery_ids=" do
-    it "adds unattached galleries" do
-      user = create(:user)
-      character = create(:character, user: user)
-      gallery = create(:gallery, user: user)
+    let(:user) { create(:user) }
+    let(:group) { create(:gallery_group) }
+    let(:character) { create(:character, user: user) }
+    let(:gallery) { create(:gallery, user: user) }
 
+    it "adds unattached galleries" do
       expect(character.gallery_ids).to eq([])
       expect(character.ungrouped_gallery_ids).to eq([])
-      character.ungrouped_gallery_ids = [gallery.id]
-      character.save!
+      character.update!(ungrouped_gallery_ids: [gallery.id])
 
       character.reload
       expect(character.characters_galleries.map(&:added_by_group?)).to match_array([false])
@@ -98,8 +98,6 @@ RSpec.describe Character do
 
     it "sets already-attached galleries to not be added_by_group" do
       # does not add a new attachment
-      user = create(:user)
-      group = create(:gallery_group)
       character = create(:character, gallery_groups: [group], user: user)
       gallery = create(:gallery, gallery_groups: [group], user: user)
 
@@ -107,8 +105,7 @@ RSpec.describe Character do
       expect(character.gallery_ids).to match_array([gallery.id])
       expect(character.ungrouped_gallery_ids).to match_array([])
 
-      character.ungrouped_gallery_ids = [gallery.id]
-      character.save!
+      character.update!(ungrouped_gallery_ids: [gallery.id])
       character.reload
 
       expect(character.gallery_ids).to match_array([gallery.id])
@@ -120,10 +117,8 @@ RSpec.describe Character do
       # does not remove gallery_manual when not told to
       # sets flag on gallery_both to be added_by_group
       # does not remove gallery_auto despite not being present
-      user = create(:user)
-      group = create(:gallery_group)
       character = create(:character, gallery_groups: [group], user: user)
-      gallery_manual = create(:gallery, user: user)
+      gallery_manual = gallery
       gallery_both = create(:gallery, gallery_groups: [group], user: user)
       gallery_automatic = create(:gallery, gallery_groups: [group], user: user)
 
@@ -134,8 +129,7 @@ RSpec.describe Character do
       expect(character.gallery_ids).to match_array([gallery_manual.id, gallery_both.id, gallery_automatic.id])
       expect(character.ungrouped_gallery_ids).to match_array([gallery_manual.id, gallery_both.id])
 
-      character.ungrouped_gallery_ids = [gallery_manual.id]
-      character.save!
+      character.update!(ungrouped_gallery_ids: [gallery_manual.id])
 
       character.reload
       expect(character.gallery_ids).to match_array([gallery_manual.id, gallery_both.id, gallery_automatic.id])
@@ -144,15 +138,12 @@ RSpec.describe Character do
     end
 
     it "deletes manually-added galleries when not present" do
-      user = create(:user)
-      gallery = create(:gallery, user: user)
       character = create(:character, user: user, galleries: [gallery])
 
       character.reload
       expect(character.gallery_ids).to eq([gallery.id])
       expect(character.ungrouped_gallery_ids).to eq([gallery.id])
-      character.ungrouped_gallery_ids = []
-      character.save!
+      character.update!(ungrouped_gallery_ids: [])
 
       character.reload
       expect(character.gallery_ids).to eq([])
@@ -160,10 +151,8 @@ RSpec.describe Character do
 
     it "does nothing if unchanged" do
       # does not remove or change the status of any of: gallery_manual, gallery_both, gallery_auto
-      user = create(:user)
-      group = create(:gallery_group)
       character = create(:character, gallery_groups: [group], user: user)
-      gallery_manual = create(:gallery, user: user)
+      gallery_manual = gallery
       gallery_both = create(:gallery, gallery_groups: [group], user: user)
       gallery_automatic = create(:gallery, gallery_groups: [group], user: user)
 
@@ -174,8 +163,7 @@ RSpec.describe Character do
       expect(character.gallery_ids).to match_array([gallery_manual.id, gallery_both.id, gallery_automatic.id])
       expect(character.ungrouped_gallery_ids).to match_array([gallery_manual.id, gallery_both.id])
 
-      character.ungrouped_gallery_ids = [gallery_manual.id, gallery_both.id]
-      character.save!
+      character.update!(ungrouped_gallery_ids: [gallery_manual.id, gallery_both.id])
 
       character.reload
       expect(character.gallery_ids).to match_array([gallery_manual.id, gallery_both.id, gallery_automatic.id])
@@ -192,17 +180,15 @@ RSpec.describe Character do
             obj.gallery_group_ids = gallery_group_ids
             obj.ungrouped_gallery_ids = ungrouped_gallery_ids
           end
+          obj.save!
         end
 
         it "supports adding a gallery at the same time as removing its group" do
-          user = create(:user)
-          group = create(:gallery_group)
           gallery = create(:gallery, user: user, gallery_groups: [group])
           character = create(:character, user: user, gallery_groups: [group])
           expect(character.reload.galleries).to match_array([gallery])
 
           process_changes(character, [], [gallery.id], time)
-          character.save!
 
           character.reload
           expect(character.galleries).to match_array([gallery])
@@ -211,7 +197,6 @@ RSpec.describe Character do
         end
 
         it "supports adding a gallery at the same time as swapping its group" do
-          user = create(:user)
           group1 = create(:gallery_group)
           group2 = create(:gallery_group)
           gallery = create(:gallery, user: user, gallery_groups: [group1, group2])
@@ -219,7 +204,6 @@ RSpec.describe Character do
           expect(character.reload.galleries).to match_array([gallery])
 
           process_changes(character, [group2.id], [gallery.id], time)
-          character.save!
 
           character.reload
           expect(character.galleries).to match_array([gallery])
@@ -228,14 +212,11 @@ RSpec.describe Character do
         end
 
         it "keeps a gallery when removing at the same time as adding its group" do
-          user = create(:user)
-          group = create(:gallery_group)
           gallery = create(:gallery, user: user, gallery_groups: [group])
           character = create(:character, user: user, galleries: [gallery])
           expect(character.reload.galleries).to match_array([gallery])
 
           process_changes(character, [group.id], [], time)
-          character.save!
 
           character.reload
           expect(character.galleries).to match_array([gallery])
@@ -244,7 +225,6 @@ RSpec.describe Character do
         end
 
         it "keeps a gallery when removing at the same time as swapping its group" do
-          user = create(:user)
           group1 = create(:gallery_group)
           group2 = create(:gallery_group)
           gallery = create(:gallery, user: user, gallery_groups: [group1, group2])
@@ -252,7 +232,6 @@ RSpec.describe Character do
           expect(character.reload.galleries).to match_array([gallery])
 
           process_changes(character, [group2.id], [], time)
-          character.save!
 
           character.reload
           expect(character.galleries).to match_array([gallery])
