@@ -104,8 +104,8 @@ RSpec.describe FavoritesController do
       end
 
       it "orders favorited posts correctly" do
-        user_post.update!(tagged_at: Time.zone.now - 2.minutes)
-        board_post.update!(tagged_at: Time.zone.now - 5.minutes)
+        user_post.update!(tagged_at: 2.minutes.ago)
+        board_post.update!(tagged_at: 5.minutes.ago)
         board_user_post.update!(tagged_at: Time.zone.now)
         favorite = create(:favorite, favorite: board)
         create(:favorite, user: favorite.user, favorite: user)

@@ -89,7 +89,7 @@ RSpec.describe PostsController, 'POST mark' do
     it "does not mess with read timestamps" do
       user = create(:user)
 
-      time = Time.zone.now - 10.minutes
+      time = 10.minutes.ago
       post1 = create(:post, created_at: time, updated_at: time) # unread
       post2 = create(:post, created_at: time, updated_at: time) # partially read
       post3 = create(:post, created_at: time, updated_at: time) # fully read

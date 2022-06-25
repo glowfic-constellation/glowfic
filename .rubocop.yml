@@ -323,6 +323,9 @@ Rails/Blank:
 Rails/ContentTag:
   Enabled: true
 
+Rails/DurationArithmetic: # new in 2.13
+  Enabled: true
+
 Rails/DynamicFindBy:
   Enabled: true
   Whitelist:
