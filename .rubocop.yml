@@ -408,6 +408,9 @@ Rails/SquishedSQLHeredocs:
 Rails/TimeZoneAssignment: # (new in 2.10)
   Enabled: true
 
+Rails/TransactionExitStatement: # new in 2.14
+  Enabled: true
+
 Rails/UniqueValidationWithoutIndex:
   Enabled: false
 
