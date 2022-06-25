@@ -107,7 +107,7 @@ class Character < ApplicationRecord
       end
     end
     # add any new galleries
-    self.galleries << Gallery.where(id: new_ids) if new_ids.present?
+    self.characters_galleries.new(new_ids.map { |id| { gallery_id: id } }) if new_ids.present?
   end
 
   def character_gallery_for(gallery)
