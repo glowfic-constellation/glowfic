@@ -21,7 +21,7 @@ class ScrapePostJob < ApplicationJob
   end
 
   def self.view_post(post_id)
-    host = ENV['DOMAIN_NAME'] || 'localhost:3000'
+    host = ENV.fetch('DOMAIN_NAME', 'localhost:3000')
     url = Rails.application.routes.url_helpers.post_url(post_id, host: host, protocol: 'https')
     "<a href='#{url}'>View it here</a>."
   end

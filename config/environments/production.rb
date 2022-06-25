@@ -33,7 +33,7 @@ Rails.application.configure do
   config.assets.compile = false
 
   # Enable serving of images, stylesheets, and JavaScripts from an asset server.
-  config.action_controller.asset_host = ENV['ASSET_HOST']
+  config.action_controller.asset_host = ENV.fetch('ASSET_HOST', nil) # staging doesn't have a CDN, so this needs to default to nil
 
   # Specifies the header that your server uses for sending files.
   # config.action_dispatch.x_sendfile_header = 'X-Sendfile' # for Apache
@@ -59,7 +59,7 @@ Rails.application.configure do
   config.log_tags = [:request_id]
 
   # Use a different cache store in production.
-  config.cache_store = :redis_cache_store, { url: ENV['REDIS_CACHE_URL'], expires_in: 30.days }
+  config.cache_store = :redis_cache_store, { url: ENV.fetch('REDIS_CACHE_URL'), expires_in: 30.days }
 
   # Use a real queuing backend for Active Job (and separate queues per environment).
   config.active_job.queue_adapter = :resque

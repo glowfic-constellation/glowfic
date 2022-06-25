@@ -1,7 +1,7 @@
 class AsyncMailer < ActionMailer::Base
   include Resque::Mailer
 
-  default from: "Glowfic Constellation <#{ENV['GMAIL_USERNAME']}>"
+  default from: "Glowfic Constellation <#{ENV.fetch('GMAIL_USERNAME', nil)}>"
   helper :application
   helper :mailer
   layout 'mailer'

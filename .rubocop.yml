@@ -564,6 +564,9 @@ Style/ExponentialNotation:
   Enabled: false
   # disabled because we literally never use exponents
 
+Style/FetchEnvVar: # new in 1.28
+  Enabled: true
+
 Style/FormatStringToken:
   EnforcedStyle: 'template'
 

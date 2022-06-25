@@ -15,7 +15,7 @@
 # See http://rubydoc.info/gems/rspec-core/RSpec/Core/Configuration
 
 # Don't calculate coverage when running single tests or recording API examples
-unless ENV['SKIP_COVERAGE'] || ENV['APIPIE_RECORD'] || RSpec.configuration.files_to_run.count <= 1
+unless ENV.fetch('SKIP_COVERAGE', false) || ENV.fetch('APIPIE_RECORD', false) || RSpec.configuration.files_to_run.count <= 1
   require 'simplecov'
   SimpleCov.start 'rails' do
     add_group("Controllers") { |src| src.filename.include?('app/controllers') and src.filename.exclude?('app/controllers/api') }
@@ -143,7 +143,7 @@ RSpec.configure do |config|
   # Print the 10 slowest examples and example groups at the
   # end of the spec run, to help surface which specs are running
   # particularly slow.
-  config.profile_examples = (ENV['NUM_PROFILE'] || 10).to_i
+  config.profile_examples = ENV.fetch('NUM_PROFILE', 10).to_i
 
   # Run specs in random order to surface order dependencies. If you find an
   # order dependency and want to debug it, you can fix the order by providing

@@ -20,8 +20,8 @@ Resque::Mailer.excluded_environments = [] # I explicitly want this to run in tes
 
 if Rails.env.production?
   Resque::Server.use(Rack::Auth::Basic) do |user, password|
-    username = ENV['RESQUE_WEB_HTTP_BASIC_AUTH_USER'] || 'user'
-    pw = ENV['RESQUE_WEB_HTTP_BASIC_AUTH_PASSWORD'] || 'secret'
+    username = ENV.fetch('RESQUE_WEB_HTTP_BASIC_AUTH_USER', 'user')
+    pw = ENV.fetch('RESQUE_WEB_HTTP_BASIC_AUTH_PASSWORD', 'secret')
     [user, password] == [username, pw]
   end
 end
