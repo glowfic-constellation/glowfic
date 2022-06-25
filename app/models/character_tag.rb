@@ -24,7 +24,7 @@ class CharacterTag < ApplicationRecord
     return if gallery_group.nil? # skip non-gallery_groups
     galleries = gallery_group.galleries.where(user_id: character.user_id)
     joined_group_galleries = (character.gallery_groups - [gallery_group]).collect(&:galleries).flatten
-    joined_group_galleries = joined_group_galleries.select { |gallery| gallery.user_id = character.user_id }.map(&:id)
+    joined_group_galleries = joined_group_galleries.select { |gallery| gallery.user_id == character.user_id }.map(&:id)
     galleries = galleries.where.not(id: joined_group_galleries).pluck(:id)
     character.characters_galleries.select { |cg| galleries.include?(cg.gallery_id) && cg.added_by_group }.each(&:mark_for_destruction)
   end
