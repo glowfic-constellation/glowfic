@@ -426,6 +426,9 @@ Rails/WhereNot:
 RSpec/AnyInstance:
   Enabled: false
 
+RSpec/BeNil: # new in 2.9.0
+  Enabled: true
+
 RSpec/ContextWording:
   Enabled: false
 

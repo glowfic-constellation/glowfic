@@ -31,7 +31,7 @@ RSpec.describe Icon do
         icon = create(:uploaded_icon)
         dupe_icon = build(:icon, url: icon.url, s3_key: icon.s3_key, user: create(:user))
         expect(dupe_icon).not_to be_valid
-        expect(dupe_icon.url).to be nil
+        expect(dupe_icon.url).to be_nil
       end
 
       it "should set the url back to its previous url on update" do
