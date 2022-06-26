@@ -408,7 +408,7 @@ GEM
     thread_safe (0.3.6)
     tilt (2.0.10)
     timecop (0.9.5)
-    tinymce-rails (5.10.3)
+    tinymce-rails (5.10.4)
       railties (>= 3.1.1)
     traceroute (0.8.1)
       rails (>= 3.0.0)
