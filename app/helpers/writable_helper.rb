@@ -24,7 +24,7 @@ module WritableHelper
   def has_edit_audits?(audits, written)
     return false unless written.id.present?
     if written.is_a?(Post)
-      count = audits[:post]
+      count = audits.fetch(:post, 0)
     else
       count = audits.fetch(written.id, 0)
     end
