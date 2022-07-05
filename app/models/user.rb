@@ -153,7 +153,7 @@ class User < ApplicationRecord
     Rails.cache.fetch(Block.cache_string_for(self.id, keyword), expires_in: 1.month) do
       post_ids = Post.unscoped.where(
         authors_locked: true,
-        id: Post::Author.where(user_id: post_user_ids).select(:post_id),
+        id: Post::Author.where(user_id: post_user_ids.or(full_user_ids)).select(:post_id),
       ).pluck(:id)
       if keyword == 'blocked'
         post_ids -= Post::Author.where(user_id: self.id).pluck(:post_id)
