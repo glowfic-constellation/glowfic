@@ -1098,20 +1098,26 @@ RSpec.describe RepliesController do
     end
 
     it "correctly restores a previously restored reply" do
-      reply = create(:reply, content: 'not yet restored')
+      reply = Timecop.freeze(2.days.ago) { create(:reply, content: 'not yet restored') }
+      original_created_at = reply.created_at
       reply.destroy!
       login_as(reply.user)
-      post :restore, params: { id: reply.id }
+
+      Timecop.freeze(1.day.ago) do
+        post :restore, params: { id: reply.id }
+      end
+
       expect(flash[:success]).to eq("Reply has been restored!")
 
       reply = Reply.find(reply.id)
-      reply.content = 'restored right'
-      reply.save!
+      expect(reply.created_at).to be_the_same_time_as(original_created_at)
+      reply.update!(content: 'restored right')
       reply.destroy!
 
       post :restore, params: { id: reply.id }
       expect(flash[:success]).to eq("Reply has been restored!")
       reply = Reply.find(reply.id)
+      expect(reply.created_at).to be_the_same_time_as(original_created_at)
       expect(reply.content).to eq('restored right')
     end
 
