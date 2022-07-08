@@ -1,6 +1,6 @@
 class UserMailer < AsyncMailer
   helper WritableHelper
-  # helper IconHelper
+  helper IconHelper
 
   def post_has_new_reply(user_id, reply_id)
     return unless (@reply = Reply.find_by_id(reply_id))
