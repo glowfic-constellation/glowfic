@@ -4,7 +4,7 @@ RSpec.describe UserMailer, type: :mailer do
   describe "#post_has_new_reply" do
     it "sends email" do
       ActionMailer::Base.deliveries.clear
-      UserMailer.post_has_new_reply(create(:user).id, create(:reply).id).deliver!
+      UserMailer.post_has_new_reply(create(:user).id, create(:reply, with_icon: true).id).deliver!
       expect(ActionMailer::Base.deliveries.count).to eq(1)
     end
 
@@ -19,11 +19,6 @@ RSpec.describe UserMailer, type: :mailer do
       ResqueSpec.perform_next(UserMailer.queue)
       expect(UserMailer).to have_queue_size_of(0)
       expect(ActionMailer::Base.deliveries.count).to eq(0)
-    end
-
-    it "renders the body" do
-      mail = UserMailer.post_has_new_reply(create(:user).id, create(:reply, with_icon: true).id)
-      expect(mail.body.encoded).to match("Hi")
     end
   end
 
