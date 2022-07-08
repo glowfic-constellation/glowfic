@@ -20,9 +20,9 @@ RSpec.describe UserMailer, type: :mailer do
       expect(UserMailer).to have_queue_size_of(0)
       expect(ActionMailer::Base.deliveries.count).to eq(0)
     end
-    
+
     it "renders the body" do
-      mail = UserMailer.post_has_new_reply(create(:user).id, create(:reply).id)
+      mail = UserMailer.post_has_new_reply(create(:user).id, create(:reply, with_icon: true).id)
       expect(mail.body.encoded).to match("Hi")
     end
   end
