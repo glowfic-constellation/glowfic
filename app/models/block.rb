@@ -25,7 +25,7 @@ class Block < ApplicationRecord
     all: 2,
   }, _prefix: true
 
-  CACHE_VERSION = 5
+  CACHE_VERSION = 6
 
   def editable_by?(user)
     return false unless user

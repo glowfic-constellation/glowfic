@@ -6,7 +6,7 @@ class PostViewer < ApplicationRecord
 
   after_commit :invalidate_cache
 
-  CACHE_VERSION = 1
+  CACHE_VERSION = 2
 
   def self.cache_string_for(user_id)
     "#{Rails.env}.#{CACHE_VERSION}.visible_posts.#{user_id}"
