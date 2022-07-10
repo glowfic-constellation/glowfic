@@ -365,8 +365,6 @@ GEM
       sprockets (> 3.0)
       sprockets-rails
       tilt
-    scout_apm (5.2.0)
-      parser
     seed_dump (3.3.1)
       activerecord (>= 4)
       activesupport (>= 4)
@@ -495,7 +493,6 @@ DEPENDENCIES
   rubocop-rspec (~> 2.6.0)
   sanitize
   sassc-rails
-  scout_apm
   seed_dump (~> 3.2)
   select2-rails
   selenium-webdriver
