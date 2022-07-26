@@ -287,10 +287,10 @@ function setupTinyMCE() {
     tinyMCE.init({
       selector: selector,
       menubar: false,
-      toolbar: ["bold italic underline strikethrough forecolor | link image | blockquote hr bullist numlist | undo redo"],
+      toolbar: ["bold italic underline strikethrough | link image | blockquote hr bullist numlist | undo redo"],
       branding: false,
       plugins: "wordcount,image,hr,link,autoresize,paste",
-      paste_as_text: false,
+      paste_as_text: true,
       custom_undo_redo_levels: 10,
       content_css: gon.tinymce_css_path,
       statusbar: true,
