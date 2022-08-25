@@ -434,8 +434,8 @@ RSpec/DescribedClass:
 
 RSpec/DescribeMethod:
   Exclude:
-    - 'spec/controllers/posts_controller/*'
-    - 'spec/controllers/replies_controller/*'
+    - 'spec/controllers/posts/*'
+    - 'spec/controllers/replies/*'
 
 RSpec/ExampleLength:
   Enabled: false
@@ -451,8 +451,8 @@ RSpec/ExpectChange:
 
 RSpec/FilePath:
   Exclude:
-    - 'spec/controllers/posts_controller/*'
-    - 'spec/controllers/replies_controller/*'
+    - 'spec/controllers/posts/*'
+    - 'spec/controllers/replies/*'
 
 RSpec/HookArgument:
   EnforcedStyle: each
