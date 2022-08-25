@@ -17,7 +17,7 @@ class Message < ApplicationRecord
   scope :ordered_by_thread, -> { order(thread_id: :asc, id: :desc) }
   scope :unread, -> { where(unread: true) }
 
-  CACHE_VERSION = 1
+  CACHE_VERSION = 2
 
   def visible_to?(user)
     user_ids.include?(user.id)

@@ -235,6 +235,7 @@ class RepliesController < WritableController
     end
 
     new_reply = Reply.new(audit.audited_changes)
+    new_reply.created_at = Audited::Audit.order(id: :asc).find_by(action: 'create', auditable_id: params[:id]).created_at
     unless new_reply.editable_by?(current_user)
       flash[:error] = "You do not have permission to modify this post."
       redirect_to post_path(new_reply.post) and return
@@ -293,7 +294,7 @@ class RepliesController < WritableController
     @written = written
     @post = @written.post
     @written.user = current_user unless @written.user
-    @audits = { @written.id => @written.audits.count } if @written.id.present?
+    @audits = @written.id.present? ? { @written.id => @written.audits.count } : {}
 
     @page_title = @post.subject
 

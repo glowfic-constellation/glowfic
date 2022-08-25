@@ -6,7 +6,7 @@ class NewsView < ApplicationRecord
 
   after_commit :invalidate_caches
 
-  CACHE_VERSION = 1
+  CACHE_VERSION = 2
 
   def self.cache_string_for(user_id)
     "#{Rails.env}.#{CACHE_VERSION}.unread_news_count.#{user_id}"
