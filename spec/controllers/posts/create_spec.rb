@@ -1,4 +1,4 @@
-RSpec.describe PostsController, 'POST create' do
+RSpec.describe PostsController, 'POST create', type: :controller do
   it "requires login" do
     post :create
     expect(response).to redirect_to(root_url)
