@@ -44,6 +44,7 @@ require 'rails_helper'
 require 'support/spec_test_helper'
 require 'support/spec_feature_helper'
 require 'support/api_test_helper'
+require 'support/posts_controller_shared'
 
 require 'webdrivers'
 require 'selenium/webdriver'

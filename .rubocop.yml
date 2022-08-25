@@ -432,6 +432,11 @@ RSpec/ContextWording:
 RSpec/DescribedClass:
   EnforcedStyle: explicit
 
+RSpec/DescribeMethod:
+  Exclude:
+    - 'spec/controllers/posts/*'
+    - 'spec/controllers/replies/*'
+
 RSpec/ExampleLength:
   Enabled: false
 
@@ -443,6 +448,11 @@ RSpec/ExcessiveDocstringSpacing: # new in 2.5
 
 RSpec/ExpectChange:
   EnforcedStyle: block
+
+RSpec/FilePath:
+  Exclude:
+    - 'spec/controllers/posts/*'
+    - 'spec/controllers/replies/*'
 
 RSpec/HookArgument:
   EnforcedStyle: each
