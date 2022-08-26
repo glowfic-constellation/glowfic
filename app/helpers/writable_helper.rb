@@ -2,7 +2,7 @@ module WritableHelper
   def unread_warning
     return unless @replies.present?
     return if @replies.total_pages == page
-    'You are not on the latest page of the thread ' + \
+    'You are not on the latest page of the post ' + \
     tag.a('(View unread)', href: unread_path(@post), class: 'unread-warning') + ' ' + \
     tag.a('(New tab)', href: unread_path(@post), class: 'unread-warning', target: '_blank')
   end

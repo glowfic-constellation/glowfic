@@ -12,7 +12,7 @@ class PostsController < WritableController
 
   def index
     @posts = posts_from_relation(Post.ordered, show_blocked: !!params[:show_blocked])
-    @page_title = 'Recent Threads'
+    @page_title = 'Recent Posts'
   end
 
   def owed
@@ -66,7 +66,7 @@ class PostsController < WritableController
     @posts = posts_from_relation(@posts.ordered, with_unread: true, show_blocked: !!params[:show_blocked])
 
     @hide_quicklinks = true
-    @page_title = @started ? 'Opened Threads' : 'Unread Threads'
+    @page_title = @started ? 'Opened Posts' : 'Unread Posts'
     use_javascript('posts/unread')
   end
 
@@ -310,7 +310,7 @@ class PostsController < WritableController
   def warnings
     if logged_in?
       @post.hide_warnings_for(current_user)
-      flash[:success] = "Content warnings have been hidden for this thread. Proceed at your own risk. "
+      flash[:success] = "Content warnings have been hidden for this post. Proceed at your own risk. "
       flash[:success] += "Please be aware that this will reset if new warnings are added later."
     else
       session[:ignore_warnings] = true

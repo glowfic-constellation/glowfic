@@ -33,7 +33,7 @@ class NotifyFollowersOfNewPostJob < ApplicationJob
     users = filter_users(post, Favorite.where(favorite: new_user).pluck(:user_id))
     return if users.empty?
 
-    subject = "#{new_user.username} has joined a new thread"
+    subject = "#{new_user.username} has joined a new post"
     message = "#{new_user.username} has just joined the post entitled #{post.subject} with "
     message += post.joined_authors.where.not(id: new_user.id).pluck(:username).join(', ')
     message += ". #{ScrapePostJob.view_post(post.id)}"

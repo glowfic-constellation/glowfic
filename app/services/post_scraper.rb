@@ -125,7 +125,7 @@ class PostScraper < Object
 
   def import_post_from_doc(doc)
     subject = @subject || doc.at_css('.entry .entry-title').text.strip
-    logger.info "Importing thread '#{subject}'"
+    logger.info "Importing post '#{subject}'"
 
     @post = Post.new
     @post.board_id = @board_id
@@ -137,7 +137,7 @@ class PostScraper < Object
     # detect already imported
     # skip if it's a threaded import, unless a subject was given manually
     if (@subject || !@threaded_import) && (subj_post = Post.find_by(subject: @post.subject, board_id: @board_id))
-      raise AlreadyImportedError.new("This thread has already been imported", subj_post.id)
+      raise AlreadyImportedError.new("This post has already been imported", subj_post.id)
     end
 
     scraper = ReplyScraper.new(@post, console: @console_import)

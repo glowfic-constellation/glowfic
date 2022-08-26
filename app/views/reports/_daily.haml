@@ -28,7 +28,7 @@
     - if @posts.present?
       %tr
         %th.subber.width-15
-        %th.subber= link_to 'Thread', url_for(day: params[:day], sort: 'subject')
+        %th.subber= link_to 'Post', url_for(day: params[:day], sort: 'subject')
         %th.subber= link_to 'Continuity', url_for(day: params[:day], sort: 'continuity')
         %th.subber Authors
         %th.subber.width-70 Replies
@@ -42,11 +42,11 @@
           - klass << 'post-ignored' if ignored?(post)
           %td.vtop.post-completed{class: klass.dup.push(post.complete? ? 'post-complete' : 'post-incomplete')}
             - if post.complete?
-              = image_tag "icons/book.png", class: 'vmid', title: "Thread Complete", alt: 'Complete'
+              = image_tag "icons/book.png", class: 'vmid', title: "Post Complete", alt: 'Complete'
             - elsif post.on_hiatus?
-              = image_tag "icons/hourglass.png", class: 'vmid', title: "Thread On Hiatus", alt: 'Hiatused'
+              = image_tag "icons/hourglass.png", class: 'vmid', title: "Post On Hiatus", alt: 'Hiatused'
             - elsif post.abandoned?
-              = image_tag "icons/book_grey.png", class: 'vmid', title: "Thread Abandoned", alt: 'Abandoned'
+              = image_tag "icons/book_grey.png", class: 'vmid', title: "Post Abandoned", alt: 'Abandoned'
             - if !current_user.try(:hide_warnings) && post.has_content_warnings?
               = image_tag "icons/exclamation.png", class: 'vmid', title: "Content Warning: " + post.content_warnings.pluck(:name).join(', '), alt: 'Has Warnings'
             - if post.created_at.beginning_of_day == @day.beginning_of_day
