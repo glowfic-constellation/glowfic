@@ -1,4 +1,21 @@
 RSpec.describe PostsController, 'POST create' do
+  let(:user) { create(:user) }
+  let(:coauthor) { create(:user) }
+
+  let(:board) { create(:board) }
+
+  let(:settings) { create_list(:setting, 2) }
+  let(:warnings) { create_list(:content_warning, 2) }
+  let(:labels) { create_list(:label, 2) }
+  let(:setting_ids) { [settings[0].id, "_ #{settings[1].name}", '_other'] }
+  let(:warning_ids) { [warnings[0].id, "_#{warnings[1].name}", '_other'] }
+  let(:label_ids) { [labels[0].id, "_#{labels[1].name}", '_other'] }
+
+  let(:templateless_character) { create(:character, user: user) }
+  let(:templated_character) { create(:template_character, user: user) }
+  let(:character_alias) { create(:alias, character: templateless_character) }
+  let(:icon) { create(:icon, user: user) }
+
   it "requires login" do
     post :create
     expect(response).to redirect_to(root_url)
@@ -13,6 +30,11 @@ RSpec.describe PostsController, 'POST create' do
   end
 
   context "scrape" do
+    let(:user) { create(:importing_user) }
+    let(:url) { 'http://wild-pegasus-appeared.dreamwidth.org/403.html?style=site&view=flat' }
+
+    before(:each) { clear_enqueued_jobs }
+
     include ActiveJob::TestHelper
     it "requires valid user" do
       user = create(:user)
@@ -23,7 +45,6 @@ RSpec.describe PostsController, 'POST create' do
     end
 
     it "requires valid dreamwidth url" do
-      user = create(:importing_user)
       login_as(user)
       post :create, params: { button_import: true, dreamwidth_url: 'http://www.google.com' }
       expect(response).to render_template(:new)
@@ -31,10 +52,7 @@ RSpec.describe PostsController, 'POST create' do
     end
 
     it "requires extant usernames" do
-      clear_enqueued_jobs
-      user = create(:importing_user)
       login_as(user)
-      url = 'http://wild-pegasus-appeared.dreamwidth.org/403.html?style=site&view=flat'
       stub_fixture(url, 'scrape_no_replies')
       post :create, params: { button_import: true, dreamwidth_url: url }
       expect(response).to render_template(:new)
@@ -44,11 +62,8 @@ RSpec.describe PostsController, 'POST create' do
     end
 
     it "scrapes" do
-      clear_enqueued_jobs
-      user = create(:importing_user)
       login_as(user)
       create(:character, user: user, screenname: 'wild-pegasus-appeared')
-      url = 'http://wild-pegasus-appeared.dreamwidth.org/403.html?style=site&view=flat'
       stub_fixture(url, 'scrape_no_replies')
       post :create, params: { button_import: true, dreamwidth_url: url }
       expect(response).to redirect_to(posts_url)
@@ -58,33 +73,24 @@ RSpec.describe PostsController, 'POST create' do
   end
 
   context "preview" do
+    before(:each) { login_as(user) }
+
     it "sets expected variables" do
-      user = create(:user)
-      login_as(user)
-      setting1 = create(:setting)
-      setting2 = create(:setting)
-      warning1 = create(:content_warning)
-      warning2 = create(:content_warning)
-      label1 = create(:label)
-      label2 = create(:label)
-      char1 = create(:character, user: user)
-      char2 = create(:template_character, user: user)
-      icon = create(:icon)
-      calias = create(:alias, character: char1)
-      coauthor = create(:user)
+      templated_character
       expect(controller).to receive(:editor_setup).and_call_original
       expect(controller).to receive(:setup_layout_gon).and_call_original
+
       post :create, params: {
         button_preview: true,
         post: {
           subject: 'test',
           content: 'orign',
-          character_id: char1.id,
+          character_id: templateless_character.id,
           icon_id: icon.id,
-          character_alias_id: calias.id,
-          setting_ids: [setting1.id, "_ #{setting2.name}", '_other'],
-          content_warning_ids: [warning1.id, "_#{warning2.name}", '_other'],
-          label_ids: [label1.id, "_#{label2.name}", '_other'],
+          character_alias_id: character_alias.id,
+          setting_ids: setting_ids,
+          content_warning_ids: warning_ids,
+          label_ids: label_ids,
           unjoined_author_ids: [user.id, coauthor.id],
         },
       }
@@ -92,9 +98,9 @@ RSpec.describe PostsController, 'POST create' do
       expect(assigns(:written)).to be_an_instance_of(Post)
       expect(assigns(:written)).to be_a_new_record
       expect(assigns(:written).user).to eq(user)
-      expect(assigns(:written).character).to eq(char1)
+      expect(assigns(:written).character).to eq(templateless_character)
       expect(assigns(:written).icon).to eq(icon)
-      expect(assigns(:written).character_alias).to eq(calias)
+      expect(assigns(:written).character_alias).to eq(character_alias)
       expect(assigns(:post)).to eq(assigns(:written))
       expect(assigns(:page_title)).to eq('Previewing: test')
       expect(assigns(:author_ids)).to match_array([user.id, coauthor.id])
@@ -103,9 +109,9 @@ RSpec.describe PostsController, 'POST create' do
       expect(assigns(:post).settings.size).to eq(0)
       expect(assigns(:post).content_warnings.size).to eq(0)
       expect(assigns(:post).labels.size).to eq(0)
-      expect(assigns(:settings).map(&:id_for_select)).to match_array([setting1.id, setting2.id, '_other'])
-      expect(assigns(:content_warnings).map(&:id_for_select)).to match_array([warning1.id, warning2.id, '_other'])
-      expect(assigns(:labels).map(&:id_for_select)).to match_array([label1.id, label2.id, '_other'])
+      expect(assigns(:settings).map(&:id_for_select)).to match_array(settings.map(&:id) + ['_other'])
+      expect(assigns(:content_warnings).map(&:id_for_select)).to match_array(warnings.map(&:id) + ['_other'])
+      expect(assigns(:labels).map(&:id_for_select)).to match_array(labels.map(&:id) + ['_other'])
       expect(Setting.count).to eq(2)
       expect(ContentWarning.count).to eq(2)
       expect(Label.count).to eq(2)
@@ -116,21 +122,17 @@ RSpec.describe PostsController, 'POST create' do
       expect(controller.gon.editor_user[:username]).to eq(user.username)
 
       # templates
+      templateless_pluck = [[templateless_character.id, templateless_character.name]]
       templates = assigns(:templates)
       expect(templates.length).to eq(3)
-      thread_chars = templates.first
-      expect(thread_chars.name).to eq('Thread characters')
-      expect(thread_chars.plucked_characters).to eq([[char1.id, char1.name]])
-      template_chars = templates[1]
-      expect(template_chars).to eq(char2.template)
-      templateless = templates.last
-      expect(templateless.name).to eq('Templateless')
-      expect(templateless.plucked_characters).to eq([[char1.id, char1.name]])
+      expect(templates[0].name).to eq('Thread characters')
+      expect(templates[0].plucked_characters).to eq(templateless_pluck)
+      expect(templates[1]).to eq(templated_character.template)
+      expect(templates[2].name).to eq('Templateless')
+      expect(templates[2].plucked_characters).to eq(templateless_pluck)
     end
 
     it "does not crash without arguments" do
-      user = create(:user)
-      login_as(user)
       post :create, params: { button_preview: true }
       expect(response).to render_template(:preview)
       expect(assigns(:written)).to be_an_instance_of(Post)
@@ -139,10 +141,6 @@ RSpec.describe PostsController, 'POST create' do
     end
 
     it "does not create authors or viewers" do
-      user = create(:user)
-      login_as(user)
-
-      coauthor = create(:user)
       board = create(:board, creator: user, authors_locked: true)
 
       expect {
@@ -165,6 +163,8 @@ RSpec.describe PostsController, 'POST create' do
   end
 
   context "make changes" do
+    before(:each) { login_as(user) }
+
     [Label, Setting, ContentWarning].each do |tag_class|
       it "creates new #{tag_class.table_name.humanize(capitalize: false)}" do
         # rubocop:disable Rails/SaveBang
@@ -172,12 +172,11 @@ RSpec.describe PostsController, 'POST create' do
         existing_name = create(snake_class.to_sym)
         existing_case = create(snake_class.to_sym)
         tags = ['_atag', '_atag', create(snake_class.to_sym).id, '', '_' + existing_name.name, '_' + existing_case.name.upcase]
-        login
         expect {
           post :create, params: {
             post: {
               subject: 'a',
-              board_id: create(:board).id,
+              board_id: board.id,
               snake_class.foreign_key.pluralize => tags,
             },
           }
@@ -189,15 +188,11 @@ RSpec.describe PostsController, 'POST create' do
     end
 
     context "authors" do
-      it "creates new post authors correctly" do
-        user = create(:user)
-        other_user = create(:user)
-        create(:user) # user should not be author
-        board_creator = create(:user) # user should not be author
-        board = create(:board, creator: board_creator)
-        login_as(user)
+      let(:time) { 5.minutes.ago }
 
-        time = 5.minutes.ago
+      before(:each) { create(:user) }
+
+      it "creates new post authors correctly" do
         Timecop.freeze(time) do
           expect {
             post :create, params: {
@@ -205,7 +200,7 @@ RSpec.describe PostsController, 'POST create' do
                 subject: 'a',
                 user_id: user.id,
                 board_id: board.id,
-                unjoined_author_ids: [other_user.id],
+                unjoined_author_ids: [coauthor.id],
                 private_note: 'there is a note!',
               },
             }
@@ -213,7 +208,7 @@ RSpec.describe PostsController, 'POST create' do
         end
 
         post = assigns(:post).reload
-        expect(post.tagging_authors).to match_array([user, other_user])
+        expect(post.tagging_authors).to match_array([user, coauthor])
 
         post_author = post.author_for(user)
         expect(post_author.can_owe).to eq(true)
@@ -221,20 +216,13 @@ RSpec.describe PostsController, 'POST create' do
         expect(post_author.joined_at).to be_the_same_time_as(time)
         expect(post_author.private_note).to eq('there is a note!')
 
-        other_post_author = post.author_for(other_user)
+        other_post_author = post.author_for(coauthor)
         expect(other_post_author.can_owe).to eq(true)
         expect(other_post_author.joined).to eq(false)
         expect(other_post_author.joined_at).to be_nil
       end
 
       it "handles post submitted with no authors" do
-        user = create(:user)
-        create(:user) # non-author
-        board_creator = create(:user)
-        board = create(:board, creator: board_creator)
-        login_as(user)
-
-        time = 5.minutes.ago
         Timecop.freeze(time) do
           expect {
             post :create, params: {
@@ -259,52 +247,44 @@ RSpec.describe PostsController, 'POST create' do
       end
 
       it "adds new post authors to board cameo" do
-        user = create(:user)
-        other_user = create(:user)
         third_user = create(:user)
-        create(:user) # separate user
-        board = create(:board, creator: user, writers: [other_user])
+        board = create(:board, creator: user, writers: [coauthor])
 
-        login_as(user)
         expect {
           post :create, params: {
             post: {
               subject: 'a',
               user_id: user.id,
               board_id: board.id,
-              unjoined_author_ids: [user.id, other_user.id, third_user.id],
+              unjoined_author_ids: [user.id, coauthor.id, third_user.id],
             },
           }
         }.to change { BoardAuthor.count }.by(1)
 
         post = assigns(:post).reload
-        expect(post.tagging_authors).to match_array([user, other_user, third_user])
+        expect(post.tagging_authors).to match_array([user, coauthor, third_user])
 
         board.reload
-        expect(board.writers).to match_array([user, other_user])
+        expect(board.writers).to match_array([user, coauthor])
         expect(board.cameos).to match_array([third_user])
       end
 
       it "does not add to cameos of open boards" do
-        user = create(:user)
-        other_user = create(:user)
-        board = create(:board)
         expect(board.cameos).to be_empty
 
-        login_as(user)
         expect {
           post :create, params: {
             post: {
               subject: 'a',
               user_id: user.id,
               board_id: board.id,
-              unjoined_author_ids: [user.id, other_user.id],
+              unjoined_author_ids: [user.id, coauthor.id],
             },
           }
         }.not_to change { BoardAuthor.count }
 
         post = assigns(:post).reload
-        expect(post.tagging_authors).to match_array([user, other_user])
+        expect(post.tagging_authors).to match_array([user, coauthor])
 
         board.reload
         expect(board.writers).to eq([board.creator])
@@ -312,42 +292,29 @@ RSpec.describe PostsController, 'POST create' do
       end
 
       it "handles new post authors already being in cameos" do
-        user = create(:user)
-        other_user = create(:user)
-        board = create(:board, creator: user, cameos: [other_user])
+        board = create(:board, creator: user, cameos: [coauthor])
 
-        login_as(user)
         post :create, params: {
           post: {
             subject: 'a',
             user_id: user.id,
             board_id: board.id,
-            unjoined_author_ids: [user.id, other_user.id],
+            unjoined_author_ids: [user.id, coauthor.id],
           },
         }
 
         expect(flash[:success]).to eq("Post created.")
         post = assigns(:post).reload
-        expect(post.tagging_authors).to match_array([user, other_user])
+        expect(post.tagging_authors).to match_array([user, coauthor])
 
         board.reload
         expect(board.creator).to eq(user)
-        expect(board.cameos).to match_array([other_user])
+        expect(board.cameos).to match_array([coauthor])
       end
     end
 
     it "handles invalid posts" do
-      user = create(:user)
-      login_as(user)
-      setting1 = create(:setting)
-      setting2 = create(:setting)
-      warning1 = create(:content_warning)
-      warning2 = create(:content_warning)
-      label1 = create(:label)
-      label2 = create(:label)
-      char1 = create(:character, user: user)
-      char2 = create(:template_character, user: user)
-      coauthor = create(:user)
+      templated_character
       expect(controller).to receive(:editor_setup).and_call_original
       expect(controller).to receive(:setup_layout_gon).and_call_original
 
@@ -356,10 +323,10 @@ RSpec.describe PostsController, 'POST create' do
         post: {
           subject: 'asubjct',
           content: 'acontnt',
-          setting_ids: [setting1.id, "_ #{setting2.name}", '_other'],
-          content_warning_ids: [warning1.id, "_#{warning2.name}", '_other'],
-          label_ids: [label1.id, "_#{label2.name}", '_other'],
-          character_id: char1.id,
+          setting_ids: setting_ids,
+          content_warning_ids: warning_ids,
+          label_ids: label_ids,
+          character_id: templateless_character.id,
           unjoined_author_ids: [user.id, coauthor.id],
         },
       }
@@ -378,24 +345,23 @@ RSpec.describe PostsController, 'POST create' do
       expect(controller.gon.editor_user[:username]).to eq(user.username)
 
       # templates
+      templateless_pluck = [[templateless_character.id, templateless_character.name]]
       templates = assigns(:templates)
       expect(templates.length).to eq(3)
-      thread_chars = templates.first
-      expect(thread_chars.name).to eq('Thread characters')
-      expect(thread_chars.plucked_characters).to eq([[char1.id, char1.name]])
-      template_chars = templates[1]
-      expect(template_chars).to eq(char2.template)
-      templateless = templates.last
-      expect(templateless.name).to eq('Templateless')
-      expect(templateless.plucked_characters).to eq([[char1.id, char1.name]])
+      expect(templates[0].name).to eq('Thread characters')
+      expect(templates[0].plucked_characters).to eq(templateless_pluck)
+      expect(templates[1]).to eq(templated_character.template)
+      expect(templates[2].name).to eq('Templateless')
+      expect(templates[2].plucked_characters).to eq(templateless_pluck)
 
       # tags
-      expect(assigns(:post).settings.size).to eq(3)
-      expect(assigns(:post).content_warnings.size).to eq(3)
-      expect(assigns(:post).labels.size).to eq(3)
-      expect(assigns(:post).settings.map(&:id_for_select)).to match_array([setting1.id, setting2.id, '_other'])
-      expect(assigns(:post).content_warnings.map(&:id_for_select)).to match_array([warning1.id, warning2.id, '_other'])
-      expect(assigns(:post).labels.map(&:id_for_select)).to match_array([label1.id, label2.id, '_other'])
+      post = assigns(:post)
+      expect(post.settings.size).to eq(3)
+      expect(post.content_warnings.size).to eq(3)
+      expect(post.labels.size).to eq(3)
+      expect(post.settings.map(&:id_for_select)).to match_array(settings.map(&:id) + ['_other'])
+      expect(post.content_warnings.map(&:id_for_select)).to match_array(warnings.map(&:id) + ['_other'])
+      expect(post.labels.map(&:id_for_select)).to match_array(labels.map(&:id) + ['_other'])
       expect(Setting.count).to eq(2)
       expect(ContentWarning.count).to eq(2)
       expect(Label.count).to eq(2)
@@ -403,21 +369,8 @@ RSpec.describe PostsController, 'POST create' do
     end
 
     it "creates a post" do
-      user = create(:user)
-      login_as(user)
-      board = create(:board)
-      section = create(:board_section, board: board)
-      char = create(:character, user: user)
-      icon = create(:icon, user: user)
-      calias = create(:alias, character: char)
       viewer = create(:user)
-      setting1 = create(:setting)
-      setting2 = create(:setting)
-      warning1 = create(:content_warning)
-      warning2 = create(:content_warning)
-      label1 = create(:label)
-      label2 = create(:label)
-      coauthor = create(:user)
+      section = create(:board_section, board: board)
 
       expect {
         post :create, params: {
@@ -427,14 +380,14 @@ RSpec.describe PostsController, 'POST create' do
             description: 'adesc',
             board_id: board.id,
             section_id: section.id,
-            character_id: char.id,
+            character_id: templateless_character.id,
             icon_id: icon.id,
-            character_alias_id: calias.id,
+            character_alias_id: character_alias.id,
             privacy: :access_list,
             viewer_ids: [viewer.id],
-            setting_ids: [setting1.id, "_ #{setting2.name}", '_other'],
-            content_warning_ids: [warning1.id, "_#{warning2.name}", '_other'],
-            label_ids: [label1.id, "_#{label2.name}", '_other'],
+            setting_ids: setting_ids,
+            content_warning_ids: warning_ids,
+            label_ids: label_ids,
             unjoined_author_ids: [coauthor.id],
           },
         }
@@ -451,9 +404,9 @@ RSpec.describe PostsController, 'POST create' do
       expect(post.description).to eq('adesc')
       expect(post.board).to eq(board)
       expect(post.section).to eq(section)
-      expect(post.character_id).to eq(char.id)
+      expect(post.character_id).to eq(templateless_character.id)
       expect(post.icon_id).to eq(icon.id)
-      expect(post.character_alias_id).to eq(calias.id)
+      expect(post.character_alias_id).to eq(character_alias.id)
       expect(post).to be_privacy_access_list
       expect(post.viewers).to match_array([viewer])
       expect(post.reload).to be_visible_to(viewer)
@@ -468,9 +421,9 @@ RSpec.describe PostsController, 'POST create' do
       expect(post.settings.size).to eq(3)
       expect(post.content_warnings.size).to eq(3)
       expect(post.labels.size).to eq(3)
-      expect(post.settings.map(&:id_for_select)).to match_array([setting1.id, setting2.id, Setting.last.id])
-      expect(post.content_warnings.map(&:id_for_select)).to match_array([warning1.id, warning2.id, ContentWarning.last.id])
-      expect(post.labels.map(&:id_for_select)).to match_array([label1.id, label2.id, Label.last.id])
+      expect(post.settings.map(&:id_for_select)).to match_array(settings.map(&:id) + [Setting.last.id])
+      expect(post.content_warnings.map(&:id_for_select)).to match_array(warnings.map(&:id) + [ContentWarning.last.id])
+      expect(post.labels.map(&:id_for_select)).to match_array(labels.map(&:id) + [Label.last.id])
       expect(Setting.count).to eq(3)
       expect(ContentWarning.count).to eq(3)
       expect(Label.count).to eq(3)
@@ -478,12 +431,10 @@ RSpec.describe PostsController, 'POST create' do
     end
 
     it "generates a flat post" do
-      user = create(:user)
-      login_as(user)
       post :create, params: {
         post: {
           subject: 'subject',
-          board_id: create(:board).id,
+          board_id: board.id,
           privacy: :registered,
           content: 'content',
         },
@@ -498,30 +449,32 @@ RSpec.describe PostsController, 'POST create' do
     let(:blocked) { create(:user) }
     let(:blocking) { create(:user) }
     let(:other_user) { create(:user) }
+    let(:blocking_key) { Block.cache_string_for(blocking.id, 'hidden') }
+    let(:blocker_key) { Block.cache_string_for(blocked.id, 'blocked') }
 
     before(:each) do
       create(:block, blocking_user: user, blocked_user: blocked, hide_me: :posts)
       create(:block, blocking_user: blocking, blocked_user: user, hide_them: :posts)
+      # make sure the caches are generated for both
+      blocking.hidden_posts
+      blocked.blocked_posts
     end
 
     it "regenerates blocked and hidden posts for poster" do
-      expect(blocking.hidden_posts).to be_empty
-      expect(blocked.blocked_posts).to be_empty
-
       login_as(user)
 
       post :create, params: {
         post: {
           subject: "subject",
           user_id: user.id,
-          board_id: create(:board).id,
+          board_id: board.id,
           authors_locked: true,
           unjoined_author_ids: [other_user.id],
         },
       }
 
-      expect(Rails.cache.exist?(Block.cache_string_for(blocking.id, 'hidden'))).to be(false)
-      expect(Rails.cache.exist?(Block.cache_string_for(blocked.id, 'blocked'))).to be(false)
+      expect(Rails.cache.exist?(blocking_key)).to be(false)
+      expect(Rails.cache.exist?(blocker_key)).to be(false)
 
       post = assigns(:post)
       expect(blocking.hidden_posts).to eq([post.id])
@@ -529,23 +482,20 @@ RSpec.describe PostsController, 'POST create' do
     end
 
     it "regenerates blocked and hidden posts for coauthor" do
-      expect(blocking.hidden_posts).to be_empty
-      expect(blocked.blocked_posts).to be_empty
-
       login_as(other_user)
 
       post :create, params: {
         post: {
           subject: "subject",
           user_id: other_user.id,
-          board_id: create(:board).id,
+          board_id: board.id,
           authors_locked: true,
           unjoined_author_ids: [user.id],
         },
       }
 
-      expect(Rails.cache.exist?(Block.cache_string_for(blocking.id, 'hidden'))).to be(false)
-      expect(Rails.cache.exist?(Block.cache_string_for(blocked.id, 'blocked'))).to be(false)
+      expect(Rails.cache.exist?(blocking_key)).to be(false)
+      expect(Rails.cache.exist?(blocker_key)).to be(false)
 
       post = assigns(:post)
       expect(blocking.hidden_posts).to eq([post.id])
