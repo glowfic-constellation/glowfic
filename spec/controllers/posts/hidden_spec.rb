@@ -1,4 +1,7 @@
 RSpec.describe PostsController, 'GET hidden' do
+  let(:user) { create(:user) }
+  let(:post) { create(:post) }
+
   it "requires login" do
     get :hidden
     expect(response).to redirect_to(root_url)
@@ -21,7 +24,6 @@ RSpec.describe PostsController, 'GET hidden' do
   end
 
   it "succeeds with board hidden" do
-    user = create(:user)
     board = create(:board)
     board.ignore(user)
     login_as(user)
@@ -32,8 +34,6 @@ RSpec.describe PostsController, 'GET hidden' do
   end
 
   it "succeeds with post hidden" do
-    user = create(:user)
-    post = create(:post)
     post.ignore(user)
     login_as(user)
     get :hidden
@@ -43,8 +43,6 @@ RSpec.describe PostsController, 'GET hidden' do
   end
 
   it "succeeds with both hidden" do
-    user = create(:user)
-    post = create(:post)
     post.ignore(user)
     post.board.ignore(user)
     login_as(user)
