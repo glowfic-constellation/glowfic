@@ -164,358 +164,333 @@ RSpec.describe PostsController, 'POST create' do
     end
   end
 
-  it "creates new labels" do
-    existing_name = create(:label)
-    existing_case = create(:label)
-    tags = ['_atag', '_atag', create(:label).id, '', '_' + existing_name.name, '_' + existing_case.name.upcase]
-    login
-    expect {
-      post :create, params: { post: { subject: 'a', board_id: create(:board).id, label_ids: tags } }
-    }.to change { Label.count }.by(1)
-    expect(Label.last.name).to eq('atag')
-    expect(assigns(:post).labels.count).to eq(4)
-  end
+  context "make changes" do
+    [Label, Setting, ContentWarning].each do |tag_class|
+      it "creates new #{tag_class.table_name.humanize(capitalize: false)}" do
+        # rubocop:disable Rails/SaveBang
+        snake_class = tag_class.name.underscore
+        existing_name = create(snake_class.to_sym)
+        existing_case = create(snake_class.to_sym)
+        tags = ['_atag', '_atag', create(snake_class.to_sym).id, '', '_' + existing_name.name, '_' + existing_case.name.upcase]
+        login
+        expect {
+          post :create, params: {
+            post: {
+              subject: 'a',
+              board_id: create(:board).id,
+              snake_class.foreign_key.pluralize => tags,
+            },
+          }
+        }.to change { tag_class.count }.by(1)
+        expect(tag_class.last.name).to eq('atag')
+        expect(assigns(:post).send(snake_class.pluralize.to_sym).count).to eq(4)
+        # rubocop:enable Rails/SaveBang
+      end
+    end
 
-  it "creates new settings" do
-    existing_name = create(:setting)
-    existing_case = create(:setting)
-    tags = [
-      '_atag',
-      '_atag',
-      create(:setting).id,
-      '',
-      '_' + existing_name.name,
-      '_' + existing_case.name.upcase,
-    ]
-    login
-    expect {
-      post :create, params: { post: { subject: 'a', board_id: create(:board).id, setting_ids: tags } }
-    }.to change { Setting.count }.by(1)
-    expect(Setting.last.name).to eq('atag')
-    expect(assigns(:post).settings.count).to eq(4)
-  end
+    context "authors" do
+      it "creates new post authors correctly" do
+        user = create(:user)
+        other_user = create(:user)
+        create(:user) # user should not be author
+        board_creator = create(:user) # user should not be author
+        board = create(:board, creator: board_creator)
+        login_as(user)
 
-  it "creates new content warnings" do
-    existing_name = create(:content_warning)
-    existing_case = create(:content_warning)
-    tags = [
-      '_atag',
-      '_atag',
-      create(:content_warning).id,
-      '',
-      '_' + existing_name.name,
-      '_' + existing_case.name.upcase,
-    ]
-    login
-    expect {
-      post :create, params: {
-        post: { subject: 'a', board_id: create(:board).id, content_warning_ids: tags },
-      }
-    }.to change { ContentWarning.count }.by(1)
-    expect(ContentWarning.last.name).to eq('atag')
-    expect(assigns(:post).content_warnings.count).to eq(4)
-  end
+        time = 5.minutes.ago
+        Timecop.freeze(time) do
+          expect {
+            post :create, params: {
+              post: {
+                subject: 'a',
+                user_id: user.id,
+                board_id: board.id,
+                unjoined_author_ids: [other_user.id],
+                private_note: 'there is a note!',
+              },
+            }
+          }.to change { Post::Author.count }.by(2)
+        end
 
-  it "creates new post authors correctly" do
-    user = create(:user)
-    other_user = create(:user)
-    create(:user) # user should not be author
-    board_creator = create(:user) # user should not be author
-    board = create(:board, creator: board_creator)
-    login_as(user)
+        post = assigns(:post).reload
+        expect(post.tagging_authors).to match_array([user, other_user])
 
-    time = 5.minutes.ago
-    Timecop.freeze(time) do
-      expect {
+        post_author = post.author_for(user)
+        expect(post_author.can_owe).to eq(true)
+        expect(post_author.joined).to eq(true)
+        expect(post_author.joined_at).to be_the_same_time_as(time)
+        expect(post_author.private_note).to eq('there is a note!')
+
+        other_post_author = post.author_for(other_user)
+        expect(other_post_author.can_owe).to eq(true)
+        expect(other_post_author.joined).to eq(false)
+        expect(other_post_author.joined_at).to be_nil
+      end
+
+      it "handles post submitted with no authors" do
+        user = create(:user)
+        create(:user) # non-author
+        board_creator = create(:user)
+        board = create(:board, creator: board_creator)
+        login_as(user)
+
+        time = 5.minutes.ago
+        Timecop.freeze(time) do
+          expect {
+            post :create, params: {
+              post: {
+                subject: 'a',
+                user_id: user.id,
+                board_id: board.id,
+                unjoined_author_ids: [''],
+              },
+            }
+          }.to change { Post::Author.count }.by(1)
+        end
+
+        post = assigns(:post).reload
+        expect(post.tagging_authors).to eq([post.user])
+        expect(post.authors).to match_array([user])
+
+        post_author = post.post_authors.first
+        expect(post_author.can_owe).to eq(true)
+        expect(post_author.joined).to eq(true)
+        expect(post_author.joined_at).to be_the_same_time_as(time)
+      end
+
+      it "adds new post authors to board cameo" do
+        user = create(:user)
+        other_user = create(:user)
+        third_user = create(:user)
+        create(:user) # separate user
+        board = create(:board, creator: user, writers: [other_user])
+
+        login_as(user)
+        expect {
+          post :create, params: {
+            post: {
+              subject: 'a',
+              user_id: user.id,
+              board_id: board.id,
+              unjoined_author_ids: [user.id, other_user.id, third_user.id],
+            },
+          }
+        }.to change { BoardAuthor.count }.by(1)
+
+        post = assigns(:post).reload
+        expect(post.tagging_authors).to match_array([user, other_user, third_user])
+
+        board.reload
+        expect(board.writers).to match_array([user, other_user])
+        expect(board.cameos).to match_array([third_user])
+      end
+
+      it "does not add to cameos of open boards" do
+        user = create(:user)
+        other_user = create(:user)
+        board = create(:board)
+        expect(board.cameos).to be_empty
+
+        login_as(user)
+        expect {
+          post :create, params: {
+            post: {
+              subject: 'a',
+              user_id: user.id,
+              board_id: board.id,
+              unjoined_author_ids: [user.id, other_user.id],
+            },
+          }
+        }.not_to change { BoardAuthor.count }
+
+        post = assigns(:post).reload
+        expect(post.tagging_authors).to match_array([user, other_user])
+
+        board.reload
+        expect(board.writers).to eq([board.creator])
+        expect(board.cameos).to be_empty
+      end
+
+      it "handles new post authors already being in cameos" do
+        user = create(:user)
+        other_user = create(:user)
+        board = create(:board, creator: user, cameos: [other_user])
+
+        login_as(user)
         post :create, params: {
           post: {
             subject: 'a',
             user_id: user.id,
             board_id: board.id,
-            unjoined_author_ids: [other_user.id],
-            private_note: 'there is a note!',
+            unjoined_author_ids: [user.id, other_user.id],
           },
         }
-      }.to change { Post::Author.count }.by(2)
+
+        expect(flash[:success]).to eq("Post created.")
+        post = assigns(:post).reload
+        expect(post.tagging_authors).to match_array([user, other_user])
+
+        board.reload
+        expect(board.creator).to eq(user)
+        expect(board.cameos).to match_array([other_user])
+      end
     end
 
-    post = assigns(:post).reload
-    expect(post.tagging_authors).to match_array([user, other_user])
+    it "handles invalid posts" do
+      user = create(:user)
+      login_as(user)
+      setting1 = create(:setting)
+      setting2 = create(:setting)
+      warning1 = create(:content_warning)
+      warning2 = create(:content_warning)
+      label1 = create(:label)
+      label2 = create(:label)
+      char1 = create(:character, user: user)
+      char2 = create(:template_character, user: user)
+      coauthor = create(:user)
+      expect(controller).to receive(:editor_setup).and_call_original
+      expect(controller).to receive(:setup_layout_gon).and_call_original
 
-    post_author = post.author_for(user)
-    expect(post_author.can_owe).to eq(true)
-    expect(post_author.joined).to eq(true)
-    expect(post_author.joined_at).to be_the_same_time_as(time)
-    expect(post_author.private_note).to eq('there is a note!')
-
-    other_post_author = post.author_for(other_user)
-    expect(other_post_author.can_owe).to eq(true)
-    expect(other_post_author.joined).to eq(false)
-    expect(other_post_author.joined_at).to be_nil
-  end
-
-  it "handles post submitted with no authors" do
-    user = create(:user)
-    create(:user) # non-author
-    board_creator = create(:user)
-    board = create(:board, creator: board_creator)
-    login_as(user)
-
-    time = 5.minutes.ago
-    Timecop.freeze(time) do
-      expect {
-        post :create, params: {
-          post: {
-            subject: 'a',
-            user_id: user.id,
-            board_id: board.id,
-            unjoined_author_ids: [''],
-          },
-        }
-      }.to change { Post::Author.count }.by(1)
-    end
-
-    post = assigns(:post).reload
-    expect(post.tagging_authors).to eq([post.user])
-    expect(post.authors).to match_array([user])
-
-    post_author = post.post_authors.first
-    expect(post_author.can_owe).to eq(true)
-    expect(post_author.joined).to eq(true)
-    expect(post_author.joined_at).to be_the_same_time_as(time)
-  end
-
-  it "adds new post authors to board cameo" do
-    user = create(:user)
-    other_user = create(:user)
-    third_user = create(:user)
-    create(:user) # separate user
-    board = create(:board, creator: user, writers: [other_user])
-
-    login_as(user)
-    expect {
-      post :create, params: {
-        post: {
-          subject: 'a',
-          user_id: user.id,
-          board_id: board.id,
-          unjoined_author_ids: [user.id, other_user.id, third_user.id],
-        },
-      }
-    }.to change { BoardAuthor.count }.by(1)
-
-    post = assigns(:post).reload
-    expect(post.tagging_authors).to match_array([user, other_user, third_user])
-
-    board.reload
-    expect(board.writers).to match_array([user, other_user])
-    expect(board.cameos).to match_array([third_user])
-  end
-
-  it "does not add to cameos of open boards" do
-    user = create(:user)
-    other_user = create(:user)
-    board = create(:board)
-    expect(board.cameos).to be_empty
-
-    login_as(user)
-    expect {
-      post :create, params: {
-        post: {
-          subject: 'a',
-          user_id: user.id,
-          board_id: board.id,
-          unjoined_author_ids: [user.id, other_user.id],
-        },
-      }
-    }.not_to change { BoardAuthor.count }
-
-    post = assigns(:post).reload
-    expect(post.tagging_authors).to match_array([user, other_user])
-
-    board.reload
-    expect(board.writers).to eq([board.creator])
-    expect(board.cameos).to be_empty
-  end
-
-  it "handles new post authors already being in cameos" do
-    user = create(:user)
-    other_user = create(:user)
-    board = create(:board, creator: user, cameos: [other_user])
-
-    login_as(user)
-    post :create, params: {
-      post: {
-        subject: 'a',
-        user_id: user.id,
-        board_id: board.id,
-        unjoined_author_ids: [user.id, other_user.id],
-      },
-    }
-
-    expect(flash[:success]).to eq("Post created.")
-    post = assigns(:post).reload
-    expect(post.tagging_authors).to match_array([user, other_user])
-
-    board.reload
-    expect(board.creator).to eq(user)
-    expect(board.cameos).to match_array([other_user])
-  end
-
-  it "handles invalid posts" do
-    user = create(:user)
-    login_as(user)
-    setting1 = create(:setting)
-    setting2 = create(:setting)
-    warning1 = create(:content_warning)
-    warning2 = create(:content_warning)
-    label1 = create(:label)
-    label2 = create(:label)
-    char1 = create(:character, user: user)
-    char2 = create(:template_character, user: user)
-    coauthor = create(:user)
-    expect(controller).to receive(:editor_setup).and_call_original
-    expect(controller).to receive(:setup_layout_gon).and_call_original
-
-    # valid post requires a board_id
-    post :create, params: {
-      post: {
-        subject: 'asubjct',
-        content: 'acontnt',
-        setting_ids: [setting1.id, "_ #{setting2.name}", '_other'],
-        content_warning_ids: [warning1.id, "_#{warning2.name}", '_other'],
-        label_ids: [label1.id, "_#{label2.name}", '_other'],
-        character_id: char1.id,
-        unjoined_author_ids: [user.id, coauthor.id],
-      },
-    }
-
-    expect(response).to render_template(:new)
-    expect(flash[:error][:message]).to eq("Post could not be created because of the following problems:")
-    expect(assigns(:post)).not_to be_persisted
-    expect(assigns(:post).user).to eq(user)
-    expect(assigns(:post).subject).to eq('asubjct')
-    expect(assigns(:post).content).to eq('acontnt')
-    expect(assigns(:page_title)).to eq('New Post')
-    expect(assigns(:author_ids)).to match_array([user.id, coauthor.id])
-
-    # editor_setup:
-    expect(assigns(:javascripts)).to include('posts/editor')
-    expect(controller.gon.editor_user[:username]).to eq(user.username)
-
-    # templates
-    templates = assigns(:templates)
-    expect(templates.length).to eq(3)
-    thread_chars = templates.first
-    expect(thread_chars.name).to eq('Thread characters')
-    expect(thread_chars.plucked_characters).to eq([[char1.id, char1.name]])
-    template_chars = templates[1]
-    expect(template_chars).to eq(char2.template)
-    templateless = templates.last
-    expect(templateless.name).to eq('Templateless')
-    expect(templateless.plucked_characters).to eq([[char1.id, char1.name]])
-
-    # tags
-    expect(assigns(:post).settings.size).to eq(3)
-    expect(assigns(:post).content_warnings.size).to eq(3)
-    expect(assigns(:post).labels.size).to eq(3)
-    expect(assigns(:post).settings.map(&:id_for_select)).to match_array([setting1.id, setting2.id, '_other'])
-    expect(assigns(:post).content_warnings.map(&:id_for_select)).to match_array([warning1.id, warning2.id, '_other'])
-    expect(assigns(:post).labels.map(&:id_for_select)).to match_array([label1.id, label2.id, '_other'])
-    expect(Setting.count).to eq(2)
-    expect(ContentWarning.count).to eq(2)
-    expect(Label.count).to eq(2)
-    expect(PostTag.count).to eq(0)
-  end
-
-  it "creates a post" do
-    user = create(:user)
-    login_as(user)
-    board = create(:board)
-    section = create(:board_section, board: board)
-    char = create(:character, user: user)
-    icon = create(:icon, user: user)
-    calias = create(:alias, character: char)
-    viewer = create(:user)
-    setting1 = create(:setting)
-    setting2 = create(:setting)
-    warning1 = create(:content_warning)
-    warning2 = create(:content_warning)
-    label1 = create(:label)
-    label2 = create(:label)
-    coauthor = create(:user)
-
-    expect {
+      # valid post requires a board_id
       post :create, params: {
         post: {
           subject: 'asubjct',
           content: 'acontnt',
-          description: 'adesc',
-          board_id: board.id,
-          section_id: section.id,
-          character_id: char.id,
-          icon_id: icon.id,
-          character_alias_id: calias.id,
-          privacy: :access_list,
-          viewer_ids: [viewer.id],
           setting_ids: [setting1.id, "_ #{setting2.name}", '_other'],
           content_warning_ids: [warning1.id, "_#{warning2.name}", '_other'],
           label_ids: [label1.id, "_#{label2.name}", '_other'],
-          unjoined_author_ids: [coauthor.id],
+          character_id: char1.id,
+          unjoined_author_ids: [user.id, coauthor.id],
         },
       }
-    }.to change { Post.count }.by(1)
-    expect(response).to redirect_to(post_path(assigns(:post)))
-    expect(flash[:success]).to eq("Post created.")
 
-    post = assigns(:post).reload
-    expect(post).to be_persisted
-    expect(post.user).to eq(user)
-    expect(post.last_user).to eq(user)
-    expect(post.subject).to eq('asubjct')
-    expect(post.content).to eq('acontnt')
-    expect(post.description).to eq('adesc')
-    expect(post.board).to eq(board)
-    expect(post.section).to eq(section)
-    expect(post.character_id).to eq(char.id)
-    expect(post.icon_id).to eq(icon.id)
-    expect(post.character_alias_id).to eq(calias.id)
-    expect(post).to be_privacy_access_list
-    expect(post.viewers).to match_array([viewer])
-    expect(post.reload).to be_visible_to(viewer)
-    expect(post.reload).not_to be_visible_to(create(:user))
+      expect(response).to render_template(:new)
+      expect(flash[:error][:message]).to eq("Post could not be created because of the following problems:")
+      expect(assigns(:post)).not_to be_persisted
+      expect(assigns(:post).user).to eq(user)
+      expect(assigns(:post).subject).to eq('asubjct')
+      expect(assigns(:post).content).to eq('acontnt')
+      expect(assigns(:page_title)).to eq('New Post')
+      expect(assigns(:author_ids)).to match_array([user.id, coauthor.id])
 
-    expect(post.authors).to match_array([user, coauthor])
-    expect(post.tagging_authors).to match_array([user, coauthor])
-    expect(post.unjoined_authors).to match_array([coauthor])
-    expect(post.joined_authors).to match_array([user])
+      # editor_setup:
+      expect(assigns(:javascripts)).to include('posts/editor')
+      expect(controller.gon.editor_user[:username]).to eq(user.username)
 
-    # tags
-    expect(post.settings.size).to eq(3)
-    expect(post.content_warnings.size).to eq(3)
-    expect(post.labels.size).to eq(3)
-    expect(post.settings.map(&:id_for_select)).to match_array([setting1.id, setting2.id, Setting.last.id])
-    expect(post.content_warnings.map(&:id_for_select)).to match_array([warning1.id, warning2.id, ContentWarning.last.id])
-    expect(post.labels.map(&:id_for_select)).to match_array([label1.id, label2.id, Label.last.id])
-    expect(Setting.count).to eq(3)
-    expect(ContentWarning.count).to eq(3)
-    expect(Label.count).to eq(3)
-    expect(PostTag.count).to eq(9)
-  end
+      # templates
+      templates = assigns(:templates)
+      expect(templates.length).to eq(3)
+      thread_chars = templates.first
+      expect(thread_chars.name).to eq('Thread characters')
+      expect(thread_chars.plucked_characters).to eq([[char1.id, char1.name]])
+      template_chars = templates[1]
+      expect(template_chars).to eq(char2.template)
+      templateless = templates.last
+      expect(templateless.name).to eq('Templateless')
+      expect(templateless.plucked_characters).to eq([[char1.id, char1.name]])
 
-  it "generates a flat post" do
-    user = create(:user)
-    login_as(user)
-    post :create, params: {
-      post: {
-        subject: 'subject',
-        board_id: create(:board).id,
-        privacy: :registered,
-        content: 'content',
-      },
-    }
-    post = assigns(:post)
-    expect(post.flat_post).not_to be_nil
+      # tags
+      expect(assigns(:post).settings.size).to eq(3)
+      expect(assigns(:post).content_warnings.size).to eq(3)
+      expect(assigns(:post).labels.size).to eq(3)
+      expect(assigns(:post).settings.map(&:id_for_select)).to match_array([setting1.id, setting2.id, '_other'])
+      expect(assigns(:post).content_warnings.map(&:id_for_select)).to match_array([warning1.id, warning2.id, '_other'])
+      expect(assigns(:post).labels.map(&:id_for_select)).to match_array([label1.id, label2.id, '_other'])
+      expect(Setting.count).to eq(2)
+      expect(ContentWarning.count).to eq(2)
+      expect(Label.count).to eq(2)
+      expect(PostTag.count).to eq(0)
+    end
+
+    it "creates a post" do
+      user = create(:user)
+      login_as(user)
+      board = create(:board)
+      section = create(:board_section, board: board)
+      char = create(:character, user: user)
+      icon = create(:icon, user: user)
+      calias = create(:alias, character: char)
+      viewer = create(:user)
+      setting1 = create(:setting)
+      setting2 = create(:setting)
+      warning1 = create(:content_warning)
+      warning2 = create(:content_warning)
+      label1 = create(:label)
+      label2 = create(:label)
+      coauthor = create(:user)
+
+      expect {
+        post :create, params: {
+          post: {
+            subject: 'asubjct',
+            content: 'acontnt',
+            description: 'adesc',
+            board_id: board.id,
+            section_id: section.id,
+            character_id: char.id,
+            icon_id: icon.id,
+            character_alias_id: calias.id,
+            privacy: :access_list,
+            viewer_ids: [viewer.id],
+            setting_ids: [setting1.id, "_ #{setting2.name}", '_other'],
+            content_warning_ids: [warning1.id, "_#{warning2.name}", '_other'],
+            label_ids: [label1.id, "_#{label2.name}", '_other'],
+            unjoined_author_ids: [coauthor.id],
+          },
+        }
+      }.to change { Post.count }.by(1)
+      expect(response).to redirect_to(post_path(assigns(:post)))
+      expect(flash[:success]).to eq("Post created.")
+
+      post = assigns(:post).reload
+      expect(post).to be_persisted
+      expect(post.user).to eq(user)
+      expect(post.last_user).to eq(user)
+      expect(post.subject).to eq('asubjct')
+      expect(post.content).to eq('acontnt')
+      expect(post.description).to eq('adesc')
+      expect(post.board).to eq(board)
+      expect(post.section).to eq(section)
+      expect(post.character_id).to eq(char.id)
+      expect(post.icon_id).to eq(icon.id)
+      expect(post.character_alias_id).to eq(calias.id)
+      expect(post).to be_privacy_access_list
+      expect(post.viewers).to match_array([viewer])
+      expect(post.reload).to be_visible_to(viewer)
+      expect(post.reload).not_to be_visible_to(create(:user))
+
+      expect(post.authors).to match_array([user, coauthor])
+      expect(post.tagging_authors).to match_array([user, coauthor])
+      expect(post.unjoined_authors).to match_array([coauthor])
+      expect(post.joined_authors).to match_array([user])
+
+      # tags
+      expect(post.settings.size).to eq(3)
+      expect(post.content_warnings.size).to eq(3)
+      expect(post.labels.size).to eq(3)
+      expect(post.settings.map(&:id_for_select)).to match_array([setting1.id, setting2.id, Setting.last.id])
+      expect(post.content_warnings.map(&:id_for_select)).to match_array([warning1.id, warning2.id, ContentWarning.last.id])
+      expect(post.labels.map(&:id_for_select)).to match_array([label1.id, label2.id, Label.last.id])
+      expect(Setting.count).to eq(3)
+      expect(ContentWarning.count).to eq(3)
+      expect(Label.count).to eq(3)
+      expect(PostTag.count).to eq(9)
+    end
+
+    it "generates a flat post" do
+      user = create(:user)
+      login_as(user)
+      post :create, params: {
+        post: {
+          subject: 'subject',
+          board_id: create(:board).id,
+          privacy: :registered,
+          content: 'content',
+        },
+      }
+      post = assigns(:post)
+      expect(post.flat_post).not_to be_nil
+    end
   end
 
   context "with blocks" do
