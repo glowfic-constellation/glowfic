@@ -103,13 +103,13 @@ class PostsController < WritableController
 
   def unhide
     if params[:unhide_boards].present?
-      board_ids = params[:unhide_boards].map(&:to_i).compact.uniq
+      board_ids = params[:unhide_boards].filter_map(&:to_i).uniq
       views_to_update = BoardView.where(user_id: current_user.id).where(board_id: board_ids)
       views_to_update.each { |view| view.update(ignored: false) }
     end
 
     if params[:unhide_posts].present?
-      post_ids = params[:unhide_posts].map(&:to_i).compact.uniq
+      post_ids = params[:unhide_posts].filter_map(&:to_i).uniq
       views_to_update = Post::View.where(user_id: current_user.id).where(post_id: post_ids)
       views_to_update.each { |view| view.update(ignored: false) }
     end

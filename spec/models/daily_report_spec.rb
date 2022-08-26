@@ -73,22 +73,21 @@ RSpec.describe DailyReport do
     end
 
     it "calculates today posts with replies timestamp correctly" do
-      old = Time.zone
-      Time.zone = "Eastern Time (US & Canada)"
-      now = Time.zone.now.end_of_day - 1.hour # ensure no issues running near midnight
-      post = nil
+      Time.use_zone("Eastern Time (US & Canada)") do
+        now = Time.zone.now.end_of_day - 1.hour # ensure no issues running near midnight
+        post = nil
 
-      Timecop.freeze(now) do
-        post = create(:post)
+        Timecop.freeze(now) do
+          post = create(:post)
+        end
+
+        Timecop.freeze(now + 10.minutes) do
+          create(:reply, post: post, user: post.user)
+        end
+
+        report = DailyReport.new(now)
+        expect(report.posts.first.first_updated_at).to be_the_same_time_as(now)
       end
-
-      Timecop.freeze(now + 10.minutes) do
-        create(:reply, post: post, user: post.user)
-      end
-
-      report = DailyReport.new(now)
-      expect(report.posts.first.first_updated_at).to be_the_same_time_as(now)
-      Time.zone = old
     end
 
     it "does not perform time zone fuckery" do
