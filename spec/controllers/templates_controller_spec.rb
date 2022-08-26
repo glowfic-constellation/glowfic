@@ -259,6 +259,7 @@ RSpec.describe TemplatesController do
       character = create(:character, user: template.user, template: template)
       login_as(template.user)
 
+      allow(Template).to receive(:find_by).and_call_original
       allow(Template).to receive(:find_by).with(id: template.id.to_s).and_return(template)
       allow(template).to receive(:destroy!).and_raise(ActiveRecord::RecordNotDestroyed, 'fake error')
       expect(template).to receive(:destroy!)

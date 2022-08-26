@@ -178,10 +178,14 @@ RSpec.describe AliasesController do
       calias = create(:alias)
       reply = create(:reply, user: calias.character.user, character: calias.character, character_alias: calias)
       login_as(calias.character.user)
+
+      allow(CharacterAlias).to receive(:find_by).and_call_original
       allow(CharacterAlias).to receive(:find_by).with(id: calias.id.to_s).and_return(calias)
       allow(calias).to receive(:destroy!).and_raise(ActiveRecord::RecordNotDestroyed, 'fake error')
       expect(calias).to receive(:destroy!)
+
       delete :destroy, params: { id: calias.id, character_id: calias.character.id }
+
       expect(response).to redirect_to(edit_character_path(calias.character))
       expect(flash[:error]).to eq({ message: "Alias could not be deleted.", array: [] })
       expect(reply.reload.character_alias).to eq(calias)

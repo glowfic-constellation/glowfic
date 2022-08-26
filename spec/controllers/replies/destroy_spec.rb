@@ -125,6 +125,7 @@ RSpec.describe RepliesController, 'DELETE destroy' do
     reply = create(:reply, user: post.user, post: post)
     login_as(post.user)
 
+    allow(Reply).to receive(:find_by).and_call_original
     allow(Reply).to receive(:find_by).with(id: reply.id.to_s).and_return(reply)
     allow(reply).to receive(:destroy!).and_raise(ActiveRecord::RecordNotDestroyed, 'fake error')
     expect(reply).to receive(:destroy!)

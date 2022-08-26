@@ -261,6 +261,7 @@ RSpec.describe NewsController do
       news = create(:news)
       login_as(create(:admin_user))
 
+      allow(News).to receive(:find_by).and_call_original
       allow(News).to receive(:find_by).with(id: news.id.to_s).and_return(news)
       allow(news).to receive(:destroy!).and_raise(ActiveRecord::RecordNotDestroyed, 'fake error')
       expect(news).to receive(:destroy!)

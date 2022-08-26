@@ -284,6 +284,8 @@ RSpec.describe BoardSectionsController do
       section = create(:board_section)
       post = create(:post, user: section.board.creator, board: section.board, section: section)
       login_as(section.board.creator)
+
+      allow(BoardSection).to receive(:find_by).and_call_original
       allow(BoardSection).to receive(:find_by).with(id: section.id.to_s).and_return(section)
       allow(section).to receive(:destroy!).and_raise(ActiveRecord::RecordNotDestroyed, 'fake error')
       expect(section).to receive(:destroy!)
