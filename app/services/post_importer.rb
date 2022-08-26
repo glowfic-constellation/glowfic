@@ -14,11 +14,9 @@ class PostImporter < Object
   def self.valid_dreamwidth_url?(url)
     # this is simply checking for a properly formatted Dreamwidth URL
     # errors when actually querying the URL are handled by ScrapePostJob
-    return false if url.blank?
-    return false unless url.include?('dreamwidth')
+    return false if url.blank? || url.exclude?('dreamwidth')
     parsed_url = URI.parse(url)
-    return false unless parsed_url.host
-    parsed_url.host.ends_with?('dreamwidth.org')
+    parsed_url.host&.ends_with?('dreamwidth.org')
   rescue URI::InvalidURIError
     false
   end
