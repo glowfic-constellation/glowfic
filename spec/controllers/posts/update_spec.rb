@@ -1,4 +1,39 @@
 RSpec.describe PostsController, 'PUT update' do
+  let(:user) { create(:user) }
+  let(:coauthor) { create(:user) }
+  let(:joined_user) { create(:user) }
+  let(:invited_user) { create(:user) }
+  let(:viewer) { create(:user) }
+  let(:admin) { create(:admin_user) }
+
+  let(:board) { create(:board) }
+  let(:post) { create(:post, board: board) }
+  let(:reply) { create(:reply, post: post, user: coauthor) }
+  let(:private_post) { create(:post, privacy: :private) }
+  let(:user_post) { create(:post, user: user, board: board) }
+
+  let(:setting) { create(:setting, name: 'setting') }
+  let(:removed_setting) { create(:setting) }
+  let(:duplicate_setting) { create(:setting, name: 'dupesetting') }
+  let(:warning) { create(:content_warning, name: 'warning') }
+  let(:removed_warning) { create(:content_warning) }
+  let(:duplicate_warning) { create(:content_warning, name: 'dupewarning') }
+  let(:label) { create(:label, name: 'label') }
+  let(:removed_label) { create(:label) }
+  let(:duplicate_label) { create(:label, name: 'dupelabel') }
+  let(:regular_tags) { [setting, warning, label] }
+  let(:duplicate_tags) { [duplicate_setting, duplicate_warning, duplicate_label] }
+  let(:removed_tags) { [removed_setting, removed_warning, removed_label] }
+
+  let(:setting_ids) { [setting.id, '_newsetting', '_dupesetting'] }
+  let(:warning_ids) { [warning.id, '_newwarning', '_dupewarning'] }
+  let(:label_ids) { [label.id, '_newlabel', '_dupelabel'] }
+
+  let(:templateless_character) { create(:character, user: user) }
+  let(:templated_character) { create(:template_character, user: user) }
+  let(:character_alias) { create(:alias, character: templateless_character) }
+  let(:icon) { create(:icon, user: user) }
+
   it "requires login" do
     put :update, params: { id: -1 }
     expect(response).to redirect_to(root_url)
@@ -17,29 +52,22 @@ RSpec.describe PostsController, 'PUT update' do
   end
 
   it "requires post be visible to user" do
-    post = create(:post, privacy: :private)
-    user = create(:user)
     login_as(user)
-    expect(post.visible_to?(user)).not_to eq(true)
 
-    put :update, params: { id: post.id }
+    put :update, params: { id: private_post.id }
     expect(response).to redirect_to(continuities_url)
     expect(flash[:error]).to eq("You do not have permission to view this post.")
   end
 
   it "requires notes from moderators" do
-    post = create(:post, privacy: :private)
-    login_as(create(:admin_user))
+    login_as(admin)
     put :update, params: { id: post.id }
     expect(response).to render_template(:edit)
     expect(flash[:error]).to eq('You must provide a reason for your moderator edit.')
   end
 
   it "does not require note from coauthors" do
-    post = create(:post, privacy: :access_list)
-    user = create(:user)
-    post.viewers << user
-    post.authors << user
+    post = create(:post, privacy: :access_list, authors: [user], viewers: [user])
     login_as(user)
     put :update, params: { id: post.id }
     expect(flash[:success]).not_to be_nil
@@ -48,8 +76,6 @@ RSpec.describe PostsController, 'PUT update' do
 
   it "stores note from moderators" do
     Post.auditing_enabled = true
-    post = create(:post, privacy: :private)
-    admin = create(:admin_user)
     login_as(admin)
     put :update, params: {
       id: post.id,
@@ -62,6 +88,10 @@ RSpec.describe PostsController, 'PUT update' do
   end
 
   context "mark unread" do
+    let(:unread_reply) { build(:reply, post: post) }
+
+    before(:each) { login_as(user) }
+
     # rubocop:disable RSpec/RepeatedExample
     it "requires valid at_id" do
       skip "TODO does not notify"
@@ -73,41 +103,27 @@ RSpec.describe PostsController, 'PUT update' do
     # rubocop:enable RSpec/RepeatedExample
 
     context "with at_id" do
-      it "works" do
-        post = create(:post)
-        unread_reply = build(:reply, post: post)
+      before(:each) do
         Timecop.freeze(post.created_at + 1.minute) do
           unread_reply.save!
           create(:reply, post: post)
         end
-        Timecop.freeze(post.created_at + 2.minutes) do
-          post.mark_read(post.user)
-        end
-        expect(post.last_read(post.user)).to be_the_same_time_as(post.created_at + 2.minutes)
-        login_as(post.user)
 
+        Timecop.freeze(post.created_at + 2.minutes) { post.mark_read(user) }
+      end
+
+      it "works" do
         put :update, params: { id: post.id, unread: true, at_id: unread_reply.id }
 
         expect(response).to redirect_to(unread_posts_url)
         expect(flash[:success]).to eq("Post has been marked as read until reply ##{unread_reply.id}.")
-        expect(post.reload.last_read(post.user)).to be_the_same_time_as((unread_reply.created_at - 1.second))
-        expect(post.reload.first_unread_for(post.user)).to eq(unread_reply)
+        expect(post.reload.last_read(user)).to be_the_same_time_as((unread_reply.created_at - 1.second))
+        expect(post.reload.first_unread_for(user)).to eq(unread_reply)
       end
 
       it "works when ignored" do
-        user = create(:user)
-        post = create(:post)
-        unread_reply = build(:reply, post: post)
-        Timecop.freeze(post.created_at + 1.minute) do
-          unread_reply.save!
-          create(:reply, post: post)
-        end
-        Timecop.freeze(post.created_at + 2.minutes) do
-          post.mark_read(user)
-          post.ignore(user)
-        end
+        Timecop.freeze(post.created_at + 2.minutes) { post.ignore(user) }
         expect(post.reload.first_unread_for(user)).to be_nil
-        login_as(user)
 
         put :update, params: { id: post.id, unread: true, at_id: unread_reply.id }
 
@@ -120,12 +136,10 @@ RSpec.describe PostsController, 'PUT update' do
     end
 
     context "without at_id" do
+      before(:each) { post.mark_read(user) }
+
       it "works" do
-        post = create(:post)
-        user = create(:user)
-        post.mark_read(user)
         expect(post.reload.send(:view_for, user)).not_to be_nil
-        login_as(user)
 
         put :update, params: { id: post.id, unread: true }
 
@@ -135,12 +149,8 @@ RSpec.describe PostsController, 'PUT update' do
       end
 
       it "works when ignored" do
-        post = create(:post)
-        user = create(:user)
-        post.mark_read(user)
         post.ignore(user)
         expect(post.reload.first_unread_for(user)).to be_nil
-        login_as(user)
 
         put :update, params: { id: post.id, unread: true }
 
@@ -152,9 +162,9 @@ RSpec.describe PostsController, 'PUT update' do
   end
 
   context "change status" do
+    before(:each) { login_as(user) }
+
     it "requires permission" do
-      post = create(:post)
-      login
       put :update, params: { id: post.id, status: 'complete' }
       expect(response).to redirect_to(post_url(post))
       expect(flash[:error]).to eq("You do not have permission to modify this post.")
@@ -162,41 +172,36 @@ RSpec.describe PostsController, 'PUT update' do
     end
 
     it "requires valid status" do
-      post = create(:post)
-      login_as(post.user)
-      put :update, params: { id: post.id, status: 'invalid' }
-      expect(response).to redirect_to(post_url(post))
+      put :update, params: { id: user_post.id, status: 'invalid' }
+      expect(response).to redirect_to(post_url(user_post))
       expect(flash[:error]).to eq("Invalid status selected.")
-      expect(post.reload).to be_active
+      expect(user_post.reload).to be_active
     end
 
     it "handles unexpected failure" do
-      post = create(:post, status: :active)
-      login_as(post.user)
-      post.update_columns(board_id: 0) # rubocop:disable Rails/SkipsModelValidations
-      expect(post.reload).not_to be_valid
-      put :update, params: { id: post.id, status: 'abandoned' }
-      expect(response).to redirect_to(post_url(post))
+      user_post.update_columns(board_id: 0) # rubocop:disable Rails/SkipsModelValidations
+      put :update, params: { id: user_post.id, status: 'abandoned' }
+      expect(response).to redirect_to(post_url(user_post))
       expect(flash[:error][:message]).to eq('Status could not be updated because of the following problems:')
-      expect(post.reload.status).not_to eq(:abandoned)
+      expect(user_post.reload.status).not_to eq(:abandoned)
     end
 
     it "marks read after completed" do
-      post = nil
+      post = build(:post, user: user)
+
       Timecop.freeze(1.day.ago) do
-        post = create(:post)
-        login_as(post.user)
-        post.mark_read(post.user)
+        post.save!
+        post.mark_read(user)
       end
+
       put :update, params: { id: post.id, status: 'complete' }
-      post = Post.find(post.id)
+
+      post.reload
       expect(post.last_read(post.user)).to be_the_same_time_as(post.tagged_at)
     end
 
     Post.statuses.each_key do |status|
       context "to #{status}" do
-        let(:post) { create(:post) }
-
         it "works for creator" do
           login_as(post.user)
           put :update, params: { id: post.id, status: status }
@@ -206,7 +211,6 @@ RSpec.describe PostsController, 'PUT update' do
         end
 
         it "works for coauthor" do
-          reply = create(:reply, post: post)
           login_as(reply.user)
           put :update, params: { id: post.id, status: status }
           expect(response).to redirect_to(post_url(post))
@@ -215,7 +219,7 @@ RSpec.describe PostsController, 'PUT update' do
         end
 
         it "works for admin" do
-          login_as(create(:admin_user))
+          login_as(admin)
           put :update, params: { id: post.id, status: status }
           expect(response).to redirect_to(post_url(post))
           expect(flash[:success]).to eq("Post has been marked #{status}.")
@@ -250,7 +254,7 @@ RSpec.describe PostsController, 'PUT update' do
           end
 
           it "works for admin" do
-            login_as(create(:admin_user))
+            login_as(admin)
             put :update, params: { id: post.id, status: status }
             expect(response).to redirect_to(post_url(post))
             expect(flash[:success]).to eq("Post has been marked #{status}.")
@@ -265,7 +269,6 @@ RSpec.describe PostsController, 'PUT update' do
   context "author lock" do
     context "locking" do
       let(:post) { create(:post, authors_locked: false) }
-      let(:reply) { create(:reply, post: post) }
 
       it "requires permission" do
         login
@@ -292,7 +295,7 @@ RSpec.describe PostsController, 'PUT update' do
       end
 
       it "works for admin" do
-        login_as(create(:admin_user))
+        login_as(admin)
         put :update, params: { id: post.id, authors_locked: 'true' }
         expect(response).to redirect_to(post_url(post))
         expect(flash[:success]).to eq("Post has been locked to current authors.")
@@ -311,7 +314,6 @@ RSpec.describe PostsController, 'PUT update' do
     end
 
     context "unlocking" do
-      let(:coauthor) { create(:user) }
       let(:post) { create(:post, authors_locked: true, unjoined_authors: [coauthor]) }
       let(:reply) { create(:reply, user: coauthor, post: post) }
 
@@ -340,7 +342,7 @@ RSpec.describe PostsController, 'PUT update' do
       end
 
       it "works for admin" do
-        login_as(create(:admin_user))
+        login_as(admin)
         put :update, params: { id: post.id, authors_locked: 'false' }
         expect(response).to redirect_to(post_url(post))
         expect(flash[:success]).to eq("Post has been unlocked from current authors.")
@@ -359,15 +361,16 @@ RSpec.describe PostsController, 'PUT update' do
   end
 
   context "mark hidden" do
-    it "marks hidden" do
-      post = create(:post)
-      reply = create(:reply, post: post)
-      user = create(:user)
-      post.mark_read(user, at_time: post.read_time_for([reply]))
-      time_read = post.reload.last_read(user)
+    let(:reply) { create(:reply, post: post) }
+    let(:time_read) { post.reload.last_read(user) }
 
+    before(:each) do
       login_as(user)
-      expect(post.ignored_by?(user)).not_to eq(true)
+      post.mark_read(user, at_time: post.read_time_for([reply]))
+    end
+
+    it "marks hidden" do
+      time_read
 
       put :update, params: { id: post.id, hidden: 'true' }
       expect(response).to redirect_to(post_url(post))
@@ -377,15 +380,8 @@ RSpec.describe PostsController, 'PUT update' do
     end
 
     it "marks unhidden" do
-      post = create(:post)
-      reply = create(:reply, post: post)
-      user = create(:user)
-      login_as(user)
-      post.mark_read(user, at_time: post.read_time_for([reply]))
-      time_read = post.reload.last_read(user)
-
+      time_read
       post.ignore(user)
-      expect(post.reload.ignored_by?(user)).to eq(true)
 
       put :update, params: { id: post.id, hidden: 'false' }
       expect(response).to redirect_to(post_url(post))
@@ -396,30 +392,23 @@ RSpec.describe PostsController, 'PUT update' do
   end
 
   context "preview" do
+    before(:each) { login_as(user) }
+
     it "handles tags appropriately in memory and storage" do
-      user = create(:user)
-      login_as(user)
+      post = create(:post,
+        user: user,
+        settings: [setting, removed_setting],
+        content_warnings: [warning, removed_warning],
+        labels: [label, removed_label],
+      )
+      duplicate_tags
 
-      setting = create(:setting)
-      rems = create(:setting)
-      dupes = create(:setting, name: 'dupesetting')
-      warning = create(:content_warning)
-      remw = create(:content_warning)
-      dupew = create(:content_warning, name: 'dupewarning')
-      label = create(:label)
-      reml = create(:label)
-      dupel = create(:label, name: 'dupelabel')
-
-      post = create(:post, user: user, settings: [setting, rems], content_warnings: [warning, remw], labels: [label, reml])
       expect(Setting.count).to eq(3)
       expect(ContentWarning.count).to eq(3)
       expect(Label.count).to eq(3)
       expect(PostTag.count).to eq(6)
 
       # for each type: keep one, remove one, create one, existing one
-      setting_ids = [setting.id, '_setting', '_dupesetting']
-      warning_ids = [warning.id, '_warning', '_dupewarning']
-      label_ids = [label.id, '_label', '_dupelabel']
       put :update, params: {
         id: post.id,
         button_preview: true,
@@ -435,53 +424,45 @@ RSpec.describe PostsController, 'PUT update' do
       expect(post.settings.size).to eq(2)
       expect(post.content_warnings.size).to eq(2)
       expect(post.labels.size).to eq(2)
-      expect(assigns(:settings).map(&:name)).to match_array([setting.name, 'setting', 'dupesetting'])
-      expect(assigns(:content_warnings).map(&:name)).to match_array([warning.name, 'warning', 'dupewarning'])
-      expect(assigns(:labels).map(&:name)).to match_array([label.name, 'label', 'dupelabel'])
+      expect(assigns(:settings).map(&:name)).to match_array([setting.name, 'newsetting', 'dupesetting'])
+      expect(assigns(:content_warnings).map(&:name)).to match_array([warning.name, 'newwarning', 'dupewarning'])
+      expect(assigns(:labels).map(&:name)).to match_array([label.name, 'newlabel', 'dupelabel'])
       expect(Setting.count).to eq(3)
       expect(ContentWarning.count).to eq(3)
       expect(Label.count).to eq(3)
       expect(PostTag.count).to eq(6)
-      expect(PostTag.where(post: post, tag: [setting, warning, label]).count).to eq(3)
-      expect(PostTag.where(post: post, tag: [dupes, dupew, dupel]).count).to eq(0)
-      expect(PostTag.where(post: post, tag: [reml, remw, rems]).count).to eq(3)
+      expect(PostTag.where(post: post, tag: regular_tags).count).to eq(3)
+      expect(PostTag.where(post: post, tag: duplicate_tags).count).to eq(0)
+      expect(PostTag.where(post: post, tag: removed_tags).count).to eq(3)
     end
 
     it "sets expected variables" do
       Post.auditing_enabled = true
-      user = create(:user)
-      login_as(user)
       post = create(:post, user: user, subject: 'old', content: 'example')
-      setting1 = create(:setting)
-      setting2 = create(:setting)
-      warning1 = create(:content_warning)
-      warning2 = create(:content_warning)
-      label1 = create(:label)
-      label2 = create(:label)
-      char1 = create(:character, user: user)
-      char2 = create(:template_character, user: user)
       icon = create(:icon, user: user)
-      calias = create(:alias, character: char1)
-      coauthor = create(:user)
-      viewer = create(:user)
+      duplicate_tags
+      templated_character
+
       expect(controller).to receive(:editor_setup).and_call_original
       expect(controller).to receive(:setup_layout_gon).and_call_original
+
       put :update, params: {
         id: post.id,
         button_preview: true,
         post: {
           subject: 'test',
           content: 'orign',
-          character_id: char1.id,
+          character_id: templateless_character.id,
           icon_id: icon.id,
-          character_alias_id: calias.id,
-          setting_ids: [setting1.id, "_ #{setting2.name}", '_other'],
-          content_warning_ids: [warning1.id, "_#{warning2.name}", '_other'],
-          label_ids: [label1.id, "_#{label2.name}", '_other'],
+          character_alias_id: character_alias.id,
+          setting_ids: setting_ids,
+          content_warning_ids: warning_ids,
+          label_ids: label_ids,
           unjoined_author_ids: [coauthor.id],
           viewer_ids: [viewer.id],
         },
       }
+
       expect(response).to render_template(:preview)
       expect(assigns(:written)).to be_an_instance_of(Post)
       expect(assigns(:written)).not_to be_a_new_record
@@ -489,9 +470,9 @@ RSpec.describe PostsController, 'PUT update' do
       expect(assigns(:post).user).to eq(user)
       expect(assigns(:post).subject).to eq('test')
       expect(assigns(:post).content).to eq('orign')
-      expect(assigns(:post).character).to eq(char1)
+      expect(assigns(:post).character).to eq(templateless_character)
       expect(assigns(:post).icon).to eq(icon)
-      expect(assigns(:post).character_alias).to eq(calias)
+      expect(assigns(:post).character_alias).to eq(character_alias)
       expect(assigns(:page_title)).to eq('Previewing: test')
       expect(assigns(:audits)).to eq({ post: 1 })
 
@@ -505,24 +486,22 @@ RSpec.describe PostsController, 'PUT update' do
       expect(assigns(:viewer_ids)).to eq([viewer.id.to_s])
 
       # templates
+      templateless_select = [[templateless_character.id, templateless_character.name]]
       templates = assigns(:templates)
       expect(templates.length).to eq(3)
-      thread_chars = templates.first
-      expect(thread_chars.name).to eq('Thread characters')
-      expect(thread_chars.plucked_characters).to eq([[char1.id, char1.name]])
-      template_chars = templates[1]
-      expect(template_chars).to eq(char2.template)
-      templateless = templates.last
-      expect(templateless.name).to eq('Templateless')
-      expect(templateless.plucked_characters).to eq([[char1.id, char1.name]])
+      expect(templates[0].name).to eq('Thread characters')
+      expect(templates[0].plucked_characters).to eq(templateless_select)
+      expect(templates[1]).to eq(templated_character.template)
+      expect(templates[2].name).to eq('Templateless')
+      expect(templates[2].plucked_characters).to eq(templateless_select)
 
       # tags
       expect(assigns(:post).settings.size).to eq(0)
       expect(assigns(:post).content_warnings.size).to eq(0)
       expect(assigns(:post).labels.size).to eq(0)
-      expect(assigns(:settings).map(&:id_for_select)).to match_array([setting1.id, setting2.id, '_other'])
-      expect(assigns(:content_warnings).map(&:id_for_select)).to match_array([warning1.id, warning2.id, '_other'])
-      expect(assigns(:labels).map(&:id_for_select)).to match_array([label1.id, label2.id, '_other'])
+      expect(assigns(:settings).map(&:id_for_select)).to match_array(settings_select)
+      expect(assigns(:content_warnings).map(&:id_for_select)).to match_array(warnings_select)
+      expect(assigns(:labels).map(&:id_for_select)).to match_array(labels_select)
       expect(Setting.count).to eq(2)
       expect(ContentWarning.count).to eq(2)
       expect(Label.count).to eq(2)
@@ -540,10 +519,7 @@ RSpec.describe PostsController, 'PUT update' do
     end
 
     it "does not crash without arguments" do
-      user = create(:user)
-      login_as(user)
-      post = create(:post, user: user)
-      put :update, params: { id: post.id, button_preview: true }
+      put :update, params: { id: user_post.id, button_preview: true }
       expect(response).to render_template(:preview)
       expect(assigns(:written).user).to eq(user)
     end
@@ -553,10 +529,6 @@ RSpec.describe PostsController, 'PUT update' do
     end
 
     it "does not create authors or viewers" do
-      user = create(:user)
-      login_as(user)
-
-      coauthor = create(:user)
       board = create(:board, creator: user, authors_locked: true)
       post = create(:post, user: user, board: board, authors_locked: true, privacy: :access_list)
 
@@ -579,31 +551,24 @@ RSpec.describe PostsController, 'PUT update' do
   end
 
   context "make changes" do
+    before(:each) { login_as(user) }
+
     context "with tag changes" do
       it "creates new tags if needed" do
-        user = create(:user)
-        login_as(user)
+        post = create(:post,
+          user: user,
+          settings: [setting, removed_setting],
+          content_warnings: [warning, removed_warning],
+          labels: [label, removed_label],
+        )
+        duplicate_tags
 
-        setting = create(:setting)
-        rems = create(:setting)
-        dupes = create(:setting, name: 'dupesetting')
-        warning = create(:content_warning)
-        remw = create(:content_warning)
-        dupew = create(:content_warning, name: 'dupewarning')
-        label = create(:label)
-        reml = create(:label)
-        dupel = create(:label, name: 'dupelabel')
-
-        post = create(:post, user: user, settings: [setting, rems], content_warnings: [warning, remw], labels: [label, reml])
         expect(Setting.count).to eq(3)
         expect(ContentWarning.count).to eq(3)
         expect(Label.count).to eq(3)
         expect(PostTag.count).to eq(6)
 
         # for each type: keep one, remove one, create one, existing one
-        setting_ids = [setting.id, '_setting', '_dupesetting']
-        warning_ids = [warning.id, '_warning', '_dupewarning']
-        label_ids = [label.id, '_label', '_dupelabel']
         put :update, params: {
           id: post.id,
           post: {
@@ -618,43 +583,33 @@ RSpec.describe PostsController, 'PUT update' do
         expect(post.settings.size).to eq(3)
         expect(post.content_warnings.size).to eq(3)
         expect(post.labels.size).to eq(3)
-        expect(post.settings.map(&:name)).to match_array([setting.name, 'setting', 'dupesetting'])
-        expect(post.content_warnings.map(&:name)).to match_array([warning.name, 'warning', 'dupewarning'])
-        expect(post.labels.map(&:name)).to match_array([label.name, 'label', 'dupelabel'])
+        expect(post.settings.map(&:name)).to match_array([setting.name, 'newsetting', 'dupesetting'])
+        expect(post.content_warnings.map(&:name)).to match_array([warning.name, 'newwarning', 'dupewarning'])
+        expect(post.labels.map(&:name)).to match_array([label.name, 'newlabel', 'dupelabel'])
+
         expect(Setting.count).to eq(4)
         expect(ContentWarning.count).to eq(4)
         expect(Label.count).to eq(4)
         expect(PostTag.count).to eq(9)
-        expect(PostTag.where(post: post, tag: [setting, warning, label]).count).to eq(3)
-        expect(PostTag.where(post: post, tag: [dupes, dupew, dupel]).count).to eq(3)
-        expect(PostTag.where(post: post, tag: [reml, remw, rems]).count).to eq(0)
+        expect(PostTag.where(post: post, tag: regular_tags).count).to eq(3)
+        expect(PostTag.where(post: post, tag: duplicate_tags).count).to eq(3)
+        expect(PostTag.where(post: post, tag: removed_tags).count).to eq(0)
       end
 
       it "uses extant tags if available" do
-        user = create(:user)
-        login_as(user)
-        post = create(:post, user: user)
-        setting_ids = ['_setting']
-        setting = create(:setting, name: 'setting')
-        warning_ids = ['_warning']
-        warning = create(:content_warning, name: 'warning')
-        label_ids = ['_label']
-        tag = create(:label, name: 'label')
+        regular_tags
         put :update, params: {
-          id: post.id,
-          post: { setting_ids: setting_ids, content_warning_ids: warning_ids, label_ids: label_ids },
+          id: user_post.id,
+          post: { setting_ids: ['_setting'], content_warning_ids: ['_warning'], label_ids: ['_label'] },
         }
-        expect(response).to redirect_to(post_url(post))
+        expect(response).to redirect_to(post_url(user_post))
         post = assigns(:post)
         expect(post.settings).to eq([setting])
         expect(post.content_warnings).to eq([warning])
-        expect(post.labels).to eq([tag])
+        expect(post.labels).to eq([label])
       end
 
       it "orders tags" do
-        user = create(:user)
-        login_as(user)
-        post = create(:post, user: user)
         setting2 = create(:setting)
         setting3 = create(:setting)
         setting1 = create(:setting)
@@ -665,14 +620,14 @@ RSpec.describe PostsController, 'PUT update' do
         tag1 = create(:label)
         tag2 = create(:label)
         put :update, params: {
-          id: post.id,
+          id: user_post.id,
           post: {
             setting_ids: [setting1, setting2, setting3].map(&:id),
             content_warning_ids: [warning1, warning2, warning3].map(&:id),
             label_ids: [tag1, tag2, tag3].map(&:id),
           },
         }
-        expect(response).to redirect_to(post_url(post))
+        expect(response).to redirect_to(post_url(user_post))
         post = assigns(:post)
         expect(post.settings).to eq([setting1, setting2, setting3])
         expect(post.content_warnings).to eq([warning1, warning2, warning3])
@@ -682,51 +637,41 @@ RSpec.describe PostsController, 'PUT update' do
 
     context "with author changes" do
       it "correctly updates when adding new authors" do
-        user = create(:user)
-        other_user = create(:user)
-        login_as(user)
-        post = create(:post, user: user)
+        user_post
 
-        time = 5.minutes.from_now
-        Timecop.freeze(time) do
+        Timecop.freeze(5.minutes.from_now) do
           expect {
             put :update, params: {
-              id: post.id,
+              id: user_post.id,
               post: {
-                unjoined_author_ids: [other_user.id],
+                unjoined_author_ids: [coauthor.id],
               },
             }
           }.to change { Post::Author.count }.by(1)
         end
 
-        expect(response).to redirect_to(post_url(post))
-        post.reload
-        expect(post.tagging_authors).to match_array([user, other_user])
+        expect(response).to redirect_to(post_url(user_post))
+        user_post.reload
+        expect(user_post.tagging_authors).to match_array([user, coauthor])
 
         # doesn't change joined time or invited status when inviting main user
-        main_author = post.author_for(user)
+        main_author = user_post.author_for(user)
         expect(main_author.can_owe).to eq(true)
         expect(main_author.joined).to eq(true)
         expect(main_author.joined_at).to be_the_same_time_as(post.created_at)
 
         # doesn't set joined time but does set invited status when inviting new user
-        new_author = post.author_for(other_user)
+        new_author = user_post.author_for(coauthor)
         expect(new_author.can_owe).to eq(true)
         expect(new_author.joined).to eq(false)
         expect(new_author.joined_at).to be_nil
       end
 
       it "correctly updates when removing authors" do
-        user = create(:user)
-        invited_user = create(:user)
-        joined_user = create(:user)
-
-        login_as(user)
-        time = 5.minutes.ago
-        post = reply = nil
-        Timecop.freeze(time) do
-          post = create(:post, user: user, unjoined_authors: [invited_user])
+        post, reply = Timecop.freeze(5.minutes.ago) do
+          post = create(:post, user: user, unjoined_authors: [joined_user, invited_user])
           reply = create(:reply, user: joined_user, post: post)
+          [post, reply]
         end
 
         post.reload
@@ -772,76 +717,57 @@ RSpec.describe PostsController, 'PUT update' do
       end
 
       it "updates board cameos if necessary" do
-        user = create(:user)
-        other_user = create(:user)
-        third_user = create(:user)
-        login_as(user)
-        board = create(:board, creator: user, writers: [other_user])
+        board = create(:board, creator: user, writers: [coauthor])
         post = create(:post, user: user, board: board)
+
         put :update, params: {
           id: post.id,
           post: {
-            unjoined_author_ids: [other_user.id, third_user.id],
+            unjoined_author_ids: [coauthor.id, invited_user.id],
           },
         }
+
         post.reload
         board.reload
-        expect(post.tagging_authors).to match_array([user, other_user, third_user])
-        expect(board.cameos).to match_array([third_user])
+        expect(post.tagging_authors).to match_array([user, coauthor, invited_user])
+        expect(board.cameos).to match_array([invited_user])
       end
 
       it "does not add to cameos of open boards" do
-        user = create(:user)
-        other_user = create(:user)
-        login_as(user)
-        board = create(:board)
-        expect(board.cameos).to be_empty
-        post = create(:post, user: user, board: board)
         put :update, params: {
-          id: post.id,
+          id: user_post.id,
           post: {
-            unjoined_author_ids: [other_user.id],
+            unjoined_author_ids: [coauthor.id],
           },
         }
-        post.reload
+        user_post.reload
         board.reload
-        expect(post.tagging_authors).to match_array([user, other_user])
+        expect(user_post.tagging_authors).to match_array([user, coauthor])
         expect(board.cameos).to be_empty
       end
     end
 
     it "requires valid update" do
-      setting = create(:setting)
-      rems = create(:setting)
-      dupes = create(:setting, name: 'dupesetting')
-      warning = create(:content_warning)
-      remw = create(:content_warning)
-      dupew = create(:content_warning, name: 'dupewarning')
-      label = create(:label)
-      reml = create(:label)
-      dupel = create(:label, name: 'dupelabel')
+      post = create(:post,
+        user: user,
+        settings: [setting, removed_setting],
+        content_warnings: [warning, removed_warning],
+        labels: [label, removed_label],
+      )
 
-      user = create(:user)
-      login_as(user)
+      duplicate_tags
+      templated_character
+      templateless_character
 
-      post = create(:post, user: user, settings: [setting, rems], content_warnings: [warning, remw], labels: [label, reml])
       expect(Setting.count).to eq(3)
       expect(ContentWarning.count).to eq(3)
       expect(Label.count).to eq(3)
       expect(PostTag.count).to eq(6)
 
-      char1 = create(:character, user: user)
-      char2 = create(:template_character, user: user)
-
-      coauthor = create(:user)
-
       expect(controller).to receive(:editor_setup).and_call_original
       expect(controller).to receive(:setup_layout_gon).and_call_original
 
       # for each type: keep one, remove one, create one, existing one
-      setting_ids = [setting.id, '_setting', '_dupesetting']
-      warning_ids = [warning.id, '_warning', '_dupewarning']
-      label_ids = [label.id, '_label', '_dupelabel']
       put :update, params: {
         id: post.id,
         post: {
@@ -865,54 +791,38 @@ RSpec.describe PostsController, 'PUT update' do
       # templates
       templates = assigns(:templates)
       expect(templates.length).to eq(2)
-      template_chars = templates.first
-      expect(template_chars).to eq(char2.template)
-      templateless = templates.last
-      expect(templateless.name).to eq('Templateless')
-      expect(templateless.plucked_characters).to eq([[char1.id, char1.name]])
+      expect(templates[0]).to eq(templated_character.template)
+      expect(templates[1].name).to eq('Templateless')
+      expect(templates[1].plucked_characters).to eq([[templateless_character.id, templateless_character.name]])
 
       # tags change only in memory when save fails
       post = assigns(:post)
       expect(post.settings.size).to eq(3)
       expect(post.content_warnings.size).to eq(3)
       expect(post.labels.size).to eq(3)
-      expect(post.settings.map(&:name)).to match_array([setting.name, 'setting', 'dupesetting'])
-      expect(post.content_warnings.map(&:name)).to match_array([warning.name, 'warning', 'dupewarning'])
-      expect(post.labels.map(&:name)).to match_array([label.name, 'label', 'dupelabel'])
+      expect(post.settings.map(&:name)).to match_array([setting.name, 'newsetting', 'dupesetting'])
+      expect(post.content_warnings.map(&:name)).to match_array([warning.name, 'newwarning', 'dupewarning'])
+      expect(post.labels.map(&:name)).to match_array([label.name, 'newlabel', 'dupelabel'])
       expect(Setting.count).to eq(3)
       expect(ContentWarning.count).to eq(3)
       expect(Label.count).to eq(3)
       expect(PostTag.count).to eq(6)
-      expect(PostTag.where(post: post, tag: [setting, warning, label]).count).to eq(3)
-      expect(PostTag.where(post: post, tag: [dupes, dupew, dupel]).count).to eq(0)
-      expect(PostTag.where(post: post, tag: [reml, remw, rems]).count).to eq(3)
+      expect(PostTag.where(post: post, tag: regular_tags).count).to eq(3)
+      expect(PostTag.where(post: post, tag: duplicate_tags).count).to eq(0)
+      expect(PostTag.where(post: post, tag: removed_tags).count).to eq(3)
     end
 
     it "works" do
-      user = create(:user)
-      removed_author = create(:user)
-      joined_author = create(:user)
-
-      post = create(:post, user: user, unjoined_authors: [removed_author])
-      create(:reply, user: joined_author, post: post)
+      post = create(:post, user: user, unjoined_authors: [invited_user])
+      create(:reply, user: joined_user, post: post)
 
       newcontent = post.content + 'new'
       newsubj = post.subject + 'new'
-      login_as(user)
-      board = create(:board)
       section = create(:board_section, board: board)
-      char = create(:character, user: user)
-      calias = create(:alias, character_id: char.id)
-      icon = create(:icon, user: user)
-      viewer = create(:user)
-      setting = create(:setting)
-      warning = create(:content_warning)
-      tag = create(:label)
-      coauthor = create(:user)
 
       post.reload
-      expect(post.tagging_authors).to match_array([user, removed_author, joined_author])
-      expect(post.joined_authors).to match_array([user, joined_author])
+      expect(post.tagging_authors).to match_array([user, invited_user, joined_user])
+      expect(post.joined_authors).to match_array([user, joined_user])
       expect(post.viewers).to be_empty
 
       put :update, params: {
@@ -923,14 +833,14 @@ RSpec.describe PostsController, 'PUT update' do
           description: 'desc',
           board_id: board.id,
           section_id: section.id,
-          character_id: char.id,
-          character_alias_id: calias.id,
+          character_id: templateless_character.id,
+          character_alias_id: character_alias.id,
           icon_id: icon.id,
           privacy: :access_list,
           viewer_ids: [viewer.id],
           setting_ids: [setting.id],
           content_warning_ids: [warning.id],
-          label_ids: [tag.id],
+          label_ids: [label.id],
           unjoined_author_ids: [coauthor.id],
         },
       }
@@ -943,25 +853,23 @@ RSpec.describe PostsController, 'PUT update' do
       expect(post.description).to eq('desc')
       expect(post.board_id).to eq(board.id)
       expect(post.section_id).to eq(section.id)
-      expect(post.character_id).to eq(char.id)
-      expect(post.character_alias_id).to eq(calias.id)
+      expect(post.character_id).to eq(templateless_character.id)
+      expect(post.character_alias_id).to eq(character_alias.id)
       expect(post.icon_id).to eq(icon.id)
       expect(post).to be_privacy_access_list
       expect(post.viewers).to match_array([viewer])
       expect(post.settings).to eq([setting])
       expect(post.content_warnings).to eq([warning])
-      expect(post.labels).to eq([tag])
+      expect(post.labels).to eq([label])
       expect(post.reload).to be_visible_to(viewer)
       expect(post.reload).not_to be_visible_to(create(:user))
-      expect(post.tagging_authors).to match_array([user, joined_author, coauthor])
-      expect(post.joined_authors).to match_array([user, joined_author])
-      expect(post.authors).to match_array([user, coauthor, joined_author])
+      expect(post.tagging_authors).to match_array([user, joined_user, coauthor])
+      expect(post.joined_authors).to match_array([user, joined_user])
+      expect(post.authors).to match_array([user, coauthor, joined_user])
     end
 
     it "does not allow coauthors to edit post text" do
       skip "Is not currently implemented on saving data"
-      user = create(:user)
-      coauthor = create(:user)
       login_as(coauthor)
       post = create(:post, user: user, authors: [user, coauthor], authors_locked: true)
       put :update, params: {
@@ -977,7 +885,6 @@ RSpec.describe PostsController, 'PUT update' do
 
   context "metadata" do
     it "allows coauthors" do
-      coauthor = create(:user)
       login_as(coauthor)
       post = create(:post, subject: "test subject")
       create(:reply, post: post, user: coauthor)
@@ -994,8 +901,6 @@ RSpec.describe PostsController, 'PUT update' do
     end
 
     it "allows invited coauthors before they reply" do
-      user = create(:user)
-      coauthor = create(:user)
       login_as(coauthor)
       post = create(:post, user: user, authors: [user, coauthor], authors_locked: true, subject: "test subject")
       put :update, params: {
@@ -1028,9 +933,7 @@ RSpec.describe PostsController, 'PUT update' do
 
   context "notes" do
     it "updates if there are no other changes" do
-      post = create(:post)
       login_as(post.user)
-      expect(post.author_for(post.user).private_note).to be_nil
       put :update, params: {
         id: post.id,
         post: {
@@ -1043,7 +946,6 @@ RSpec.describe PostsController, 'PUT update' do
     it "updates with other changes" do
       post = create(:post, content: 'old')
       login_as(post.user)
-      expect(post.author_for(post.user).private_note).to be_nil
       put :update, params: {
         id: post.id,
         post: {
@@ -1056,10 +958,7 @@ RSpec.describe PostsController, 'PUT update' do
     end
 
     it "updates with coauthor" do
-      post = create(:post)
-      reply = create(:reply, post: post)
       login_as(reply.user)
-      expect(post.author_for(reply.user).private_note).to be_nil
       put :update, params: {
         id: post.id,
         post: {
