@@ -259,62 +259,97 @@ RSpec.describe PostsController, 'PUT update' do
   end
 
   context "author lock" do
-    let(:post) { create(:post, authors_locked: false) }
+    context "locking" do
+      let(:post) { create(:post, authors_locked: false) }
+      let(:reply) { create(:reply, post: post) }
 
-    it "requires permission" do
-      login
-      put :update, params: { id: post.id, authors_locked: 'true' }
-      expect(response).to redirect_to(post_url(post))
-      expect(flash[:error]).to eq("You do not have permission to modify this post.")
-      expect(post.reload).not_to be_authors_locked
+      it "requires permission" do
+        login
+        put :update, params: { id: post.id, authors_locked: 'true' }
+        expect(response).to redirect_to(post_url(post))
+        expect(flash[:error]).to eq("You do not have permission to modify this post.")
+        expect(post.reload).not_to be_authors_locked
+      end
+
+      it "works for creator" do
+        login_as(post.user)
+        put :update, params: { id: post.id, authors_locked: 'true' }
+        expect(response).to redirect_to(post_url(post))
+        expect(flash[:success]).to eq("Post has been locked to current authors.")
+        expect(post.reload).to be_authors_locked
+      end
+
+      it "works for coauthor" do
+        login_as(reply.user)
+        put :update, params: { id: post.id, authors_locked: 'true' }
+        expect(response).to redirect_to(post_url(post))
+        expect(flash[:success]).to eq("Post has been locked to current authors.")
+        expect(post.reload).to be_authors_locked
+      end
+
+      it "works for admin" do
+        login_as(create(:admin_user))
+        put :update, params: { id: post.id, authors_locked: 'true' }
+        expect(response).to redirect_to(post_url(post))
+        expect(flash[:success]).to eq("Post has been locked to current authors.")
+        expect(post.reload).to be_authors_locked
+      end
+
+      it "handles unexpected failure" do
+        login_as(post.user)
+        post.update_columns(board_id: 0) # rubocop:disable Rails/SkipsModelValidations
+        expect(post.reload).not_to be_valid
+        put :update, params: { id: post.id, authors_locked: 'true' }
+        expect(response).to redirect_to(post_url(post))
+        expect(flash[:error][:message]).to eq('Post could not be updated because of the following problems:')
+        expect(post.reload).not_to be_authors_locked
+      end
     end
 
-    it "works for creator" do
-      login_as(post.user)
-      put :update, params: { id: post.id, authors_locked: 'true' }
-      expect(response).to redirect_to(post_url(post))
-      expect(flash[:success]).to eq("Post has been locked to current authors.")
-      expect(post.reload).to be_authors_locked
+    context "unlocking" do
+      let(:post) { create(:post, authors_locked: true, unjoined_authors: [coauthor]) }
+      let(:reply) { create(:reply, user: coauthor, post: post) }
 
-      put :update, params: { id: post.id, authors_locked: 'false' }
-      expect(flash[:success]).to eq("Post has been unlocked from current authors.")
-      expect(post.reload).not_to be_authors_locked
-    end
+      it "requires permission" do
+        login
+        put :update, params: { id: post.id, authors_locked: 'true' }
+        expect(response).to redirect_to(post_url(post))
+        expect(flash[:error]).to eq("You do not have permission to modify this post.")
+        expect(post.reload).to be_authors_locked
+      end
 
-    it "works for coauthor" do
-      reply = create(:reply, post: post)
-      login_as(reply.user)
-      put :update, params: { id: post.id, authors_locked: 'true' }
-      expect(response).to redirect_to(post_url(post))
-      expect(flash[:success]).to eq("Post has been locked to current authors.")
-      expect(post.reload).to be_authors_locked
+      it "works for creator" do
+        login_as(post.user)
+        put :update, params: { id: post.id, authors_locked: 'false' }
+        expect(response).to redirect_to(post_url(post))
+        expect(flash[:success]).to eq("Post has been unlocked from current authors.")
+        expect(post.reload).not_to be_authors_locked
+      end
 
-      put :update, params: { id: post.id, authors_locked: 'false' }
-      expect(flash[:success]).to eq("Post has been unlocked from current authors.")
-      expect(post.reload).not_to be_authors_locked
-    end
+      it "works for coauthor" do
+        login_as(reply.user)
+        put :update, params: { id: post.id, authors_locked: 'false' }
+        expect(response).to redirect_to(post_url(post))
+        expect(flash[:success]).to eq("Post has been unlocked from current authors.")
+        expect(post.reload).not_to be_authors_locked
+      end
 
-    it "works for admin" do
-      login_as(create(:admin_user))
-      put :update, params: { id: post.id, authors_locked: 'true' }
-      expect(response).to redirect_to(post_url(post))
-      expect(flash[:success]).to eq("Post has been locked to current authors.")
-      expect(post.reload).to be_authors_locked
+      it "works for admin" do
+        login_as(create(:admin_user))
+        put :update, params: { id: post.id, authors_locked: 'false' }
+        expect(response).to redirect_to(post_url(post))
+        expect(flash[:success]).to eq("Post has been unlocked from current authors.")
+        expect(post.reload).not_to be_authors_locked
+      end
 
-      put :update, params: { id: post.id, authors_locked: 'false' }
-      expect(flash[:success]).to eq("Post has been unlocked from current authors.")
-      expect(post.reload).not_to be_authors_locked
-    end
-
-    it "handles unexpected failure" do
-      post = create(:post)
-      login_as(post.user)
-      post.update_columns(board_id: 0) # rubocop:disable Rails/SkipsModelValidations
-      expect(post.reload).not_to be_valid
-      put :update, params: { id: post.id, authors_locked: 'true' }
-      expect(response).to redirect_to(post_url(post))
-      expect(flash[:error][:message]).to eq('Post could not be updated because of the following problems:')
-      expect(post.reload).not_to be_authors_locked
+      it "handles unexpected failure" do
+        login_as(post.user)
+        post.update_columns(board_id: 0) # rubocop:disable Rails/SkipsModelValidations
+        put :update, params: { id: post.id, authors_locked: 'false' }
+        expect(response).to redirect_to(post_url(post))
+        expect(flash[:error][:message]).to eq('Post could not be updated because of the following problems:')
+        expect(post.reload).not_to be_authors_locked
+      end
     end
   end
 
