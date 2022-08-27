@@ -72,78 +72,82 @@ RSpec.describe PostsController, 'PUT update' do
     end
     # rubocop:enable RSpec/RepeatedExample
 
-    it "works with at_id" do
-      post = create(:post)
-      unread_reply = build(:reply, post: post)
-      Timecop.freeze(post.created_at + 1.minute) do
-        unread_reply.save!
-        create(:reply, post: post)
-      end
-      Timecop.freeze(post.created_at + 2.minutes) do
-        post.mark_read(post.user)
-      end
-      expect(post.last_read(post.user)).to be_the_same_time_as(post.created_at + 2.minutes)
-      login_as(post.user)
+    context "with at_id" do
+      it "works" do
+        post = create(:post)
+        unread_reply = build(:reply, post: post)
+        Timecop.freeze(post.created_at + 1.minute) do
+          unread_reply.save!
+          create(:reply, post: post)
+        end
+        Timecop.freeze(post.created_at + 2.minutes) do
+          post.mark_read(post.user)
+        end
+        expect(post.last_read(post.user)).to be_the_same_time_as(post.created_at + 2.minutes)
+        login_as(post.user)
 
-      put :update, params: { id: post.id, unread: true, at_id: unread_reply.id }
+        put :update, params: { id: post.id, unread: true, at_id: unread_reply.id }
 
-      expect(response).to redirect_to(unread_posts_url)
-      expect(flash[:success]).to eq("Post has been marked as read until reply ##{unread_reply.id}.")
-      expect(post.reload.last_read(post.user)).to be_the_same_time_as((unread_reply.created_at - 1.second))
-      expect(post.reload.first_unread_for(post.user)).to eq(unread_reply)
+        expect(response).to redirect_to(unread_posts_url)
+        expect(flash[:success]).to eq("Post has been marked as read until reply ##{unread_reply.id}.")
+        expect(post.reload.last_read(post.user)).to be_the_same_time_as((unread_reply.created_at - 1.second))
+        expect(post.reload.first_unread_for(post.user)).to eq(unread_reply)
+      end
+
+      it "works when ignored" do
+        user = create(:user)
+        post = create(:post)
+        unread_reply = build(:reply, post: post)
+        Timecop.freeze(post.created_at + 1.minute) do
+          unread_reply.save!
+          create(:reply, post: post)
+        end
+        Timecop.freeze(post.created_at + 2.minutes) do
+          post.mark_read(user)
+          post.ignore(user)
+        end
+        expect(post.reload.first_unread_for(user)).to be_nil
+        login_as(user)
+
+        put :update, params: { id: post.id, unread: true, at_id: unread_reply.id }
+
+        expect(response).to redirect_to(unread_posts_url)
+        expect(flash[:success]).to eq("Post has been marked as read until reply ##{unread_reply.id}.")
+        expect(post.reload.last_read(user)).to be_the_same_time_as((unread_reply.created_at - 1.second))
+        expect(post.reload.first_unread_for(user)).to eq(unread_reply)
+        expect(post).to be_ignored_by(user)
+      end
     end
 
-    it "works without at_id" do
-      post = create(:post)
-      user = create(:user)
-      post.mark_read(user)
-      expect(post.reload.send(:view_for, user)).not_to be_nil
-      login_as(user)
+    context "without at_id" do
+      it "works" do
+        post = create(:post)
+        user = create(:user)
+        post.mark_read(user)
+        expect(post.reload.send(:view_for, user)).not_to be_nil
+        login_as(user)
 
-      put :update, params: { id: post.id, unread: true }
+        put :update, params: { id: post.id, unread: true }
 
-      expect(response).to redirect_to(unread_posts_url)
-      expect(flash[:success]).to eq("Post has been marked as unread")
-      expect(post.reload.first_unread_for(user)).to eq(post)
-    end
-
-    it "works when ignored with at_id" do
-      user = create(:user)
-      post = create(:post)
-      unread_reply = build(:reply, post: post)
-      Timecop.freeze(post.created_at + 1.minute) do
-        unread_reply.save!
-        create(:reply, post: post)
+        expect(response).to redirect_to(unread_posts_url)
+        expect(flash[:success]).to eq("Post has been marked as unread")
+        expect(post.reload.first_unread_for(user)).to eq(post)
       end
-      Timecop.freeze(post.created_at + 2.minutes) do
+
+      it "works when ignored" do
+        post = create(:post)
+        user = create(:user)
         post.mark_read(user)
         post.ignore(user)
+        expect(post.reload.first_unread_for(user)).to be_nil
+        login_as(user)
+
+        put :update, params: { id: post.id, unread: true }
+
+        expect(response).to redirect_to(unread_posts_url)
+        expect(flash[:success]).to eq("Post has been marked as unread")
+        expect(post.reload.first_unread_for(user)).to eq(post)
       end
-      expect(post.reload.first_unread_for(user)).to be_nil
-      login_as(user)
-
-      put :update, params: { id: post.id, unread: true, at_id: unread_reply.id }
-
-      expect(response).to redirect_to(unread_posts_url)
-      expect(flash[:success]).to eq("Post has been marked as read until reply ##{unread_reply.id}.")
-      expect(post.reload.last_read(user)).to be_the_same_time_as((unread_reply.created_at - 1.second))
-      expect(post.reload.first_unread_for(user)).to eq(unread_reply)
-      expect(post).to be_ignored_by(user)
-    end
-
-    it "works when ignored without at_id" do
-      post = create(:post)
-      user = create(:user)
-      post.mark_read(user)
-      post.ignore(user)
-      expect(post.reload.first_unread_for(user)).to be_nil
-      login_as(user)
-
-      put :update, params: { id: post.id, unread: true }
-
-      expect(response).to redirect_to(unread_posts_url)
-      expect(flash[:success]).to eq("Post has been marked as unread")
-      expect(post.reload.first_unread_for(user)).to eq(post)
     end
   end
 
@@ -307,6 +311,7 @@ RSpec.describe PostsController, 'PUT update' do
     end
 
     context "unlocking" do
+      let(:coauthor) { create(:user) }
       let(:post) { create(:post, authors_locked: true, unjoined_authors: [coauthor]) }
       let(:reply) { create(:reply, user: coauthor, post: post) }
 
@@ -348,7 +353,7 @@ RSpec.describe PostsController, 'PUT update' do
         put :update, params: { id: post.id, authors_locked: 'false' }
         expect(response).to redirect_to(post_url(post))
         expect(flash[:error][:message]).to eq('Post could not be updated because of the following problems:')
-        expect(post.reload).not_to be_authors_locked
+        expect(post.reload).to be_authors_locked
       end
     end
   end
@@ -574,231 +579,235 @@ RSpec.describe PostsController, 'PUT update' do
   end
 
   context "make changes" do
-    it "creates new tags if needed" do
-      user = create(:user)
-      login_as(user)
+    context "with tag changes" do
+      it "creates new tags if needed" do
+        user = create(:user)
+        login_as(user)
 
-      setting = create(:setting)
-      rems = create(:setting)
-      dupes = create(:setting, name: 'dupesetting')
-      warning = create(:content_warning)
-      remw = create(:content_warning)
-      dupew = create(:content_warning, name: 'dupewarning')
-      label = create(:label)
-      reml = create(:label)
-      dupel = create(:label, name: 'dupelabel')
+        setting = create(:setting)
+        rems = create(:setting)
+        dupes = create(:setting, name: 'dupesetting')
+        warning = create(:content_warning)
+        remw = create(:content_warning)
+        dupew = create(:content_warning, name: 'dupewarning')
+        label = create(:label)
+        reml = create(:label)
+        dupel = create(:label, name: 'dupelabel')
 
-      post = create(:post, user: user, settings: [setting, rems], content_warnings: [warning, remw], labels: [label, reml])
-      expect(Setting.count).to eq(3)
-      expect(ContentWarning.count).to eq(3)
-      expect(Label.count).to eq(3)
-      expect(PostTag.count).to eq(6)
+        post = create(:post, user: user, settings: [setting, rems], content_warnings: [warning, remw], labels: [label, reml])
+        expect(Setting.count).to eq(3)
+        expect(ContentWarning.count).to eq(3)
+        expect(Label.count).to eq(3)
+        expect(PostTag.count).to eq(6)
 
-      # for each type: keep one, remove one, create one, existing one
-      setting_ids = [setting.id, '_setting', '_dupesetting']
-      warning_ids = [warning.id, '_warning', '_dupewarning']
-      label_ids = [label.id, '_label', '_dupelabel']
-      put :update, params: {
-        id: post.id,
-        post: {
-          setting_ids: setting_ids,
-          content_warning_ids: warning_ids,
-          label_ids: label_ids,
-        },
-      }
-      expect(response).to redirect_to(post_url(post))
-      post = assigns(:post)
+        # for each type: keep one, remove one, create one, existing one
+        setting_ids = [setting.id, '_setting', '_dupesetting']
+        warning_ids = [warning.id, '_warning', '_dupewarning']
+        label_ids = [label.id, '_label', '_dupelabel']
+        put :update, params: {
+          id: post.id,
+          post: {
+            setting_ids: setting_ids,
+            content_warning_ids: warning_ids,
+            label_ids: label_ids,
+          },
+        }
+        expect(response).to redirect_to(post_url(post))
+        post = assigns(:post)
 
-      expect(post.settings.size).to eq(3)
-      expect(post.content_warnings.size).to eq(3)
-      expect(post.labels.size).to eq(3)
-      expect(post.settings.map(&:name)).to match_array([setting.name, 'setting', 'dupesetting'])
-      expect(post.content_warnings.map(&:name)).to match_array([warning.name, 'warning', 'dupewarning'])
-      expect(post.labels.map(&:name)).to match_array([label.name, 'label', 'dupelabel'])
-      expect(Setting.count).to eq(4)
-      expect(ContentWarning.count).to eq(4)
-      expect(Label.count).to eq(4)
-      expect(PostTag.count).to eq(9)
-      expect(PostTag.where(post: post, tag: [setting, warning, label]).count).to eq(3)
-      expect(PostTag.where(post: post, tag: [dupes, dupew, dupel]).count).to eq(3)
-      expect(PostTag.where(post: post, tag: [reml, remw, rems]).count).to eq(0)
-    end
-
-    it "uses extant tags if available" do
-      user = create(:user)
-      login_as(user)
-      post = create(:post, user: user)
-      setting_ids = ['_setting']
-      setting = create(:setting, name: 'setting')
-      warning_ids = ['_warning']
-      warning = create(:content_warning, name: 'warning')
-      label_ids = ['_label']
-      tag = create(:label, name: 'label')
-      put :update, params: {
-        id: post.id,
-        post: { setting_ids: setting_ids, content_warning_ids: warning_ids, label_ids: label_ids },
-      }
-      expect(response).to redirect_to(post_url(post))
-      post = assigns(:post)
-      expect(post.settings).to eq([setting])
-      expect(post.content_warnings).to eq([warning])
-      expect(post.labels).to eq([tag])
-    end
-
-    it "correctly updates when adding new authors" do
-      user = create(:user)
-      other_user = create(:user)
-      login_as(user)
-      post = create(:post, user: user)
-
-      time = 5.minutes.from_now
-      Timecop.freeze(time) do
-        expect {
-          put :update, params: {
-            id: post.id,
-            post: {
-              unjoined_author_ids: [other_user.id],
-            },
-          }
-        }.to change { Post::Author.count }.by(1)
+        expect(post.settings.size).to eq(3)
+        expect(post.content_warnings.size).to eq(3)
+        expect(post.labels.size).to eq(3)
+        expect(post.settings.map(&:name)).to match_array([setting.name, 'setting', 'dupesetting'])
+        expect(post.content_warnings.map(&:name)).to match_array([warning.name, 'warning', 'dupewarning'])
+        expect(post.labels.map(&:name)).to match_array([label.name, 'label', 'dupelabel'])
+        expect(Setting.count).to eq(4)
+        expect(ContentWarning.count).to eq(4)
+        expect(Label.count).to eq(4)
+        expect(PostTag.count).to eq(9)
+        expect(PostTag.where(post: post, tag: [setting, warning, label]).count).to eq(3)
+        expect(PostTag.where(post: post, tag: [dupes, dupew, dupel]).count).to eq(3)
+        expect(PostTag.where(post: post, tag: [reml, remw, rems]).count).to eq(0)
       end
 
-      expect(response).to redirect_to(post_url(post))
-      post.reload
-      expect(post.tagging_authors).to match_array([user, other_user])
-
-      # doesn't change joined time or invited status when inviting main user
-      main_author = post.author_for(user)
-      expect(main_author.can_owe).to eq(true)
-      expect(main_author.joined).to eq(true)
-      expect(main_author.joined_at).to be_the_same_time_as(post.created_at)
-
-      # doesn't set joined time but does set invited status when inviting new user
-      new_author = post.author_for(other_user)
-      expect(new_author.can_owe).to eq(true)
-      expect(new_author.joined).to eq(false)
-      expect(new_author.joined_at).to be_nil
-    end
-
-    it "correctly updates when removing authors" do
-      user = create(:user)
-      invited_user = create(:user)
-      joined_user = create(:user)
-
-      login_as(user)
-      time = 5.minutes.ago
-      post = reply = nil
-      Timecop.freeze(time) do
-        post = create(:post, user: user, unjoined_authors: [invited_user])
-        reply = create(:reply, user: joined_user, post: post)
+      it "uses extant tags if available" do
+        user = create(:user)
+        login_as(user)
+        post = create(:post, user: user)
+        setting_ids = ['_setting']
+        setting = create(:setting, name: 'setting')
+        warning_ids = ['_warning']
+        warning = create(:content_warning, name: 'warning')
+        label_ids = ['_label']
+        tag = create(:label, name: 'label')
+        put :update, params: {
+          id: post.id,
+          post: { setting_ids: setting_ids, content_warning_ids: warning_ids, label_ids: label_ids },
+        }
+        expect(response).to redirect_to(post_url(post))
+        post = assigns(:post)
+        expect(post.settings).to eq([setting])
+        expect(post.content_warnings).to eq([warning])
+        expect(post.labels).to eq([tag])
       end
 
-      post.reload
-      expect(post.authors).to match_array([user, invited_user, joined_user])
-      expect(post.joined_authors).to match_array([user, joined_user])
-
-      post_author = post.author_for(user)
-      expect(post_author.joined).to eq(true)
-      expect(post_author.joined_at).to be_the_same_time_as(post.created_at)
-
-      invited_post_author = post.author_for(invited_user)
-      expect(invited_post_author.joined).to eq(false)
-
-      joined_post_author = post.author_for(joined_user)
-      expect(joined_post_author.joined).to eq(true)
-      expect(joined_post_author.joined_at).to be_the_same_time_as(reply.created_at)
-
-      put :update, params: {
-        id: post.id,
-        post: {
-          unjoined_author_ids: [''],
-        },
-      }
-      expect(response).to redirect_to(post_url(post))
-      expect(flash[:success]).to eq('Post updated.')
-
-      post.reload
-      expect(post.authors).to match_array([user, joined_user])
-      expect(post.joined_authors).to match_array([user, joined_user])
-      expect(post.tagging_authors).to match_array([user, joined_user])
-
-      post_author.reload
-      expect(post_author.can_owe).to eq(true)
-      expect(post_author.joined).to eq(true)
-      expect(post_author.joined_at).to be_the_same_time_as(post.created_at)
-
-      expect(post.author_for(invited_user)).to be_nil
-
-      joined_post_author.reload
-      expect(joined_post_author.can_owe).to eq(true)
-      expect(joined_post_author.joined).to eq(true)
-      expect(joined_post_author.joined_at).to be_the_same_time_as(reply.created_at)
+      it "orders tags" do
+        user = create(:user)
+        login_as(user)
+        post = create(:post, user: user)
+        setting2 = create(:setting)
+        setting3 = create(:setting)
+        setting1 = create(:setting)
+        warning1 = create(:content_warning)
+        warning3 = create(:content_warning)
+        warning2 = create(:content_warning)
+        tag3 = create(:label)
+        tag1 = create(:label)
+        tag2 = create(:label)
+        put :update, params: {
+          id: post.id,
+          post: {
+            setting_ids: [setting1, setting2, setting3].map(&:id),
+            content_warning_ids: [warning1, warning2, warning3].map(&:id),
+            label_ids: [tag1, tag2, tag3].map(&:id),
+          },
+        }
+        expect(response).to redirect_to(post_url(post))
+        post = assigns(:post)
+        expect(post.settings).to eq([setting1, setting2, setting3])
+        expect(post.content_warnings).to eq([warning1, warning2, warning3])
+        expect(post.labels).to eq([tag1, tag2, tag3])
+      end
     end
 
-    it "updates board cameos if necessary" do
-      user = create(:user)
-      other_user = create(:user)
-      third_user = create(:user)
-      login_as(user)
-      board = create(:board, creator: user, writers: [other_user])
-      post = create(:post, user: user, board: board)
-      put :update, params: {
-        id: post.id,
-        post: {
-          unjoined_author_ids: [other_user.id, third_user.id],
-        },
-      }
-      post.reload
-      board.reload
-      expect(post.tagging_authors).to match_array([user, other_user, third_user])
-      expect(board.cameos).to match_array([third_user])
-    end
+    context "with author changes" do
+      it "correctly updates when adding new authors" do
+        user = create(:user)
+        other_user = create(:user)
+        login_as(user)
+        post = create(:post, user: user)
 
-    it "does not add to cameos of open boards" do
-      user = create(:user)
-      other_user = create(:user)
-      login_as(user)
-      board = create(:board)
-      expect(board.cameos).to be_empty
-      post = create(:post, user: user, board: board)
-      put :update, params: {
-        id: post.id,
-        post: {
-          unjoined_author_ids: [other_user.id],
-        },
-      }
-      post.reload
-      board.reload
-      expect(post.tagging_authors).to match_array([user, other_user])
-      expect(board.cameos).to be_empty
-    end
+        time = 5.minutes.from_now
+        Timecop.freeze(time) do
+          expect {
+            put :update, params: {
+              id: post.id,
+              post: {
+                unjoined_author_ids: [other_user.id],
+              },
+            }
+          }.to change { Post::Author.count }.by(1)
+        end
 
-    it "orders tags" do
-      user = create(:user)
-      login_as(user)
-      post = create(:post, user: user)
-      setting2 = create(:setting)
-      setting3 = create(:setting)
-      setting1 = create(:setting)
-      warning1 = create(:content_warning)
-      warning3 = create(:content_warning)
-      warning2 = create(:content_warning)
-      tag3 = create(:label)
-      tag1 = create(:label)
-      tag2 = create(:label)
-      put :update, params: {
-        id: post.id,
-        post: {
-          setting_ids: [setting1, setting2, setting3].map(&:id),
-          content_warning_ids: [warning1, warning2, warning3].map(&:id),
-          label_ids: [tag1, tag2, tag3].map(&:id),
-        },
-      }
-      expect(response).to redirect_to(post_url(post))
-      post = assigns(:post)
-      expect(post.settings).to eq([setting1, setting2, setting3])
-      expect(post.content_warnings).to eq([warning1, warning2, warning3])
-      expect(post.labels).to eq([tag1, tag2, tag3])
+        expect(response).to redirect_to(post_url(post))
+        post.reload
+        expect(post.tagging_authors).to match_array([user, other_user])
+
+        # doesn't change joined time or invited status when inviting main user
+        main_author = post.author_for(user)
+        expect(main_author.can_owe).to eq(true)
+        expect(main_author.joined).to eq(true)
+        expect(main_author.joined_at).to be_the_same_time_as(post.created_at)
+
+        # doesn't set joined time but does set invited status when inviting new user
+        new_author = post.author_for(other_user)
+        expect(new_author.can_owe).to eq(true)
+        expect(new_author.joined).to eq(false)
+        expect(new_author.joined_at).to be_nil
+      end
+
+      it "correctly updates when removing authors" do
+        user = create(:user)
+        invited_user = create(:user)
+        joined_user = create(:user)
+
+        login_as(user)
+        time = 5.minutes.ago
+        post = reply = nil
+        Timecop.freeze(time) do
+          post = create(:post, user: user, unjoined_authors: [invited_user])
+          reply = create(:reply, user: joined_user, post: post)
+        end
+
+        post.reload
+        expect(post.authors).to match_array([user, invited_user, joined_user])
+        expect(post.joined_authors).to match_array([user, joined_user])
+
+        post_author = post.author_for(user)
+        expect(post_author.joined).to eq(true)
+        expect(post_author.joined_at).to be_the_same_time_as(post.created_at)
+
+        invited_post_author = post.author_for(invited_user)
+        expect(invited_post_author.joined).to eq(false)
+
+        joined_post_author = post.author_for(joined_user)
+        expect(joined_post_author.joined).to eq(true)
+        expect(joined_post_author.joined_at).to be_the_same_time_as(reply.created_at)
+
+        put :update, params: {
+          id: post.id,
+          post: {
+            unjoined_author_ids: [''],
+          },
+        }
+        expect(response).to redirect_to(post_url(post))
+        expect(flash[:success]).to eq("Post updated.")
+
+        post.reload
+        expect(post.authors).to match_array([user, joined_user])
+        expect(post.joined_authors).to match_array([user, joined_user])
+        expect(post.tagging_authors).to match_array([user, joined_user])
+
+        post_author.reload
+        expect(post_author.can_owe).to eq(true)
+        expect(post_author.joined).to eq(true)
+        expect(post_author.joined_at).to be_the_same_time_as(post.created_at)
+
+        expect(post.author_for(invited_user)).to be_nil
+
+        joined_post_author.reload
+        expect(joined_post_author.can_owe).to eq(true)
+        expect(joined_post_author.joined).to eq(true)
+        expect(joined_post_author.joined_at).to be_the_same_time_as(reply.created_at)
+      end
+
+      it "updates board cameos if necessary" do
+        user = create(:user)
+        other_user = create(:user)
+        third_user = create(:user)
+        login_as(user)
+        board = create(:board, creator: user, writers: [other_user])
+        post = create(:post, user: user, board: board)
+        put :update, params: {
+          id: post.id,
+          post: {
+            unjoined_author_ids: [other_user.id, third_user.id],
+          },
+        }
+        post.reload
+        board.reload
+        expect(post.tagging_authors).to match_array([user, other_user, third_user])
+        expect(board.cameos).to match_array([third_user])
+      end
+
+      it "does not add to cameos of open boards" do
+        user = create(:user)
+        other_user = create(:user)
+        login_as(user)
+        board = create(:board)
+        expect(board.cameos).to be_empty
+        post = create(:post, user: user, board: board)
+        put :update, params: {
+          id: post.id,
+          post: {
+            unjoined_author_ids: [other_user.id],
+          },
+        }
+        post.reload
+        board.reload
+        expect(post.tagging_authors).to match_array([user, other_user])
+        expect(board.cameos).to be_empty
+      end
     end
 
     it "requires valid update" do
