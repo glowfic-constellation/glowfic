@@ -223,15 +223,12 @@ RSpec.describe PostsController, 'PUT update' do
     context "with an old thread" do
       [:hiatus, :active].each do |status|
         context "to #{status}" do
-          time = 2.months.ago
-          let(:post) { create(:post, created_at: time, updated_at: time) }
-          let(:reply) { create(:reply, post: post, created_at: time, updated_at: time) }
-
-          before (:each) { reply }
+          let(:time) { 2.months.ago }
+          let(:post) { Timecop.freeze(time) { create(:post) } }
+          let!(:reply) { Timecop.freeze(time) { create(:reply, post: post) } }
 
           it "works for creator" do
             login_as(post.user)
-            expect(post.reload.tagged_at).to be_the_same_time_as(time)
             put :update, params: { id: post.id, status: status }
             expect(response).to redirect_to(post_url(post))
             expect(flash[:success]).to eq("Post has been marked #{status}.")
@@ -241,7 +238,6 @@ RSpec.describe PostsController, 'PUT update' do
 
           it "works for coauthor" do
             login_as(reply.user)
-            expect(post.reload.tagged_at).to be_the_same_time_as(time)
             put :update, params: { id: post.id, status: status }
             expect(response).to redirect_to(post_url(post))
             expect(flash[:success]).to eq("Post has been marked #{status}.")
@@ -251,7 +247,6 @@ RSpec.describe PostsController, 'PUT update' do
 
           it "works for admin" do
             login_as(create(:admin_user))
-            expect(post.reload.tagged_at).to be_the_same_time_as(time)
             put :update, params: { id: post.id, status: status }
             expect(response).to redirect_to(post_url(post))
             expect(flash[:success]).to eq("Post has been marked #{status}.")
