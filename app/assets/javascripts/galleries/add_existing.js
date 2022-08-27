@@ -38,7 +38,7 @@ $(document).ready(function() {
       $.each(resp.icons, function(index, icon) {
         var iconDiv = $("<div>").attr({class: 'gallery-icon'});
         var iconImg = $("<img>").attr({src: icon.url, alt: icon.keyword, title: icon.keyword, 'class': 'icon add-gallery-icon', 'data-id': icon.id});
-        iconDiv.append(iconImg).append("<br>").append($("<span>").attr({class: 'icon-keyword'}).append(icon.keyword));
+        iconDiv.append(iconImg).append("<br>").append($("<span>").attr({class: 'icon-keyword'}).text(icon.keyword));
         $("#icons-" + galleryId).append(iconDiv);
       });
       bindGalleryIcons("#icons-" + galleryId + " .add-gallery-icon");

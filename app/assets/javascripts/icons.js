@@ -15,7 +15,7 @@ function setIconFromId(id) {
     if (aliases.length > 0) {
       $("#alias_dropdown").show().empty().append('<option value="">— No alias —</option>');
       for (var i = 0; i < aliases.length; i++) {
-        $("#alias_dropdown").append($("<option>").attr({value: aliases[i].id}).append(aliases[i].name));
+        $("#alias_dropdown").append($("<option>").attr({value: aliases[i].id}).text(aliases[i].name));
       }
     } else {
       $("#alias_dropdown").hide().val('');

@@ -49,7 +49,8 @@ class Icon < ApplicationRecord
   def use_https
     return if uploaded?
     return unless url.starts_with?('http://')
-    return unless url.include?("imgur.com") || url.include?("dreamwidth.org")
+    uri = URI(url)
+    return unless uri.host.match?(/(^|\.)imgur\.com$/) || uri.host.match?(/(^|\.)dreamwidth\.org$/)
     self.url = url.sub('http:', 'https:')
   end
 

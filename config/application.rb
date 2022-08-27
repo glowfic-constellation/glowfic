@@ -75,5 +75,6 @@ module Glowfic
 
     # redis-rails does not support cache versioning
     config.active_record.cache_versioning = false
+    config.active_record.collection_cache_versioning = false
   end
 end

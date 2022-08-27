@@ -49,6 +49,25 @@ RSpec.feature "Show a list of galleries", :type => :feature do
     end
   end
 
+  scenario "Expanding a user's list of galleries while logged out", js: true do
+    user = create(:user)
+    create(:icon, user: user, keyword: "galleryless <strong> icon")
+    icon = create(:icon, user: user, keyword: "galleryful <strong> icon")
+    create(:gallery, user: user, name: "Gallery", icons: [icon])
+
+    visit user_galleries_path(user_id: user.id)
+
+    within('#content tbody') do
+      expect(page).not_to have_text("galleryless <strong> icon")
+      within(gallery_row_for("[Galleryless]")) { page.find('.gallery-box').click }
+      expect(page).to have_text("galleryless <strong> icon")
+
+      expect(page).not_to have_text("galleryful <strong> icon")
+      within(gallery_row_for("Gallery")) { page.find('.gallery-box').click }
+      expect(page).to have_text("galleryful <strong> icon")
+    end
+  end
+
   scenario "View another user's list of galleries while logged in" do
     user = setup_sample_data
     login
