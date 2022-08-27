@@ -165,7 +165,7 @@ function displayGallery(newId) {
   $.authenticatedGet('/api/v1/galleries/'+newId, {}, function(resp) {
     var galleryObj = $("<div>").attr({id: 'gallery'+newId}).data('id', newId);
     galleryObj.append("<br />");
-    galleryObj.append($("<b>").attr({class: 'gallery-name'}).append(resp.name));
+    galleryObj.append($("<b>").attr({class: 'gallery-name'}).text(resp.name));
     galleryObj.append("<br />");
     var galleryIcons = $("<div>").attr({class: 'gallery-icons'});
     galleryObj.append(galleryIcons);

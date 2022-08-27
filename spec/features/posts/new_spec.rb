@@ -112,4 +112,17 @@ RSpec.feature "Creating posts", :type => :feature do
       expect(page).to have_xpath(".//img[contains(@src, '#{icon2.url}')]")
     end
   end
+
+  scenario "Continuity settings show up", js: true do
+    login
+    create(:board)
+    board = create(:board)
+    create(:board)
+    create(:board_section, board: board, name: "Th<em> pirates")
+    create(:board_section, board: board, name: "Th/ose/ aliens")
+
+    visit new_post_path
+    page.select(board.name, from: "Continuity:")
+    page.select("Th<em> pirates", from: "Continuity section:")
+  end
 end

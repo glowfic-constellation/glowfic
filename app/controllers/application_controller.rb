@@ -206,8 +206,8 @@ class ApplicationController < ActionController::Base
   def require_glowfic_domain
     return unless Rails.env.production? || params[:force_domain] # for testability
     return unless standard_request?
-    return if request.host.include?('glowfic.com')
-    return if request.host.include?('glowfic-staging.herokuapp.com')
+    return if request.host.match?(/(^|\.)glowfic\.com$/)
+    return if request.host.match?(/(^|\.)glowfic-staging\.herokuapp\.com$/)
     glowfic_url = root_url(host: ENV['DOMAIN_NAME'], protocol: 'https')[0...-1] + request.fullpath # strip double slash
     redirect_to glowfic_url, status: :moved_permanently
   end
