@@ -264,7 +264,7 @@ function galleryNode(gallery, multiGallery) {
   if (!multiGallery) return iconNodes;
 
   var nameNode = $("<div class='gallery-name'></div>").text(gallery.name);
-  return $("<div class='gallery-group'>").append(nameNode).append(iconNodes);
+  return $("<div class='gallery-group'></div>").append(nameNode).append(iconNodes);
 }
 
 function iconNode(icon) {
