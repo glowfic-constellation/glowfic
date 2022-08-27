@@ -19,16 +19,6 @@ RSpec.describe PostsController, 'GET owed' do
     expect(assigns(:page_title)).to eq('Replies Owed')
   end
 
-  it "lists number of posts in the title if present" do
-    user = create(:user)
-    login_as(user)
-    post = create(:post, user: user)
-    create(:reply, post: post)
-    get :owed
-    expect(response.status).to eq(200)
-    expect(assigns(:page_title)).to eq('[1] Replies Owed')
-  end
-
   context "with views" do
     render_views
 
@@ -122,69 +112,111 @@ RSpec.describe PostsController, 'GET owed' do
       login_as(user)
     end
 
-    it "shows a post if replied to by someone else" do
-      create(:reply, post_id: post.id, user_id: other_user.id)
+    context "with coauthor reply" do
+      it "shows a post if replied to by someone else" do
+        create(:reply, post_id: post.id, user_id: other_user.id)
 
-      get :owed
-      expect(response.status).to eq(200)
-      expect(assigns(:posts)).to match_array([post])
+        get :owed
+        expect(response.status).to eq(200)
+        expect(assigns(:posts)).to match_array([post])
+      end
+
+      it "does not show posts from site_testing" do
+        site_test = create(:board, id: Board::ID_SITETESTING)
+
+        post.board = site_test
+        post.save!
+        create(:reply, post_id: post.id, user_id: other_user.id)
+
+        get :owed
+        expect(response.status).to eq(200)
+        expect(assigns(:posts)).to be_empty
+      end
+
+      it "hides completed threads" do
+        create(:reply, post: post, user: other_user)
+        post.update!(status: :complete)
+        get :owed
+        expect(response.status).to eq(200)
+        expect(assigns(:posts)).to be_empty
+      end
+
+      it "hides abandoned threads" do
+        create(:reply, post: post, user: other_user)
+        post.update!(status: :abandoned)
+        get :owed
+        expect(response.status).to eq(200)
+        expect(assigns(:posts)).to be_empty
+      end
+
+      it "show hiatused threads by default" do
+        create(:reply, post_id: post.id, user_id: other_user.id)
+        post.update!(status: :hiatus)
+
+        get :owed
+        expect(response.status).to eq(200)
+        expect(assigns(:posts)).to match_array([post])
+      end
+
+      it "optionally hides hiatused threads" do
+        create(:reply, post_id: post.id, user_id: other_user.id)
+        post.update!(status: :hiatus)
+
+        user.hide_hiatused_tags_owed = true
+        user.save!
+        get :owed
+        expect(response.status).to eq(200)
+        expect(assigns(:posts)).to be_empty
+      end
+
+      it "hides threads the user has manually removed themselves from" do
+        post = create(:post, user: other_user, tagging_authors: [other_user])
+        create(:reply, post: post, user: user)
+        create(:reply, post: post, user: other_user)
+        post.opt_out_of_owed(user)
+        get :owed
+        expect(response.status).to eq(200)
+        expect(assigns(:posts)).to be_empty
+      end
+
+      it "lists number of posts in the title if present" do
+        user = create(:user)
+        login_as(user)
+        post = create(:post, user: user)
+        create(:reply, post: post)
+        get :owed
+        expect(response.status).to eq(200)
+        expect(assigns(:page_title)).to eq('[1] Replies Owed')
+      end
     end
 
-    it "hides a post if you reply to it" do
-      create(:reply, post_id: post.id, user_id: other_user.id)
-      create(:reply, post_id: post.id, user_id: user.id)
+    context "with own reply" do
+      it "hides a post if you reply to it" do
+        create(:reply, post_id: post.id, user_id: other_user.id)
+        create(:reply, post_id: post.id, user_id: user.id)
 
-      get :owed
-      expect(response.status).to eq(200)
-      expect(assigns(:posts)).to be_empty
-    end
+        get :owed
+        expect(response.status).to eq(200)
+        expect(assigns(:posts)).to be_empty
+      end
 
-    it "does not show posts from site_testing" do
-      site_test = create(:board, id: Board::ID_SITETESTING)
+      it "shows threads with existing drafts" do
+        create(:reply, post: post, user: other_user)
+        create(:reply, post: post, user: user)
+        create(:reply_draft, post: post, user: user)
+        get :owed
+        expect(response.status).to eq(200)
+        expect(assigns(:posts)).to match_array([post])
+      end
 
-      post.board = site_test
-      post.save!
-      create(:reply, post_id: post.id, user_id: other_user.id)
-
-      get :owed
-      expect(response.status).to eq(200)
-      expect(assigns(:posts)).to be_empty
-    end
-
-    it "hides completed threads" do
-      create(:reply, post: post, user: other_user)
-      post.update!(status: :complete)
-      get :owed
-      expect(response.status).to eq(200)
-      expect(assigns(:posts)).to be_empty
-    end
-
-    it "hides abandoned threads" do
-      create(:reply, post: post, user: other_user)
-      post.update!(status: :abandoned)
-      get :owed
-      expect(response.status).to eq(200)
-      expect(assigns(:posts)).to be_empty
-    end
-
-    it "show hiatused threads by default" do
-      create(:reply, post_id: post.id, user_id: other_user.id)
-      post.update!(status: :hiatus)
-
-      get :owed
-      expect(response.status).to eq(200)
-      expect(assigns(:posts)).to match_array([post])
-    end
-
-    it "optionally hides hiatused threads" do
-      create(:reply, post_id: post.id, user_id: other_user.id)
-      post.update!(status: :hiatus)
-
-      user.hide_hiatused_tags_owed = true
-      user.save!
-      get :owed
-      expect(response.status).to eq(200)
-      expect(assigns(:posts)).to be_empty
+      it "does not show threads with drafts by coauthors" do
+        create(:reply, post: post, user: other_user)
+        create(:reply, post: post, user: user)
+        create(:reply_draft, post: post, user: other_user)
+        get :owed
+        expect(response.status).to eq(200)
+        expect(assigns(:posts)).to be_empty
+      end
     end
 
     it "shows threads the user has been invited to" do
@@ -192,16 +224,6 @@ RSpec.describe PostsController, 'GET owed' do
       get :owed
       expect(response.status).to eq(200)
       expect(assigns(:posts)).to match_array([post])
-    end
-
-    it "hides threads the user has manually removed themselves from" do
-      post = create(:post, user: other_user, tagging_authors: [other_user])
-      create(:reply, post: post, user: user)
-      create(:reply, post: post, user: other_user)
-      post.opt_out_of_owed(user)
-      get :owed
-      expect(response.status).to eq(200)
-      expect(assigns(:posts)).to be_empty
     end
 
     it "orders posts by tagged_at" do
@@ -213,24 +235,6 @@ RSpec.describe PostsController, 'GET owed' do
       create(:reply, post_id: post1.id, user_id: other_user.id)
       get :owed
       expect(assigns(:posts)).to eq([post1, post2, post3])
-    end
-
-    it "shows threads with existing drafts" do
-      create(:reply, post: post, user: other_user)
-      create(:reply, post: post, user: user)
-      create(:reply_draft, post: post, user: user)
-      get :owed
-      expect(response.status).to eq(200)
-      expect(assigns(:posts)).to match_array([post])
-    end
-
-    it "does not show threads with drafts by coauthors" do
-      create(:reply, post: post, user: other_user)
-      create(:reply, post: post, user: user)
-      create(:reply_draft, post: post, user: other_user)
-      get :owed
-      expect(response.status).to eq(200)
-      expect(assigns(:posts)).to be_empty
     end
 
     it "shows solo threads" do
