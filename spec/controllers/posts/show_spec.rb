@@ -298,9 +298,11 @@ RSpec.describe PostsController, 'GET show' do
 
     it "sets reply variable using build_new_reply_for" do
       # mock Post.find_by_id so we can mock post.build_new_reply_for
+      allow(Post).to receive(:find_by_id).and_call_original
       allow(Post).to receive(:find_by_id).with(post.id.to_s).and_return(post)
 
-      expect(post).to receive(:build_new_reply_for).with(user, {}).and_call_original
+      allow(post).to receive(:build_new_reply_for).and_call_original
+      expect(post).to receive(:build_new_reply_for).with(user, {})
       expect(controller).to receive(:setup_layout_gon).and_call_original
 
       get :show, params: { id: post.id }
@@ -322,8 +324,10 @@ RSpec.describe PostsController, 'GET show' do
 
     it "sets reply variable using build_new_reply_for" do
       # mock Post.find_by_id so we can mock post.build_new_reply_for
+      allow(Post).to receive(:find_by_id).and_call_original
       allow(Post).to receive(:find_by_id).with(post.id.to_s).and_return(post)
 
+      allow(post).to receive(:build_new_reply_for).and_call_original
       expect(post).to receive(:build_new_reply_for).with(user, {}).and_call_original
 
       get :show, params: { id: post.id }
@@ -337,6 +341,7 @@ RSpec.describe PostsController, 'GET show' do
       post = create(:post, authors_locked: true)
 
       # mock Post.find_by_id so we can mock post.build_new_reply_for
+      allow(Post).to receive(:find_by_id).and_call_original
       allow(Post).to receive(:find_by_id).with(post.id.to_s).and_return(post)
 
       login_as(user)
