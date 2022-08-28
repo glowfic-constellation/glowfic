@@ -28,6 +28,9 @@ RSpec.describe PostsController, 'PUT update' do
   let(:setting_ids) { [setting.id, '_newsetting', '_dupesetting'] }
   let(:warning_ids) { [warning.id, '_newwarning', '_dupewarning'] }
   let(:label_ids) { [label.id, '_newlabel', '_dupelabel'] }
+  let(:settings_select) { [setting.id, duplicate_setting.id, '_newsetting'] }
+  let(:warnings_select) { [warning.id, duplicate_warning.id, '_newwarning'] }
+  let(:labels_select) { [label.id, duplicate_label.id, '_newlabel'] }
 
   let(:templateless_character) { create(:character, user: user) }
   let(:templated_character) { create(:template_character, user: user) }
@@ -424,9 +427,9 @@ RSpec.describe PostsController, 'PUT update' do
       expect(post.settings.size).to eq(2)
       expect(post.content_warnings.size).to eq(2)
       expect(post.labels.size).to eq(2)
-      expect(assigns(:settings).map(&:name)).to match_array([setting.name, 'newsetting', 'dupesetting'])
-      expect(assigns(:content_warnings).map(&:name)).to match_array([warning.name, 'newwarning', 'dupewarning'])
-      expect(assigns(:labels).map(&:name)).to match_array([label.name, 'newlabel', 'dupelabel'])
+      expect(assigns(:settings).map(&:id_for_select)).to match_array(settings_select)
+      expect(assigns(:content_warnings).map(&:id_for_select)).to match_array(warnings_select)
+      expect(assigns(:labels).map(&:id_for_select)).to match_array(labels_select)
       expect(Setting.count).to eq(3)
       expect(ContentWarning.count).to eq(3)
       expect(Label.count).to eq(3)
@@ -580,12 +583,13 @@ RSpec.describe PostsController, 'PUT update' do
         expect(response).to redirect_to(post_url(post))
         post = assigns(:post)
 
+        new_warning = ContentWarning.find_by(name: 'newwarning')
         expect(post.settings.size).to eq(3)
         expect(post.content_warnings.size).to eq(3)
         expect(post.labels.size).to eq(3)
-        expect(post.settings.map(&:name)).to match_array([setting.name, 'newsetting', 'dupesetting'])
-        expect(post.content_warnings.map(&:name)).to match_array([warning.name, 'newwarning', 'dupewarning'])
-        expect(post.labels.map(&:name)).to match_array([label.name, 'newlabel', 'dupelabel'])
+        expect(post.settings.map(&:id_for_select)).to match_array([setting, duplicate_setting, Setting.find_by(name: 'newsetting')].map(&:id))
+        expect(post.content_warnings.map(&:id_for_select)).to match_array([warning, duplicate_warning, new_warning].map(&:id))
+        expect(post.labels.map(&:id_for_select)).to match_array([label, duplicate_label, Label.find_by(name: 'newlabel')].map(&:id))
 
         expect(Setting.count).to eq(4)
         expect(ContentWarning.count).to eq(4)
@@ -800,9 +804,9 @@ RSpec.describe PostsController, 'PUT update' do
       expect(post.settings.size).to eq(3)
       expect(post.content_warnings.size).to eq(3)
       expect(post.labels.size).to eq(3)
-      expect(post.settings.map(&:name)).to match_array([setting.name, 'newsetting', 'dupesetting'])
-      expect(post.content_warnings.map(&:name)).to match_array([warning.name, 'newwarning', 'dupewarning'])
-      expect(post.labels.map(&:name)).to match_array([label.name, 'newlabel', 'dupelabel'])
+      expect(post.settings.map(&:id_for_select)).to match_array(settings_select)
+      expect(post.content_warnings.map(&:id_for_select)).to match_array(warnings_select)
+      expect(post.labels.map(&:id_for_select)).to match_array(labels_select)
       expect(Setting.count).to eq(3)
       expect(ContentWarning.count).to eq(3)
       expect(Label.count).to eq(3)
