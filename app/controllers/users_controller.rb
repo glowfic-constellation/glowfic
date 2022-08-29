@@ -128,16 +128,8 @@ class UsersController < ApplicationController
     @day = calculate_day
     daystart = @day.beginning_of_day
     dayend = @day.end_of_day
-    @posts = Post.where(user: current_user).where('created_at between ? AND ?', daystart, dayend).ordered_by_id.pluck(:content)
     @replies = Reply.where(user: current_user).where('created_at between ? AND ?', daystart, dayend).order(post_id: :asc).ordered.pluck(:content)
-
-    @total = @posts + @replies
-    if @total.empty?
-      @total = 0
-    else
-      @total[0] = @total[0].split.size
-      @total = @total.inject { |r, e| r + e.split.size }.to_i
-    end
+    @ToTal = @replies.map { |x| x.split.size }.sum
   end
 
   private

@@ -53,7 +53,8 @@ RSpec.describe PostsController, 'PUT update' do
     login_as(admin)
     put :update, params: {
       id: post.id,
-      post: { description: 'b', audit_comment: 'note' },
+      post: { description: 'b' },
+      reply: { audit_comment: 'note' },
     }
     expect(flash[:success]).to eq("Your post has been updated.")
     expect(post.reload.description).to eq('b')
@@ -436,27 +437,28 @@ RSpec.describe PostsController, 'PUT update' do
         button_preview: true,
         post: {
           subject: 'test',
-          content: 'orign',
-          character_id: char1.id,
-          icon_id: icon.id,
-          character_alias_id: calias.id,
           setting_ids: [setting1.id, "_ #{setting2.name}", '_other'],
           content_warning_ids: [warning1.id, "_#{warning2.name}", '_other'],
           label_ids: [label1.id, "_#{label2.name}", '_other'],
           unjoined_author_ids: [coauthor.id],
           viewer_ids: [viewer.id],
         },
+        reply: {
+          content: 'orign',
+          character_id: char1.id,
+          icon_id: icon.id,
+          character_alias_id: calias.id,
+        },
       }
       expect(response).to render_template(:preview)
-      expect(assigns(:written)).to be_an_instance_of(Post)
-      expect(assigns(:written)).not_to be_a_new_record
-      expect(assigns(:post)).to eq(assigns(:written))
+      expect(assigns(:post).written).to be_an_instance_of(Reply)
+      expect(assigns(:post).written).not_to be_a_new_record
       expect(assigns(:post).user).to eq(user)
       expect(assigns(:post).subject).to eq('test')
-      expect(assigns(:post).content).to eq('orign')
-      expect(assigns(:post).character).to eq(char1)
-      expect(assigns(:post).icon).to eq(icon)
-      expect(assigns(:post).character_alias).to eq(calias)
+      expect(assigns(:post).written.content).to eq('orign')
+      expect(assigns(:post).written.character).to eq(char1)
+      expect(assigns(:post).written.icon).to eq(icon)
+      expect(assigns(:post).written.character_alias).to eq(calias)
       expect(assigns(:page_title)).to eq('Previewing: test')
       expect(assigns(:audits)).to eq({ post: 1 })
 
@@ -497,10 +499,10 @@ RSpec.describe PostsController, 'PUT update' do
       post = assigns(:post).reload
       expect(post.user).to eq(user)
       expect(post.subject).to eq('old')
-      expect(post.content).to eq('example')
-      expect(post.character).to be_nil
-      expect(post.icon).to be_nil
-      expect(post.character_alias).to be_nil
+      expect(post.written.content).to eq('example')
+      expect(post.written.character).to be_nil
+      expect(post.written.icon).to be_nil
+      expect(post.written.character_alias).to be_nil
       Post.auditing_enabled = false
     end
 
@@ -510,7 +512,7 @@ RSpec.describe PostsController, 'PUT update' do
       post = create(:post, user: user)
       put :update, params: { id: post.id, button_preview: true }
       expect(response).to render_template(:preview)
-      expect(assigns(:written).user).to eq(user)
+      expect(assigns(:post).written.user).to eq(user)
     end
 
     it "saves a draft" do
@@ -857,7 +859,7 @@ RSpec.describe PostsController, 'PUT update' do
       post = create(:post, user: user, unjoined_authors: [removed_author])
       create(:reply, user: joined_author, post: post)
 
-      newcontent = post.content + 'new'
+      newcontent = post.written.content + 'new'
       newsubj = post.subject + 'new'
       login_as(user)
       board = create(:board)
@@ -872,6 +874,7 @@ RSpec.describe PostsController, 'PUT update' do
       coauthor = create(:user)
 
       post.reload
+      post.written.reload
       expect(post.tagging_authors).to match_array([user, removed_author, joined_author])
       expect(post.joined_authors).to match_array([user, joined_author])
       expect(post.viewers).to be_empty
@@ -879,14 +882,10 @@ RSpec.describe PostsController, 'PUT update' do
       put :update, params: {
         id: post.id,
         post: {
-          content: newcontent,
           subject: newsubj,
           description: 'desc',
           board_id: board.id,
           section_id: section.id,
-          character_id: char.id,
-          character_alias_id: calias.id,
-          icon_id: icon.id,
           privacy: :access_list,
           viewer_ids: [viewer.id],
           setting_ids: [setting.id],
@@ -894,19 +893,25 @@ RSpec.describe PostsController, 'PUT update' do
           label_ids: [tag.id],
           unjoined_author_ids: [coauthor.id],
         },
+        reply: {
+          content: newcontent,
+          character_id: char.id,
+          character_alias_id: calias.id,
+          icon_id: icon.id,
+        },
       }
       expect(response).to redirect_to(post_url(post))
       expect(flash[:success]).to eq("Your post has been updated.")
 
       post.reload
-      expect(post.content).to eq(newcontent)
+      expect(post.written.content).to eq(newcontent)
       expect(post.subject).to eq(newsubj)
       expect(post.description).to eq('desc')
       expect(post.board_id).to eq(board.id)
       expect(post.section_id).to eq(section.id)
-      expect(post.character_id).to eq(char.id)
-      expect(post.character_alias_id).to eq(calias.id)
-      expect(post.icon_id).to eq(icon.id)
+      expect(post.written.character_id).to eq(char.id)
+      expect(post.written.character_alias_id).to eq(calias.id)
+      expect(post.written.icon_id).to eq(icon.id)
       expect(post).to be_privacy_access_list
       expect(post.viewers).to match_array([viewer])
       expect(post.settings).to eq([setting])
@@ -927,7 +932,7 @@ RSpec.describe PostsController, 'PUT update' do
       post = create(:post, user: user, authors: [user, coauthor], authors_locked: true)
       put :update, params: {
         id: post.id,
-        post: {
+        reply: {
           content: "newtext",
         },
       }
@@ -1009,11 +1014,28 @@ RSpec.describe PostsController, 'PUT update' do
         id: post.id,
         post: {
           private_note: 'look a note!',
+          subject: 'new',
+        },
+      }
+      expect(Post.find_by_id(post.id).author_for(post.user).private_note).not_to be_nil
+      expect(post.reload.subject).to eq('new')
+    end
+
+    it "updates with written changes" do
+      post = create(:post, content: 'old')
+      login_as(post.user)
+      expect(post.author_for(post.user).private_note).to be_nil
+      put :update, params: {
+        id: post.id,
+        post: {
+          private_note: 'look a note!',
+        },
+        reply: {
           content: 'new',
         },
       }
       expect(Post.find_by_id(post.id).author_for(post.user).private_note).not_to be_nil
-      expect(post.reload.content).to eq('new')
+      expect(post.reload.written.content).to eq('new')
     end
 
     it "updates with coauthor" do

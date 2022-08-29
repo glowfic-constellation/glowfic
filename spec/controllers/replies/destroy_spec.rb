@@ -124,10 +124,11 @@ RSpec.describe RepliesController, 'DELETE destroy' do
     post = create(:post)
     reply = create(:reply, user: post.user, post: post)
     login_as(post.user)
+    expect(reply.reply_order).to eq(1)
     expect_any_instance_of(Reply).to receive(:destroy!).and_raise(ActiveRecord::RecordNotDestroyed, 'fake error')
     delete :destroy, params: { id: reply.id }
     expect(response).to redirect_to(reply_url(reply, anchor: "reply-#{reply.id}"))
     expect(flash[:error]).to eq({ message: "Reply could not be deleted.", array: [] })
-    expect(post.reload.replies).to eq([reply])
+    expect(post.reload.replies.find_by(reply_order: 1)).to eq(reply)
   end
 end

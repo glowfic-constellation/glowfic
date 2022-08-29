@@ -9,6 +9,7 @@ class Post < ApplicationRecord
   include Writable
 
   belongs_to :board, inverse_of: :posts, optional: false
+  belongs_to :user, optional: false
   belongs_to :section, class_name: 'BoardSection', inverse_of: :posts, optional: true
   belongs_to :last_user, class_name: 'User', inverse_of: false, optional: false
   belongs_to :last_reply, class_name: 'Reply', inverse_of: false, optional: true
@@ -31,6 +32,8 @@ class Post < ApplicationRecord
   has_many :indexes, inverse_of: :posts, through: :index_posts, dependent: :destroy
   has_many :index_sections, inverse_of: :posts, through: :index_posts, dependent: :destroy
 
+  has_one :written, -> { where(reply_order: 0) }, class_name: 'Reply', inverse_of: :post, dependent: :destroy
+
   attr_accessor :is_import
   attr_writer :skip_edited
 
@@ -38,6 +41,7 @@ class Post < ApplicationRecord
   validates :description, length: { maximum: 255 }
   validate :valid_board, :valid_board_section
 
+  after_initialize :create_written, if: :new_record?
   before_validation :set_last_user, on: :create
   before_create :build_initial_flat_post, :set_timestamps
   before_update :set_timestamps
@@ -46,6 +50,7 @@ class Post < ApplicationRecord
 
   NON_EDITED_ATTRS = %w(id created_at updated_at edited_at tagged_at last_user_id last_reply_id section_order)
   NON_TAGGED_ATTRS = %w(icon_id character_alias_id character_id)
+
   audited except: NON_EDITED_ATTRS, update_with_comment_only: false
   has_associated_audits
 
@@ -53,7 +58,6 @@ class Post < ApplicationRecord
     :search,
     against: %i(
       subject
-      content
     ),
     using: { tsearch: { dictionary: "english" } },
   )
@@ -82,7 +86,7 @@ class Post < ApplicationRecord
   # rubocop:enable Style/TrailingCommaInArguments
 
   scope :with_reply_count, -> {
-    select('(SELECT COUNT(*) FROM replies WHERE replies.post_id = posts.id) AS reply_count')
+    select('(SELECT COUNT(*) FROM replies WHERE replies.post_id = posts.id AND replies.reply_order > 0) AS reply_count')
   }
 
   scope :visible_to, ->(user) {
@@ -125,9 +129,6 @@ class Post < ApplicationRecord
       last_user_reply = user_replies.last
       reply.character_id = last_user_reply.character_id
       reply.character_alias_id = last_user_reply.character_alias_id
-    elsif self.user == user
-      reply.character_id = self.character_id
-      reply.character_alias_id = self.character_alias_id
     elsif user.active_character_id.present?
       reply.character_id = user.active_character_id
     end
@@ -169,9 +170,6 @@ class Post < ApplicationRecord
       .order(Arel.sql('MAX(id) desc'))
       .pluck(:character_id)
 
-    # add the post's character_id to the last one if it's not over the limit
-    recent_ids << character_id if character_id.present? && user_id == user.id && recent_ids.length < count && recent_ids.exclude?(character_id)
-
     # fetch the relevant characters and sort by their index in the recent list
     Character.where(id: recent_ids).includes(:default_icon).sort_by do |x|
       recent_ids.index(x.id)
@@ -185,10 +183,6 @@ class Post < ApplicationRecord
   def show_warnings_for?(user)
     return false if user.hide_warnings
     !view_for(user).try(:warnings_hidden)
-  end
-
-  def last_updated
-    edited_at
   end
 
   def read_time_for(viewing_replies)
@@ -223,20 +217,15 @@ class Post < ApplicationRecord
   end
 
   def total_word_count
-    return word_count unless replies.exists?
     contents = replies.pluck(:content)
     full_sanitizer = Rails::Html::FullSanitizer.new
-    word_count + contents.inject(0) { |r, e| r + full_sanitizer.sanitize(e).split.size }.to_i
+    contents.inject(0) { |r, e| r + full_sanitizer.sanitize(e).split.size }.to_i
   end
 
   def word_count_for(user)
-    sum = 0
-    sum = word_count if user_id == user.id
-    return sum unless replies.where(user_id: user.id).exists?
-
     contents = replies.where(user_id: user.id).pluck(:content)
     full_sanitizer = Rails::Html::FullSanitizer.new
-    sum + contents.inject(0) { |r, e| r + full_sanitizer.sanitize(e).split.size }.to_i
+    contents.inject(0) { |r, e| r + full_sanitizer.sanitize(e).split.size }.to_i
   end
 
   # only returns for authors who have written in the post (it's zero for authors who have not joined)
@@ -246,7 +235,6 @@ class Post < ApplicationRecord
 
   def character_appearance_counts
     reply_counts = replies.joins(:character).group(:character_id).count
-    reply_counts[character_id] = reply_counts[character_id].to_i + 1
     Character.where(id: reply_counts.keys).map { |c| [c, reply_counts[c.id]] }.sort_by { |a| -a[1] }
   end
 
@@ -275,6 +263,18 @@ class Post < ApplicationRecord
 
   def next_post(user)
     adjacent_posts_for(user) { |relation| relation.find_by('section_order > ?', self.section_order) }
+  end
+
+  def editable_by?(editor)
+    return false unless editor
+    return true if editor.id == user_id
+    editor.has_permission?(:edit_replies)
+  end
+
+  def deletable_by?(editor)
+    return false unless editor
+    return true if editor.id == user_id
+    editor.has_permission?(:delete_replies)
   end
 
   private
@@ -340,5 +340,9 @@ class Post < ApplicationRecord
   def invalidate_caches
     return unless saved_change_to_authors_locked?
     Post::Author.clear_cache_for(authors)
+  end
+
+  def create_written
+    self.written ||= self.replies.build(reply_order: 0, user: self.user, skip_draft: true)
   end
 end

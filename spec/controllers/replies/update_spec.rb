@@ -103,14 +103,14 @@ RSpec.describe RepliesController, 'PUT update' do
     login_as(reply_post.user)
     create(:reply, post: reply_post)
     reply = create(:reply, post: reply_post, user: reply_post.user)
-    expect(reply.reply_order).to eq(1)
+    expect(reply.reply_order).to eq(2)
     expect(reply_post.replies.ordered.last).to eq(reply)
     create(:reply, post: reply_post)
     expect(reply_post.replies.ordered.last).not_to eq(reply)
     reply_post.mark_read(reply_post.user)
     put :update, params: { id: reply.id, reply: { content: 'new content' } }
     expect(flash[:success]).to eq("Post updated")
-    expect(reply.reload.reply_order).to eq(1)
+    expect(reply.reload.reply_order).to eq(2)
   end
 
   context "preview" do
@@ -149,7 +149,7 @@ RSpec.describe RepliesController, 'PUT update' do
       expect(ReplyDraft.count).to eq(0)
       expect(assigns(:audits)).to eq({ reply.id => 1 })
 
-      written = assigns(:written)
+      written = assigns(:reply)
       expect(written).not_to be_a_new_record
       expect(written.user).to eq(reply_post.user)
       expect(written.character).to eq(char)
@@ -167,9 +167,11 @@ RSpec.describe RepliesController, 'PUT update' do
       expect(controller.gon.editor_user[:username]).to eq(user.username)
       # templates
       templates = assigns(:templates)
-      expect(templates.length).to eq(2)
-      template_chars = templates.first
-      expect(template_chars).to eq(char2.template)
+      expect(templates.length).to eq(3)
+      used = templates.first
+      expect(used.name).to eq("Thread characters")
+      expect(used.plucked_characters).to eq([[char.id, char.name]])
+      expect(templates[1]).to eq(char2.template)
       templateless = templates.last
       expect(templateless.name).to eq('Templateless')
       expect(templateless.plucked_characters).to eq([[char.id, char.name]])
@@ -195,9 +197,9 @@ RSpec.describe RepliesController, 'PUT update' do
       }
 
       expect(response).to render_template(:preview)
-      expect(assigns(:written).user).to eq(reply.user)
-      expect(assigns(:written).audit_comment).to eq('note')
-      expect(assigns(:written).content).to eq(newcontent)
+      expect(assigns(:reply).user).to eq(reply.user)
+      expect(assigns(:reply).audit_comment).to eq('note')
+      expect(assigns(:reply).content).to eq(newcontent)
 
       expect(controller.gon.editor_user[:username]).to eq(user.username)
       expect(assigns(:templates)).to eq([char.template])

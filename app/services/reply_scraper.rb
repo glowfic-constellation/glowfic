@@ -47,6 +47,11 @@ class ReplyScraper < Object
     set_from_icon(@reply, img_url, img_keyword)
 
     if @reply.is_a?(Post)
+      @reply.written.user = @reply.user
+      @reply.written.content = @reply.content
+      @reply.written.character = @reply.character
+      @reply.written.icon = @reply.icon
+      @reply.written.created_at = @reply.written.updated_at = created_at
       @reply.last_user_id = @reply.user_id
       @reply.edited_at = created_at
     end
