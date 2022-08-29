@@ -148,7 +148,7 @@ RSpec.describe DailyReport do
   describe "#unread_date_for" do
     it "invalidates cache on view update" do
       user = create(:user)
-      date = Time.zone.now - 4.days
+      date = 4.days.ago
       later = date + 2.days
       Timecop.freeze(date) do
         DailyReport.mark_read(user, at_time: date.to_date)

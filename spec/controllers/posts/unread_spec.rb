@@ -31,7 +31,7 @@ RSpec.describe PostsController, 'GET unread' do
 
   it "shows appropriate posts" do
     user = create(:user)
-    time = Time.zone.now - 10.minutes
+    time = 10.minutes.ago
 
     unread_post = create(:post) # post
     opened_post1, opened_post2, read_post1, read_post2, hidden_post = Timecop.freeze(time) do
@@ -139,7 +139,7 @@ RSpec.describe PostsController, 'GET unread' do
 
     it "shows appropriate posts" do
       user = create(:user, unread_opened: true)
-      time = Time.zone.now - 10.minutes
+      time = 10.minutes.ago
 
       unread_post = create(:post) # post
       opened_post1, opened_post2, read_post1, read_post2, hidden_post = Timecop.freeze(time) do

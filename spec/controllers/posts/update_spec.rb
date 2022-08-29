@@ -179,7 +179,7 @@ RSpec.describe PostsController, 'PUT update' do
 
     it "marks read after completed" do
       post = nil
-      Timecop.freeze(Time.zone.now - 1.day) do
+      Timecop.freeze(1.day.ago) do
         post = create(:post)
         login_as(post.user)
         post.mark_read(post.user)
@@ -235,8 +235,8 @@ RSpec.describe PostsController, 'PUT update' do
             put :update, params: { id: post.id, status: status }
             expect(response).to redirect_to(post_url(post))
             expect(flash[:success]).to eq("Post has been marked #{status}.")
-            expect(post.reload.send("on_hiatus?")).to eq(true)
-            expect(post.reload.send("hiatus?")).to eq(status == :hiatus)
+            expect(post.reload.send(:on_hiatus?)).to eq(true)
+            expect(post.reload.send(:hiatus?)).to eq(status == :hiatus)
           end
 
           it "works for coauthor" do
@@ -245,8 +245,8 @@ RSpec.describe PostsController, 'PUT update' do
             put :update, params: { id: post.id, status: status }
             expect(response).to redirect_to(post_url(post))
             expect(flash[:success]).to eq("Post has been marked #{status}.")
-            expect(post.reload.send("on_hiatus?")).to eq(true)
-            expect(post.reload.send("hiatus?")).to eq(status == :hiatus)
+            expect(post.reload.send(:on_hiatus?)).to eq(true)
+            expect(post.reload.send(:hiatus?)).to eq(status == :hiatus)
           end
 
           it "works for admin" do
@@ -255,8 +255,8 @@ RSpec.describe PostsController, 'PUT update' do
             put :update, params: { id: post.id, status: status }
             expect(response).to redirect_to(post_url(post))
             expect(flash[:success]).to eq("Post has been marked #{status}.")
-            expect(post.reload.send("on_hiatus?")).to eq(true)
-            expect(post.reload.send("hiatus?")).to eq(status == :hiatus)
+            expect(post.reload.send(:on_hiatus?)).to eq(true)
+            expect(post.reload.send(:hiatus?)).to eq(status == :hiatus)
           end
         end
       end
@@ -621,7 +621,7 @@ RSpec.describe PostsController, 'PUT update' do
       login_as(user)
       post = create(:post, user: user)
 
-      time = Time.zone.now + 5.minutes
+      time = 5.minutes.from_now
       Timecop.freeze(time) do
         expect {
           put :update, params: {
@@ -656,7 +656,7 @@ RSpec.describe PostsController, 'PUT update' do
       joined_user = create(:user)
 
       login_as(user)
-      time = Time.zone.now - 5.minutes
+      time = 5.minutes.ago
       post = reply = nil
       Timecop.freeze(time) do
         post = create(:post, user: user, unjoined_authors: [invited_user])

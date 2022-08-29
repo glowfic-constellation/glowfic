@@ -247,10 +247,10 @@ RSpec.describe IconsController do
       it "orders posts correctly" do
         post3 = create(:post, icon: icon, user: icon.user)
         post4 = create(:post, icon: icon, user: icon.user)
-        post.update!(tagged_at: Time.zone.now - 5.minutes)
-        other_post.update!(tagged_at: Time.zone.now - 2.minutes)
-        post3.update!(tagged_at: Time.zone.now - 8.minutes)
-        post4.update!(tagged_at: Time.zone.now - 4.minutes)
+        post.update!(tagged_at: 5.minutes.ago)
+        other_post.update!(tagged_at: 2.minutes.ago)
+        post3.update!(tagged_at: 8.minutes.ago)
+        post4.update!(tagged_at: 4.minutes.ago)
         get :show, params: { id: icon.id, view: 'posts' }
         expect(assigns(:posts)).to eq([other_post, post4, post, post3])
       end

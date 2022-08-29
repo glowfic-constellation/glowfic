@@ -343,7 +343,7 @@ RSpec.describe BoardsController do
       coauthor = create(:user)
       board = create(:board, writers: [coauthor])
       sections = [create(:board_section, board: board), create(:board_section, board: board)]
-      posts = [create(:post, board: board, user: board.creator, tagged_at: Time.zone.now + 5.minutes), create(:post, user: coauthor, board: board)]
+      posts = [create(:post, board: board, user: board.creator, tagged_at: 5.minutes.from_now), create(:post, user: coauthor, board: board)]
       sections[0].update!(section_order: 1)
       sections[1].update!(section_order: 0)
       login_as(board.creator)

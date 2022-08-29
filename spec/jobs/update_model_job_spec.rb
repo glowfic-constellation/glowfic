@@ -24,7 +24,7 @@ RSpec.describe UpdateModelJob do
     reply = create(:reply)
     char = create(:character, user: reply.user)
     args = ['Reply', { id: reply.id }, { character_id: char.id }]
-    notifier = class_double('ExceptionNotifier').as_stubbed_const
+    notifier = class_double(ExceptionNotifier).as_stubbed_const
     expect(notifier).to receive(:notify_exception).with(ArgumentError, data: { job: UpdateModelJob.to_s, args: args })
     UpdateModelJob.perform_now(*args)
   end
@@ -35,7 +35,7 @@ RSpec.describe UpdateModelJob do
     user = create(:user)
     user.destroy!
     args = ['Reply', { id: reply.id }, { character_id: char.id }, user.id]
-    notifier = class_double('ExceptionNotifier').as_stubbed_const
+    notifier = class_double(ExceptionNotifier).as_stubbed_const
     expect(notifier).to receive(:notify_exception).with(ActiveRecord::RecordNotFound, data: { job: UpdateModelJob.to_s, args: args })
     UpdateModelJob.perform_now(*args)
   end

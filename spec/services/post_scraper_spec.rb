@@ -73,7 +73,7 @@ RSpec.describe PostScraper do
     url = 'http://alicornutopia.dreamwidth.org/9596.html?thread=4077436&style=site#cmt4077436'
     stub_fixture(url, 'scrape_threaded')
     scraper = PostScraper.new(url, nil, nil, nil, true)
-    scraper.instance_variable_set('@html_doc', scraper.send(:doc_from_url, url))
+    scraper.instance_variable_set(:@html_doc, scraper.send(:doc_from_url, url))
     expect(scraper.send(:page_links).size).to eq(2)
   end
 
@@ -81,7 +81,7 @@ RSpec.describe PostScraper do
     url = 'https://alicornutopia.dreamwidth.org/22671.html?thread=14698127&style=site#cmt14698127'
     stub_fixture(url, 'scrape_threaded_broken_depth')
     scraper = PostScraper.new(url, nil, nil, nil, true)
-    scraper.instance_variable_set('@html_doc', scraper.send(:doc_from_url, url))
+    scraper.instance_variable_set(:@html_doc, scraper.send(:doc_from_url, url))
     expect(scraper.send(:page_links)).to eq([
       'https://alicornutopia.dreamwidth.org/22671.html?thread=14705039&style=site#cmt14705039',
       'https://alicornutopia.dreamwidth.org/22671.html?thread=14711695&style=site#cmt14711695',
@@ -92,7 +92,7 @@ RSpec.describe PostScraper do
     url = 'https://alicornutopia.dreamwidth.org/22671.html?thread=14691983#cmt14691983'
     stub_fixture(url, 'scrape_threaded_broken_boundary_depth')
     scraper = PostScraper.new(url, nil, nil, nil, true)
-    scraper.instance_variable_set('@html_doc', scraper.send(:doc_from_url, url))
+    scraper.instance_variable_set(:@html_doc, scraper.send(:doc_from_url, url))
     expect(scraper.send(:page_links)).to eq([
       'https://alicornutopia.dreamwidth.org/22671.html?thread=14698383&style=site#cmt14698383',
       'https://alicornutopia.dreamwidth.org/22671.html?thread=14698639&style=site#cmt14698639',

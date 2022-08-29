@@ -224,7 +224,7 @@ RSpec.describe PostsController, 'POST create' do
     board = create(:board, creator: board_creator)
     login_as(user)
 
-    time = Time.zone.now - 5.minutes
+    time = 5.minutes.ago
     Timecop.freeze(time) do
       expect {
         post :create, params: {
@@ -261,7 +261,7 @@ RSpec.describe PostsController, 'POST create' do
     board = create(:board, creator: board_creator)
     login_as(user)
 
-    time = Time.zone.now - 5.minutes
+    time = 5.minutes.ago
     Timecop.freeze(time) do
       expect {
         post :create, params: {

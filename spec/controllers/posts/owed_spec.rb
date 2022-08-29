@@ -102,7 +102,7 @@ RSpec.describe PostsController, 'GET owed' do
 
     it "shows auto-hiatused posts" do
       post = nil
-      Timecop.freeze(Time.zone.now - 1.month) do
+      Timecop.freeze(1.month.ago) do
         post = create(:post, user: user)
         create(:reply, post: post, user: other_user)
       end

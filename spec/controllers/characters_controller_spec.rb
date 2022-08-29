@@ -1079,7 +1079,7 @@ RSpec.describe CharactersController do
         expect(reply.post.reload.character_id).to eq(reply_post_char) # check it doesn't replace all replies in a post
 
         audit = reply.audits.where(action: 'update').first
-        expect(audit).not_to be(nil)
+        expect(audit).not_to be_nil
         expect(audit.user).to eq(user)
       end
     end

@@ -22,10 +22,7 @@ Rails:
 
 #################### Gemspec ##############################
 
-Gemspec/DateAssignment: # (new in 1.10)
-  Enabled: true
-
-Gemspec/RequireMFA: # new in 1.23
+Gemspec:
   Enabled: false
 
 #################### Layout ##############################
@@ -170,6 +167,10 @@ Lint/ParenthesesAsGroupedExpression:
 Lint/RedundantDirGlobSort: # (new in 1.8)
   Enabled: true
 
+Lint/RefinementImportMethods: # new in 1.27
+  Enabled: false
+  # for ruby 3.1
+
 Lint/RequireRelativeSelfPath: # new in 1.22
   Enabled: true
 
@@ -228,6 +229,10 @@ Metrics/PerceivedComplexity:
 
 Naming/AccessorMethodName:
   Enabled: false
+
+Naming/BlockForwarding: # new in 1.24
+  Enabled: false
+  # for ruby 3.1
 
 Naming/MemoizedInstanceVariableName:
   Enabled: false
@@ -297,7 +302,14 @@ Performance/StringInclude:
 Performance/Sum:
   Enabled: true
 
+Performance/StringIdentifierArgument: # new in 1.13
+  Enabled: true
+
 ##################### Rails ##################################
+
+Rails/ActionControllerTestCase: # new in 2.14
+  Enabled: false
+  # we don't use rails native tests, and also, no.
 
 Rails/ActiveRecordCallbacksOrder:
   Enabled: true
@@ -323,6 +335,25 @@ Rails/Blank:
 Rails/ContentTag:
   Enabled: true
 
+Rails/CompactBlank: # new in 2.13
+  Enabled: true
+
+Rails/DeprecatedActiveModelErrorsMethods: # new in 2.14
+  Enabled: true
+
+Rails/DotSeparatedKeys: # new in 2.15
+  Enabled: false
+  # I18n
+
+Rails/DuplicateAssociation: # new in 2.14
+  Enabled: true
+
+Rails/DuplicateScope: # new in 2.14
+  Enabled: true
+
+Rails/DurationArithmetic: # new in 2.13
+  Enabled: true
+
 Rails/DynamicFindBy:
   Enabled: true
   Whitelist:
@@ -344,6 +375,12 @@ Rails/FilePath:
 Rails/FindById:
   Enabled: true
 
+Rails/I18nLazyLookup: # new in 2.14
+  Enabled: false
+
+Rails/I18nLocaleTexts: # new in 2.14
+  Enabled: false
+
 Rails/Inquiry:
   Enabled: true
 
@@ -362,6 +399,9 @@ Rails/MailerName:
   Enabled: true
 
 Rails/MatchRoute: # new in 2.7
+  Enabled: true
+
+Rails/MigrationClassName: # new in 2.14
   Enabled: true
 
 Rails/NegateInclude:
@@ -383,6 +423,9 @@ Rails/PluckInWhere:
 Rails/ReadWriteAttribute:
   Enabled: false
 
+Rails/RedundantPresenceValidationOnBelongsTo: # new in 2.13
+  Enabled: true
+
 Rails/RedundantTravelBack: # new in 2.12
   Enabled: false
   # we don't use rails tests
@@ -391,6 +434,12 @@ Rails/RenderInline:
   Enabled: true
 
 Rails/RenderPlainText:
+  Enabled: true
+
+Rails/RootJoinChain: # new in 2.13
+  Enabled: true
+
+Rails/RootPublicPath: # new in 2.15
   Enabled: true
 
 Rails/SaveBang:
@@ -402,7 +451,16 @@ Rails/ShortI18n:
 Rails/SquishedSQLHeredocs:
   Enabled: true
 
+Rails/StripHeredoc: # new in 2.15
+  Enabled: true
+
 Rails/TimeZoneAssignment: # (new in 2.10)
+  Enabled: true
+
+Rails/ToFormattedS: # new in 2.15
+  Enabled: true
+
+Rails/TransactionExitStatement: # new in 2.14
   Enabled: true
 
 Rails/UniqueValidationWithoutIndex:
@@ -425,6 +483,15 @@ Rails/WhereNot:
 
 RSpec/AnyInstance:
   Enabled: false
+
+RSpec/BeEq: # new in 2.9.0
+  Enabled: false
+
+RSpec/BeNil: # new in 2.9.0
+  Enabled: true
+
+RSpec/ChangeByZero: # new in 2.11.0
+  Enabled: true
 
 RSpec/ContextWording:
   Enabled: false
@@ -483,10 +550,18 @@ RSpec/StubbedMock:
 RSpec/SubjectDeclaration: # new in 2.5
   Enabled: true
 
+RSpec/VerifiedDoubleReference: # new in 2.10.0
+  Enabled: true
+
 ################## RSpec/Capybara ##############################
 
 RSpec/Capybara/FeatureMethods:
   EnabledMethods: [feature, scenario]
+
+################## RSpec/FactoryBot ############################
+
+RSpec/FactoryBot/SyntaxMethods: # new in 2.7
+  Enabled: true
 
 ################## RSpec/Rails #################################
 
@@ -497,6 +572,9 @@ RSpec/Rails/HttpStatus:
   EnforcedStyle: numeric
 
 ################## Security ##############################
+
+Security/CompoundHash: # new in 1.28
+  Enabled: true
 
 Security/IoMethods: # new in 1.22
   Enabled: true
@@ -551,12 +629,24 @@ Style/EmptyMethod:
 Style/EndlessMethod: # (new in 1.8)
   Enabled: true
 
+Style/EnvHome: # new in 1.29
+  Enabled: true
+
 Style/ExplicitBlockArgument:
   Enabled: false
 
 Style/ExponentialNotation:
   Enabled: false
   # disabled because we literally never use exponents
+
+Style/FetchEnvVar: # new in 1.28
+  Enabled: true
+
+Style/FileRead: # new in 1.24
+  Enabled: true
+
+Style/FileWrite: # new in 1.24
+  Enabled: true
 
 Style/FormatStringToken:
   EnforcedStyle: 'template'
@@ -597,6 +687,12 @@ Style/KeywordParametersOrder:
 Style/Lambda:
   Enabled: false
 
+Style/MapCompactWithConditionalBlock: # new in 1.30
+  Enabled: true
+
+Style/MapToHash: # new in 1.24
+  Enabled: true
+
 Style/MixinUsage:
   Exclude: ['bin/*']
 
@@ -607,6 +703,9 @@ Style/MutableConstant:
   Enabled: false
 
 Style/NegatedIfElseCondition: # (new in 1.2)
+  Enabled: true
+
+Style/NestedFileDirname: # new in 1.26
   Enabled: true
 
 Style/NilLambda: # (new in 1.3)
@@ -623,6 +722,9 @@ Style/NumericLiterals:
 
 Style/NumericPredicate:
   Enabled: false
+
+Style/ObjectThen: # new in 1.28
+  Enabled: true
 
 Style/OpenStructUse: # new in 1.23
   Enabled: false
@@ -652,6 +754,9 @@ Style/RedundantBegin:
 
 Style/RedundantException:
   Enabled: false
+
+Style/RedundantInitialize: # new in 1.27
+  Enabled: true
 
 Style/RedundantSelf:
   Enabled: false
