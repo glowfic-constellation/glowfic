@@ -631,9 +631,6 @@ Style/OpenStructUse: # new in 1.23
 Style/OptionalBooleanParameter:
   Enabled: false
 
-Style/ParallelAssignment:
-  Enabled: false
-
 Style/PercentLiteralDelimiters:
   Enabled: false
 

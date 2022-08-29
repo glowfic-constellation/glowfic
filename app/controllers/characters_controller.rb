@@ -157,27 +157,19 @@ class CharactersController < ApplicationController
       .joins(:user)
       .left_outer_joins(:template)
       .pluck('characters.id, characters.name, characters.pb, users.id, users.username, templates.id, templates.name')
-    @pbs = []
 
-    pb_struct = Struct.new(:item_id, :item_name, :type, :pb, :user_id, :username)
-    chars.each do |dataset|
-      id, name, pb, user_id, username, template_id, nickname = dataset
-      if template_id.present?
-        item_id, item_name, type = template_id, nickname, Template
+    @pbs = chars.map { |data| Character.facecast_for(data) }.uniq
+
+    case params[:sort]
+      when "name"
+        keys = [:name, :pb, :username]
+      when "writer"
+        keys = [:username, :pb, :name]
       else
-        item_id, item_name, type = id, name, Character
-      end
-      @pbs << pb_struct.new(item_id, item_name, type, pb, user_id, username)
+        keys = [:pb, :username, :name]
     end
-    @pbs.uniq!
 
-    if params[:sort] == "name"
-      @pbs.sort_by! { |x| [x[:item_name].downcase, x[:pb].downcase, x[:username].downcase] }
-    elsif params[:sort] == "writer"
-      @pbs.sort_by! { |x| [x[:username].downcase, x[:pb].downcase, x[:item_name].downcase] }
-    else
-      @pbs.sort_by! { |x| [x[:pb].downcase, x[:username].downcase, x[:item_name].downcase] }
-    end
+    @pbs.sort_by! { |x| x.to_h.values_at(*keys).map(&:downcase) }
   end
 
   def replace
