@@ -57,7 +57,7 @@ RSpec.describe SplitPostJob do
 
     expect {
       SplitPostJob.perform_now(reply.id, title)
-    }.to change { Post.count }.by(1).and change { Reply.count }.by(0)
+    }.to change { Post.count }.by(1).and not_change { Reply.count }
 
     post.reload
     expect(post.replies.count).to eq(50)
@@ -93,7 +93,7 @@ RSpec.describe SplitPostJob do
 
     expect {
       SplitPostJob.perform_now(reply.id, title)
-    }.to change { Post.count }.by(1).and change { Reply.count }.by(0)
+    }.to change { Post.count }.by(1).and not_change { Reply.count }
 
     new_post = Post.last
     expect(new_post.board).to eq(board)
@@ -114,7 +114,7 @@ RSpec.describe SplitPostJob do
 
     expect {
       SplitPostJob.perform_now(post.replies.find_by(reply_order: 6).id, title)
-    }.to change { Post.count }.by(1).and change { Reply.count }.by(0)
+    }.to change { Post.count }.by(1).and not_change { Reply.count }
 
     new_post = Post.last
 

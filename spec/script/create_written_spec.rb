@@ -3,15 +3,15 @@ require Rails.root.join('script', 'create_written.rb').to_s
 RSpec.describe "#create_writtens" do # rubocop:disable Rspec/DescribeClass
   it "skips posts that already have writtens" do
     create(:post)
-    expect { create_writtens }.not_to change{Reply.count}
+    expect { create_writtens }.not_to change { Reply.count }
   end
 
   it "creates writtens for simple posts" do
     post = create(:post, skip_written: true)
     expect(post.written).to be_nil
     allow(STDOUT).to receive(:puts).with("Creating writtens for posts #{post.id} through #{post.id}")
-    Timecop.freeze(Time.zone.now + 8.hours) do
-      expect { create_writtens }.to change{Reply.count}.by(1)
+    Timecop.freeze(8.hours.from_now) do
+      expect { create_writtens }.to change { Reply.count }.by(1)
     end
     written = Reply.last
     expect(written.reply_order).to eq(0)
@@ -31,14 +31,14 @@ RSpec.describe "#create_writtens" do # rubocop:disable Rspec/DescribeClass
     calias = create(:alias, character: character)
 
     post = create(:post, character: character, icon: icon, character_alias: calias, user: user, skip_written: true)
-    Timecop.freeze(Time.zone.now + 4.hours) do
+    Timecop.freeze(4.hours.from_now) do
       post.update!(content: 'new content!')
     end
     expect(post.written).to be_nil
 
     allow(STDOUT).to receive(:puts).with("Creating writtens for posts #{post.id} through #{post.id}")
-    Timecop.freeze(Time.zone.now + 8.hours) do
-      expect { create_writtens }.to change{Reply.count}.by(1)
+    Timecop.freeze(8.hours.from_now) do
+      expect { create_writtens }.to change { Reply.count }.by(1)
     end
     written = Reply.last
     expect(written.reply_order).to eq(0)
@@ -70,26 +70,26 @@ RSpec.describe "#create_writtens" do # rubocop:disable Rspec/DescribeClass
 
       post = create(:post, character: character, icon: icon, user: user, skip_written: true)
 
-      Timecop.freeze(Time.zone.now + 2.hours) do
+      Timecop.freeze(2.hours.from_now) do
         post.update!(subject: 'new subject!')
       end
 
-      Timecop.freeze(Time.zone.now + 4.hours) do
+      Timecop.freeze(4.hours.from_now) do
         post.update!(content: 'new content!')
       end
 
-      Timecop.freeze(Time.zone.now + 6.hours) do
+      Timecop.freeze(6.hours.from_now) do
         post.update!(status: :complete)
       end
 
-      Timecop.freeze(Time.zone.now + 8.hours) do
+      Timecop.freeze(8.hours.from_now) do
         post.update!(character_alias: calias)
       end
       expect(post.written).to be_nil
 
       allow(STDOUT).to receive(:puts).with("Creating writtens for posts #{post.id} through #{post.id}")
-      Timecop.freeze(Time.zone.now + 12.hours) do
-        expect { create_writtens }.to change{Reply.count}.by(1)
+      Timecop.freeze(12.hours.from_now) do
+        expect { create_writtens }.to change { Reply.count }.by(1)
       end
       written = Reply.last
       expect(written.reply_order).to eq(0)
@@ -108,11 +108,11 @@ RSpec.describe "#create_writtens" do # rubocop:disable Rspec/DescribeClass
 
       update_audit1 = written.audits.second
       expect(update_audit1.action).to eq('update')
-      expect(update_audit1.audited_changes).to eq({'content' => ['test content', 'new content!']})
+      expect(update_audit1.audited_changes).to eq({ 'content' => ['test content', 'new content!'] })
 
       update_audit2 = written.audits.third
       expect(update_audit2.action).to eq('update')
-      expect(update_audit2.audited_changes).to eq({'character_alias_id' => [nil, calias.id]})
+      expect(update_audit2.audited_changes).to eq({ 'character_alias_id' => [nil, calias.id] })
     end
   end
 
@@ -120,8 +120,8 @@ RSpec.describe "#create_writtens" do # rubocop:disable Rspec/DescribeClass
     posts = create_list(:post, 30, with_character: true, with_icon: true, skip_written: true)
     allow(STDOUT).to receive(:puts).with("Creating writtens for posts #{posts.first.id} through #{posts.last.id}")
 
-    Timecop.freeze(Time.zone.now + 8.hours) do
-      expect { create_writtens }.to change{Reply.count}.by(30)
+    Timecop.freeze(8.hours.from_now) do
+      expect { create_writtens }.to change { Reply.count }.by(30)
     end
   end
 end
