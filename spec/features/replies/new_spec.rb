@@ -72,7 +72,7 @@ RSpec.feature "Creating replies", :type => :feature do
     end
   end
 
-  scenario "User interacts with javascript", js: true do
+  skip "User interacts with javascript", js: true do
     post = create(:post)
 
     user = login
