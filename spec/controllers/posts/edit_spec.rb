@@ -93,4 +93,15 @@ RSpec.describe PostsController, 'GET edit' do
     expect(assigns(:post).content_warnings.map(&:id_for_select)).to match_array([warning.id])
     expect(assigns(:post).labels.map(&:id_for_select)).to match_array([label.id])
   end
+
+  context "with render_view" do
+    render_views
+
+    it "works" do
+      post = create(:post)
+      create(:post_link, linking_post: post)
+      expect(post.linked_post_joins).to be_present
+      get :edit, params: { id: post.id }
+    end
+  end
 end
