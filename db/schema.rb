@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2020_04_16_173619) do
+ActiveRecord::Schema.define(version: 2021_07_15_154620) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "citext"
@@ -340,7 +340,7 @@ ActiveRecord::Schema.define(version: 2020_04_16_173619) do
     t.integer "last_reply_id"
     t.datetime "edited_at"
     t.datetime "tagged_at"
-    t.boolean "authors_locked", default: false
+    t.boolean "authors_locked", default: true
     t.integer "character_alias_id"
     t.index "to_tsvector('english'::regconfig, COALESCE((subject)::text, ''::text))", name: "idx_fts_post_subject", using: :gin
     t.index "to_tsvector('english'::regconfig, COALESCE(content, ''::text))", name: "idx_fts_post_content", using: :gin

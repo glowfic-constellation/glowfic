@@ -31,7 +31,7 @@ RSpec.describe PostsController, 'GET delete_history' do
   it "sets correct variables" do
     post = create(:post)
     login_as(post.user)
-    reply = create(:reply, post: post)
+    reply = create(:reply, post: post, user: post.user)
     reply.destroy!
     get :delete_history, params: { id: post.id }
     expect(response).to have_http_status(200)
@@ -41,7 +41,7 @@ RSpec.describe PostsController, 'GET delete_history' do
   it "ignores restored replies" do
     post = create(:post)
     login_as(post.user)
-    reply = create(:reply, post: post)
+    reply = create(:reply, post: post, user: post.user)
     reply.destroy!
     restore(reply)
     get :delete_history, params: { id: post.id }
@@ -51,7 +51,7 @@ RSpec.describe PostsController, 'GET delete_history' do
   it "only selects more recent restore" do
     post = create(:post)
     login_as(post.user)
-    reply = create(:reply, post: post, content: 'old content')
+    reply = create(:reply, post: post, user: post.user, content: 'old content')
     reply.destroy!
     restore(reply)
     reply = Reply.find_by_id(reply.id)

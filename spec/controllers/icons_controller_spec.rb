@@ -220,15 +220,14 @@ RSpec.describe IconsController do
     end
 
     context "post view" do
-      let(:icon) { create(:icon) }
-      let(:post) { create(:post, icon: icon, user: icon.user) }
-      let(:other_post) { create(:post) }
-      let(:reply) { create(:reply, icon: icon, user: icon.user, post: other_post) }
+      let(:user) { create(:user) }
+      let(:icon) { create(:icon, user: user) }
+      let!(:post) { create(:post, icon: icon, user: user) }
+      let(:other_post) { create(:post, unjoined_authors: [user]) }
 
       before(:each) do
-        create(:post) # should not be found
-        post
-        reply
+        create(:reply, icon: icon, user: user, post: other_post)
+        create(:post)
       end
 
       it "loads posts logged out" do
@@ -280,23 +279,20 @@ RSpec.describe IconsController do
     end
 
     context "stats view" do
-      let(:icon) { create(:icon) }
-      let(:post) { create(:post, icon: icon, user: icon.user) }
-      let(:reply) { create(:reply, icon: icon, user: icon.user, post: create(:post)) }
-      let(:private_post) { create(:post, icon: icon, user: icon.user, privacy: :private) }
-      let(:registered_post) { create(:post, icon: icon, user: icon.user, privacy: :registered) }
-      let(:full_post) { create(:post, icon: icon, user: icon.user, privacy: :full_accounts) }
+      let(:user) { create(:user) }
+      let(:icon) { create(:icon, user: user) }
+      let(:post) { create(:post, icon: icon, user: user) }
 
       before(:each) do
-        create(:reply, post: post, user: icon.user, icon: icon)
-        reply
-        private_post
-        registered_post
-        full_post
+        create(:reply, icon: icon, post: post, user: user)
+        create(:reply, icon: icon, user: user)
+        create(:post, icon: icon, user: user, privacy: :private)
+        create(:post, icon: icon, user: user, privacy: :registered)
+        create(:post, icon: icon, user: user, privacy: :full_accounts)
       end
 
       it "fetches correct counts for icon owner" do
-        login_as(icon.user)
+        login_as(user)
         get :show, params: { id: icon.id }
         expect(response).to have_http_status(200)
         expect(assigns(:times_used)).to eq(6)

@@ -39,7 +39,7 @@ RSpec.describe RepliesController, 'GET show' do
     user2 = create(:user, username: 'user2')
     board = create(:board, name: 'example board')
     section = create(:board_section, board: board, name: 'example section')
-    post = create(:post, board: board, section: section, user: user, subject: 'a post', description: 'Test.')
+    post = create(:post, board: board, section: section, user: user, subject: 'a post', description: 'Test.', unjoined_authors: [user2])
     create_list(:reply, 25, post: post, user: user)
     reply = create(:reply, post: post, user: user2)
     get :show, params: { id: reply.id }

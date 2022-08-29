@@ -96,8 +96,8 @@ RSpec.shared_examples "logged in post list" do
   end
 
   it "shows unlocked posts with incomplete blocking" do
-    post1 = create(:post)
-    post2 = create(:post)
+    post1 = create(:post, authors_locked: false)
+    post2 = create(:post, authors_locked: false)
     create(:block, blocking_user: user, blocked_user: post1.user, hide_them: :posts)
     create(:block, blocking_user: post2.user, blocked_user: user, hide_me: :posts)
     get controller_action, params: params
@@ -106,7 +106,7 @@ RSpec.shared_examples "logged in post list" do
   end
 
   it "does not show unlocked posts with full viewer-side blocking" do
-    post1 = create(:post)
+    post1 = create(:post, authors_locked: false)
     create(:block, blocking_user: user, blocked_user: post1.user, hide_them: :all)
     get controller_action, params: params
     expect(response.status).to eq(200)

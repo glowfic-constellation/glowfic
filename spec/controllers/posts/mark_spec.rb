@@ -90,9 +90,9 @@ RSpec.describe PostsController, 'POST mark' do
       user = create(:user)
 
       time = 10.minutes.ago
-      post1 = create(:post, created_at: time, updated_at: time) # unread
-      post2 = create(:post, created_at: time, updated_at: time) # partially read
-      post3 = create(:post, created_at: time, updated_at: time) # fully read
+      post1 = create(:post, created_at: time, updated_at: time, authors_locked: false) # unread
+      post2 = create(:post, created_at: time, updated_at: time, authors_locked: false) # partially read
+      post3 = create(:post, created_at: time, updated_at: time, authors_locked: false) # fully read
       Array.new(5) { |i| create(:reply, post: post1, created_at: time + i.minutes, updated_at: time + i.minutes) } # replies1
       replies2 = Array.new(5) { |i| create(:reply, post: post2, created_at: time + i.minutes, updated_at: time + i.minutes) }
       replies3 = Array.new(5) { |i| create(:reply, post: post3, created_at: time + i.minutes, updated_at: time + i.minutes) }

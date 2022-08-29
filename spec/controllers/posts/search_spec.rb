@@ -88,6 +88,7 @@ RSpec.describe PostsController, 'GET search' do
       posts = Array.new(4) { create(:post) }
       filtered_post = posts.last
       first_post = posts.first
+      first_post.update!(unjoined_authors: [filtered_post.user])
       create(:reply, post: first_post, user: filtered_post.user)
       get :search, params: { commit: true, author_id: [filtered_post.user_id] }
       expect(assigns(:search_results)).to match_array([filtered_post, first_post])
@@ -100,14 +101,14 @@ RSpec.describe PostsController, 'GET search' do
 
       found_posts = []
       create(:post, user: author1) # one author but not the other, post
-      post = create(:post, user: nonauthor) # one author but not the other, reply
+      post = create(:post, user: nonauthor, unjoined_authors: [author2]) # one author but not the other, reply
       create(:reply, user: author2, post: post)
 
-      post = create(:post, user: author1) # both authors, one post only
+      post = create(:post, user: author1, unjoined_authors: [author2]) # both authors, one post only
       create(:reply, post: post, user: author2)
       found_posts << post
 
-      post = create(:post, user: nonauthor) # both authors, replies only
+      post = create(:post, user: nonauthor, unjoined_authors: [author1, author2]) # both authors, replies only
       create(:reply, post: post, user: author1)
       create(:reply, post: post, user: author2)
       found_posts << post
@@ -132,7 +133,7 @@ RSpec.describe PostsController, 'GET search' do
     end
 
     it "sorts posts by tagged_at" do
-      posts = Array.new(4) { create(:post) }
+      posts = create_list(:post, 4, authors_locked: false)
       create(:reply, post: posts[2])
       create(:reply, post: posts[1])
       get :search, params: { commit: true }

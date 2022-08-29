@@ -46,7 +46,7 @@ RSpec.describe FlatPost do
       post = create(:post)
       nonpost = create(:post)
 
-      reply = build(:reply, post: post)
+      reply = build(:reply, post: post, user: post.user)
       reply.skip_regenerate = true
       reply.save!
 

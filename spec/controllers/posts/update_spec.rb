@@ -74,10 +74,10 @@ RSpec.describe PostsController, 'PUT update' do
 
     it "works with at_id" do
       post = create(:post)
-      unread_reply = build(:reply, post: post)
+      unread_reply = build(:reply, post: post, user: post.user)
       Timecop.freeze(post.created_at + 1.minute) do
         unread_reply.save!
-        create(:reply, post: post)
+        create(:reply, post: post, user: post.user)
       end
       Timecop.freeze(post.created_at + 2.minutes) do
         post.mark_read(post.user)
@@ -110,10 +110,10 @@ RSpec.describe PostsController, 'PUT update' do
     it "works when ignored with at_id" do
       user = create(:user)
       post = create(:post)
-      unread_reply = build(:reply, post: post)
+      unread_reply = build(:reply, post: post, user: post.user)
       Timecop.freeze(post.created_at + 1.minute) do
         unread_reply.save!
-        create(:reply, post: post)
+        create(:reply, post: post, user: post.user)
       end
       Timecop.freeze(post.created_at + 2.minutes) do
         post.mark_read(user)
@@ -191,10 +191,12 @@ RSpec.describe PostsController, 'PUT update' do
 
     Post.statuses.each_key do |status|
       context "to #{status}" do
-        let(:post) { create(:post) }
+        let(:user) { create(:user) }
+        let(:coauthor) { create(:user) }
+        let(:post) { create(:post, user: user, unjoined_authors: [coauthor]) }
 
         it "works for creator" do
-          login_as(post.user)
+          login_as(user)
           put :update, params: { id: post.id, status: status }
           expect(response).to redirect_to(post_url(post))
           expect(flash[:success]).to eq("Post has been marked #{status}.")
@@ -202,8 +204,8 @@ RSpec.describe PostsController, 'PUT update' do
         end
 
         it "works for coauthor" do
-          reply = create(:reply, post: post)
-          login_as(reply.user)
+          create(:reply, post: post, user: coauthor)
+          login_as(coauthor)
           put :update, params: { id: post.id, status: status }
           expect(response).to redirect_to(post_url(post))
           expect(flash[:success]).to eq("Post has been marked #{status}.")
@@ -223,14 +225,15 @@ RSpec.describe PostsController, 'PUT update' do
     context "with an old thread" do
       [:hiatus, :active].each do |status|
         context "to #{status}" do
-          time = 2.months.ago
-          let(:post) { create(:post, created_at: time, updated_at: time) }
-          let(:reply) { create(:reply, post: post, created_at: time, updated_at: time) }
+          let(:time) { 2.months.ago }
+          let!(:user) { create(:user) }
+          let!(:coauthor) { create(:user) }
+          let!(:post) { Timecop.freeze(time) { create(:post, user: user, unjoined_authors: [coauthor]) } }
 
-          before (:each) { reply }
+          before(:each) { Timecop.freeze(time) { create(:reply, post: post, user: coauthor) } }
 
           it "works for creator" do
-            login_as(post.user)
+            login_as(user)
             expect(post.reload.tagged_at).to be_the_same_time_as(time)
             put :update, params: { id: post.id, status: status }
             expect(response).to redirect_to(post_url(post))
@@ -240,7 +243,7 @@ RSpec.describe PostsController, 'PUT update' do
           end
 
           it "works for coauthor" do
-            login_as(reply.user)
+            login_as(coauthor)
             expect(post.reload.tagged_at).to be_the_same_time_as(time)
             put :update, params: { id: post.id, status: status }
             expect(response).to redirect_to(post_url(post))
@@ -312,7 +315,7 @@ RSpec.describe PostsController, 'PUT update' do
     end
 
     it "handles unexpected failure" do
-      post = create(:post)
+      post = create(:post, authors_locked: false)
       login_as(post.user)
       post.update_columns(board_id: 0) # rubocop:disable Rails/SkipsModelValidations
       expect(post.reload).not_to be_valid
@@ -326,7 +329,7 @@ RSpec.describe PostsController, 'PUT update' do
   context "mark hidden" do
     it "marks hidden" do
       post = create(:post)
-      reply = create(:reply, post: post)
+      reply = create(:reply, post: post, user: post.user)
       user = create(:user)
       post.mark_read(user, at_time: post.read_time_for([reply]))
       time_read = post.reload.last_read(user)
@@ -343,7 +346,7 @@ RSpec.describe PostsController, 'PUT update' do
 
     it "marks unhidden" do
       post = create(:post)
-      reply = create(:reply, post: post)
+      reply = create(:reply, post: post, user: post.user)
       user = create(:user)
       login_as(user)
       post.mark_read(user, at_time: post.read_time_for([reply]))
@@ -659,7 +662,7 @@ RSpec.describe PostsController, 'PUT update' do
       time = 5.minutes.ago
       post = reply = nil
       Timecop.freeze(time) do
-        post = create(:post, user: user, unjoined_authors: [invited_user])
+        post = create(:post, user: user, unjoined_authors: [joined_user, invited_user])
         reply = create(:reply, user: joined_user, post: post)
       end
 
@@ -854,7 +857,7 @@ RSpec.describe PostsController, 'PUT update' do
       removed_author = create(:user)
       joined_author = create(:user)
 
-      post = create(:post, user: user, unjoined_authors: [removed_author])
+      post = create(:post, user: user, unjoined_authors: [joined_author, removed_author])
       create(:reply, user: joined_author, post: post)
 
       newcontent = post.content + 'new'
@@ -940,7 +943,7 @@ RSpec.describe PostsController, 'PUT update' do
     it "allows coauthors" do
       coauthor = create(:user)
       login_as(coauthor)
-      post = create(:post, subject: "test subject")
+      post = create(:post, subject: "test subject", unjoined_authors: [coauthor])
       create(:reply, post: post, user: coauthor)
       put :update, params: {
         id: post.id,
@@ -1017,9 +1020,10 @@ RSpec.describe PostsController, 'PUT update' do
     end
 
     it "updates with coauthor" do
-      post = create(:post)
-      reply = create(:reply, post: post)
-      login_as(reply.user)
+      coauthor = create(:user)
+      post = create(:post, unjoined_authors: [coauthor])
+      reply = create(:reply, post: post, user: coauthor)
+      login_as(coauthor)
       expect(post.author_for(reply.user).private_note).to be_nil
       put :update, params: {
         id: post.id,

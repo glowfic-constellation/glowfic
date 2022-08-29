@@ -99,7 +99,7 @@ RSpec.describe RepliesController, 'PUT update' do
   end
 
   it "preserves reply_order" do
-    reply_post = create(:post)
+    reply_post = create(:post, authors_locked: false)
     login_as(reply_post.user)
     create(:reply, post: reply_post)
     reply = create(:reply, post: reply_post, user: reply_post.user)

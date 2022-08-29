@@ -1,6 +1,6 @@
 RSpec.describe PostHelper do
   describe "#author_links" do
-    let(:post) { create(:post) }
+    let(:post) { create(:post, authors_locked: false) }
 
     context "with only deleted users" do
       before(:each) { post.user.update!(deleted: true) }

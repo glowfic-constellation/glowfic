@@ -11,10 +11,11 @@ RSpec.feature "Show a single continuity", :type => :feature do
 
   scenario "View a continuity with many authors in a post" do
     board = create(:board, name: "Author board")
-    post1 = create(:post, board: board, user: board.creator)
-    reply = create(:reply, post: post1)
-    post2 = create(:post, board: board, user: board.creator)
-    create_list(:reply, 4, post: post2)
+    post1 = create(:post, board: board, user: board.creator, unjoined_authors: [create(:user)])
+    reply = create(:reply, post: post1, user: post1.unjoined_authors.first)
+    users = create_list(:user, 4)
+    post2 = create(:post, board: board, user: board.creator, unjoined_authors: users)
+    users.each { |u| create_list(:reply, 4, post: post2, user: u) }
 
     visit continuity_path(board)
 
@@ -37,7 +38,7 @@ RSpec.feature "Show a single continuity", :type => :feature do
     coauthor2 = create(:user, username: "Bob")
     coauthor3 = create(:user, username: "Poe")
     board = create(:board, name: "Test board")
-    post1 = create(:post, user: del_user1, board: board)
+    post1 = create(:post, user: del_user1, board: board, unjoined_authors: [coauthor3])
     create(:reply, post: post1, user: coauthor3)
     post2 = create(:post, user: del_user2, board: board)
     post3 = create(:post, user: del_user2, board: board, authors: [del_user1, del_user2, coauthor1, coauthor2, coauthor3])

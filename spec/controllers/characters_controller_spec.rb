@@ -287,10 +287,10 @@ RSpec.describe CharactersController do
     end
 
     it "orders recent posts" do
-      post3 = create(:post)
-      post1 = create(:post, user: character.user, character: character)
-      post4 = create(:post, user: character.user, character: character)
-      post2 = create(:post)
+      post3 = create(:post, authors_locked: false)
+      post1 = create(:post, user: character.user, character: character, authors_locked: false)
+      post4 = create(:post, user: character.user, character: character, authors_locked: false)
+      post2 = create(:post, authors_locked: false)
       create(:reply, post: post4)
       create(:reply, post: post3, user: character.user, character: character)
       create(:reply, post: post2, user: character.user, character: character)

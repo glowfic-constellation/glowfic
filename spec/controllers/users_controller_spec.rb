@@ -190,11 +190,12 @@ RSpec.describe UsersController do
 
     it "sorts posts correctly" do
       user = create(:user)
-      post1 = create(:post)
-      post2 = create(:post, user: user)
-      post3 = create(:post)
+      other_user = create(:user)
+      post1 = create(:post, unjoined_authors: [user])
+      post2 = create(:post, user: user, unjoined_authors: [other_user])
+      post3 = create(:post, unjoined_authors: [user])
       create(:reply, post: post3, user: user)
-      create(:reply, post: post2)
+      create(:reply, post: post2, user: other_user)
       create(:reply, post: post1, user: user)
       create(:post)
       get :show, params: { id: user.id }

@@ -163,6 +163,7 @@ RSpec.describe NotifyFollowersOfNewPostJob do
     let(:author) { create(:user) }
     let(:replier) { create(:user) }
     let(:notified) { create(:user) }
+    let(:post) { create(:post, user: author, unjoined_authors: [replier]) }
 
     context "with both authors favorited" do
       before(:each) do
@@ -173,7 +174,7 @@ RSpec.describe NotifyFollowersOfNewPostJob do
       it "does not send twice if the user has favorited both the poster and the replier" do
         expect {
           perform_enqueued_jobs do
-            post = create(:post, user: author)
+            post
             create(:reply, post: post, user: replier)
           end
         }.to change { Message.count }.by(1)
@@ -182,7 +183,7 @@ RSpec.describe NotifyFollowersOfNewPostJob do
       it "does not send twice if the poster changes their username" do
         expect {
           perform_enqueued_jobs do
-            post = create(:post, user: author)
+            post
             author.update!(username: author.username + 'new')
             create(:reply, post: post, user: replier)
           end
@@ -192,7 +193,7 @@ RSpec.describe NotifyFollowersOfNewPostJob do
       it "does not send twice if the post subject changes" do
         expect {
           perform_enqueued_jobs do
-            post = create(:post, user: author)
+            post
             post.update!(subject: post.subject + 'new')
             create(:reply, post: post, user: replier)
           end
@@ -207,7 +208,7 @@ RSpec.describe NotifyFollowersOfNewPostJob do
         not_favorited_post = nil
         expect {
           perform_enqueued_jobs do
-            not_favorited_post = create(:post)
+            not_favorited_post = create(:post, unjoined_authors: [replier])
           end
         }.not_to change { Message.count }
 
@@ -223,25 +224,23 @@ RSpec.describe NotifyFollowersOfNewPostJob do
       before(:each) { create(:favorite, user: notified, favorite: replier) }
 
       it "sends the right message" do
-        title = "test subject"
-
         expect {
           perform_enqueued_jobs do
-            post = create(:post, user: author, subject: title)
+            post
             create(:reply, post: post, user: replier)
           end
         }.to change { Message.count }.by(1)
 
         message = Message.last
         expect(message.subject).to eq("#{replier.username} has joined a new thread")
-        expect(message.message).to include(title)
+        expect(message.message).to include(post.subject)
         expect(message.message).to include("with #{author.username}")
       end
 
       it "does not send unless visible" do
         expect {
           perform_enqueued_jobs do
-            post = create(:post, privacy: :access_list, viewers: [replier])
+            post = create(:post, privacy: :access_list, unjoined_authors: [replier], viewers: [replier])
             create(:reply, post: post, user: replier)
           end
         }.not_to change { Message.count }
@@ -253,7 +252,7 @@ RSpec.describe NotifyFollowersOfNewPostJob do
       end
 
       it "does not queue on imported replies" do
-        post = create(:post)
+        post = create(:post, authors_locked: false)
         clear_enqueued_jobs
         create(:reply, user: replier, post: post, is_import: true)
         expect(NotifyFollowersOfNewPostJob).not_to have_been_enqueued
@@ -264,7 +263,7 @@ RSpec.describe NotifyFollowersOfNewPostJob do
       create(:favorite, user: author, favorite: replier)
       expect {
         perform_enqueued_jobs do
-          post = create(:post, user: author)
+          post
           create(:reply, post: post, user: replier)
         end
       }.not_to change { Message.count }
@@ -283,7 +282,7 @@ RSpec.describe NotifyFollowersOfNewPostJob do
 
     describe "with blocking" do
       let(:coauthor) { create(:user) }
-      let!(:post) { create(:post, user: author, unjoined_authors: [coauthor]) }
+      let!(:post) { create(:post, user: author, unjoined_authors: [coauthor, replier]) }
       let(:reply) { create(:reply, post: post, user: replier) }
 
       before(:each) { create(:favorite, user: notified, favorite: replier) }

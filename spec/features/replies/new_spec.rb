@@ -40,7 +40,7 @@ RSpec.feature "Creating replies", :type => :feature do
   end
 
   scenario "User replies to open post" do
-    post = create(:post)
+    post = create(:post, authors_locked: false)
 
     user = login
     visit post_path(post)

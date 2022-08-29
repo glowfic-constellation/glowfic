@@ -13,8 +13,9 @@ RSpec.feature "Viewing posts", :type => :feature do
 
   scenario "with an archived author" do
     user = create(:user)
-    post = create(:post, user: user)
-    reply = create(:reply, post: post)
+    coauthor = create(:user)
+    post = create(:post, user: user, unjoined_authors: [coauthor])
+    create(:reply, post: post, user: coauthor)
     create(:reply, post: post, user: user)
     user.archive
     visit post_path(post)
@@ -24,7 +25,7 @@ RSpec.feature "Viewing posts", :type => :feature do
     end
     replies = page.all('.post-reply')
     within(replies[0]) do
-      expect(page).to have_selector('.post-author', exact_text: reply.user.username)
+      expect(page).to have_selector('.post-author', exact_text: coauthor.username)
     end
     within(replies[1]) do
       expect(page).to have_selector('.post-author', exact_text: '(deleted user)')

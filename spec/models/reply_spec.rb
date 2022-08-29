@@ -49,99 +49,83 @@ RSpec.describe Reply do
   end
 
   describe "#notify_other_authors" do
+    let(:notified_user) { create(:user, email_notifications: true) }
+    let(:coauthor) { create(:user) }
+    let(:post) { create(:post, user: notified_user, unjoined_authors: [coauthor]) }
+
     before(:each) { ResqueSpec.reset! }
 
     it "does nothing if skip_notify is set" do
-      notified_user = create(:user, email_notifications: true)
-      post = create(:post, user: notified_user)
-
-      create(:reply, post: post, skip_notify: true)
+      create(:reply, post: post, user: coauthor, skip_notify: true)
       expect(UserMailer).to have_queue_size_of(0)
     end
 
     it "does nothing if the previous reply was yours" do
-      notified_user = create(:user, email_notifications: true)
-      post = create(:post, user: notified_user)
-
-      reply = create(:reply, post: post, skip_notify: true)
-
-      create(:reply, post: post, user: reply.user)
+      create(:reply, post: post, user: coauthor, skip_notify: true)
+      create(:reply, post: post, user: coauthor)
       expect(UserMailer).to have_queue_size_of(0)
     end
 
     it "does nothing if the post was yours on the first reply" do
-      notified_user = create(:user, email_notifications: true)
-      post = create(:post, user: notified_user)
-
       create(:reply, post: post, user: notified_user)
       expect(UserMailer).to have_queue_size_of(0)
     end
 
     it "does not send to authors with notifications off" do
-      post = create(:post)
-      expect(post.user.email_notifications).not_to eq(true)
-      create(:reply, post: post)
+      notified_user.update!(email_notifications: false)
+      create(:reply, post: post, user: coauthor)
       expect(UserMailer).to have_queue_size_of(0)
     end
 
     it "does not send to emailless users" do
-      user = create(:user)
-      user.update_columns(email: nil) # rubocop:disable Rails/SkipsModelValidations
-      post = create(:post, user: user)
-      create(:reply, post: post)
+      notified_user.update_columns(email: nil) # rubocop:disable Rails/SkipsModelValidations
+      create(:reply, post: post, user: coauthor)
       expect(UserMailer).to have_queue_size_of(0)
     end
 
     it "does not send to users who have opted out of owed" do
-      user = create(:user, email_notifications: true)
-      post = create(:post, user: user)
-      post.opt_out_of_owed(user)
-      create(:reply, post: post)
+      post.opt_out_of_owed(notified_user)
+      create(:reply, post: post, user: coauthor)
       expect(UserMailer).to have_queue_size_of(0)
     end
 
     it "sends to all other active authors if previous reply wasn't yours" do
-      notified_user = create(:user, email_notifications: true)
-      post = create(:post, user: notified_user)
+      coauthor.update!(email_notifications: true)
+      create(:reply, post: post, user: coauthor, skip_notify: true)
 
-      another_notified_user = create(:user, email_notifications: true)
-      create(:reply, user: another_notified_user, post: post, skip_notify: true)
-
-      reply = create(:reply, post: post)
+      coauthor2 = create(:user)
+      post.unjoined_authors << coauthor2
+      reply = create(:reply, post: post, user: coauthor2)
       expect(UserMailer).to have_queue_size_of(2)
       expect(UserMailer).to have_queued(:post_has_new_reply, [notified_user.id, reply.id])
-      expect(UserMailer).to have_queued(:post_has_new_reply, [another_notified_user.id, reply.id])
+      expect(UserMailer).to have_queued(:post_has_new_reply, [coauthor.id, reply.id])
     end
 
     it "sends if the post was yours but previous reply wasn't" do
-      notified_user = create(:user, email_notifications: true)
-      post = create(:post, user: notified_user)
-
-      another_notified_user = create(:user, email_notifications: true)
-      create(:reply, user: another_notified_user, post: post, skip_notify: true)
+      coauthor.update!(email_notifications: true)
+      create(:reply, post: post, user: coauthor, skip_notify: true)
 
       reply = create(:reply, post: post, user: notified_user)
       expect(UserMailer).to have_queue_size_of(1)
-      expect(UserMailer).to have_queued(:post_has_new_reply, [another_notified_user.id, reply.id])
+      expect(UserMailer).to have_queued(:post_has_new_reply, [coauthor.id, reply.id])
     end
   end
 
   describe "authors interactions" do
     it "does not update can_owe upon creating a reply" do
-      post = create(:post)
-      reply = create(:reply, post: post)
+      coauthor = create(:user)
+      post = create(:post, unjoined_authors: [coauthor])
+      author = post.author_for(coauthor)
 
-      expect(post.author_for(reply.user).can_owe).to be(true)
-      create(:reply, user: reply.user, post: post)
-      expect(post.author_for(reply.user).can_owe).to be(true)
+      expect(author.can_owe).to be(true)
+      create(:reply, user: coauthor, post: post)
+      expect(author.reload.can_owe).to be(true)
 
-      author = post.author_for(reply.user)
-      author.can_owe = false
-      author.save!
+      author.update!(can_owe: false)
 
-      expect(post.author_for(reply.user).can_owe).to be(false)
-      create(:reply, user: reply.user, post: post)
-      expect(post.author_for(reply.user).can_owe).to be(false)
+      expect(author.reload.can_owe).to be(false)
+      create(:reply, user: coauthor, post: post)
+      expect(author.reload.can_owe).to be(false)
     end
   end
 
@@ -149,25 +133,25 @@ RSpec.describe Reply do
     let(:post) { create(:post) }
 
     it "orders replies" do
-      first_reply = create(:reply, post: post)
-      second_reply = create(:reply, post: post)
-      third_reply = create(:reply, post: post)
+      first_reply = create(:reply, post: post, user: post.user)
+      second_reply = create(:reply, post: post, user: post.user)
+      third_reply = create(:reply, post: post, user: post.user)
       expect(post.replies.ordered).to eq([first_reply, second_reply, third_reply])
     end
 
     it "orders replies by reply_order, not created_at" do
-      first_reply = Timecop.freeze(post.created_at + 1.second) { create(:reply, post: post) }
-      second_reply = Timecop.freeze(first_reply.created_at - 5.seconds) { create(:reply, post: post) }
-      third_reply = Timecop.freeze(first_reply.created_at - 3.seconds) { create(:reply, post: post) }
+      first_reply = Timecop.freeze(post.created_at + 1.second) { create(:reply, post: post, user: post.user) }
+      second_reply = Timecop.freeze(first_reply.created_at - 5.seconds) { create(:reply, post: post, user: post.user) }
+      third_reply = Timecop.freeze(first_reply.created_at - 3.seconds) { create(:reply, post: post, user: post.user) }
       expect(post.replies.ordered).not_to eq(post.replies.order(:created_at))
       expect(post.replies.order(:created_at)).to eq([second_reply, third_reply, first_reply])
       expect(post.replies.ordered).to eq([first_reply, second_reply, third_reply])
     end
 
     it "orders replies by reply order not ID" do
-      first_reply = create(:reply, post: post)
-      second_reply = create(:reply, post: post)
-      third_reply = create(:reply, post: post)
+      first_reply = create(:reply, post: post, user: post.user)
+      second_reply = create(:reply, post: post, user: post.user)
+      third_reply = create(:reply, post: post, user: post.user)
       second_reply.update_columns(reply_order: 2) # rubocop:disable Rails/SkipsModelValidations
       third_reply.update_columns(reply_order: 1) # rubocop:disable Rails/SkipsModelValidations
       expect(post.replies.ordered).to eq([first_reply, third_reply, second_reply])
@@ -176,10 +160,11 @@ RSpec.describe Reply do
 
   describe "#destroy_subsequent_replies" do
     it "works" do
-      post = create(:post)
-      replies = create_list(:reply, 2, post: post)
-      reply = create(:reply, post: post)
-      create_list(:reply, 2, post: post)
+      coauthor = create(:user)
+      post = create(:post, unjoined_authors: [coauthor])
+      replies = create_list(:reply, 2, post: post, user: coauthor)
+      reply = create(:reply, post: post, user: post.user)
+      create_list(:reply, 2, post: post, user: coauthor)
       expect { reply.send(:destroy_subsequent_replies) }.to change { Reply.count }.by(-3)
       expect(Reply.where(id: replies.map(&:id)).count).to eq(2)
       expect(Reply.find_by(id: reply.id)).not_to be_present
