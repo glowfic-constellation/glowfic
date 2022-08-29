@@ -728,7 +728,7 @@ RSpec.describe Post do
 
     it "does not reset on written update" do
       post.written.content = 'new content'
-      post.written.save
+      post.written.save!
       expect(post.reload).not_to be_show_warnings_for(user)
     end
 
