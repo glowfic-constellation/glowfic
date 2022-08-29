@@ -88,7 +88,7 @@ class Reply < ApplicationRecord
     # return unless needs to update last reply (this is destroyed, this is the last reply)
     post.last_reply = previous_reply
     post.last_user = (previous_reply || post).user
-    post.tagged_at = (previous_reply || post).last_updated
+    post.tagged_at = previous_reply.present? ? previous_reply.updated_at : post.edited_at
     post.save
   end
 
