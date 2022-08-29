@@ -107,8 +107,9 @@ RSpec.describe RepliesController, 'GET search' do
     it "filters by author" do
       replies = create_list(:reply, 4)
       filtered_reply = replies.last
+      filtered_written = create(:post, user: filtered_reply.user).written
       get :search, params: { commit: true, author_id: filtered_reply.user_id }
-      expect(assigns(:search_results)).to match_array([filtered_reply.post.written, filtered_reply])
+      expect(assigns(:search_results)).to match_array([filtered_written, filtered_reply])
     end
 
     it "filters by icon" do
@@ -160,7 +161,7 @@ RSpec.describe RepliesController, 'GET search' do
       replies = create_list(:reply, 4)
       filtered_reply = replies.last
       get :search, params: { commit: true, post_id: filtered_reply.post_id }
-      expect(assigns(:search_results)).to match_array([filtered_reply])
+      expect(assigns(:search_results)).to match_array([filtered_reply.post.written, filtered_reply])
     end
 
     it "requires visible post if given" do
