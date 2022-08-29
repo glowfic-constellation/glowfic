@@ -110,8 +110,6 @@ class PostScraper < Object
 
     scraper = ReplyScraper.new(@post, console: @console_import)
     scraper.import(doc)
-    scraper = ReplyScraper.new(@post.written, console: @console_import)
-    scraper.import(doc)
   end
 
   def import_replies_from_doc(doc)
