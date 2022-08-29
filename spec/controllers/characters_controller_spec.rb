@@ -577,22 +577,6 @@ RSpec.describe CharactersController do
       expect(character.galleries).to be_blank
     end
 
-    it "adds galleries by groups" do
-      user = create(:user)
-      group = create(:gallery_group)
-      gallery = create(:gallery, gallery_groups: [group], user: user)
-      character = create(:character, user: user)
-      login_as(user)
-      put :update, params: { id: character.id, character: { gallery_group_ids: [group.id] } }
-
-      expect(flash[:success]).to eq('Character saved successfully.')
-      character.reload
-      expect(character.gallery_groups).to match_array([group])
-      expect(character.galleries).to match_array([gallery])
-      expect(character.ungrouped_gallery_ids).to be_blank
-      expect(character.characters_galleries.first).to be_added_by_group
-    end
-
     it "creates new templates when specified" do
       expect(Template.count).to eq(0)
       character = create(:character)
@@ -603,98 +587,98 @@ RSpec.describe CharactersController do
       expect(character.reload.template_id).to eq(Template.first.id)
     end
 
-    it "removes gallery only if not shared between groups" do
-      user = create(:user)
-      group1 = create(:gallery_group) # gallery1
-      group2 = create(:gallery_group) # -> gallery1
-      group3 = create(:gallery_group) # gallery2 ->
-      group4 = create(:gallery_group) # gallery2
-      gallery1 = create(:gallery, gallery_groups: [group1, group2], user: user)
-      gallery2 = create(:gallery, gallery_groups: [group3, group4], user: user)
-      character = create(:character, gallery_groups: [group1, group3, group4], user: user)
-      login_as(user)
-      put :update, params: { id: character.id, character: { gallery_group_ids: [group2.id, group4.id] } }
+    describe "with gallery groups" do
+      let(:user) { create(:user) }
+      let(:group) { create(:gallery_group) }
+      let!(:gallery) { create(:gallery, gallery_groups: [group], user: user) }
+      let(:character) { create(:character, user: user) }
 
-      expect(flash[:success]).to eq('Character saved successfully.')
-      character.reload
-      expect(character.gallery_groups).to match_array([group2, group4])
-      expect(character.galleries).to match_array([gallery1, gallery2])
-      expect(character.ungrouped_gallery_ids).to be_blank
-      expect(character.characters_galleries.map(&:added_by_group)).to eq([true, true])
-    end
+      before(:each) { login_as(user) }
 
-    it "does not remove gallery if tethered by group" do
-      user = create(:user)
-      group = create(:gallery_group)
-      gallery = create(:gallery, gallery_groups: [group], user: user)
-      character = create(:character, gallery_groups: [group], user: user)
-      character.ungrouped_gallery_ids = [gallery.id]
-      character.save!
-      expect(character.characters_galleries.first).not_to be_added_by_group
+      it "adds galleries by groups" do
+        put :update, params: { id: character.id, character: { gallery_group_ids: [group.id] } }
 
-      login_as(user)
-      put :update, params: {
-        id: character.id,
-        character: {
-          ungrouped_gallery_ids: [''],
-          gallery_group_ids: [group.id],
-        },
-      }
-      expect(flash[:success]).to eq('Character saved successfully.')
-      character.reload
-      expect(character.gallery_groups).to match_array([group])
-      expect(character.galleries).to match_array([gallery])
-      expect(character.ungrouped_gallery_ids).to be_blank
-      expect(character.characters_galleries.first).to be_added_by_group
-    end
+        expect(flash[:success]).to eq('Character saved successfully.')
+        character.reload
+        expect(character.gallery_groups).to match_array([group])
+        expect(character.galleries).to match_array([gallery])
+        expect(character.ungrouped_gallery_ids).to be_blank
+        expect(character.characters_galleries.first).to be_added_by_group
+      end
 
-    it "works when adding both group and gallery" do
-      user = create(:user)
-      group = create(:gallery_group)
-      gallery = create(:gallery, gallery_groups: [group], user: user)
-      character = create(:character, user: user)
+      it "removes gallery only if not shared between groups" do
+        group2 = create(:gallery_group) # -> gallery1
+        group3 = create(:gallery_group) # gallery2 ->
+        group4 = create(:gallery_group) # gallery2
+        gallery1 = create(:gallery, gallery_groups: [group, group2], user: user)
+        gallery2 = create(:gallery, gallery_groups: [group3, group4], user: user)
+        character = create(:character, gallery_groups: [group, group3, group4], user: user)
 
-      login_as(user)
-      put :update, params: {
-        id: character.id,
-        character: {
-          gallery_group_ids: [group.id],
-          ungrouped_gallery_ids: [gallery.id],
-        },
-      }
-      expect(flash[:success]).to eq('Character saved successfully.')
-      character.reload
-      expect(character.gallery_groups).to match_array([group])
-      expect(character.galleries).to match_array([gallery])
-      expect(character.ungrouped_gallery_ids).to eq([gallery.id])
-      expect(character.characters_galleries.first).not_to be_added_by_group
-    end
+        put :update, params: { id: character.id, character: { gallery_group_ids: [group2.id, group4.id] } }
 
-    it "does not add another user's galleries" do
-      group = create(:gallery_group)
-      create(:gallery, gallery_groups: [group]) # gallery
-      character = create(:character)
+        expect(flash[:success]).to eq('Character saved successfully.')
+        character.reload
+        expect(character.gallery_groups).to match_array([group2, group4])
+        expect(character.galleries).to match_array([gallery1, gallery2])
+        expect(character.ungrouped_gallery_ids).to be_blank
+        expect(character.characters_galleries.map(&:added_by_group)).to eq([true, true])
+      end
 
-      login_as(character.user)
-      put :update, params: { id: character.id, character: { gallery_group_ids: [group.id] } }
-      expect(flash[:success]).to eq('Character saved successfully.')
-      character.reload
-      expect(character.gallery_groups).to match_array([group])
-      expect(character.galleries).to be_blank
-    end
+      it "does not remove gallery if tethered by group" do
+        character = create(:character, gallery_groups: [group], user: user)
+        character.update!(ungrouped_gallery_ids: [gallery.id])
+        expect(character.characters_galleries.first).not_to be_added_by_group
 
-    it "removes untethered galleries when group goes" do
-      user = create(:user)
-      group = create(:gallery_group)
-      create(:gallery, gallery_groups: [group], user: user) # gallery
-      character = create(:character, gallery_groups: [group], user: user)
+        put :update, params: {
+          id: character.id,
+          character: {
+            ungrouped_gallery_ids: [''],
+            gallery_group_ids: [group.id],
+          },
+        }
+        expect(flash[:success]).to eq('Character saved successfully.')
+        character.reload
+        expect(character.gallery_groups).to match_array([group])
+        expect(character.galleries).to match_array([gallery])
+        expect(character.ungrouped_gallery_ids).to be_blank
+        expect(character.characters_galleries.first).to be_added_by_group
+      end
 
-      login_as(user)
-      put :update, params: { id: character.id, character: { gallery_group_ids: [''] } }
-      expect(flash[:success]).to eq('Character saved successfully.')
-      character.reload
-      expect(character.gallery_groups).to eq([])
-      expect(character.galleries).to eq([])
+      it "works when adding both group and gallery" do
+        put :update, params: {
+          id: character.id,
+          character: {
+            gallery_group_ids: [group.id],
+            ungrouped_gallery_ids: [gallery.id],
+          },
+        }
+        expect(flash[:success]).to eq('Character saved successfully.')
+        character.reload
+        expect(character.gallery_groups).to match_array([group])
+        expect(character.galleries).to match_array([gallery])
+        expect(character.ungrouped_gallery_ids).to eq([gallery.id])
+        expect(character.characters_galleries.first).not_to be_added_by_group
+      end
+
+      it "does not add another user's galleries" do
+        create(:gallery, gallery_groups: [group])
+
+        put :update, params: { id: character.id, character: { gallery_group_ids: [group.id] } }
+        expect(flash[:success]).to eq('Character saved successfully.')
+        character.reload
+        expect(character.gallery_groups).to match_array([group])
+        expect(character.galleries).to eq([gallery])
+      end
+
+      it "removes untethered galleries when group goes" do
+        character = create(:character, gallery_groups: [group], user: user)
+
+        put :update, params: { id: character.id, character: { gallery_group_ids: [''] } }
+        expect(flash[:success]).to eq('Character saved successfully.')
+        character.reload
+        expect(character.gallery_groups).to eq([])
+        expect(character.galleries).to eq([])
+      end
     end
 
     context "with views" do
