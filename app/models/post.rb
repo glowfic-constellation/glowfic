@@ -34,7 +34,7 @@ class Post < ApplicationRecord
 
   has_many :notifications, inverse_of: :post, dependent: :destroy
 
-  has_one :written, -> { where(reply_order: 0) }, class_name: 'Reply', inverse_of: :post
+  has_one :written, -> { where(reply_order: 0) }, class_name: 'Reply', inverse_of: :post, dependent: :destroy
 
   attr_accessor :is_import, :skip_written # TODO: delete skip_written after the migration is done
   attr_writer :skip_edited
