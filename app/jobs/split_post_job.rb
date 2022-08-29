@@ -30,7 +30,7 @@ class SplitPostJob < ApplicationJob
     new_post = Post.new(first_reply.attributes.slice(*REPLY_ATTRS))
     new_post.skip_edited = true
     new_post.is_import = true
-    new_post.skip_written = true
+    new_post.written.delete
     new_post.assign_attributes(old_post.attributes.slice(*POST_ATTRS))
     POST_ASSOCS.each do |assoc|
       new_post.send(assoc + "=", old_post.send(assoc))
