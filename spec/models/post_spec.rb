@@ -661,7 +661,7 @@ RSpec.describe Post do
     end
 
     context "with replies" do
-      let(:reply_user) { create(:user)}
+      let(:reply_user) { create(:user) }
       let(:post) { create(:post, authors: [reply_user]) }
 
       before(:each) { create(:reply, post: post, user: reply_user) }
