@@ -757,8 +757,6 @@ Style/RedundantException:
 
 Style/RedundantInitialize: # new in 1.27
   Enabled: true
-  Exclude:
-    - 'spec/lib/presentable_spec.rb'
 
 Style/RedundantSelf:
   Enabled: false

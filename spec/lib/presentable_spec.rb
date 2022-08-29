@@ -1,6 +1,8 @@
 RSpec.describe Presentable do
   class ExampleWithPresenter
-    def initialize(obj) end
+    def initialize(obj)
+      # allowing accepting an argument
+    end
 
     def as_json(_options={})
       4
@@ -35,7 +37,9 @@ RSpec.describe Presentable do
   end
 
   class ExampleWithSuperPresenter
-    def initialize(obj) end
+    def initialize(obj)
+      # allowing accepting an argument
+    end
 
     def as_json(_options={})
       1
