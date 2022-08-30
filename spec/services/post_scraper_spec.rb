@@ -30,8 +30,8 @@ RSpec.describe PostScraper do
     board = create(:board, creator: user)
 
     scraper = PostScraper.new(url, board.id)
-    allow_any_instance_of(ReplyScraper).to receive(:prompt_for_user).and_return(user)
-    allow_any_instance_of(ReplyScraper).to receive(:set_from_icon).and_return(nil)
+    allow_any_instance_of(ReplyScraper).to receive(:prompt_for_user).and_return(user) # rubocop:todo RSpec/AnyInstance
+    allow_any_instance_of(ReplyScraper).to receive(:set_from_icon).and_return(nil) # rubocop:todo RSpec/AnyInstance
     expect(scraper.send(:logger)).to receive(:info).with("Importing thread 'linear b'")
 
     scraper.scrape!
@@ -54,8 +54,8 @@ RSpec.describe PostScraper do
     board = create(:board, creator: user)
 
     scraper = PostScraper.new(url, board.id)
-    allow_any_instance_of(ReplyScraper).to receive(:prompt_for_user).and_return(user)
-    allow_any_instance_of(ReplyScraper).to receive(:set_from_icon).and_return(nil)
+    allow_any_instance_of(ReplyScraper).to receive(:prompt_for_user).and_return(user) # rubocop:todo RSpec/AnyInstance
+    allow_any_instance_of(ReplyScraper).to receive(:set_from_icon).and_return(nil) # rubocop:todo RSpec/AnyInstance
     expect(scraper.send(:logger)).to receive(:info).with("Importing thread 'linear b'")
 
     scraper.scrape!
