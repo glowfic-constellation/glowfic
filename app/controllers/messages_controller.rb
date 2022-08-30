@@ -89,7 +89,7 @@ class MessagesController < ApplicationController
       end
     end
     @message = Message.new
-    set_message_parent(message.last_in_thread)
+    set_message_parent(message.last_in_thread.id)
     editor_setup
   end
 

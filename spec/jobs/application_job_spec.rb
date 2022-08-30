@@ -11,14 +11,20 @@ RSpec.describe ApplicationJob do
 
   it "retries on sigterm" do
     exception = Resque::TermException.new(15)
-    expect_any_instance_of(StubJob).to receive(:perform).and_raise(exception)
-    StubJob.perform_now(1)
+    job = StubJob.new(1)
+    allow(StubJob).to receive(:new).and_return(job)
+    allow(job).to receive(:perform).and_raise(exception)
+    expect(job).to receive(:perform)
+    job.perform_now
     expect(StubJob).to have_been_enqueued.with(1).on_queue('high')
   end
 
   skip "retries on error" do
-    expect_any_instance_of(StubJob).to receive(:perform).and_raise(StandardError)
-    StubJob.perform_now(1)
+    job = StubJob.new(1)
+    allow(StubJob).to receive(:new).and_return(job)
+    allow(job).to receive(:perform).and_raise(StandardError)
+    expect(job).to receive(:perform)
+    job.perform_now
     expect(StubJob).to have_been_enqueued.with(1).on_queue('high')
   end
 

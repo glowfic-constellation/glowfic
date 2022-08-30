@@ -291,8 +291,14 @@ RSpec.describe BlocksController, type: :controller do
     it "handles failure" do
       block = create(:block)
       login_as(block.blocking_user)
-      expect_any_instance_of(Block).to receive(:destroy).and_return(false)
+
+      allow(Block).to receive(:find_by).and_call_original
+      allow(Block).to receive(:find_by).with(id: block.id.to_s).and_return(block)
+      allow(block).to receive(:destroy).and_return(false)
+      expect(block).to receive(:destroy)
+
       delete :destroy, params: { id: block.id }
+
       expect(response).to redirect_to(blocks_url)
       expect(flash[:error][:message]).to eq("User could not be unblocked.")
       expect(Block.find_by(id: block.id)).to eq(block)

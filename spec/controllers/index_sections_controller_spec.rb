@@ -239,10 +239,17 @@ RSpec.describe IndexSectionsController do
       section = create(:index_section)
       index = section.index
       login_as(index.user)
-      expect_any_instance_of(IndexSection).to receive(:destroy!).and_raise(ActiveRecord::RecordNotDestroyed, 'fake error')
+
+      allow(IndexSection).to receive(:find_by).and_call_original
+      allow(IndexSection).to receive(:find_by).with(id: section.id.to_s).and_return(section)
+      allow(section).to receive(:destroy!).and_raise(ActiveRecord::RecordNotDestroyed, 'fake error')
+      expect(section).to receive(:destroy!)
+
       delete :destroy, params: { id: section.id }
+
       expect(response).to redirect_to(index_url(index))
-      expect(flash[:error]).to eq({ message: "Index section could not be deleted.", array: [] })
+      expect(flash[:error][:message]).to eq("Index section could not be deleted.")
+      expect(flash[:error][:array]).to be_empty
       expect(index.reload.index_sections).to eq([section])
     end
   end

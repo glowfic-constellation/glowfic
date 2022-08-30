@@ -108,9 +108,15 @@ RSpec.describe Api::V1::PostsController do
     end
 
     it "handles failed saves" do
-      expect_any_instance_of(Post::Author).to receive(:update).and_return(false)
       user = api_login
       post = create(:post, user: user)
+      author = post.author_for(user)
+
+      allow(Post).to receive(:find_by).and_call_original
+      allow(Post).to receive(:find_by).with(id: post.id.to_s).and_return(post)
+      allow(post).to receive(:author_for).with(user).and_return(author)
+      allow(author).to receive(:update).and_return(false)
+      expect(author).to receive(:update)
 
       patch :update, params: { id: post.id, private_note: 'Shiny new note' }
 
