@@ -35,8 +35,16 @@ class Admin::CharactersController < Admin::AdminController
     end
   end
 
+  private
+
   def preview_relocate
     @page_title = 'Preview Character Reassignment'
     render :preview_relocate
+  end
+
+  def require_relocate_permission
+    return if current_user.has_permission?(:relocate_characters)
+    flash[:error] = "You do not have permission to view that page."
+    redirect_to admin_url
   end
 end
