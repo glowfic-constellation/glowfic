@@ -1,0 +1,22 @@
+= form_with url: do_relocate_characters_path, method: :post do |f|
+  %table.form-table
+    %thead
+      %tr
+        %th.editor-title{colspan: 2} Relocate Characters
+    %tbody
+      %tr
+        %th.sub= f.label :character_id, "Character Ids"
+        %td{class: cycle('even', 'odd')}= f.text_field :character_id, value: @char_ids.join(', '), placeholder: 'Comma-seperated list', class: 'text'
+      %tr
+        %th.sub= f.label :user_id, 'New User Id'
+        %td{class: cycle('even', 'odd')}= f.text_field :user_id, value: params[:user_id], placeholder: "New User", class: 'text'
+      %tr
+        %td.sub With Templates
+        %td.padding-5{class: cycle('even', 'odd')}
+          = f.check_box :include_templates, checked: params[:include_templates], class: 'vmid no-margin', style: 'margin-bottom: 3px;'
+          = f.label :include_templates "Transfer Templates"
+    %tfoot
+      %tr
+        %th.form-table-ender{colspan: 2}
+          = f.submit 'Split', class: 'button', id: 'submit_button', data: { disable_with: 'Splitting...' }
+          = f.submit "Preview", class: 'button', id: 'preview_button', name: 'button_preview', data: { disable_with: 'Previewing...' }
