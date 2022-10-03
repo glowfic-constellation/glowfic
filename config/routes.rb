@@ -171,5 +171,11 @@ Rails.application.routes.draw do
         post :do_regenerate
       end
     end
+    resources :characters, only: [] do
+      collection do
+        get :relocate
+        post :do_relocate
+      end
+    end
   end
 end

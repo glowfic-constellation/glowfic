@@ -6,11 +6,11 @@ class Admin::CharactersController < Admin::AdminController
   end
 
   def do_relocate
-    @char_ids = params[:character_id].split(',').map(&:strip).map(&:to_i)
-    @characters = Character.where(id: char_ids)
+    @char_ids = params[:character_id]&.split(',')&.map(&:strip)&.map(&:to_i)
+    @characters = Character.where(id: @char_ids)
     @new_user = User.find_by(id: params[:user_id])
     unless @new_user.present?
-      flash[:error] = "User could not be found"
+      flash[:error] = "New user could not be found."
       redirect_to relocate_characters_url and return
     end
     unless @characters.present?
@@ -32,6 +32,9 @@ class Admin::CharactersController < Admin::AdminController
     rescue ApiError => e
       flash[:error] = e.msg
       redirect_to relocate_characters_url and return
+    else
+      flash[:success] = "Characters relocated."
+      redirect_to admin_url
     end
   end
 
