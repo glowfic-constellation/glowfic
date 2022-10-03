@@ -37,6 +37,7 @@ RSpec.describe Admin::CharactersController do
     let!(:characters) { Character.where(id: create_list(:character, 10, user: old_user).map(&:id)) }
     let!(:posts) { Post.where(id: characters.map { |c| create(:post, user: old_user, character: c).id }) }
     let!(:replies) { Reply.where(id: characters.map { |c| create_list(:reply, 2, character: c, user: old_user).map(&:id) }.flatten) }
+    let(:character_ids) { characters.map(&:id).join(', ') }
 
     it "requires login" do
       post :do_relocate, params: { id: -1 }
@@ -75,14 +76,14 @@ RSpec.describe Admin::CharactersController do
     describe "preview" do
       it "loads for mods" do
         login_as(mod)
-        post :do_relocate, params: { button_preview: 'Preview', character_id: characters.map(&:id).join(', '), user_id: new_user.id }
+        post :do_relocate, params: { button_preview: 'Preview', character_id: character_ids, user_id: new_user.id }
         expect(response).to have_http_status(200)
         expect(assigns(:char_ids)).to eq(characters.map(&:id))
       end
 
       it "loads for admins" do
         login_as(admin)
-        post :do_relocate, params: { button_preview: 'Preview', character_id: characters.map(&:id).join(', '), user_id: new_user.id }
+        post :do_relocate, params: { button_preview: 'Preview', character_id: character_ids, user_id: new_user.id }
         expect(response).to have_http_status(200)
         expect(assigns(:char_ids)).to eq(characters.map(&:id))
       end
@@ -104,7 +105,7 @@ RSpec.describe Admin::CharactersController do
       it "works as mod" do
         login_as(mod)
         perform_enqueued_jobs do
-          post :do_relocate, params: { character_id: characters.map(&:id).join(', '), user_id: new_user.id }
+          post :do_relocate, params: { character_id: character_ids, user_id: new_user.id }
         end
         expect(response).to redirect_to(admin_url)
         expect(flash[:success]).to eq("Characters relocated.")
@@ -122,7 +123,7 @@ RSpec.describe Admin::CharactersController do
       it "works as admin" do
         login_as(admin)
         perform_enqueued_jobs do
-          post :do_relocate, params: { character_id: characters.map(&:id).join(', '), user_id: new_user.id }
+          post :do_relocate, params: { character_id: character_ids, user_id: new_user.id }
         end
         expect(response).to redirect_to(admin_url)
         expect(flash[:success]).to eq("Characters relocated.")
@@ -135,6 +136,34 @@ RSpec.describe Admin::CharactersController do
         expect(posts.reload.pluck(:user_id).uniq).to eq([new_user.id])
         expect(replies.reload.pluck(:user_id).uniq).to eq([new_user.id])
         expect(characters.first.audits.last.user).to eq(admin)
+      end
+
+      it "fails with character groups" do
+        login_as(mod)
+        group = create(:character_group, user: old_user)
+        characters[1].update!(character_group: group)
+        post :do_relocate, params: { character_id: character_ids, user_id: new_user.id }
+        expect(response).to redirect_to(relocate_characters_url)
+        expect(flash[:error]).to eq("Characters must not have groups.")
+      end
+
+      it "fails with multiple users" do
+        login_as(mod)
+        characters[1].update!(user: create(:user))
+        post :do_relocate, params: { character_id: character_ids, user_id: new_user.id }
+        expect(response).to redirect_to(relocate_characters_url)
+        expect(flash[:error]).to eq("Characters must have a single original user.")
+      end
+
+      it "fails with overlap between moved and unmoved" do
+        login_as(mod)
+        gallery = create(:gallery, icon_count: 3, user: old_user)
+        create(:character, user: old_user, galleries: [gallery], default_icon: gallery.icons.first)
+        characters[1].update!(galleries: [gallery])
+        post :do_relocate, params: { character_id: character_ids, user_id: new_user.id }
+        expect(response).to redirect_to(relocate_characters_url)
+        err_msg = "Galleries for characters which are being moved must not be the same as ones not being moved; gallery ids [#{gallery.id}] intersect"
+        expect(flash[:error]).to eq(err_msg)
       end
     end
   end

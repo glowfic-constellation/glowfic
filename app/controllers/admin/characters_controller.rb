@@ -30,7 +30,7 @@ class Admin::CharactersController < Admin::AdminController
       flash[:error] = "Characters must have a single original user."
       redirect_to relocate_characters_url and return
     rescue ApiError => e
-      flash[:error] = e.msg
+      flash[:error] = e.message
       redirect_to relocate_characters_url and return
     else
       flash[:success] = "Characters relocated."
