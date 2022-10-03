@@ -6,10 +6,10 @@
     %tbody
       %tr
         %th.sub= f.label :reply_id, "Reply Id"
-        %td{class: cycle('even', 'odd')}= f.text_field :reply_id, placeholder: 'Id of reply for new top post', class: 'text'
+        %td{class: cycle('even', 'odd')}= f.text_field :reply_id, value: params[:reply_id], placeholder: 'Id of reply for new top post', class: 'text'
       %tr
         %th.sub= f.label :subject
-        %td{class: cycle('even', 'odd')}= f.text_field :subject, placeholder: "New Subject", class: 'text'
+        %td{class: cycle('even', 'odd')}= f.text_field :subject, value: params[:subject], placeholder: "New Subject", class: 'text'
     %tfoot
       %tr
         %th.form-table-ender{colspan: 2}
