@@ -14,7 +14,7 @@ RSpec.describe Admin::CharactersController do
     it "requires permission" do
       login
       get :relocate
-      expect(response).to redirect_to(root_url)
+      expect(response).to redirect_to(admin_url)
       expect(flash[:error]).to eq("You do not have permission to view that page.")
     end
 
@@ -48,7 +48,7 @@ RSpec.describe Admin::CharactersController do
     it "requires permission" do
       login
       post :do_relocate, params: { id: -1 }
-      expect(response).to redirect_to(root_url)
+      expect(response).to redirect_to(admin_url)
       expect(flash[:error]).to eq("You do not have permission to view that page.")
     end
 

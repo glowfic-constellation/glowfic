@@ -14,7 +14,7 @@ RSpec.describe Admin::PostsController do
     it "requires permission" do
       login
       get :split
-      expect(response).to redirect_to(root_url)
+      expect(response).to redirect_to(admin_url)
       expect(flash[:error]).to eq("You do not have permission to view that page.")
     end
 
@@ -45,7 +45,7 @@ RSpec.describe Admin::PostsController do
     it "requires permission" do
       login
       post :do_split, params: { id: -1 }
-      expect(response).to redirect_to(root_url)
+      expect(response).to redirect_to(admin_url)
       expect(flash[:error]).to eq("You do not have permission to view that page.")
     end
 
@@ -106,7 +106,7 @@ RSpec.describe Admin::PostsController do
     it "requires permission" do
       login
       get :regenerate_flat
-      expect(response).to redirect_to(root_url)
+      expect(response).to redirect_to(admin_url)
       expect(flash[:error]).to eq("You do not have permission to view that page.")
     end
 
@@ -135,7 +135,7 @@ RSpec.describe Admin::PostsController do
     it "requires permission" do
       login
       post :do_regenerate
-      expect(response).to redirect_to(root_url)
+      expect(response).to redirect_to(admin_url)
       expect(flash[:error]).to eq("You do not have permission to view that page.")
     end
 

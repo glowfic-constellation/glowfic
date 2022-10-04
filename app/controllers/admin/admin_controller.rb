@@ -1,6 +1,6 @@
 class Admin::AdminController < ApplicationController
   before_action :login_required
-  before_action :require_permission
+  before_action :require_permission, only: :index
 
   def index
     @page_title = 'Admin Tools'
