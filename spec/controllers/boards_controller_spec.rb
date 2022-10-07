@@ -210,6 +210,7 @@ RSpec.describe BoardsController do
           description: 'Test description',
           coauthor_ids: [user2.id],
           cameo_ids: [user3.id],
+          authors_locked: false,
         },
       }
       expect(response).to redirect_to(continuities_url)
@@ -222,6 +223,7 @@ RSpec.describe BoardsController do
       expect(board.description).to eq('Test description')
       expect(board.writers).to match_array([creator, user2])
       expect(board.cameos).to match_array([user3])
+      expect(board.authors_locked).to eq(false)
     end
   end
 
@@ -393,7 +395,7 @@ RSpec.describe BoardsController do
 
     it "succeeds" do
       user = create(:user)
-      board = create(:board, creator: user)
+      board = create(:board, creator: user, authors_locked: false)
       name = board.name
       login_as(user)
       user2 = create(:user)
@@ -405,6 +407,7 @@ RSpec.describe BoardsController do
           description: 'New description',
           coauthor_ids: [user2.id],
           cameo_ids: [user3.id],
+          authors_locked: true,
         },
       }
       expect(response).to redirect_to(continuity_url(board))
@@ -414,6 +417,7 @@ RSpec.describe BoardsController do
       expect(board.description).to eq('New description')
       expect(board.writers).to match_array([user, user2])
       expect(board.cameos).to match_array([user3])
+      expect(board.authors_locked).to eq(true)
     end
   end
 

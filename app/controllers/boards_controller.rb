@@ -207,6 +207,6 @@ class BoardsController < ApplicationController
   end
 
   def permitted_params
-    params.fetch(:board, {}).permit(:name, :description, coauthor_ids: [], cameo_ids: [])
+    params.fetch(:board, {}).permit(:name, :description, :authors_locked, coauthor_ids: [], cameo_ids: [])
   end
 end
