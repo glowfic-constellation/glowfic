@@ -4,8 +4,11 @@ class CharacterTag < ApplicationRecord
   belongs_to :tag, inverse_of: :character_tags, optional: true # TODO: This is required, fix bug around validation if it is set as such
   belongs_to :setting, foreign_key: :tag_id, inverse_of: :character_tags, optional: true
   belongs_to :gallery_group, foreign_key: :tag_id, inverse_of: :character_tags, optional: true
+  belongs_to :character_group, foreign_key: :tag_id, inverse_of: :character_tags, optional: true
 
   validates :character, uniqueness: { scope: :tag }
+
+  scope :only_character_groups, -> { joins(:tag).where(tags: { type: 'CharacterGroup' }) }
 
   after_create :add_galleries_to_character
   after_destroy :remove_galleries_from_character

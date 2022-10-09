@@ -445,6 +445,15 @@ ActiveRecord::Schema[8.0].define(version: 2024_12_24_202900) do
     t.index ["type"], name: "index_tags_on_type"
   end
 
+  create_table "template_tags", force: :cascade do |t|
+    t.integer "template_id", null: false
+    t.integer "tag_id", null: false
+    t.datetime "created_at", precision: 6
+    t.datetime "updated_at", precision: 6
+    t.index ["tag_id"], name: "index_template_tags_on_tag_id"
+    t.index ["template_id"], name: "index_template_tags_on_template_id"
+  end
+
   create_table "templates", id: :serial, force: :cascade do |t|
     t.integer "user_id", null: false
     t.citext "name"
