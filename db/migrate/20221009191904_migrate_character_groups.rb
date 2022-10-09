@@ -3,9 +3,9 @@ class MigrateCharacterGroups < ActiveRecord::Migration[6.0]
     characters = Character.where.not(character_group_id: nil)
     templates = Template.where(id: characters.select(:template_id).distinct.pluck(:template_id))
     untemplated_characters = characters.where(template_id: nil)
-    group_cross = CharacterGroup.ids.to_h { |i| [i, nil] }
+    group_cross = OldCharacterGroup.ids.to_h { |i| [i, nil] }
 
-    CharacterGroup.all.each do |group|
+    OldCharacterGroup.all.each do |group|
       new = NewCharacterGroup.create_or_find_by!(name: group.name)
       group_cross[group.id] = new.id
     end

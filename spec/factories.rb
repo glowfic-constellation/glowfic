@@ -194,7 +194,7 @@ FactoryBot.define do
     end
   end
 
-  factory :character_group do
+  factory :old_character_group do
     user
     sequence :name, ordered_numbers do |n|
       "test character group #{n}"
