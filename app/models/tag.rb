@@ -12,7 +12,7 @@ class Tag < ApplicationRecord
   has_many :template_tags, dependent: :destroy, inverse_of: :tag
   has_many :templates, through: :template_tags, dependent: :destroy
 
-  TYPES = %w(Setting Label ContentWarning GalleryGroup NewCharacterGroup)
+  TYPES = %w(Setting Label ContentWarning GalleryGroup CharacterGroup)
 
   validates :name, :type, presence: true
   validates :name, uniqueness: { scope: :type }
