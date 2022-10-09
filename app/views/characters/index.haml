@@ -75,10 +75,10 @@
       %th.odd{style: 'padding: 3px', colspan: colspan}= # spacer between two .subbers
     - if @group
       = render 'group', group: @group, page_view: page_view, colspan: colspan
-    - elsif NewCharacterGroup.owned_by(@user).exists?
-      = render partial: 'group', collection: NewCharacterGroup.owned_by(@user).order(id: :asc), locals: { page_view: page_view, colspan: colspan }
+    - elsif CharacterGroup.owned_by(@user).exists?
+      = render partial: 'group', collection: CharacterGroup.owned_by(@user).order(id: :asc), locals: { page_view: page_view, colspan: colspan }
       - if @user.characters.non_npcs.ungrouped.exists?
-        = render 'group', characters: @user.non_npcs.characters.ungrouped, group: nil, page_view: page_view, colspan: colspan
+        = render 'group', characters: @user.characters.non_npcs.ungrouped, group: nil, page_view: page_view, colspan: colspan
     - elsif @user.characters.exists?
       - templates = @user.templates.ordered
       - templates = templates.where(retired: false) unless show_retired
