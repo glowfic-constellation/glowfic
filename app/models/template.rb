@@ -10,6 +10,8 @@ class Template < ApplicationRecord
   validates :name, presence: true
 
   scope :ordered, -> { order(name: :asc, created_at: :asc, id: :asc) }
+  scope :for_group, ->(group) { join(:template_tags).where(template_tags: { tag_id: group }) }
+  scope :ungrouped, -> { where("NOT EXISTS (SELECT 1 FROM template_tags WHERE template_tags.template_id = templates.id)") }
 
   CHAR_PLUCK = Arel.sql("characters.id as id, concat_ws(' | ', characters.name, nickname, screenname)")
   NPC_PLUCK = Arel.sql("characters.id as id, concat_ws(' | ', characters.name, nickname)")

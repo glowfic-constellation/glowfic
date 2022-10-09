@@ -45,6 +45,12 @@ class Character < ApplicationRecord
     base = where(retired: false).left_outer_joins(:template)
     base.where(template_id: nil).or(base.where(template: { retired: false }))
   end
+  scope :for_group, ->(group) { join(:character_tags).where(character_tags: { tag_id: group.id }) }
+  scope :ungrouped, -> {
+    left_outer_joins(:character_tags)
+      .where("NOT EXISTS (SELECT 1 FROM tags WHERE character_tags.tag_id = tags.id AND tags.type = 'CharacterGroup')")
+      .where("NOT EXISTS (SELECT 1 FROM template_tags WHERE template_tags.template_id = characters.template_id)")
+  }
 
   accepts_nested_attributes_for :template, reject_if: :all_blank
 
