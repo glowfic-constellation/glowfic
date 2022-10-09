@@ -1,0 +1,2 @@
+class NewCharacterGroup < Tag
+end
