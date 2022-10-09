@@ -1,4 +1,4 @@
-class NewCharacterGroup < Tag
+class CharacterGroup < Tag
   scope :owned_by, ->(user) {
     left_outer_joins(character_tags: :character)
       .left_outer_joins(:template_tags)
