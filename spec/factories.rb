@@ -225,6 +225,10 @@ FactoryBot.define do
     factory :gallery_group, class: :gallery_group do
       type { 'GalleryGroup' }
     end
+
+    factory :character_group, class: :character_group do
+      type { 'CharacterGroup' }
+    end
   end
 
   factory :message do
