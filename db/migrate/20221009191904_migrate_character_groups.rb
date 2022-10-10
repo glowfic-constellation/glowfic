@@ -6,7 +6,7 @@ class MigrateCharacterGroups < ActiveRecord::Migration[6.0]
     group_cross = OldCharacterGroup.ids.to_h { |i| [i, nil] }
 
     OldCharacterGroup.all.each do |group|
-      new = CharacterGroup.create_or_find_by!(name: group.name)
+      new = CharacterGroup.create!(name: group.name, user: group.user)
       group_cross[group.id] = new.id
     end
 

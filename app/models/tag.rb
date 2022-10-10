@@ -15,7 +15,7 @@ class Tag < ApplicationRecord
   TYPES = %w(Setting Label ContentWarning GalleryGroup CharacterGroup)
 
   validates :name, :type, presence: true
-  validates :name, uniqueness: { scope: :type }
+  validates :name, uniqueness: { scope: :type }, unless: proc { |tag| tag.is_a?(CharacterGroup) }
 
   scope :ordered_by_type, -> { order(type: :desc, name: :asc) }
 

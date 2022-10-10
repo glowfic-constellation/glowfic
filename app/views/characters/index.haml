@@ -75,8 +75,8 @@
       %th.odd{style: 'padding: 3px', colspan: colspan}= # spacer between two .subbers
     - if @group
       = render 'group', group: @group, page_view: page_view, colspan: colspan
-    - elsif CharacterGroup.owned_by(@user).exists?
-      = render partial: 'group', collection: CharacterGroup.owned_by(@user).order(id: :asc), locals: { page_view: page_view, colspan: colspan }
+    - elsif @user.character_groups.exists?
+      = render partial: 'group', collection: @user.character_groups.order(id: :asc), locals: { page_view: page_view, colspan: colspan }
       - if @user.characters.non_npcs.ungrouped.exists?
         = render 'group', characters: @user.characters.non_npcs.ungrouped, group: nil, page_view: page_view, colspan: colspan
     - elsif @user.characters.exists?
