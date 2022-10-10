@@ -36,7 +36,7 @@ RSpec.describe RepliesController, 'DELETE destroy' do
     login
     delete :destroy, params: { id: reply.id }
     expect(response).to redirect_to(post_url(reply.post))
-    expect(flash[:error]).to eq("You do not have permission to modify this post.")
+    expect(flash[:error]).to eq("You do not have permission to modify this reply.")
   end
 
   it "succeeds for reply creator" do
@@ -133,7 +133,6 @@ RSpec.describe RepliesController, 'DELETE destroy' do
     delete :destroy, params: { id: reply.id }
 
     expect(response).to redirect_to(reply_url(reply, anchor: "reply-#{reply.id}"))
-    expect(flash[:error]).to eq({ message: "Reply could not be deleted.", array: [] })
-    expect(post.reload.replies).to eq([reply])
+    expect(flash[:error][:message]).to eq("Reply could not be deleted because of the following problems:")
   end
 end

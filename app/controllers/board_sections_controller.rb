@@ -13,7 +13,7 @@ class BoardSectionsController < ApplicationController
   def create
     @board_section = BoardSection.new(permitted_params)
     unless @board_section.board.nil? || @board_section.board.editable_by?(current_user)
-      flash[:error] = "You do not have permission to edit this continuity."
+      flash[:error] = "You do not have permission to modify this continuity."
       redirect_to continuities_path and return
     end
 
@@ -21,13 +21,13 @@ class BoardSectionsController < ApplicationController
       @board_section.save!
     rescue ActiveRecord::RecordInvalid
       flash.now[:error] = {
-        message: "Section could not be created.",
+        message: "Section could not be created because of the following problems:",
         array: @board_section.errors.full_messages,
       }
       @page_title = 'New Section'
       render :new
     else
-      flash[:success] = "New section, #{@board_section.name}, has successfully been created for #{@board_section.board.name}."
+      flash[:success] = "New section, #{@board_section.name}, created for #{@board_section.board.name}."
       redirect_to edit_continuity_path(@board_section.board)
     end
   end
@@ -53,7 +53,7 @@ class BoardSectionsController < ApplicationController
       @board_section.save!
     rescue ActiveRecord::RecordInvalid
       flash.now[:error] = {
-        message: "Section could not be updated.",
+        message: "Section could not be updated because of the following problems:",
         array: @board_section.errors.full_messages,
       }
       @page_title = 'Edit ' + @board_section.name_was
@@ -61,7 +61,7 @@ class BoardSectionsController < ApplicationController
       gon.section_id = @board_section.id
       render :edit
     else
-      flash[:success] = "#{@board_section.name} has been successfully updated."
+      flash[:success] = "Section updated."
       redirect_to board_section_path(@board_section)
     end
   end
@@ -71,7 +71,7 @@ class BoardSectionsController < ApplicationController
       @board_section.destroy!
     rescue ActiveRecord::RecordNotDestroyed
       flash[:error] = {
-        message: "Section could not be deleted.",
+        message: "Section could not be deleted because of the following problems:",
         array: @board_section.errors.full_messages,
       }
       redirect_to board_section_path(@board_section)
@@ -92,7 +92,7 @@ class BoardSectionsController < ApplicationController
   def require_permission
     return unless (board = @board_section.try(:board) || Board.find_by_id(params[:board_id]))
     return if board.editable_by?(current_user)
-    flash[:error] = "You do not have permission to edit this continuity."
+    flash[:error] = "You do not have permission to modify this continuity."
     redirect_to continuities_path
   end
 

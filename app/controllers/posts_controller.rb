@@ -144,14 +144,14 @@ class PostsController < WritableController
       @post.save!
     rescue ActiveRecord::RecordInvalid
       flash.now[:error] = {
+        message: "Post could not be created because of the following problems:",
         array: @post.errors.full_messages,
-        message: "Your post could not be saved because of the following problems:",
       }
       editor_setup
       @page_title = 'New Post'
       render :new
     else
-      flash[:success] = "You have successfully posted."
+      flash[:success] = "Post created."
       redirect_to @post
     end
   end
@@ -237,14 +237,14 @@ class PostsController < WritableController
       end
     rescue ActiveRecord::RecordInvalid
       flash.now[:error] = {
+        message: "Post could not be updated because of the following problems:",
         array: @post.errors.full_messages,
-        message: "Your post could not be saved because of the following problems:",
       }
       @audits = { post: @post.audits.count }
       editor_setup
       render :edit
     else
-      flash[:success] = "Your post has been updated."
+      flash[:success] = "Post updated."
       redirect_to @post
     end
   end
@@ -259,7 +259,7 @@ class PostsController < WritableController
       @post.destroy!
     rescue ActiveRecord::RecordNotDestroyed
       flash[:error] = {
-        message: "Post could not be deleted.",
+        message: "Post could not be deleted because of the following problems:",
         array: @post.errors.full_messages,
       }
       redirect_to @post
@@ -383,7 +383,7 @@ class PostsController < WritableController
       end
     rescue ActiveRecord::RecordInvalid
       flash[:error] = {
-        message: "Status could not be updated.",
+        message: "Status could not be updated because of the following problems:",
         array: @post.errors.full_messages,
       }
     else
@@ -398,7 +398,7 @@ class PostsController < WritableController
       @post.save!
     rescue ActiveRecord::RecordInvalid
       flash[:error] = {
-        message: "Post could not be updated.",
+        message: "Post could not be updated because of the following problems:",
         array: @post.errors.full_messages,
       }
     else

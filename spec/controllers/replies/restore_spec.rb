@@ -38,7 +38,7 @@ RSpec.describe RepliesController, 'POST restore' do
     reply.destroy!
     post :restore, params: { id: reply.id }
     expect(response).to redirect_to(post_url(rpost))
-    expect(flash[:error]).to eq('You do not have permission to modify this post.')
+    expect(flash[:error]).to eq('You do not have permission to modify this reply.')
   end
 
   it "handles mid reply deletion" do
@@ -130,7 +130,7 @@ RSpec.describe RepliesController, 'POST restore' do
     reply.destroy!
     login_as(reply.user)
     post :restore, params: { id: reply.id }
-    expect(flash[:success]).to eq("Reply has been restored!")
+    expect(flash[:success]).to eq("Reply restored.")
     post :restore, params: { id: reply.id }
     expect(flash[:error]).to eq("Reply does not need restoring.")
     expect(response).to redirect_to(post_url(reply.post))
@@ -146,7 +146,7 @@ RSpec.describe RepliesController, 'POST restore' do
       post :restore, params: { id: reply.id }
     end
 
-    expect(flash[:success]).to eq("Reply has been restored!")
+    expect(flash[:success]).to eq("Reply restored.")
 
     reply = Reply.find(reply.id)
     expect(reply.created_at).to be_the_same_time_as(original_created_at)
@@ -154,7 +154,7 @@ RSpec.describe RepliesController, 'POST restore' do
     reply.destroy!
 
     post :restore, params: { id: reply.id }
-    expect(flash[:success]).to eq("Reply has been restored!")
+    expect(flash[:success]).to eq("Reply restored.")
     reply = Reply.find(reply.id)
     expect(reply.created_at).to be_the_same_time_as(original_created_at)
     expect(reply.content).to eq('restored right')
@@ -167,7 +167,7 @@ RSpec.describe RepliesController, 'POST restore' do
     login_as(reply.user)
     post :restore, params: { id: reply.id }
 
-    expect(flash[:success]).to eq("Reply has been restored!")
+    expect(flash[:success]).to eq("Reply restored.")
     reply = Reply.find(reply.id)
     expect(reply.created_at).to be_the_same_time_as(old_created_at)
   end
@@ -181,7 +181,7 @@ RSpec.describe RepliesController, 'POST restore' do
     rpost.update!(status: :hiatus)
     login_as(rpost.user)
     post :restore, params: { id: reply.id }
-    expect(flash[:success]).to eq("Reply has been restored!")
+    expect(flash[:success]).to eq("Reply restored.")
     expect(Post.find(rpost.id)).to be_hiatus
   end
 end

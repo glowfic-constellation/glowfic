@@ -24,7 +24,7 @@ class BlocksController < ApplicationController
 
     unless @block.save
       flash.now[:error] = {
-        message: "User could not be blocked.",
+        message: "User could not be blocked because of the following problems:",
         array: @block.errors.full_messages,
       }
       editor_setup
@@ -33,7 +33,7 @@ class BlocksController < ApplicationController
       render :new and return
     end
 
-    flash[:success] = "User blocked!"
+    flash[:success] = "User blocked."
     redirect_to blocks_path
   end
 
@@ -44,7 +44,7 @@ class BlocksController < ApplicationController
   def update
     unless @block.update(permitted_params)
       flash.now[:error] = {
-        message: "Block could not be saved.",
+        message: "Block could not be updated because of the following problems:",
         array: @block.errors.full_messages,
       }
       editor_setup
@@ -52,7 +52,7 @@ class BlocksController < ApplicationController
       render :edit and return
     end
 
-    flash[:success] = "Block updated!"
+    flash[:success] = "Block updated."
     redirect_to blocks_path
   end
 
@@ -61,7 +61,7 @@ class BlocksController < ApplicationController
       @block.destroy!
     rescue ActiveRecord::RecordNotDestroyed
       flash[:error] = {
-        message: "User could not be unblocked.",
+        message: "User could not be unblocked because of the following problems:",
         array: @block.errors.full_messages,
       }
     else

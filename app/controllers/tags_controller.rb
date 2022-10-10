@@ -52,21 +52,21 @@ class TagsController < ApplicationController
       end
     rescue ActiveRecord::RecordInvalid
       flash.now[:error] = {
-        message: "Tag could not be saved because of the following problems:",
+        message: "#{@tag.type.underscore.humanize} could not be updated because of the following problems:",
         array: @tag.errors.full_messages,
       }
       @page_title = "Edit Tag: #{@tag.name}"
       build_editor
       render :edit
     else
-      flash[:success] = "Tag saved!"
+      flash[:success] = "Tag updated."
       redirect_to tag_path(@tag)
     end
   end
 
   def destroy
     unless @tag.deletable_by?(current_user)
-      flash[:error] = "You do not have permission to edit this tag."
+      flash[:error] = "You do not have permission to modify this tag."
       redirect_to tag_path(@tag) and return
     end
 
@@ -74,7 +74,7 @@ class TagsController < ApplicationController
       @tag.destroy!
     rescue ActiveRecord::RecordNotDestroyed
       flash[:error] = {
-        message: "Tag could not be deleted.",
+        message: "#{@tag.type.underscore.humanize} could not be deleted because of the following problems:",
         array: @tag.errors.full_messages,
       }
       redirect_to tag_path(@tag)
@@ -98,7 +98,7 @@ class TagsController < ApplicationController
 
   def require_permission
     return if @tag.editable_by?(current_user)
-    flash[:error] = "You do not have permission to edit this tag."
+    flash[:error] = "You do not have permission to modify this tag."
     redirect_to tag_path(@tag)
   end
 

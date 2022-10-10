@@ -201,7 +201,7 @@ RSpec.describe MessagesController do
       reader = create(:reader_user)
       login
       post :create, params: { message: { recipient_id: reader.id, subject: 'test', message: 'testing' } }
-      expect(flash[:error][:message]).to eq("Your message could not be sent because of the following problems:")
+      expect(flash[:error][:message]).to eq("Message could not be sent because of the following problems:")
       expect(assigns(:message)).not_to be_valid
       expect(assigns(:message).recipient).to be_nil
       expect(assigns(:page_title)).to eq('Compose Message')
@@ -219,7 +219,7 @@ RSpec.describe MessagesController do
 
       post :create, params: { message: {} }
       expect(response).to render_template(:new)
-      expect(flash[:error][:message]).to eq("Your message could not be sent because of the following problems:")
+      expect(flash[:error][:message]).to eq("Message could not be sent because of the following problems:")
       expect(assigns(:message)).not_to be_valid
       expect(assigns(:page_title)).to eq('Compose Message')
       expect(assigns(:javascripts)).to include('messages')
@@ -231,7 +231,7 @@ RSpec.describe MessagesController do
       recipient = create(:user)
       post :create, params: { message: { subject: 'test', message: 'testing', recipient_id: recipient.id } }
       expect(response).to redirect_to(messages_url(view: 'inbox'))
-      expect(flash[:success]).to eq('Message sent!')
+      expect(flash[:success]).to eq('Message sent.')
       message = assigns(:message).reload
       expect(message.subject).to eq('test')
       expect(message.message).to eq('testing')
@@ -279,7 +279,7 @@ RSpec.describe MessagesController do
       expect(Message.count).to eq(2)
       expect(response).to redirect_to(messages_path(view: 'inbox'))
       message = assigns(:message).reload
-      expect(flash[:success]).to eq('Message sent!')
+      expect(flash[:success]).to eq('Message sent.')
       expect(message.sender_id).to eq(previous.recipient_id)
       expect(message.recipient_id).to eq(previous.sender_id)
       expect(message.message).to eq('response')
@@ -297,7 +297,7 @@ RSpec.describe MessagesController do
       }
       expect(Message.count).to eq(2)
       expect(response).to redirect_to(messages_path(view: 'inbox'))
-      expect(flash[:success]).to eq('Message sent!')
+      expect(flash[:success]).to eq('Message sent.')
       message = assigns(:message).reload
       expect(message.sender_id).to eq(previous.sender_id)
       expect(message.recipient_id).to eq(previous.recipient_id)
@@ -370,7 +370,7 @@ RSpec.describe MessagesController do
       login
       get :show, params: { id: message.id }
       expect(response).to redirect_to(messages_url(view: 'inbox'))
-      expect(flash[:error]).to eq("That is not your message!")
+      expect(flash[:error]).to eq("You do not have permission to view that message.")
     end
 
     it "requires extant sender" do

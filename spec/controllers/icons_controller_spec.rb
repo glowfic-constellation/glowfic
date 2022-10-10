@@ -48,7 +48,7 @@ RSpec.describe IconsController do
         gallery = create(:gallery)
         delete :delete_multiple, params: { marked_ids: [icon.id], gallery_id: gallery.id, gallery_delete: true }
         expect(response).to redirect_to(user_galleries_url(user.id))
-        expect(flash[:error]).to eq("That is not your gallery.")
+        expect(flash[:error]).to eq("You do not have permission to modify this gallery.")
       end
 
       it "skips other people's icons" do
@@ -355,7 +355,7 @@ RSpec.describe IconsController do
       get :edit, params: { id: create(:icon).id }
       expect(response.status).to eq(302)
       expect(response.redirect_url).to eq(user_galleries_url(user_id))
-      expect(flash[:error]).to eq("That is not your icon.")
+      expect(flash[:error]).to eq("You do not have permission to modify this icon.")
     end
 
     it "successfully loads" do
@@ -391,7 +391,7 @@ RSpec.describe IconsController do
       user_id = login
       put :update, params: { id: create(:icon).id }
       expect(response).to redirect_to(user_galleries_url(user_id))
-      expect(flash[:error]).to eq("That is not your icon.")
+      expect(flash[:error]).to eq("You do not have permission to modify this icon.")
     end
 
     it "requires valid params" do
@@ -399,7 +399,7 @@ RSpec.describe IconsController do
       login_as(icon.user)
       put :update, params: { id: icon.id, icon: { url: '' } }
       expect(response).to render_template(:edit)
-      expect(flash[:error][:message]).to eq("Your icon could not be saved due to the following problems:")
+      expect(flash[:error][:message]).to eq("Icon could not be updated because of the following problems:")
     end
 
     it "successfully updates" do
@@ -443,7 +443,7 @@ RSpec.describe IconsController do
       delete :destroy, params: { id: create(:icon).id }
       expect(response.status).to eq(302)
       expect(response.redirect_url).to eq(user_galleries_url(user_id))
-      expect(flash[:error]).to eq("That is not your icon.")
+      expect(flash[:error]).to eq("You do not have permission to modify this icon.")
     end
 
     it "successfully destroys" do
@@ -452,7 +452,7 @@ RSpec.describe IconsController do
       delete :destroy, params: { id: icon.id }
       expect(response.status).to eq(302)
       expect(response.redirect_url).to eq(user_galleries_url(user_id))
-      expect(flash[:success]).to eq("Icon deleted successfully.")
+      expect(flash[:success]).to eq("Icon deleted.")
       expect(Icon.find_by_id(icon.id)).to be_nil
     end
 
@@ -464,7 +464,7 @@ RSpec.describe IconsController do
       delete :destroy, params: { id: icon.id }
       expect(response.status).to eq(302)
       expect(response.redirect_url).to eq(gallery_url(gallery))
-      expect(flash[:success]).to eq("Icon deleted successfully.")
+      expect(flash[:success]).to eq("Icon deleted.")
       expect(Icon.find_by_id(icon.id)).to be_nil
     end
 
@@ -481,7 +481,7 @@ RSpec.describe IconsController do
       delete :destroy, params: { id: icon.id }
 
       expect(response).to redirect_to(icon_url(icon))
-      expect(flash[:error]).to eq({ message: "Icon could not be deleted.", array: [] })
+      expect(flash[:error][:message]).to eq("Icon could not be deleted because of the following problems:")
       expect(post.reload.icon).to eq(icon)
     end
   end
@@ -511,7 +511,7 @@ RSpec.describe IconsController do
       user_id = login
       post :avatar, params: { id: create(:icon).id }
       expect(response).to redirect_to(user_galleries_url(user_id))
-      expect(flash[:error]).to eq("That is not your icon.")
+      expect(flash[:error]).to eq("You do not have permission to modify this icon.")
     end
 
     it "handles save errors" do
@@ -528,7 +528,7 @@ RSpec.describe IconsController do
       post :avatar, params: { id: icon.id }
 
       expect(response).to redirect_to(icon_url(icon))
-      expect(flash[:error]).to eq("Something went wrong.")
+      expect(flash[:error][:message]).to eq("Avatar could not be set because of the following problems:")
       expect(user.reload.avatar_id).to be_nil
     end
 
@@ -541,7 +541,7 @@ RSpec.describe IconsController do
       post :avatar, params: { id: icon.id }
 
       expect(response).to redirect_to(icon_url(icon))
-      expect(flash[:success]).to eq("Avatar has been set!")
+      expect(flash[:success]).to eq("Avatar set.")
       expect(user.reload.avatar_id).to eq(icon.id)
     end
   end
@@ -571,7 +571,7 @@ RSpec.describe IconsController do
       user_id = login
       get :replace, params: { id: create(:icon).id }
       expect(response).to redirect_to(user_galleries_url(user_id))
-      expect(flash[:error]).to eq("That is not your icon.")
+      expect(flash[:error]).to eq("You do not have permission to modify this icon.")
     end
 
     context "with galleryless icon" do
@@ -650,7 +650,7 @@ RSpec.describe IconsController do
       user_id = login
       post :do_replace, params: { id: create(:icon).id }
       expect(response).to redirect_to(user_galleries_url(user_id))
-      expect(flash[:error]).to eq("That is not your icon.")
+      expect(flash[:error]).to eq("You do not have permission to modify this icon.")
     end
 
     it "requires valid other icon" do
@@ -667,7 +667,7 @@ RSpec.describe IconsController do
       login_as(icon.user)
       post :do_replace, params: { id: icon.id, icon_dropdown: other_icon.id }
       expect(response).to redirect_to(replace_icon_path(icon))
-      expect(flash[:error]).to eq('That is not your icon.')
+      expect(flash[:error]).to eq('You do not have permission to modify this icon.')
     end
 
     it "succeeds with valid other icon" do

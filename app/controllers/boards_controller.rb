@@ -43,14 +43,14 @@ class BoardsController < ApplicationController
       @board.save!
     rescue ActiveRecord::RecordInvalid
       flash.now[:error] = {
-        message: "Continuity could not be created.",
+        message: "Continuity could not be created because of the following problems:",
         array: @board.errors.full_messages,
       }
       @page_title = 'New Continuity'
       editor_setup
       render :new
     else
-      flash[:success] = "Continuity created!"
+      flash[:success] = "Continuity created."
       redirect_to continuities_path
     end
   end
@@ -81,7 +81,7 @@ class BoardsController < ApplicationController
       @board.update!(permitted_params)
     rescue ActiveRecord::RecordInvalid
       flash.now[:error] = {
-        message: "Continuity could not be created.",
+        message: "Continuity could not be updated because of the following problems:",
         array: @board.errors.full_messages,
       }
       @page_title = 'Edit Continuity: ' + @board.name_was
@@ -90,7 +90,7 @@ class BoardsController < ApplicationController
       @board_sections = @board.board_sections.ordered
       render :edit
     else
-      flash[:success] = "Continuity saved!"
+      flash[:success] = "Continuity updated."
       redirect_to continuity_path(@board)
     end
   end
@@ -100,7 +100,7 @@ class BoardsController < ApplicationController
       @board.destroy!
     rescue ActiveRecord::RecordNotDestroyed
       flash[:error] = {
-        message: "Continuity could not be deleted.",
+        message: "Continuity could not be deleted because of the following problems:",
         array: @board.errors.full_messages,
       }
       redirect_to continuity_path(@board)
@@ -174,7 +174,7 @@ class BoardsController < ApplicationController
 
   def require_edit_permission
     return if @board.editable_by?(current_user)
-    flash[:error] = "You do not have permission to edit that continuity."
+    flash[:error] = "You do not have permission to modify this continuity."
     redirect_to continuity_path(@board)
   end
 

@@ -75,7 +75,7 @@ RSpec.describe RepliesController, 'PUT update' do
     login_as(reply.user)
     put :update, params: { id: reply.id, reply: { post_id: nil } }
     expect(response).to render_template(:edit)
-    expect(flash[:error][:message]).to eq("Your reply could not be saved because of the following problems:")
+    expect(flash[:error][:message]).to eq("Reply could not be updated because of the following problems:")
   end
 
   it "succeeds" do
