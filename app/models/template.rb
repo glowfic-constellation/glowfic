@@ -8,6 +8,7 @@ class Template < ApplicationRecord
   has_one :character_group, through: :template_tag, dependent: :destroy
 
   validates :name, presence: true
+  validate :valid_group
 
   scope :ordered, -> { order(name: :asc, created_at: :asc, id: :asc) }
   scope :for_group, ->(group) { join(:template_tags).where(template_tags: { tag_id: group }) }
@@ -18,5 +19,13 @@ class Template < ApplicationRecord
 
   def plucked_characters
     characters.non_npcs.not_retired.pluck(CHAR_PLUCK)
+  end
+
+  private
+
+  def valid_group
+    return unless character_group.present?
+    return if character_group.user_id == user_id
+    errors.add(:character_group, "must be yours")
   end
 end

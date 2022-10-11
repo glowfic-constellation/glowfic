@@ -31,8 +31,6 @@ class Character < ApplicationRecord
   validates :cluster, length: { maximum: 255 }
   validate :valid_group, :valid_galleries, :valid_default_icon
 
-  attr_accessor :group_name
-
   before_validation :strip_spaces
   after_update :update_flat_posts
   after_destroy :clear_char_ids
@@ -171,12 +169,9 @@ class Character < ApplicationRecord
   private
 
   def valid_group
-    return unless character_group_id == 0
-    @group = CharacterGroup.new(user: user, name: group_name)
-    return if @group.valid?
-    @group.errors.messages.each do |k, v|
-      v.each { |val| errors.add("group #{k}", val) }
-    end
+    return if character_group.nil?
+    return if character_group.user_id == user_id
+    errors.add(:character_group, "must be yours")
   end
 
   def valid_galleries
