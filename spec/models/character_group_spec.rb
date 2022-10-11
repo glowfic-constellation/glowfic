@@ -29,5 +29,59 @@ RSpec.describe CharacterGroup do
       group = build(:character_group, user: user, name: setting.name)
       expect(group).to be_valid
     end
+
+    it "cannot have characters from another user" do
+      group = build(:character_group, characters: create_list(:character, 1))
+      expect(group).not_to be_valid
+      expect(group.errors.full_messages).to eq(['Characters must be yours'])
+    end
+
+    it "cannot have templates from another user" do
+      group = build(:character_group, templates: create_list(:template, 1))
+      expect(group).not_to be_valid
+      expect(group.errors.full_messages).to eq(['Templates must be yours'])
+    end
+
+    it "can have both characters and templates" do
+      characters = create_list(:character, 1, user: user)
+      templates = create_list(:template, 1, user: user)
+      group = build(:character_group, user: user, characters: characters, templates: templates)
+      expect(group).to be_valid
+    end
+
+    it "can have multiple characters" do
+      group = build(:character_group, user: user, characters: create_list(:character, 3, user: user))
+      expect(group).to be_valid
+    end
+
+    it "can have multiple templates" do
+      group = build(:character_group, user: user, templates: create_list(:template, 3, user: user))
+      expect(group).to be_valid
+    end
+
+    it "cannot have the same character as another group" do
+      character = create(:character, user: user)
+      create(:character_group, user: user, characters: [character])
+      group = build(:character_group, user: user, characters: [character])
+      expect(group).not_to be_valid
+      expect(group.errors.full_messages).to eq(['Character tags is invalid'])
+      expect(group.character_tags.first.errors.full_messages).to eq(['Character has already been taken'])
+    end
+
+    it "cannot have the same template as another group" do
+      template = create(:template, user: user)
+      create(:character_group, user: user, templates: [template])
+      group = build(:character_group, user: user, templates: [template])
+      expect(group).not_to be_valid
+      expect(group.errors.full_messages).to eq(['Template tags is invalid'])
+      expect(template.template_tag.errors.full_messages).to eq(['Template has already been taken'])
+    end
+
+    it "can have the same character as a setting" do
+      character = create(:character, user: user)
+      create(:setting, characters: [character])
+      group = build(:character_group, user: user, characters: [character])
+      expect(group).to be_valid
+    end
   end
 end
