@@ -28,7 +28,7 @@ RSpec.describe Template do
     end
 
     it "requires a valid group if one is given" do
-      template = build(:template, group: create(:group))
+      template = build(:template, character_group: create(:character_group))
       expect(template).not_to be_valid
       expect(template.errors.full_messages).to eq(['Character group must be yours'])
     end
