@@ -22,6 +22,13 @@ RSpec.describe Character do
       expect(character).not_to be_valid
     end
 
+    it "cannot have both group and characters" do
+      user = create(:user)
+      character = build(:template_character, user: user, character_group: create(:character_group, user: user))
+      expect(character).not_to be_valid
+      expect(character.errors.full_messages).to eq(['Template and character group cannot co-exist'])
+    end
+
     it "strips facecast" do
       character = create(:character, pb: 'Chris Pine ')
       expect(character.reload.pb).to eq('Chris Pine')
