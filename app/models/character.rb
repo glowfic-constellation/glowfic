@@ -169,6 +169,7 @@ class Character < ApplicationRecord
 
   def valid_group
     return if character_group.nil?
+    errors.add(:template, 'and character group cannot co-exist') and return unless template.nil?
     return if character_group.user_id == user_id
     errors.add(:character_group, "must be yours")
   end
