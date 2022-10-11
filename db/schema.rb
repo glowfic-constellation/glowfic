@@ -106,6 +106,7 @@ ActiveRecord::Schema[7.0].define(version: 2023_09_30_053037) do
     t.integer "tag_id", null: false
     t.datetime "created_at", precision: nil
     t.datetime "updated_at", precision: nil
+    t.boolean "primary", default: false
     t.index ["character_id"], name: "index_character_tags_on_character_id"
     t.index ["tag_id"], name: "index_character_tags_on_tag_id"
   end
@@ -419,6 +420,7 @@ ActiveRecord::Schema[7.0].define(version: 2023_09_30_053037) do
   create_table "template_tags", force: :cascade do |t|
     t.integer "template_id", null: false
     t.integer "tag_id", null: false
+    t.boolean "primary", default: false
     t.datetime "created_at", precision: 6
     t.datetime "updated_at", precision: 6
     t.index ["tag_id"], name: "index_template_tags_on_tag_id"
