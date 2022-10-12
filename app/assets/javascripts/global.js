@@ -141,13 +141,17 @@ function processTotal(key) {
 
 function createTagSelect(tagType, selector, formType, scope) {
   foundTags[selector] = [];
+  var url = '/api/v1/tags';
+  if (tagType === 'Setting') {
+    url = '/api/v1/settings';
+  }
 
   createSelect2("#"+formType+"_"+selector+"_ids", {
     tags: true,
     tokenSeparators: [','],
     placeholder: 'Enter ' + selector.replace('_', ' ') + '(s) separated by commas',
     ajax: {
-      url: '/api/v1/tags',
+      url: url,
       data: function(params) {
         var data = queryTransform(params);
         data.t = tagType;
