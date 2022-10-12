@@ -8,8 +8,10 @@ class CreateTemplateTags < ActiveRecord::Migration[6.0]
 
       t.index :template_id
       t.index :tag_id
+      t.index :primary
     end
 
-    add_column :character_tags, :primary, :boolean, default: false
+    add_column :character_tags, :primary, :boolean
+    add_index :character_tags, :primary
   end
 end
