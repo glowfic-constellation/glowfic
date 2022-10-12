@@ -5,6 +5,7 @@ class RepliesController < WritableController
   before_action :login_required, except: [:search, :show, :history]
   before_action :get_multi_replies, only: [:create, :update]
   before_action :find_model, only: [:show, :history, :edit, :update, :destroy]
+  before_action :find_parent, only: [:show, :history, :edit, :update, :destroy]
   before_action :editor_setup, only: [:edit]
   before_action :require_create_permission, only: [:create]
   before_action :require_edit_permission, only: [:edit, :update]
@@ -171,13 +172,12 @@ class RepliesController < WritableController
   private
 
   def find_model
-    @reply = Reply.find_by(id: params[:id])
+    return if (@reply = Reply.find_by(id: params[:id]))
+    flash[:error] = "Post could not be found."
+    redirect_to continuities_path
+  end
 
-    unless @reply
-      flash[:error] = "Post could not be found."
-      redirect_to continuities_path and return
-    end
-
+  def find_parent
     @post = @reply.post
     unless @post.visible_to?(current_user)
       flash[:error] = "You do not have permission to view this post."
