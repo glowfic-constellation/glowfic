@@ -115,31 +115,27 @@ class AccessCirclesController < ApplicationController
 
   def find_user
     return if params[:user_id].nil?
-    unless (@user = User.active.find_by(id: params[:user_id]))
-      flash[:error] = 'User could not be found.'
-      redirect_to root_path
-    end
+    return if (@user = User.active.find_by(id: params[:user_id]))
+    flash[:error] = 'User could not be found.'
+    redirect_to root_path
   end
 
   def require_edit_permission
-    unless @circle.editable_by?(current_user)
-      flash[:error] = 'You do not have permission to modify this access circle'
-      redirect_to user_access_circles_path(current_user)
-    end
+    return if @circle.editable_by?(current_user)
+    flash[:error] = 'You do not have permission to modify this access circle'
+    redirect_to user_access_circles_path(current_user)
   end
 
   def require_delete_permission
-    unless @circle.deletable_by?(current_user)
-      flash[:error] = 'You do not have permission to modify this access circle'
-      redirect_to user_access_circles_path(current_user)
-    end
+    return if @circle.deletable_by?(current_user)
+    flash[:error] = 'You do not have permission to modify this access circle'
+    redirect_to user_access_circles_path(current_user)
   end
 
   def require_index_permission
-    unless params[:user_id].nil? || current_user.id == params[:user_id].to_i || current_user.has_permission?(:view_access_circles)
-      flash[:error] = "You do not have permission to view this page."
-      redirect_to root_path
-    end
+    return if params[:user_id].nil? || current_user.id == params[:user_id].to_i || current_user.has_permission?(:view_access_circles)
+    flash[:error] = "You do not have permission to view this page."
+    redirect_to root_path
   end
 
   def editor_setup
