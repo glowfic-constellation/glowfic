@@ -22,7 +22,7 @@ class BoardSectionsController < ApplicationController
       render :new
     else
       flash[:success] = "New section, #{@board_section.name}, created for #{@board_section.board.name}."
-      redirect_to edit_continuity_path(@board_section.board)
+      redirect_to edit_continuity_path(@board)
     end
   end
 
@@ -64,7 +64,7 @@ class BoardSectionsController < ApplicationController
       redirect_to board_section_path(@board_section)
     else
       flash[:success] = "Section deleted."
-      redirect_to edit_continuity_path(@board_section.board)
+      redirect_to edit_continuity_path(@board)
     end
   end
 
@@ -91,15 +91,14 @@ class BoardSectionsController < ApplicationController
 
   def og_data
     stats = []
-    board = @board_section.board
-    stats << board.writers.where.not(deleted: true).ordered.pluck(:username).join(', ') if board.authors_locked?
+    stats << @board.writers.where.not(deleted: true).ordered.pluck(:username).join(', ') if @board.authors_locked?
     post_count = @board_section.posts.privacy_public.count
     stats << "#{post_count} #{'post'.pluralize(post_count)}"
     desc = [stats.join(' – ')]
     desc << generate_short(@board_section.description) if @board_section.description.present?
     {
       url: board_section_url(@board_section),
-      title: "#{board.name} » #{@board_section.name}",
+      title: "#{@board.name} » #{@board_section.name}",
       description: desc.join("\n"),
     }
   end
