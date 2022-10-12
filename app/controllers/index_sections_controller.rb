@@ -3,7 +3,7 @@ class IndexSectionsController < ApplicationController
   before_action :login_required, except: [:show]
   before_action :readonly_forbidden, except: [:show]
   before_action :find_model, except: [:new, :create]
-  before_action :find_index, only: [:new, :create]
+  before_action :find_parent, only: [:new, :create]
   before_action :require_create_permission, only: [:new, :create]
   before_action :require_edit_permission, except: [:new, :create, :show]
 
@@ -67,7 +67,7 @@ class IndexSectionsController < ApplicationController
     redirect_to indexes_path
   end
 
-  def find_index
+  def find_parent
     id = params[:index_id] || permitted_params[:index_id]
     return if (@index = Index.find_by(id: id))
     flash[:error] = "Index could not be found."

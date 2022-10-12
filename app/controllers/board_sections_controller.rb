@@ -3,7 +3,7 @@ class BoardSectionsController < ApplicationController
   before_action :login_required, except: :show
   before_action :readonly_forbidden, except: :show
   before_action :find_model, except: [:new, :create]
-  before_action :find_board, except: [:show]
+  before_action :find_parent, except: [:show]
   before_action :require_permission, except: [:show]
 
   def new
@@ -76,7 +76,7 @@ class BoardSectionsController < ApplicationController
     redirect_to continuities_path
   end
 
-  def find_board
+  def find_parent
     board_id = params[:board_id] || permitted_params[:board_id]
     @board = Board.find_by(id: board_id)
     @board ||= @board_section.try(:board)
