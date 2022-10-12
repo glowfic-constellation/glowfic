@@ -431,9 +431,9 @@ RSpec.describe TagsController do
       delete :destroy, params: {
         id: tag.id,
         page: 2,
-        view: 'Label'
+        view: 'Label',
       }
-      expect(response).to redirect_to(tags_path({page: 2, view: 'Label'}))
+      expect(response).to redirect_to(tags_path({ page: 2, view: 'Label' }))
       expect(flash[:success]).to eq("Tag deleted.")
     end
 

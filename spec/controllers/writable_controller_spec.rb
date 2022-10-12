@@ -241,7 +241,7 @@ RSpec.describe WritableController do
 
     it "sets session ignore warnings for logged out user" do
       without_partial_double_verification do
-        allow(controller).to receive(:params).and_return({ignore_warnings: true})
+        allow(controller).to receive(:params).and_return({ ignore_warnings: true })
       end
       expect(controller.send(:display_warnings?)).to eq(false)
       expect(session[:ignore_warnings]).to eq(true)
@@ -254,7 +254,7 @@ RSpec.describe WritableController do
     it "does not set session ignore warnings for logged in user" do
       login_as(user)
       without_partial_double_verification do
-        allow(controller).to receive(:params).and_return({ignore_warnings: true})
+        allow(controller).to receive(:params).and_return({ ignore_warnings: true })
       end
       expect { expect(controller.send(:display_warnings?)).to eq(false) }.not_to change { session[:ignore_warnings] }
     end

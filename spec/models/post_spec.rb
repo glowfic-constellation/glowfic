@@ -519,7 +519,7 @@ RSpec.describe Post do
       expect(post.author_word_counts).to match_array([
         [creator.username, post.word_count],
         [coauthor.username, coauthor_reply.word_count],
-        ['(deleted user)', deleted_reply.word_count]
+        ['(deleted user)', deleted_reply.word_count],
       ])
     end
   end
@@ -843,7 +843,7 @@ RSpec.describe Post do
       params = {
         content: 'test content',
         character_id: character.id,
-        icon_id: icon.id
+        icon_id: icon.id,
       }
 
       reply = post.build_new_reply_for(user, params)

@@ -154,7 +154,7 @@ RSpec.describe ApplicationHelper do
   end
 
   describe "#per_page_options" do
-    let(:options) { {10=>10, 25=>25, 50=>50, 100=>100} }
+    let(:options) { { 10 => 10, 25 => 25, 50 => 50, 100 => 100 } }
 
     it "handles no default" do
       without_partial_double_verification do
@@ -180,7 +180,7 @@ RSpec.describe ApplicationHelper do
     end
 
     it "handles custom default" do
-      options = {10=>10, 25=>25, 30=>30, 50=>50, 100=>100}
+      options = { 10 => 10, 25 => 25, 30 => 30, 50 => 50, 100 => 100 }
       html = options_for_select(options, 30)
       expect(helper.per_page_options(30)).to eq(html)
     end

@@ -522,7 +522,7 @@ RSpec.describe ApplicationController do
     it "uses param if given" do
       login_as(user)
       without_partial_double_verification do
-        allow(controller).to receive(:params).and_return({per_page: 75})
+        allow(controller).to receive(:params).and_return({ per_page: 75 })
       end
       expect(controller.send(:per_page)).to eq(75)
     end
@@ -530,7 +530,7 @@ RSpec.describe ApplicationController do
     it "sets to 100 if all" do
       login_as(user)
       without_partial_double_verification do
-        allow(controller).to receive(:params).and_return({per_page: 'all'})
+        allow(controller).to receive(:params).and_return({ per_page: 'all' })
       end
       expect(controller.send(:per_page)).to eq(100)
     end
@@ -538,7 +538,7 @@ RSpec.describe ApplicationController do
     it "sets to 100 if greater than 100" do
       login_as(user)
       without_partial_double_verification do
-        allow(controller).to receive(:params).and_return({per_page: 200})
+        allow(controller).to receive(:params).and_return({ per_page: 200 })
       end
       expect(controller.send(:per_page)).to eq(100)
     end
@@ -546,7 +546,7 @@ RSpec.describe ApplicationController do
     it "sets to default if zero" do
       login_as(user)
       without_partial_double_verification do
-        allow(controller).to receive(:params).and_return({per_page: 0})
+        allow(controller).to receive(:params).and_return({ per_page: 0 })
       end
       expect(controller.send(:per_page)).to eq(25)
     end
