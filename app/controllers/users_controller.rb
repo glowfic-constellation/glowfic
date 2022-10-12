@@ -143,10 +143,9 @@ class UsersController < ApplicationController
   private
 
   def require_own_user
-    unless params[:id] == current_user.id.to_s
-      flash[:error] = "You do not have permission to edit that user."
-      redirect_to(continuities_path)
-    end
+    return if params[:id] == current_user.id.to_s
+    flash[:error] = "You do not have permission to edit that user."
+    redirect_to(continuities_path)
   end
 
   def signup_prep

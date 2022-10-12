@@ -152,21 +152,19 @@ class IconsController < UploadingController
   private
 
   def find_model
-    unless (@icon = Icon.find_by_id(params[:id]))
-      flash[:error] = "Icon could not be found."
-      if logged_in?
-        redirect_to user_galleries_path(current_user)
-      else
-        redirect_to root_path
-      end
+    return if (@icon = Icon.find_by_id(params[:id]))
+    flash[:error] = "Icon could not be found."
+    if logged_in?
+      redirect_to user_galleries_path(current_user)
+    else
+      redirect_to root_path
     end
   end
 
   def require_permission
-    if @icon.user_id != current_user.id
-      flash[:error] = "That is not your icon."
-      redirect_to user_galleries_path(current_user)
-    end
+    return if @icon.user_id == current_user.id
+    flash[:error] = "That is not your icon."
+    redirect_to user_galleries_path(current_user)
   end
 
   def icon_redirect(gallery)

@@ -116,10 +116,9 @@ class User < ApplicationRecord
   end
 
   def encrypt_password
-    if password.present?
-      self.salt_uuid ||= SecureRandom.uuid
-      self.crypted = crypted_password(password)
-    end
+    return unless password.present?
+    self.salt_uuid ||= SecureRandom.uuid
+    self.crypted = crypted_password(password)
   end
 
   def crypted_password(unencrypted)

@@ -85,10 +85,9 @@ class IndexesController < ApplicationController
   private
 
   def find_model
-    unless (@index = Index.find_by_id(params[:id]))
-      flash[:error] = "Index could not be found."
-      redirect_to indexes_path
-    end
+    return if (@index = Index.find_by_id(params[:id]))
+    flash[:error] = "Index could not be found."
+    redirect_to indexes_path
   end
 
   def require_create_permission
@@ -98,10 +97,9 @@ class IndexesController < ApplicationController
   end
 
   def require_edit_permission
-    unless @index.editable_by?(current_user)
-      flash[:error] = "You do not have permission to edit this index."
-      redirect_to @index
-    end
+    return if @index.editable_by?(current_user)
+    flash[:error] = "You do not have permission to edit this index."
+    redirect_to @index
   end
 
   def permitted_params

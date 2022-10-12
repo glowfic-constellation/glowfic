@@ -91,17 +91,15 @@ class TagsController < ApplicationController
   private
 
   def find_model
-    unless (@tag = Tag.find_by_id(params[:id]))
-      flash[:error] = "Tag could not be found."
-      redirect_to tags_path
-    end
+    return if (@tag = Tag.find_by(id: params[:id]))
+    flash[:error] = "Tag could not be found."
+    redirect_to tags_path
   end
 
   def require_permission
-    unless @tag.editable_by?(current_user)
-      flash[:error] = "You do not have permission to edit this tag."
-      redirect_to tag_path(@tag)
-    end
+    return if @tag.editable_by?(current_user)
+    flash[:error] = "You do not have permission to edit this tag."
+    redirect_to tag_path(@tag)
   end
 
   def build_editor

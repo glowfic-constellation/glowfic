@@ -92,13 +92,12 @@ class TemplatesController < ApplicationController
   end
 
   def find_model
-    unless (@template = Template.find_by_id(params[:id]))
-      flash[:error] = "Template could not be found."
-      if logged_in?
-        redirect_to user_characters_path(current_user)
-      else
-        redirect_to root_path
-      end
+    return if (@template = Template.find_by_id(params[:id]))
+    flash[:error] = "Template could not be found."
+    if logged_in?
+      redirect_to user_characters_path(current_user)
+    else
+      redirect_to root_path
     end
   end
 

@@ -36,7 +36,7 @@ RSpec.describe RepliesController, 'GET edit' do
     login
     get :edit, params: { id: reply.id }
     expect(response).to redirect_to(post_url(reply.post))
-    expect(flash[:error]).to eq("You do not have permission to modify this post.")
+    expect(flash[:error]).to eq("You do not have permission to modify this reply.")
   end
 
   it "works" do

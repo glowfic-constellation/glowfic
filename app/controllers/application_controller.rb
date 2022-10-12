@@ -19,17 +19,15 @@ class ApplicationController < ActionController::Base
   protected
 
   def login_required
-    unless logged_in?
-      flash[:error] = "You must be logged in to view that page."
-      redirect_to root_path
-    end
+    return if logged_in?
+    flash[:error] = "You must be logged in to view that page."
+    redirect_to root_path
   end
 
   def logout_required
-    if logged_in?
-      flash[:error] = "You are already logged in."
-      redirect_to continuities_path
-    end
+    return unless logged_in?
+    flash[:error] = "You are already logged in."
+    redirect_to continuities_path
   end
 
   def handle_invalid_token
@@ -147,11 +145,11 @@ class ApplicationController < ActionController::Base
     @unread_ids ||= []
     @unread_ids += unread_views.map(&:post_id)
 
-    if with_unread
-      @unread_counts = Reply.where(post_id: @unread_ids).joins('INNER JOIN post_views ON replies.post_id = post_views.post_id')
-      @unread_counts = @unread_counts.where(post_views: { user_id: current_user.id })
-      @unread_counts = @unread_counts.where('replies.created_at > post_views.read_at').group(:post_id).count
-    end
+    return unless with_unread
+
+    @unread_counts = Reply.where(post_id: @unread_ids).joins('INNER JOIN post_views ON replies.post_id = post_views.post_id')
+    @unread_counts = @unread_counts.where(post_views: { user_id: current_user.id })
+    @unread_counts = @unread_counts.where('replies.created_at > post_views.read_at').group(:post_id).count
   end
 
   attr_reader :unread_ids, :opened_ids, :unread_counts

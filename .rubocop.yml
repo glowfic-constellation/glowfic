@@ -657,9 +657,6 @@ Style/GlobalVars:
 Style/GlobalStdStream:
   Enabled: false
 
-Style/GuardClause:
-  Enabled: false
-
 Style/HashAsLastArrayItem:
   Enabled: false
 
