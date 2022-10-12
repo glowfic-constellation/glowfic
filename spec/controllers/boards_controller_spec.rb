@@ -344,7 +344,7 @@ RSpec.describe BoardsController do
       board = create(:board, writers: [coauthor])
       sections = [create(:board_section, continuity: board), create(:board_section, continuity: board)]
       posts = [
-        create(:post, continuity: board, user: board.creator, tagged_at: 5.minutes.from_now,
+        create(:post, continuity: board, user: board.creator, tagged_at: 5.minutes.from_now),
         create(:post, user: coauthor, continuity: board),
       ]
       sections[0].update!(section_order: 1)
