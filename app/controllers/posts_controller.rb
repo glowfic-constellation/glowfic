@@ -46,19 +46,20 @@ class PostsController < WritableController
   def unread
     @started = (params[:started] == 'true') || (params[:started].nil? && current_user.unread_opened)
     @posts = Post.joins("LEFT JOIN post_views ON post_views.post_id = posts.id AND post_views.user_id = #{current_user.id}")
-    @posts = @posts.joins("LEFT JOIN board_views on board_views.board_id = posts.board_id AND board_views.user_id = #{current_user.id}")
+    continuity_join = "LEFT JOIN continuity_views on continuity_views.continuity_id = posts.continuity_id AND continuity_views.user_id = ?"
+    @posts = @posts.joins(Post.sanitize_sql([continuity_join, current_user.id]))
     @posts = @posts.where.not(post_views: { read_at: nil }) if @started
 
     # post view does not exist and (board view does not exist or post has updated since non-ignored board view read_at)
     no_post_view = @posts.where(post_views: { user_id: nil })
-    updated_since_board_read = no_post_view.where(board_views: { read_at: nil })
-      .or(no_post_view.where("date_trunc('second', board_views.read_at) < date_trunc('second', posts.tagged_at)"))
-      .where(board_views: { ignored: false })
-    no_post_view = no_post_view.where(board_views: { user_id: nil }).or(updated_since_board_read)
+    updated_since_board_read = no_post_view.where(continuity_views: { read_at: nil })
+      .or(no_post_view.where("date_trunc('second', continuity_views.read_at) < date_trunc('second', posts.tagged_at)"))
+      .where(continuity_views: { ignored: false })
+    no_post_view = no_post_view.where(continuity_views: { user_id: nil }).or(updated_since_board_read)
 
     # post view exists and post has updated since non-ignored post view read_at and (board view does not exist or is not ignored)
     with_post_view = @posts.where(post_views: { ignored: false }) # non-existant post-views will return nil here
-    with_post_view = with_post_view.where(board_views: { user_id: nil }).or(with_post_view.where(board_views: { ignored: false }))
+    with_post_view = with_post_view.where(continuity_views: { user_id: nil }).or(with_post_view.where(continuity_views: { ignored: false }))
     with_post_view = with_post_view.where(post_views: { read_at: nil })
       .or(with_post_view.where("date_trunc('second', post_views.read_at) < date_trunc('second', posts.tagged_at)"))
 
@@ -104,7 +105,7 @@ class PostsController < WritableController
   def unhide
     if params[:unhide_boards].present?
       board_ids = params[:unhide_boards].filter_map(&:to_i).uniq
-      views_to_update = BoardView.where(user_id: current_user.id).where(board_id: board_ids)
+      views_to_update = BoardView.where(user_id: current_user.id).where(continuity_id: board_ids)
       views_to_update.each { |view| view.update(ignored: false) }
     end
 
@@ -282,7 +283,7 @@ class PostsController < WritableController
     return unless params[:commit].present?
 
     @search_results = Post.ordered
-    @search_results = @search_results.where(board_id: params[:board_id]) if params[:board_id].present?
+    @search_results = @search_results.where(continuity_id: params[:board_id]) if params[:board_id].present?
     @search_results = @search_results.where(id: Setting.find(params[:setting_id]).post_tags.pluck(:post_id)) if params[:setting_id].present?
     if params[:subject].present?
       if params[:abbrev].present?

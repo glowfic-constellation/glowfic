@@ -37,12 +37,13 @@
       %tr
         %th.sub Updated
         %td{class: cycle('even', 'odd')}= pretty_time(audit.created_at)
-      - if audit.action == 'update' && audit.audited_changes.key?('board_id')
+      - if audit.action == 'update' && (audit.audited_changes.key?('board_id') || audit.audited_changes.key?('continuity_id'))
         %tr
           %th.sub Continuity
           %td{class: cycle('even', 'odd')}
             Changed from
-            - if (board = Board.find_by_id(audit.audited_changes['board_id'][0]))
+            - old_id = audit.audited_changes.key?('board_id') ? audit.audited_changes['board_id'][0] : audit.audited_changes['continuity_id'][0]
+            - if (board = Board.find_by_id(old_id))
               %b= link_to board.name, continuity_path(board)
             - else
               %b [Deleted]

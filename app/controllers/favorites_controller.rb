@@ -16,7 +16,7 @@ class FavoritesController < ApplicationController
     board_favorites = @favorites.where(favorite_type: Board.to_s).select(:favorite_id)
     post_favorites = @favorites.where(favorite_type: Post.to_s).select(:favorite_id)
 
-    @posts = Post.where(id: author_posts).or(Post.where(id: post_favorites)).or(Post.where(board_id: board_favorites))
+    @posts = Post.where(id: author_posts).or(Post.where(id: post_favorites)).or(Post.where(continuity_id: board_favorites))
     @posts = posts_from_relation(@posts.ordered, with_unread: true)
     @hide_quicklinks = true
   end

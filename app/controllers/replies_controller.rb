@@ -63,7 +63,7 @@ class RepliesController < WritableController
     if @post
       @search_results = @search_results.where(post_id: @post.id)
     elsif params[:board_id].present?
-      post_ids = Post.where(board_id: params[:board_id]).pluck(:id)
+      post_ids = Post.where(continuity_id: params[:board_id]).pluck(:id)
       @search_results = @search_results.where(post_id: post_ids)
     end
 

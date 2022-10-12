@@ -22,7 +22,7 @@ class Api::V1::BoardSectionsController < Api::ApiController
       render json: { errors: [error] }, status: :not_found and return
     end
 
-    boards = Board.where(id: sections.select(:board_id).distinct.pluck(:board_id))
+    boards = Board.where(id: sections.select(:continuity_id).distinct.pluck(:continuity_id))
     unless boards.count == 1
       error = { message: 'Sections must be from one continuity' }
       render json: { errors: [error] }, status: :unprocessable_entity and return
