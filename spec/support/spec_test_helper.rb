@@ -33,7 +33,7 @@ module SpecTestHelper
       elsif ele.is_a?(ActiveRecord::Base)
         ele
       elsif ele.is_a?(ActiveSupport::TimeWithZone)
-        ele.in_time_zone.to_s(:iso8601)
+        ele.in_time_zone.iso8601(3)
       else
         ele.to_s
       end
