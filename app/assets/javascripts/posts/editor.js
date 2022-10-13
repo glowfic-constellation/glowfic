@@ -171,28 +171,16 @@ function setupWritableEditor() {
   // Hides selectors when you click outside them
   $(document).click(function(e) {
     var target = e.target;
-    hideIconSelect(target);
-    hideCharacterSelect(target);
-    hideAliasSelect(target);
+    hideSelect(target, iconSelectBox, '#current-icon-holder');
+    hideSelect(target, '#character-selector', '#swap-character');
+    hideSelect(target, '#alias-selector', '#swap-alias');
   });
 }
 
-function hideIconSelect(target) {
-  if (!$(target).closest('#current-icon-holder').length && !$(target).closest(iconSelectBox).length) {
-    $('#icon-overlay').hide();
-    iconSelectBox.hide();
-  }
-}
-
-function hideCharacterSelect(target) {
-  if (!$(target).closest('#character-selector').length && !$(target).closest('#swap-character').length) {
-    $('#character-selector').hide();
-  }
-}
-
-function hideAliasSelect(target) {
-  if (!$(target).closest('#alias-selector').length && !$(target).closest('#swap-alias').length) {
-    $('#alias-selector').hide();
+function hideSelect(target, selectBox, selectHolder) {
+  if (!$(target).closest(selectHolder).length && !$(target).closest(selectBox).length) {
+    if (selectHolder === '#current-icon-holder') { $('#icon-overlay').hide(); }
+    selectBox.hide();
   }
 }
 
