@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2022_10_12_213635) do
+ActiveRecord::Schema.define(version: 2022_10_13_004257) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "citext"
@@ -32,7 +32,7 @@ ActiveRecord::Schema.define(version: 2022_10_12_213635) do
     t.datetime "created_at"
     t.string "request_uuid"
     t.index ["associated_type", "associated_id"], name: "associated_index"
-    t.index ["auditable_type", "auditable_id"], name: "auditable_index"
+    t.index ["auditable_type", "auditable_id", "version"], name: "auditable_index"
     t.index ["created_at"], name: "index_audits_on_created_at"
     t.index ["request_uuid"], name: "index_audits_on_request_uuid"
     t.index ["user_id", "user_type"], name: "user_index"
