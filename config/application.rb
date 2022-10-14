@@ -79,5 +79,6 @@ module Glowfic
     # redis-rails does not support cache versioning
     config.active_record.cache_versioning = false
     config.active_record.collection_cache_versioning = false
+    config.active_storage.resolve_model_to_route = :rails_storage_proxy
   end
 end
