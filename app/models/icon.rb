@@ -2,6 +2,7 @@ class Icon < ApplicationRecord
   include Presentable
 
   S3_DOMAIN = '.s3.amazonaws.com'
+  CACHE_VERSION = 1
 
   belongs_to :user, optional: false
   has_one :avatar_user, inverse_of: :avatar, class_name: 'User', foreign_key: :avatar_id, dependent: :nullify
@@ -10,6 +11,8 @@ class Icon < ApplicationRecord
   has_many :reply_drafts, dependent: :nullify
   has_many :galleries_icons, dependent: :destroy, inverse_of: :icon
   has_many :galleries, through: :galleries_icons, dependent: :destroy
+  has_one_attached :image
+  delegate_missing_to :image
 
   validates :keyword, presence: true
   validates :url,
@@ -25,6 +28,7 @@ class Icon < ApplicationRecord
   before_update :delete_from_s3
   after_update :update_flat_posts
   after_destroy :clear_icon_ids, :delete_from_s3
+  after_commit :invalidate_cache
 
   scope :ordered, -> { order(Arel.sql('lower(keyword) asc'), created_at: :asc, id: :asc) }
 
@@ -48,6 +52,22 @@ class Icon < ApplicationRecord
     times_used = post_counts.merge(reply_counts) { |_, p, r| p + r }
     posts_used = post_ids.uniq.group_by(&:first).transform_values(&:size)
     [times_used, posts_used]
+  end
+
+  def url
+    Rails.cache.fetch(Icon.cache_string_for(self.id), expires_in: 1.month) do
+      if image.attached?
+        uri = URI(CGI.unescape(image.url))
+        uri.host = URI(ENV.fetch('ICON_HOST')).host
+        uri.to_s
+      else
+        self[:url]
+      end
+    end
+  end
+
+  def self.cache_string_for(icon_id)
+    "#{Rails.env}.#{CACHE_VERSION}.icon_url.#{icon_id}"
   end
 
   private
@@ -94,6 +114,10 @@ class Icon < ApplicationRecord
     return unless saved_change_to_url? || saved_change_to_keyword?
     post_ids = (Post.where(icon_id: id).pluck(:id) + Reply.where(icon_id: id).select(:post_id).distinct.pluck(:post_id)).uniq
     post_ids.each { |id| GenerateFlatPostJob.enqueue(id) }
+  end
+
+  def invalidate_cache
+    Rails.cache.delete(Icon.cache_string_for(id))
   end
 
   class UploadError < RuntimeError
