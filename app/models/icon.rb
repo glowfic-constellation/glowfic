@@ -14,17 +14,9 @@ class Icon < ApplicationRecord
   has_one_attached :image
   delegate_missing_to :image
 
-  validates :keyword, presence: true
-  validates :url,
-    presence: true,
-    length: { maximum: 255 }
-  validates :credit, length: { maximum: 255 }
-  validate :url_is_url
-  validate :uploaded_url_yours
   nilify_blanks
 
   before_validation :use_icon_host
-  before_save :use_https
   before_update :delete_from_s3
   after_update :update_flat_posts
   after_destroy :clear_icon_ids, :delete_from_s3
@@ -57,9 +49,13 @@ class Icon < ApplicationRecord
   def url
     Rails.cache.fetch(Icon.cache_string_for(self.id), expires_in: 1.month) do
       if image.attached?
-        uri = URI(CGI.unescape(image.url))
-        uri.host = URI(ENV.fetch('ICON_HOST')).host
-        uri.to_s
+        if ENV.fetch('ICON_HOST', nil).present?
+          uri = URI(CGI.unescape(image.url))
+          uri.host = URI(ENV.fetch('ICON_HOST')).host
+          uri.to_s
+        else
+          Rails.application.routes.url_helpers.rails_storage_proxy_path(image, host: ENV.fetch('DOMAIN_NAME', 'localhost:3000'))
+        end
       else
         self[:url]
       end
