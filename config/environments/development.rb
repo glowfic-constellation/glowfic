@@ -76,7 +76,7 @@ Rails.application.configure do
   config.action_controller.raise_on_missing_callback_actions = true
 
   # Check html is valid
-  config.middleware.use HTMLProofer::Middleware
+  # config.middleware.use ::HTMLProofer::Middleware
 
   # raise an error if assets aren't found
   config.assets.unknown_asset_fallback = false
