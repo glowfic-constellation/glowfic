@@ -2,7 +2,7 @@ class OauthToken < ApplicationRecord
   belongs_to :client_application
   belongs_to :user
   validates :token, uniqueness: true
-  validates :client_application, :token, presence: true
+  validates :token, presence: true
   before_validation :generate_keys, :on => :create
   attr_accessor :expires_at
 

@@ -589,7 +589,7 @@ RSpec.describe BoardsController do
     context "no search" do
       it "works logged out" do
         get :search
-        expect(response).to have_http_status(:ok)
+        expect(response).to have_http_status(200)
         expect(assigns(:page_title)).to eq('Search Continuities')
         expect(assigns(:search_results)).to be_nil
       end
@@ -603,7 +603,7 @@ RSpec.describe BoardsController do
       it "works logged in" do
         login
         get :search
-        expect(response).to have_http_status(:ok)
+        expect(response).to have_http_status(200)
         expect(assigns(:page_title)).to eq('Search Continuities')
         expect(assigns(:search_results)).to be_nil
       end

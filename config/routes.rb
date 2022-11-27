@@ -129,7 +129,7 @@ Rails.application.routes.draw do
     get :access_token
     post :authorize
     get :authorize
-    match '',               :to => 'oauth#index',         :via => :get, :as => :oauth
+    get '', :to => 'oauth#index', :as => :oauth
   end
   # API
   namespace :api do

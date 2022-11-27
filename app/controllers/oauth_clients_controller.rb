@@ -50,9 +50,8 @@ class OauthClientsController < ApplicationController
 
   def get_client_application
     @client_application = @current_user.client_applications.find(params[:id])
-    unless @client_application
-      flash.now[:error] = "Wrong application id"
-      raise ActiveRecord::RecordNotFound
-    end
+    return unless @client_application
+    flash.now[:error] = "Wrong application id"
+    raise ActiveRecord::RecordNotFound
   end
 end

@@ -9,7 +9,7 @@ RSpec.describe SessionsController do
     it "works when logged in" do
       login
       get :index
-      expect(response).to have_http_status(:ok)
+      expect(response).to have_http_status(200)
       expect(controller.gon.logged_in).to eq(true)
     end
 

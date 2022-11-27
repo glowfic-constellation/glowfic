@@ -4,14 +4,14 @@ RSpec.describe AboutController do
   describe "GET tos" do
     it "succeeds when logged out" do
       get :tos
-      expect(response).to have_http_status(:ok)
+      expect(response).to have_http_status(200)
       expect(assigns(:page_title)).to eq("Terms of Service")
     end
 
     it "succeeds when logged in" do
       login
       get :tos
-      expect(response).to have_http_status(:ok)
+      expect(response).to have_http_status(200)
       expect(assigns(:page_title)).to eq("Terms of Service")
     end
 
@@ -27,14 +27,14 @@ RSpec.describe AboutController do
   describe "GET privacy" do
     it "succeeds when logged out" do
       get :privacy
-      expect(response).to have_http_status(:ok)
+      expect(response).to have_http_status(200)
       expect(assigns(:page_title)).to eq("Privacy Policy")
     end
 
     it "succeeds when logged in" do
       login
       get :privacy
-      expect(response).to have_http_status(:ok)
+      expect(response).to have_http_status(200)
       expect(assigns(:page_title)).to eq("Privacy Policy")
     end
 
@@ -49,14 +49,14 @@ RSpec.describe AboutController do
   describe "GET dmca" do
     it "succeeds when logged out" do
       get :dmca
-      expect(response).to have_http_status(:ok)
+      expect(response).to have_http_status(200)
       expect(assigns(:page_title)).to eq("DMCA Policy")
     end
 
     it "succeeds when logged in" do
       login
       get :dmca
-      expect(response).to have_http_status(:ok)
+      expect(response).to have_http_status(200)
       expect(assigns(:page_title)).to eq("DMCA Policy")
     end
 
@@ -71,14 +71,14 @@ RSpec.describe AboutController do
   describe "GET contact" do
     it "succeeds when logged out" do
       get :contact
-      expect(response).to have_http_status(:ok)
+      expect(response).to have_http_status(200)
       expect(assigns(:page_title)).to eq("Contact Us")
     end
 
     it "succeeds when logged in" do
       login
       get :contact
-      expect(response).to have_http_status(:ok)
+      expect(response).to have_http_status(200)
       expect(assigns(:page_title)).to eq("Contact Us")
     end
 
