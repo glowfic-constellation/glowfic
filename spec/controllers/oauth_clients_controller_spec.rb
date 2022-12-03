@@ -4,7 +4,6 @@ require 'oauth/client/action_controller_request'
 
 RSpec.describe OauthClientsController do
   include OAuthControllerSpecHelper
-  fixtures :client_applications, :oauth_tokens
   before(:each) do
     setup_oauth_for_user
   end
@@ -35,6 +34,11 @@ RSpec.describe OauthClientsController do
   end
 
   describe "show" do
+    before(:each) do
+      @client_applications = @user.client_applications
+      @client_application = @user.client_applications.first
+    end
+
     def do_get
       get :show, params: { :id => @client_application.id }
     end
@@ -56,6 +60,10 @@ RSpec.describe OauthClientsController do
   end
 
   describe "new" do
+    before(:each) do
+      @client_applications = @user.client_applications
+    end
+
     def do_get
       get :new
     end
@@ -77,6 +85,10 @@ RSpec.describe OauthClientsController do
   end
 
   describe "edit" do
+    before(:each) do
+      @client_applications = @user.client_applications
+    end
+
     def do_get
       get :edit, params: { :id => @client_application.id }
     end
@@ -98,6 +110,10 @@ RSpec.describe OauthClientsController do
   end
 
   describe "create" do
+    before(:each) do
+      @client_applications = @user.client_applications
+    end
+
     def do_valid_post
       post :create, params: { 'client_application'=>{ 'name' => 'my site', :url => "http://test.com", :callback_url => "http://test.com/callback" } }
       @client_application = ClientApplication.last
@@ -120,6 +136,10 @@ RSpec.describe OauthClientsController do
   end
 
   describe "destroy" do
+    before(:each) do
+      @client_applications = @user.client_applications
+    end
+
     def do_delete
       delete :destroy, params: { :id => @client_application.id }
     end
@@ -137,6 +157,10 @@ RSpec.describe OauthClientsController do
   end
 
   describe "update" do
+    before(:each) do
+      @client_applications = @user.client_applications
+    end
+
     def do_valid_update
       put :update,
         params: { :id                  => @client_application.id,
