@@ -12,7 +12,6 @@ module OAuthControllerSpecHelper
     @consumer = OAuth::Consumer.new(@client_application.key, @client_application.secret, { :site=>"http://localhost:3000" })
 
     @current_client_application = @client_application
-    puts @client_application.id
     @current_client_applications = @user.client_applications
 
     @access_token = AccessToken.create! :user => @user, :client_application => @client_application
