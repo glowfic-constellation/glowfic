@@ -23,7 +23,6 @@ module Glowfic
     "cite"       => %w(href),
   }
 
-  DISCORD_LINK_GLOWFIC = 'https://discord.gg/Mytf2ruKpv'
   DISCORD_LINK_CONSTELLATION = 'https://discord.gg/RWUPXQD'
 
   module Sanitizers

@@ -27,6 +27,37 @@ RSpec.describe SessionsController do
       get :index
       expect(controller.send(:logged_in?)).not_to eq(true)
     end
+
+    context "with render_views" do
+      render_views
+
+      it "works without link" do
+        allow(ENV).to receive(:fetch).with('DISCORD_LINK_GLOWFIC', nil).and_return(nil)
+        get :index
+        expect(response).to have_http_status(200)
+        expect(response.body).not_to include('Glowfic Community Discord')
+        expect(controller.gon.logged_in).not_to eq(true)
+      end
+
+      it "works when logged out" do
+        allow(ENV).to receive(:fetch).with('DISCORD_LINK_GLOWFIC', nil).and_return('https://discord.gg/fakeinvite')
+        get :index
+        expect(response).to have_http_status(200)
+        expect(response.body).to include('Glowfic Community Discord')
+        expect(response.body).to include('discord.gg')
+        expect(controller.gon.logged_in).not_to eq(true)
+      end
+
+      it "works when logged in" do
+        allow(ENV).to receive(:fetch).with('DISCORD_LINK_GLOWFIC', nil).and_return('https://discord.gg/fakeinvite')
+        login
+        get :index
+        expect(response).to have_http_status(200)
+        expect(response.body).to include('Glowfic Community Discord')
+        expect(response.body).to include('discord.gg')
+        expect(controller.gon.logged_in).to eq(true)
+      end
+    end
   end
 
   describe "GET new" do
