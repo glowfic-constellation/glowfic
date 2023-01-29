@@ -30,7 +30,7 @@ RSpec.feature "Creating replies", :type => :feature do
     end
 
     expect(page).to have_no_selector('.error')
-    expect(page).to have_selector('.content-header', exact_text: 'Edit post')
+    expect(page).to have_selector('.content-header', exact_text: 'Edit reply')
     expect(page).to have_no_selector('.post-container')
     within('#post-editor') do
       fill_in 'reply_content', with: 'other text'
@@ -59,7 +59,7 @@ RSpec.feature "Creating replies", :type => :feature do
 
     # first changes, then preview
     expect(page).to have_no_selector('.error')
-    expect(page).to have_selector('.content-header', exact_text: 'Edit post')
+    expect(page).to have_selector('.content-header', exact_text: 'Edit reply')
     expect(page).to have_no_selector('.post-container')
     within('#post-editor') do
       fill_in 'reply_content', with: 'other text'
@@ -116,7 +116,7 @@ RSpec.feature "Creating replies", :type => :feature do
     end
 
     expect(page).to have_no_selector('.error')
-    expect(page).to have_selector('.content-header', exact_text: 'Edit post')
+    expect(page).to have_selector('.content-header', exact_text: 'Edit reply')
     expect(page).to have_no_selector('.post-container')
     within('#post-editor') do
       fill_in 'reply_content', with: 'other text'
@@ -147,7 +147,7 @@ RSpec.feature "Creating replies", :type => :feature do
 
     # first changes, then preview
     expect(page).to have_no_selector('.error')
-    expect(page).to have_selector('.content-header', exact_text: 'Edit post')
+    expect(page).to have_selector('.content-header', exact_text: 'Edit reply')
     expect(page).to have_no_selector('.post-container')
     within('#post-editor') do
       fill_in 'reply_content', with: 'other text'
