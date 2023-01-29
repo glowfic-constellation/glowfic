@@ -35,8 +35,7 @@ RSpec.describe SessionsController do
         allow(ENV).to receive(:fetch).with('DISCORD_LINK_GLOWFIC', nil).and_return(nil)
         get :index
         expect(response).to have_http_status(200)
-        expect(response.body).to include('Glowfic Community Discord')
-        expect(response.body).to include('discord.gg')
+        expect(response.body).not_to include('Glowfic Community Discord')
         expect(controller.gon.logged_in).not_to eq(true)
       end
 
