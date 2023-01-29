@@ -32,7 +32,7 @@ RSpec.describe Icon do
       expect(icon).not_to be_valid
     end
 
-    it "works with short credit"
+    it "works with short credit" do
       short_credit = 'b' * 200
       icon = build(:icon, credit: short_credit)
       expect(icon).to be_valid
