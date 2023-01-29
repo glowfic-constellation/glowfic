@@ -28,7 +28,7 @@ RSpec.describe Icon do
 
     it "requires short credit" do
       long_credit = 'aa' * 255
-      icon = icon.build(:icon, credit: long_credit)
+      icon = build(:icon, credit: long_credit)
       expect(icon).not_to be_valid
 
       icon.credit = 'b' * 200
