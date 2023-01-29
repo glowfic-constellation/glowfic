@@ -32,7 +32,7 @@ RSpec.describe SessionsController do
       render_views
 
       it "works without link" do
-        allow(ENV).to receive(:fetch).with('DISCORD_LINK_GLOWFIC').and_return(nil)
+        allow(ENV).to receive(:fetch).with('DISCORD_LINK_GLOWFIC', nil).and_return(nil)
         get :index
         expect(response).to have_http_status(200)
         expect(response.body).to contain('Glowfic Community Discord')
@@ -41,7 +41,7 @@ RSpec.describe SessionsController do
       end
 
       it "works when logged out" do
-        allow(ENV).to receive(:fetch).with('DISCORD_LINK_GLOWFIC').and_return('https://discord.gg/fakeinvite')
+        allow(ENV).to receive(:fetch).with('DISCORD_LINK_GLOWFIC', nil).and_return('https://discord.gg/fakeinvite')
         get :index
         expect(response).to have_http_status(200)
         expect(response.body).to contain('Glowfic Community Discord')
@@ -50,7 +50,7 @@ RSpec.describe SessionsController do
       end
 
       it "works when logged in" do
-        allow(ENV).to receive(:fetch).with('DISCORD_LINK_GLOWFIC').and_return('https://discord.gg/fakeinvite')
+        allow(ENV).to receive(:fetch).with('DISCORD_LINK_GLOWFIC', nil).and_return('https://discord.gg/fakeinvite')
         login
         get :index
         expect(response).to have_http_status(200)
