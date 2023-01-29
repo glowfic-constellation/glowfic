@@ -26,6 +26,18 @@ RSpec.describe Icon do
       expect(icon).not_to be_valid
     end
 
+    it "requires short credit" do
+      long_credit = 'aa' * 255
+      icon = build(:icon, credit: long_credit)
+      expect(icon).not_to be_valid
+    end
+
+    it "works with short credit" do
+      short_credit = 'b' * 200
+      icon = build(:icon, credit: short_credit)
+      expect(icon).to be_valid
+    end
+
     describe "#uploaded_url_yours" do
       it "should set the url back to its previous url on create" do
         icon = create(:uploaded_icon)
