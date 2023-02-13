@@ -9,8 +9,8 @@ gem 'apipie-rails'
 # - for migrations with `rails generate audited:upgrade`
 # - that the method set_audit_user has not changed, since we duplicate it in
 #   ApplicationRecord for use in callbacks to send audit user ids to background jobs.
-#   (currently https://github.com/collectiveidea/audited/blob/v4.9.0/lib/audited/audit.rb#L175)
-gem 'audited', '~> 4.9.0'
+#   (currently https://github.com/collectiveidea/audited/blob/v5.0.2/lib/audited/audit.rb#L183)
+gem 'audited', '~> 5.0.0'
 
 gem 'aws-sdk-rails', '~> 2'
 gem 'aws-sdk-s3', '~> 1'
@@ -33,7 +33,7 @@ gem 'nokogiri'
 gem 'pg', '~> 1.1.4'
 gem 'pg_search'
 gem 'rack-pratchett'
-gem 'rails', '~> 6.0.0'
+gem 'rails', '~> 6.1.0'
 gem 'redis', '~> 4.0'
 gem 'resque'
 gem 'resque_mailer'
