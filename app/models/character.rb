@@ -70,7 +70,7 @@ class Character < ApplicationRecord
   def selector_name(include_settings: false)
     parts = [name, nickname, screenname]
     parts << settings.pluck(:name).join(' & ') if include_settings
-    parts.reject(&:blank?).join(' | ')
+    parts.compact_blank.join(' | ')
   end
 
   def reorder_galleries(_gallery=nil)
