@@ -45,7 +45,7 @@ class UsersController < ApplicationController
       render :new and return
     end
 
-    @user.role_id = Permissible::READONLY if params[:secret] != "ALLHAILTHECOIN"
+    @user.role_id = Permissible::READONLY if params[:secret] != ENV["ACCOUNT_SECRET"]
 
     begin
       @user.save!
@@ -115,13 +115,26 @@ class UsersController < ApplicationController
   end
 
   def upgrade
-    # check secret
-
-    unless current_user.update(role_id: nil)
-      # fail
+    unless current_user.read_only?
+      flash.now[:error] = "This account does not need to be upgraded."
+      @page_title = 'Edit Account'
+      render :edit and return
     end
 
-    # success
+    unless params[:secret] == ENV["ACCOUNT_SECRET"]
+      flash.now[:error] = "That is not the correct secret. Please ask someone in the community for help."
+      @page_title = 'Edit Account'
+      render :edit and return
+    end
+
+    unless current_user.update(role_id: nil)
+      flash.now[:error] = "There was a problem updating your account."
+      @page_title = 'Edit Account'
+      render :edit and return
+    end
+
+    flash[:success] = "Changes saved successfully."
+    redirect_to edit_user_path(current_user)
   end
 
   def search
