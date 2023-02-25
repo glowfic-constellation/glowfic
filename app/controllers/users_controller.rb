@@ -114,6 +114,16 @@ class UsersController < ApplicationController
     end
   end
 
+  def upgrade
+    # check secret
+
+    unless current_user.update(role_id: nil)
+      # fail
+    end
+
+    # success
+  end
+
   def search
     @page_title = 'Search Users'
     return unless params[:commit].present?

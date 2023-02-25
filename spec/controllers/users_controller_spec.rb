@@ -453,6 +453,9 @@ RSpec.describe UsersController do
     end
   end
 
+  describe "PUT upgrade" do
+  end
+
   describe "GET search" do
     it "works logged in" do
       login
