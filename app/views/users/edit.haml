@@ -98,13 +98,13 @@
     %tbody
       %tr
         %th.sub Old
-        %td{class: cycle('even', 'odd')}= password_field_tag :old_password, params[:old_password], :placeholder => "Old Password", :class => 'text'
+        %td{class: cycle('even', 'odd')}= password_field_tag :old_password, params[:old_password], placeholder: "Old Password", class: 'text'
       %tr
         %th.sub New
-        %td{class: cycle('even', 'odd')}= f.password_field :password, :placeholder => "New Password", :class => 'text', :value => (params[:user] || {})[:password]
+        %td{class: cycle('even', 'odd')}= f.password_field :password, placeholder: "New Password", class: 'text', value: (params[:user] || {})[:password]
       %tr
         %th.sub Confirm
-        %td{class: cycle('even', 'odd')}= f.password_field :password_confirmation, :placeholder => "Confirm Password", :class => 'text', :value => (params[:user] || {})[:password_confirmation]
+        %td{class: cycle('even', 'odd')}= f.password_field :password_confirmation, placeholder: "Confirm Password", class: 'text', value: (params[:user] || {})[:password_confirmation]
     %tfoot
       %tr
         %th.form-table-ender{colspan: 2}= submit_tag "Save", class: 'button'

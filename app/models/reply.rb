@@ -63,7 +63,7 @@ class Reply < ApplicationRecord
 
   def update_active_char
     return if is_import
-    user.update(:active_character => character)
+    user.update(active_character: character)
   end
 
   def destroy_subsequent_replies

@@ -1,4 +1,4 @@
-RSpec.feature "Creating replies", :type => :feature do
+RSpec.feature "Creating replies", type: :feature do
   def find_reply_on_page(reply)
     find('.post-reply') { |x| x.has_selector?('a', id: "reply-#{reply.id}") }
   end

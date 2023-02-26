@@ -1,4 +1,4 @@
-RSpec.feature "Creating a new index", :type => :feature do
+RSpec.feature "Creating a new index", type: :feature do
   scenario "Create a simple index" do
     login
     visit new_index_path

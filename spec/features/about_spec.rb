@@ -1,4 +1,4 @@
-RSpec.feature "About pages", :type => :feature do
+RSpec.feature "About pages", type: :feature do
   scenario "Terms of Service page" do
     visit tos_path
     within("#tos-content h1") do

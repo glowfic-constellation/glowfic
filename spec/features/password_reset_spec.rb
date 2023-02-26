@@ -1,4 +1,4 @@
-RSpec.feature "Resetting password", :type => :feature do
+RSpec.feature "Resetting password", type: :feature do
   scenario "Resetting your password" do
     # request reset
     user = create(:user)

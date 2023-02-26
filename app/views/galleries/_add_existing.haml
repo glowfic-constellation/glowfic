@@ -18,7 +18,7 @@
         %br
         - @unassigned.each do |icon|
           .gallery-icon
-            = icon_tag icon, class: 'add-gallery-icon', :'data-id' => icon.id
+            = icon_tag icon, class: 'add-gallery-icon', 'data-id': icon.id
             %br
             %span.icon-keyword= icon.keyword
     %tr

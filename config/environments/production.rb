@@ -105,10 +105,10 @@ Rails.application.configure do
 
   # use ExceptionNotification to email Marri stack traces
   Rails.application.config.middleware.use ExceptionNotification::Rack,
-    :email => {
-      :email_prefix         => "[Glowfic Constellation Error] ",
-      :sender_address       => %{"Glowfic Constellation" <glowfic.constellation@gmail.com>},
-      :exception_recipients => %w{glowfic.constellation@gmail.com},
+    email: {
+      email_prefix: "[Glowfic Constellation Error] ",
+      sender_address: %{"Glowfic Constellation" <glowfic.constellation@gmail.com>},
+      exception_recipients: %w{glowfic.constellation@gmail.com},
     }
 
   # Inserts middleware to perform automatic connection switching.

@@ -2,8 +2,8 @@
 class UsersController < ApplicationController
   include DateSelectable
 
-  before_action :signup_prep, :only => :new
-  before_action :login_required, :except => [:index, :show, :new, :create, :search]
+  before_action :signup_prep, only: :new
+  before_action :login_required, except: [:index, :show, :new, :create, :search]
   before_action :logout_required, only: [:new, :create]
   before_action :require_own_user, only: [:edit, :update, :password]
 

@@ -2,7 +2,7 @@
 %html
   %head
     %title #{@post.subject} | Glowfic Constellation
-    %meta{ :charset => "utf-8" }
+    %meta{ charset: "utf-8" }
     <meta name="viewport" content="width=device-width">
     = stylesheet_link_tag 'application'
     - if current_user.try(:layout).present?

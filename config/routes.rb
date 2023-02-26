@@ -4,7 +4,7 @@ Rails.application.routes.draw do
   # For details on the DSL available within this file, see https://guides.rubyonrails.org/routing.html
   apipie
 
-  root :to => 'sessions#index'
+  root to: 'sessions#index'
 
   # Accounts
   get '/login' => 'sessions#new', as: :login
@@ -156,5 +156,5 @@ Rails.application.routes.draw do
   resources :bugs, only: :create
   resources :favorites, only: [:index, :create, :destroy]
   get '/contribute' => 'contribute#index', as: :contribute
-  mount Resque::Server.new, :at => "/resque_web"
+  mount Resque::Server.new, at: "/resque_web"
 end
