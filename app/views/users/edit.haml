@@ -110,7 +110,7 @@
         %th.form-table-ender{colspan: 2}= submit_tag "Save", class: 'button'
 - if current_user.read_only?
   %br
-  = form_for current_user, url: upgrade_user_path(current_user), method: :put, html: { id: 'upgrade_account_form' } do |f|
+  = form_for current_user, url: upgrade_user_path(current_user), method: :put, html: { id: 'upgrade_account_form' } do
     %table.form-table#upgrade-Account
       %thead
         %tr
@@ -118,7 +118,7 @@
       %tbody
         %tr
           %th.sub Secret
-          %td{class: 'even'}= text_field_tag :secret, params[:secret], placeholder: "Secret word - ask around the community"
+          %td.even= text_field_tag :secret, params[:secret], placeholder: "Secret word - ask around the community"
       %tfoot
         %tr
           %th.form-table-ender{colspan: 2}= submit_tag "Save", class: 'button'
