@@ -1,4 +1,4 @@
-FROM ruby:2.7.7
+FROM ruby:3.0.5
 
 WORKDIR /code
 
@@ -12,7 +12,7 @@ RUN apt-get update && apt-get install -y \
     chromium \
   && apt-get clean
 
-ARG bundler_version=2.3.10
+ARG bundler_version=2.3.25
 
 RUN gem install bundler -v $bundler_version
 
