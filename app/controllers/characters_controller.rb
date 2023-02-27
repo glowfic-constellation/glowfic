@@ -364,7 +364,7 @@ class CharactersController < ApplicationController
     linked << ("Nickname".pluralize(nicknames.count) + ": " + nicknames.join(', ')) if nicknames.present?
     settings = @character.settings.pluck(:name)
     linked << ("Setting".pluralize(settings.count) + ": " + settings.join(', ')) if settings.present?
-    desc = [linked.join('. ')].reject(&:blank?)
+    desc = [linked.join('. ')].compact_blank
     desc << generate_short(@character.description) if @character.description.present?
     reply_posts = Reply.where(character_id: @character.id).select(:post_id).distinct.pluck(:post_id)
     posts_count = Post.where(character_id: @character.id).or(Post.where(id: reply_posts)).privacy_public.uniq.count
