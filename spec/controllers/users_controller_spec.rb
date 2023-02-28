@@ -478,7 +478,7 @@ RSpec.describe UsersController do
       user = create(:user, role_id: Permissible::ADMIN)
       login_as(user)
       put :upgrade, params: { id: user.id, secret: 'chocolate' }
-      expect(response).to render_template(:edit)
+      expect(response).to redirect_to(edit_user_url(user))
       expect(flash[:error]).to eq("This account does not need to be upgraded.")
     end
 
@@ -494,11 +494,12 @@ RSpec.describe UsersController do
     it "handles update failures" do
       allow(ENV).to receive(:[]).with('ACCOUNT_SECRET').and_return('chocolate')
       user = create(:user, role_id: Permissible::READONLY)
-      expect(user).to receive(:update).and_return(false)
+      allow(user).to receive(:update).and_return(false)
+      expect(user).to receive(:update)
       login_as(user)
       put :upgrade, params: { id: user.id, secret: 'chocolate' }
-      expect(response).to render_template(:edit)
       expect(flash[:error]).to eq("There was a problem updating your account.")
+      expect(response).to render_template(:edit)
     end
 
     it "works" do
@@ -508,7 +509,7 @@ RSpec.describe UsersController do
       put :upgrade, params: { id: user.id, secret: 'chocolate' }
       expect(response).to redirect_to(edit_user_url(user))
       expect(flash[:success]).to eq("Changes saved successfully.")
-      expect(user.reload).not_to be_readonly
+      expect(user.reload).not_to be_read_only
     end
   end
 

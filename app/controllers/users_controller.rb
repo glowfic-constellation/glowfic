@@ -6,6 +6,7 @@ class UsersController < ApplicationController
   before_action :login_required, except: [:index, :show, :new, :create, :search]
   before_action :logout_required, only: [:new, :create]
   before_action :require_own_user, only: [:edit, :update, :password, :upgrade]
+  before_action :require_readonly_user, only: :upgrade
 
   def index
     @page_title = 'Users'
@@ -115,12 +116,6 @@ class UsersController < ApplicationController
   end
 
   def upgrade
-    unless current_user.read_only?
-      flash.now[:error] = "This account does not need to be upgraded."
-      @page_title = 'Edit Account'
-      render :edit and return
-    end
-
     unless params[:secret] == ENV["ACCOUNT_SECRET"]
       flash.now[:error] = "That is not the correct secret. Please ask someone in the community for help."
       @page_title = 'Edit Account'
@@ -169,6 +164,12 @@ class UsersController < ApplicationController
     return if params[:id] == current_user.id.to_s
     flash[:error] = "You do not have permission to edit that user."
     redirect_to(continuities_path)
+  end
+
+  def require_readonly_user
+    return if current_user.read_only?
+    flash[:error] = "This account does not need to be upgraded."
+    redirect_to edit_user_path(current_user)
   end
 
   def signup_prep
