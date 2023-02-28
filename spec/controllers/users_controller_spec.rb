@@ -116,6 +116,7 @@ RSpec.describe UsersController do
     end
 
     it "creates reader account without secret" do
+      allow(ENV).to receive(:[]).with('ACCOUNT_SECRET').and_return('ALLHAILTHECOIN')
       pass = 'testpassword'
       user = build(:user).attributes.with_indifferent_access.merge(password: pass, password_confirmation: pass, email: 'testemail@example.com')
 
@@ -470,7 +471,7 @@ RSpec.describe UsersController do
       login
       put :upgrade, params: { id: user.id }
       expect(response).to redirect_to(continuities_url)
-      expect(flash[:error]).to eq("This account does not need to be upgraded.")
+      expect(flash[:error]).to eq("You do not have permission to edit that user.")
     end
 
     it "requires reader account" do
@@ -478,7 +479,7 @@ RSpec.describe UsersController do
       login_as(user)
       put :upgrade, params: { id: user.id, secret: 'chocolate' }
       expect(response).to render_template(:edit)
-      expect(flash[:error]).to eq("That is not the correct secret. Please ask someone in the community for help.")
+      expect(flash[:error]).to eq("This account does not need to be upgraded.")
     end
 
     it "requires valid secret" do
@@ -493,7 +494,7 @@ RSpec.describe UsersController do
     it "handles update failures" do
       allow(ENV).to receive(:[]).with('ACCOUNT_SECRET').and_return('chocolate')
       user = create(:user, role_id: Permissible::READONLY)
-      expect(user).to_receive(:update).and_return(false)
+      expect(user).to receive(:update).and_return(false)
       login_as(user)
       put :upgrade, params: { id: user.id, secret: 'chocolate' }
       expect(response).to render_template(:edit)
@@ -506,7 +507,8 @@ RSpec.describe UsersController do
       login_as(user)
       put :upgrade, params: { id: user.id, secret: 'chocolate' }
       expect(response).to redirect_to(edit_user_url(user))
-      expect(flash[:error]).to eq("Changes saved successfully.")
+      expect(flash[:success]).to eq("Changes saved successfully.")
+      expect(user.reload).not_to be_readonly
     end
   end
 
