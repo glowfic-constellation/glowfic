@@ -497,7 +497,7 @@ RSpec.describe UsersController do
       allow(user).to receive(:update).and_return(false)
       expect(user).to receive(:update)
       login_as(user)
-      allow(controller).to receive(:current_user).and_return(user)
+      allow(controller).to receive(:current_user).and_return(user).and_call_original
       put :upgrade, params: { id: user.id, secret: 'chocolate' }
       expect(flash[:error]).to eq("There was a problem updating your account.")
       expect(response).to render_template(:edit)
