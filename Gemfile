@@ -3,6 +3,8 @@ source 'https://rubygems.org'
 
 ruby '3.4.8'
 
+gem 'rbs'
+
 gem 'api-pagination'
 gem 'apipie-rails'
 
@@ -70,6 +72,7 @@ group :development do
   gem 'listen'
   gem 'memory_profiler'
   gem 'rack-mini-profiler'
+  gem 'rbs_rails', require: false
   gem 'rubocop', '~> 1.75.5', require: false
   gem 'rubocop-capybara', '~> 2.22.1', require: false
   gem 'rubocop-factory_bot', '~> 2.27.1', require: false
@@ -78,6 +81,7 @@ group :development do
   gem 'rubocop-rspec', '~> 3.7.0', require: false
   gem 'rubocop-rspec_rails', '~> 2.31.0', require: false
   gem 'traceroute'
+  gem 'typeprof'
 end
 
 group :development, :test do

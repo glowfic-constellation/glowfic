@@ -39,3 +39,5 @@ backstop/reports/*
 
 # Ignore Rails credentials key
 /config/master.key
+
+/.gem_rbs_collection/
