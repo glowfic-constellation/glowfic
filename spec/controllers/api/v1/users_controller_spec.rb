@@ -6,7 +6,7 @@ RSpec.describe Api::V1::UsersController do
       create(:user, username: 'aab') # enduser
       create(:user, username: 'aaa') # notuser
       User.all.each do |user|
-        create(:user, username: user.username.upcase + 'c')
+        create(:user, username: "#{user.username.upcase}c")
       end
     end
 

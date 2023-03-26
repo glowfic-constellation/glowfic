@@ -472,7 +472,7 @@ RSpec.describe CharactersController do
     it "fails with invalid template params" do
       character = create(:character)
       login_as(character.user)
-      new_name = character.name + 'aaa'
+      new_name = "#{character.name}aaa"
       put :update, params: {
         id: character.id,
         new_template: '1',
@@ -510,7 +510,7 @@ RSpec.describe CharactersController do
       character = create(:character)
       user = character.user
       login_as(user)
-      new_name = character.name + 'aaa'
+      new_name = "#{character.name}aaa"
       template = create(:template, user: user)
       gallery = create(:gallery, user: user)
       setting = create(:setting, name: 'Another World')
@@ -916,7 +916,7 @@ RSpec.describe CharactersController do
       login_as(user)
       get :replace, params: { id: character.id }
       expect(response).to have_http_status(200)
-      expect(assigns(:page_title)).to eq('Replace Character: ' + character.name)
+      expect(assigns(:page_title)).to eq("Replace Character: #{character.name}")
 
       expect(controller.gon.gallery[other_char.id][:url]).to eq(other_char.default_icon.url)
       expect(controller.gon.gallery[other_char.id][:aliases]).to eq([calias.as_json])
@@ -934,7 +934,7 @@ RSpec.describe CharactersController do
         login_as(user)
         get :replace, params: { id: character.id }
         expect(response).to have_http_status(200)
-        expect(assigns(:page_title)).to eq('Replace Character: ' + character.name)
+        expect(assigns(:page_title)).to eq("Replace Character: #{character.name}")
         expect(assigns(:alts)).to match_array(alts)
         expect(assigns(:alt_dropdown).length).to eq(alts.length)
       end
@@ -963,7 +963,7 @@ RSpec.describe CharactersController do
         login_as(user)
         get :replace, params: { id: character.id }
         expect(response).to have_http_status(200)
-        expect(assigns(:page_title)).to eq('Replace Character: ' + character.name)
+        expect(assigns(:page_title)).to eq("Replace Character: #{character.name}")
         expect(assigns(:alts)).to match_array(alts)
         expect(assigns(:alt_dropdown).length).to eq(alts.length)
       end

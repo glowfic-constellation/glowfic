@@ -5,7 +5,7 @@ class PostScraper < Object
     @board_id = board_id || Board::ID_SANDBOX
     @section_id = section_id
     @status = status || :complete
-    url += (url.include?('?') ? '&' : '?') + 'style=site' unless url.include?('style=site')
+    url += "#{url.include?('?') ? '&' : '?'}style=site" unless url.include?('style=site')
     url += '&view=flat' unless url.include?('view=flat') || threaded_import
     @url = url
     @console_import = console_import
@@ -106,7 +106,7 @@ class PostScraper < Object
       url = first_reply_in_batch.at_css('.comment-title').at_css('a').attribute('href').value
       unless url[/(\?|&)style=site/]
         url_obj = URI.parse(url)
-        url_obj.query += ('&' if url_obj.query.present?) + 'style=site'
+        url_obj.query += "#{'&' if url_obj.query.present?}style=site"
         url = url_obj.to_s
       end
       links << url
@@ -173,6 +173,7 @@ end
 
 class AlreadyImportedError < RuntimeError
   attr_reader :post_id
+
   def initialize(msg, post_id)
     @post_id = post_id
     super(msg)

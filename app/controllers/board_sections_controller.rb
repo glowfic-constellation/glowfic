@@ -39,7 +39,7 @@ class BoardSectionsController < ApplicationController
   end
 
   def edit
-    @page_title = 'Edit ' + @board_section.name
+    @page_title = "Edit #{@board_section.name}"
     use_javascript('board_sections')
     gon.section_id = @board_section.id
   end
@@ -56,7 +56,7 @@ class BoardSectionsController < ApplicationController
         message: "Section could not be updated.",
         array: @board_section.errors.full_messages,
       }
-      @page_title = 'Edit ' + @board_section.name_was
+      @page_title = "Edit #{@board_section.name_was}"
       use_javascript('board_sections')
       gon.section_id = @board_section.id
       render :edit

@@ -36,3 +36,7 @@ backstop/reports/*
 # Ignore DB backups
 /db/backups/*
 /db/storage
+
+# Local binaries
+bin/rspec
+bin/spring

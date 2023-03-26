@@ -283,7 +283,7 @@ RSpec.describe MessagesController do
       expect(message.sender_id).to eq(previous.recipient_id)
       expect(message.recipient_id).to eq(previous.sender_id)
       expect(message.message).to eq('response')
-      expect(message.subject).to eq('Re: ' + previous.subject)
+      expect(message.subject).to eq("Re: #{previous.subject}")
       expect(message.parent).to eq(previous)
     end
 

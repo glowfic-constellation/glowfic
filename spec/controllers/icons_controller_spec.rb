@@ -594,7 +594,7 @@ RSpec.describe IconsController do
         expect(response).to have_http_status(200)
         expect(assigns(:alts)).to match_array(alts)
         expect(assigns(:posts)).to match_array([post, reply.post])
-        expect(assigns(:page_title)).to eq("Replace Icon: " + icon.keyword)
+        expect(assigns(:page_title)).to eq("Replace Icon: #{icon.keyword}")
       end
     end
 
@@ -620,7 +620,7 @@ RSpec.describe IconsController do
         expect(response).to have_http_status(200)
         expect(assigns(:alts)).to match_array(alts)
         expect(assigns(:posts)).to match_array([post, reply.post])
-        expect(assigns(:page_title)).to eq("Replace Icon: " + icon.keyword)
+        expect(assigns(:page_title)).to eq("Replace Icon: #{icon.keyword}")
       end
     end
   end

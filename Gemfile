@@ -30,6 +30,7 @@ gem 'jwt'
 gem 'newrelic_rpm'
 gem 'nilify_blanks'
 gem 'nokogiri'
+gem 'oauth-plugin', git: 'https://github.com/l1n/oauth-plugin', ref: 'd4a09d005734c6d6722b47cf8ca4fa61102defb7'
 gem 'pg', '~> 1.1'
 gem 'pg_search'
 gem 'rack-pratchett'
@@ -54,7 +55,7 @@ group :production do
 end
 
 group :development do
-  gem "brakeman", '~> 5.2.0', require: false
+  gem "brakeman", '~> 5.2.1', require: false
   gem 'haml_lint', '~> 0.40.0', require: false
   gem 'listen'
   gem 'memory_profiler'
@@ -71,9 +72,12 @@ group :development, :test do
   gem 'database_cleaner'
   gem 'dotenv-rails'
   gem 'html-proofer'
+  gem 'pry'
   gem 'rake', '~> 12.0'
   gem 'rspec-rails'
   gem 'seed_dump', '~> 3.2'
+  gem 'spring'
+  gem 'spring-commands-rspec'
   gem 'thin'
 end
 
@@ -89,3 +93,5 @@ group :test do
   gem 'webdrivers', '~> 4.0'
   gem 'webmock'
 end
+
+gem "oauth", "~> 0.5.8"

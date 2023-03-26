@@ -403,7 +403,7 @@ RSpec.describe BoardsController do
       put :update, params: {
         id: board.id,
         board: {
-          name: name + 'edit',
+          name: "#{name}edit",
           description: 'New description',
           coauthor_ids: [user2.id],
           cameo_ids: [user3.id],
@@ -413,7 +413,7 @@ RSpec.describe BoardsController do
       expect(response).to redirect_to(continuity_url(board))
       expect(flash[:success]).to eq("Continuity saved!")
       board.reload
-      expect(board.name).to eq(name + 'edit')
+      expect(board.name).to eq("#{name}edit")
       expect(board.description).to eq('New description')
       expect(board.writers).to match_array([user, user2])
       expect(board.cameos).to match_array([user3])

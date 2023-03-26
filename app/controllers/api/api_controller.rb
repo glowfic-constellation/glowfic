@@ -2,6 +2,7 @@ class Api::ApiController < ActionController::Base
   include Rails::Pagination
   include Authentication::Api
 
+  before_action :oauth_or_jwt
   protect_from_forgery with: :exception
   before_action :check_token
   around_action :set_timezone
@@ -15,6 +16,10 @@ class Api::ApiController < ActionController::Base
 
   protected
 
+  def oauth_or_jwt
+    @current_user ||= current_token&.user
+  end
+
   def check_token
     # checks for invalid tokens in a before to prevent double renders
     logged_in?
@@ -26,8 +31,8 @@ class Api::ApiController < ActionController::Base
     render json: { errors: [error] }, status: :unauthorized and return
   end
 
-  def set_timezone
-    Time.use_zone("UTC") { yield }
+  def set_timezone(&block)
+    Time.use_zone("UTC", &block)
   end
 
   def handle_param_validation

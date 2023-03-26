@@ -449,7 +449,7 @@ RSpec.describe GalleriesController do
       user = create(:user)
       gallery = create(:gallery, user: user)
       icon = create(:icon, user: user)
-      newkey = icon.keyword + 'new'
+      newkey = "#{icon.keyword}new"
       gallery.icons << icon
       login_as(user)
 

@@ -6,7 +6,7 @@ RSpec.describe Api::V1::TemplatesController do
       create(:template, name: 'aab') # endtemplate
       create(:template, name: 'aaa') # nottemplate
       Template.all.each do |template|
-        create(:template, name: template.name.upcase + 'c')
+        create(:template, name: "#{template.name.upcase}c")
       end
     end
 

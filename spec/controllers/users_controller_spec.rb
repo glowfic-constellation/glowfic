@@ -330,7 +330,7 @@ RSpec.describe UsersController do
       user.reload
       expect(user.username).to eq('user124')
       expect(user.authenticate(pass)).to eq(true)
-      expect(user.authenticate(pass + '1')).not_to eq(true)
+      expect(user.authenticate("#{pass}1")).not_to eq(true)
     end
 
     context "tos" do
@@ -473,7 +473,7 @@ RSpec.describe UsersController do
       create(:user, username: 'aab') # enduser
       create(:user, username: 'aaa') # notuser
       User.all.each do |user|
-        create(:user, username: user.username.upcase + 'c')
+        create(:user, username: "#{user.username.upcase}c")
       end
       get :search, params: { commit: 'Search', username: 'b' }
       expect(response).to have_http_status(200)

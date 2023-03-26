@@ -198,7 +198,7 @@ RSpec.describe TemplatesController do
     it "works" do
       template = create(:template)
       char = create(:character, user: template.user)
-      new_name = template.name + 'new'
+      new_name = "#{template.name}new"
       login_as(template.user)
 
       put :update, params: {

@@ -24,7 +24,7 @@ class GalleriesController < UploadingController
     @page_title = if @user.id == current_user.try(:id)
       "Your Galleries"
     else
-      @user.username + "'s Galleries"
+      "#{@user.username}'s Galleries"
     end
     use_javascript('galleries/expander')
     gon.user_id = @user.id
@@ -83,7 +83,7 @@ class GalleriesController < UploadingController
       end
 
       @user = @gallery.user
-      @page_title = @gallery.name + ' (Gallery)'
+      @page_title = "#{@gallery.name} (Gallery)"
       @meta_og = og_data
     end
     icons = @gallery ? @gallery.icons : @user.galleryless_icons
@@ -102,7 +102,7 @@ class GalleriesController < UploadingController
   end
 
   def edit
-    @page_title = 'Edit Gallery: ' + @gallery.name
+    @page_title = "Edit Gallery: #{@gallery.name}"
     use_javascript('galleries/uploader')
     use_javascript('galleries/edit')
   end
@@ -119,7 +119,7 @@ class GalleriesController < UploadingController
       flash.now[:error] = {}
       flash.now[:error][:message] = "Gallery could not be saved."
       flash.now[:error][:array] = @gallery.errors.full_messages
-      @page_title = 'Edit Gallery: ' + @gallery.name_was
+      @page_title = "Edit Gallery: #{@gallery.name_was}"
       use_javascript('galleries/uploader')
       use_javascript('galleries/edit')
       editor_setup
@@ -240,7 +240,7 @@ class GalleriesController < UploadingController
     find_model unless params[:id] == '0'
     @unassigned = current_user.galleryless_icons
     @page_title = "Add Icons"
-    @page_title += ": " + @gallery.name unless @gallery.nil?
+    @page_title += ": #{@gallery.name}" unless @gallery.nil?
   end
 
   def editor_setup

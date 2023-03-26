@@ -43,7 +43,7 @@ RSpec.describe Api::V1::SessionsController do
     it "requires a valid password" do
       password = 'password'
       user = create(:user, password: password)
-      post :create, params: { username: user.username, password: password + "-not" }
+      post :create, params: { username: user.username, password: "#{password}-not" }
       expect(response).to have_http_status(401)
       expect(response.json['errors'][0]['message']).to eq("You have entered an incorrect password.")
     end

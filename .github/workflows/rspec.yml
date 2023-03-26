@@ -53,3 +53,8 @@ jobs:
         uses: paambaati/codeclimate-action@v3.0.0
         with:
           coverageCommand: bundle exec rspec spec
+      - name: Archive code coverage results
+        uses: actions/upload-artifact@v3
+        with:
+          name: code-coverage-report
+          path: /home/runner/work/glowfic/glowfic/coverage/code-coverage.html

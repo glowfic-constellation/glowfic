@@ -6,7 +6,7 @@ RSpec.describe Api::V1::BoardsController do
       create(:board, name: 'aab') # enduser
       create(:board, name: 'aaa') # notuser
       Board.all.each do |board|
-        create(:board, name: board.name.upcase + 'c')
+        create(:board, name: "#{board.name.upcase}c")
       end
     end
 
