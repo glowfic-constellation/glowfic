@@ -72,13 +72,13 @@ group :development, :test do
   gem 'database_cleaner'
   gem 'dotenv-rails'
   gem 'html-proofer'
+  gem 'pry'
   gem 'rake', '~> 12.0'
   gem 'rspec-rails'
   gem 'seed_dump', '~> 3.2'
-  gem 'thin'
-  gem 'pry'
   gem 'spring'
   gem 'spring-commands-rspec'
+  gem 'thin'
 end
 
 group :test do

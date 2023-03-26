@@ -2,7 +2,7 @@ class OauthController < ApplicationController
   before_action :login_required, only: [:authorize, :revoke]
   oauthenticate only: [:test_request]
   oauthenticate strategies: :token, interactive: false, only: [:invalidate]
-  skip_before_action :verify_authenticity_token, only:[:invalidate, :test_request, :token]
+  skip_before_action :verify_authenticity_token, only: [:invalidate, :test_request, :token]
 
   def token
     @client_application = ClientApplication.find_by! key: params[:client_id]
@@ -45,7 +45,7 @@ class OauthController < ApplicationController
   # Invalidate current token
   def invalidate
     current_token.invalidate!
-    head status:410
+    head status: 410
   end
 
   protected
@@ -62,7 +62,7 @@ class OauthController < ApplicationController
       return
     end
     @token = @verification_code.exchange!
-    render json:@token
+    render json: @token
   end
 
   # http://tools.ietf.org/html/draft-ietf-oauth-v2-22#section-4.1.2
@@ -73,19 +73,18 @@ class OauthController < ApplicationController
       return
     end
     @token = Oauth2Token.create! client_application: @client_application, user: @user, scope: params[:scope]
-    render json:@token
+    render json: @token
   end
 
   # should authenticate and return a user if valid password. Override in your own controller
   def authenticate_user(username, password)
-    user = Authentication.new.authenticate(username, password)
-    return user
+    Authentication.new.authenticate(username, password)
   end
 
   # autonomous authorization which creates a token for client_applications user
   def oauth2_token_client_credentials
     @token = Oauth2Token.create! client_application: @client_application, user: @client_application.user, scope: params[:scope]
-    render json:@token
+    render json: @token
   end
 
   # Override this to match your authorization page form
@@ -95,6 +94,6 @@ class OauthController < ApplicationController
   end
 
   def oauth2_error(error="invalid_grant")
-    render json: { error:error }.to_json, status: :bad_request
+    render json: { error: error }.to_json, status: :bad_request
   end
 end
