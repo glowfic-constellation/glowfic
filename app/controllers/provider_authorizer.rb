@@ -59,9 +59,9 @@ class ProviderAuthorizer
   end
 
   def encode_response
-    response.map do |k, v|
+    response.filter_map do |k, v|
       k && v && [CGI.escape(k.to_s), CGI.escape(v)].join("=")
-    end.compact * "&"
+    end * "&"
   end
 
   protected
