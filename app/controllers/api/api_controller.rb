@@ -21,10 +21,6 @@ class Api::ApiController < ActionController::Base
     @current_user ||= current_token&.user
   end
 
-  def current_user=(user)
-    user == current_user
-  end
-
   def check_token
     # checks for invalid tokens in a before to prevent double renders
     logged_in?

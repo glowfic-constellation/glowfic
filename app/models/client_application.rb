@@ -18,21 +18,6 @@ class ClientApplication < ApplicationRecord
 
   attr_accessor :token_callback_url
 
-  def self.find_token(token_key)
-    token = OauthToken.find_by :token => token_key, :include => :client_application
-    token if token&.authorized?
-  end
-
-  def self.verify_request(request, options={}, &block)
-    begin
-      signature = OAuth::Signature.build(request, options, &block)
-      return false unless OauthNonce.remember(signature.request.nonce, signature.request.timestamp)
-      signature.verify
-    rescue OAuth::Signature::UnknownSignatureMethod
-      false
-    end
-  end
-
   def oauth_server
     @oauth_server ||= OAuth::Server.new("http://your.site")
   end
