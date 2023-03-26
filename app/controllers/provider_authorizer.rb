@@ -32,7 +32,6 @@ class ProviderAuthorizer
   def redirect_uri
     uri = base_uri
     if params[:response_type] == 'code'
-      binding.pry
       if uri.query && uri.query.present?
         uri.query << '&'
       else
