@@ -12,17 +12,17 @@ class ProviderAuthorizer
   end
 
   def code
-    @code ||= ::Oauth2Verifier.create! :client_application => app,
-      :user               => @user,
-      :scope              => @params[:scope],
-      :callback_url       => @params[:redirect_uri]
+    @code ||= ::Oauth2Verifier.create! client_application: app,
+      user: @user,
+      scope: @params[:scope],
+      callback_url: @params[:redirect_uri]
   end
 
   def token
-    @token ||= ::Oauth2Token.create! :client_application => app,
-      :user               => @user,
-      :scope              => @params[:scope],
-      :callback_url       => @params[:redirect_uri]
+    @token ||= ::Oauth2Token.create! client_application: app,
+      user: @user,
+      scope: @params[:scope],
+      callback_url: @params[:redirect_uri]
   end
 
   def authorized?

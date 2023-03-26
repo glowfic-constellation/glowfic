@@ -40,7 +40,7 @@ RSpec.describe OauthClientsController do
     end
 
     def do_get
-      get :show, params: { :id => @client_application.id }
+      get :show, params: { id: @client_application.id }
     end
 
     it "should be successful" do
@@ -96,7 +96,7 @@ RSpec.describe OauthClientsController do
     end
 
     def do_get
-      get :edit, params: { :id => @client_application.id }
+      get :edit, params: { id: @client_application.id }
     end
 
     it "should be successful" do
@@ -121,7 +121,7 @@ RSpec.describe OauthClientsController do
     end
 
     def do_valid_post
-      post :create, params: { 'client_application'=>{ 'name' => 'my site', :url => "http://test.com", :callback_url => "http://test.com/callback" } }
+      post :create, params: { 'client_application'=>{ 'name' => 'my site', url: "http://test.com", callback_url: "http://test.com/callback" } }
       @client_application = ClientApplication.last
     end
 
@@ -132,7 +132,7 @@ RSpec.describe OauthClientsController do
     it "should redirect to new client_application" do
       do_valid_post
       expect(response).to be_redirect
-      expect(response).to redirect_to(:action => "show", :id => @client_application.id)
+      expect(response).to redirect_to(action: "show", id: @client_application.id)
     end
 
     it "should render show template" do
@@ -147,7 +147,7 @@ RSpec.describe OauthClientsController do
     end
 
     def do_delete
-      delete :destroy, params: { :id => @client_application.id }
+      delete :destroy, params: { id: @client_application.id }
     end
 
     it "should destroy client applications" do
@@ -158,7 +158,7 @@ RSpec.describe OauthClientsController do
     it "should redirect to list" do
       do_delete
       expect(response).to be_redirect
-      expect(response).to redirect_to(:action => 'index')
+      expect(response).to redirect_to(action: 'index')
     end
   end
 
@@ -169,19 +169,19 @@ RSpec.describe OauthClientsController do
 
     def do_valid_update
       put :update,
-        params: { :id                  => @client_application.id,
+        params: { id: @client_application.id,
                   'client_application' => { 'name' => 'updated site', 'url' => @client_application.url,
 'callback_url' => @client_application.callback_url, }, }
     end
 
     def do_invalid_update
-      put :update, params: { :id => @client_application.id, 'client_application' => { 'name' => nil } }
+      put :update, params: { id: @client_application.id, 'client_application' => { 'name' => nil } }
     end
 
     it "should redirect to show client_application" do
       do_valid_update
       expect(response).to be_redirect
-      expect(response).to redirect_to(:action => "show", :id => @client_application.id)
+      expect(response).to redirect_to(action: "show", id: @client_application.id)
     end
 
     it "should assign client_applications" do

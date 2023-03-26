@@ -11,7 +11,7 @@ module Glowfic
   ALLOWED_TAGS = %w(b i u sub sup del ins hr p br div span pre code h1 h2 h3 h4 h5 h6 ul ol li dl dt dd a img blockquote q table tbody td th thead tr
                     strike s strong em big small font cite abbr var samp kbd mark ruby rp rt bdo wbr details summary)
   ALLOWED_ATTRIBUTES = {
-    :all         => %w(xml:lang class style title lang dir),
+    all: %w(xml:lang class style title lang dir),
     "hr"         => %w(width),
     "li"         => %w(value),
     "ol"         => %w(reversed start type),

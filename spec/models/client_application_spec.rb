@@ -3,8 +3,8 @@ RSpec.describe ClientApplication do
   before(:each) do
     @user = User.find_by_id(1) || create(:user)
     @user.save!
-    @application = ClientApplication.create! :name => "Agree2", :url => "http://agree2.com", :user => @user, :callback_url => "http://test.com/callback"
-    @token = Oauth2Token.create! :client_application => @application, :user => @user
+    @application = ClientApplication.create! name: "Agree2", url: "http://agree2.com", user: @user, callback_url: "http://test.com/callback"
+    @token = Oauth2Token.create! client_application: @application, user: @user
   end
 
   it "should be valid" do
