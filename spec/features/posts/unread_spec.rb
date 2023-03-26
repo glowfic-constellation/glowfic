@@ -1,4 +1,4 @@
-RSpec.feature "Unread posts", :type => :feature do
+RSpec.feature "Unread posts", type: :feature do
   scenario "User views their unread page" do
     visit unread_posts_path
     within(".error") { expect(page).to have_text("You must be logged in") }

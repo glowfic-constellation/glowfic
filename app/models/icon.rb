@@ -15,6 +15,7 @@ class Icon < ApplicationRecord
   validates :url,
     presence: true,
     length: { maximum: 255 }
+  validates :credit, length: { maximum: 255 }
   validate :url_is_url
   validate :uploaded_url_yours
   nilify_blanks

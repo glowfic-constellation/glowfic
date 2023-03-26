@@ -1,4 +1,4 @@
-RSpec.feature "Viewing flat posts", :type => :feature do
+RSpec.feature "Viewing flat posts", type: :feature do
   scenario "User views a flat post" do
     user = login
     post = create(:post, user: user, subject: "test subject", content: "test content")

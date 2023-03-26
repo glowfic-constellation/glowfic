@@ -22,11 +22,11 @@
     %tr.gallery-icon-keyword
       - klass = cycle('even', 'odd')
       %td.centered{class: klass} Keyword
-      %td{class: klass}= f.text_field :keyword, :placeholder => "Keyword", :class => 'text'
+      %td{class: klass}= f.text_field :keyword, placeholder: "Keyword", class: 'text'
     %tr.gallery-icon-credit
       - klass = cycle('even', 'odd')
       %td.centered{class: klass} Credit
-      %td{class: klass}= f.text_field :credit, :placeholder => "Credit", :class => 'text'
+      %td{class: klass}= f.text_field :credit, placeholder: "Credit", class: 'text'
     - if gif.present?
       %tr.gallery-icon-remove
         %td{class: cycle('even', 'odd'), colspan: 2}

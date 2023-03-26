@@ -1,4 +1,4 @@
-class UserMailer < AsyncMailer
+class UserMailer < ApplicationMailer
   helper WritableHelper
   helper IconHelper
 

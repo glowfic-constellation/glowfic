@@ -1,8 +1,8 @@
-FROM ruby:2.7.5
+FROM ruby:3.0.5
 
 WORKDIR /code
 
-RUN echo "deb http://apt.postgresql.org/pub/repos/apt/ stretch-pgdg main" >> /etc/apt/sources.list.d/pgdg.list
+RUN echo "deb http://apt.postgresql.org/pub/repos/apt/ bullseye-pgdg main" >> /etc/apt/sources.list.d/pgdg.list
 RUN wget --quiet -O - https://www.postgresql.org/media/keys/ACCC4CF8.asc | apt-key add -
 RUN curl -sL https://deb.nodesource.com/setup_16.x | bash
 RUN apt-get update && apt-get install -y \
@@ -12,7 +12,7 @@ RUN apt-get update && apt-get install -y \
     chromium \
   && apt-get clean
 
-ARG bundler_version=2.3.10
+ARG bundler_version=2.3.25
 
 RUN gem install bundler -v $bundler_version
 

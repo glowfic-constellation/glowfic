@@ -40,7 +40,7 @@ module WillPaginate
       end
 
       def summary
-        tag(:span, @options[:summary_label] % [ current_page, @collection.total_pages ], :class => "summary")
+        tag(:span, @options[:summary_label] % [ current_page, @collection.total_pages ], class: "summary")
       end
 
       alias_method :_pagination, :pagination

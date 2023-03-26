@@ -1,4 +1,4 @@
-RSpec.feature "Show a list of galleries", :type => :feature do
+RSpec.feature "Show a list of galleries", type: :feature do
   def setup_sample_data
     user = create(:user, username: 'Test user', password: 'known')
     create(:icon, user: user) # galleryless icon

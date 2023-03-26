@@ -1,4 +1,4 @@
-RSpec.feature "Editing posts", :type => :feature do
+RSpec.feature "Editing posts", type: :feature do
   scenario "Logged-out user tries to edit a post" do
     post = create(:post, subject: 'test subject')
 
