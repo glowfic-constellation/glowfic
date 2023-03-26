@@ -1,6 +1,6 @@
 class OauthClientsController < ApplicationController
   before_action :login_required
-  before_action :get_client_application, :only => [:show, :edit, :update, :destroy]
+  before_action :get_client_application, only: [:show, :edit, :update, :destroy]
 
   def index
     @client_applications = @current_user.client_applications
@@ -15,9 +15,9 @@ class OauthClientsController < ApplicationController
     @client_application = @current_user.client_applications.build(user_params)
     if @client_application.save
       flash[:notice] = "Registered the information successfully"
-      redirect_to :action => "show", :id => @client_application.id
+      redirect_to action: "show", id: @client_application.id
     else
-      render :action => "new"
+      render action: "new"
     end
   end
 
@@ -34,16 +34,16 @@ class OauthClientsController < ApplicationController
   def update
     if @client_application.update(user_params)
       flash[:notice] = "Updated the client information successfully"
-      redirect_to :action => "show", :id => @client_application.id
+      redirect_to action: "show", id: @client_application.id
     else
-      render :action => "edit"
+      render action: "edit"
     end
   end
 
   def destroy
     @client_application.destroy!
     flash[:notice] = "Destroyed the client application registration"
-    redirect_to :action => "index"
+    redirect_to action: "index"
   end
 
   private

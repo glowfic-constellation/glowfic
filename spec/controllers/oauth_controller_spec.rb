@@ -3,8 +3,8 @@ RSpec.describe OauthController, type: :controller do
   before(:each) do
     @user = create(:user)
     login_as(@user)
-    @client_application = ClientApplication.create! :user => @user, :name => "Client Application name", :url => "http://localhost/",
-      :callback_url => "http://localhost:3000/callback"
+    @client_application = ClientApplication.create! user: @user, name: "Client Application name", url: "http://localhost/",
+      callback_url: "http://localhost:3000/callback"
   end
 
   describe "GET authorize" do
@@ -21,7 +21,7 @@ RSpec.describe OauthController, type: :controller do
 
   describe "POST authorize" do
     it "redirect_to callback_url" do
-      post :authorize, params: { :authorize => '1', :client_id => @client_application.key }
+      post :authorize, params: { authorize: '1', client_id: @client_application.key }
       expect(response).to redirect_to(/\Ahttp:\/\/localhost:3000\/callback/)
     end
   end
@@ -41,8 +41,8 @@ RSpec.describe OauthController, type: :controller do
       expect(response.headers["Location"]).to eq(oauth_clients_url)
     end
     it "invalidates token" do
-      verifier = Oauth2Verifier.create! :client_application => @client_application, :user => @user, :scope => "account",
-        :callback_url => @client_application.callback_url
+      verifier = Oauth2Verifier.create! client_application: @client_application, user: @user, scope: "account",
+        callback_url: @client_application.callback_url
       ProviderAuthorizer.new @user, true,
         { client_id: @client_application.key, scope: 'account', redirect_uri: @client_application.callback_url }
       post :token,
@@ -55,7 +55,7 @@ RSpec.describe OauthController, type: :controller do
           state: nil,
           permitted: true,
         }
-      post :revoke, params: {:token => response.json['access_token']}
+      post :revoke, params: {token: response.json['access_token']}
       expect(response.status).to eq(302)
       expect(response.headers["Location"]).to eq(oauth_clients_url)
     end
@@ -68,8 +68,8 @@ RSpec.describe OauthController, type: :controller do
     end
 
     it "should not return access_token" do
-      verifier = Oauth2Verifier.create! :client_application => @client_application, :user => @user, :scope => "account",
-        :callback_url => @client_application.callback_url
+      verifier = Oauth2Verifier.create! client_application: @client_application, user: @user, scope: "account",
+        callback_url: @client_application.callback_url
       ProviderAuthorizer.new @user, true,
         { client_id: @client_application.key, scope: 'account', redirect_uri: @client_application.callback_url }
       post :token,
@@ -97,8 +97,8 @@ RSpec.describe OauthController, type: :controller do
     end
 
     it "should return access_token" do
-      verifier = Oauth2Verifier.create! :client_application => @client_application, :user => @user, :scope => "account",
-        :callback_url => @client_application.callback_url
+      verifier = Oauth2Verifier.create! client_application: @client_application, user: @user, scope: "account",
+        callback_url: @client_application.callback_url
       ProviderAuthorizer.new @user, true,
         { client_id: @client_application.key, scope: 'account', redirect_uri: @client_application.callback_url }
       post :token,
