@@ -1,18 +1,8 @@
 class OauthController < ApplicationController
   before_action :login_required, :only => [:authorize, :revoke]
   oauthenticate :only => [:test_request]
-  oauthenticate :strategies => :token, :interactive => false, :only => [:invalidate, :capabilities]
-  oauthenticate :strategies => :oauth10_request_token, :interactive => false, :only => [:access_token]
-  skip_before_action :verify_authenticity_token, :only=>[:access_token, :invalidate, :test_request, :token]
-
-  def access_token
-    @token = current_token&.exchange!
-    if @token
-      render :plain => @token.to_query
-    else
-      render :nothing => true, :status => :unauthorized
-    end
-  end
+  oauthenticate :strategies => :token, :interactive => false, :only => [:invalidate]
+  skip_before_action :verify_authenticity_token, :only=>[:invalidate, :test_request, :token]
 
   def token
     @client_application = ClientApplication.find_by! :key => params[:client_id]
@@ -44,7 +34,7 @@ class OauthController < ApplicationController
   end
 
   def revoke
-    @token = current_user.tokens.find_by! :token => params[:token]
+    @token = current_user.tokens.find_by :token => params[:token]
     if @token
       @token.invalidate!
       flash[:notice] = "You've revoked the token for #{@token.client_application.name}"
@@ -56,20 +46,6 @@ class OauthController < ApplicationController
   def invalidate
     current_token.invalidate!
     head :status=>410
-  end
-
-  # Capabilities of current_token
-  def capabilities
-    if current_token.respond_to?(:capabilities)
-      @capabilities = current_token.capabilities
-    else
-      @capabilities = { :invalidate=>url_for(:action=>:invalidate) }
-    end
-
-    respond_to do |format|
-      format.json { render :json=>@capabilities }
-      format.xml { render :xml=>@capabilities }
-    end
   end
 
   protected
@@ -102,7 +78,8 @@ class OauthController < ApplicationController
 
   # should authenticate and return a user if valid password. Override in your own controller
   def authenticate_user(username, password)
-    User.authenticate(username, password)
+    user = Authentication.new.authenticate(username, password)
+    return user
   end
 
   # autonomous authorization which creates a token for client_applications user

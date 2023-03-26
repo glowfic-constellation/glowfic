@@ -41,11 +41,6 @@ class ClientApplication < ApplicationRecord
     @oauth_client ||= OAuth::Consumer.new(key, secret)
   end
 
-  # If your application requires passing in extra parameters handle it here
-  def create_request_token(_params={})
-    RequestToken.create :client_application => self, :callback_url => self.token_callback_url
-  end
-
   protected
 
   def generate_keys

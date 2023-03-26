@@ -15,7 +15,8 @@
 # See http://rubydoc.info/gems/rspec-core/RSpec/Core/Configuration
 
 # Don't calculate coverage when running single tests or recording API examples
-unless ENV.fetch('SKIP_COVERAGE', false) || ENV.fetch('APIPIE_RECORD', false) || RSpec.configuration.files_to_run.count <= 1
+# FIXME DO NOT CHECK IN
+unless ENV.fetch('SKIP_COVERAGE', false) || ENV.fetch('APIPIE_RECORD', false) || RSpec.configuration.files_to_run.count <= 0
   require 'simplecov'
 
   # skip warning for HAML compiled file length when close enough (within 2 lines difference)
