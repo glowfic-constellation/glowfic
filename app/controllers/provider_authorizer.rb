@@ -32,7 +32,8 @@ class ProviderAuthorizer
   def redirect_uri
     uri = base_uri
     if params[:response_type] == 'code'
-      if uri.query
+      binding.pry
+      if uri.query && uri.query.present?
         uri.query << '&'
       else
         uri.query = ''
@@ -61,7 +62,7 @@ class ProviderAuthorizer
   def encode_response
     response.map do |k, v|
       k && v && [CGI.escape(k.to_s), CGI.escape(v)].join("=")
-    end * "&"
+    end.compact * "&"
   end
 
   protected
