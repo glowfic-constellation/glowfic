@@ -18,10 +18,6 @@ class OauthToken < ApplicationRecord
     !authorized_at.nil? && !invalidated?
   end
 
-  def to_query
-    "oauth_token=#{token}&oauth_token_secret=#{secret}"
-  end
-
   protected
 
   def generate_keys
