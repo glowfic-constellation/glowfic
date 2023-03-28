@@ -60,7 +60,7 @@ RSpec.describe OauthClientsController do
 
     it "should fail to render if client_application is invalid" do
       @user.client_applications[0].delete
-      expect {do_get}.to raise_error(ActiveRecord::RecordNotFound)
+      expect { do_get }.to raise_error(ActiveRecord::RecordNotFound)
       expect(flash[:error]).to eq("Wrong application id")
     end
   end

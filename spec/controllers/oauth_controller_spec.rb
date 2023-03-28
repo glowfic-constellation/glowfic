@@ -40,6 +40,7 @@ RSpec.describe OauthController, type: :controller do
       expect(response.status).to eq(302)
       expect(response.headers["Location"]).to eq(oauth_clients_url)
     end
+
     it "invalidates token" do
       verifier = Oauth2Verifier.create! client_application: @client_application, user: @user, scope: "account",
         callback_url: @client_application.callback_url
@@ -55,7 +56,7 @@ RSpec.describe OauthController, type: :controller do
           state: nil,
           permitted: true,
         }
-      post :revoke, params: {token: response.json['access_token']}
+      post :revoke, params: { token: response.json['access_token'] }
       expect(response.status).to eq(302)
       expect(response.headers["Location"]).to eq(oauth_clients_url)
     end

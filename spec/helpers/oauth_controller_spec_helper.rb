@@ -9,7 +9,7 @@ module OAuthControllerSpecHelper
     @server = OAuth::Server.new "http://localhost:3000"
     @client_application = ClientApplication.create! user: @user, name: "Client Application name", url: "http://localhost/",
       callback_url: "http://localhost:3000/callback"
-    @consumer = OAuth::Consumer.new(@client_application.key, @client_application.secret, { site:"http://localhost:3000" })
+    @consumer = OAuth::Consumer.new(@client_application.key, @client_application.secret, { site: "http://localhost:3000" })
 
     @current_client_application = @client_application
     @current_client_applications = @user.client_applications
