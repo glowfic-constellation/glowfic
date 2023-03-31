@@ -494,11 +494,8 @@ RSpec.describe UsersController do
     it "handles update failures" do
       allow(ENV).to receive(:[]).with('ACCOUNT_SECRET').and_return('chocolate')
       user = create(:user, role_id: Permissible::READONLY)
-      allow(user).to receive(:update).and_return(false)
-      expect(user).to receive(:update)
       login_as(user)
-      allow(controller).to receive(:current_user).and_return(user)
-      controller.send(:set_user_token)
+      expect(an_instance_of(User)).to receive(:update).and_return(false)
       put :upgrade, params: { id: user.id, secret: 'chocolate' }
       expect(flash[:error]).to eq("There was a problem updating your account.")
       expect(response).to render_template(:edit)
