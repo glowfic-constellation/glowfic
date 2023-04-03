@@ -66,6 +66,7 @@ module Glowfic
     config.action_view.sanitized_allowed_tags = Glowfic::ALLOWED_TAGS
     config.action_view.sanitized_allowed_attributes = %w(href src width height alt cite datetime title class name xml:lang abbr style target)
     config.middleware.use Rack::Pratchett
+    config.middleware.use Rack::Deflater
 
     # redis-rails does not support cache versioning
     config.active_record.cache_versioning = false
