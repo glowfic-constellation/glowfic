@@ -75,6 +75,7 @@ RSpec.describe UsersController do
     end
 
     it "requires valid fields" do
+      allow(ENV).to receive(:[]).with('ACCOUNT_SECRET').and_return('ALLHAILTHECOIN')
       post :create, params: { secret: "ALLHAILTHECOIN", tos: true, addition: '14' }
       expect(response).to render_template(:new)
       expect(flash[:error][:message]).to eq("There was a problem completing your sign up.")
@@ -85,6 +86,7 @@ RSpec.describe UsersController do
     end
 
     it "rejects short passwords" do
+      allow(ENV).to receive(:[]).with('ACCOUNT_SECRET').and_return('ALLHAILTHECOIN')
       user = build(:user).attributes.with_indifferent_access.merge(password: 'short', password_confirmation: 'short')
       post :create, params: { secret: 'ALLHAILTHECOIN', tos: true, addition: '14' }.merge(user: user)
       expect(response).to render_template(:new)
@@ -95,6 +97,7 @@ RSpec.describe UsersController do
     end
 
     it "signs you up" do
+      allow(ENV).to receive(:[]).with('ACCOUNT_SECRET').and_return('ALLHAILTHECOIN')
       pass = 'testpassword'
       user = build(:user).attributes.with_indifferent_access.merge(password: pass, password_confirmation: pass, email: 'testemail@example.com')
 
@@ -113,6 +116,7 @@ RSpec.describe UsersController do
     end
 
     it "creates reader account without secret" do
+      allow(ENV).to receive(:[]).with('ACCOUNT_SECRET').and_return('ALLHAILTHECOIN')
       pass = 'testpassword'
       user = build(:user).attributes.with_indifferent_access.merge(password: pass, password_confirmation: pass, email: 'testemail@example.com')
 
@@ -124,6 +128,7 @@ RSpec.describe UsersController do
     end
 
     it "allows long passwords" do
+      allow(ENV).to receive(:[]).with('ACCOUNT_SECRET').and_return('ALLHAILTHECOIN')
       pass = 'this is a long password to test the password validation feature and to see if it accepts this'
       user = build(:user).attributes.with_indifferent_access.merge(password: pass, password_confirmation: pass)
       expect {
@@ -137,6 +142,7 @@ RSpec.describe UsersController do
     end
 
     it "strips spaces" do
+      allow(ENV).to receive(:[]).with('ACCOUNT_SECRET').and_return('ALLHAILTHECOIN')
       user = build(:user, username: 'withspace ').attributes
       user = user.with_indifferent_access.merge(password: 'password', password_confirmation: 'password')
       post :create, params: { secret: 'ALLHAILTHECOIN', tos: true, addition: '14' }.merge(user: user)
@@ -450,6 +456,59 @@ RSpec.describe UsersController do
 
     it "has more tests" do
       skip
+    end
+  end
+
+  describe "PUT upgrade" do
+    it "requires login" do
+      put :upgrade, params: { id: -1 }
+      expect(response).to redirect_to(root_url)
+      expect(flash[:error]).to eq("You must be logged in to view that page.")
+    end
+
+    it "requires own user" do
+      user = create(:user)
+      login
+      put :upgrade, params: { id: user.id }
+      expect(response).to redirect_to(continuities_url)
+      expect(flash[:error]).to eq("You do not have permission to edit that user.")
+    end
+
+    it "requires reader account" do
+      user = create(:user, role_id: Permissible::ADMIN)
+      login_as(user)
+      put :upgrade, params: { id: user.id, secret: 'chocolate' }
+      expect(response).to redirect_to(edit_user_url(user))
+      expect(flash[:error]).to eq("This account does not need to be upgraded.")
+    end
+
+    it "requires valid secret" do
+      allow(ENV).to receive(:[]).with('ACCOUNT_SECRET').and_return('chocolate')
+      user = create(:user, role_id: Permissible::READONLY)
+      login_as(user)
+      put :upgrade, params: { id: user.id, secret: 'vanilla' }
+      expect(response).to render_template(:edit)
+      expect(flash[:error]).to eq("That is not the correct secret. Please ask someone in the community for help.")
+    end
+
+    it "handles update failures" do
+      allow(ENV).to receive(:[]).with('ACCOUNT_SECRET').and_return('chocolate')
+      user = create(:user, role_id: Permissible::READONLY)
+      login_as(user)
+      expect_any_instance_of(User).to receive(:update).and_return(false)
+      put :upgrade, params: { id: user.id, secret: 'chocolate' }
+      expect(flash[:error]).to eq("There was a problem updating your account.")
+      expect(response).to render_template(:edit)
+    end
+
+    it "works" do
+      allow(ENV).to receive(:[]).with('ACCOUNT_SECRET').and_return('chocolate')
+      user = create(:user, role_id: Permissible::READONLY)
+      login_as(user)
+      put :upgrade, params: { id: user.id, secret: 'chocolate' }
+      expect(response).to redirect_to(edit_user_url(user))
+      expect(flash[:success]).to eq("Changes saved successfully.")
+      expect(user.reload).not_to be_read_only
     end
   end
 

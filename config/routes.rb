@@ -21,6 +21,7 @@ Rails.application.routes.draw do
     end
     member do
       put :password
+      put :upgrade
       get :output
     end
   end
