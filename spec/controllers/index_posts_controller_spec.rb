@@ -224,7 +224,7 @@ RSpec.describe IndexPostsController do
       login_as(index.user)
 
       allow(IndexPost).to receive(:find_by).and_call_original
-      allow(IndexPost).to receive(:find_by).with({id: index_post.id.to_s}).and_return(index_post)
+      allow(IndexPost).to receive(:find_by).with({ id: index_post.id.to_s }).and_return(index_post)
       allow(index_post).to receive(:destroy!).and_raise(ActiveRecord::RecordNotDestroyed, 'fake error')
       expect(index_post).to receive(:destroy!)
 

@@ -113,7 +113,7 @@ RSpec.describe Api::V1::PostsController do
       author = post.author_for(user)
 
       allow(Post).to receive(:find_by).and_call_original
-      allow(Post).to receive(:find_by).with({id: post.id.to_s}).and_return(post)
+      allow(Post).to receive(:find_by).with({ id: post.id.to_s }).and_return(post)
       allow(post).to receive(:author_for).with(user).and_return(author)
       allow(author).to receive(:update).and_return(false)
       expect(author).to receive(:update)

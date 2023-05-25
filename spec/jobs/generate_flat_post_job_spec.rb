@@ -58,7 +58,7 @@ RSpec.describe GenerateFlatPostJob do
       exc = StandardError
 
       allow(Post).to receive(:find_by).and_call_original
-      allow(Post).to receive(:find_by).with({id: post.id}).and_return(post)
+      allow(Post).to receive(:find_by).with({ id: post.id }).and_return(post)
       allow(post).to receive(:flat_post).and_return(flat)
       allow(flat).to receive(:save!).and_raise(exc)
       expect(flat).to receive(:save!)
@@ -82,7 +82,7 @@ RSpec.describe GenerateFlatPostJob do
       exc = Resque::TermException.new("SIGTERM")
 
       allow(Post).to receive(:find_by).and_call_original
-      allow(Post).to receive(:find_by).with({id: post.id}).and_return(post)
+      allow(Post).to receive(:find_by).with({ id: post.id }).and_return(post)
       allow(post).to receive(:flat_post).and_return(flat)
       allow(flat).to receive(:save!).and_raise(exc)
       expect(flat).to receive(:save!)

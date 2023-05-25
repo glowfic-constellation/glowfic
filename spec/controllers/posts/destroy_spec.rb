@@ -52,7 +52,7 @@ RSpec.describe PostsController, 'DELETE destroy' do
     login_as(post.user)
 
     allow(Post).to receive(:find_by).and_call_original
-    allow(Post).to receive(:find_by).with({id: post.id.to_s}).and_return(post)
+    allow(Post).to receive(:find_by).with({ id: post.id.to_s }).and_return(post)
     allow(post).to receive(:destroy!).and_raise(ActiveRecord::RecordNotDestroyed, 'fake error')
     expect(post).to receive(:destroy!)
 

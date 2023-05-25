@@ -180,7 +180,7 @@ RSpec.describe AliasesController do
       login_as(calias.character.user)
 
       allow(CharacterAlias).to receive(:find_by).and_call_original
-      allow(CharacterAlias).to receive(:find_by).with({id: calias.id.to_s}).and_return(calias)
+      allow(CharacterAlias).to receive(:find_by).with({ id: calias.id.to_s }).and_return(calias)
       allow(calias).to receive(:destroy!).and_raise(ActiveRecord::RecordNotDestroyed, 'fake error')
       expect(calias).to receive(:destroy!)
 
