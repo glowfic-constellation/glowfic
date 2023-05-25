@@ -67,8 +67,9 @@ GEM
       actionpack (>= 5.0)
       activesupport (>= 5.0)
     ast (2.4.2)
-    audited (5.0.2)
+    audited (5.3.3)
       activerecord (>= 5.0, < 7.1)
+      request_store (~> 1.2)
     autoprefixer-rails (10.4.7.0)
       execjs (~> 2)
     aws-eventstream (1.2.0)
@@ -189,7 +190,7 @@ GEM
     httparty (0.21.0)
       mini_mime (>= 1.0.0)
       multi_xml (>= 0.5.2)
-    i18n (1.12.0)
+    i18n (1.13.0)
       concurrent-ruby (~> 1.0)
     jmespath (1.6.1)
     jquery-fileupload-rails (1.0.0)
@@ -447,7 +448,7 @@ GEM
     xpath (3.2.0)
       nokogiri (~> 1.8)
     yell (2.2.2)
-    zeitwerk (2.6.7)
+    zeitwerk (2.6.8)
 
 PLATFORMS
   ruby
@@ -455,7 +456,7 @@ PLATFORMS
 DEPENDENCIES
   api-pagination
   apipie-rails
-  audited (~> 5.0.0)
+  audited (~> 5.3.0)
   aws-sdk-rails (~> 2)
   aws-sdk-s3 (~> 1)
   aws-sdk-ses (~> 1)
