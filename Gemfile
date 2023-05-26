@@ -55,14 +55,14 @@ end
 
 group :development do
   gem "brakeman", '~> 6.0.1', require: false
-  gem 'haml_lint', '~> 0.40.0', require: false
+  gem 'haml_lint', '~> 0.45.0', require: false
   gem 'listen'
   gem 'memory_profiler'
   gem 'rack-mini-profiler'
-  gem 'rubocop', '~> 1.30.0', require: false
-  gem 'rubocop-performance', '~> 1.14.0', require: false
-  gem 'rubocop-rails', '~> 2.15.0', require: false
-  gem 'rubocop-rspec', '~> 2.11.0', require: false
+  gem 'rubocop', '~> 1.51.0', require: false
+  gem 'rubocop-performance', '~> 1.18.0', require: false
+  gem 'rubocop-rails', '~> 2.19.0', require: false
+  gem 'rubocop-rspec', '~> 2.22.0', require: false
   gem 'traceroute'
 end
 
