@@ -13,6 +13,8 @@ AllCops:
     - 'vendor/**/*'
 
 require:
+  - rubocop-capybara
+  - rubocop-factory_bot
   - rubocop-performance
   - rubocop-rails
   - rubocop-rspec
@@ -557,7 +559,7 @@ RSpec/Capybara/FeatureMethods:
 
 ################## RSpec/FactoryBot ############################
 
-RSpec/FactoryBot/SyntaxMethods: # new in 2.7
+FactoryBot/SyntaxMethods: # new in 2.7
   Enabled: true
 
 ################## RSpec/Rails #################################
@@ -591,7 +593,7 @@ Style/AutoResourceCleanup:
   Enabled: true
 
 Style/BlockDelimiters:
-  IgnoredMethods: ['lambda', 'proc', 'it', 'expect']
+  AllowedMethods: ['lambda', 'proc', 'it', 'expect']
 
 Style/CaseLikeIf:
   Enabled: false
