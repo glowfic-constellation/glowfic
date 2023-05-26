@@ -130,7 +130,7 @@ RSpec.describe BoardsController do
     it "sets correct variables" do
       user_id = login
       current_user = User.find(user_id)
-      other_users = Array.new(3) { create(:user) }
+      other_users = create_list(:user, 3)
 
       get :new
 
@@ -176,7 +176,7 @@ RSpec.describe BoardsController do
 
     it "sets correct variables on failure" do
       login
-      other_users = Array.new(3) { create(:user) }
+      other_users = create_list(:user, 3)
 
       post :create
 
@@ -294,7 +294,7 @@ RSpec.describe BoardsController do
 
     it "calculates OpenGraph meta" do
       user = create(:user, username: 'John Doe')
-      board = create(:board, name: 'board', creator: user, writers: [create(:user, username: 'Jane Doe')], description: 'sample board')
+      board = create(:board, name: 'board', creator: user, writers: [create(:user, username: 'Jane Doe')], description: 'sample board') # rubocop:disable FactoryBot/CreateList
       create(:post, subject: 'title', user: user, board: board)
       get :show, params: { id: board.id }
 
@@ -344,7 +344,7 @@ RSpec.describe BoardsController do
     it "sets expected variables" do
       coauthor = create(:user)
       board = create(:board, writers: [coauthor])
-      sections = [create(:board_section, board: board), create(:board_section, board: board)]
+      sections = create_list(:board_section, 2, board: board)
       posts = [create(:post, board: board, user: board.creator, tagged_at: 5.minutes.from_now), create(:post, user: coauthor, board: board)]
       sections[0].update!(section_order: 1)
       sections[1].update!(section_order: 0)
@@ -635,7 +635,7 @@ RSpec.describe BoardsController do
         create(:board, creator: author1) # one author but not the other
         create(:board, coauthors: [author2]) # one author but not the other, coauthor
 
-        boards = [create(:board, creator: author1, coauthors: [author2])] # both authors
+        boards = [create(:board, creator: author1, coauthors: [author2])] # both authors # rubocop:disable FactoryBot/CreateList
         boards << create(:board, coauthors: [author1, author2]) # both authors coauthors
         create(:board, coauthors: [author1], cameos: [author2]) # both authors, one cameo
 
@@ -654,16 +654,16 @@ RSpec.describe BoardsController do
   describe "#editor_setup" do
     it "gets the correct set of available cowriters" do
       login
-      users = Array.new(3) { create(:user) }
+      users = create_list(:user, 3)
       controller.send(:editor_setup)
       expect(assigns(:cameos)).to match_array(users)
       expect(assigns(:coauthors)).to match_array(users)
     end
 
     it "gets the correct set of available cowriters on an existing board" do
-      users = Array.new(3) { create(:user) }
-      coauthors = [create(:user)]
-      cameos = [create(:user), create(:user)]
+      users = create_list(:user, 3)
+      coauthors = [create(:user)] # rubocop:disable FactoryBot/CreateList
+      cameos = create_list(:user, 2)
       board = create(:board, writers: coauthors, cameos: cameos)
       login_as(board.creator)
       board.reload

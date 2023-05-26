@@ -18,7 +18,7 @@ RSpec.describe MessagesController do
       it "assigns correct inbox variables" do
         user = create(:user)
         login_as(user)
-        messages = Array.new(4) { create(:message, recipient: user) }
+        messages = create_list(:message, 4, recipient: user)
         deleted = create(:message, recipient: user)
         deleted.sender.archive
         get :index
@@ -31,7 +31,7 @@ RSpec.describe MessagesController do
       it "assigns correct outbox variables" do
         user = create(:user)
         login_as(user)
-        messages = Array.new(4) { create(:message, sender: user) }
+        messages = create_list(:message, 4, sender: user)
         deleted = create(:message, sender: user)
         deleted.recipient.archive
         get :index, params: { view: 'outbox' }
@@ -170,7 +170,7 @@ RSpec.describe MessagesController do
 
       it "sets succeeds with previous messages" do
         user = create(:user)
-        messages = Array.new(7) { create(:message, sender: user) }
+        messages = create_list(:message, 7, sender: user)
         recents = messages[-5..-1].map(&:recipient)
         recents_data = recents.reverse.map { |x| [x.username, x.id] }
         users_data = messages.map(&:recipient).map { |x| [x.username, x.id] }
@@ -210,7 +210,7 @@ RSpec.describe MessagesController do
     it "fails with invalid params" do
       user = create(:user)
       login_as(user)
-      messages = Array.new(2) { create(:message, sender: user) }
+      messages = create_list(:message, 2, sender: user)
       recents = messages.map(&:recipient).map { |x| [x.username, x.id] }
       recents_data = recents.reverse
       other_user = create(:user)
@@ -327,7 +327,7 @@ RSpec.describe MessagesController do
       it "succeeds" do
         user = create(:user)
         login_as(user)
-        messages = Array.new(2) { create(:message, sender: user) }
+        messages = create_list(:message, 2, sender: user)
         recents = messages.map(&:recipient).map { |x| [x.username, x.id] }
         recents_data = recents.reverse
         other_user = create(:user)

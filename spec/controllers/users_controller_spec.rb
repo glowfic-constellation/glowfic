@@ -187,7 +187,7 @@ RSpec.describe UsersController do
 
     it "sets the correct variables" do
       user = create(:user)
-      posts = Array.new(3) { create(:post, user: user) }
+      posts = create_list(:post, 3, user: user)
       create(:post)
       get :show, params: { id: user.id }
       expect(assigns(:page_title)).to eq(user.username)

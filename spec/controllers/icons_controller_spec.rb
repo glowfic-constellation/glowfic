@@ -578,7 +578,7 @@ RSpec.describe IconsController do
       it "sets variables correctly" do
         user = create(:user)
         icon = create(:icon, user: user)
-        alts = Array.new(5) { create(:icon, user: user) }
+        alts = create_list(:icon, 5, user: user)
         post = create(:post, user: user, icon: icon)
         create(:reply, post: post, user: user, icon: icon) # post reply
         reply = create(:reply, user: user, icon: icon)
@@ -602,7 +602,7 @@ RSpec.describe IconsController do
       it "sets variables correctly" do
         user = create(:user)
         icon = create(:icon, user: user)
-        alts = Array.new(5) { create(:icon, user: user) }
+        alts = create_list(:icon, 5, user: user)
         gallery = create(:gallery, user: user, icon_ids: [icon.id] + alts.map(&:id))
         other_icon = create(:icon, user: user)
 

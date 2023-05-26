@@ -105,7 +105,7 @@ RSpec.describe RepliesController, 'GET search' do
     end
 
     it "filters by author" do
-      replies = Array.new(4) { create(:reply) }
+      replies = create_list(:reply, 4)
       filtered_reply = replies.last
       get :search, params: { commit: true, author_id: filtered_reply.user_id }
       expect(assigns(:search_results)).to match_array([filtered_reply])
@@ -157,7 +157,7 @@ RSpec.describe RepliesController, 'GET search' do
     end
 
     it "filters by post" do
-      replies = Array.new(4) { create(:reply) }
+      replies = create_list(:reply, 4)
       filtered_reply = replies.last
       get :search, params: { commit: true, post_id: filtered_reply.post_id }
       expect(assigns(:search_results)).to match_array([filtered_reply])
