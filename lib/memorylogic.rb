@@ -19,6 +19,6 @@ module Memorylogic
     diff = (new_memory - old_memory)
     return if diff == 0
     diff = (diff < 0 ? '-' : '+') + number_to_human_size(diff.abs)
-    logger&.warn("Memory usage in #{params[:controller]}\##{params[:action]}: #{change_string} (#{diff}) | PID: #{Process.pid}")
+    logger&.warn("Memory usage in #{params[:controller]}##{params[:action]}: #{change_string} (#{diff}) | PID: #{Process.pid}")
   end
 end
