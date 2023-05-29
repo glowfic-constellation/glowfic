@@ -1,4 +1,4 @@
-RSpec.feature "Creating a new character", type: :feature do
+RSpec.feature "Creating a new character" do
   scenario "Create an invalid character", js: true do
     # view new character form without being logged in
     visit new_character_path

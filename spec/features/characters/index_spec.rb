@@ -1,4 +1,4 @@
-RSpec.feature "Listing characters", type: :feature do
+RSpec.feature "Listing characters" do
   def with_template(characters, template)
     {
       template: template,

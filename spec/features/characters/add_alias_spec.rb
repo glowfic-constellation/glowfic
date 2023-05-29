@@ -1,4 +1,4 @@
-RSpec.feature "Adding a character alias", type: :feature do
+RSpec.feature "Adding a character alias" do
   scenario "Adding successfully" do
     user = login
     character = create(:character, user: user)

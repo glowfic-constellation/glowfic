@@ -1,4 +1,4 @@
-RSpec.feature "Message threads", type: :feature do
+RSpec.feature "Message threads" do
   scenario "User views a message thread" do
     user = login
 

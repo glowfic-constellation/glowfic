@@ -1,4 +1,4 @@
-RSpec.feature "Creating a new template", type: :feature do
+RSpec.feature "Creating a new template" do
   scenario "Create an invalid template" do
     # view new template form without being logged in
     visit new_template_path

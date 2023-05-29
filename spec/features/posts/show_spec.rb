@@ -1,4 +1,4 @@
-RSpec.feature "Viewing posts", type: :feature do
+RSpec.feature "Viewing posts" do
   scenario "with a user layout set" do
     user = login
     post = create(:post, user: user)
