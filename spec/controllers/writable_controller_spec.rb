@@ -1,7 +1,7 @@
 RSpec.describe WritableController do
   describe "#setup_layout_gon" do
     it "does not error when logged out" do
-      controller.send(:setup_layout_gon)
+      expect { controller.send(:setup_layout_gon) }.not_to raise_error
     end
 
     it "works when logged in with default theme" do

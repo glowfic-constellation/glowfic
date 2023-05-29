@@ -117,7 +117,7 @@ RSpec.describe ReportsController do
         create_list(:post, 3)
         Post.last.user.update!(moiety: 'abcdef')
         Timecop.freeze(2.days.ago) { create(:post, num_replies: 4) }
-        get :show, params: { id: 'daily' }
+        expect { get :show, params: { id: 'daily' } }.not_to raise_error
       end
 
       it "works with logged in" do

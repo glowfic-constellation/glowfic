@@ -125,7 +125,7 @@ RSpec.describe IconsController do
       it "skips other people's icons" do
         icon = create(:icon)
         delete :delete_multiple, params: { marked_ids: [icon.id] }
-        icon.reload
+        expect { icon.reload }.not_to raise_error
       end
 
       it "removes int ids from gallery" do

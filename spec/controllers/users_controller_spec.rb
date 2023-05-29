@@ -265,7 +265,7 @@ RSpec.describe UsersController do
 
       it "displays options" do
         user_id = login
-        get :edit, params: { id: user_id }
+        expect { get :edit, params: { id: user_id } }.not_to raise_error
       end
     end
   end

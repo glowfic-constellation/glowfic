@@ -123,6 +123,7 @@ RSpec.feature "Creating posts", type: :feature do
 
     visit new_post_path
     page.select(board.name, from: "Continuity:")
+    expect(page).to have_select('Continuity section:')
     page.select("Th<em> pirates", from: "Continuity section:")
   end
 end
