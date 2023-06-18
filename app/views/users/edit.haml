@@ -45,7 +45,8 @@
           = f.label :default_hide_retired_characters, "Hide retired characters"
       %tr
         %th.sub= f.label :default_editor
-        %td{class: cycle('even', 'odd')}= f.select(:default_editor, options_for_select({ 'Rich Text' => 'rtf', HTML: 'html' }, current_user.default_editor))
+        - editor_modes = { 'Rich Text': 'rtf', HTML: 'html', Markdown: 'md' }
+        %td{class: cycle('even', 'odd')}= f.select(:default_editor, options_for_select(editor_modes, current_user.default_editor))
       %tr
         %th.sub= f.label :moiety, 'Moiety hex'
         %td{class: cycle('even', 'odd')}
