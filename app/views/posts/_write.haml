@@ -1,8 +1,9 @@
+- editor_mode = @post.editor_mode || current_user.default_editor
 = form_for post, html: { id: 'post_form' } do |f|
   - content_for :form do
     - unless post.id.present? && !post.editable_by?(current_user)
-      .view-button#rtf{class: ('selected' if current_user.default_editor == 'rtf')} Rich Text
-      .view-button#html{class: ('selected' if current_user.default_editor == 'html')} HTML
+      .view-button#rtf{class: ('selected' if editor_mode == 'rtf')} Rich Text
+      .view-button#html{class: ('selected' if editor_mode == 'html')} HTML
       .view-button#editor-help{title: 'Help'} ?
     = f.label :subject, 'Subject:'
     = f.text_field :subject, placeholder: 'Subject'
@@ -22,6 +23,7 @@
         = f.hidden_field :character_id, id: 'reply_character_id'
         = f.hidden_field :icon_id, id: 'reply_icon_id'
         = f.hidden_field :character_alias_id, id: 'reply_character_alias_id'
+        = f.hidden_field :editor_mode, value: editor_mode, id: 'editor_mode'
       = render 'posts/editor_help'
   - content_for :buttons do
     - if post.id.present? && !post.editable_by?(current_user)
