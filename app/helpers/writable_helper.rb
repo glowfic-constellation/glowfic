@@ -66,10 +66,16 @@ module WritableHelper
   BLOCKQUOTE_TAG = /<blockquote( |>)/
   LINEBREAK = /\r?\n/
   BR = '<br>'.freeze
+  MD_EXTENSIONS = { tables: true, fenced_code_blocks: true, autolink: true, disable_indented_code_blocks: true,
+                    strikethrough: true, lax_spacing: true, space_after_headers: true, }.freeze
+  MD_RENDERER = Redcarpet::Render::HTML.new(prettify: true, hard_wrap: true, with_toc_data: true)
+  MD_CONVERTER = Redcarpet::Markdown.new(MD_RENDERER, MD_EXTENSIONS)
 
   # specific blockquote handling is due to simple_format wanting to wrap a blockquote in a paragraph
-  def sanitize_written_content(content, editor_mode='html')
-    unless editor_mode == 'rtf' || content[P_TAG] || content[BR_TAG]
+  def sanitize_written_content(content, editor_mode)
+    if editor_mode == 'md'
+      content = MD_CONVERTER.render(content)
+    elsif editor_mode != 'rtf' && !content[P_TAG] && !content[BR_TAG]
       content = if content[BLOCKQUOTE_QUICK_SEARCH] && content[BLOCKQUOTE_TAG]
         content.gsub(LINEBREAK, BR)
       else
