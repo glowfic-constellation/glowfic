@@ -1,8 +1,8 @@
 # frozen_string_literal: true
 class AliasesController < ApplicationController
   before_action :login_required
+  before_action :find_parent
   before_action :require_permission
-  before_action :find_character
   before_action :find_model, only: :destroy
 
   def new
@@ -45,22 +45,21 @@ class AliasesController < ApplicationController
 
   private
 
-  def require_permission
-    return unless current_user&.read_only?
-    flash[:error] = "You do not have permission to create aliases."
-    redirect_to continuities_path
+  def find_parent
+    return if (@character = Character.find_by(id: params[:character_id]))
+    flash[:error] = "Character could not be found."
+    redirect_to user_characters_path(current_user)
   end
 
-  def find_character
-    unless (@character = Character.find_by_id(params[:character_id]))
-      flash[:error] = "Character could not be found."
-      redirect_to user_characters_path(current_user) and return
+  def require_permission
+    if current_user.read_only?
+      flash[:error] = "You do not have permission to create aliases."
+      redirect_to continuities_path
+    else
+      return if @character.user == current_user
+      flash[:error] = "That is not your character."
+      redirect_to user_characters_path(current_user)
     end
-
-    return if @character.user == current_user
-
-    flash[:error] = "That is not your character."
-    redirect_to user_characters_path(current_user)
   end
 
   def find_model
@@ -70,7 +69,6 @@ class AliasesController < ApplicationController
     end
 
     return if @alias.character_id == @character.id
-
     flash[:error] = "Alias could not be found for that character."
     redirect_to edit_character_path(@character)
   end

@@ -3,30 +3,18 @@ class IndexPostsController < ApplicationController
   before_action :login_required
   before_action :readonly_forbidden
   before_action :find_model, only: [:edit, :update, :destroy]
+  before_action :find_parent
+  before_action :require_edit_permission, only: [:edit, :update, :destroy]
+  before_action :require_create_permission, only: [:new, :create]
 
   def new
-    unless (index = Index.find_by_id(params[:index_id]))
-      flash[:error] = "Index could not be found."
-      redirect_to indexes_path and return
-    end
-
-    unless index.editable_by?(current_user)
-      flash[:error] = "You do not have permission to edit this index."
-      redirect_to index_path(index) and return
-    end
-
-    @index_post = IndexPost.new(index: index, index_section_id: params[:index_section_id])
+    @index_post = IndexPost.new(index: @index, index_section_id: params[:index_section_id])
     @page_title = "Add Posts to Index"
     use_javascript('posts/index_post_new')
   end
 
   def create
     @index_post = IndexPost.new(permitted_params)
-
-    if @index_post.index && !@index_post.index.editable_by?(current_user)
-      flash[:error] = "You do not have permission to edit this index."
-      redirect_to @index_post.index and return
-    end
 
     unless @index_post.save
       flash.now[:error] = {
@@ -39,7 +27,7 @@ class IndexPostsController < ApplicationController
     end
 
     flash[:success] = "Post added to index!"
-    redirect_to @index_post.index
+    redirect_to @index
   end
 
   def edit
@@ -56,7 +44,7 @@ class IndexPostsController < ApplicationController
     end
 
     flash[:success] = "Index post has been updated."
-    redirect_to @index_post.index
+    redirect_to @index
   end
 
   def destroy
@@ -70,7 +58,7 @@ class IndexPostsController < ApplicationController
     else
       flash[:success] = "Post removed from index."
     end
-    redirect_to @index_post.index
+    redirect_to @index
   end
 
   private
@@ -80,13 +68,27 @@ class IndexPostsController < ApplicationController
   end
 
   def find_model
-    unless (@index_post = IndexPost.find_by_id(params[:id]))
-      flash[:error] = "Index post could not be found."
-      redirect_to indexes_path and return
-    end
+    return if (@index_post = IndexPost.find_by_id(params[:id]))
+    flash[:error] = "Index post could not be found."
+    redirect_to indexes_path
+  end
 
-    return if @index_post.index.editable_by?(current_user)
+  def find_parent
+    id = params[:index_id] || permitted_params[:index_id]
+    return if (@index = @index_post&.index || Index.find_by(id: id))
+    flash[:error] = "Index could not be found."
+    redirect_to indexes_path
+  end
+
+  def require_create_permission
+    return if @index.editable_by?(current_user)
     flash[:error] = "You do not have permission to edit this index."
-    redirect_to @index_post.index
+    redirect_to @index
+  end
+
+  def require_edit_permission
+    return if @index.editable_by?(current_user)
+    flash[:error] = "You do not have permission to edit this index."
+    redirect_to @index
   end
 end

@@ -3,8 +3,10 @@ class GalleriesController < UploadingController
   include Taggable
 
   before_action :login_required, except: [:index, :show, :search]
-  before_action :find_model, only: [:destroy, :edit, :update] # assumes login_required
+  before_action :find_model, only: [:edit, :update, :destroy]
   before_action :require_create_permission, only: [:new, :create, :add, :icon]
+  before_action :require_own_gallery, only: [:add, :icon]
+  before_action :require_edit_permission, only: [:edit, :update, :destroy]
   before_action :setup_new_icons, only: [:add, :icon]
   before_action :set_s3_url, only: [:edit, :add, :icon]
   before_action :editor_setup, only: [:new, :edit]
@@ -57,9 +59,10 @@ class GalleriesController < UploadingController
   end
 
   def add
-    return unless params[:id] == '0' && params[:type] == 'existing'
-    flash[:error] = 'Cannot add existing icons to galleryless. Please remove from existing galleries instead.'
-    redirect_to user_gallery_path(id: 0, user_id: current_user.id)
+    if params[:id] == '0' && params[:type] == 'existing' # rubocop:disable Style/GuardClause
+      flash[:error] = 'Cannot add existing icons to galleryless. Please remove from existing galleries instead.'
+      redirect_to user_gallery_path(id: 0, user_id: current_user.id)
+    end
   end
 
   def show
@@ -211,13 +214,12 @@ class GalleriesController < UploadingController
   private
 
   def find_model
-    @gallery = Gallery.find_by_id(params[:id])
+    return if (@gallery = Gallery.find_by_id(params[:id]))
+    flash[:error] = "Gallery could not be found."
+    redirect_to user_galleries_path(current_user)
+  end
 
-    unless @gallery
-      flash[:error] = "Gallery could not be found."
-      redirect_to user_galleries_path(current_user) and return
-    end
-
+  def require_edit_permission
     return if @gallery.user_id == current_user.id
     flash[:error] = "That is not your gallery."
     redirect_to user_galleries_path(current_user)
@@ -229,6 +231,13 @@ class GalleriesController < UploadingController
     redirect_to continuities_path
   end
 
+  def require_own_gallery
+    return if params[:id] == '0'
+    find_model
+    return if performed?
+    require_edit_permission
+  end
+
   def setup_new_icons
     if params[:type] == "existing"
       use_javascript('galleries/add_existing')
@@ -237,7 +246,6 @@ class GalleriesController < UploadingController
       use_javascript('galleries/uploader')
     end
     @icons = []
-    find_model unless params[:id] == '0'
     @unassigned = current_user.galleryless_icons
     @page_title = "Add Icons"
     @page_title += ": " + @gallery.name unless @gallery.nil?

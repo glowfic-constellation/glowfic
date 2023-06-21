@@ -3,7 +3,8 @@ class NewsController < ApplicationController
   before_action :login_required, except: [:index, :show]
   before_action :require_staff, except: [:index, :show]
   before_action :find_model, only: [:show, :edit, :update, :destroy]
-  before_action :require_permission, only: [:edit, :update]
+  before_action :require_edit_permission, only: [:edit, :update]
+  before_action :require_delete_permission, only: :destroy
 
   def index
     @page_title = 'Site News'
@@ -61,11 +62,6 @@ class NewsController < ApplicationController
   end
 
   def destroy
-    unless @news.deletable_by?(current_user)
-      flash[:error] = "You do not have permission to edit that news post."
-      redirect_to news_index_path and return
-    end
-
     begin
       @news.destroy!
     rescue ActiveRecord::RecordNotDestroyed
@@ -93,10 +89,16 @@ class NewsController < ApplicationController
     redirect_to news_index_path
   end
 
-  def require_permission
+  def require_edit_permission
     return if @news.editable_by?(current_user)
     flash[:error] = "You do not have permission to edit that news post."
     redirect_to news_index_path
+  end
+
+  def require_delete_permission
+    return if @news.deletable_by?(current_user)
+    flash[:error] = "You do not have permission to edit that news post."
+    redirect_to news_index_path and return
   end
 
   def permitted_params
