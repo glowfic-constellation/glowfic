@@ -42,8 +42,8 @@
           %th.sub Continuity
           %td{class: cycle('even', 'odd')}
             Changed from
-            - if (board = Board.find_by_id(audit.audited_changes['board_id'][0]))
-              %b= link_to board.name, continuity_path(board)
+            - if (continuity = Board.find_by_id(audit.audited_changes['board_id'][0]))
+              %b= link_to continuity.name, continuity_path(continuity)
             - else
               %b [Deleted]
             to

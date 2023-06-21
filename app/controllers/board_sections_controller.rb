@@ -90,23 +90,23 @@ class BoardSectionsController < ApplicationController
   end
 
   def require_permission
-    return unless (board = @board_section.try(:board) || Board.find_by_id(params[:board_id]))
-    return if board.editable_by?(current_user)
+    return unless (continuity = @board_section.try(:board) || Board.find_by_id(params[:board_id]))
+    return if continuity.editable_by?(current_user)
     flash[:error] = "You do not have permission to edit this continuity."
     redirect_to continuities_path
   end
 
   def og_data
     stats = []
-    board = @board_section.board
-    stats << board.writers.where.not(deleted: true).ordered.pluck(:username).join(', ') if board.authors_locked?
+    continuity = @board_section.board
+    stats << continuity.writers.where.not(deleted: true).ordered.pluck(:username).join(', ') if continuity.authors_locked?
     post_count = @board_section.posts.privacy_public.count
     stats << "#{post_count} #{'post'.pluralize(post_count)}"
     desc = [stats.join(' – ')]
     desc << generate_short(@board_section.description) if @board_section.description.present?
     {
       url: board_section_url(@board_section),
-      title: "#{board.name} » #{@board_section.name}",
+      title: "#{continuity.name} » #{@board_section.name}",
       description: desc.join("\n"),
     }
   end

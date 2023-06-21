@@ -16,18 +16,18 @@ RSpec.describe PostsController, 'GET hidden' do
     login
     get :hidden
     expect(response.status).to eq(200)
-    expect(assigns(:hidden_boardviews)).to be_empty
+    expect(assigns(:hidden_continuities)).to be_empty
     expect(assigns(:hidden_posts)).to be_empty
   end
 
-  it "succeeds with board hidden" do
+  it "succeeds with continuity hidden" do
     user = create(:user)
-    board = create(:board)
-    board.ignore(user)
+    continuity = create(:continuity)
+    continuity.ignore(user)
     login_as(user)
     get :hidden
     expect(response.status).to eq(200)
-    expect(assigns(:hidden_boardviews)).not_to be_empty
+    expect(assigns(:hidden_continuities)).not_to be_empty
     expect(assigns(:hidden_posts)).to be_empty
   end
 
@@ -38,7 +38,7 @@ RSpec.describe PostsController, 'GET hidden' do
     login_as(user)
     get :hidden
     expect(response.status).to eq(200)
-    expect(assigns(:hidden_boardviews)).to be_empty
+    expect(assigns(:hidden_continuities)).to be_empty
     expect(assigns(:hidden_posts)).not_to be_empty
   end
 
@@ -50,7 +50,7 @@ RSpec.describe PostsController, 'GET hidden' do
     login_as(user)
     get :hidden
     expect(response.status).to eq(200)
-    expect(assigns(:hidden_boardviews)).not_to be_empty
+    expect(assigns(:hidden_continuities)).not_to be_empty
     expect(assigns(:hidden_posts)).not_to be_empty
   end
 end

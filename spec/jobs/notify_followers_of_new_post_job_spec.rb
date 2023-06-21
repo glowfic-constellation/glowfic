@@ -18,26 +18,26 @@ RSpec.describe NotifyFollowersOfNewPostJob do
     let(:author) { create(:user) }
     let(:coauthor) { create(:user) }
     let(:notified) { create(:user) }
-    let(:board) { create(:board) }
+    let(:continuity) { create(:continuity) }
     let(:title) { 'test subject' }
 
     shared_examples "new" do
       it "works" do
         expect {
           perform_enqueued_jobs do
-            create(:post, user: author, unjoined_authors: [coauthor], board: board, subject: title)
+            create(:post, user: author, unjoined_authors: [coauthor], board: continuity, subject: title)
           end
         }.to change { Message.count }.by(1)
         author_msg = Message.where(recipient: notified).last
         expect(author_msg.subject).to include("New post by #{author.username}")
-        expected = "#{author.username} has just posted a new post entitled #{title} in the #{board.name} continuity with #{coauthor.username}."
+        expected = "#{author.username} has just posted a new post entitled #{title} in the #{continuity.name} continuity with #{coauthor.username}."
         expect(author_msg.message).to include(expected)
       end
 
       it "does not send for private posts" do
         expect {
           perform_enqueued_jobs do
-            create(:post, user: author, board: board, privacy: :private)
+            create(:post, user: author, board: continuity, privacy: :private)
           end
         }.not_to change { Message.count }
       end
@@ -46,7 +46,7 @@ RSpec.describe NotifyFollowersOfNewPostJob do
         unnotified = create(:reader_user)
         create(:favorite, user: unnotified, favorite: author)
         perform_enqueued_jobs do
-          create(:post, user: author, board: board, privacy: :full_accounts)
+          create(:post, user: author, board: continuity, privacy: :full_accounts)
         end
 
         # don't use change format because other non-reader users may be notified
@@ -58,7 +58,7 @@ RSpec.describe NotifyFollowersOfNewPostJob do
         create(:favorite, user: unnotified, favorite: favorite)
         expect {
           perform_enqueued_jobs do
-            create(:post, user: author, board: board, unjoined_authors: [coauthor], privacy: :access_list, viewers: [coauthor, notified])
+            create(:post, user: author, board: continuity, unjoined_authors: [coauthor], privacy: :access_list, viewers: [coauthor, notified])
           end
         }.to change { Message.count }.by(1)
         expect(Message.where(recipient: unnotified)).not_to be_present
@@ -68,7 +68,7 @@ RSpec.describe NotifyFollowersOfNewPostJob do
         notified.update!(favorite_notifications: false)
         expect {
           perform_enqueued_jobs do
-            create(:post, user: author, board: board)
+            create(:post, user: author, board: continuity)
           end
         }.not_to change { Message.count }
       end
@@ -76,13 +76,13 @@ RSpec.describe NotifyFollowersOfNewPostJob do
       it "does not send to coauthors" do
         expect {
           perform_enqueued_jobs do
-            create(:post, user: author, board: board, unjoined_authors: [notified])
+            create(:post, user: author, board: continuity, unjoined_authors: [notified])
           end
         }.not_to change { Message.count }
       end
 
       it "does not queue on imported posts" do
-        create(:post, user: author, board: board, is_import: true)
+        create(:post, user: author, board: continuity, is_import: true)
         expect(NotifyFollowersOfNewPostJob).not_to have_been_enqueued
       end
     end
@@ -97,20 +97,20 @@ RSpec.describe NotifyFollowersOfNewPostJob do
       it "works for self-threads" do
         expect {
           perform_enqueued_jobs do
-            create(:post, user: author, unjoined_authors: [], board: board, subject: title)
+            create(:post, user: author, unjoined_authors: [], board: continuity, subject: title)
           end
         }.to change { Message.count }.by(1)
 
         author_msg = Message.where(recipient: notified).last
         expect(author_msg.subject).to eq("New post by #{author.username}")
-        expect(author_msg.message).to include("#{author.username} has just posted a new post entitled #{title} in the #{board.name} continuity.")
+        expect(author_msg.message).to include("#{author.username} has just posted a new post entitled #{title} in the #{continuity.name} continuity.")
       end
     end
 
-    context "with favorited board" do
-      let(:favorite) { board }
+    context "with favorited continuity" do
+      let(:favorite) { continuity }
 
-      before(:each) { create(:favorite, user: notified, favorite: board) }
+      before(:each) { create(:favorite, user: notified, favorite: continuity) }
 
       include_examples "new"
 
@@ -118,7 +118,7 @@ RSpec.describe NotifyFollowersOfNewPostJob do
         create(:favorite, user: notified, favorite: author)
         expect {
           perform_enqueued_jobs do
-            create(:post, user: author, board: board)
+            create(:post, user: author, board: continuity)
           end
         }.to change { Message.count }.by(1)
       end
@@ -126,16 +126,16 @@ RSpec.describe NotifyFollowersOfNewPostJob do
       it "does not send to the poster" do
         expect {
           perform_enqueued_jobs do
-            create(:post, user: notified, board: board)
+            create(:post, user: notified, board: continuity)
           end
         }.not_to change { Message.count }
       end
     end
 
     describe "with blocking" do
-      let(:post) { create(:post, user: author, board: board, authors: [coauthor]) }
+      let(:post) { create(:post, user: author, board: continuity, authors: [coauthor]) }
 
-      before(:each) { create(:favorite, user: notified, favorite: board) }
+      before(:each) { create(:favorite, user: notified, favorite: continuity) }
 
       it "does not send to users the poster has blocked" do
         create(:block, blocking_user: author, blocked_user: notified, hide_me: :posts)

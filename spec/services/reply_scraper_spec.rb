@@ -2,8 +2,8 @@ require "spec_helper"
 
 RSpec.describe ReplyScraper do
   let(:user) { create(:user, username: "Marri") }
-  let(:board) { create(:board, creator: user) }
-  let(:post) { Post.new(board: board, subject: 'linear b', status: Post.statuses[:complete], is_import: true) }
+  let(:continuity) { create(:board, creator: user) }
+  let(:post) { Post.new(board: continuity, subject: 'linear b', status: Post.statuses[:complete], is_import: true) }
 
   let(:doc) do
     url = 'http://wild-pegasus-appeared.dreamwidth.org/403.html?style=site&view=flat'

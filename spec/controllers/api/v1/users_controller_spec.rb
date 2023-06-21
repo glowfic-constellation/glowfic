@@ -101,8 +101,8 @@ RSpec.describe Api::V1::UsersController do
 
     it 'returns only the correct posts', show_in_doc: true do
       user = create(:user)
-      board = create(:board)
-      user_post = create(:post, user: user, board: board, section: create(:board_section, board: board))
+      continuity = create(:continuity)
+      user_post = create(:post, user: user, board: continuity, section: create(:board_section, board: continuity))
       create(:post, user: create(:user))
       get :posts, params: { id: user.id }
       expect(response).to have_http_status(200)

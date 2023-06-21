@@ -3,13 +3,13 @@ class PostImporter < Object
     @url = url
   end
 
-  def import(board_id, importer_id, section_id: nil, status: Post.statuses[:complete], threaded: false)
+  def import(continuity_id, importer_id, section_id: nil, status: Post.statuses[:complete], threaded: false)
     validate_url!
-    validate_duplicate!(board_id) unless threaded
+    validate_duplicate!(continuity_id) unless threaded
     validate_usernames!
 
     # note that the arg order for this import method does not match the order of ScrapePostJob
-    ScrapePostJob.perform_later(@url, board_id, section_id, status, threaded, importer_id)
+    ScrapePostJob.perform_later(@url, continuity_id, section_id, status, threaded, importer_id)
   end
 
   def self.valid_dreamwidth_url?(url)
@@ -30,9 +30,9 @@ class PostImporter < Object
     raise InvalidDreamwidthURL.new('Invalid URL provided.') unless self.class.valid_dreamwidth_url?(@url)
   end
 
-  def validate_duplicate!(board_id)
+  def validate_duplicate!(continuity_id)
     subject = dreamwidth_doc.at_css('.entry .entry-title').text.strip
-    subj_post = Post.where(subject: subject, board_id: board_id).first
+    subj_post = Post.find_by(subject: subject, board_id: continuity_id)
     return unless subj_post
     raise AlreadyImported.new("This thread has already been imported! " + ScrapePostJob.view_post(subj_post.id))
   end

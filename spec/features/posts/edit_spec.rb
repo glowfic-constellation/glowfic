@@ -195,11 +195,11 @@ RSpec.feature "Editing posts", type: :feature do
     end
   end
 
-  scenario "Moderator saves no change to a post in a board they can't write in" do
+  scenario "Moderator saves no change to a post in a continuity they can't write in" do
     user = create(:user)
     other_user = create(:user)
-    board = create(:board, creator: user, writers: [other_user], name: 'test board')
-    post = create(:post, user: user, board: board, subject: 'test subject')
+    continuity = create(:continuity, creator: user, writers: [other_user], name: 'test continuity')
+    post = create(:post, user: user, board: continuity, subject: 'test subject')
 
     login(create(:mod_user, password: 'known'), 'known')
 
@@ -213,14 +213,14 @@ RSpec.feature "Editing posts", type: :feature do
     expect(page).to have_no_selector('.error')
     expect(page).to have_selector('.content-header', exact_text: 'Edit post')
     expect(page).to have_no_selector('.post-container')
-    expect(page).to have_field('Continuity:', with: board.id)
+    expect(page).to have_field('Continuity:', with: continuity.id)
     click_button 'Preview'
 
     # verify preview, change again
     expect(page).to have_no_selector('.error')
     expect(page).to have_selector('.content-header', exact_text: 'test subject')
     expect(page).to have_selector('.post-container', count: 1)
-    expect(page).to have_field('Continuity:', with: board.id)
+    expect(page).to have_field('Continuity:', with: continuity.id)
     expect(page).to have_selector('#post-editor')
     within('#post-editor') do
       fill_in 'Moderator note', with: 'test edit'
@@ -229,7 +229,7 @@ RSpec.feature "Editing posts", type: :feature do
 
     expect(page).to have_no_selector('.error')
     expect(page).to have_selector('.success', text: 'has been updated.')
-    expect(page).to have_selector('.flash.breadcrumbs', exact_text: "Continuities » test board » test subject")
+    expect(page).to have_selector('.flash.breadcrumbs', exact_text: "Continuities » test continuity » test subject")
     expect(page).to have_selector('.post-container', count: 1)
     within('.post-container') do
       expect(page).to have_no_selector('.post-updated')

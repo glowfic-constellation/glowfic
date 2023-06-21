@@ -32,7 +32,7 @@ RSpec.describe PostsController, 'GET history' do
       Post.auditing_enabled = true
       post = create(:post)
       post.update!(privacy: :access_list)
-      post.update!(board: create(:board))
+      post.update!(board: create(:continuity))
       post.update!(content: 'new content')
 
       login_as(post.user)

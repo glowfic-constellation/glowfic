@@ -1,10 +1,10 @@
 %tr
   - klass = cycle('even', 'odd')
-  %td.padding-10.board-title{class: klass}= link_to board.name, continuity_path(board)
+  %td.padding-10.board-title{class: klass}= link_to continuity.name, continuity_path(continuity)
   %td.padding-10.board-authors{class: klass}
-    - if board.authors_locked?
-      - writers = board.writers.reject(&:deleted?).sort_by { |a| a.username.downcase }
+    - if continuity.authors_locked?
+      - writers = continuity.writers.reject(&:deleted?).sort_by { |a| a.username.downcase }
       = safe_join(writers.map { |u| user_link(u) }, ', ')
     - else
       Anyone
-  %td.padding-10.board-time{class: klass}= pretty_time(board.tagged_at)
+  %td.padding-10.board-time{class: klass}= pretty_time(continuity.tagged_at)

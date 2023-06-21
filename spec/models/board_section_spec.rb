@@ -1,17 +1,23 @@
 RSpec.describe BoardSection do
   include ActiveJob::TestHelper
 
+  let(:continuity) { create(:continuity) }
+  let(:section) { create(:board_section, board: continuity) }
+  let(:section0) { create(:board_section, board: continuity) }
+  let(:section1) { create(:board_section, board: continuity) }
+  let(:section2) { create(:board_section, board: continuity) }
+  let(:section3) { create(:board_section, board: continuity) }
+
   it "should reset section_* fields in posts after deletion" do
-    board = create(:board)
-    BoardSection.create!(board: board, name: 'Test')
-    section = BoardSection.create!(board: board, name: 'Test')
-    section2 = BoardSection.create!(board: board, name: 'Test')
-    post = create(:post, board: board, section_id: section.id)
+    create(:board_section, board: continuity)
+    section
+    section2 = create(:board_section, board: continuity)
+    post = create(:post, board: continuity, section: section)
     expect(post.section_id).not_to be_nil
     expect(post.section_order).to eq(0)
     expect(section2.section_order).to eq(2)
     perform_enqueued_jobs(only: UpdateModelJob) do
-      Audited.audit_class.as_user(board.creator) do
+      Audited.audit_class.as_user(continuity.creator) do
         section.destroy!
       end
     end
@@ -22,54 +28,37 @@ RSpec.describe BoardSection do
   end
 
   it "should autofill post section order when not specified" do
-    board = create(:board)
-    section = BoardSection.create!(board: board, name: 'Test')
-    post0 = create(:post, board: board, section_id: section.id)
-    post1 = create(:post, board: board, section_id: section.id)
-    post2 = create(:post, board: board, section_id: section.id)
+    post0 = create(:post, board: continuity, section: section)
+    post1 = create(:post, board: continuity, section: section)
+    post2 = create(:post, board: continuity, section: section)
     expect(post0.section_order).to eq(0)
     expect(post1.section_order).to eq(1)
     expect(post2.section_order).to eq(2)
   end
 
-  it "should autofill board section order when not specified" do
-    board = create(:board)
-    section0 = BoardSection.create!(board_id: board.id, name: 'Test')
-    section1 = BoardSection.create!(board_id: board.id, name: 'Test')
-    section2 = BoardSection.create!(board_id: board.id, name: 'Test')
+  it "should autofill continuity section order when not specified" do
     expect(section0.section_order).to eq(0)
     expect(section1.section_order).to eq(1)
     expect(section2.section_order).to eq(2)
   end
 
   it "should reorder upon deletion" do
-    board = create(:board)
-    section0 = create(:board_section, board_id: board.id)
     expect(section0.section_order).to eq(0)
-    section1 = create(:board_section, board_id: board.id)
     expect(section1.section_order).to eq(1)
-    section2 = create(:board_section, board_id: board.id)
     expect(section2.section_order).to eq(2)
-    section3 = create(:board_section, board_id: board.id)
     expect(section3.section_order).to eq(3)
-    Audited.audit_class.as_user(board.creator) { section1.destroy! }
+    Audited.audit_class.as_user(continuity.creator) { section1.destroy! }
     expect(section0.reload.section_order).to eq(0)
     expect(section2.reload.section_order).to eq(1)
     expect(section3.reload.section_order).to eq(2)
   end
 
-  it "should reorder upon board change" do
-    board = create(:board)
-    section0 = create(:board_section, board_id: board.id)
+  it "should reorder upon continuity change" do
     expect(section0.section_order).to eq(0)
-    section1 = create(:board_section, board_id: board.id)
     expect(section1.section_order).to eq(1)
-    section2 = create(:board_section, board_id: board.id)
     expect(section2.section_order).to eq(2)
-    section3 = create(:board_section, board_id: board.id)
     expect(section3.section_order).to eq(3)
-    section1.board = create(:board)
-    section1.save!
+    section1.update!(board: create(:continuity))
     expect(section0.reload.section_order).to eq(0)
     expect(section2.reload.section_order).to eq(1)
     expect(section3.reload.section_order).to eq(2)

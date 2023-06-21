@@ -84,7 +84,7 @@ RSpec.describe PostsController, 'GET unread' do
     expect(assigns(:posts)).to eq([post1, post2, post3])
   end
 
-  it "manages board/post read time mismatches" do
+  it "manages continuity/post read time mismatches" do
     user = create(:user)
 
     # no views exist
@@ -96,19 +96,19 @@ RSpec.describe PostsController, 'GET unread' do
     post_read_post = create(:post)
     post_read_post.mark_read(user)
 
-    # only board view exists
-    board_unread_post = create(:post)
-    board_unread_post.board.mark_read(user, at_time: board_unread_post.created_at - 1.second, force: true)
-    board_read_post = create(:post)
-    board_read_post.board.mark_read(user)
+    # only continuity view exists
+    continuity_unread_post = create(:post)
+    continuity_unread_post.board.mark_read(user, at_time: continuity_unread_post.created_at - 1.second, force: true)
+    continuity_read_post = create(:post)
+    continuity_read_post.board.mark_read(user)
 
     # both exist
     both_unread_post = create(:post)
     both_unread_post.mark_read(user, at_time: both_unread_post.created_at - 1.second, force: true)
     both_unread_post.board.mark_read(user, at_time: both_unread_post.created_at - 1.second, force: true)
-    both_board_read_post = create(:post)
-    both_board_read_post.mark_read(user, at_time: both_unread_post.created_at - 1.second, force: true)
-    both_board_read_post.board.mark_read(user)
+    both_continuity_read_post = create(:post)
+    both_continuity_read_post.mark_read(user, at_time: both_unread_post.created_at - 1.second, force: true)
+    both_continuity_read_post.board.mark_read(user)
     both_post_read_post = create(:post)
     both_post_read_post.board.mark_read(user, at_time: both_unread_post.created_at - 1.second, force: true)
     both_post_read_post.mark_read(user)
@@ -116,14 +116,14 @@ RSpec.describe PostsController, 'GET unread' do
     both_read_post.mark_read(user)
     both_read_post.board.mark_read(user)
 
-    # board ignored
-    board_ignored = create(:post)
-    board_ignored.mark_read(user, at_time: both_unread_post.created_at - 1.second, force: true)
-    board_ignored.board.ignore(user)
+    # continuity ignored
+    continuity_ignored = create(:post)
+    continuity_ignored.mark_read(user, at_time: both_unread_post.created_at - 1.second, force: true)
+    continuity_ignored.board.ignore(user)
 
     login_as(user)
     get :unread
-    expect(assigns(:posts)).to match_array([unread_post, post_unread_post, board_unread_post, both_unread_post, both_board_read_post])
+    expect(assigns(:posts)).to match_array([unread_post, post_unread_post, continuity_unread_post, both_unread_post, both_continuity_read_post])
   end
 
   context "opened" do

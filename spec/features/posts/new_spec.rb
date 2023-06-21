@@ -4,7 +4,7 @@ RSpec.feature "Creating posts", type: :feature do
     within(".error") { expect(page).to have_text("You must be logged in") }
 
     user = login
-    create(:board)
+    create(:continuity)
 
     visit new_post_path
     expect(page).to have_no_selector(".error")
@@ -33,7 +33,7 @@ RSpec.feature "Creating posts", type: :feature do
 
   scenario "User creates a post with preview" do
     user = login
-    create(:board)
+    create(:continuity)
 
     visit new_post_path
     expect(page).to have_no_selector(".error")
@@ -90,7 +90,7 @@ RSpec.feature "Creating posts", type: :feature do
 
   scenario "User sees different editor settings" do
     user = login
-    create(:board)
+    create(:continuity)
 
     visit new_post_path
     within("#current-icon-holder") do

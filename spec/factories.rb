@@ -26,7 +26,7 @@ FactoryBot.define do
     end
   end
 
-  factory :board do
+  factory :board, aliases: [:continuity] do
     creator
     authors_locked { writer_ids.present? || writers.present? }
     sequence :name do |n|
@@ -208,7 +208,7 @@ FactoryBot.define do
     user
   end
 
-  factory :board_view do
+  factory :board_view, aliases: [:continuity_view] do
     user
     board
   end

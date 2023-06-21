@@ -28,35 +28,35 @@ RSpec.describe PostsController, 'POST unhide' do
     expect(response).to redirect_to(hidden_posts_url)
   end
 
-  it "succeeds for board" do
-    board = create(:board)
-    stay_hidden_board = create(:board)
+  it "succeeds for continuity" do
+    continuity = create(:continuity)
+    stay_hidden_continuity = create(:continuity)
     user = create(:user)
-    board.ignore(user)
-    stay_hidden_board.ignore(user)
+    continuity.ignore(user)
+    stay_hidden_continuity.ignore(user)
     login_as(user)
-    post :unhide, params: { unhide_boards: [board.id] }
+    post :unhide, params: { unhide_boards: [continuity.id] }
     expect(response).to redirect_to(hidden_posts_url)
-    board.reload
-    stay_hidden_board.reload
-    expect(board).not_to be_ignored_by(user)
-    expect(stay_hidden_board).to be_ignored_by(user)
+    continuity.reload
+    stay_hidden_continuity.reload
+    expect(continuity).not_to be_ignored_by(user)
+    expect(stay_hidden_continuity).to be_ignored_by(user)
   end
 
   it "succeeds for both" do
-    board = create(:board)
+    continuity = create(:continuity)
     hidden_post = create(:post)
     user = create(:user)
-    board.ignore(user)
+    continuity.ignore(user)
     hidden_post.ignore(user)
     login_as(user)
 
-    post :unhide, params: { unhide_boards: [board.id], unhide_posts: [hidden_post.id] }
+    post :unhide, params: { unhide_boards: [continuity.id], unhide_posts: [hidden_post.id] }
 
     expect(response).to redirect_to(hidden_posts_url)
-    board.reload
+    continuity.reload
     hidden_post.reload
-    expect(board).not_to be_ignored_by(user)
+    expect(continuity).not_to be_ignored_by(user)
     expect(hidden_post).not_to be_ignored_by(user)
   end
 

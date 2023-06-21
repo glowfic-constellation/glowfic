@@ -20,8 +20,8 @@ module ReportsHelper
   def ignored?(post)
     return false unless @opened_posts.present?
     view = @opened_posts.detect { |v| v.post_id == post.id }
-    board_view = @board_views.detect { |v| v.board_id == post.board_id }
-    return false unless view || board_view
-    view.try(:ignored?) || board_view.try(:ignored?)
+    continuity_view = @continuity_views.detect { |v| v.board_id == post.board_id }
+    return false unless view || continuity_view
+    view.try(:ignored?) || continuity_view.try(:ignored?)
   end
 end
