@@ -119,7 +119,7 @@ class PostsController < WritableController
 
   def new
     @post = Post.new(character: current_user.active_character, user: current_user, authors_locked: true)
-    @post.board_id = params[:board_id]
+    @post.continuity_id = params[:continuity_id]
     @post.section_id = params[:section_id]
     @post.icon_id = (current_user.active_character ? current_user.active_character.default_icon.try(:id) : current_user.avatar_id)
     @page_title = 'New Post'
@@ -277,12 +277,12 @@ class PostsController < WritableController
     @setting = Setting.where(id: params[:setting_id]) if params[:setting_id].present?
     @character = Character.where(id: params[:character_id]) if params[:character_id].present?
     @user = User.active.where(id: params[:author_id]).ordered if params[:author_id].present?
-    @board = Board.where(id: params[:board_id]) if params[:board_id].present?
+    @board = Board.where(id: params[:continuity_id]) if params[:continuity_id].present?
 
     return unless params[:commit].present?
 
     @search_results = Post.ordered
-    @search_results = @search_results.where(board_id: params[:board_id]) if params[:board_id].present?
+    @search_results = @search_results.where(board_id: params[:continuity_id]) if params[:continuity_id].present?
     @search_results = @search_results.where(id: Setting.find(params[:setting_id]).post_tags.pluck(:post_id)) if params[:setting_id].present?
     if params[:subject].present?
       if params[:abbrev].present?
@@ -417,7 +417,7 @@ class PostsController < WritableController
   def import_thread
     begin
       importer = PostImporter.new(params[:dreamwidth_url])
-      importer.import(params[:board_id], current_user.id, section_id: params[:section_id], status: params[:status], threaded: params[:threaded])
+      importer.import(params[:continuity_id], current_user.id, section_id: params[:section_id], status: params[:status], threaded: params[:threaded])
     rescue PostImportError => e
       flash.now[:error] = e.api_error
       params[:view] = 'import'
@@ -466,7 +466,7 @@ class PostsController < WritableController
 
   def permitted_params(include_associations=true)
     allowed_params = [
-      :board_id,
+      :continuity_id,
       :section_id,
       :privacy,
       :subject,

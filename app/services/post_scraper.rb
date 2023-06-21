@@ -128,7 +128,7 @@ class PostScraper < Object
     logger.info "Importing thread '#{subject}'"
 
     @post = Post.new
-    @post.board_id = @board_id
+    @post.continuity_id = @board_id
     @post.section_id = @section_id
     @post.subject = subject
     @post.status = @status

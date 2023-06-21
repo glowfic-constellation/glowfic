@@ -182,12 +182,12 @@ RSpec.describe PostHelper do
     it "anchors for sectioned post" do
       section = create(:board_section)
       post = create(:post, board: section.board, section: section)
-      expect(helper.anchored_continuity_path(post)).to eq(continuity_path(post.board_id) + "#section-" + section.id.to_s)
+      expect(helper.anchored_continuity_path(post)).to eq(continuity_path(post.continuity_id) + "#section-" + section.id.to_s)
     end
 
     it "does not anchor for unsectioned post" do
       post = create(:post)
-      expect(helper.anchored_continuity_path(post)).to eq(continuity_path(post.board_id))
+      expect(helper.anchored_continuity_path(post)).to eq(continuity_path(post.continuity_id))
     end
   end
 end

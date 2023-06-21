@@ -16,12 +16,12 @@
         = form_tag search_replies_path, method: :get do
           %table.search-form
             %tr
-              %td{style: 'width: 80px;'}= label_tag :board_id, 'Continuity'
+              %td{style: 'width: 80px;'}= label_tag :continuity_id, 'Continuity'
               %td
                 - if @post
                   %b= @post.board.name
                 - else
-                  = select_tag :board_id, options_from_collection_for_select(@boards || [], :id, :name, params[:board_id]),
+                  = select_tag :continuity_id, options_from_collection_for_select(@boards || [], :id, :name, params[:continuity_id]),
                     { class: 'chosen-select', prompt: '— Choose Continuity —' }
             %tr
               %td= label_tag :author_id, 'Author'

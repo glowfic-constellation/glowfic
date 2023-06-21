@@ -37,7 +37,7 @@ $(document).ready(function() {
     allowClear: true,
   });
 
-  createSelect2('#board_id', {
+  createSelect2('#continuity_id', {
     ajax: {
       url: '/api/v1/boards',
       processResults: processTotal('name'),

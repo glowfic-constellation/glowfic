@@ -66,7 +66,7 @@ RSpec.describe PostsController, 'GET new' do
     create(:user) # user not in the board
     board_creator = create(:user) # user in the board
     board = create(:board, creator: board_creator, authors_locked: false)
-    get :new, params: { board_id: board.id }
+    get :new, params: { continuity_id: board.id }
     expect(assigns(:post).board).to eq(board)
     expect(assigns(:author_ids)).to eq([])
   end
@@ -77,7 +77,7 @@ RSpec.describe PostsController, 'GET new' do
     coauthor = create(:user)
     create(:user) # other_user
     board = create(:board, creator: user, writers: [coauthor])
-    get :new, params: { board_id: board.id }
+    get :new, params: { continuity_id: board.id }
     expect(assigns(:post).board).to eq(board)
     expect(assigns(:author_ids)).to match_array([coauthor.id])
   end

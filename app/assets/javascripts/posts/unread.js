@@ -1,6 +1,6 @@
 /* global createSelect2, processResults */
 $(document).ready(function() {
-  createSelect2('#board_id', {
+  createSelect2('#continuity_id', {
     ajax: {
       url: '/api/v1/boards',
       processResults: function(data, params) {

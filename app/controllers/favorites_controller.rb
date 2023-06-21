@@ -30,8 +30,8 @@ class FavoritesController < ApplicationController
         redirect_to users_path and return
       end
       fav_path = favorite
-    elsif params[:board_id].present?
-      unless (favorite = Board.find_by_id(params[:board_id]))
+    elsif params[:continuity_id].present?
+      unless (favorite = Board.find_by_id(params[:continuity_id]))
         flash[:error] = "Continuity could not be found."
         redirect_to continuities_path and return
       end

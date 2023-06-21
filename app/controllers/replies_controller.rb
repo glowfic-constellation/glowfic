@@ -24,7 +24,7 @@ class RepliesController < WritableController
       @users = User.active.where(id: params[:author_id]) if params[:author_id].present?
       @characters = Character.where(id: params[:character_id]) if params[:character_id].present?
       @templates = Template.ordered.limit(25)
-      @boards = Board.where(id: params[:board_id]) if params[:board_id].present?
+      @boards = Board.where(id: params[:continuity_id]) if params[:continuity_id].present?
       if @post
         # post exists but post not visible
         flash.now[:error] = "You do not have permission to view this post."
@@ -62,8 +62,8 @@ class RepliesController < WritableController
 
     if @post
       @search_results = @search_results.where(post_id: @post.id)
-    elsif params[:board_id].present?
-      post_ids = Post.where(board_id: params[:board_id]).pluck(:id)
+    elsif params[:continuity_id].present?
+      post_ids = Post.where(board_id: params[:continuity_id]).pluck(:id)
       @search_results = @search_results.where(post_id: post_ids)
     end
 

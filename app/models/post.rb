@@ -31,6 +31,8 @@ class Post < ApplicationRecord
   has_many :indexes, inverse_of: :posts, through: :index_posts, dependent: :destroy
   has_many :index_sections, inverse_of: :posts, through: :index_posts, dependent: :destroy
 
+  alias_attribute :continuity_id, :board_id
+
   attr_accessor :is_import
   attr_writer :skip_edited
 
@@ -294,7 +296,7 @@ class Post < ApplicationRecord
 
   def valid_board_section
     return unless section.present?
-    return if section.board_id == board_id
+    return if section.continuity_id == continuity_id
     errors.add(:section, "must be in the post's board")
   end
 

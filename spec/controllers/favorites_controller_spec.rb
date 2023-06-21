@@ -146,7 +146,7 @@ RSpec.describe FavoritesController do
 
     it "requires valid board if given" do
       login
-      post :create, params: { board_id: -1 }
+      post :create, params: { continuity_id: -1 }
       expect(response).to redirect_to(continuities_path)
       expect(flash[:error]).to eq('Continuity could not be found.')
     end
@@ -203,7 +203,7 @@ RSpec.describe FavoritesController do
       user = create(:user)
       board = create(:board)
       login_as(user)
-      post :create, params: { board_id: board.id }
+      post :create, params: { continuity_id: board.id }
       expect(Favorite.between(user, board)).not_to be_nil
       expect(response).to redirect_to(continuity_url(board))
       expect(flash[:success]).to eq("Your favorite has been saved.")
