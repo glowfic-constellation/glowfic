@@ -15,7 +15,7 @@ Rails.application.routes.draw do
   resources :users, except: :destroy do
     resources :characters, only: :index
     resources :galleries, only: [:index, :show]
-    resources :boards, only: :index
+    resources :boards, controller: :continuities, only: :index
     collection do
       get :search
     end
@@ -69,7 +69,7 @@ Rails.application.routes.draw do
   end
 
   # Forums
-  resources :boards, as: :continuities do
+  resources :boards, as: :continuities, controller: :continuities do
     collection do
       post :mark
       get :search
@@ -112,7 +112,7 @@ Rails.application.routes.draw do
   # API
   namespace :api do
     namespace :v1 do
-      resources :boards, only: [:index, :show] do
+      resources :boards, controller: :continuities, only: [:index, :show] do
         member { get :posts }
       end
       resources :board_sections, only: [] do

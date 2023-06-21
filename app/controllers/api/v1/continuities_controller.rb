@@ -1,4 +1,4 @@
-class Api::V1::BoardsController < Api::ApiController
+class Api::V1::ContinuitiesController < Api::ApiController
   resource_description do
     name 'Continuities'
     description 'Viewing, searching, and editing continuities'
