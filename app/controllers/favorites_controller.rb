@@ -13,7 +13,7 @@ class FavoritesController < ApplicationController
 
     user_favorites = @favorites.where(favorite_type: User.to_s).select(:favorite_id)
     author_posts = Post::Author.where(user_id: user_favorites, joined: true).select(:post_id)
-    board_favorites = @favorites.where(favorite_type: Board.to_s).select(:favorite_id)
+    board_favorites = @favorites.where(favorite_type: Continuity.to_s).select(:favorite_id)
     post_favorites = @favorites.where(favorite_type: Post.to_s).select(:favorite_id)
 
     @posts = Post.where(id: author_posts).or(Post.where(id: post_favorites)).or(Post.where(board_id: board_favorites))
@@ -31,11 +31,11 @@ class FavoritesController < ApplicationController
       end
       fav_path = favorite
     elsif params[:board_id].present?
-      unless (favorite = Board.find_by_id(params[:board_id]))
+      unless (favorite = Continuity.find_by_id(params[:board_id]))
         flash[:error] = "Continuity could not be found."
         redirect_to continuities_path and return
       end
-      fav_path = continuity_path(favorite)
+      fav_path = favorite
     elsif params[:post_id].present?
       unless (favorite = Post.find_by_id(params[:post_id]))
         flash[:error] = "Post could not be found."
@@ -87,11 +87,7 @@ class FavoritesController < ApplicationController
       redirect_to favorites_path
     else
       flash[:success] = "Favorite removed."
-      if [User.to_s, Post.to_s].include?(fav.favorite_type)
-        redirect_to fav.favorite
-      else
-        redirect_to continuity_path(fav.favorite)
-      end
+      redirect_to fav.favorite
     end
   end
 end

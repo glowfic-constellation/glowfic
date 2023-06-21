@@ -2,7 +2,7 @@ class PostScraper < Object
   attr_accessor :url, :post, :html_doc
 
   def initialize(url, board_id=nil, section_id=nil, status=nil, threaded_import=false, console_import=false, subject=nil)
-    @board_id = board_id || Board::ID_SANDBOX
+    @board_id = board_id || Continuity::ID_SANDBOX
     @section_id = section_id
     @status = status || :complete
     url += (url.include?('?') ? '&' : '?') + 'style=site' unless url.include?('style=site')

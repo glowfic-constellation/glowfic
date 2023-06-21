@@ -47,7 +47,7 @@ throne.update!(avatar_id: 4)
 teceler.update!(avatar_id: 5)
 
 puts "Creating continuities..."
-Board.create!([
+Continuity.create!([
   { name: 'Effulgence', creator: alicorn, writers: [kappa] },
   { name: 'Witchlight', creator: alicorn, writers: [marri] },
   { name: 'Sandboxes', creator: marri, pinned: true, authors_locked: false },
@@ -106,6 +106,6 @@ Message.create!([
 puts "Creating favorites..."
 Favorite.create!([
   { user_id: 3, favorite_id: 1, favorite_type: "Post" },
-  { user_id: 3, favorite_id: 1, favorite_type: "Board" },
+  { user_id: 3, favorite_id: 1, favorite_type: "Continuity" },
   { user_id: 3, favorite_id: 1, favorite_type: "User" },
 ])

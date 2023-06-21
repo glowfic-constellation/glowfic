@@ -1,6 +1,6 @@
 class AddOrderToSectionlessPosts < ActiveRecord::Migration[4.2]
   def up
-    Board.all.each do |board|
+    Continuity.all.each do |board|
       posts = board.posts.where(section_id: nil).order('created_at asc')
       next unless posts.present?
 

@@ -84,7 +84,7 @@ RSpec.describe ReportsHelper do
   describe "#ignored?" do
     let(:board_view) { create(:board_view, user: user, board: post.board) }
 
-    before(:each) { assign(:board_views, BoardView.where(user_id: user.id).select([:board_id, :ignored])) }
+    before(:each) { assign(:board_views, Continuity::View.where(user_id: user.id).select([:board_id, :ignored])) }
 
     it "requires opened posts" do
       assign(:opened_posts, nil)

@@ -1,4 +1,4 @@
-RSpec.describe Board do
+RSpec.describe Continuity do
   include ActiveJob::TestHelper
 
   describe "validations" do
@@ -22,8 +22,8 @@ RSpec.describe Board do
     end
 
     it "should require a unique name" do
-      create(:board, name: 'Test Board')
-      board = build(:board, name: 'Test Board')
+      create(:board, name: 'Test Continuity')
+      board = build(:board, name: 'Test Continuity')
       expect(board).not_to be_valid
       board.name = 'Name'
       expect(board).to be_valid
@@ -38,20 +38,19 @@ RSpec.describe Board do
   end
 
   describe "coauthors" do
+    let(:coauthor) { create(:user) }
+    let(:cameo) { create(:user) }
+
     it "should list the correct writers" do
       board = create(:board)
-      coauthor = create(:user)
-      cameo = create(:user)
       create(:user) # not_board
-      board.board_authors.create!(user: coauthor)
-      board.board_authors.create!(user: cameo, cameo: true)
+      board.continuity_authors.create!(user: coauthor)
+      board.continuity_authors.create!(user: cameo, cameo: true)
       board.reload
       expect(board.writer_ids).to match_array([board.creator_id, coauthor.id])
     end
 
     it "should allow coauthors and cameos to post" do
-      coauthor = create(:user)
-      cameo = create(:user)
       board = create(:board, writers: [coauthor], cameos: [cameo], authors_locked: true)
       expect(board.authors_locked?).to be true
       expect(coauthor.writes_in?(board)).to be true
@@ -59,28 +58,21 @@ RSpec.describe Board do
     end
 
     it "should allow coauthors but not cameos to edit" do
-      board = create(:board)
-      coauthor = create(:user)
-      cameo = create(:user)
-      board.board_authors.create!(user: coauthor)
-      board.board_authors.create!(user: cameo, cameo: true)
-      board.reload
+      board = create(:board, writers: [coauthor], cameos: [cameo], authors_locked: true)
       expect(board.editable_by?(coauthor)).to be true
       expect(board.editable_by?(cameo)).to be false
     end
 
     it "should allow coauthors only once per board" do
-      board = create(:board)
+      board = create(:board, writers: [coauthor], authors_locked: true)
       board2 = create(:board)
-      coauthor = create(:user)
       create(:user)
-      board.board_authors.create!(user: coauthor)
-      expect { board.board_authors.create!(user: coauthor) }.to raise_error(ActiveRecord::RecordInvalid)
-      board2.board_authors.create!(user: coauthor)
+      expect { board.continuity_authors.create!(user: coauthor) }.to raise_error(ActiveRecord::RecordInvalid)
+      board2.continuity_authors.create!(user: coauthor)
       board.reload
       board2.reload
-      expect(board.board_authors.count).to eq(2)
-      expect(board2.board_authors.count).to eq(2)
+      expect(board.continuity_authors.count).to eq(2)
+      expect(board2.continuity_authors.count).to eq(2)
     end
   end
 
@@ -123,7 +115,7 @@ RSpec.describe Board do
 
   it "deletes sections but moves posts to sandboxes" do
     board = create(:board)
-    create(:board, id: Board::ID_SANDBOX)
+    create(:board, id: Continuity::ID_SANDBOX)
     section = create(:board_section, board: board)
     post = create(:post, board: board, section: section)
     perform_enqueued_jobs(only: UpdateModelJob) do

@@ -534,7 +534,7 @@ RSpec.describe PostsController, 'PUT update' do
             viewer_ids: [coauthor.id, create(:user).id],
           },
         }
-      }.not_to change { [Post::Author.count, PostViewer.count, BoardAuthor.count] }
+      }.not_to change { [Post::Author.count, PostViewer.count, Continuity::Author.count] }
 
       expect(flash[:error]).to be_nil
       expect(assigns(:page_title)).to eq('Previewing: ' + assigns(:post).subject.to_s)

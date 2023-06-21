@@ -1,4 +1,4 @@
-class BoardPresenter
+class ContinuityPresenter
   attr_reader :board
 
   def initialize(board)

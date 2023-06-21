@@ -180,8 +180,8 @@ class UsersController < ApplicationController
   end
 
   def og_data
-    board_ids = BoardAuthor.where(user_id: @user.id, cameo: false).select(:board_id).distinct.pluck(:board_id)
-    boards = Board.where(id: board_ids).ordered.pluck(:name)
+    board_ids = Continuity::Author.where(user_id: @user.id, cameo: false).select(:board_id).distinct.pluck(:board_id)
+    boards = Continuity.where(id: board_ids).ordered.pluck(:name)
     board_count = boards.length
     if board_count > 0
       desc = "Continuity".pluralize(board_count) + ": " + generate_short(boards * ', ')
