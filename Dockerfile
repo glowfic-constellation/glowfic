@@ -1,4 +1,4 @@
-FROM ruby:3.0.5
+FROM ruby:3.1.4
 
 WORKDIR /code
 
