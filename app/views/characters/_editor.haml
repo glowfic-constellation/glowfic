@@ -26,6 +26,7 @@
       = f.fields_for :template do |ff|
         %th.sub= ff.label :name, '↳ Name'
         %td{class: klass}
+          = ff.hidden_field :id
           = ff.text_field :name, placeholder: "Template Name", class: 'text'
   %tr
     %th.sub Cluster
