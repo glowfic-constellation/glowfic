@@ -46,7 +46,6 @@ require 'support/spec_feature_helper'
 require 'support/api_test_helper'
 require 'support/posts_controller_shared'
 
-require 'webdrivers'
 require 'selenium/webdriver'
 
 Capybara.register_driver :chrome do |app|
