@@ -28,8 +28,8 @@ class Character < ApplicationRecord
   attr_accessor :group_name
 
   before_validation :strip_spaces
-  after_update :update_flat_posts
-  after_destroy :clear_char_ids
+  after_update_commit :update_flat_posts
+  after_destroy_commit :clear_char_ids
 
   scope :ordered, -> { order(name: :asc).order(Arel.sql('lower(screenname) asc'), created_at: :asc, id: :asc) }
   scope :with_name, ->(charname) { where("lower(concat_ws(' | ', name, nickname, screenname)) LIKE ?", "%#{charname.downcase}%") }
