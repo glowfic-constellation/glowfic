@@ -9,7 +9,7 @@ RUN curl -fsSL https://deb.nodesource.com/gpgkey/nodesource-repo.gpg.key | gpg -
   echo "deb [signed-by=/etc/apt/keyrings/nodesource.gpg] https://deb.nodesource.com/node_16.x nodistro main" >> /etc/apt/sources.list.d/nodesource.list
 RUN apt-get update \
   && apt -t nodistro install -y nodejs \
-  && apt -t bookworm-pgdg install -y postgresql-client-11 \
+  && apt -t bookworm-pgdg install -y postgresql-client-14 \
   && apt install -y curl chromium \
   && apt-get clean
 
