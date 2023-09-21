@@ -1,4 +1,4 @@
-[![Build Status](https://travis-ci.com/Marri/glowfic.svg?branch=master)](https://travis-ci.com/Marri/glowfic) [![Test Coverage](https://codeclimate.com/github/Marri/glowfic/badges/coverage.svg)](https://codeclimate.com/github/Marri/glowfic/coverage)
+[![Build Status](https://github.com/glowfic-constellation/glowfic/actions/workflows/rspec.yml/badge.svg)](https://github.com/glowfic-constellation/glowfic/actions) [![Test Coverage](https://codeclimate.com/github/Marri/glowfic/badges/coverage.svg)](https://codeclimate.com/github/Marri/glowfic/coverage)
 
 ## README
 
@@ -31,7 +31,7 @@ This README mostly focuses on how to get started developing this project with Do
 
     *   Copy the code:
 
-        `git clone https://github.com/Marri/glowfic.git`
+        `git clone https://github.com/glowfic-constellation/glowfic.git`
 
 (More specific details, such as if you have write permission and wish to use SSH instead of HTTPS, may be found on the GitHub site.)
 
