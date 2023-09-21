@@ -2,6 +2,7 @@ name: bundler-audit
 on:
   pull_request:
     branches: [ main ]
+  merge_group:
   schedule:
     - cron: '20 20 * * 2'
 jobs:
