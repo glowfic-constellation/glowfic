@@ -6,7 +6,6 @@ class BoardSectionPresenter
   end
 
   def as_json(_options={})
-    return {} unless board_section
     {
       id: board_section.id,
       name: board_section.name,

@@ -6,7 +6,6 @@ class UserPresenter
   end
 
   def as_json(options={})
-    return {} unless user
     return { id: user.id, username: '(deleted user)' } if user.deleted?
     return detailed_json(options) if options[:detailed]
     summary_json(options)

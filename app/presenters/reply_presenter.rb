@@ -6,7 +6,6 @@ class ReplyPresenter
   end
 
   def as_json(_options={})
-    return {} unless reply
     {
       id: reply.id,
       content: reply.content,
