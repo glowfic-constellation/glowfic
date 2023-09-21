@@ -422,7 +422,7 @@ GEM
     temple (0.10.2)
     test-unit (3.5.3)
       power_assert
-    thin (1.8.1)
+    thin (1.8.2)
       daemons (~> 1.0, >= 1.0.9)
       eventmachine (~> 1.0, >= 1.0.4)
       rack (>= 1, < 3)
