@@ -1,4 +1,4 @@
-[![Build Status](https://travis-ci.com/Marri/glowfic.svg?branch=master)](https://travis-ci.com/Marri/glowfic) [![Test Coverage](https://codeclimate.com/github/Marri/glowfic/badges/coverage.svg)](https://codeclimate.com/github/Marri/glowfic/coverage)
+[![Build Status](https://github.com/glowfic-constellation/glowfic/actions/workflows/rspec.yml/badge.svg)](https://github.com/glowfic-constellation/glowfic/actions) [![Test Coverage](https://codeclimate.com/github/Marri/glowfic/badges/coverage.svg)](https://codeclimate.com/github/Marri/glowfic/coverage)
 
 ## README
 
