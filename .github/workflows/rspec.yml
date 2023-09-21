@@ -41,7 +41,7 @@ jobs:
       RAILS_ENV: test
 
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v4
       - name: Set up Chrome
         run: sudo apt-get update && sudo apt-get install -y chromium-browser
       - name: Set up Ruby
