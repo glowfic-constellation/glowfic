@@ -63,7 +63,7 @@ GEM
     addressable (2.8.5)
       public_suffix (>= 2.0.2, < 6.0)
     api-pagination (5.0.0)
-    apipie-rails (0.8.1)
+    apipie-rails (1.2.2)
       actionpack (>= 5.0)
       activesupport (>= 5.0)
     ast (2.4.2)
