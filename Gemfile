@@ -12,7 +12,7 @@ gem 'apipie-rails'
 #   (currently https://github.com/collectiveidea/audited/blob/v5.3.3/lib/audited/audit.rb#L183)
 gem 'audited', '~> 5.3.3'
 
-gem 'aws-sdk-rails', '~> 2'
+gem 'aws-sdk-rails', '~> 3'
 gem 'aws-sdk-s3', '~> 1'
 gem 'aws-sdk-ses', '~> 1'
 gem 'barnes' # heroku ruby-specific metrics
