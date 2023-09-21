@@ -202,7 +202,7 @@ GEM
       thor (>= 0.14, < 2.0)
     jquery-ui-rails (6.0.1)
       railties (>= 3.2.16)
-    json (2.6.2)
+    json (2.6.3)
     jwt (2.4.1)
     listen (3.7.1)
       rb-fsevent (~> 0.10, >= 0.10.3)
@@ -475,7 +475,7 @@ DEPENDENCIES
   jquery-fileupload-rails
   jquery-rails (~> 4.3)
   jquery-ui-rails
-  json (~> 2.3)
+  json (~> 2.6)
   jwt
   listen
   memory_profiler
