@@ -404,8 +404,8 @@ function setGalleriesAndDefault(galleries, defaultIcon) {
 
   if (defaultIcon && shownIcons.indexOf(defaultIcon.id) < 0) { iconSelectBox.append(iconNode(defaultIcon)); }
 
-  // If no icons, remove pointer
-  if (shownIcons.length === 0) {
+  // If no default and no icons in any galleries, remove pointer
+  if (!defaultIcon && shownIcons.length === 0) {
     $("#current-icon").removeClass('pointer');
     return;
   }
