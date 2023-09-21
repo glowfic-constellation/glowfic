@@ -9,7 +9,7 @@
     %br
     = f.label :description, 'Description:'
     = f.text_field :description, placeholder: 'Description'
-    .details (Optional: describe the thread's setting and major players, e.g. A Bell and Vorkosigans in Chronicle)
+    .details (Optional: describe the post's setting and major players, e.g. A Bell and Vorkosigans in Chronicle)
     - unless post.id.present? && !post.editable_by?(current_user)
       %br
       #post-form-wrapper

@@ -16,8 +16,8 @@ class WritableController < ApplicationController
       uniq_chars_ids = @post.replies.where(user_id: user.id).where.not(character_id: nil).group(:character_id).pluck(:character_id)
       uniq_chars_ids << @post.character_id if @post.user_id == user.id && @post.character_id.present?
       uniq_chars = Character.where(id: uniq_chars_ids).ordered.pluck(pluck)
-      threadchars = faked.new('Thread characters', nil, uniq_chars)
-      @templates.insert(0, threadchars)
+      postchars = faked.new('Post characters', nil, uniq_chars)
+      @templates.insert(0, postchars)
     end
     @templates.reject! { |template| template.plucked_characters.empty? }
 

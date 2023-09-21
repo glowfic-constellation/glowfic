@@ -1,10 +1,10 @@
 - content_for :posts_title do
   - if params[:view] == 'hidden'
-    All Threads With Replies Owed Disabled
+    All Posts With Replies Owed Disabled
   - elsif params[:view] == 'hiatused'
-    Hiatused Threads You Owe Replies In
+    Hiatused Posts You Owe Replies In
   - else
-    Threads You Owe Replies In
+    Posts You Owe Replies In
 
   - if params[:view] == 'hidden'
     = link_to owed_posts_path do

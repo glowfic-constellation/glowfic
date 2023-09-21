@@ -99,7 +99,7 @@
           %td.icon-box
             .centered.padding-5 — No galleries yet —
 - elsif params[:view] == 'posts'
-  - content_for(:posts_title) { 'Recent Threads' }
+  - content_for(:posts_title) { 'Recent Posts' }
   = render 'posts/list', posts: @posts, table_class: 'character-right-content-box'
 - else
   - reset_cycle
