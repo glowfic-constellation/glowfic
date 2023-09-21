@@ -76,7 +76,7 @@ RSpec.describe RepliesController, 'POST create' do
     it "does not create authors" do
       user = create(:user)
       board = create(:board, authors_locked: true)
-      reply_post = create(:post, user: board.creator, board: board)
+      reply_post = create(:post, user: board.creator, continuity: board)
       expect(reply_post.user.id).not_to eq(user.id)
       login_as(user)
 

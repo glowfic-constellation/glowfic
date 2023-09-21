@@ -74,10 +74,10 @@ RSpec.describe ReportsController do
       today = DateTime.now.utc.beginning_of_day
       board1 = create(:board, name: 'cc')
       board2 = create(:board, name: 'dd')
-      post1 = Timecop.freeze(today) { create(:post, board: board1) }
-      post2 = Timecop.freeze(today + 2.hours) { create(:post, board: board1) }
-      post3 = Timecop.freeze(today) { create(:post, board: board2) }
-      post4 = Timecop.freeze(today + 1.hour) { create(:post, board: board2) }
+      post1 = Timecop.freeze(today) { create(:post, continuity: board1) }
+      post2 = Timecop.freeze(today + 2.hours) { create(:post, continuity: board1) }
+      post3 = Timecop.freeze(today) { create(:post, continuity: board2) }
+      post4 = Timecop.freeze(today + 1.hour) { create(:post, continuity: board2) }
       user = create(:user, timezone: 'UTC')
       login_as(user)
       get :show, params: { id: 'daily', day: today.to_date.to_s, sort: 'continuity' }

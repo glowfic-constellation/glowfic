@@ -23,8 +23,8 @@ RSpec.describe FavoritesController do
       let (:user_post) { create(:post, user: user) }
       let (:post) { create(:post) }
       let (:board) { create(:board, creator: user) }
-      let (:board_post) { create(:post, board: board) }
-      let (:board_user_post) { create(:post, board: board, user: user) }
+      let (:board_post) { create(:post, continuity: board) }
+      let (:board_user_post) { create(:post, continuity: board, user: user) }
 
       before(:each) do
         user_post

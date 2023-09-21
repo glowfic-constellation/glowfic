@@ -96,7 +96,7 @@ RSpec.describe BoardSectionsController do
 
   describe "GET show" do
     let(:board) { create(:board) }
-    let(:section) { create(:board_section, board: board) }
+    let(:section) { create(:board_section, continuity: board) }
 
     it "requires valid section" do
       get :show, params: { id: -1 }
@@ -105,9 +105,9 @@ RSpec.describe BoardSectionsController do
     end
 
     it "does not require login" do
-      posts = create_list(:post, 2, board: board, section: section)
+      posts = create_list(:post, 2, continuity: board, section: section)
       create(:post)
-      create(:post, board: board)
+      create(:post, continuity: board)
       get :show, params: { id: section.id }
       expect(response).to have_http_status(200)
       expect(assigns(:page_title)).to eq(section.name)
@@ -127,11 +127,11 @@ RSpec.describe BoardSectionsController do
     end
 
     it "orders posts correctly" do
-      post5 = create(:post, board: board, section: section)
-      post1 = create(:post, board: board, section: section)
-      post4 = create(:post, board: board, section: section)
-      post3 = create(:post, board: board, section: section)
-      post2 = create(:post, board: board, section: section)
+      post5 = create(:post, continuity: board, section: section)
+      post1 = create(:post, continuity: board, section: section)
+      post4 = create(:post, continuity: board, section: section)
+      post3 = create(:post, continuity: board, section: section)
+      post2 = create(:post, continuity: board, section: section)
       post1.update!(section_order: 1)
       post2.update!(section_order: 2)
       post3.update!(section_order: 3)
@@ -146,8 +146,8 @@ RSpec.describe BoardSectionsController do
     it "calculates OpenGraph data" do
       user = create(:user, username: 'John Doe')
       board = create(:board, name: 'board', creator: user, writers: [create(:user, username: 'Jane Doe')])
-      section = create(:board_section, name: 'section', board: board, description: "test description")
-      create(:post, subject: 'title', user: user, board: board, section: section)
+      section = create(:board_section, name: 'section', continuity: board, description: "test description")
+      create(:post, subject: 'title', user: user, continuity: board, section: section)
       get :show, params: { id: section.id }
 
       meta_og = assigns(:meta_og)
@@ -189,7 +189,7 @@ RSpec.describe BoardSectionsController do
 
     it "works" do
       section = create(:board_section)
-      login_as(section.board.creator)
+      login_as(section.continuity.creator)
       get :edit, params: { id: section.id }
       expect(response).to have_http_status(200)
       expect(assigns(:page_title)).to eq("Edit #{section.name}")
@@ -215,7 +215,7 @@ RSpec.describe BoardSectionsController do
       user = create(:user)
       login_as(user)
       board_section = create(:board_section)
-      expect(board_section.board).not_to be_editable_by(user)
+      expect(board_section.continuity).not_to be_editable_by(user)
 
       put :update, params: { id: board_section.id }
       expect(response).to redirect_to(continuities_url)
@@ -224,7 +224,7 @@ RSpec.describe BoardSectionsController do
 
     it "requires valid params" do
       board_section = create(:board_section)
-      login_as(board_section.board.creator)
+      login_as(board_section.continuity.creator)
       put :update, params: { id: board_section.id, board_section: { name: '' } }
       expect(response).to have_http_status(200)
       expect(response).to render_template(:edit)
@@ -233,7 +233,7 @@ RSpec.describe BoardSectionsController do
 
     it "succeeds" do
       board_section = create(:board_section, name: 'TestSection1')
-      login_as(board_section.board.creator)
+      login_as(board_section.continuity.creator)
       section_name = 'TestSection2'
       put :update, params: { id: board_section.id, board_section: { name: section_name } }
       expect(response).to redirect_to(board_section_path(board_section))
@@ -273,23 +273,22 @@ RSpec.describe BoardSectionsController do
 
     it "works" do
       section = create(:board_section)
-      login_as(section.board.creator)
+      login_as(section.continuity.creator)
       delete :destroy, params: { id: section.id }
-      expect(response).to redirect_to(edit_continuity_url(section.board))
+      expect(response).to redirect_to(edit_continuity_url(section.continuity))
       expect(flash[:success]).to eq("Section deleted.")
       expect(BoardSection.find_by_id(section.id)).to be_nil
     end
 
     it "handles destroy failure" do
       section = create(:board_section)
-      post = create(:post, user: section.board.creator, board: section.board, section: section)
-      login_as(section.board.creator)
+      post = create(:post, user: section.continuity.creator, continuity: section.continuity, section: section)
+      login_as(section.continuity.creator)
 
       allow(BoardSection).to receive(:find_by).and_call_original
       allow(BoardSection).to receive(:find_by).with(id: section.id.to_s).and_return(section)
       allow(section).to receive(:destroy!).and_raise(ActiveRecord::RecordNotDestroyed, 'fake error')
       expect(section).to receive(:destroy!)
-
       delete :destroy, params: { id: section.id }
 
       expect(response).to redirect_to(board_section_url(section))

@@ -35,7 +35,7 @@ RSpec.describe PostsController, 'GET search' do
 
     it "filters by continuity" do
       post = create(:post)
-      post2 = create(:post, board: post.board)
+      post2 = create(:post, continuity: post.continuity)
       create(:post)
       get :search, params: { commit: true, board_id: post.board_id }
       expect(assigns(:search_results)).to match_array([post, post2])
@@ -127,7 +127,7 @@ RSpec.describe PostsController, 'GET search' do
     it "filters by completed" do
       create(:post)
       post = create(:post, status: :complete)
-      get :search, params: { commit: true, completed: true }
+      get :search, params: { commit: true, completed: '1' }
       expect(assigns(:search_results)).to match_array(post)
     end
 

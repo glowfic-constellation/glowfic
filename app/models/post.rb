@@ -8,7 +8,7 @@ class Post < ApplicationRecord
   include Viewable
   include Writable
 
-  belongs_to :board, inverse_of: :posts, optional: false
+  belongs_to :continuity, class_name: 'Board', foreign_key: :board_id, inverse_of: :posts, optional: false
   belongs_to :section, class_name: 'BoardSection', inverse_of: :posts, optional: true
   belongs_to :last_user, class_name: 'User', inverse_of: false, optional: false
   belongs_to :last_reply, class_name: 'Reply', inverse_of: false, optional: true
@@ -143,7 +143,7 @@ class Post < ApplicationRecord
 
   def first_unread_for(user)
     return @first_unread if @first_unread
-    viewed_at = last_read(user) || board.last_read(user)
+    viewed_at = last_read(user) || continuity.last_read(user)
     return @first_unread = self unless viewed_at
     return unless replies.exists?
     reply = replies.where('created_at > ?', viewed_at).ordered.first
@@ -153,7 +153,7 @@ class Post < ApplicationRecord
   def last_seen_reply_for(user)
     return @last_seen if @last_seen
     return unless replies.exists? # unlike first_unread_for we don't care about the post
-    viewed_at = last_read(user) || board.last_read(user)
+    viewed_at = last_read(user) || continuity.last_read(user)
     return unless viewed_at
     reply = replies.where('created_at <= ?', viewed_at).ordered.last
     @last_seen = reply
@@ -216,7 +216,7 @@ class Post < ApplicationRecord
   def taggable_by?(user)
     return false unless user
     return false if complete? || abandoned?
-    return false unless user.writes_in?(board)
+    return false unless user.writes_in?(continuity)
     return false if user.read_only?
     return true unless authors_locked?
     author_ids.include?(user.id)
@@ -280,22 +280,22 @@ class Post < ApplicationRecord
   private
 
   def adjacent_posts_for(user)
-    return unless board.ordered?
-    return unless section || board.board_sections.empty?
+    return unless continuity.ordered?
+    return unless section || continuity.board_sections.empty?
     yield Post.where(board_id: self.board_id, section_id: self.section_id).visible_to(user).ordered_in_section
   end
 
   def valid_board
     return unless board_id.present?
     return unless new_record? || board_id_changed?
-    return if board.open_to?(user)
-    errors.add(:board, "is invalid – you must be able to write in it")
+    return if continuity.open_to?(user)
+    errors.add(:continuity, "is invalid – you must be able to write in it")
   end
 
   def valid_board_section
     return unless section.present?
     return if section.board_id == board_id
-    errors.add(:section, "must be in the post's board")
+    errors.add(:section, "must be in the post's continuity")
   end
 
   def set_last_user

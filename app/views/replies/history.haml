@@ -1,7 +1,7 @@
 - content_for :breadcrumbs do
   = link_to "Continuities", continuities_path
   &raquo;
-  = link_to @reply.post.board.name, continuity_path(@reply.post.board)
+  = link_to @reply.post.continuity.name, continuity_path(@reply.post.continuity)
   &raquo;
   = link_to @reply.post.subject, post_path(@reply.post)
   &raquo;

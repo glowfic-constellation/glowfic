@@ -41,8 +41,8 @@ RSpec.describe Api::V1::BoardsController do
 
     it "succeeds with valid board" do
       board = create(:board)
-      section1 = create(:board_section, board: board)
-      section2 = create(:board_section, board: board)
+      section1 = create(:board_section, continuity: board)
+      section2 = create(:board_section, continuity: board)
       get :show, params: { id: board.id }
       expect(response).to have_http_status(200)
       expect(response.json['id']).to eq(board.id)
@@ -54,8 +54,8 @@ RSpec.describe Api::V1::BoardsController do
     it "succeeds for logged in users with valid board" do
       api_login
       board = create(:board)
-      section1 = create(:board_section, board: board)
-      section2 = create(:board_section, board: board)
+      section1 = create(:board_section, continuity: board)
+      section2 = create(:board_section, continuity: board)
       get :show, params: { id: board.id }
       expect(response).to have_http_status(200)
       expect(response.json['id']).to eq(board.id)
@@ -66,8 +66,8 @@ RSpec.describe Api::V1::BoardsController do
 
     it "orders sections by section_order", :show_in_doc do
       board = create(:board)
-      section1 = create(:board_section, board: board)
-      section2 = create(:board_section, board: board)
+      section1 = create(:board_section, continuity: board)
+      section2 = create(:board_section, continuity: board)
       section1.section_order = 1
       section1.save!
       section2.section_order = 0
@@ -93,7 +93,7 @@ RSpec.describe Api::V1::BoardsController do
 
     it 'filters non-public posts' do
       public_post = create(:post, privacy: :public)
-      create(:post, privacy: :private, board: public_post.board)
+      create(:post, privacy: :private, continuity: public_post.continuity)
       get :posts, params: { id: public_post.board_id }
       expect(response).to have_http_status(200)
       expect(response.json['results'].size).to eq(1)
@@ -103,27 +103,27 @@ RSpec.describe Api::V1::BoardsController do
     it 'returns only the correct posts', show_in_doc: true do
       board = create(:board)
       user_post = Timecop.freeze(DateTime.new(2019, 1, 2, 3, 4, 5).utc) do
-        create(:post, board: board, section: create(:board_section, board: board))
+        create(:post, continuity: board, section: create(:board_section, continuity: board))
       end
-      create(:post, board: create(:board))
+      create(:post, continuity: create(:board))
       get :posts, params: { id: board.id }
       expect(response).to have_http_status(200)
       expect(response.json['results'].size).to eq(1)
       expect(response.json['results'][0]['id']).to eq(user_post.id)
-      expect(response.json['results'][0]['board']['id']).to eq(user_post.board_id)
+      expect(response.json['results'][0]['continuity']['id']).to eq(user_post.board_id)
       expect(response.json['results'][0]['section']['id']).to eq(user_post.section_id)
     end
 
     it 'paginates results' do
       board = create(:board)
-      create_list(:post, 26, board: board)
+      create_list(:post, 26, continuity: board)
       get :posts, params: { id: board.id }
       expect(response.json['results'].size).to eq(25)
     end
 
     it 'paginates results on additional pages' do
       board = create(:board)
-      create_list(:post, 27, board: board)
+      create_list(:post, 27, continuity: board)
       get :posts, params: { id: board.id, page: 2 }
       expect(response.json['results'].size).to eq(2)
     end

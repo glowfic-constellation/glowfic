@@ -26,7 +26,7 @@ FactoryBot.define do
     end
   end
 
-  factory :board do
+  factory :board, aliases: [:continuity] do
     creator
     authors_locked { writer_ids.present? || writers.present? }
     sequence :name do |n|
@@ -38,7 +38,7 @@ FactoryBot.define do
     sequence :name do |n|
       "TestSection#{n}"
     end
-    board
+    continuity
   end
 
   factory :post do
@@ -48,7 +48,7 @@ FactoryBot.define do
       num_replies { 0 }
     end
     user
-    board
+    continuity
     description { "" }
     content { "test content" }
     sequence :subject do |n|
@@ -210,7 +210,7 @@ FactoryBot.define do
 
   factory :board_view do
     user
-    board
+    continuity
   end
 
   factory :post_author, class: 'Post::Author' do

@@ -125,7 +125,7 @@ class ApplicationController < ActionController::Base
 
     relation
       .select(select)
-      .joins(:board)
+      .joins(:continuity)
       .joins(:last_user)
       .includes(:authors)
       .with_has_content_warnings

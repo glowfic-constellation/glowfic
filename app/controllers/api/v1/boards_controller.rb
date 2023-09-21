@@ -37,7 +37,7 @@ class Api::V1::BoardsController < Api::ApiController
     end
 
     queryset = Post.privacy_public.where(board_id: board.id).with_reply_count.select('posts.*')
-    posts = paginate queryset.includes(:board, :joined_authors, :section), per_page: 25
+    posts = paginate queryset.includes(:continuity, :joined_authors, :section), per_page: 25
     render json: { results: posts }
   end
 end

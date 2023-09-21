@@ -4,8 +4,8 @@ RSpec.feature "Favorites page", type: :feature do
     create(:post, user: user, subject: "user post") # user_post
     post = create(:post, subject: "postt")
     board = create(:board, creator: user, name: "boardt")
-    create(:post, board: board, subject: "board post") # board_post
-    create(:post, board: board, user: user, subject: "board user post") # board_user_post
+    create(:post, continuity: board, subject: "board post") # board_post
+    create(:post, continuity: board, user: user, subject: "board user post") # board_user_post
 
     logged_in_user = login
     create(:favorite, user: logged_in_user, favorite: user)

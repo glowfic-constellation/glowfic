@@ -254,25 +254,25 @@ RSpec.describe BoardsController do
     end
 
     it "only fetches the board's first 25 posts" do
-      create_list(:post, 26, board: board)
+      create_list(:post, 26, continuity: board)
       get :show, params: { id: board.id }
       expect(assigns(:posts).size).to eq(25)
     end
 
     it "orders the posts by tagged_at in unordered boards" do
-      Array.new(3) { create(:post, board: board, tagged_at: Time.zone.now + rand(5..30).hours) }
+      Array.new(3) { create(:post, continuity: board, tagged_at: Time.zone.now + rand(5..30).hours) }
       get :show, params: { id: board.id }
       expect(assigns(:posts)).to eq(assigns(:posts).sort_by(&:tagged_at).reverse)
     end
 
     it "orders the posts correctly in ordered boards" do
-      section2 = create(:board_section, board: board)
-      section1 = create(:board_section, board: board)
+      section2 = create(:board_section, continuity: board)
+      section1 = create(:board_section, continuity: board)
       section1.update!(section_order: 0)
       section2.update!(section_order: 1)
-      post1, post2, post3 = create_list(:post, 3, board: board, section: section1)
-      post4, post5, post6 = create_list(:post, 3, board: board, section: section2)
-      post7, post8, post9 = create_list(:post, 3, board: board)
+      post1, post2, post3 = create_list(:post, 3, continuity: board, section: section1)
+      post4, post5, post6 = create_list(:post, 3, continuity: board, section: section2)
+      post7, post8, post9 = create_list(:post, 3, continuity: board)
       board.posts.each do |post|
         # skip callbacks so we truly override tagged_at
         post.update_columns(tagged_at: Time.zone.now + rand(5..30).hours) # rubocop:disable Rails/SkipsModelValidations
@@ -295,7 +295,7 @@ RSpec.describe BoardsController do
     it "calculates OpenGraph meta" do
       user = create(:user, username: 'John Doe')
       board = create(:board, name: 'board', creator: user, writers: [create(:user, username: 'Jane Doe')], description: 'sample board')
-      create(:post, subject: 'title', user: user, board: board)
+      create(:post, subject: 'title', user: user, continuity: board)
       get :show, params: { id: board.id }
 
       meta_og = assigns(:meta_og)
@@ -344,8 +344,11 @@ RSpec.describe BoardsController do
     it "sets expected variables" do
       coauthor = create(:user)
       board = create(:board, writers: [coauthor])
-      sections = [create(:board_section, board: board), create(:board_section, board: board)]
-      posts = [create(:post, board: board, user: board.creator, tagged_at: 5.minutes.from_now), create(:post, user: coauthor, board: board)]
+      sections = [create(:board_section, continuity: board), create(:board_section, continuity: board)]
+      posts = [
+        create(:post, continuity: board, user: board.creator, tagged_at: 5.minutes.from_now),
+        create(:post, user: coauthor, continuity: board),
+      ]
       sections[0].update!(section_order: 1)
       sections[1].update!(section_order: 0)
       login_as(board.creator)
@@ -460,8 +463,8 @@ RSpec.describe BoardsController do
     it "moves posts to sandboxes" do
       board = create(:board)
       create(:board, id: Board::ID_SANDBOX)
-      section = create(:board_section, board: board)
-      post = create(:post, board: board, section: section)
+      section = create(:board_section, continuity: board)
+      post = create(:post, continuity: board, section: section)
       login_as(board.creator)
       perform_enqueued_jobs(only: UpdateModelJob) do
         delete :destroy, params: { id: board.id }
@@ -476,7 +479,7 @@ RSpec.describe BoardsController do
 
     it "handles destroy failure" do
       board = create(:board)
-      post = create(:post, user: board.creator, board: board)
+      post = create(:post, user: board.creator, continuity: board)
       login_as(board.creator)
 
       allow(Board).to receive(:find_by).and_call_original
@@ -488,7 +491,7 @@ RSpec.describe BoardsController do
 
       expect(response).to redirect_to(continuity_url(board))
       expect(flash[:error]).to eq({ message: "Continuity could not be deleted.", array: [] })
-      expect(post.reload.board).to eq(board)
+      expect(post.reload.continuity).to eq(board)
     end
   end
 
@@ -543,9 +546,9 @@ RSpec.describe BoardsController do
     it "marks extant post views read" do
       now = Time.zone.now
       user = create(:user)
-      read_post = create(:post, user: user, board: board)
+      read_post = create(:post, user: user, continuity: board)
       read_post.mark_read(user, at_time: now - 1.day, force: true)
-      unread_post = create(:post, user: user, board: board)
+      unread_post = create(:post, user: user, continuity: board)
       unread_post.mark_read(create(:user), at_time: now - 1.day, force: true)
 
       expect(Board.find(board.id).last_read(user)).to be_nil # reload to reset cached @view

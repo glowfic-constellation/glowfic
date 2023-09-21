@@ -2,7 +2,7 @@
   %th.sub Continuity
   %td.odd
     - if @board_section.posts.present?
-      = @board_section.board.name
+      = @board_section.continuity.name
     - else
       = f.select :board_id, options_from_collection_for_select(allowed_boards(@board_section, current_user), :id, :name, @board_section.board_id), {}, class: 'chosen-select'
 %tr

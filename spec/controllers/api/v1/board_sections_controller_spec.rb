@@ -8,8 +8,8 @@ RSpec.describe Api::V1::BoardSectionsController do
 
     it "requires a board you have access to" do
       board = create(:board)
-      board_section1 = create(:board_section, board_id: board.id)
-      board_section2 = create(:board_section, board_id: board.id)
+      board_section1 = create(:board_section, continuity: board)
+      board_section2 = create(:board_section, continuity: board)
       expect(board_section1.reload.section_order).to eq(0)
       expect(board_section2.reload.section_order).to eq(1)
 
@@ -26,9 +26,9 @@ RSpec.describe Api::V1::BoardSectionsController do
       user = create(:user)
       board1 = create(:board, creator: user)
       board2 = create(:board, creator: user)
-      board_section1 = create(:board_section, board_id: board1.id)
-      board_section2 = create(:board_section, board_id: board2.id)
-      board_section3 = create(:board_section, board_id: board2.id)
+      board_section1 = create(:board_section, continuity: board1)
+      board_section2 = create(:board_section, continuity: board2)
+      board_section3 = create(:board_section, continuity: board2)
 
       expect(board_section1.reload.section_order).to eq(0)
       expect(board_section2.reload.section_order).to eq(0)
@@ -46,8 +46,8 @@ RSpec.describe Api::V1::BoardSectionsController do
 
     it "requires valid section ids" do
       board = create(:board)
-      board_section1 = create(:board_section, board_id: board.id)
-      board_section2 = create(:board_section, board_id: board.id)
+      board_section1 = create(:board_section, continuity: board)
+      board_section2 = create(:board_section, continuity: board)
       expect(board_section1.reload.section_order).to eq(0)
       expect(board_section2.reload.section_order).to eq(1)
       section_ids = [-1]
@@ -63,11 +63,11 @@ RSpec.describe Api::V1::BoardSectionsController do
     it "works for valid changes", :show_in_doc do
       board = create(:board)
       board2 = create(:board, creator: board.creator)
-      board_section1 = create(:board_section, board_id: board.id)
-      board_section2 = create(:board_section, board_id: board.id)
-      board_section3 = create(:board_section, board_id: board.id)
-      board_section4 = create(:board_section, board_id: board.id)
-      board_section5 = create(:board_section, board_id: board2.id)
+      board_section1 = create(:board_section, continuity: board)
+      board_section2 = create(:board_section, continuity: board)
+      board_section3 = create(:board_section, continuity: board)
+      board_section4 = create(:board_section, continuity: board)
+      board_section5 = create(:board_section, continuity: board2)
 
       expect(board_section1.reload.section_order).to eq(0)
       expect(board_section2.reload.section_order).to eq(1)
@@ -91,11 +91,11 @@ RSpec.describe Api::V1::BoardSectionsController do
     it "works when specifying valid subset", :show_in_doc do
       board = create(:board)
       board2 = create(:board, creator: board.creator)
-      board_section1 = create(:board_section, board_id: board.id)
-      board_section2 = create(:board_section, board_id: board.id)
-      board_section3 = create(:board_section, board_id: board.id)
-      board_section4 = create(:board_section, board_id: board.id)
-      board_section5 = create(:board_section, board_id: board2.id)
+      board_section1 = create(:board_section, continuity: board)
+      board_section2 = create(:board_section, continuity: board)
+      board_section3 = create(:board_section, continuity: board)
+      board_section4 = create(:board_section, continuity: board)
+      board_section5 = create(:board_section, continuity: board2)
 
       expect(board_section1.reload.section_order).to eq(0)
       expect(board_section2.reload.section_order).to eq(1)

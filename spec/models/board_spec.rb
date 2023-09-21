@@ -86,14 +86,14 @@ RSpec.describe Board do
 
   it "should be fixable via admin method" do
     board = create(:board)
-    post = create(:post, board: board)
-    create(:post, board: board) # post2
-    create(:post, board: board) # post3
-    create(:post, board: board) # post4
+    post = create(:post, continuity: board)
+    create(:post, continuity: board) # post2
+    create(:post, continuity: board) # post3
+    create(:post, continuity: board) # post4
     post.update_columns(section_order: 2) # rubocop:disable Rails/SkipsModelValidations
-    section = create(:board_section, board: board)
-    create(:board_section, board: board) # section2
-    create(:board_section, board: board) # section3
+    section = create(:board_section, continuity: board)
+    create(:board_section, continuity: board) # section2
+    create(:board_section, continuity: board) # section3
     section.update_columns(section_order: 6) # rubocop:disable Rails/SkipsModelValidations
     expect(board.posts.ordered_in_section.pluck(:section_order)).to eq([1, 2, 2, 3])
     expect(board.board_sections.ordered.pluck(:section_order)).to eq([1, 2, 6])
@@ -116,7 +116,7 @@ RSpec.describe Board do
 
     it "should be ordered if board has sections" do
       board = create(:board)
-      create(:board_section, board: board)
+      create(:board_section, continuity: board)
       expect(board.ordered?).to eq(true)
     end
   end
@@ -124,13 +124,13 @@ RSpec.describe Board do
   it "deletes sections but moves posts to sandboxes" do
     board = create(:board)
     create(:board, id: Board::ID_SANDBOX)
-    section = create(:board_section, board: board)
-    post = create(:post, board: board, section: section)
+    section = create(:board_section, continuity: board)
+    post = create(:post, continuity: board, section: section)
     perform_enqueued_jobs(only: UpdateModelJob) do
       Audited.audit_class.as_user(board.creator) { board.destroy! }
     end
     post.reload
-    expect(post.board_id).to eq(3)
+    expect(post.board_id).to eq(Board::ID_SANDBOX)
     expect(post.section).to be_nil
     expect(BoardSection.find_by_id(section.id)).to be_nil
   end

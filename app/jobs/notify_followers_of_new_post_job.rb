@@ -15,13 +15,13 @@ class NotifyFollowersOfNewPostJob < ApplicationJob
   end
 
   def notify_of_post_creation(post, post_user)
-    favorites = Favorite.where(favorite: post_user).or(Favorite.where(favorite: post.board))
+    favorites = Favorite.where(favorite: post_user).or(Favorite.where(favorite: post.continuity))
     user_ids = favorites.select(:user_id).distinct.pluck(:user_id)
     users = filter_users(post, user_ids)
 
     return if users.empty?
 
-    message = "#{post_user.username} has just posted a new post entitled #{post.subject} in the #{post.board.name} continuity"
+    message = "#{post_user.username} has just posted a new post entitled #{post.subject} in the #{post.continuity.name} continuity"
     other_authors = post.authors.where.not(id: post_user.id)
     message += " with #{other_authors.pluck(:username).join(', ')}" if other_authors.exists?
     message += ". #{ScrapePostJob.view_post(post.id)}"

@@ -23,7 +23,7 @@ module Orderable
 
       if has_attribute?(:board_id) # all indexes are ordered
         board_checking_id = is_after ? board_id_before_last_save : board_id_was
-        board_checking = Board.find_by_id(board_checking_id) || board
+        board_checking = Board.find_by_id(board_checking_id) || continuity
         return unless board_checking.ordered?
       end
 

@@ -49,14 +49,14 @@ module Owable
     end
 
     def update_board_cameos
-      return unless board.authors_locked?
+      return unless continuity.authors_locked?
 
       # adjust for the fact that the associations are managed separately
       all_authors = authors + unjoined_authors + joined_authors + tagging_authors
       # check board authors rather than authors to avoid issues with weird association caching
-      new_cameos = all_authors.uniq.map(&:id) - board.board_authors.map(&:user_id)
+      new_cameos = all_authors.uniq.map(&:id) - continuity.board_authors.map(&:user_id)
       return if new_cameos.empty?
-      new_cameos.each { |author| board.board_authors.create!(user_id: author, cameo: true) }
+      new_cameos.each { |author| continuity.board_authors.create!(user_id: author, cameo: true) }
     end
   end
 end

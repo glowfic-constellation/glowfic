@@ -9,7 +9,7 @@ class Post::View < ApplicationRecord
   private
 
   def mark_favorite_read
-    favorited_continuity = user.favorites.where(favorite: post.board).exists?
+    favorited_continuity = user.favorites.where(favorite: post.continuity).exists?
     favorited_users = user.favorites.where(favorite: post.joined_authors).exists?
     return unless favorited_continuity || favorited_users
 

@@ -142,8 +142,7 @@ RSpec.describe PostsController, 'GET owed' do
     it "does not show posts from site_testing" do
       site_test = create(:board, id: Board::ID_SITETESTING)
 
-      post.board = site_test
-      post.save!
+      post.update!(continuity: site_test)
       create(:reply, post_id: post.id, user_id: other_user.id)
 
       get :owed

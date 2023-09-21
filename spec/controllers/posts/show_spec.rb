@@ -17,7 +17,7 @@ RSpec.describe PostsController, 'GET show' do
   it "calculates OpenGraph meta" do
     user = create(:user, username: 'example user')
     board = create(:board, name: 'board')
-    post = create(:post, subject: 'title', user: user, board: board)
+    post = create(:post, subject: 'title', user: user, continuity: board)
     get :show, params: { id: post.id }
 
     meta_og = assigns(:meta_og)

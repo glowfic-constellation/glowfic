@@ -120,7 +120,7 @@ class BoardsController < ApplicationController
       Board.transaction do
         board.mark_read(current_user)
         read_time = board.last_read(current_user)
-        post_views = Post::View.joins(post: :board).where(user: current_user, boards: { id: board.id })
+        post_views = Post::View.joins(post: :continuity).where(user: current_user, boards: { id: board.id })
         post_views.update_all(read_at: read_time, updated_at: read_time) # rubocop:disable Rails/SkipsModelValidations
       end
       flash[:success] = "#{board.name} marked as read."
