@@ -471,7 +471,7 @@ RSpec.describe UsersController do
       login
       put :upgrade, params: { id: user.id }
       expect(response).to redirect_to(continuities_url)
-      expect(flash[:error]).to eq("You do not have permission to edit that user.")
+      expect(flash[:error]).to eq("You do not have permission to modify this account.")
     end
 
     it "requires reader account" do
