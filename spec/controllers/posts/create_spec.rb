@@ -554,8 +554,6 @@ RSpec.describe PostsController, 'POST create' do
   end
 
   it "regenerates visible_posts" do
-    user = create(:user)
-    coauthor = create(:user)
     viewer = create(:user)
     circle_viewers = User.where(id: create_list(:user, 3).map(&:id))
     unrelated = create(:user)
@@ -580,7 +578,7 @@ RSpec.describe PostsController, 'POST create' do
       },
     }
 
-    expect(flash[:success]).to eq('You have successfully posted.')
+    expect(flash[:success]).to eq('Post created.')
     post = assigns(:post).reload
     expect(post.viewers).to match_array([viewer, coauthor])
     expect(post.access_circles).to eq([circle])

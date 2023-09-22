@@ -921,8 +921,6 @@ RSpec.describe PostsController, 'PUT update' do
     end
 
     it "regenerates visible_posts" do
-      user = create(:user)
-      coauthor = create(:user)
       old_viewer = create(:user)
       new_viewer = create(:user)
       still_viewer = create(:user)
@@ -972,7 +970,7 @@ RSpec.describe PostsController, 'PUT update' do
         },
       }
 
-      expect(flash[:success]).to eq('Your post has been updated.')
+      expect(flash[:success]).to eq('Post updated.')
       post.reload
       expect(post.viewers).to match_array([new_viewer, still_viewer, coauthor])
       expect(post.access_circles).to match_array([circle2, circle3])
