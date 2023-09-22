@@ -504,7 +504,7 @@ RSpec.describe RepliesController, 'POST create' do
       reply: {
         post_id: reply_post.id,
         content: 'test',
-        editor_mdoe: 'html',
+        editor_mode: 'html',
       },
     }
 
