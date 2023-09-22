@@ -39,10 +39,10 @@ Layout/CaseIndentation:
 Layout/CommentIndentation:
   Exclude: ['spec/spec_helper.rb']
 
-Layout/EmptyLineAfterMagicComment:
+Layout/EmptyLineAfterGuardClause:
   Enabled: false
 
-Layout/EmptyLineAfterGuardClause:
+Layout/EmptyLineAfterMagicComment:
   Enabled: false
 
 Layout/EmptyLinesAroundAttributeAccessor:
@@ -96,6 +96,10 @@ Layout/MultilineMethodCallBraceLayout:
 
 Layout/MultilineMethodCallIndentation:
   EnforcedStyle: 'indented'
+
+Layout/MultilineMethodParameterLineBreaks: # new in 1.32
+  Enabled: true
+  AllowMultilineFinalElement: true
 
 Layout/MultilineOperationIndentation:
   EnforcedStyle: aligned
@@ -158,8 +162,7 @@ Lint/EmptyInPattern: # new in 1.16
   Enabled: true
 
 Lint/IncompatibleIoSelectWithFiberScheduler: # new in 1.21
-  Enabled: false
-  # we don't use IO methods
+  Enabled: true
 
 Lint/LambdaWithoutLiteralBlock: # (new in 1.8)
   Enabled: true
@@ -169,8 +172,7 @@ Lint/MissingSuper:
     - 'app/services/daily_report.rb'
 
 Lint/NonAtomicFileOperation: # new in 1.31
-  Enabled: false
-  # we don't use IO methods
+  Enabled: true
 
 Lint/NoReturnInBeginEndBlocks: # (new in 1.2)
   Enabled: true
@@ -189,8 +191,7 @@ Lint/RedundantDirGlobSort: # (new in 1.8)
   Enabled: true
 
 Lint/RefinementImportMethods: # new in 1.27
-  Enabled: false
-  # for ruby 3.1
+  Enabled: true
 
 Lint/RequireRangeParentheses: # new in 1.32
   Enabled: true
@@ -234,11 +235,11 @@ Metrics/BlockNesting:
   Enabled: true
   Max: 4
 
-Metrics/CollectionLiteralLength: # new in 1.47
-  Enabled: true
-
 Metrics/ClassLength:
   Enabled: false
+
+Metrics/CollectionLiteralLength: # new in 1.47
+  Enabled: true
 
 Metrics/CyclomaticComplexity:
   Enabled: false
@@ -261,8 +262,7 @@ Naming/AccessorMethodName:
   Enabled: false
 
 Naming/BlockForwarding: # new in 1.24
-  Enabled: false
-  # for ruby 3.1
+  Enabled: true
 
 Naming/MemoizedInstanceVariableName:
   Enabled: false
@@ -326,13 +326,13 @@ Performance/SortReverse:
 Performance/Squeeze:
   Enabled: true
 
+Performance/StringIdentifierArgument: # new in 1.13
+  Enabled: true
+
 Performance/StringInclude:
   Enabled: true
 
 Performance/Sum:
-  Enabled: true
-
-Performance/StringIdentifierArgument: # new in 1.13
   Enabled: true
 
 ##################### Rails ##################################
@@ -379,10 +379,10 @@ Rails/Blank:
   Enabled: true
   UnlessPresent: false
 
-Rails/ContentTag:
+Rails/CompactBlank: # new in 2.13
   Enabled: true
 
-Rails/CompactBlank: # new in 2.13
+Rails/ContentTag:
   Enabled: true
 
 Rails/DeprecatedActiveModelErrorsMethods: # new in 2.14
@@ -425,9 +425,15 @@ Rails/FindById:
 Rails/FreezeTime: # new in 2.16
   Enabled: true
 
-Rails/IgnoredColumnsAssignment: # new in 2.17
+Rails/HasManyOrHasOneDependent:
+  Exclude:
+    - 'app/models/user.rb'
+
+Rails/HelperInstanceVariable:
   Enabled: false
-  # we don't use ignored_columns
+
+Rails/IgnoredColumnsAssignment: # new in 2.17
+  Enabled: true
 
 Rails/I18nLazyLookup: # new in 2.14
   Enabled: false
@@ -438,16 +444,8 @@ Rails/I18nLocaleTexts: # new in 2.14
 Rails/Inquiry:
   Enabled: true
 
-Rails/HasManyOrHasOneDependent:
-  Exclude:
-    - 'app/models/user.rb'
-
-Rails/HelperInstanceVariable:
-  Enabled: false
-
 Rails/I18nLocaleAssignment: # new in 2.11
-  Enabled: false
-  # we don't use i18n
+  Enabled: true
 
 Rails/MailerName:
   Enabled: true
@@ -490,12 +488,14 @@ Rails/RenderInline:
 Rails/RenderPlainText:
   Enabled: true
 
+Rails/ResponseParsedBody: # new in 2.18
+  Enabled: true
+
 Rails/RootJoinChain: # new in 2.13
   Enabled: true
 
 Rails/RootPathnameMethods: # new in 2.16
-  Enabled: false
-  # we don't use IO methods
+  Enabled: true
 
 Rails/RootPublicPath: # new in 2.15
   Enabled: true
@@ -525,6 +525,9 @@ Rails/ToFormattedS: # new in 2.15
 Rails/TopLevelHashWithIndifferentAccess: # new in 2.16
   Enabled: true
 
+Rails/ToSWithArgument: # new in 2.16
+  Enabled: true
+
 Rails/TransactionExitStatement: # new in 2.14
   Enabled: true
 
@@ -532,8 +535,7 @@ Rails/UniqueValidationWithoutIndex:
   Enabled: false
 
 Rails/UnusedIgnoredColumns: # new in 2.11
-  Enabled: false
-  # we don't use ignored_columns
+  Enabled: true
 
 Rails/WhereEquals:
   Enabled: true
@@ -544,25 +546,19 @@ Rails/WhereExists:
 Rails/WhereMissing: # new in 2.16
   Enabled: true
 
-Rails/WhereNotWithMultipleConditions: # new in 2.17
-  Enabled: true
-
 Rails/WhereNot:
   Enabled: true
 
-Rails/ResponseParsedBody: # new in 2.18
-  Enabled: true
-
-Rails/ToSWithArgument: # new in 2.16
+Rails/WhereNotWithMultipleConditions: # new in 2.17
   Enabled: true
 
 ################## RSpec #################################
 
-RSpec/BeEq: # new in 2.9.0
-  Enabled: false
-
 RSpec/BeEmpty: # new in 2.20
   Enabled: true
+
+RSpec/BeEq: # new in 2.9.0
+  Enabled: false
 
 RSpec/BeNil: # new in 2.9.0
   Enabled: true
@@ -574,7 +570,7 @@ RSpec/ClassCheck: # new in 2.13
   Enabled: true
 
 RSpec/ContainExactly: # new in 2.19
-  Enabled: true
+  Enabled: false
 
 RSpec/ContextWording:
   Enabled: false
@@ -613,9 +609,15 @@ RSpec/HookArgument:
 RSpec/IdenticalEqualityAssertion: # new in 2.4
   Enabled: true
 
+RSpec/IndexedLet: # new in 2.20
+  Enabled: false
+
 RSpec/LeakyConstantDeclaration:
   Exclude:
     - 'spec/lib/presentable_spec.rb'
+
+RSpec/MatchArray: # new in 2.19
+  Enabled: false
 
 RSpec/MessageSpies:
   EnforcedStyle: receive
@@ -626,11 +628,14 @@ RSpec/MultipleExpectations:
 RSpec/MultipleMemoizedHelpers:
   Enabled: false
 
+RSpec/NestedGroups:
+  Max: 5
+
 RSpec/NoExpectationExample: # new in 2.13
   Enabled: true
 
-RSpec/NestedGroups:
-  Max: 5
+RSpec/PendingWithoutReason: # new in 2.16
+  Enabled: true
 
 RSpec/RedundantAround: # new in 2.19
   Enabled: true
@@ -651,43 +656,28 @@ RSpec/SubjectDeclaration: # new in 2.5
 RSpec/VerifiedDoubleReference: # new in 2.10.0
   Enabled: true
 
-RSpec/IndexedLet: # new in 2.20
-  Enabled: false
-  # consider enabling
-
-RSpec/MatchArray: # new in 2.19
-  Enabled: false
-  # consider enabling
-
-RSpec/PendingWithoutReason: # new in 2.16
-  Enabled: false
-  # consider enabling
-
 ################## RSpec/Capybara ##############################
 
 RSpec/Capybara/FeatureMethods:
   EnabledMethods: [feature, scenario]
 
-Capybara/MatchStyle: # new in 2.17
+RSpec/Capybara/MatchStyle: # new in 2.17
   Enabled: true
 
-Capybara/NegationMatcher: # new in 2.14
-  Enabled: false
+RSpec/Capybara/NegationMatcher: # new in 2.14
+  Enabled: true
   EnforcedStyle: have_no
 
-Capybara/SpecificActions: # new in 2.14
+RSpec/Capybara/SpecificActions: # new in 2.14
   Enabled: true
 
-Capybara/SpecificFinders: # new in 2.13
-  Enabled: false
+RSpec/Capybara/SpecificFinders: # new in 2.13
+  Enabled: true
 
-Capybara/SpecificMatcher: # new in 2.12
+RSpec/Capybara/SpecificMatcher: # new in 2.12
   Enabled: true
 
 ################## RSpec/FactoryBot ############################
-
-FactoryBot/SyntaxMethods: # new in 2.7
-  Enabled: true
 
 FactoryBot/AssociationStyle: # new in 2.23
   Enabled: true
@@ -702,6 +692,9 @@ FactoryBot/FactoryNameStyle: # new in 2.16
   Enabled: true
 
 FactoryBot/RedundantFactoryOption: # new in 2.23
+  Enabled: true
+
+FactoryBot/SyntaxMethods: # new in 2.7
   Enabled: true
 
 ################## RSpec/Rails #################################
@@ -737,11 +730,10 @@ Security/IoMethods: # new in 1.22
 Style/AndOr:
   EnforcedStyle: 'conditionals'
 
-Style/ArrayIntersect: # new in 1.40
-  Enabled: false
-  # enable on 3.1
-
 Style/ArgumentsForwarding: # (new in 1.1)
+  Enabled: true
+
+Style/ArrayIntersect: # new in 1.40
   Enabled: true
 
 Style/AsciiComments:
@@ -765,22 +757,23 @@ Style/ClassEqualityComparison:
 Style/CollectionCompact: # (new in 1.2)
   Enabled: true
 
-Style/ConcatArrayLiterals: # new in 1.41
-  Enabled: true
-
 Style/CommentAnnotation:
   Enabled: false
+
+Style/ComparableClamp: # new in 1.44
+  Enabled: true
+
+Style/ConcatArrayLiterals: # new in 1.41
+  Enabled: true
 
 Style/ConditionalAssignment:
   Enabled: false
 
 Style/DataInheritance: # new in 1.49
-  Enabled: false
-  # we don't use Data.define
+  Enabled: true
 
 Style/DirEmpty: # new in 1.48
-  Enabled: false
-  # we don't use IO methods
+  Enabled: true
 
 Style/Documentation:
   Enabled: false
@@ -790,6 +783,9 @@ Style/DocumentDynamicEvalDefinition: # (new in 1.1)
 
 Style/DoubleNegation:
   Enabled: false
+
+Style/EmptyHeredoc: # new in 1.32
+  Enabled: true
 
 Style/EmptyMethod:
   Enabled: false
@@ -810,11 +806,10 @@ Style/ExponentialNotation:
   Enabled: false
   # we don't use exponents
 
-Style/FileEmpty: # new in 1.48
-  Enabled: false
-  # we don't use IO methods
-
 Style/FetchEnvVar: # new in 1.28
+  Enabled: true
+
+Style/FileEmpty: # new in 1.48
   Enabled: true
 
 Style/FileRead: # new in 1.24
@@ -829,11 +824,11 @@ Style/FormatStringToken:
 Style/FrozenStringLiteralComment:
   Enabled: false
 
-Style/GlobalVars:
-  AllowedVariables: ['$redis']
-
 Style/GlobalStdStream:
   Enabled: false
+
+Style/GlobalVars:
+  AllowedVariables: ['$redis']
 
 Style/HashAsLastArrayItem:
   Enabled: false
@@ -850,11 +845,33 @@ Style/IfWithBooleanLiteralBranches: # (new in 1.9)
 Style/InPatternThen: # new in 1.16
   Enabled: true
 
+Style/InvertibleUnlessCondition:  # new in 1.44
+  Enabled: true
+  InverseMethods:
+    :!=: :==
+    :>: :<=
+    :<=: :>
+    :<: :>=
+    :>=: :<
+    :!~: :=~
+    :zero?: :nonzero?
+    :nonzero?: :zero?
+    :any?: :none?
+    :none?: :any?
+    :even?: :odd?
+    :odd?: :even?
+    :blank?: :present?
+    :include?: :exclude?
+    :exclude?: :include?
+
 Style/KeywordParametersOrder:
   Enabled: false
 
 Style/Lambda:
   Enabled: false
+
+Style/MagicCommentFormat: # new in 1.35
+  Enabled: true
 
 Style/MapCompactWithConditionalBlock: # new in 1.30
   Enabled: true
@@ -863,11 +880,10 @@ Style/MapToHash: # new in 1.24
   Enabled: true
 
 Style/MapToSet: # new in 1.42
-  Enabled: false
-  # we don't use Sets
+  Enabled: true
 
 Style/MinMaxComparison: # new in 1.42
-  Enabled: false
+  Enabled: true
 
 Style/MixinUsage:
   Exclude: ['bin/*']
@@ -903,8 +919,7 @@ Style/ObjectThen: # new in 1.28
   Enabled: true
 
 Style/OpenStructUse: # new in 1.23
-  Enabled: false
-  # we don't use OpenStruct
+  Enabled: true
 
 Style/OperatorMethodCall: # new in 1.37
   Enabled: true
@@ -931,6 +946,9 @@ Style/RedundantArgument: # (new in 1.4)
 Style/RedundantBegin:
   Enabled: false
 
+Style/RedundantConstantBase: # new in 1.40
+  Enabled: true
+
 Style/RedundantDoubleSplatHashBraces: # new in 1.41
   Enabled: true
 
@@ -952,10 +970,10 @@ Style/RedundantLineContinuation: # new in 1.49
 Style/RedundantSelf:
   Enabled: false
 
-Style/RedundantStringEscape: # new in 1.37
+Style/RedundantSelfAssignmentBranch: # new in 1.19
   Enabled: true
 
-Style/RedundantSelfAssignmentBranch: # new in 1.19
+Style/RedundantStringEscape: # new in 1.37
   Enabled: true
 
 Style/RegexpLiteral:
@@ -997,38 +1015,7 @@ Style/TrailingCommaInHashLiteral:
   EnforcedStyleForMultiline: 'consistent_comma'
 
 Lint/UselessRuby2Keywords: # new in 1.23
-  Enabled: false
-  # we don't use ruby2_keywords
+  Enabled: true
 
 Style/WordArray:
   Enabled: false
-
-Style/ComparableClamp: # new in 1.44
-  Enabled: true
-
-Style/EmptyHeredoc: # new in 1.32
-  Enabled: true
-
-Style/InvertibleUnlessCondition:
-  Enabled: true
-  InverseMethods:
-    :!=: :==
-    :>: :<=
-    :<=: :>
-    :<: :>=
-    :>=: :<
-    :!~: :=~
-    :nonzero?: :zero?
-    :any?: :none?
-    :none?: :any?
-    :even?: :odd?
-    :odd?: :even?
-    :blank?: :present?
-    :include?: :exclude?
-    :exclude?: :include?
-
-Style/MagicCommentFormat: # new in 1.35
-  Enabled: true
-
-Style/RedundantConstantBase: # new in 1.40
-  Enabled: true
