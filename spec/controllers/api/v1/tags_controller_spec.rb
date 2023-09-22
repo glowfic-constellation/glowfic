@@ -84,7 +84,7 @@ RSpec.describe Api::V1::TagsController do
   end
 
   describe "GET show" do
-    it "should support getting gallery groups with gallery IDs", show_in_doc: true do
+    it "should support getting gallery groups with gallery IDs", :show_in_doc do
       user = create(:user)
       group = create(:gallery_group)
       galleries = create_list(:gallery, 2, user: user, gallery_groups: [group])
@@ -105,7 +105,7 @@ RSpec.describe Api::V1::TagsController do
       end
     end
 
-    it "should handle invalid tag", show_in_doc: true do
+    it "should handle invalid tag", :show_in_doc do
       get :show, params: { id: 99 }
       expect(response).to have_http_status(404)
       expect(response.json).to have_key('errors')

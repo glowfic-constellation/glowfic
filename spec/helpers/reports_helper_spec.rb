@@ -101,7 +101,7 @@ RSpec.describe ReportsHelper do
     end
 
     it "returns true if board ignored" do
-      assign(:opened_posts, [create(:post_view, user: user)]) # rubocop:disable FactoryBot/CreateList
+      assign(:opened_posts, [create(:post_view, user: user)])
       board_view.update!(ignored: true)
       expect(helper.ignored?(post)).to eq(true)
     end

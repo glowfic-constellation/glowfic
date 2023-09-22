@@ -536,7 +536,7 @@ RSpec.describe UsersController do
       create(:user, username: 'aba') # miduser
       create(:user, username: 'aab') # enduser
       create(:user, username: 'aaa') # notuser
-      User.all.each do |user|
+      User.find_each do |user|
         create(:user, username: user.username.upcase + 'c')
       end
       get :search, params: { commit: 'Search', username: 'b' }

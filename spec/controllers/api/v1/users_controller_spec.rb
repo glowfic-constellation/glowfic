@@ -5,7 +5,7 @@ RSpec.describe Api::V1::UsersController do
       create(:user, username: 'aba') # miduser
       create(:user, username: 'aab') # enduser
       create(:user, username: 'aaa') # notuser
-      User.all.each do |user|
+      User.find_each do |user|
         create(:user, username: user.username.upcase + 'c')
       end
     end
@@ -18,19 +18,19 @@ RSpec.describe Api::V1::UsersController do
       expect(response.json['results'].count).to eq(9)
     end
 
-    it "works logged out", show_in_doc: true do
+    it "works logged out", :show_in_doc do
       create_search_users
       get :index, params: { q: 'b' }
       expect(response).to have_http_status(200)
       expect(response.json['results'].count).to eq(2)
     end
 
-    it "raises error on invalid page", show_in_doc: true do
+    it "raises error on invalid page", :show_in_doc do
       get :index, params: { page: 'b' }
       expect(response).to have_http_status(422)
     end
 
-    it "supports exact match", show_in_doc: true do
+    it "supports exact match", :show_in_doc do
       create(:user, username: 'alicorn')
       create(:user, username: 'ali')
       get :index, params: { q: 'ali', match: 'exact' }
@@ -82,7 +82,7 @@ RSpec.describe Api::V1::UsersController do
   end
 
   describe 'GET posts' do
-    it 'requires a valid user', show_in_doc: true do
+    it 'requires a valid user', :show_in_doc do
       get :posts, params: { id: 0 }
       expect(response).to have_http_status(404)
       expect(response.json['errors'].size).to eq(1)
@@ -99,7 +99,7 @@ RSpec.describe Api::V1::UsersController do
       expect(response.json['results'][0]['id']).to eq(public_post.id)
     end
 
-    it 'returns only the correct posts', show_in_doc: true do
+    it 'returns only the correct posts', :show_in_doc do
       user = create(:user)
       board = create(:board)
       user_post = create(:post, user: user, board: board, section: create(:board_section, board: board))

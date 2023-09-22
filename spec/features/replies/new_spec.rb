@@ -72,7 +72,7 @@ RSpec.feature "Creating replies" do
     end
   end
 
-  skip "User interacts with javascript", js: true do
+  skip "User interacts with javascript", :js do
     post = create(:post)
 
     user = login
@@ -106,7 +106,7 @@ RSpec.feature "Creating replies" do
       page.find_by_id('html').click
 
       fill_in id: "reply_content", with: "test reply!"
-      click_on "Post"
+      click_button "Post"
     end
 
     expect(page).to have_no_selector('.error')

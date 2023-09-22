@@ -5,7 +5,7 @@ RSpec.describe Api::V1::BoardsController do
       create(:board, name: 'aba') # miduser
       create(:board, name: 'aab') # enduser
       create(:board, name: 'aaa') # notuser
-      Board.all.each do |board|
+      Board.find_each do |board|
         create(:board, name: board.name.upcase + 'c')
       end
     end
@@ -18,14 +18,14 @@ RSpec.describe Api::V1::BoardsController do
       expect(response.json['results'].count).to eq(8)
     end
 
-    it "works logged out", show_in_doc: true do
+    it "works logged out", :show_in_doc do
       create_search_boards
       get :index, params: { q: 'b' }
       expect(response).to have_http_status(200)
       expect(response.json['results'].count).to eq(2)
     end
 
-    it "raises error on invalid page", show_in_doc: true do
+    it "raises error on invalid page", :show_in_doc do
       get :index, params: { page: 'b' }
       expect(response).to have_http_status(422)
     end
@@ -84,7 +84,7 @@ RSpec.describe Api::V1::BoardsController do
   end
 
   describe 'GET posts' do
-    it 'requires a valid board', show_in_doc: true do
+    it 'requires a valid board', :show_in_doc do
       get :posts, params: { id: 0 }
       expect(response).to have_http_status(404)
       expect(response.json['errors'].size).to eq(1)
@@ -100,7 +100,7 @@ RSpec.describe Api::V1::BoardsController do
       expect(response.json['results'][0]['id']).to eq(public_post.id)
     end
 
-    it 'returns only the correct posts', show_in_doc: true do
+    it 'returns only the correct posts', :show_in_doc do
       board = create(:board)
       user_post = Timecop.freeze(DateTime.new(2019, 1, 2, 3, 4, 5).utc) do
         create(:post, board: board, section: create(:board_section, board: board))

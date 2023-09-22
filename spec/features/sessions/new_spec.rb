@@ -7,7 +7,7 @@ RSpec.feature "Logging in" do
     within('.form-table') do
       fill_in 'Username', with: 'Invalid user'
       fill_in 'Password', with: 'failed password'
-      click_on 'Sign In'
+      click_button 'Sign In'
     end
 
     expect(page).to have_selector('.flash.error', text: 'That username does not exist.')
@@ -18,7 +18,7 @@ RSpec.feature "Logging in" do
     within('.form-table') do
       fill_in 'Username', with: username
       fill_in 'Password', with: 'failed password'
-      click_on 'Sign In'
+      click_button 'Sign In'
     end
 
     expect(page).to have_selector('.flash.error', text: 'You have entered an incorrect password.')
@@ -36,7 +36,7 @@ RSpec.feature "Logging in" do
     within('.form-table') do
       fill_in 'Username', with: username
       fill_in 'Password', with: password
-      click_on 'Sign In'
+      click_button 'Sign In'
     end
 
     expect(page).to have_current_path(continuities_path)

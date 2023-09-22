@@ -53,7 +53,7 @@ module Orderable
     end
 
     def order_change?(is_after)
-      return if new_record? # otherwise we will reorder on create
+      return false if new_record? # otherwise we will reorder on create
       ordered_attributes.any? do |atr|
         is_after ? saved_change_to_attribute?(atr) : attribute_changed?(atr)
       end

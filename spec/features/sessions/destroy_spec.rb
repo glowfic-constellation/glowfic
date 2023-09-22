@@ -1,5 +1,5 @@
 RSpec.feature "Logging out" do
-  scenario "Log out while correctly logged in", js: true do
+  scenario "Log out while correctly logged in", :js do
     user = login
     expect(page).to have_selector('#user-info', text: user.username)
     click_button "Log out"

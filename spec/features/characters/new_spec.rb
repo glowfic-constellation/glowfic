@@ -1,5 +1,5 @@
 RSpec.feature "Creating a new character" do
-  scenario "Create an invalid character", js: true do
+  scenario "Create an invalid character", :js do
     # view new character form without being logged in
     visit new_character_path
     expect(page).to have_selector('.flash.error')
@@ -67,7 +67,7 @@ RSpec.feature "Creating a new character" do
     end
   end
 
-  scenario "Creating character with icon, description and extant template", js: true do
+  scenario "Creating character with icon, description and extant template", :js do
     user = login
     create_list(:icon, 2, user: user)
     icon = create(:icon, user: user, keyword: 'Example icon')

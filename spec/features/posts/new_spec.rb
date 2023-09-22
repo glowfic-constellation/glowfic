@@ -113,7 +113,7 @@ RSpec.feature "Creating posts" do
     end
   end
 
-  scenario "Continuity settings show up", js: true do
+  scenario "Continuity settings show up", :js do
     login
     create(:board)
     board = create(:board)

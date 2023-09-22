@@ -288,13 +288,13 @@ RSpec.describe BoardsController do
       post9.update!(section_order: 2)
       get :show, params: { id: board.id }
       # we only order board section posts in the HAML, so manually order them here
-      expect(assigns(:board_sections).map(&:posts).map(&:ordered_in_section).map(&:to_a)).to eq([[post1, post2, post3], [post4, post5, post6]])
+      expect(assigns(:board_sections).map { |x| x.posts.ordered_in_section.to_a }).to eq([[post1, post2, post3], [post4, post5, post6]])
       expect(assigns(:posts)).to eq([post7, post8, post9])
     end
 
     it "calculates OpenGraph meta" do
       user = create(:user, username: 'John Doe')
-      board = create(:board, name: 'board', creator: user, writers: [create(:user, username: 'Jane Doe')], description: 'sample board') # rubocop:disable FactoryBot/CreateList
+      board = create(:board, name: 'board', creator: user, writers: [create(:user, username: 'Jane Doe')], description: 'sample board')
       create(:post, subject: 'title', user: user, board: board)
       get :show, params: { id: board.id }
 
@@ -635,7 +635,7 @@ RSpec.describe BoardsController do
         create(:board, creator: author1) # one author but not the other
         create(:board, coauthors: [author2]) # one author but not the other, coauthor
 
-        boards = [create(:board, creator: author1, coauthors: [author2])] # both authors # rubocop:disable FactoryBot/CreateList
+        boards = [create(:board, creator: author1, coauthors: [author2])] # both authors
         boards << create(:board, coauthors: [author1, author2]) # both authors coauthors
         create(:board, coauthors: [author1], cameos: [author2]) # both authors, one cameo
 
@@ -662,7 +662,7 @@ RSpec.describe BoardsController do
 
     it "gets the correct set of available cowriters on an existing board" do
       users = create_list(:user, 3)
-      coauthors = [create(:user)] # rubocop:disable FactoryBot/CreateList
+      coauthors = [create(:user)]
       cameos = create_list(:user, 2)
       board = create(:board, writers: coauthors, cameos: cameos)
       login_as(board.creator)

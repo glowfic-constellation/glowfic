@@ -49,7 +49,7 @@ RSpec.feature "Show a list of galleries" do
     end
   end
 
-  scenario "Expanding a user's list of galleries while logged out", js: true do
+  scenario "Expanding a user's list of galleries while logged out", :js do
     user = create(:user)
     create(:icon, user: user, keyword: "galleryless <strong> icon")
     icon = create(:icon, user: user, keyword: "galleryful <strong> icon")
