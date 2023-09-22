@@ -105,7 +105,7 @@ RSpec.describe Message do
     message = create(:message)
     create(:block, blocking_user: message.sender, blocked_user: message.recipient)
     message.unread = false
-    message.save!
+    expect { message.save! }.not_to raise_error
   end
 
   it "errors to sender if messaging a deleted user" do

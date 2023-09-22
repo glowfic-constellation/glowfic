@@ -1,4 +1,4 @@
-RSpec.describe Block, type: :model do
+RSpec.describe Block do
   describe "validations" do
     it 'succeeds' do
       expect(create(:block)).to be_valid

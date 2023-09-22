@@ -1,4 +1,4 @@
-RSpec.feature "Listing characters", type: :feature do
+RSpec.feature "Listing characters" do
   def with_template(characters, template)
     {
       template: template,
@@ -92,14 +92,14 @@ RSpec.feature "Listing characters", type: :feature do
     end
 
     def no_headers
-      expect(page).not_to have_text('Template:')
-      expect(page).not_to have_text('Group:')
+      expect(page).to have_no_text('Template:')
+      expect(page).to have_no_text('Group:')
     end
 
     def no_unrelated
-      expect(page).not_to have_text('Unrelated template')
-      expect(page).not_to have_text('Unrelated character')
-      expect(page).not_to have_text('Unrelated group')
+      expect(page).to have_no_text('Unrelated template')
+      expect(page).to have_no_text('Unrelated character')
+      expect(page).to have_no_text('Unrelated group')
     end
 
     scenario "Viewing in list mode, separated by template" do

@@ -202,7 +202,7 @@ RSpec.describe Api::V1::CharactersController do
       get :show, params: { id: character.id }
       expect(response).to have_http_status(200)
       expect(response.json['galleries'].size).to eq(1)
-      expect(response.json['galleries'][0]['icons'].map { |i| i['keyword'] }).to eq(['xxx', 'yyy', 'zzz'])
+      expect(response.json['galleries'][0]['icons'].map { |i| i['keyword'] }).to eq(['xxx', 'yyy', 'zzz']) # rubocop:disable Rails/Pluck
     end
 
     it "has associations when present", :show_in_doc do

@@ -113,7 +113,7 @@ RSpec.describe CharactersController do
       render_views
       it "sets correct variables" do
         user = create(:user)
-        templates = Array.new(2) { create(:template, user: user) }
+        templates = create_list(:template, 2, user: user)
         create(:template)
 
         login_as(user)
@@ -218,7 +218,7 @@ RSpec.describe CharactersController do
         gallery = create(:gallery, user: user)
         group = create(:gallery_group)
         group_gallery = create(:gallery, user: user, gallery_groups: [group])
-        templates = Array.new(2) { create(:template, user: user) }
+        templates = create_list(:template, 2, user: user)
         create(:template)
 
         login_as(user)
@@ -390,7 +390,7 @@ RSpec.describe CharactersController do
         gallery = create(:gallery, user: user, gallery_groups: [group])
         character = create(:character, user: user, gallery_groups: [group])
         calias = create(:alias, character: character)
-        templates = Array.new(2) { create(:template, user: user) }
+        templates = create_list(:template, 2, user: user)
         create(:template)
 
         login_as(user)
@@ -704,7 +704,7 @@ RSpec.describe CharactersController do
         group = create(:gallery_group)
         gallery = create(:gallery, user: user, gallery_groups: [group])
         character = create(:character, user: user, gallery_groups: [group])
-        templates = Array.new(2) { create(:template, user: user) }
+        templates = create_list(:template, 2, user: user)
         create(:template)
 
         login_as(user)
@@ -928,7 +928,7 @@ RSpec.describe CharactersController do
         user = create(:user)
         template = create(:template, user: user)
         character = create(:character, user: user, template: template)
-        alts = Array.new(5) { create(:character, user: user, template: template) }
+        alts = create_list(:character, 5, user: user, template: template)
         create(:character, user: user) # other character
 
         login_as(user)
@@ -956,7 +956,7 @@ RSpec.describe CharactersController do
       it "sets alts correctly" do
         user = create(:user)
         character = create(:character, user: user)
-        alts = Array.new(5) { create(:character, user: user) }
+        alts = create_list(:character, 5, user: user)
         template = create(:template, user: user)
         create(:character, user: user, template: template) # other character
 

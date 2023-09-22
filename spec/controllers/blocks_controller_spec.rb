@@ -1,4 +1,4 @@
-RSpec.describe BlocksController, type: :controller do
+RSpec.describe BlocksController do
   describe "GET index" do
     it "requires login" do
       get :index

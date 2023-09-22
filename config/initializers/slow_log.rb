@@ -3,7 +3,7 @@
 
 ActiveSupport::Notifications.subscribe("process_action.action_controller") do |*args|
   event = ActiveSupport::Notifications::Event.new(*args)
-  next unless event.duration > 5000
+  next if event.duration <= 5000
 
   # hide most headers as they significantly clutter logs
   headers = event.payload.delete(:headers).to_h
@@ -13,7 +13,7 @@ end
 
 ActiveSupport::Notifications.subscribe("sql.active_record") do |*args|
   event = ActiveSupport::Notifications::Event.new(*args)
-  next unless event.duration > 1000
+  next if event.duration <= 1000
 
   # convert activerecord binds into more readable parameters
   filter_keys = ["salt_uuid", "crypted", "email"]

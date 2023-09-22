@@ -1,4 +1,4 @@
-RSpec.describe IconHelper, type: :helper do
+RSpec.describe IconHelper do
   describe "#dropdown_icons" do
     let(:user) { create(:user) }
     let(:post) { build(:post, user: user) }

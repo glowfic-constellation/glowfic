@@ -195,10 +195,10 @@ class ApplicationController < ActionController::Base
     gon.api_token = session[:api_token]["value"] if logged_in?
   end
 
-  def set_timezone(&block)
+  def set_timezone(&)
     return yield unless logged_in?
     return yield unless current_user.timezone
-    Time.use_zone(current_user.timezone, &block)
+    Time.use_zone(current_user.timezone, &)
   end
 
   def require_glowfic_domain

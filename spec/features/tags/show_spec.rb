@@ -1,4 +1,4 @@
-RSpec.feature "Viewing a tag", type: :feature do
+RSpec.feature "Viewing a tag" do
   scenario "Viewing a setting" do
     # set up sample data
     setting_owner = create(:user, username: 'setting owner')
@@ -43,6 +43,6 @@ RSpec.feature "Viewing a tag", type: :feature do
       expect(page).to have_link('sample template', href: template_path(template))
     end
 
-    expect(page).not_to have_selector('tr', text: 'Other character')
+    expect(page).to have_no_selector('tr', text: 'Other character')
   end
 end

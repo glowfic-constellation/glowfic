@@ -1,4 +1,4 @@
-RSpec.describe UserMailer, type: :mailer do
+RSpec.describe UserMailer do
   before(:each) { ResqueSpec.reset! }
 
   describe "#post_has_new_reply" do

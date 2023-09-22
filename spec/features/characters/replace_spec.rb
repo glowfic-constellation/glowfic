@@ -1,4 +1,4 @@
-RSpec.feature "Replacing characters", type: :feature do
+RSpec.feature "Replacing characters" do
   scenario "Selecting a character with aliases", js: true do
     user = login
     fred = create(:character, user: user, name: "Fred the <strong>!")

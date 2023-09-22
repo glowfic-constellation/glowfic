@@ -766,7 +766,7 @@ RSpec.describe Post do
 
     it "limits the amount of returned data" do
       user = create(:user)
-      characters = Array.new(10) { create(:character, user: user) }
+      characters = create_list(:character, 10, user: user)
       post_char = create(:character, user: user)
       post = create(:post, user: user, character: post_char)
       characters.each do |char|

@@ -87,7 +87,7 @@ RSpec.describe Api::V1::TagsController do
     it "should support getting gallery groups with gallery IDs", show_in_doc: true do
       user = create(:user)
       group = create(:gallery_group)
-      galleries = Array.new(2) { create(:gallery, user: user, gallery_groups: [group]) }
+      galleries = create_list(:gallery, 2, user: user, gallery_groups: [group])
       create(:gallery, gallery_groups: [group])
       get :show, params: { id: group.id, user_id: user.id }
       expect(response).to have_http_status(200)

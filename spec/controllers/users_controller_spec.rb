@@ -187,7 +187,7 @@ RSpec.describe UsersController do
 
     it "sets the correct variables" do
       user = create(:user)
-      posts = Array.new(3) { create(:post, user: user) }
+      posts = create_list(:post, 3, user: user)
       create(:post)
       get :show, params: { id: user.id }
       expect(assigns(:page_title)).to eq(user.username)
@@ -265,7 +265,7 @@ RSpec.describe UsersController do
 
       it "displays options" do
         user_id = login
-        get :edit, params: { id: user_id }
+        expect { get :edit, params: { id: user_id } }.not_to raise_error
       end
     end
   end
@@ -494,8 +494,13 @@ RSpec.describe UsersController do
     it "handles update failures" do
       allow(ENV).to receive(:[]).with('ACCOUNT_SECRET').and_return('chocolate')
       user = create(:user, role_id: Permissible::READONLY)
+
+      allow(User).to receive(:find_by_id).and_call_original
+      allow(User).to receive(:find_by_id).with(user.id).and_return(user)
+      allow(user).to receive(:update).and_return(false)
+      expect(user).to receive(:update)
+
       login_as(user)
-      expect_any_instance_of(User).to receive(:update).and_return(false)
       put :upgrade, params: { id: user.id, secret: 'chocolate' }
       expect(flash[:error]).to eq("There was a problem updating your account.")
       expect(response).to render_template(:edit)

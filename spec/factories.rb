@@ -129,7 +129,7 @@ FactoryBot.define do
       "test character #{n}"
     end
     factory :template_character do
-      template { build(:template, user: user) }
+      template { association(:template, user: user) }
     end
     before(:create) do |character, evaluator|
       character.default_icon = create(:icon, user: character.user) if evaluator.with_default_icon
@@ -248,7 +248,7 @@ FactoryBot.define do
   end
 
   factory :news do
-    user { create(:mod_user) }
+    user { association(:mod_user) }
     sequence :content do |n|
       "content for news post #{n}"
     end

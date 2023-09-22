@@ -201,7 +201,7 @@ RSpec.describe PostsController, 'GET owed' do
       post.opt_out_of_owed(user)
       get :owed
       expect(response.status).to eq(200)
-      expect(assigns(:posts)).to match_array([])
+      expect(assigns(:posts)).to be_empty
     end
 
     it "orders posts by tagged_at" do

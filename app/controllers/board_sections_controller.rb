@@ -13,7 +13,7 @@ class BoardSectionsController < ApplicationController
   def create
     @board_section = BoardSection.new(permitted_params)
     unless @board_section.board.nil? || @board_section.board.editable_by?(current_user)
-      flash[:error] = "You do not have permission to modify this continuity."
+      flash[:error] = "You do not have permission to modify this continuity." # rubocop:disable Rails/ActionControllerFlashBeforeRender
       redirect_to continuities_path and return
     end
 

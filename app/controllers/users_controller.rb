@@ -13,18 +13,6 @@ class UsersController < ApplicationController
     @users = User.active.ordered.paginate(page: page)
   end
 
-  def show
-    unless (@user = User.active.find_by_id(params[:id]))
-      flash[:error] = "User could not be found."
-      redirect_to users_path and return
-    end
-
-    ids = Post::Author.where(user_id: @user.id, joined: true).pluck(:post_id)
-    @posts = posts_from_relation(Post.where(id: ids).ordered)
-    @page_title = @user.username
-    @meta_og = og_data
-  end
-
   def new
     @user = User.new
   end
@@ -63,6 +51,18 @@ class UsersController < ApplicationController
       @current_user = @user
       redirect_to root_url
     end
+  end
+
+  def show
+    unless (@user = User.active.find_by_id(params[:id]))
+      flash[:error] = "User could not be found."
+      redirect_to users_path and return
+    end
+
+    ids = Post::Author.where(user_id: @user.id, joined: true).pluck(:post_id)
+    @posts = posts_from_relation(Post.where(id: ids).ordered)
+    @page_title = @user.username
+    @meta_og = og_data
   end
 
   def edit

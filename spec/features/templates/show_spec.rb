@@ -1,4 +1,4 @@
-RSpec.feature "Viewing a template", type: :feature do
+RSpec.feature "Viewing a template" do
   let!(:user) { create(:user) }
   let!(:template) { create(:template, user: user, name: 'sample template') }
 
@@ -28,7 +28,7 @@ RSpec.feature "Viewing a template", type: :feature do
   scenario "Viewing in list mode" do
     visit template_path(template, view: 'list')
     expect(page).to have_text('Template: sample template')
-    expect(page).not_to have_text('Unrelated template')
+    expect(page).to have_no_text('Unrelated template')
 
     # check characters
     within table_titled('Template: sample template') do
@@ -46,20 +46,20 @@ RSpec.feature "Viewing a template", type: :feature do
         end
       end
 
-      expect(page).not_to have_text('Unrelated character')
+      expect(page).to have_no_text('Unrelated character')
     end
 
     # check posts
     within table_titled('Posts with Template Instances') do
       expect(page).to have_link('Template post', href: post_path(post))
-      expect(page).not_to have_text('Unrelated post')
+      expect(page).to have_no_text('Unrelated post')
     end
   end
 
   scenario "Viewing in icon mode" do
     visit template_path(template, view: 'icons')
     expect(page).to have_text('Template: sample template')
-    expect(page).not_to have_text('Unrelated template')
+    expect(page).to have_no_text('Unrelated template')
 
     # check characters
     within table_titled('Template: sample template') do
@@ -76,13 +76,13 @@ RSpec.feature "Viewing a template", type: :feature do
         end
       end
 
-      expect(page).not_to have_text('Unrelated character')
+      expect(page).to have_no_text('Unrelated character')
     end
 
     # check posts
     within table_titled('Posts with Template Instances') do
       expect(page).to have_link('Template post', href: post_path(post))
-      expect(page).not_to have_text('Unrelated post')
+      expect(page).to have_no_text('Unrelated post')
     end
   end
 end

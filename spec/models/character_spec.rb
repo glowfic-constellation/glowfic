@@ -105,7 +105,7 @@ RSpec.describe Character do
 
       character.reload
       expect(character.gallery_ids).to match_array([gallery.id])
-      expect(character.ungrouped_gallery_ids).to match_array([])
+      expect(character.ungrouped_gallery_ids).to be_empty
 
       character.ungrouped_gallery_ids = [gallery.id]
       character.save!
@@ -207,7 +207,7 @@ RSpec.describe Character do
           character.reload
           expect(character.galleries).to match_array([gallery])
           expect(character.ungrouped_gallery_ids).to match_array([gallery.id])
-          expect(character.gallery_groups).to match_array([])
+          expect(character.gallery_groups).to be_empty
         end
 
         it "supports adding a gallery at the same time as swapping its group" do
@@ -239,7 +239,7 @@ RSpec.describe Character do
 
           character.reload
           expect(character.galleries).to match_array([gallery])
-          expect(character.ungrouped_gallery_ids).to match_array([])
+          expect(character.ungrouped_gallery_ids).to be_empty
           expect(character.gallery_groups).to match_array([group])
         end
 
@@ -256,7 +256,7 @@ RSpec.describe Character do
 
           character.reload
           expect(character.galleries).to match_array([gallery])
-          expect(character.ungrouped_gallery_ids).to match_array([])
+          expect(character.ungrouped_gallery_ids).to be_empty
           expect(character.gallery_groups).to match_array([group2])
         end
       end

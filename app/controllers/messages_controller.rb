@@ -46,7 +46,7 @@ class MessagesController < ApplicationController
     end
 
     if flash.now[:error].nil? && @message.save
-      flash[:success] = "Message sent."
+      flash[:success] = "Message sent." # rubocop:disable Rails/ActionControllerFlashBeforeRender
       redirect_to messages_path(view: 'inbox') and return
     end
 

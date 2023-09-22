@@ -1,4 +1,4 @@
-RSpec.feature "Creating posts", type: :feature do
+RSpec.feature "Creating posts" do
   scenario "User creates a post" do
     visit new_post_path
     within(".error") { expect(page).to have_text("You must be logged in") }
@@ -123,6 +123,7 @@ RSpec.feature "Creating posts", type: :feature do
 
     visit new_post_path
     page.select(board.name, from: "Continuity:")
+    expect(page).to have_select('Continuity section:')
     page.select("Th<em> pirates", from: "Continuity section:")
   end
 end

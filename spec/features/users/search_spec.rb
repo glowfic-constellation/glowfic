@@ -1,4 +1,4 @@
-RSpec.feature "Searching users", type: :feature do
+RSpec.feature "Searching users" do
   scenario "Logged-out user searches simple list of users" do
     simple_user = create(:user, username: 'Test Alice')
     moietied_user = create(:user, username: 'Test Bob', moiety: 'FF0000', moiety_name: 'Test moiety')
@@ -18,8 +18,8 @@ RSpec.feature "Searching users", type: :feature do
 
     search_for('Fred')
     expect(page).to have_text("Total: 0")
-    expect(page).not_to have_text('Test')
-    expect(page).not_to have_text('Dominique')
+    expect(page).to have_no_text('Test')
+    expect(page).to have_no_text('Dominique')
 
     search_for('Test')
     expect(page).to have_text("Total: 3")
@@ -34,6 +34,6 @@ RSpec.feature "Searching users", type: :feature do
       expect(page).to have_link('Test Charlie', href: user_path(old_user))
       expect(page).to have_text('Jan 01, 2018 12:00 AM')
     end
-    expect(page).not_to have_text('Dominique')
+    expect(page).to have_no_text('Dominique')
   end
 end

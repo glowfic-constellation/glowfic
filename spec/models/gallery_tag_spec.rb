@@ -8,7 +8,7 @@ RSpec.describe GalleryTag do
         gallery = create(:gallery)
         gallery.gallery_groups << group
         gallery.save!
-        expect(character.reload.galleries).to match_array([])
+        expect(character.reload.galleries).to be_empty
       end
 
       it "does not add to a character twice" do

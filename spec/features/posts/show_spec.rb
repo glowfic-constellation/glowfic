@@ -1,4 +1,4 @@
-RSpec.feature "Viewing posts", type: :feature do
+RSpec.feature "Viewing posts" do
   scenario "with a user layout set" do
     user = login
     post = create(:post, user: user)
@@ -47,12 +47,12 @@ RSpec.feature "Viewing posts", type: :feature do
       user = login
       user.update!(hide_warnings: true)
       visit post_path(post)
-      expect(page).not_to have_selector('.error')
+      expect(page).to have_no_selector('.error')
     end
 
     scenario "when user ignores warnings" do
       visit post_path(post, ignore_warnings: true)
-      expect(page).not_to have_selector('.error')
+      expect(page).to have_no_selector('.error')
     end
   end
 end
