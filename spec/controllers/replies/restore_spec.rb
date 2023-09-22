@@ -227,7 +227,7 @@ RSpec.describe RepliesController, 'POST restore', :versioning do
 
         post :restore, params: { id: reply.id }
 
-        expect(flash[:success]).to eq("Reply has been restored!")
+        expect(flash[:success]).to eq("Reply restored.")
         Audited.auditing_enabled = false
       end
 
@@ -241,7 +241,7 @@ RSpec.describe RepliesController, 'POST restore', :versioning do
       reply.destroy!
 
       post :restore, params: { id: reply.id }
-      expect(flash[:success]).to eq("Reply has been restored!")
+      expect(flash[:success]).to eq("Reply restored.")
       reply = Reply.find_by(id: reply.id)
       expect(reply.content).to eq('restored right')
     end

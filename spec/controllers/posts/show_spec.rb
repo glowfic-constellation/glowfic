@@ -126,7 +126,7 @@ RSpec.describe PostsController, 'GET show' do
     end
 
     Version.as_user(post.user) do
-      replies[1].touch # rubocop:disable Rails/SkipsModelValidations
+      # replies[1].touch # Papertrail creates audit on touches
       replies[3].update!(character: create(:character, user: post.user))
       replies[2].update!(content: 'new content')
       1.upto(5) { |i| replies[4].update!(content: 'message' + i.to_s) }

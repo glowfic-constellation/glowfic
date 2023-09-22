@@ -45,9 +45,10 @@ RSpec.describe PostsController, 'GET delete_history' do
     end
 
     it "only selects more recent restore" do
+      reply_id = reply.id
       Version.as_user(reply.user) { reply.destroy! }
       restore(reply)
-      reply = Reply.find_by_id(reply.id)
+      reply = Reply.find_by_id(reply_id)
       reply.update!(content: 'new content')
       Version.as_user(reply.user) { reply.destroy! }
       get :delete_history, params: { id: post.id }
@@ -105,9 +106,10 @@ RSpec.describe PostsController, 'GET delete_history' do
     end
 
     it "only selects more recent restore" do
+      reply_id = reply.id
       Audited.audit_class.as_user(reply.user) { reply.destroy! }
       restore(reply)
-      reply = Reply.find_by_id(reply.id)
+      reply = Reply.find_by_id(reply_id)
       reply.update!(content: 'new content')
       Audited.audit_class.as_user(reply.user) { reply.destroy! }
       get :delete_history, params: { id: post.id }
