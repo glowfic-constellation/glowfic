@@ -34,37 +34,41 @@ RSpec.describe PostsController, 'GET search' do
     end
 
     it "filters by continuity" do
-      post = create(:post)
-      post2 = create(:post, board: post.board)
+      board = create(:board)
+      posts = create_list(:post, 2, board: board)
       create(:post)
-      get :search, params: { commit: true, board_id: post.board_id }
-      expect(assigns(:search_results)).to match_array([post, post2])
+      get :search, params: { commit: true, board_id: board.id }
+      expect(assigns(:search_results)).to match_array(posts)
     end
 
     it "filters by setting" do
       setting = create(:setting)
-      post = create(:post)
-      post.settings << setting
+      post = create(:post, settings: [setting])
       create(:post)
       get :search, params: { commit: true, setting_id: setting.id }
       expect(assigns(:search_results)).to match_array([post])
     end
 
-    it "filters by subject" do
-      post1 = create(:post, subject: 'contains stars')
-      post2 = create(:post, subject: 'contains Stars cased')
-      create(:post, subject: 'unrelated')
-      get :search, params: { commit: true, subject: 'stars' }
-      expect(assigns(:search_results)).to match_array([post1, post2])
-    end
+    context "filters by subject" do
+      let!(:post1) { create(:post, subject: 'contains stars') }
+      let!(:post2) { create(:post, subject: 'contains Stars') }
 
-    it "filters by subject acronym" do
-      post1 = create(:post, subject: 'contains stars')
-      post2 = create(:post, subject: 'contains Stars')
-      post3 = create(:post, subject: 'Case starlight')
-      create(:post, subject: 'unrelated')
-      get :search, params: { commit: true, subject: 'cs', abbrev: true }
-      expect(assigns(:search_results)).to match_array([post1, post2, post3])
+      before(:each) { create(:post, subject: 'unrelated') }
+
+      it "successfully" do
+        get :search, params: { commit: true, subject: 'stars' }
+        expect(assigns(:search_results)).to match_array([post1, post2])
+      end
+
+      it "acronym" do
+        post3 = create(:post, subject: 'Case starlight')
+        get :search, params: { commit: true, subject: 'cs', abbrev: true }
+        expect(assigns(:search_results)).to match_array([post1, post2, post3])
+      end
+
+      it "exact match" do
+        skip "TODO not yet implemented"
+      end
     end
 
     it "does not mix up subject with content" do
@@ -80,40 +84,31 @@ RSpec.describe PostsController, 'GET search' do
       expect(assigns(:search_results)).to match_array([post])
     end
 
-    it "filters by exact match subject" do
-      skip "TODO not yet implemented"
-    end
+    context "filters by authors" do
+      let(:author1) { create(:user) }
+      let(:author2) { create(:user) }
+      let!(:post1) { create(:post, user: author1) } # a1 only, post only
+      let!(:post2) { create(:post) } # a2 only, reply only
+      let!(:post3) { create(:post, user: author1) } # both authors, a1 post only
+      let!(:post4) { create(:post) } # both authors, replies only
 
-    it "filters by authors" do
-      posts = Array.new(4) { create(:post) }
-      filtered_post = posts.last
-      first_post = posts.first
-      create(:reply, post: first_post, user: filtered_post.user)
-      get :search, params: { commit: true, author_id: [filtered_post.user_id] }
-      expect(assigns(:search_results)).to match_array([filtered_post, first_post])
-    end
+      before(:each) do
+        create(:post)
+        create(:reply, post: post2, user: author2)
+        create(:reply, post: post3, user: author2)
+        create(:reply, post: post4, user: author1)
+        create(:reply, post: post4, user: author2)
+      end
 
-    it "filters by multiple authors" do
-      author1 = create(:user)
-      author2 = create(:user)
-      nonauthor = create(:user)
+      it "one author" do
+        get :search, params: { commit: true, author_id: [author1.id] }
+        expect(assigns(:search_results)).to match_array([post1, post3, post4])
+      end
 
-      found_posts = []
-      create(:post, user: author1) # one author but not the other, post
-      post = create(:post, user: nonauthor) # one author but not the other, reply
-      create(:reply, user: author2, post: post)
-
-      post = create(:post, user: author1) # both authors, one post only
-      create(:reply, post: post, user: author2)
-      found_posts << post
-
-      post = create(:post, user: nonauthor) # both authors, replies only
-      create(:reply, post: post, user: author1)
-      create(:reply, post: post, user: author2)
-      found_posts << post
-
-      get :search, params: { commit: true, author_id: [author1.id, author2.id] }
-      expect(assigns(:search_results)).to match_array(found_posts)
+      it "multiple authors" do
+        get :search, params: { commit: true, author_id: [author1.id, author2.id] }
+        expect(assigns(:search_results)).to match_array([post3, post4])
+      end
     end
 
     it "filters by characters" do
@@ -132,7 +127,7 @@ RSpec.describe PostsController, 'GET search' do
     end
 
     it "sorts posts by tagged_at" do
-      posts = Array.new(4) { create(:post) }
+      posts = create_list(:post, 4)
       create(:reply, post: posts[2])
       create(:reply, post: posts[1])
       get :search, params: { commit: true }

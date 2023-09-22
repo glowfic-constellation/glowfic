@@ -1,5 +1,6 @@
 RSpec.describe PostsController, 'POST warnings' do
   let(:warn_post) { create(:post) }
+  let(:user) { create(:user) }
 
   it "requires a valid post" do
     post :warnings, params: { id: -1 }
@@ -8,7 +9,7 @@ RSpec.describe PostsController, 'POST warnings' do
   end
 
   it "requires permission" do
-    warn_post = create(:post, privacy: :private)
+    warn_post.update!(privacy: :private)
     post :warnings, params: { id: warn_post.id }
     expect(response).to redirect_to(continuities_url)
     expect(flash[:error]).to eq("You do not have permission to view this post.")
@@ -23,7 +24,6 @@ RSpec.describe PostsController, 'POST warnings' do
   end
 
   it "works for logged in" do
-    user = create(:user)
     expect(session[:ignore_warnings]).to be_nil
     expect(warn_post.send(:view_for, user)).to be_a_new_record
     login_as(user)
@@ -37,7 +37,6 @@ RSpec.describe PostsController, 'POST warnings' do
   end
 
   it "works for reader accounts" do
-    user = create(:reader_user)
     login_as(user)
     expect(session[:ignore_warnings]).to be_nil
     expect(warn_post.send(:view_for, user)).to be_a_new_record

@@ -1,4 +1,7 @@
 RSpec.describe PostsController, 'DELETE destroy' do
+  let(:user) { create(:user) }
+  let(:post) { create(:post, user: user) }
+
   it "requires login" do
     delete :destroy, params: { id: -1 }
     expect(response).to redirect_to(root_url)
@@ -17,25 +20,20 @@ RSpec.describe PostsController, 'DELETE destroy' do
   end
 
   it "requires post permission" do
-    user = create(:user)
-    login_as(user)
-    post = create(:post)
-    expect(post).not_to be_editable_by(user)
+    login
     delete :destroy, params: { id: post.id }
     expect(response).to redirect_to(post_url(post))
     expect(flash[:error]).to eq("You do not have permission to modify this post.")
   end
 
   it "succeeds" do
-    post = create(:post)
-    login_as(post.user)
+    login_as(user)
     delete :destroy, params: { id: post.id }
     expect(response).to redirect_to(continuities_url)
     expect(flash[:success]).to eq("Post deleted.")
   end
 
   it "deletes Post::Authors" do
-    user = create(:user)
     login_as(user)
     other_user = create(:user)
     post = create(:post, user: user, authors: [user, other_user])
@@ -47,9 +45,8 @@ RSpec.describe PostsController, 'DELETE destroy' do
   end
 
   it "handles destroy failure" do
-    post = create(:post)
     reply = create(:reply, user: post.user, post: post)
-    login_as(post.user)
+    login_as(user)
 
     allow(Post).to receive(:find_by).and_call_original
     allow(Post).to receive(:find_by).with(id: post.id.to_s).and_return(post)

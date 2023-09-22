@@ -1,4 +1,6 @@
 RSpec.describe PostsController, 'GET new' do
+  let(:user) { create(:user) }
+
   it "requires login" do
     get :new
     expect(response).to redirect_to(root_url)
@@ -13,7 +15,6 @@ RSpec.describe PostsController, 'GET new' do
   end
 
   it "sets relevant fields" do
-    user = create(:user)
     char1 = create(:character, user: user, name: 'alphafirst')
     user.update!(active_character: char1)
     user.reload
@@ -46,39 +47,41 @@ RSpec.describe PostsController, 'GET new' do
   end
 
   context "import" do
+    before(:each) { login_as(user) }
+
     it "requires import permission" do
-      login
       get :new, params: { view: :import }
       expect(response).to redirect_to(new_post_path)
       expect(flash[:error]).to eq('You do not have access to this feature.')
     end
 
     it "works for importer" do
-      login_as(create(:importing_user))
+      user.update!(role_id: Permissible::IMPORTER)
       get :new, params: { view: :import }
       expect(response).to have_http_status(200)
     end
   end
 
-  it "defaults authors to be the current user in open boards" do
-    user = create(:user)
-    login_as(user)
-    create(:user) # user not in the board
-    board_creator = create(:user) # user in the board
-    board = create(:board, creator: board_creator, authors_locked: false)
-    get :new, params: { board_id: board.id }
-    expect(assigns(:post).board).to eq(board)
-    expect(assigns(:author_ids)).to eq([])
-  end
+  context "authors" do
+    before(:each) do
+      login_as(user)
+      create(:user)
+    end
 
-  it "defaults authors to be board authors in closed boards" do
-    user = create(:user)
-    login_as(user)
-    coauthor = create(:user)
-    create(:user) # other_user
-    board = create(:board, creator: user, writers: [coauthor])
-    get :new, params: { board_id: board.id }
-    expect(assigns(:post).board).to eq(board)
-    expect(assigns(:author_ids)).to match_array([coauthor.id])
+    it "defaults authors to be the current user in open boards" do
+      login_as(user)
+      board = create(:board, authors_locked: false)
+      get :new, params: { board_id: board.id }
+      expect(assigns(:post).board).to eq(board)
+      expect(assigns(:author_ids)).to eq([])
+    end
+
+    it "defaults authors to be board authors in closed boards" do
+      coauthor = create(:user)
+      board = create(:board, creator: user, writers: [coauthor])
+      get :new, params: { board_id: board.id }
+      expect(assigns(:post).board).to eq(board)
+      expect(assigns(:author_ids)).to match_array([coauthor.id])
+    end
   end
 end
