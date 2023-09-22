@@ -1,44 +1,39 @@
 /* global deleteUnusedIcons */
+/* exported addUploadedIcon, addCallback, failCallback */
+
 var done = 0;
 var total = 0;
 var failed = 0;
 
+var keyLeft = 37;
+var keyUp = 38;
+var keyRight = 39;
+var keyDown = 40;
+
 $(document).ready(function() {
   fixButtons();
   $(".icon-row td:has(input)").each(function() {
-    $(this).keydown(processDirectionalKey);
+    $(this).keydown(function(event) {
+      if ([keyLeft, keyUp, keyRight, keyDown].indexOf(event.which) < 0) return; // skip if not a directional key
+      var input = $('input', this);
+      if (input.get(0).type !== 'text') { return; } // skip if not text
+      if (input.get(0).selectionStart !== input.get(0).selectionEnd) { return; } // skip processing if user has text selected
+      processDirectionalKey(event, input);
+    });
   });
 });
 
-function processDirectionalKey(event) {
-  var keyLeft = 37,
-    keyUp = 38,
-    keyRight = 39,
-    keyDown = 40;
-  if ([keyLeft, keyUp, keyRight, keyDown].indexOf(event.which) < 0) return;
-  var input = $('input', this);
-  if (input.get(0).type !== 'text') return;
-
+function processDirectionalKey(event, input) {
   var caret = input.get(0).selectionStart;
-  var caretEnd = input.get(0).selectionEnd;
-  if (caret !== caretEnd) return; // skip processing if user has text selected
-
-  var length = input.val().length;
   var index = $(this).closest('td').index();
 
   var consume = false;
   switch (event.which) {
   case keyLeft:
-    if (caret === 0) {
-      $(this).closest('td').prev().find('input').focus();
-      consume = true;
-    }
+    consume = processKeyLeft(caret);
     break;
   case keyRight:
-    if (caret >= length) {
-      $(this).closest('td').next().find('input').focus();
-      consume = true;
-    }
+    consume = processKeyRight(caret, input.val().length);
     break;
   case keyUp:
     $(this).closest('tr').prev('.icon-row').children().eq(index).find('input').focus();
@@ -50,6 +45,18 @@ function processDirectionalKey(event) {
     break;
   }
   if (consume) event.preventDefault();
+}
+
+function processKeyLeft(caret) {
+  if (caret !== 0) { return false; }
+  $(this).closest('td').prev().find('input').focus();
+  return true;
+}
+
+function processKeyRight(caret, length) {
+  if (caret <= length) { return false; }
+  $(this).closest('td').next().find('input').focus();
+  return true;
 }
 
 function fixButtons() {
@@ -112,7 +119,7 @@ function cleanUpRows() {
   $(".icon-row").each(function() {
     var anySet = false;
     if ($(this).find('.conf .filename').text() !== '') return;
-    $(this).find('input').each(function() {
+    $(this).find('input').each(function() { // eslint-disable-line consistent-return
       if ($(this).val() !== '') {
         anySet = true;
         return false;
@@ -127,7 +134,7 @@ function cleanUpRows() {
   fixButtons();
 }
 
-function addUploadedIcon(url, key, data, fileInput) {
+function addUploadedIcon(url, key, data, _fileInput) {
   done += 1;
   updateBox();
 

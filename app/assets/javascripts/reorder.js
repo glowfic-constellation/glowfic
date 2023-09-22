@@ -1,3 +1,5 @@
+/* exported bindSortable, swapRows */
+
 // orderBox is the box the ordering is scoped to
 // so that a single page can have multiple separate ordering structures
 function bindArrows(orderBox, path, param) {

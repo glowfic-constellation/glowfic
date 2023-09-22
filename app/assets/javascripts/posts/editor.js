@@ -171,23 +171,17 @@ function setupWritableEditor() {
   // Hides selectors when you click outside them
   $(document).click(function(e) {
     var target = e.target;
-
-    if (!$(target).closest('#current-icon-holder').length &&
-        !$(target).closest(iconSelectBox).length) {
-      $('#icon-overlay').hide();
-      iconSelectBox.hide();
-    }
-
-    if (!$(target).closest('#character-selector').length &&
-        !$(target).closest('#swap-character').length) {
-      $('#character-selector').hide();
-    }
-
-    if (!$(target).closest('#alias-selector').length &&
-        !$(target).closest('#swap-alias').length) {
-      $('#alias-selector').hide();
-    }
+    hideSelect(target, iconSelectBox, '#current-icon-holder');
+    hideSelect(target, '#character-selector', '#swap-character');
+    hideSelect(target, '#alias-selector', '#swap-alias');
   });
+}
+
+function hideSelect(target, selectBox, selectHolder) {
+  if (!$(target).closest(selectHolder).length && !$(target).closest(selectBox).length) {
+    if (selectHolder === '#current-icon-holder') { $('#icon-overlay').hide(); }
+    selectBox.hide();
+  }
 }
 
 function fixWritableFormCaching() {
@@ -406,10 +400,9 @@ function setGalleriesAndDefault(galleries, defaultIcon) {
   $("#current-icon").addClass('pointer');
 
   // Calculate new galleries
-  var multiGallery = galleries.length > 1;
-  for (var j = 0; j < galleries.length; j++) {
-    iconSelectBox.append(galleryNode(galleries[j], multiGallery));
-  }
+  setGalleries(galleries);
+
+  if (defaultIcon && shownIcons.indexOf(defaultIcon.id) < 0) { iconSelectBox.append(iconNode(defaultIcon)); }
 
   // If no default and no icons in any galleries, remove pointer
   if (!defaultIcon && shownIcons.length === 0) {
@@ -417,10 +410,16 @@ function setGalleriesAndDefault(galleries, defaultIcon) {
     return;
   }
 
-  if (defaultIcon && shownIcons.indexOf(defaultIcon.id) < 0) iconSelectBox.append(iconNode(defaultIcon));
   iconSelectBox.append(iconNode({id: '', url: gon.no_icon_path, keyword: 'No Icon', skip_dropdown: true}));
   bindGallery();
   bindIcon();
+}
+
+function setGalleries(galleries) {
+  var multiGallery = galleries.length > 1;
+  for (var j = 0; j < galleries.length; j++) {
+    iconSelectBox.append(galleryNode(galleries[j], multiGallery));
+  }
 }
 
 function getAndSetCharacterData(characterId, options) {

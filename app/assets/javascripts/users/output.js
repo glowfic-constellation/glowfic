@@ -11,9 +11,22 @@ function copyToClipboard(elem) {
   var inserted = $("<textarea id='_hiddenCopyText_'>").insertAfter(elem);
   var target = inserted[0]; // must be DOM not JQuery object for select range functions
   target.textContent = $.trim(elem.text());
-  var end = target.value.length;
 
   // select the content
+  selectContent(target);
+
+  // copy the selection
+  try {
+    document.execCommand("copy");
+  } catch (e) { /* continue regardless */ }
+
+  // clean up page
+  if (currentFocus && typeof currentFocus.focus === "function") { currentFocus.focus(); }
+  inserted.remove();
+}
+
+function selectContent(target) {
+  var end = target.value.length;
   if (target.setSelectionRange) {
     target.focus(); target.setSelectionRange(0, end);
   } else if (target.createTextRange) { /* IE */
@@ -26,13 +39,4 @@ function copyToClipboard(elem) {
     target.selectionStart = 0;
     target.selectionEnd = end;
   }
-
-  // copy the selection
-  try {
-    document.execCommand("copy");
-  } catch (e) { /* continue regardless */ }
-
-  // clean up page
-  if (currentFocus && typeof currentFocus.focus === "function") { currentFocus.focus(); }
-  inserted.remove();
 }

@@ -48,6 +48,7 @@ $(document).ready(function() {
 
 $(window).on('beforeunload', function() {
   if (skipWarning || imageIds.length === 0) return;
+  // eslint-disable-next-line consistent-return
   return "Are you sure you wish to navigate away? You have " + imageIds.length + " image(s) selected.";
 });
 

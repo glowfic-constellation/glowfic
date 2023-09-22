@@ -1,4 +1,5 @@
 /* global addUploadedIcon, setLoadingIcon, addCallback, failCallback */
+/* export deleteUnusedIcons */
 
 var uploadedIcons = {};
 var formKey = '';
@@ -17,8 +18,9 @@ $(document).ready(function() {
     var usedUrls = $.map($('form.icon-upload').find('input[id$=_url]'), function(input) { return $(input).val(); });
     var uploadedUrls = $.map(uploadedIcons, function(value, key) { return key; });
     var unusedUrls = uploadedUrls.filter(function(x) { return usedUrls.indexOf(x) < 0; });
-    if (unusedUrls.length < 1) return true;
+    if (unusedUrls.length < 1) { return true; }
     deleteUnusedIcons($.map(unusedUrls, function(url) { return uploadedIcons[url]; }));
+    return false;
   });
 });
 
@@ -82,12 +84,11 @@ function bindFileInput(fileInput, form, submitButton, formData) {
     },
     fail: function(e, data) {
       submitButton.prop('disabled', false);
-      if (typeof failCallback !== 'undefined') failCallback();
+      if (typeof failCallback !== 'undefined') { failCallback(); }
       unsetLoadingIcon();
       var response = data.response().jqXHR;
-      var policyExpired = response.responseText.includes("Invalid according to Policy: Policy expired.");
-      if (!policyExpired) policyExpired = response.responseText.includes("Idle connections will be closed.");
-      var badFiletype = response.responseText.includes("Policy Condition failed") && response.responseText.includes('"$Content-Type", "image/"');
+      var responseText = response.responseText;
+      var badFiletype = responseText.includes("Policy Condition failed") && responseText.includes('"$Content-Type", "image/"');
       var bugsData = {
         'response_status': response.status,
         'response_body': response.responseText,
@@ -97,7 +98,7 @@ function bindFileInput(fileInput, form, submitButton, formData) {
       };
       if (response.readyState === 0) {
         alert("Upload of " + data.files[0].name + " failed due to a network error. Please check your connection and try again.");
-      } else if (policyExpired) {
+      } else if (isPolicyExpired(responseText)) {
         alert("Your upload permissions appear to have expired. Please refresh the page and try again.");
       } else if (badFiletype) {
         alert("You must upload files with an image filetype such as .png or .jpg - please retry with a valid file.");
@@ -161,4 +162,9 @@ function deleteUnusedIcons(keys) {
   $(keys).each(function(index, key) {
     $.authenticatedPost('/api/v1/icons/s3_delete', {s3_key: key});
   });
+}
+
+function isPolicyExpired(responseText) {
+  return responseText.includes("Invalid according to Policy: Policy expired.")
+    || responseText.includes("Idle connections will be closed.");
 }
