@@ -24,13 +24,13 @@ class IndexesController < ApplicationController
       @index.save!
     rescue ActiveRecord::RecordInvalid
       flash.now[:error] = {
-        message: "Index could not be created.",
+        message: "Index could not be created because of the following problems:",
         array: @index.errors.full_messages,
       }
       @page_title = 'New Index'
       render :new
     else
-      flash[:success] = "Index created!"
+      flash[:success] = "Index created."
       redirect_to @index and return
     end
   end
@@ -56,13 +56,13 @@ class IndexesController < ApplicationController
       @index.update!(permitted_params)
     rescue ActiveRecord::RecordInvalid
       flash.now[:error] = {
-        message: "Index could not be saved because of the following problems:",
+        message: "Index could not be updated because of the following problems:",
         array: @index.errors.full_messages,
       }
       editor_setup
       render :edit
     else
-      flash[:success] = "Index saved!"
+      flash[:success] = "Index updated."
       redirect_to @index
     end
   end
@@ -72,7 +72,7 @@ class IndexesController < ApplicationController
       @index.destroy!
     rescue ActiveRecord::RecordNotDestroyed
       flash[:error] = {
-        message: "Index could not be deleted.",
+        message: "Index could not be deleted because of the following problems:",
         array: @index.errors.full_messages,
       }
       redirect_to @index
@@ -98,7 +98,7 @@ class IndexesController < ApplicationController
 
   def require_edit_permission
     return if @index.editable_by?(current_user)
-    flash[:error] = "You do not have permission to edit this index."
+    flash[:error] = "You do not have permission to modify this index."
     redirect_to @index
   end
 

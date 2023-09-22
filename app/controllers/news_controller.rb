@@ -24,13 +24,13 @@ class NewsController < ApplicationController
       @news.save!
     rescue ActiveRecord::RecordInvalid
       flash.now[:error] = {
-        message: "News post could not be created.",
+        message: "News post could not be created because of the following problems:",
         array: @news.errors.full_messages,
       }
       @page_title = 'Create News Post'
       render :new
     else
-      flash[:success] = "News post has successfully been created."
+      flash[:success] = "News post created."
       redirect_to news_index_path
     end
   end
@@ -49,20 +49,20 @@ class NewsController < ApplicationController
       @news.update!(permitted_params)
     rescue ActiveRecord::RecordInvalid
       flash.now[:error] = {
-        message: "News post could not be saved because of the following problems:",
+        message: "News post could not be updated because of the following problems:",
         array: @news.errors.full_messages,
       }
       @page_title = "Edit News Post"
       render :edit
     else
-      flash[:success] = "News post saved!"
+      flash[:success] = "News post updated."
       redirect_to paged_news_url(@news)
     end
   end
 
   def destroy
     unless @news.deletable_by?(current_user)
-      flash[:error] = "You do not have permission to edit that news post."
+      flash[:error] = "You do not have permission to modify this news post."
       redirect_to news_index_path and return
     end
 
@@ -70,7 +70,7 @@ class NewsController < ApplicationController
       @news.destroy!
     rescue ActiveRecord::RecordNotDestroyed
       flash[:error] = {
-        message: "News post could not be deleted.",
+        message: "News post could not be deleted because of the following problems:",
         array: @news.errors.full_messages,
       }
     else
@@ -95,7 +95,7 @@ class NewsController < ApplicationController
 
   def require_permission
     return if @news.editable_by?(current_user)
-    flash[:error] = "You do not have permission to edit that news post."
+    flash[:error] = "You do not have permission to modify this news post."
     redirect_to news_index_path
   end
 

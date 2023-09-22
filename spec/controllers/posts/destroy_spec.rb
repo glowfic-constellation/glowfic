@@ -59,7 +59,7 @@ RSpec.describe PostsController, 'DELETE destroy' do
     delete :destroy, params: { id: post.id }
 
     expect(response).to redirect_to(post_url(post))
-    expect(flash[:error]).to eq({ message: "Post could not be deleted.", array: [] })
+    expect(flash[:error][:message]).to eq("Post could not be deleted because of the following problems:")
     expect(reply.reload.post).to eq(post)
   end
 end

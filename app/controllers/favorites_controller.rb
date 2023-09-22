@@ -57,7 +57,7 @@ class FavoritesController < ApplicationController
       fav.save!
     rescue ActiveRecord::RecordInvalid
       flash[:error] = {
-        message: "Your favorite could not be saved because of the following problems:",
+        message: "Favorite could not be saved because of the following problems:",
         array: fav.errors.full_messages,
       }
     else
@@ -73,7 +73,7 @@ class FavoritesController < ApplicationController
     end
 
     unless fav.user_id == current_user.id
-      flash[:error] = "That is not your favorite."
+      flash[:error] = "You do not have permission to modify this favorite."
       redirect_to favorites_path and return
     end
 
@@ -81,7 +81,7 @@ class FavoritesController < ApplicationController
       fav.destroy!
     rescue ActiveRecord::RecordNotDestroyed
       flash[:error] = {
-        message: "Favorite could not be deleted.",
+        message: "Favorite could not be deleted because of the following problems:",
         array: fav.errors.full_messages,
       }
       redirect_to favorites_path

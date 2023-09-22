@@ -79,14 +79,14 @@ class UsersController < ApplicationController
       current_user.update!(user_params)
     rescue ActiveRecord::RecordInvalid
       flash.now[:error] = {
-        message: "There was a problem updating your account.",
+        message: "Changes could not be saved because of the following problems:",
         array: current_user.errors.full_messages,
       }
       use_javascript('users/edit')
       @page_title = 'Edit Account'
       render :edit
     else
-      flash[:success] = "Changes saved successfully."
+      flash[:success] = "Changes saved."
       redirect_to edit_user_path(current_user)
     end
   end
@@ -110,7 +110,7 @@ class UsersController < ApplicationController
       @page_title = 'Edit Account'
       render :edit
     else
-      flash[:success] = "Changes saved successfully."
+      flash[:success] = "Changes saved."
       redirect_to edit_user_path(current_user)
     end
   end
@@ -162,7 +162,7 @@ class UsersController < ApplicationController
 
   def require_own_user
     return if params[:id] == current_user.id.to_s
-    flash[:error] = "You do not have permission to edit that user."
+    flash[:error] = "You do not have permission to modify this account."
     redirect_to(continuities_path)
   end
 
@@ -241,7 +241,7 @@ class UsersController < ApplicationController
       }
       render 'about/accept_tos'
     else
-      flash[:success] = "Acceptance saved successfully. Thank you!"
+      flash[:success] = "Acceptance saved. Thank you."
       redirect_to session[:previous_url] || root_url
     end
   end

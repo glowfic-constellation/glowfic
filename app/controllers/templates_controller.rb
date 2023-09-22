@@ -20,14 +20,14 @@ class TemplatesController < ApplicationController
       @template.save!
     rescue ActiveRecord::RecordInvalid
       flash.now[:error] = {
-        message: "Your template could not be saved because of the following problems:",
+        message: "Template could not be created because of the following problems:",
         array: @template.errors.full_messages,
       }
       editor_setup
       @page_title = "New Template"
       render :new
     else
-      flash[:success] = "Template saved successfully."
+      flash[:success] = "Template created."
       redirect_to @template
     end
   end
@@ -51,14 +51,14 @@ class TemplatesController < ApplicationController
       @template.update!(permitted_params)
     rescue ActiveRecord::RecordInvalid
       flash.now[:error] = {
-        message: "Your template could not be saved because of the following problems:",
+        message: "Template could not be updated because of the following problems:",
         array: @template.errors.full_messages,
       }
       editor_setup
       @page_title = 'Edit Template: ' + @template.name_was
       render :edit
     else
-      flash[:success] = "Template saved successfully."
+      flash[:success] = "Template updated."
       redirect_to @template
     end
   end
@@ -68,12 +68,12 @@ class TemplatesController < ApplicationController
       @template.destroy!
     rescue ActiveRecord::RecordNotDestroyed
       flash[:error] = {
-        message: "Template could not be deleted.",
+        message: "Template could not be deleted because of the following problems:",
         array: @template.errors.full_messages,
       }
       redirect_to @template
     else
-      flash[:success] = "Template deleted successfully."
+      flash[:success] = "Template deleted."
       redirect_to user_characters_path(current_user)
     end
   end
@@ -109,7 +109,7 @@ class TemplatesController < ApplicationController
 
   def require_edit_permission
     return true if @template.user_id == current_user.id
-    flash[:error] = "That is not your template."
+    flash[:error] = "You do not have permission to modify this template."
     redirect_to user_characters_path(current_user)
   end
 

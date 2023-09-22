@@ -147,14 +147,14 @@ RSpec.describe CharactersController do
       login
       post :create
       expect(response.status).to eq(200)
-      expect(flash[:error][:message]).to eq("Your character could not be saved.")
+      expect(flash[:error][:message]).to eq("Character could not be created because of the following problems:")
     end
 
     it "fails with invalid params" do
       login
       post :create, params: { character: {} }
       expect(response.status).to eq(200)
-      expect(flash[:error][:message]).to eq("Your character could not be saved.")
+      expect(flash[:error][:message]).to eq("Character could not be created because of the following problems:")
     end
 
     it "succeeds when valid" do
@@ -180,7 +180,7 @@ RSpec.describe CharactersController do
       }
 
       expect(response).to redirect_to(assigns(:character))
-      expect(flash[:success]).to eq("Character saved successfully.")
+      expect(flash[:success]).to eq("Character created.")
       expect(Character.count).to eq(1)
       character = assigns(:character).reload
       expect(character.name).to eq(test_name)
@@ -372,7 +372,7 @@ RSpec.describe CharactersController do
       user_id = login
       get :edit, params: { id: create(:character).id }
       expect(response).to redirect_to(user_characters_url(user_id))
-      expect(flash[:error]).to eq("You do not have permission to edit that character.")
+      expect(flash[:error]).to eq("You do not have permission to modify this character.")
     end
 
     it "succeeds when logged in" do
@@ -458,7 +458,7 @@ RSpec.describe CharactersController do
       user_id = login
       put :update, params: { id: create(:character).id }
       expect(response).to redirect_to(user_characters_url(user_id))
-      expect(flash[:error]).to eq("You do not have permission to edit that character.")
+      expect(flash[:error]).to eq("You do not have permission to modify this character.")
     end
 
     it "fails with invalid params" do
@@ -466,7 +466,7 @@ RSpec.describe CharactersController do
       login_as(character.user)
       put :update, params: { id: character.id, character: { name: '' } }
       expect(response.status).to eq(200)
-      expect(flash[:error][:message]).to eq("Your character could not be saved.")
+      expect(flash[:error][:message]).to eq("Character could not be updated because of the following problems:")
     end
 
     it "fails with invalid template params" do
@@ -482,7 +482,7 @@ RSpec.describe CharactersController do
         },
       }
       expect(response.status).to eq(200)
-      expect(flash[:error][:message]).to eq("Your character could not be saved.")
+      expect(flash[:error][:message]).to eq("Character could not be updated because of the following problems:")
       expect(character.reload.name).not_to eq(new_name)
     end
 
@@ -500,7 +500,7 @@ RSpec.describe CharactersController do
       admin = create(:admin_user)
       login_as(admin)
       put :update, params: { id: character.id, character: { name: 'b', audit_comment: 'note' } }
-      expect(flash[:success]).to eq("Character saved successfully.")
+      expect(flash[:success]).to eq("Character updated.")
       expect(character.reload.name).to eq('b')
       expect(character.audits.last.comment).to eq('note')
       Character.auditing_enabled = false
@@ -529,7 +529,7 @@ RSpec.describe CharactersController do
       }
 
       expect(response).to redirect_to(assigns(:character))
-      expect(flash[:success]).to eq("Character saved successfully.")
+      expect(flash[:success]).to eq("Character updated.")
       character.reload
       expect(character.name).to eq(new_name)
       expect(character.nickname).to eq('TemplateName')
@@ -565,7 +565,7 @@ RSpec.describe CharactersController do
       }
 
       expect(response.status).to eq(200)
-      expect(flash[:error][:message]).to eq("Your character could not be saved.")
+      expect(flash[:error][:message]).to eq("Character could not be updated because of the following problems:")
       character.reload
       expect(character.name).to eq(old_name)
       expect(character.nickname).to be_nil
@@ -585,7 +585,7 @@ RSpec.describe CharactersController do
       login_as(user)
       put :update, params: { id: character.id, character: { gallery_group_ids: [group.id] } }
 
-      expect(flash[:success]).to eq('Character saved successfully.')
+      expect(flash[:success]).to eq('Character updated.')
       character.reload
       expect(character.gallery_groups).to match_array([group])
       expect(character.galleries).to match_array([gallery])
@@ -615,7 +615,7 @@ RSpec.describe CharactersController do
       login_as(user)
       put :update, params: { id: character.id, character: { gallery_group_ids: [group2.id, group4.id] } }
 
-      expect(flash[:success]).to eq('Character saved successfully.')
+      expect(flash[:success]).to eq('Character updated.')
       character.reload
       expect(character.gallery_groups).to match_array([group2, group4])
       expect(character.galleries).to match_array([gallery1, gallery2])
@@ -640,7 +640,7 @@ RSpec.describe CharactersController do
           gallery_group_ids: [group.id],
         },
       }
-      expect(flash[:success]).to eq('Character saved successfully.')
+      expect(flash[:success]).to eq('Character updated.')
       character.reload
       expect(character.gallery_groups).to match_array([group])
       expect(character.galleries).to match_array([gallery])
@@ -662,7 +662,7 @@ RSpec.describe CharactersController do
           ungrouped_gallery_ids: [gallery.id],
         },
       }
-      expect(flash[:success]).to eq('Character saved successfully.')
+      expect(flash[:success]).to eq('Character updated.')
       character.reload
       expect(character.gallery_groups).to match_array([group])
       expect(character.galleries).to match_array([gallery])
@@ -677,7 +677,7 @@ RSpec.describe CharactersController do
 
       login_as(character.user)
       put :update, params: { id: character.id, character: { gallery_group_ids: [group.id] } }
-      expect(flash[:success]).to eq('Character saved successfully.')
+      expect(flash[:success]).to eq('Character updated.')
       character.reload
       expect(character.gallery_groups).to match_array([group])
       expect(character.galleries).to be_blank
@@ -691,7 +691,7 @@ RSpec.describe CharactersController do
 
       login_as(user)
       put :update, params: { id: character.id, character: { gallery_group_ids: [''] } }
-      expect(flash[:success]).to eq('Character saved successfully.')
+      expect(flash[:success]).to eq('Character updated.')
       character.reload
       expect(character.gallery_groups).to eq([])
       expect(character.galleries).to eq([])
@@ -748,7 +748,7 @@ RSpec.describe CharactersController do
         id: char.id,
         character: { setting_ids: [setting1, setting2, setting3].map(&:id) },
       }
-      expect(flash[:success]).to eq('Character saved successfully.')
+      expect(flash[:success]).to eq('Character updated.')
       expect(char.settings).to eq([setting1, setting2, setting3])
     end
 
@@ -764,7 +764,7 @@ RSpec.describe CharactersController do
         id: char.id,
         character: { gallery_group_ids: [group1, group2, group3, group4].map(&:id) },
       }
-      expect(flash[:success]).to eq('Character saved successfully.')
+      expect(flash[:success]).to eq('Character updated.')
       expect(char.gallery_groups).to eq([group1, group2, group3, group4])
     end
   end
@@ -845,7 +845,7 @@ RSpec.describe CharactersController do
       expect(character.user_id).not_to eq(user.id)
       delete :destroy, params: { id: character.id }
       expect(response).to redirect_to(user_characters_url(user.id))
-      expect(flash[:error]).to eq("You do not have permission to edit that character.")
+      expect(flash[:error]).to eq("You do not have permission to modify this character.")
     end
 
     it "succeeds" do
@@ -853,7 +853,7 @@ RSpec.describe CharactersController do
       login_as(character.user)
       delete :destroy, params: { id: character.id }
       expect(response).to redirect_to(user_characters_url(character.user_id))
-      expect(flash[:success]).to eq("Character deleted successfully.")
+      expect(flash[:success]).to eq("Character deleted.")
       expect(Character.find_by_id(character.id)).to be_nil
     end
 
@@ -870,7 +870,7 @@ RSpec.describe CharactersController do
       delete :destroy, params: { id: character.id }
 
       expect(response).to redirect_to(character_url(character))
-      expect(flash[:error]).to eq({ message: "Character could not be deleted.", array: [] })
+      expect(flash[:error][:message]).to eq("Character could not be deleted because of the following problems:")
       expect(post.reload.character).to eq(character)
     end
   end
@@ -898,7 +898,7 @@ RSpec.describe CharactersController do
       user_id = login
       get :replace, params: { id: character.id }
       expect(response).to redirect_to(user_characters_url(user_id))
-      expect(flash[:error]).to eq('You do not have permission to edit that character.')
+      expect(flash[:error]).to eq('You do not have permission to modify this character.')
     end
 
     it "sets correct variables" do
@@ -1005,7 +1005,7 @@ RSpec.describe CharactersController do
       user_id = login
       post :do_replace, params: { id: character.id }
       expect(response).to redirect_to(user_characters_url(user_id))
-      expect(flash[:error]).to eq('You do not have permission to edit that character.')
+      expect(flash[:error]).to eq('You do not have permission to modify this character.')
     end
 
     it "requires valid other character" do
@@ -1022,7 +1022,7 @@ RSpec.describe CharactersController do
       login_as(character.user)
       post :do_replace, params: { id: character.id, icon_dropdown: other_char.id }
       expect(response).to redirect_to(replace_character_path(character))
-      expect(flash[:error]).to eq('That is not your character.')
+      expect(flash[:error]).to eq('You do not have permission to modify this character.')
     end
 
     it "requires valid new alias if parameter provided" do
@@ -1373,7 +1373,7 @@ RSpec.describe CharactersController do
       user_id = login
       post :duplicate, params: { id: create(:character).id }
       expect(response).to redirect_to(user_characters_url(user_id))
-      expect(flash[:error]).to eq('You do not have permission to edit that character.')
+      expect(flash[:error]).to eq('You do not have permission to modify this character.')
     end
 
     it "succeeds" do
@@ -1406,7 +1406,7 @@ RSpec.describe CharactersController do
       dupe = Character.last
       character.reload
       expect(response).to redirect_to(edit_character_url(dupe))
-      expect(flash[:success]).to eq('Character duplicated successfully. You are now editing the new character.')
+      expect(flash[:success]).to eq('Character duplicated. You are now editing the new character.')
 
       expect(dupe).not_to eq(character)
 
@@ -1451,7 +1451,7 @@ RSpec.describe CharactersController do
       expect(character).not_to be_valid
       expect { post :duplicate, params: { id: character.id } }.to not_change { Character.count }
       expect(response).to redirect_to(character_path(character))
-      expect(flash[:error][:message]).to eq('Character could not be duplicated.')
+      expect(flash[:error][:message]).to eq('Character could not be duplicated because of the following problems:')
       expect(flash[:error][:array]).to eq(['Default icon must be yours'])
     end
   end

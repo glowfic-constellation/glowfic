@@ -18,7 +18,7 @@ class AliasesController < ApplicationController
       @alias.save!
     rescue ActiveRecord::RecordInvalid
       flash.now[:error] = {
-        message: "Alias could not be created.",
+        message: "Alias could not be created because of the following problems:",
         array: @alias.errors.full_messages,
       }
       @page_title = "New Alias: " + @character.name
@@ -34,7 +34,7 @@ class AliasesController < ApplicationController
       @alias.destroy!
     rescue ActiveRecord::RecordNotDestroyed
       flash[:error] = {
-        message: "Alias could not be deleted.",
+        message: "Alias could not be deleted because of the following problems:",
         array: @alias.errors.full_messages,
       }
     else
@@ -58,8 +58,7 @@ class AliasesController < ApplicationController
     end
 
     return if @character.user == current_user
-
-    flash[:error] = "That is not your character."
+    flash[:error] = "You do not have permission to modify this character."
     redirect_to user_characters_path(current_user)
   end
 

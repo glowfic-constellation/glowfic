@@ -353,7 +353,7 @@ RSpec.describe PostsController, 'POST create' do
       },
     }
 
-    expect(flash[:success]).to eq("You have successfully posted.")
+    expect(flash[:success]).to eq("Post created.")
     post = assigns(:post).reload
     expect(post.tagging_authors).to match_array([user, other_user])
 
@@ -391,7 +391,7 @@ RSpec.describe PostsController, 'POST create' do
     }
 
     expect(response).to render_template(:new)
-    expect(flash[:error][:message]).to eq("Your post could not be saved because of the following problems:")
+    expect(flash[:error][:message]).to eq("Post could not be created because of the following problems:")
     expect(assigns(:post)).not_to be_persisted
     expect(assigns(:post).user).to eq(user)
     expect(assigns(:post).subject).to eq('asubjct')
@@ -466,7 +466,7 @@ RSpec.describe PostsController, 'POST create' do
       }
     }.to change { Post.count }.by(1)
     expect(response).to redirect_to(post_path(assigns(:post)))
-    expect(flash[:success]).to eq("You have successfully posted.")
+    expect(flash[:success]).to eq("Post created.")
 
     post = assigns(:post).reload
     expect(post).to be_persisted

@@ -148,13 +148,13 @@ class RepliesController < WritableController
       reply.save!
     rescue ActiveRecord::RecordInvalid
       flash[:error] = {
-        message: "Your reply could not be saved because of the following problems:",
+        message: "Reply could not be created because of the following problems:",
         array: reply.errors.full_messages,
       }
       redirect_to posts_path and return unless reply.post
       redirect_to post_path(reply.post)
     else
-      flash[:success] = "Posted!"
+      flash[:success] = "Reply posted."
       redirect_to reply_path(reply, anchor: "reply-#{reply.id}")
     end
   end
@@ -186,7 +186,7 @@ class RepliesController < WritableController
       @reply.save!
     rescue ActiveRecord::RecordInvalid
       flash[:error] = {
-        message: "Your reply could not be saved because of the following problems:",
+        message: "Reply could not be updated because of the following problems:",
         array: @reply.errors.full_messages,
       }
       @audits = { @reply.id => @post.audits.count }
@@ -200,7 +200,7 @@ class RepliesController < WritableController
 
   def destroy
     unless @reply.deletable_by?(current_user)
-      flash[:error] = "You do not have permission to modify this post."
+      flash[:error] = "You do not have permission to modify this reply."
       redirect_to post_path(@reply.post) and return
     end
 
@@ -212,7 +212,7 @@ class RepliesController < WritableController
       @reply.destroy!
     rescue ActiveRecord::RecordNotDestroyed
       flash[:error] = {
-        message: "Reply could not be deleted.",
+        message: "Reply could not be deleted because of the following problems:",
         array: @reply.errors.full_messages,
       }
       redirect_to reply_path(@reply, anchor: "reply-#{@reply.id}")
@@ -237,7 +237,7 @@ class RepliesController < WritableController
     new_reply = Reply.new(audit.audited_changes)
     new_reply.created_at = Audited::Audit.order(id: :asc).find_by(action: 'create', auditable_id: params[:id]).created_at
     unless new_reply.editable_by?(current_user)
-      flash[:error] = "You do not have permission to modify this post."
+      flash[:error] = "You do not have permission to modify this reply."
       redirect_to post_path(new_reply.post) and return
     end
 
@@ -254,7 +254,7 @@ class RepliesController < WritableController
       new_reply.save!
     end
 
-    flash[:success] = "Reply has been restored!"
+    flash[:success] = "Reply restored."
     redirect_to reply_path(new_reply)
   end
 
@@ -313,11 +313,11 @@ class RepliesController < WritableController
       draft.save!
     rescue ActiveRecord::RecordInvalid
       flash[:error] = {
-        message: "Your draft could not be saved because of the following problems:",
+        message: "Draft could not be saved because of the following problems:",
         array: draft.errors.full_messages,
       }
     else
-      flash[:success] = "Draft saved!" if show_message
+      flash[:success] = "Draft saved." if show_message
     end
     draft
   end

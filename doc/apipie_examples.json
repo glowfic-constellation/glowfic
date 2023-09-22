@@ -807,7 +807,7 @@
       "response_data": {
         "errors": [
           {
-            "message": "That is not your icon."
+            "message": "You do not have permission to modify this icon."
           }
         ]
       },

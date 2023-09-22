@@ -72,7 +72,7 @@ RSpec.describe NewsController do
       post :create, params: { news: { content: '' } }
       expect(response).to render_template(:new)
       expect(assigns(:page_title)).to eq('Create News Post')
-      expect(flash[:error][:message]).to eq("News post could not be created.")
+      expect(flash[:error][:message]).to eq("News post could not be created because of the following problems:")
     end
 
     it "works for staff" do
@@ -151,7 +151,7 @@ RSpec.describe NewsController do
       login_as(other_mod)
       get :edit, params: { id: news.id }
       expect(response).to redirect_to(news_index_url)
-      expect(flash[:error]).to eq("You do not have permission to edit that news post.")
+      expect(flash[:error]).to eq("You do not have permission to modify this news post.")
     end
 
     it "works for admins" do
@@ -198,7 +198,7 @@ RSpec.describe NewsController do
       login_as(other_mod)
       patch :update, params: { id: news.id }
       expect(response).to redirect_to(news_index_url)
-      expect(flash[:error]).to eq("You do not have permission to edit that news post.")
+      expect(flash[:error]).to eq("You do not have permission to modify this news post.")
     end
 
     it "errors without content" do
@@ -207,7 +207,7 @@ RSpec.describe NewsController do
       patch :update, params: { id: news.id, news: { content: '' } }
       expect(response).to render_template(:edit)
       expect(assigns(:page_title)).to eq('Edit News Post')
-      expect(flash[:error][:message]).to eq("News post could not be saved because of the following problems:")
+      expect(flash[:error][:message]).to eq("News post could not be updated because of the following problems:")
     end
 
     it "works for admins" do
@@ -254,7 +254,7 @@ RSpec.describe NewsController do
       login_as(other_mod)
       delete :destroy, params: { id: news.id }
       expect(response).to redirect_to(news_index_url)
-      expect(flash[:error]).to eq("You do not have permission to edit that news post.")
+      expect(flash[:error]).to eq("You do not have permission to modify this news post.")
     end
 
     it "errors if something fails" do
@@ -269,7 +269,7 @@ RSpec.describe NewsController do
       delete :destroy, params: { id: news.id }
 
       expect(response).to redirect_to(news_index_url)
-      expect(flash[:error]).to eq({ message: "News post could not be deleted.", array: [] })
+      expect(flash[:error][:message]).to eq("News post could not be deleted because of the following problems:")
       expect(news.reload).not_to be_nil
     end
 

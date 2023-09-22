@@ -50,15 +50,15 @@ class CharactersController < ApplicationController
     begin
       @character.save!
     rescue ActiveRecord::RecordInvalid
-      @page_title = "New Character"
       flash.now[:error] = {
-        message: "Your character could not be saved.",
+        message: "Character could not be created because of the following problems:",
         array: @character.errors.full_messages,
       }
+      @page_title = "New Character"
       editor_setup
       render :new
     else
-      flash[:success] = "Character saved successfully."
+      flash[:success] = "Character created."
       redirect_to @character
     end
   end
@@ -91,15 +91,15 @@ class CharactersController < ApplicationController
         @character.save!
       end
     rescue ActiveRecord::RecordInvalid
-      @page_title = "Edit Character: " + @character.name
       flash.now[:error] = {
-        message: "Your character could not be saved.",
+        message: "Character could not be updated because of the following problems:",
         array: @character.errors.full_messages,
       }
+      @page_title = "Edit Character: " + @character.name
       editor_setup
       render :edit
     else
-      flash[:success] = "Character saved successfully."
+      flash[:success] = "Character updated."
       redirect_to @character
     end
   end
@@ -121,19 +121,19 @@ class CharactersController < ApplicationController
       end
     rescue ActiveRecord::RecordInvalid
       flash[:error] = {
-        message: "Character could not be duplicated.",
+        message: "Character could not be duplicated because of the following problems:",
         array: dupe.errors.full_messages,
       }
       redirect_to @character
     else
-      flash[:success] = "Character duplicated successfully. You are now editing the new character."
+      flash[:success] = "Character duplicated. You are now editing the new character."
       redirect_to edit_character_path(dupe)
     end
   end
 
   def destroy
     unless @character.deletable_by?(current_user)
-      flash[:error] = "You do not have permission to edit that character."
+      flash[:error] = "You do not have permission to modify this character."
       redirect_to user_characters_path(current_user) and return
     end
 
@@ -141,12 +141,12 @@ class CharactersController < ApplicationController
       @character.destroy!
     rescue ActiveRecord::RecordNotDestroyed
       flash[:error] = {
-        message: "Character could not be deleted.",
+        message: "Character could not be deleted because of the following problems:",
         array: @character.errors.full_messages,
       }
       redirect_to @character
     else
-      flash[:success] = "Character deleted successfully."
+      flash[:success] = "Character deleted."
       redirect_to user_characters_path(current_user)
     end
   end
@@ -207,7 +207,7 @@ class CharactersController < ApplicationController
     end
 
     if new_char && new_char.user_id != current_user.id
-      flash[:error] = "That is not your character."
+      flash[:error] = "You do not have permission to modify this character."
       redirect_to replace_character_path(@character) and return
     end
 
@@ -321,7 +321,7 @@ class CharactersController < ApplicationController
 
   def require_edit_permission
     return if @character.editable_by?(current_user)
-    flash[:error] = "You do not have permission to edit that character."
+    flash[:error] = "You do not have permission to modify this character."
     redirect_to user_characters_path(current_user)
   end
 
