@@ -114,7 +114,7 @@ class MessagesController < ApplicationController
       messages.each do |message|
         box_attr = "visible_#{box}"
         user_id_attr = (box == 'inbox') ? 'recipient_id' : 'sender_id'
-        Message.where(thread_id: message.thread_id, "#{user_id_attr}": current_user.id).each do |thread_message|
+        Message.where(thread_id: message.thread_id, "#{user_id_attr}": current_user.id).find_each do |thread_message|
           thread_message.update(box_attr => false, unread: false, read_at: thread_message.read_at || Time.zone.now)
         end
       end

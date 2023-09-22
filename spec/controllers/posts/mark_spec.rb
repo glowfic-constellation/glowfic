@@ -25,7 +25,7 @@ RSpec.describe PostsController, 'POST mark' do
       expect(posts[0].last_read(user)).to be_nil
       expect(posts[1].last_read(user)).to be_nil
 
-      post :mark, params: { marked_ids: posts.map(&:id).map(&:to_s), commit: "Mark Read" }
+      post :mark, params: { marked_ids: posts.map { |x| x.id.to_s }, commit: "Mark Read" }
 
       expect(response).to redirect_to(unread_posts_url)
       expect(flash[:success]).to eq("2 posts marked as read.")
@@ -36,7 +36,7 @@ RSpec.describe PostsController, 'POST mark' do
     it "works for reader users" do
       user.update!(role_id: Permissible::READONLY)
 
-      post :mark, params: { marked_ids: posts.map(&:id).map(&:to_s), commit: "Mark Read" }
+      post :mark, params: { marked_ids: posts.map { |x| x.id.to_s }, commit: "Mark Read" }
 
       expect(response).to redirect_to(unread_posts_url)
       expect(flash[:success]).to eq("2 posts marked as read.")
@@ -54,7 +54,7 @@ RSpec.describe PostsController, 'POST mark' do
     end
 
     it "ignores posts" do
-      post :mark, params: { marked_ids: posts.map(&:id).map(&:to_s) }
+      post :mark, params: { marked_ids: posts.map { |x| x.id.to_s } }
 
       expect(response).to redirect_to(unread_posts_url)
       expect(flash[:success]).to eq("2 posts hidden from this page.")
@@ -65,7 +65,7 @@ RSpec.describe PostsController, 'POST mark' do
     it "works for reader users" do
       user.update!(role_id: Permissible::READONLY)
 
-      post :mark, params: { marked_ids: posts.map(&:id).map(&:to_s) }
+      post :mark, params: { marked_ids: posts.map { |x| x.id.to_s } }
 
       expect(response).to redirect_to(unread_posts_url)
       expect(flash[:success]).to eq("2 posts hidden from this page.")
@@ -89,7 +89,7 @@ RSpec.describe PostsController, 'POST mark' do
 
       expect(post1.reload.last_read(user)).to be_nil
 
-      post :mark, params: { marked_ids: [post1, post2, post3].map(&:id).map(&:to_s) }
+      post :mark, params: { marked_ids: [post1, post2, post3].map { |x| x.id.to_s } }
 
       expect(response).to redirect_to(unread_posts_url)
       expect(flash[:success]).to eq("3 posts hidden from this page.")

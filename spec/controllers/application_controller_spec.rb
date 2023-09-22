@@ -284,7 +284,7 @@ RSpec.describe ApplicationController do
       post3 = create(:post)
       post4 = create(:post)
 
-      expect(controller.send(:posts_from_relation, Post.all.order(tagged_at: :asc))).to eq([post1, post2, post3, post4])
+      expect(controller.send(:posts_from_relation, Post.order(tagged_at: :asc))).to eq([post1, post2, post3, post4])
       expect(controller.send(:posts_from_relation, Post.all.ordered)).to eq([post4, post3, post2, post1])
     end
 

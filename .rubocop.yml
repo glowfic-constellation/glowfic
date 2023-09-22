@@ -905,20 +905,8 @@ Style/InPatternThen: # new in 1.16
   Enabled: true
 
 Style/InvertibleUnlessCondition:  # new in 1.44
-  Enabled: true
-  InverseMethods:
-    :!=: :==
-    :>: :<=
-    :<=: :>
-    :<: :>=
-    :>=: :<
-    :!~: :=~
-    :zero?: :nonzero?
-    :nonzero?: :zero?
-    :any?: :none?
-    :none?: :any?
-    :even?: :odd?
-    :odd?: :even?
+  Enabled: false
+  # overriding InverseMethods isn't working right now and we have a lot of fine examples of "unless .present?"
 
 Style/KeywordParametersOrder:
   Enabled: false

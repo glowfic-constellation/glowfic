@@ -5,7 +5,7 @@ RSpec.describe Api::V1::TemplatesController do
       create(:template, name: 'aba') # midtemplate
       create(:template, name: 'aab') # endtemplate
       create(:template, name: 'aaa') # nottemplate
-      Template.all.each do |template|
+      Template.find_each do |template|
         create(:template, name: template.name.upcase + 'c')
       end
     end
@@ -18,29 +18,29 @@ RSpec.describe Api::V1::TemplatesController do
       expect(response.json['results'].count).to eq(8)
     end
 
-    it "works logged out", show_in_doc: true do
+    it "works logged out", :show_in_doc do
       create_search_templates
       get :index, params: { q: 'b' }
       expect(response).to have_http_status(200)
       expect(response.json['results'].count).to eq(2)
     end
 
-    it "raises error on invalid page", show_in_doc: true do
+    it "raises error on invalid page", :show_in_doc do
       get :index, params: { page: 'b' }
       expect(response).to have_http_status(422)
     end
 
-    it "raises error on invalid user", show_in_doc: true do
+    it "raises error on invalid user", :show_in_doc do
       get :index, params: { user_id: 'b' }
       expect(response).to have_http_status(422)
     end
 
-    it "raises error on not found user", show_in_doc: true do
+    it "raises error on not found user", :show_in_doc do
       get :index, params: { user_id: '12' }
       expect(response).to have_http_status(422)
     end
 
-    it "finds only user's templates", show_in_doc: true do
+    it "finds only user's templates", :show_in_doc do
       user = create(:user)
       notuser = create(:user)
       template = create(:template, user: user)

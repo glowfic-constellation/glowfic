@@ -299,7 +299,7 @@ RSpec.feature "Viewing a character" do
     end
   end
 
-  scenario "Viewing many character galleries", js: true do
+  scenario "Viewing many character galleries", :js do
     user = create(:user, username: 'Example user', password: 'known')
     icons = Array.new(4) { |i| create(:icon, user: user, keyword: "Default#{i}", url: "https://example.com/image#{i}.png") }
     galleries = Array.new(4) { |i| create(:gallery, user: user, icons: [icons[i]], name: "Gallery #{i}") }

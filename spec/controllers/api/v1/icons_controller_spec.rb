@@ -1,5 +1,5 @@
 RSpec.describe Api::V1::IconsController do
-  describe "POST s3_delete", show_in_doc: true do
+  describe "POST s3_delete", :show_in_doc do
     it "should require login" do
       expect(S3_BUCKET).not_to receive(:delete_objects)
       post :s3_delete
