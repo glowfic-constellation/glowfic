@@ -598,11 +598,6 @@ RSpec/ExcessiveDocstringSpacing: # new in 2.5
 RSpec/ExpectChange:
   EnforcedStyle: block
 
-RSpec/FilePath:
-  Exclude:
-    - 'spec/controllers/posts/*'
-    - 'spec/controllers/replies/*'
-
 RSpec/HookArgument:
   EnforcedStyle: each
 
@@ -644,6 +639,15 @@ RSpec/SkipBlockInsideExample: # new in 2.19
   Enabled: true
 
 RSpec/SortMetadata: # new in 2.14
+  Enabled: true
+
+RSpec/SpecFilePathFormat: # new in 2.24
+  Enabled: true
+  Exclude:
+    - 'spec/controllers/posts/*'
+    - 'spec/controllers/replies/*'
+
+RSpec/SpecFilePathSuffix: # new in 2.24
   Enabled: true
 
 RSpec/StubbedMock:
