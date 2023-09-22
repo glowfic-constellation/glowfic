@@ -162,7 +162,7 @@ Lint/EmptyInPattern: # new in 1.16
   Enabled: true
 
 Lint/IncompatibleIoSelectWithFiberScheduler: # new in 1.21
-  Enabled: true
+  Enabled: false # unlikely to use IO select
 
 Lint/LambdaWithoutLiteralBlock: # (new in 1.8)
   Enabled: true
@@ -445,7 +445,7 @@ Rails/Inquiry:
   Enabled: true
 
 Rails/I18nLocaleAssignment: # new in 2.11
-  Enabled: true
+  Enabled: false
 
 Rails/MailerName:
   Enabled: true
