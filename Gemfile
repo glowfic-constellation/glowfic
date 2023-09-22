@@ -61,7 +61,7 @@ group :development do
   gem 'rack-mini-profiler'
   gem 'rubocop', '~> 1.51.0', require: false
   gem 'rubocop-performance', '~> 1.18.0', require: false
-  gem 'rubocop-rails', '~> 2.19.0', require: false
+  gem 'rubocop-rails', '~> 2.21.1', require: false
   gem 'rubocop-rspec', '~> 2.22.0', require: false
   gem 'traceroute'
 end
