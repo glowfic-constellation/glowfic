@@ -171,6 +171,9 @@ Lint/MissingSuper:
   Exclude:
     - 'app/services/daily_report.rb'
 
+Lint/MixedCaseRange: # new in 1.53
+  Enabled: true
+
 Lint/NonAtomicFileOperation: # new in 1.31
   Enabled: true
 
@@ -194,6 +197,9 @@ Lint/RefinementImportMethods: # new in 1.27
   Enabled: true
 
 Lint/RequireRangeParentheses: # new in 1.32
+  Enabled: true
+
+Lint/RedundantRegexpQuantifiers: # new in 1.53
   Enabled: true
 
 Lint/RequireRelativeSelfPath: # new in 1.22
@@ -220,6 +226,9 @@ Lint/UnmodifiedReduceAccumulator: # (new in 1.1)
   Enabled: true
 
 Lint/UselessRescue: # new in 1.43
+  Enabled: true
+
+Lint/UselessRuby2Keywords: # new in 1.23
   Enabled: true
 
 ###################### Metrics ####################################
@@ -300,6 +309,9 @@ Performance/ConstantRegexp:
   Enabled: true
 
 Performance/MapCompact: # (new in 1.11)
+  Enabled: true
+
+Performance/MapMethodChain: # new in 1.19
   Enabled: true
 
 Performance/MethodObjectAsBlock:
@@ -383,6 +395,9 @@ Rails/CompactBlank: # new in 2.13
   Enabled: true
 
 Rails/ContentTag:
+  Enabled: true
+
+Rails/DangerousColumnNames: # new in 2.21
   Enabled: true
 
 Rails/DeprecatedActiveModelErrorsMethods: # new in 2.14
@@ -475,6 +490,9 @@ Rails/PluckInWhere:
 Rails/ReadWriteAttribute:
   Enabled: false
 
+Rails/RedundantActiveRecordAllMethod: # new in 2.21
+  Enabled: true
+
 Rails/RedundantPresenceValidationOnBelongsTo: # new in 2.13
   Enabled: true
 
@@ -501,6 +519,9 @@ Rails/RootPublicPath: # new in 2.15
   Enabled: true
 
 Rails/SaveBang:
+  Enabled: true
+
+Rails/SelectMap: # new in 2.21
   Enabled: true
 
 Rails/ShortI18n:
@@ -535,6 +556,9 @@ Rails/UniqueValidationWithoutIndex:
   Enabled: false
 
 Rails/UnusedIgnoredColumns: # new in 2.11
+  Enabled: true
+
+Rails/UnusedRenderContent: # new in 2.21
   Enabled: true
 
 Rails/WhereEquals:
@@ -586,6 +610,12 @@ RSpec/DescribeMethod:
 RSpec/DuplicatedMetadata: # new in 2.16
   Enabled: true
 
+RSpec/EmptyMetadata: # new in 2.24
+  Enabled: true
+
+RSpec/Eq: # new in 2.24
+  Enabled: true
+
 RSpec/ExampleLength:
   Enabled: false
 
@@ -617,6 +647,9 @@ RSpec/MatchArray: # new in 2.19
 RSpec/MessageSpies:
   EnforcedStyle: receive
 
+RSpec/MetadataStyle: # new in 2.24
+  Enabled: true
+
 RSpec/MultipleExpectations:
   Enabled: false
 
@@ -631,6 +664,9 @@ RSpec/NoExpectationExample: # new in 2.13
 
 RSpec/PendingWithoutReason: # new in 2.16
   Enabled: false
+
+RSpec/ReceiveMessages: # new in 2.23
+  Enabled: true
 
 RSpec/RedundantAround: # new in 2.19
   Enabled: true
@@ -665,12 +701,21 @@ RSpec/VerifiedDoubleReference: # new in 2.10.0
 RSpec/Capybara/FeatureMethods:
   EnabledMethods: [feature, scenario]
 
+Capybara/ClickLinkOrButtonStyle: # new in 2.19
+  Enabled: true
+
 Capybara/MatchStyle: # new in 2.17
   Enabled: true
 
 Capybara/NegationMatcher: # new in 2.14
   Enabled: true
   EnforcedStyle: have_no
+
+Capybara/RSpec/HaveSelector: # new in 2.19
+  Enabled: false
+
+Capybara/RSpec/PredicateMatcher: # new in 2.19
+  Enabled: true
 
 Capybara/SpecificActions: # new in 2.14
   Enabled: true
@@ -693,6 +738,9 @@ FactoryBot/FactoryAssociationWithStrategy: # new in 2.23
   Enabled: true
 
 FactoryBot/FactoryNameStyle: # new in 2.16
+  Enabled: true
+
+FactoryBot/IdSequence: # new in 2.24
   Enabled: true
 
 FactoryBot/RedundantFactoryOption: # new in 2.23
@@ -718,6 +766,9 @@ RSpec/Rails/InferredSpecType: # new in 2.14
 RSpec/Rails/MinitestAssertions: # new in 2.17
   Enabled: true
 
+RSpec/Rails/NegationBeValid: # new in 2.23
+  Enabled: true
+
 RSpec/Rails/TravelAround: # new in 2.19
   Enabled: true
 
@@ -736,6 +787,7 @@ Style/AndOr:
 
 Style/ArgumentsForwarding: # (new in 1.1)
   Enabled: true
+  UseAnonymousForwarding: false  # TODO: consider enabling
 
 Style/ArrayIntersect: # new in 1.40
   Enabled: true
@@ -944,6 +996,9 @@ Style/QuotedSymbols: # new in 1.16
 Style/RaiseArgs:
   Enabled: false
 
+Style/RedundantArrayConstructor: # new in 1.52
+  Enabled: true
+
 Style/RedundantArgument: # (new in 1.4)
   Enabled: false
 
@@ -951,6 +1006,9 @@ Style/RedundantBegin:
   Enabled: false
 
 Style/RedundantConstantBase: # new in 1.40
+  Enabled: true
+
+Style/RedundantCurrentDirectoryInPath: # new in 1.53
   Enabled: true
 
 Style/RedundantDoubleSplatHashBraces: # new in 1.41
@@ -962,6 +1020,9 @@ Style/RedundantEach: # new in 1.38
 Style/RedundantException:
   Enabled: false
 
+Style/RedundantFilterChain: # new in 1.52
+  Enabled: true
+
 Style/RedundantHeredocDelimiterQuotes: # new in 1.45
   Enabled: true
 
@@ -969,6 +1030,12 @@ Style/RedundantInitialize: # new in 1.27
   Enabled: true
 
 Style/RedundantLineContinuation: # new in 1.49
+  Enabled: true
+
+Style/RedundantRegexpArgument: # new in 1.53
+  Enabled: true
+
+Style/RedundantRegexpConstructor: # new in 1.52
   Enabled: true
 
 Style/RedundantSelf:
@@ -983,6 +1050,9 @@ Style/RedundantStringEscape: # new in 1.37
 Style/RegexpLiteral:
   EnforcedStyle: 'slashes'
   AllowInnerSlashes: true
+
+Style/ReturnNilInPredicateMethodDefinition: # new in 1.53
+  Enabled: true
 
 Style/SelectByRegexp: # new in 1.22
   Enabled: true
@@ -1018,8 +1088,8 @@ Style/TrailingCommaInArrayLiteral:
 Style/TrailingCommaInHashLiteral:
   EnforcedStyleForMultiline: 'consistent_comma'
 
-Lint/UselessRuby2Keywords: # new in 1.23
-  Enabled: true
-
 Style/WordArray:
   Enabled: false
+
+Style/YAMLFileRead:
+  Enabled: true
