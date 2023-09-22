@@ -51,8 +51,8 @@ RSpec.describe RepliesController, 'GET history' do
 
       get :history, params: { id: reply.id }
       expect(response.status).to eq(200)
-      expect(assigns(:versions)).to be_kind_of(ActiveRecord::Relation)
-      expect(assigns(:versions).first).to be_kind_of(Version)
+      expect(assigns(:versions)).to be_a(ActiveRecord::Relation)
+      expect(assigns(:versions).first).to be_a(Version)
     end
 
     it "works with audits" do
@@ -64,8 +64,8 @@ RSpec.describe RepliesController, 'GET history' do
 
       get :history, params: { id: reply.id }
       expect(response.status).to eq(200)
-      expect(assigns(:versions)).to be_kind_of(ActiveRecord::Relation)
-      expect(assigns(:versions).first).to be_kind_of(Audited::Audit)
+      expect(assigns(:versions)).to be_a(ActiveRecord::Relation)
+      expect(assigns(:versions).first).to be_a(Audited::Audit)
       Audited.auditing_enabled = false
     end
 
@@ -80,9 +80,9 @@ RSpec.describe RepliesController, 'GET history' do
 
       get :history, params: { id: reply.id }
       expect(response.status).to eq(200)
-      expect(assigns(:versions)).to be_kind_of(Array)
-      expect(assigns(:versions).first).to be_kind_of(Audited::Audit)
-      expect(assigns(:versions).last).to be_kind_of(Version)
+      expect(assigns(:versions)).to be_a(Array)
+      expect(assigns(:versions).first).to be_a(Audited::Audit)
+      expect(assigns(:versions).last).to be_a(Version)
     end
   end
 end

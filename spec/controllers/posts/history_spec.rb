@@ -55,8 +55,8 @@ RSpec.describe PostsController, 'GET history' do
 
       get :history, params: { id: post.id }
       expect(response.status).to eq(200)
-      expect(assigns(:versions)).to be_kind_of(ActiveRecord::Relation)
-      expect(assigns(:versions).first).to be_kind_of(Audited::Audit)
+      expect(assigns(:versions)).to be_a(ActiveRecord::Relation)
+      expect(assigns(:versions).first).to be_a(Audited::Audit)
     end
 
     it "works with mixed audits and versions" do
@@ -73,9 +73,9 @@ RSpec.describe PostsController, 'GET history' do
 
       get :history, params: { id: post.id }
       expect(response.status).to eq(200)
-      expect(assigns(:versions)).to be_kind_of(Array)
-      expect(assigns(:versions).first).to be_kind_of(Audited::Audit)
-      expect(assigns(:versions).last).to be_kind_of(Version)
+      expect(assigns(:versions)).to be_a(Array)
+      expect(assigns(:versions).first).to be_a(Audited::Audit)
+      expect(assigns(:versions).last).to be_a(Version)
     end
   end
 end

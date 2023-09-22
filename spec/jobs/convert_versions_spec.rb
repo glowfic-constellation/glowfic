@@ -120,7 +120,7 @@ RSpec.describe "#convert_versions" do # rubocop:disable Rspec/DescribeClass
         Audited.audit_class.as_user(user) { post }
         audit = post.audits.first
         version = setup_version(audit, Post::Version)
-        expect(version).to be_kind_of(Post::Version)
+        expect(version).to be_a(Post::Version)
         expect(version.item_id).to eq(post.id)
         expect(version.item_type).to eq('Post')
         expect(version.event).to eq('create')
@@ -154,7 +154,7 @@ RSpec.describe "#convert_versions" do # rubocop:disable Rspec/DescribeClass
         end
         audit = post.audits.last
         version = setup_version(audit, Post::Version)
-        expect(version).to be_kind_of(Post::Version)
+        expect(version).to be_a(Post::Version)
         expect(version.item_id).to eq(post.id)
         expect(version.item_type).to eq('Post')
         expect(version.event).to eq('update')
@@ -181,7 +181,7 @@ RSpec.describe "#convert_versions" do # rubocop:disable Rspec/DescribeClass
         end
         audit = post.audits.last
         version = setup_version(audit, Post::Version)
-        expect(version).to be_kind_of(Post::Version)
+        expect(version).to be_a(Post::Version)
         expect(version.item_id).to eq(post.id)
         expect(version.item_type).to eq('Post')
         expect(version.event).to eq('destroy')
@@ -212,7 +212,7 @@ RSpec.describe "#convert_versions" do # rubocop:disable Rspec/DescribeClass
         Audited.audit_class.as_user(user) { reply }
         audit = reply.audits.first
         version = setup_version(audit, Reply::Version)
-        expect(version).to be_kind_of(Reply::Version)
+        expect(version).to be_a(Reply::Version)
         expect(version.item_id).to eq(reply.id)
         expect(version.item_type).to eq('Reply')
         expect(version.event).to eq('create')
@@ -266,7 +266,7 @@ RSpec.describe "#convert_versions" do # rubocop:disable Rspec/DescribeClass
         end
         audit = reply.audits.last
         version = setup_version(audit, Reply::Version)
-        expect(version).to be_kind_of(Reply::Version)
+        expect(version).to be_a(Reply::Version)
         expect(version.item_id).to eq(reply.id)
         expect(version.item_type).to eq('Reply')
         expect(version.event).to eq('destroy')
@@ -298,7 +298,7 @@ RSpec.describe "#convert_versions" do # rubocop:disable Rspec/DescribeClass
         audit = character.audits.last
         audit.update!(comment: 'test comment')
         version = setup_version(audit, Character::Version)
-        expect(version).to be_kind_of(Character::Version)
+        expect(version).to be_a(Character::Version)
         expect(version.item_id).to eq(character.id)
         expect(version.item_type).to eq('Character')
         expect(version.event).to eq('update')
@@ -326,7 +326,7 @@ RSpec.describe "#convert_versions" do # rubocop:disable Rspec/DescribeClass
         end
         audit = block.audits.last
         version = setup_version(audit, Block::Version)
-        expect(version).to be_kind_of(Block::Version)
+        expect(version).to be_a(Block::Version)
         expect(version.item_id).to eq(block.id)
         expect(version.item_type).to eq('Block')
         expect(version.event).to eq('update')
@@ -352,7 +352,7 @@ RSpec.describe "#convert_versions" do # rubocop:disable Rspec/DescribeClass
         end
         audit = block.audits.last
         version = setup_version(audit, Block::Version)
-        expect(version).to be_kind_of(Block::Version)
+        expect(version).to be_a(Block::Version)
         expect(version.item_id).to eq(block.id)
         expect(version.item_type).to eq('Block')
         expect(version.event).to eq('destroy')

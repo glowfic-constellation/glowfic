@@ -62,7 +62,7 @@ RSpec.describe PostsController, 'GET delete_history' do
       deleted_replies.each { |reply| Version.as_user(reply.user) { reply.destroy! } }
 
       get :delete_history, params: { id: post.id, page: 5 }
-      expect(assigns(:deleted_audits)).to be_kind_of(ActiveRecord::Relation)
+      expect(assigns(:deleted_audits)).to be_a(ActiveRecord::Relation)
       expect(assigns(:deleted_audits).total_pages).to eq(deleted_ids.size)
       expect(assigns(:deleted_audits).current_page).to eq(5)
       expect(assigns(:deleted).content).to eq(deleted_replies[4].content)
@@ -122,7 +122,7 @@ RSpec.describe PostsController, 'GET delete_history' do
       deleted_replies.each { |reply| Audited.audit_class.as_user(reply.user) { reply.destroy! } }
 
       get :delete_history, params: { id: post.id, page: 5 }
-      expect(assigns(:deleted_audits)).to be_kind_of(ActiveRecord::Relation)
+      expect(assigns(:deleted_audits)).to be_a(ActiveRecord::Relation)
       expect(assigns(:deleted_audits).total_pages).to eq(deleted_ids.size)
       expect(assigns(:deleted_audits).current_page).to eq(5)
       expect(assigns(:deleted).content).to eq(deleted_replies[4].content)
@@ -162,11 +162,11 @@ RSpec.describe PostsController, 'GET delete_history' do
       end
 
       get :delete_history, params: { id: post.id, page: 5 }
-      expect(assigns(:deleted_audits)).to be_kind_of(Array)
+      expect(assigns(:deleted_audits)).to be_a(Array)
       expect(assigns(:deleted_audits).total_pages).to eq(deleted_ids.size)
       expect(assigns(:deleted_audits).current_page).to eq(5)
       expect(assigns(:deleted).content).to eq(deleted_replies[4].content)
-      expect(assigns(:audit)).to be_kind_of(Version)
+      expect(assigns(:audit)).to be_a(Version)
       expect(assigns(:audit)).to eq(Reply::Version.find_by(item_id: deleted_ids[4], post_id: post.id, event: 'destroy'))
     end
 
