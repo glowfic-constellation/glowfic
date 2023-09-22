@@ -240,7 +240,7 @@ RSpec.describe "#convert_versions" do # rubocop:disable Rspec/DescribeClass
         end
         audit = reply.audits.last
         version = setup_version(audit, Reply::Version)
-        expect(version).to be_kind_of(Reply::Version)
+        expect(version).to be_a(Reply::Version)
         expect(version.item_id).to eq(reply.id)
         expect(version.item_type).to eq('Reply')
         expect(version.event).to eq('update')
