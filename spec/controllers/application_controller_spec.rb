@@ -333,7 +333,8 @@ RSpec.describe ApplicationController do
 
   describe "#require_glowfic_domain" do
     it "redirects on valid requests" do
-      ENV['DOMAIN_NAME'] ||= 'domaintest.host'
+      allow(ENV).to receive(:[]).and_call_original
+      allow(ENV).to receive(:[]).with('DOMAIN_NAME').and_return('domaintest.host')
       get :index, params: { force_domain: true }
       expect(response).to have_http_status(301)
       expect(response).to redirect_to('https://domaintest.host/anonymous?force_domain=true')
@@ -503,6 +504,51 @@ RSpec.describe ApplicationController do
       expect(flash[:error]).to include("Oops, looks like your session expired!")
       session_save = session[:attempted_reply].permit!
       expect(session_save.to_h).to eq(reply_param)
+    end
+  end
+
+  describe "#per_page" do
+    let(:user) { create(:user, per_page: 50) }
+
+    it "uses default if unset" do
+      expect(controller.send(:per_page)).to eq(25)
+    end
+
+    it "uses user per_page if available" do
+      login_as(user)
+      expect(controller.send(:per_page)).to eq(50)
+    end
+
+    it "uses param if given" do
+      login_as(user)
+      without_partial_double_verification do
+        allow(controller).to receive(:params).and_return({ per_page: 75 })
+      end
+      expect(controller.send(:per_page)).to eq(75)
+    end
+
+    it "sets to 100 if all" do
+      login_as(user)
+      without_partial_double_verification do
+        allow(controller).to receive(:params).and_return({ per_page: 'all' })
+      end
+      expect(controller.send(:per_page)).to eq(100)
+    end
+
+    it "sets to 100 if greater than 100" do
+      login_as(user)
+      without_partial_double_verification do
+        allow(controller).to receive(:params).and_return({ per_page: 200 })
+      end
+      expect(controller.send(:per_page)).to eq(100)
+    end
+
+    it "sets to default if zero" do
+      login_as(user)
+      without_partial_double_verification do
+        allow(controller).to receive(:params).and_return({ per_page: 0 })
+      end
+      expect(controller.send(:per_page)).to eq(25)
     end
   end
 end

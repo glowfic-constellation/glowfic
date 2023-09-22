@@ -60,11 +60,6 @@ class Tag < ApplicationRecord
     "_#{name}"
   end
 
-  def post_count
-    return read_attribute(:post_count) if has_attribute?(:post_count)
-    posts.count
-  end
-
   def character_count
     return read_attribute(:character_count) if has_attribute?(:character_count)
     characters.count

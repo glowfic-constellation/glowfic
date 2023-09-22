@@ -95,15 +95,32 @@ RSpec.describe PostsController, 'PUT update' do
 
     before(:each) { login_as(user) }
 
-    # rubocop:disable RSpec/RepeatedExample
     it "requires valid at_id" do
-      skip "TODO does not notify"
+      login_as(user)
+      expect(Post::View.find_by(user: user, post: post)).to be_nil
+
+      expect {
+        put :update, params: { id: post.id, unread: true, at_id: -1 }
+      }.not_to change { Post::View.count }
+
+      expect(response).to redirect_to(unread_posts_url)
+      expect(flash[:error]).to eq("Reply could not be found.")
     end
 
     it "requires post's at_id" do
-      skip "TODO does not notify"
+      reply = create(:reply)
+      expect(Post::View.find_by(user: user, post: post)).to be_nil
+      expect(Post::View.find_by(user: user, post: reply.post)).to be_nil
+
+      login_as(user)
+
+      expect {
+        put :update, params: { id: post.id, unread: true, at_id: reply.id }
+      }.not_to change { Post::View.count }
+
+      expect(response).to redirect_to(unread_posts_url)
+      expect(flash[:error]).to eq("Reply does not belong to this post.")
     end
-    # rubocop:enable RSpec/RepeatedExample
 
     context "with at_id" do
       before(:each) do

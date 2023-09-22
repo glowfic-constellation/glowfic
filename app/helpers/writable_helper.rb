@@ -8,12 +8,10 @@ module WritableHelper
   end
 
   def post_or_reply_link(reply)
-    return unless reply.id.present?
     post_or_reply_mem_link(id: reply.id, klass: reply.class)
   end
 
   def post_or_reply_mem_link(id: nil, klass: nil)
-    return if id.nil?
     if klass == Reply
       reply_path(id, anchor: "reply-#{id}")
     else

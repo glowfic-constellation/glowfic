@@ -311,14 +311,6 @@ RSpec.describe TagsController do
       get :edit, params: { id: tag.id }
       expect(response.status).to eq(200)
     end
-
-    it "allows mod to edit the tag" do
-      stub_const("Permissible::MOD_PERMS", [:edit_tags])
-      tag = create(:label)
-      login_as(create(:mod_user))
-      get :edit, params: { id: tag.id }
-      expect(response.status).to eq(200)
-    end
   end
 
   describe "PUT update" do
@@ -358,6 +350,17 @@ RSpec.describe TagsController do
       expect(flash[:error][:message]).to eq("Setting could not be updated because of the following problems:")
     end
 
+    it "requires ownership (or admin) to update name" do
+      login
+      name = 'test setting'
+      tag = create(:setting, name: name, owned: false)
+      put :update, params: { id: tag.id, tag: { name: 'new name', description: 'description' } }
+      tag.reload
+      expect(response).to redirect_to(tag_url(tag))
+      expect(tag.name).to eq(name)
+      expect(tag.description).to eq('description')
+    end
+
     it "allows admin to update the tag" do
       tag = create(:label)
       name = tag.name + 'Edited'
@@ -380,6 +383,8 @@ RSpec.describe TagsController do
   end
 
   describe "DELETE destroy" do
+    let(:tag) { create(:label, owned: true) }
+
     it "requires login" do
       delete :destroy, params: { id: -1 }
       expect(response).to redirect_to(root_url)
@@ -401,7 +406,6 @@ RSpec.describe TagsController do
     end
 
     it "requires permission" do
-      tag = create(:label, owned: true)
       login
       delete :destroy, params: { id: tag.id }
       expect(response).to redirect_to(tag_url(tag))
@@ -409,10 +413,27 @@ RSpec.describe TagsController do
     end
 
     it "allows admin to destroy the tag" do
-      tag = create(:label)
       login_as(create(:admin_user))
       delete :destroy, params: { id: tag.id }
       expect(response).to redirect_to(tags_path)
+      expect(flash[:success]).to eq("Tag deleted.")
+    end
+
+    it "works" do
+      login_as(tag.user)
+      delete :destroy, params: { id: tag.id }
+      expect(response).to redirect_to(tags_path)
+      expect(flash[:success]).to eq("Tag deleted.")
+    end
+
+    it "redirects properly" do
+      login_as(tag.user)
+      delete :destroy, params: {
+        id: tag.id,
+        page: 2,
+        view: 'Label',
+      }
+      expect(response).to redirect_to(tags_path({ page: 2, view: 'Label' }))
       expect(flash[:success]).to eq("Tag deleted.")
     end
 

@@ -146,6 +146,14 @@ RSpec.describe RepliesController, 'GET search' do
       expect(assigns(:search_results)).to match_array([reply])
     end
 
+    it "ignores exact match with blank quote" do
+      reply1 = create(:reply, content: 'foo')
+      create(:reply, content: 'bar')
+      reply2 = create(:reply, content: 'foo bar')
+      get :search, params: { commit: true, subj_content: '" " "foo"' }
+      expect(assigns(:search_results)).to match_array([reply1, reply2])
+    end
+
     it "only shows from visible posts" do
       reply1 = create(:reply, content: 'contains forks')
       reply2 = create(:reply, content: 'visible contains forks')
@@ -189,6 +197,16 @@ RSpec.describe RepliesController, 'GET search' do
       expect(assigns(:search_results)).to match_array([reply])
     end
 
+    it "does not try to filter by non-existant template" do
+      reply1 = create(:reply, with_character: true)
+      reply2 = create(:reply)
+      allow(Character).to receive(:where).and_call_original
+      allow(Character).to receive(:where).with(template_id: instance_of(Integer)).and_call_original
+      expect(Character).not_to receive(:where).with(template_id: instance_of(Integer))
+      get :search, params: { commit: true, template_id: -1 }
+      expect(assigns(:search_results)).to match_array([reply1, reply2])
+    end
+
     it "sorts by created desc" do
       reply = create(:reply)
       reply2 = Timecop.freeze(reply.created_at + 2.minutes) do
@@ -228,6 +246,13 @@ RSpec.describe RepliesController, 'GET search' do
       get :search, params: { commit: true, sort: 'created_old' }
       expect(assigns(:audits)).to be_empty
       Reply.auditing_enabled = false
+    end
+
+    it "can condense replies" do
+      replies = create_list(:reply, 4)
+      get :search, params: { commit: true, condensed: 'on' }
+      expect(assigns(:search_results).joins_values).not_to include('icons')
+      expect(assigns(:search_results)).to match_array(replies)
     end
   end
 end

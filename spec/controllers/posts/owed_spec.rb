@@ -129,7 +129,7 @@ RSpec.describe PostsController, 'GET owed' do
         expect(assigns(:posts)).to be_empty
       end
 
-      it "show hiatused threads by default" do
+      it "shows hiatused threads by default" do
         post.update!(status: :hiatus)
 
         get :owed
@@ -144,6 +144,7 @@ RSpec.describe PostsController, 'GET owed' do
         get :owed
         expect(response.status).to eq(200)
         expect(assigns(:posts)).to be_empty
+        expect(assigns(:hiatused_exist)).to be(true)
       end
 
       it "hides threads the user has manually removed themselves from" do
@@ -185,6 +186,15 @@ RSpec.describe PostsController, 'GET owed' do
         expect(response.status).to eq(200)
         expect(assigns(:posts)).to be_empty
       end
+    end
+
+    it "does not display hiatused tab without hiatused posts" do
+      post
+      user.update!(hide_hiatused_tags_owed: true)
+      get :owed
+      expect(response.status).to eq(200)
+      expect(assigns(:posts)).to eq([post])
+      expect(assigns(:hiatused_exist)).to be_nil
     end
 
     it "shows threads the user has been invited to" do
