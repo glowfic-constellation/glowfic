@@ -30,6 +30,7 @@ class ReportsController < ApplicationController
 
     @new_today = params[:new_today].present?
     @posts = DailyReport.new(@day).posts(sort, @new_today)
+    @posts = @posts.not_ignored_by(current_user) if current_user&.hide_from_all
     @posts = posts_from_relation(@posts, max: !@new_today)
     replies_on_day = Reply.where(created_at: @day.all_day)
     @reply_counts = replies_on_day.group(:post_id).count
