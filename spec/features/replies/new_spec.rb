@@ -91,19 +91,19 @@ RSpec.feature "Creating replies" do
     page.find(".post-expander", text: "+ Join Thread").click
 
     within('#post-editor') do
-      page.find("#swap-character").click
+      page.find_by_id('swap-character').click
       select "Fred the <strong>!", from: "active_character"
 
-      page.find("#swap-alias").click
+      page.find_by_id('swap-alias').click
       select "The <strong>!", from: "character_alias"
 
-      page.find("#current-icon-holder").click
+      page.find_by_id('current-icon-holder').click
       expect(page).to have_text("icons of the <strong>")
       within(page.find(".gallery-icon", text: "<strong> icon")) do
         page.find("img").click
       end
 
-      page.find("#html").click
+      page.find_by_id('html').click
 
       fill_in id: "reply_content", with: "test reply!"
       click_on "Post"

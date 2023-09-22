@@ -635,7 +635,7 @@ RSpec/NoExpectationExample: # new in 2.13
   Enabled: true
 
 RSpec/PendingWithoutReason: # new in 2.16
-  Enabled: true
+  Enabled: false
 
 RSpec/RedundantAround: # new in 2.19
   Enabled: true
@@ -661,20 +661,20 @@ RSpec/VerifiedDoubleReference: # new in 2.10.0
 RSpec/Capybara/FeatureMethods:
   EnabledMethods: [feature, scenario]
 
-RSpec/Capybara/MatchStyle: # new in 2.17
+Capybara/MatchStyle: # new in 2.17
   Enabled: true
 
-RSpec/Capybara/NegationMatcher: # new in 2.14
+Capybara/NegationMatcher: # new in 2.14
   Enabled: true
   EnforcedStyle: have_no
 
-RSpec/Capybara/SpecificActions: # new in 2.14
+Capybara/SpecificActions: # new in 2.14
   Enabled: true
 
-RSpec/Capybara/SpecificFinders: # new in 2.13
+Capybara/SpecificFinders: # new in 2.13
   Enabled: true
 
-RSpec/Capybara/SpecificMatcher: # new in 2.12
+Capybara/SpecificMatcher: # new in 2.12
   Enabled: true
 
 ################## RSpec/FactoryBot ############################
@@ -695,15 +695,6 @@ FactoryBot/RedundantFactoryOption: # new in 2.23
   Enabled: true
 
 FactoryBot/SyntaxMethods: # new in 2.7
-  Enabled: true
-
-RSpec/FactoryBot/ConsistentParenthesesStyle: # new in 2.14
-  Enabled: true
-
-RSpec/FactoryBot/FactoryNameStyle: # new in 2.16
-  Enabled: true
-
-RSpec/FactoryBot/SyntaxMethods: # new in 2.7
   Enabled: true
 
 ################## RSpec/Rails #################################
@@ -848,6 +839,9 @@ Style/HashConversion: # (new in 1.10)
 Style/HashExcept: # (new in 1.7)
   Enabled: true
 
+Style/HashSyntax:
+  EnforcedShorthandSyntax: either
+
 Style/IfWithBooleanLiteralBranches: # (new in 1.9)
   Enabled: true
 
@@ -869,9 +863,6 @@ Style/InvertibleUnlessCondition:  # new in 1.44
     :none?: :any?
     :even?: :odd?
     :odd?: :even?
-    :blank?: :present?
-    :include?: :exclude?
-    :exclude?: :include?
 
 Style/KeywordParametersOrder:
   Enabled: false

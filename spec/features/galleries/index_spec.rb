@@ -58,11 +58,11 @@ RSpec.feature "Show a list of galleries" do
     visit user_galleries_path(user_id: user.id)
 
     within('#content tbody') do
-      expect(page).not_to have_text("galleryless <strong> icon")
+      expect(page).to have_no_text("galleryless <strong> icon")
       within(gallery_row_for("[Galleryless]")) { page.find('.gallery-box').click }
       expect(page).to have_text("galleryless <strong> icon")
 
-      expect(page).not_to have_text("galleryful <strong> icon")
+      expect(page).to have_no_text("galleryful <strong> icon")
       within(gallery_row_for("Gallery")) { page.find('.gallery-box').click }
       expect(page).to have_text("galleryful <strong> icon")
     end

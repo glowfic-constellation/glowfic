@@ -43,7 +43,7 @@ class DailyReport < Report
     end&.in_time_zone
 
     return 1.day.ago.to_date unless last_read
-    return nil unless last_read.to_date < 1.day.ago.to_date
+    return nil if last_read.to_date >= 1.day.ago.to_date
     (last_read + 1.day).to_date
   end
 

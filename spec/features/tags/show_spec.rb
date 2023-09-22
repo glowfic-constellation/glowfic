@@ -43,6 +43,6 @@ RSpec.feature "Viewing a tag" do
       expect(page).to have_link('sample template', href: template_path(template))
     end
 
-    expect(page).not_to have_selector('tr', text: 'Other character')
+    expect(page).to have_no_selector('tr', text: 'Other character')
   end
 end

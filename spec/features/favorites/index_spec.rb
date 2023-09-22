@@ -15,9 +15,9 @@ RSpec.feature "Favorites page" do
     visit favorites_path
 
     expect(page).to have_text("Your Favorites")
-    expect(page).not_to have_text("boardt Continuity")
-    expect(page).not_to have_text("usert User")
-    expect(page).not_to have_text("postt Post")
+    expect(page).to have_no_text("boardt Continuity")
+    expect(page).to have_no_text("usert User")
+    expect(page).to have_no_text("postt Post")
     expect(page).to have_text("user post")
     expect(page).to have_text("board post")
     expect(page).to have_text("board user post")
@@ -28,8 +28,8 @@ RSpec.feature "Favorites page" do
     expect(page).to have_text("boardt Continuity")
     expect(page).to have_text("usert User")
     expect(page).to have_text("postt Post")
-    expect(page).not_to have_text("user post")
-    expect(page).not_to have_text("board post")
-    expect(page).not_to have_text("board user post")
+    expect(page).to have_no_text("user post")
+    expect(page).to have_no_text("board post")
+    expect(page).to have_no_text("board user post")
   end
 end

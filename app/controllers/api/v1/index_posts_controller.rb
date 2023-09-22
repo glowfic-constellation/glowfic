@@ -13,7 +13,7 @@ class Api::V1::IndexPostsController < Api::ApiController
   param :ordered_post_ids, Array, allow_blank: false
   param :section_id, :number, required: false
   def reorder
-    section_id = params[:section_id] ? params[:section_id].to_i : nil
+    section_id = params[:section_id]&.to_i
     post_ids = params[:ordered_post_ids].map(&:to_i).uniq
     posts = IndexPost.where(id: post_ids)
     posts_count = posts.count

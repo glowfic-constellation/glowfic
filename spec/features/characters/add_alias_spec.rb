@@ -5,7 +5,7 @@ RSpec.feature "Adding a character alias" do
     visit characters_path
     click_link character.name
     click_link "Edit Character"
-    expect(page).not_to have_text("AnAlias")
+    expect(page).to have_no_text("AnAlias")
     click_link "New Alias"
     fill_in "Alias", with: "AnAlias"
     click_button 'Save'
