@@ -50,7 +50,7 @@ RSpec.describe UpdateModelJob do
     expect(reply.post.reload.tagged_at).to be_the_same_time_as(old_tag)
   end
 
-  it "creates audits", versioning: true do
+  it "creates audits", :versioning do
     reply = create(:reply)
     new_char = create(:character, user: reply.user)
     time = Time.zone.now

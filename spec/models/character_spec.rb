@@ -263,7 +263,7 @@ RSpec.describe Character do
     end
   end
 
-  describe "audits", versioning: true do
+  describe "audits", :versioning do
     it "is not created on create" do
       create(:character)
       Version.as_user(create(:user)) { create(:character) }

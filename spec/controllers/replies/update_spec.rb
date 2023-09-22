@@ -48,7 +48,7 @@ RSpec.describe RepliesController, 'PUT update' do
     expect(flash[:error]).to eq('You must provide a reason for your moderator edit.')
   end
 
-  it "stores note from moderators", versioning: true do
+  it "stores note from moderators", :versioning do
     reply = create(:reply, content: 'a')
     admin = create(:admin_user)
     login_as(admin)
@@ -58,7 +58,7 @@ RSpec.describe RepliesController, 'PUT update' do
     expect(reply.versions.last.comment).to eq('note')
   end
 
-  it "does not save audit when only comment provided", versioning: true do
+  it "does not save audit when only comment provided", :versioning do
     reply = create(:reply)
     login_as(reply.user)
     expect {
@@ -123,7 +123,7 @@ RSpec.describe RepliesController, 'PUT update' do
   end
 
   context "preview" do
-    it "takes correct actions", versioning: true do
+    it "takes correct actions", :versioning do
       user = create(:user)
       reply_post = create(:post, user: user)
       reply = create(:reply, post: reply_post, user: user)

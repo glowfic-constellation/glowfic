@@ -1,4 +1,4 @@
-RSpec.describe RepliesController, 'POST restore', versioning: true do
+RSpec.describe RepliesController, 'POST restore', :versioning do
   it "requires login" do
     post :restore, params: { id: -1 }
     expect(response).to redirect_to(root_url)
@@ -127,7 +127,7 @@ RSpec.describe RepliesController, 'POST restore', versioning: true do
     end
   end
 
-  context "with papertrail", versioning: true do
+  context "with papertrail", :versioning do
     let(:user) { create(:user) }
     let(:rpost) { create(:post, user: user) }
 

@@ -41,7 +41,7 @@ RSpec.describe RepliesController, 'GET history' do
 
     after(:each) { Audited.auditing_enabled = false }
 
-    it "works", versioning: true do
+    it "works", :versioning do
       Version.as_user(user) do
         reply
         reply.update!(content: 'new content', paper_trail_event: 'update')

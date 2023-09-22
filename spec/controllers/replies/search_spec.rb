@@ -207,7 +207,7 @@ RSpec.describe RepliesController, 'GET search' do
       expect(assigns(:search_results)).to eq([reply, reply2])
     end
 
-    it "does not include audits", versioning: true do
+    it "does not include audits", :versioning do
       user = create(:user)
 
       replies = Version.as_user(user) do

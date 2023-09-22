@@ -27,7 +27,7 @@ RSpec.describe PostsController, 'GET delete_history' do
     expect(flash[:error]).to eq("You do not have permission to modify this post.")
   end
 
-  context "with only versions", versioning: true do
+  context "with only versions", :versioning do
     before(:each) { login_as(user) }
 
     it "sets correct variables" do

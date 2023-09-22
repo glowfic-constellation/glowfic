@@ -120,7 +120,7 @@ RSpec.describe PostsController, 'GET show' do
     end
   end
 
-  it "calculates audits", versioning: true do
+  it "calculates audits", :versioning do
     replies = Version.as_user(post.user) do
       create_list(:reply, 6, post: post, user: post.user)
     end

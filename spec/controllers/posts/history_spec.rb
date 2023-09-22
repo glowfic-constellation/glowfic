@@ -33,7 +33,7 @@ RSpec.describe PostsController, 'GET history' do
 
     after(:each) { Audited.auditing_enabled = false }
 
-    it "works", versioning: true do
+    it "works", :versioning do
       Version.as_user(user) do
         post.update!(privacy: :access_list)
         post.update!(board: create(:board))

@@ -7,7 +7,7 @@ RSpec.describe ScrapePostJob do
     allow(STDOUT).to receive(:puts).with("Importing thread 'linear b'")
   end
 
-  it "creates the correct objects", versioning: true do
+  it "creates the correct objects", :versioning do
     url = 'http://wild-pegasus-appeared.dreamwidth.org/403.html?style=site&view=flat'
     stub_fixture(url, 'scrape_no_replies')
     board = create(:board)

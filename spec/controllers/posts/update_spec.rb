@@ -77,7 +77,7 @@ RSpec.describe PostsController, 'PUT update' do
     expect(flash[:error]).not_to eq('You must provide a reason for your moderator edit.')
   end
 
-  it "stores note from moderators", versioning: true do
+  it "stores note from moderators", :versioning do
     login_as(admin)
     put :update, params: {
       id: post.id,
@@ -437,7 +437,7 @@ RSpec.describe PostsController, 'PUT update' do
       expect(PostTag.where(post: post, tag: removed_tags).count).to eq(3)
     end
 
-    it "sets expected variables", versioning: true do
+    it "sets expected variables", :versioning do
       post = Version.as_user(user) { create(:post, user: user, subject: 'old', content: 'example') }
       icon = create(:icon, user: user)
       duplicate_tags

@@ -500,7 +500,7 @@ RSpec.describe CharactersController do
       expect(flash[:error]).to eq('You must provide a reason for your moderator edit.')
     end
 
-    it "stores note from moderators", versioning: true do
+    it "stores note from moderators", :versioning do
       character = create(:character, name: 'a')
       admin = create(:admin_user)
       login_as(admin)
@@ -1091,7 +1091,7 @@ RSpec.describe CharactersController do
       expect(flash[:error]).to eq('Invalid old alias.')
     end
 
-    context "with audits enabled", versioning: true do
+    context "with audits enabled", :versioning do
       it "succeeds with valid other character" do
         user = create(:user)
         character = create(:character, user: user)

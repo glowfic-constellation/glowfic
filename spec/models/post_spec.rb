@@ -167,7 +167,7 @@ RSpec.describe Post do
       expect(post.edited_at).to eq(post.created_at)
     end
 
-    it "should update correctly when characters are edited", versioning: true do
+    it "should update correctly when characters are edited", :versioning do
       time = Time.zone.now
       post = Timecop.freeze(time - 5.minutes) do
         create(:post)
@@ -679,7 +679,7 @@ RSpec.describe Post do
         expect(post.first_unread_for(post.user)).to eq(unread)
       end
 
-      it "handles status changes", versioning: true do
+      it "handles status changes", :versioning do
         post.mark_read(post.user)
         unread = create(:reply, post: post)
         expect(post.first_unread_for(post.user)).to eq(unread)
@@ -1251,7 +1251,7 @@ RSpec.describe Post do
       expect(post.read_time_for(replies)).to be_the_same_time_as(last_reply.updated_at)
     end
 
-    it "returns tagged_at with more recent completion with versions", versioning: true do
+    it "returns tagged_at with more recent completion with versions", :versioning do
       Timecop.freeze(time + 1.day) { last_reply.update!(content: 'new content') }
       Timecop.freeze(time + 2.days) { post.update!(status: :complete) }
       expect(post.read_time_for(replies)).to be_the_same_time_as(post.tagged_at)
