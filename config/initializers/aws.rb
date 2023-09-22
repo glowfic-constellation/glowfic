@@ -14,16 +14,16 @@ if ENV.key?('MINIO_ENDPOINT')
   client = Aws::S3::Client.new
   begin
     client.head_bucket(bucket: bucket_name)
-  rescue StandardError => e
-    puts "creating bucket #{bucket_name}..."
+  rescue Aws::S3::Errors::NotFound
+    Rails.logger.warn "creating bucket #{bucket_name}..."
     public_read_policy = {
       Version: "2012-10-17",
       Statement: [{
         Effect: "Allow",
         Principal: "*",
         Action: "s3:GetObject",
-        Resource: "arn:aws:s3:::#{bucket_name}/*"
-      }]
+        Resource: "arn:aws:s3:::#{bucket_name}/*",
+      }],
     }.to_json
 
     client.create_bucket(bucket: bucket_name)
