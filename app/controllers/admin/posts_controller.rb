@@ -41,16 +41,14 @@ class Admin::PostsController < Admin::AdminController
   end
 
   def require_split_permission
-    unless current_user.has_permission?(:split_posts)
-      flash[:error] = "You do not have permission to view that page."
-      redirect_to admin_url
-    end
+    return if current_user.has_permission?(:split_posts)
+    flash[:error] = "You do not have permission to view that page."
+    redirect_to admin_url
   end
 
   def require_regen_permission
-    unless current_user.has_permission?(:regenerate_flat_posts)
-      flash[:error] = "You do not have permission to view that page."
-      redirect_to admin_url
-    end
+    return if current_user.has_permission?(:regenerate_flat_posts)
+    flash[:error] = "You do not have permission to view that page."
+    redirect_to admin_url
   end
 end

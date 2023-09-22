@@ -9,9 +9,8 @@ class Admin::AdminController < ApplicationController
   private
 
   def require_permission
-    unless current_user.mod? || current_user.admin?
-      flash[:error] = "You do not have permission to view that page."
-      redirect_to root_url
-    end
+    return if current_user.mod? || current_user.admin?
+    flash[:error] = "You do not have permission to view that page."
+    redirect_to root_url
   end
 end
