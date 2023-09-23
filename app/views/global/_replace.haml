@@ -12,14 +12,14 @@
         = icon_tag icon
         %br
         = name
-        = content_for :aliases
+        = content_for :aliases, f
       %td.replace-icon.vtop
         - if alt_icon
           = icon_tag alt_icon, id: 'new_icon'
         - else
           = no_icon_tag id: 'new_icon'
         %br
-        = content_for :options
+        = content_for :options, f
   %tbody
     - if @posts.present?
       %tr
