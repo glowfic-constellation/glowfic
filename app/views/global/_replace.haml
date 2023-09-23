@@ -10,13 +10,13 @@
     .replace-icon
       = icon_tag icon
       = name
-      = content_for :aliases
+      = content_for :aliases, f
     .replace-icon
       - if alt_icon
         = icon_tag alt_icon, id: 'new_icon'
       - else
         = no_icon_tag id: 'new_icon'
-      = content_for :options
+      = content_for :options, f
   - if @posts.present?
     .sub.colspan Optional: Select Post(s)
     .odd.centered.colspan
