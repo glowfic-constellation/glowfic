@@ -600,7 +600,8 @@ The copy box can't be invisible/hidden or copy fails but opacity works
 
   .tox-toolbar, .tox-toolbar__overflow, .tox-toolbar__primary {
     background-image: none;
-    border-bottom: 1px solid;
+    border-bottom-width: 1px;
+    border-bottom-style: solid;
     padding: 2px 0;
   }
 

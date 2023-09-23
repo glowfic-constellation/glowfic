@@ -154,7 +154,7 @@ span.badge {
 #content {
   .tox-toolbar, .tox-toolbar__overflow, .tox-toolbar__primary {
     background-color: $bg_color_mce_panel;
-    border-color: $border_color_mce_panel;
+    border-bottom-color: $border_color_mce_panel;
   }
 
   .tox-toolbar__group { border-color: $border_color_mce_panel; }
