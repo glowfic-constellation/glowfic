@@ -70,7 +70,7 @@ module Owable
 
       all_author_ids = (new_author_ids + self.author_ids + [self.user_id]).uniq
       self.authors.reset # clear association cache
-      return if (all_author_ids & blocked_ids).empty?
+      return if !all_author_ids.intersect?(blocked_ids)
       errors.add(:post_author, "cannot be added")
     end
   end
