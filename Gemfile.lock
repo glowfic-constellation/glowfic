@@ -541,6 +541,7 @@ DEPENDENCIES
   selenium-webdriver
   simplecov
   sprockets
+  sprockets-rails
   test-unit (~> 3.6)
   thin
   timecop
