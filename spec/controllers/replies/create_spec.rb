@@ -410,7 +410,7 @@ RSpec.describe RepliesController, 'POST create' do
     post :create, params: { reply: { post_id: reply_post.id, content: searchable } }
     reply = reply_post.replies.ordered.last
     expect(reply.content).to eq(searchable)
-    expect(reply.reply_order).to eq(0)
+    expect(reply.reply_order).to eq(1)
   end
 
   it "sets reply_order correctly with an existing reply" do
@@ -422,7 +422,7 @@ RSpec.describe RepliesController, 'POST create' do
     post :create, params: { reply: { post_id: reply_post.id, content: searchable } }
     reply = reply_post.replies.ordered.last
     expect(reply.content).to eq(searchable)
-    expect(reply.reply_order).to eq(1)
+    expect(reply.reply_order).to eq(2)
   end
 
   it "sets reply_order correctly with multiple existing replies" do
@@ -435,6 +435,6 @@ RSpec.describe RepliesController, 'POST create' do
     post :create, params: { reply: { post_id: reply_post.id, content: searchable } }
     reply = reply_post.replies.ordered.last
     expect(reply.content).to eq(searchable)
-    expect(reply.reply_order).to eq(2)
+    expect(reply.reply_order).to eq(3)
   end
 end

@@ -39,7 +39,7 @@ RSpec.describe "post_split" do # rubocop:disable RSpec/DescribeClass
       expect(post.subject).to eq(title)
       expect(post.replies.count).to eq(0)
       expect(post.content).to eq(reply.content)
-      expect(Reply.find_by(id: reply.id)).not_to be_present
+      expect(reply.reload).to eq(post.written)
     end
   end
 
@@ -54,14 +54,14 @@ RSpec.describe "post_split" do # rubocop:disable RSpec/DescribeClass
     100.times { |i| create(:reply, post: post, user: i.even? ? user : coauthor) }
     create(:reply, post: post, user: new_user)
 
-    previous = post.replies.find_by(reply_order: 49)
-    reply = post.replies.find_by(reply_order: 50)
-    next_reply = post.replies.find_by(reply_order: 51)
+    previous = post.replies.find_by(reply_order: 50)
+    reply = post.replies.find_by(reply_order: 51)
+    next_reply = post.replies.find_by(reply_order: 52)
     last = post.replies.last
 
     expect(STDIN).to receive(:gets).and_return(title)
     expect(STDIN).to receive(:gets).and_return(reply.id.to_s)
-    expect { split_post }.to change { Post.count }.by(1).and change { Reply.count }.by(-1)
+    expect { split_post }.to change { Post.count }.by(1).and not_change { Reply.count }
 
     post.reload
     expect(post.replies.count).to eq(50)
@@ -81,7 +81,7 @@ RSpec.describe "post_split" do # rubocop:disable RSpec/DescribeClass
     expect(new_post.last_user_id).to eq(last.user_id)
     expect(new_post.tagged_at).to eq(last.created_at)
     expect(new_post.replies.ordered.first).to eq(next_reply)
-    expect(Reply.find_by(id: reply.id)).not_to be_present
+    expect(reply.reload).to eq(new_post.written)
   end
 
   it "does not affect other posts" do
@@ -94,8 +94,8 @@ RSpec.describe "post_split" do # rubocop:disable RSpec/DescribeClass
     other_post = create(:post, num_replies: 10)
 
     expect(STDIN).to receive(:gets).and_return(title)
-    expect(STDIN).to receive(:gets).and_return(post.replies.find_by(reply_order: 5).id.to_s)
-    expect { split_post }.to change { Post.count }.by(1).and change { Reply.count }.by(-1)
+    expect(STDIN).to receive(:gets).and_return(post.replies.find_by(reply_order: 6).id.to_s)
+    expect { split_post }.to change { Post.count }.by(1).and not_change { Reply.count }
 
     new_post = Post.last
 

@@ -147,7 +147,12 @@ class UsersController < ApplicationController
     daystart = @day.beginning_of_day
     dayend = @day.end_of_day
     @posts = Post.where(user: current_user).where('created_at between ? AND ?', daystart, dayend).ordered_by_id.pluck(:content)
-    @replies = Reply.where(user: current_user).where('created_at between ? AND ?', daystart, dayend).order(post_id: :asc).ordered.pluck(:content)
+    @replies = Reply.where(user: current_user)
+      .where('created_at between ? AND ?', daystart, dayend)
+      .where.not(reply_order: 0)
+      .order(post_id: :asc)
+      .ordered
+      .pluck(:content)
 
     @total = @posts + @replies
     if @total.empty?

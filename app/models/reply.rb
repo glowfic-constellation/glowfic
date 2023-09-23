@@ -48,7 +48,7 @@ class Reply < ApplicationRecord
   private
 
   def set_last_reply
-    return if skip_post_update
+    return if skip_post_update && reply_order != 0
     post.last_user = user
     post.last_reply = self
   end
@@ -96,7 +96,7 @@ class Reply < ApplicationRecord
   end
 
   def previous_reply
-    @prev ||= post.replies.find_by(reply_order: reply_order - 1)
+    @prev ||= post.replies.find_by(reply_order: reply_order - 1) || post.written
   end
 
   def author_can_write_in_post

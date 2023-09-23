@@ -101,7 +101,7 @@ RSpec.describe RepliesController, 'GET search' do
     it "finds all when no arguments given" do
       create_list(:reply, 4)
       get :search, params: { commit: true }
-      expect(assigns(:search_results)).to match_array(Reply.all)
+      expect(assigns(:search_results)).to match_array(Reply.where.not(reply_order: 0))
     end
 
     it "filters by author" do
