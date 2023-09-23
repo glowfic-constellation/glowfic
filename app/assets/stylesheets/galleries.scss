@@ -33,7 +33,7 @@
   align-items: stretch;
   input { height: 23px; }
 
-  .icons-box {
+  .icons-box, .replace-icon {
     display: flex;
     align-items: center;
     justify-content: center;
@@ -126,7 +126,7 @@
 
 /* The preview icon boxes on replace icon and replace character */
 .replace-icon {
-  @extend .icons-box;
+  background-color: $bg_color_icon;
   width: 150px;
   text-align: center;
 }
