@@ -76,6 +76,7 @@ RSpec.describe RepliesController, 'PUT update' do
     put :update, params: { id: reply.id, reply: { post_id: nil } }
     expect(response).to render_template(:edit)
     expect(flash[:error][:message]).to eq("Reply could not be updated because of the following problems:")
+    expect(flash[:error][:array]).to eq(["Post must exist"])
   end
 
   it "succeeds" do

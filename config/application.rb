@@ -55,6 +55,9 @@ module Glowfic
     # Initialize configuration defaults for originally generated Rails version.
     config.load_defaults 6.1
 
+    # fix issue with optional: false on reply belongs_to post
+    config.active_record.has_many_inversing = false
+
     # Configuration for the application, engines, and railties goes here.
     #
     # These settings can be overridden in specific environments using the files
