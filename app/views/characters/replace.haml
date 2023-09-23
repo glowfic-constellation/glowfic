@@ -14,12 +14,12 @@
   .odd.centered.colspan
     .details *This does NOT replace icons*
 
-- content_for :aliases do
+- content_for :aliases do |f|
   - if @character.aliases.exists?
     - collection = options_from_collection_for_select(@character.aliases, :id, :name)
     = f.select :orig_alias, options_for_select({ '— Any Alias —': 'all' }, 'all') + collection, prompt: '— No alias —'
 
-- content_for :options do
+- content_for :options do |f|
   = f.select :icon_dropdown, options_for_select(@alt_dropdown, @alt.try(:id)), prompt: "No Character"
   = f.select :alias_dropdown, options_from_collection_for_select(@alt.try(:aliases), :id, :name), prompt: '— No alias —', class: ('hidden' unless @alt.try(:aliases).present?)
 
