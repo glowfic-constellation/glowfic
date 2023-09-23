@@ -10,8 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[6.1].define(version: 2023_09_30_053037) do
-
+ActiveRecord::Schema[7.0].define(version: 2023_09_30_053037) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "citext"
   enable_extension "plpgsql"
@@ -29,7 +28,7 @@ ActiveRecord::Schema[6.1].define(version: 2023_09_30_053037) do
     t.integer "version", default: 0
     t.string "comment"
     t.string "remote_address"
-    t.datetime "created_at"
+    t.datetime "created_at", precision: nil
     t.string "request_uuid"
     t.index ["associated_type", "associated_id"], name: "associated_index"
     t.index ["auditable_type", "auditable_id", "version"], name: "auditable_index"
@@ -41,8 +40,8 @@ ActiveRecord::Schema[6.1].define(version: 2023_09_30_053037) do
     t.boolean "block_interactions", default: true
     t.integer "hide_them", default: 0
     t.integer "hide_me", default: 0
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
+    t.datetime "created_at", precision: nil, null: false
+    t.datetime "updated_at", precision: nil, null: false
     t.index ["blocked_user_id"], name: "index_blocks_on_blocked_user_id"
     t.index ["blocking_user_id"], name: "index_blocks_on_blocking_user_id"
   end
@@ -50,8 +49,8 @@ ActiveRecord::Schema[6.1].define(version: 2023_09_30_053037) do
   create_table "board_authors", id: :serial, force: :cascade do |t|
     t.integer "user_id", null: false
     t.integer "board_id", null: false
-    t.datetime "created_at"
-    t.datetime "updated_at"
+    t.datetime "created_at", precision: nil
+    t.datetime "updated_at", precision: nil
     t.boolean "cameo", default: false
     t.index ["board_id"], name: "index_board_authors_on_board_id"
     t.index ["user_id"], name: "index_board_authors_on_user_id"
@@ -62,8 +61,8 @@ ActiveRecord::Schema[6.1].define(version: 2023_09_30_053037) do
     t.string "name", null: false
     t.integer "status", default: 0, null: false
     t.integer "section_order", null: false
-    t.datetime "created_at"
-    t.datetime "updated_at"
+    t.datetime "created_at", precision: nil
+    t.datetime "updated_at", precision: nil
     t.text "description"
   end
 
@@ -73,17 +72,17 @@ ActiveRecord::Schema[6.1].define(version: 2023_09_30_053037) do
     t.boolean "ignored", default: false
     t.boolean "notify_message", default: false
     t.boolean "notify_email", default: false
-    t.datetime "created_at"
-    t.datetime "updated_at"
-    t.datetime "read_at"
+    t.datetime "created_at", precision: nil
+    t.datetime "updated_at", precision: nil
+    t.datetime "read_at", precision: nil
     t.index ["user_id", "board_id"], name: "index_board_views_on_user_id_and_board_id", unique: true
   end
 
   create_table "boards", id: :serial, force: :cascade do |t|
     t.citext "name", null: false
     t.integer "creator_id", null: false
-    t.datetime "created_at"
-    t.datetime "updated_at"
+    t.datetime "created_at", precision: nil
+    t.datetime "updated_at", precision: nil
     t.text "description"
     t.boolean "pinned", default: false
     t.boolean "authors_locked", default: true
@@ -92,8 +91,8 @@ ActiveRecord::Schema[6.1].define(version: 2023_09_30_053037) do
   create_table "character_aliases", id: :serial, force: :cascade do |t|
     t.integer "character_id", null: false
     t.string "name", null: false
-    t.datetime "created_at"
-    t.datetime "updated_at"
+    t.datetime "created_at", precision: nil
+    t.datetime "updated_at", precision: nil
     t.index ["character_id"], name: "index_character_aliases_on_character_id"
   end
 
@@ -105,8 +104,8 @@ ActiveRecord::Schema[6.1].define(version: 2023_09_30_053037) do
   create_table "character_tags", id: :serial, force: :cascade do |t|
     t.integer "character_id", null: false
     t.integer "tag_id", null: false
-    t.datetime "created_at"
-    t.datetime "updated_at"
+    t.datetime "created_at", precision: nil
+    t.datetime "updated_at", precision: nil
     t.index ["character_id"], name: "index_character_tags_on_character_id"
     t.index ["tag_id"], name: "index_character_tags_on_tag_id"
   end
@@ -118,8 +117,8 @@ ActiveRecord::Schema[6.1].define(version: 2023_09_30_053037) do
     t.string "screenname"
     t.integer "template_id"
     t.integer "default_icon_id"
-    t.datetime "created_at"
-    t.datetime "updated_at"
+    t.datetime "created_at", precision: nil
+    t.datetime "updated_at", precision: nil
     t.string "pb"
     t.integer "character_group_id"
     t.text "description"
@@ -144,8 +143,8 @@ ActiveRecord::Schema[6.1].define(version: 2023_09_30_053037) do
     t.integer "user_id", null: false
     t.integer "favorite_id", null: false
     t.string "favorite_type", null: false
-    t.datetime "created_at"
-    t.datetime "updated_at"
+    t.datetime "created_at", precision: nil
+    t.datetime "updated_at", precision: nil
     t.index ["favorite_id", "favorite_type"], name: "index_favorites_on_favorite_id_and_favorite_type"
     t.index ["user_id"], name: "index_favorites_on_user_id"
   end
@@ -153,16 +152,16 @@ ActiveRecord::Schema[6.1].define(version: 2023_09_30_053037) do
   create_table "flat_posts", id: :serial, force: :cascade do |t|
     t.integer "post_id", null: false
     t.text "content"
-    t.datetime "created_at"
-    t.datetime "updated_at"
+    t.datetime "created_at", precision: nil
+    t.datetime "updated_at", precision: nil
     t.index ["post_id"], name: "index_flat_posts_on_post_id"
   end
 
   create_table "galleries", id: :serial, force: :cascade do |t|
     t.integer "user_id", null: false
     t.string "name", null: false
-    t.datetime "created_at"
-    t.datetime "updated_at"
+    t.datetime "created_at", precision: nil
+    t.datetime "updated_at", precision: nil
     t.index ["user_id"], name: "index_galleries_on_user_id"
   end
 
@@ -176,8 +175,8 @@ ActiveRecord::Schema[6.1].define(version: 2023_09_30_053037) do
   create_table "gallery_tags", id: :serial, force: :cascade do |t|
     t.integer "gallery_id", null: false
     t.integer "tag_id", null: false
-    t.datetime "created_at"
-    t.datetime "updated_at"
+    t.datetime "created_at", precision: nil
+    t.datetime "updated_at", precision: nil
     t.index ["gallery_id"], name: "index_gallery_tags_on_gallery_id"
     t.index ["tag_id"], name: "index_gallery_tags_on_tag_id"
   end
@@ -186,8 +185,8 @@ ActiveRecord::Schema[6.1].define(version: 2023_09_30_053037) do
     t.integer "user_id", null: false
     t.string "url", null: false
     t.string "keyword", null: false
-    t.datetime "created_at"
-    t.datetime "updated_at"
+    t.datetime "created_at", precision: nil
+    t.datetime "updated_at", precision: nil
     t.string "credit"
     t.boolean "has_gallery", default: false
     t.string "s3_key"
@@ -203,8 +202,8 @@ ActiveRecord::Schema[6.1].define(version: 2023_09_30_053037) do
     t.integer "index_section_id"
     t.text "description"
     t.integer "section_order"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
+    t.datetime "created_at", precision: nil, null: false
+    t.datetime "updated_at", precision: nil, null: false
     t.index ["index_id"], name: "index_index_posts_on_index_id"
     t.index ["post_id"], name: "index_index_posts_on_post_id"
   end
@@ -214,8 +213,8 @@ ActiveRecord::Schema[6.1].define(version: 2023_09_30_053037) do
     t.citext "name", null: false
     t.text "description"
     t.integer "section_order"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
+    t.datetime "created_at", precision: nil, null: false
+    t.datetime "updated_at", precision: nil, null: false
     t.index ["index_id"], name: "index_index_sections_on_index_id"
   end
 
@@ -225,8 +224,8 @@ ActiveRecord::Schema[6.1].define(version: 2023_09_30_053037) do
     t.text "description"
     t.integer "privacy", default: 0, null: false
     t.boolean "authors_locked", default: true, null: false
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
+    t.datetime "created_at", precision: nil, null: false
+    t.datetime "updated_at", precision: nil, null: false
     t.index ["user_id"], name: "index_indexes_on_user_id"
   end
 
@@ -242,9 +241,9 @@ ActiveRecord::Schema[6.1].define(version: 2023_09_30_053037) do
     t.boolean "visible_outbox", default: true
     t.boolean "marked_inbox", default: false
     t.boolean "marked_outbox", default: false
-    t.datetime "read_at"
-    t.datetime "created_at"
-    t.datetime "updated_at"
+    t.datetime "read_at", precision: nil
+    t.datetime "created_at", precision: nil
+    t.datetime "updated_at", precision: nil
     t.index ["recipient_id", "unread"], name: "index_messages_on_recipient_id_and_unread"
     t.index ["sender_id"], name: "index_messages_on_sender_id"
     t.index ["thread_id"], name: "index_messages_on_thread_id"
@@ -253,14 +252,14 @@ ActiveRecord::Schema[6.1].define(version: 2023_09_30_053037) do
   create_table "news", force: :cascade do |t|
     t.integer "user_id", null: false
     t.text "content"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
+    t.datetime "created_at", precision: nil, null: false
+    t.datetime "updated_at", precision: nil, null: false
   end
 
   create_table "news_views", force: :cascade do |t|
     t.integer "user_id", null: false
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
+    t.datetime "created_at", precision: nil, null: false
+    t.datetime "updated_at", precision: nil, null: false
     t.integer "news_id"
     t.index ["user_id"], name: "index_news_views_on_user_id"
   end
@@ -269,8 +268,8 @@ ActiveRecord::Schema[6.1].define(version: 2023_09_30_053037) do
     t.integer "user_id", null: false
     t.string "auth_token", null: false
     t.boolean "used", default: false
-    t.datetime "created_at"
-    t.datetime "updated_at"
+    t.datetime "created_at", precision: nil
+    t.datetime "updated_at", precision: nil
     t.index ["auth_token"], name: "index_password_resets_on_auth_token", unique: true
     t.index ["user_id", "created_at"], name: "index_password_resets_on_user_id_and_created_at"
   end
@@ -278,12 +277,12 @@ ActiveRecord::Schema[6.1].define(version: 2023_09_30_053037) do
   create_table "post_authors", id: :serial, force: :cascade do |t|
     t.integer "user_id", null: false
     t.integer "post_id", null: false
-    t.datetime "created_at"
-    t.datetime "updated_at"
+    t.datetime "created_at", precision: nil
+    t.datetime "updated_at", precision: nil
     t.boolean "can_owe", default: true
     t.boolean "can_reply", default: true
     t.boolean "joined", default: false
-    t.datetime "joined_at"
+    t.datetime "joined_at", precision: nil
     t.text "private_note"
     t.index ["post_id"], name: "index_post_authors_on_post_id"
     t.index ["user_id"], name: "index_post_authors_on_user_id"
@@ -293,8 +292,8 @@ ActiveRecord::Schema[6.1].define(version: 2023_09_30_053037) do
     t.integer "post_id", null: false
     t.integer "tag_id", null: false
     t.boolean "suggested", default: false
-    t.datetime "created_at"
-    t.datetime "updated_at"
+    t.datetime "created_at", precision: nil
+    t.datetime "updated_at", precision: nil
     t.index ["post_id"], name: "index_post_tags_on_post_id"
     t.index ["tag_id"], name: "index_post_tags_on_tag_id"
   end
@@ -302,8 +301,8 @@ ActiveRecord::Schema[6.1].define(version: 2023_09_30_053037) do
   create_table "post_viewers", id: :serial, force: :cascade do |t|
     t.integer "post_id", null: false
     t.integer "user_id", null: false
-    t.datetime "created_at"
-    t.datetime "updated_at"
+    t.datetime "created_at", precision: nil
+    t.datetime "updated_at", precision: nil
     t.index ["post_id"], name: "index_post_viewers_on_post_id"
   end
 
@@ -313,9 +312,9 @@ ActiveRecord::Schema[6.1].define(version: 2023_09_30_053037) do
     t.boolean "ignored", default: false
     t.boolean "notify_message", default: false
     t.boolean "notify_email", default: false
-    t.datetime "created_at"
-    t.datetime "updated_at"
-    t.datetime "read_at"
+    t.datetime "created_at", precision: nil
+    t.datetime "updated_at", precision: nil
+    t.datetime "read_at", precision: nil
     t.boolean "warnings_hidden", default: false
     t.index ["user_id", "post_id"], name: "index_post_views_on_user_id_and_post_id", unique: true
   end
@@ -328,16 +327,16 @@ ActiveRecord::Schema[6.1].define(version: 2023_09_30_053037) do
     t.integer "character_id"
     t.integer "icon_id"
     t.integer "privacy", default: 0, null: false
-    t.datetime "created_at"
-    t.datetime "updated_at"
+    t.datetime "created_at", precision: nil
+    t.datetime "updated_at", precision: nil
     t.integer "status", default: 0
     t.integer "section_id"
     t.integer "section_order"
     t.string "description"
     t.integer "last_user_id"
     t.integer "last_reply_id"
-    t.datetime "edited_at"
-    t.datetime "tagged_at"
+    t.datetime "edited_at", precision: nil
+    t.datetime "tagged_at", precision: nil
     t.boolean "authors_locked", default: false
     t.integer "character_alias_id"
     t.string "editor_mode"
@@ -358,8 +357,8 @@ ActiveRecord::Schema[6.1].define(version: 2023_09_30_053037) do
     t.integer "character_id"
     t.integer "icon_id"
     t.integer "thread_id"
-    t.datetime "created_at"
-    t.datetime "updated_at"
+    t.datetime "created_at", precision: nil
+    t.datetime "updated_at", precision: nil
     t.integer "character_alias_id"
     t.integer "reply_order"
     t.string "editor_mode"
@@ -380,8 +379,8 @@ ActiveRecord::Schema[6.1].define(version: 2023_09_30_053037) do
     t.integer "character_id"
     t.integer "icon_id"
     t.integer "thread_id"
-    t.datetime "created_at"
-    t.datetime "updated_at"
+    t.datetime "created_at", precision: nil
+    t.datetime "updated_at", precision: nil
     t.integer "character_alias_id"
     t.string "editor_mode"
     t.index ["post_id", "user_id"], name: "index_reply_drafts_on_post_id_and_user_id"
@@ -389,9 +388,9 @@ ActiveRecord::Schema[6.1].define(version: 2023_09_30_053037) do
 
   create_table "report_views", id: :serial, force: :cascade do |t|
     t.integer "user_id", null: false
-    t.datetime "read_at"
-    t.datetime "created_at"
-    t.datetime "updated_at"
+    t.datetime "read_at", precision: nil
+    t.datetime "created_at", precision: nil
+    t.datetime "updated_at", precision: nil
     t.index ["user_id"], name: "index_report_views_on_user_id"
   end
 
@@ -399,8 +398,8 @@ ActiveRecord::Schema[6.1].define(version: 2023_09_30_053037) do
     t.integer "tagged_id", null: false
     t.integer "tag_id", null: false
     t.boolean "suggested", default: false
-    t.datetime "created_at"
-    t.datetime "updated_at"
+    t.datetime "created_at", precision: nil
+    t.datetime "updated_at", precision: nil
     t.index ["tag_id"], name: "index_tag_tags_on_tag_id"
     t.index ["tagged_id"], name: "index_tag_tags_on_tagged_id"
   end
@@ -408,8 +407,8 @@ ActiveRecord::Schema[6.1].define(version: 2023_09_30_053037) do
   create_table "tags", id: :serial, force: :cascade do |t|
     t.integer "user_id", null: false
     t.citext "name", null: false
-    t.datetime "created_at"
-    t.datetime "updated_at"
+    t.datetime "created_at", precision: nil
+    t.datetime "updated_at", precision: nil
     t.string "type"
     t.text "description"
     t.boolean "owned", default: false
@@ -420,8 +419,8 @@ ActiveRecord::Schema[6.1].define(version: 2023_09_30_053037) do
   create_table "templates", id: :serial, force: :cascade do |t|
     t.integer "user_id", null: false
     t.citext "name"
-    t.datetime "created_at"
-    t.datetime "updated_at"
+    t.datetime "created_at", precision: nil
+    t.datetime "updated_at", precision: nil
     t.text "description"
     t.index ["user_id"], name: "index_templates_on_user_id"
   end
@@ -432,8 +431,8 @@ ActiveRecord::Schema[6.1].define(version: 2023_09_30_053037) do
     t.integer "avatar_id"
     t.integer "active_character_id"
     t.integer "per_page", default: 25
-    t.datetime "created_at"
-    t.datetime "updated_at"
+    t.datetime "created_at", precision: nil
+    t.datetime "updated_at", precision: nil
     t.string "timezone"
     t.citext "email"
     t.boolean "email_notifications"
