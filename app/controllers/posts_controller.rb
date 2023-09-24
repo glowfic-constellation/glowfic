@@ -328,7 +328,6 @@ class PostsController < WritableController
     @post ||= Post.new(user: current_user)
     @post.assign_attributes(permitted_params(false))
     @post.board ||= Board.find_by_id(3)
-    @post.editor_mode ||= current_user.default_editor
 
     @author_ids = params.fetch(:post, {}).fetch(:unjoined_author_ids, [])
     @viewer_ids = params.fetch(:post, {}).fetch(:viewer_ids, [])
