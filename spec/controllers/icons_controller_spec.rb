@@ -474,7 +474,7 @@ RSpec.describe IconsController do
       login_as(icon.user)
 
       allow(Icon).to receive(:find_by).and_call_original
-      allow(Icon).to receive(:find_by).with(id: icon.id.to_s).and_return(icon)
+      allow(Icon).to receive(:find_by).with({ id: icon.id.to_s }).and_return(icon)
       allow(icon).to receive(:destroy!).and_raise(ActiveRecord::RecordNotDestroyed, 'fake error')
       expect(icon).to receive(:destroy!)
 
@@ -521,7 +521,7 @@ RSpec.describe IconsController do
       login_as(user)
 
       allow(User).to receive(:find_by).and_call_original
-      allow(User).to receive(:find_by).with(id: user.id).and_return(user)
+      allow(User).to receive(:find_by).with({ id: user.id }).and_return(user)
       allow(user).to receive(:update).and_return(false)
       expect(user).to receive(:update)
 

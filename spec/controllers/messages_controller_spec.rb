@@ -426,7 +426,7 @@ RSpec.describe MessagesController do
       message = create(:message, unread: false)
       login_as(message.recipient)
       allow(Message).to receive(:find_by).and_call_original
-      allow(Message).to receive(:find_by).with(id: message.id.to_s).and_return(message)
+      allow(Message).to receive(:find_by).with({ id: message.id.to_s }).and_return(message)
       expect(message).not_to receive(:update)
       get :show, params: { id: message.id }
     end
@@ -481,7 +481,7 @@ RSpec.describe MessagesController do
         message = create(:message)
         login
         allow(Message).to receive(:find_by).and_call_original
-        allow(Message).to receive(:find_by).with(id: message.id.to_s).and_return(message)
+        allow(Message).to receive(:find_by).with({ id: message.id.to_s }).and_return(message)
         expect(message).not_to receive(:update)
         post :mark, params: { marked_ids: [message.id.to_s], commit: "Mark Unread" }
       end
@@ -521,7 +521,7 @@ RSpec.describe MessagesController do
         message = create(:message)
         login
         allow(Message).to receive(:find_by).and_call_original
-        allow(Message).to receive(:find_by).with(id: message.id.to_s).and_return(message)
+        allow(Message).to receive(:find_by).with({ id: message.id.to_s }).and_return(message)
         expect(message).not_to receive(:update)
         post :mark, params: { marked_ids: [message.id.to_s], commit: "Mark Read" }
       end
@@ -561,7 +561,7 @@ RSpec.describe MessagesController do
         message = create(:message)
         login
         allow(Message).to receive(:find_by).and_call_original
-        allow(Message).to receive(:find_by).with(id: message.id.to_s).and_return(message)
+        allow(Message).to receive(:find_by).with({ id: message.id.to_s }).and_return(message)
         expect(message).not_to receive(:update)
         post :mark, params: { marked_ids: [message.id.to_s], commit: "Delete" }
       end
