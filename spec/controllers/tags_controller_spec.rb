@@ -421,7 +421,7 @@ RSpec.describe TagsController do
       login_as(tag.user)
 
       allow(Tag).to receive(:find_by).and_call_original
-      allow(Tag).to receive(:find_by).with(id: tag.id.to_s).and_return(tag)
+      allow(Tag).to receive(:find_by).with({ id: tag.id.to_s }).and_return(tag)
       allow(tag).to receive(:destroy!).and_raise(ActiveRecord::RecordNotDestroyed, 'fake error')
       expect(tag).to receive(:destroy!)
 

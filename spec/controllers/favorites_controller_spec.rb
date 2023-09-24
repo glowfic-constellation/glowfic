@@ -260,7 +260,7 @@ RSpec.describe FavoritesController do
       login_as(favorite.user)
 
       allow(Favorite).to receive(:find_by).and_call_original
-      allow(Favorite).to receive(:find_by).with(id: favorite.id.to_s).and_return(favorite)
+      allow(Favorite).to receive(:find_by).with({ id: favorite.id.to_s }).and_return(favorite)
       allow(favorite).to receive(:destroy!).and_raise(ActiveRecord::RecordNotDestroyed, 'fake error')
       expect(favorite).to receive(:destroy!)
 

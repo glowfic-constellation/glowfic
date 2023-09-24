@@ -863,7 +863,7 @@ RSpec.describe CharactersController do
       login_as(character.user)
 
       allow(Character).to receive(:find_by).and_call_original
-      allow(Character).to receive(:find_by).with(id: character.id.to_s).and_return(character)
+      allow(Character).to receive(:find_by).with({ id: character.id.to_s }).and_return(character)
       allow(character).to receive(:destroy!).and_raise(ActiveRecord::RecordNotDestroyed, 'fake error')
       expect(character).to receive(:destroy!)
 

@@ -480,7 +480,7 @@ RSpec.describe BoardsController do
       login_as(board.creator)
 
       allow(Board).to receive(:find_by).and_call_original
-      allow(Board).to receive(:find_by).with(id: board.id.to_s).and_return(board)
+      allow(Board).to receive(:find_by).with({ id: board.id.to_s }).and_return(board)
       allow(board).to receive(:destroy!).and_raise(ActiveRecord::RecordNotDestroyed, 'fake error')
       expect(board).to receive(:destroy!)
 

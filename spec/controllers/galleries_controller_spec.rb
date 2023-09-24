@@ -604,7 +604,7 @@ RSpec.describe GalleriesController do
       login_as(gallery.user)
 
       allow(Gallery).to receive(:find_by).and_call_original
-      allow(Gallery).to receive(:find_by).with(id: gallery.id.to_s).and_return(gallery)
+      allow(Gallery).to receive(:find_by).with({ id: gallery.id.to_s }).and_return(gallery)
       allow(gallery).to receive(:destroy!).and_raise(ActiveRecord::RecordNotDestroyed, 'fake error')
       expect(gallery).to receive(:destroy!)
 
