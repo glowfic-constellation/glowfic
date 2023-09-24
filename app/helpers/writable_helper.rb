@@ -72,7 +72,7 @@ module WritableHelper
   MD_CONVERTER = Redcarpet::Markdown.new(MD_RENDERER, MD_EXTENSIONS)
 
   # specific blockquote handling is due to simple_format wanting to wrap a blockquote in a paragraph
-  def sanitize_written_content(content, editor_mode)
+  def sanitize_written_content(content, editor_mode='html')
     if editor_mode == 'md'
       content = MD_CONVERTER.render(content)
     elsif editor_mode != 'rtf' && !content[P_TAG] && !content[BR_TAG]
