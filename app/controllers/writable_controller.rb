@@ -115,6 +115,7 @@ class WritableController < ApplicationController
         session.delete(:attempted_reply)
 
         @reply = @post.build_new_reply_for(current_user, reply_hash)
+        @reply.editor_mode ||= params[:editor_mode] || current_user.default_editor
       end
 
       @post.mark_read(current_user, at_time: @post.read_time_for(@replies))

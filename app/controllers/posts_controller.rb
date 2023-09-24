@@ -118,7 +118,7 @@ class PostsController < WritableController
   end
 
   def new
-    @post = Post.new(character: current_user.active_character, user: current_user, authors_locked: true)
+    @post = Post.new(character: current_user.active_character, user: current_user, authors_locked: true, editor_mode: current_user.default_editor)
     @post.board_id = params[:board_id]
     @post.section_id = params[:section_id]
     @post.icon_id = (current_user.active_character ? current_user.active_character.default_icon.try(:id) : current_user.avatar_id)
@@ -328,6 +328,7 @@ class PostsController < WritableController
     @post ||= Post.new(user: current_user)
     @post.assign_attributes(permitted_params(false))
     @post.board ||= Board.find_by_id(3)
+    @post.editor_mode ||= current_user.default_editor
 
     @author_ids = params.fetch(:post, {}).fetch(:unjoined_author_ids, [])
     @viewer_ids = params.fetch(:post, {}).fetch(:viewer_ids, [])

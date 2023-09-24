@@ -1,10 +1,9 @@
-- editor = params[:editor_mode] || current_user.default_editor
 - content_for :form do
   = form_for reply, html: { id: 'post_form' } do |f|
     %b Reply
-    .view-button#rtf{class: ('selected' if editor == 'rtf')} Rich Text
-    .view-button#html{class: ('selected' if editor == 'html')} HTML
-    .view-button#editor-help{title: 'Help'} ?
+    %button.view-button#rtf{type: 'button', class: ('selected' if reply.editor_mode == 'rtf')} Rich Text
+    %button.view-button#html{type: 'button', class: ('selected' if reply.editor_mode == 'html')} HTML
+    %button.view-button#editor-help{type: 'button', title: 'Help'} ?
     %br
     = unread_warning.try(:html_safe)
     %br
@@ -12,9 +11,8 @@
     = f.hidden_field :character_id
     = f.hidden_field :icon_id
     = f.hidden_field :character_alias_id
-    = f.hidden_field :editor_mode, value: editor
+    = f.hidden_field :editor_mode, id: 'editor_mode'
     = hidden_field_tag :allow_dupe, @allow_dupe
-    = hidden_field_tag :editor_mode, editor
     - if params[:per_page]
       = hidden_field_tag :per_page, params[:per_page]
     #post-form-wrapper
