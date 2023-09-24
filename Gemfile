@@ -39,6 +39,7 @@ gem 'resque'
 gem 'resque_mailer'
 gem 'sanitize'
 gem 'sassc-rails'
+gem 'scout_apm'
 gem 'select2-rails'
 gem 'sprockets'
 gem 'test-unit', '~> 3.0' # required by Heroku for production console
