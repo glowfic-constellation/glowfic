@@ -339,6 +339,7 @@ ActiveRecord::Schema.define(version: 2022_10_13_004257) do
     t.datetime "tagged_at"
     t.boolean "authors_locked", default: false
     t.integer "character_alias_id"
+    t.string "editor_mode"
     t.index "to_tsvector('english'::regconfig, COALESCE((subject)::text, ''::text))", name: "idx_fts_post_subject", using: :gin
     t.index "to_tsvector('english'::regconfig, COALESCE(content, ''::text))", name: "idx_fts_post_content", using: :gin
     t.index ["board_id"], name: "index_posts_on_board_id"
@@ -360,6 +361,7 @@ ActiveRecord::Schema.define(version: 2022_10_13_004257) do
     t.datetime "updated_at"
     t.integer "character_alias_id"
     t.integer "reply_order"
+    t.string "editor_mode"
     t.index "to_tsvector('english'::regconfig, COALESCE(content, ''::text))", name: "idx_fts_reply_content", using: :gin
     t.index ["character_id"], name: "index_replies_on_character_id"
     t.index ["created_at"], name: "index_replies_on_created_at"
@@ -380,6 +382,7 @@ ActiveRecord::Schema.define(version: 2022_10_13_004257) do
     t.datetime "created_at"
     t.datetime "updated_at"
     t.integer "character_alias_id"
+    t.string "editor_mode"
     t.index ["post_id", "user_id"], name: "index_reply_drafts_on_post_id_and_user_id"
   end
 

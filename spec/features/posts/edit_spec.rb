@@ -17,7 +17,7 @@ RSpec.feature "Editing posts" do
 
   scenario "User edits a post" do
     user = create(:user, password: 'known')
-    post = create(:post, user: user, subject: 'test subject', content: 'test content')
+    post = create(:post, user: user, subject: 'test subject', content: 'test content', editor_mode: 'html')
 
     login(user, 'known')
 
@@ -50,7 +50,7 @@ RSpec.feature "Editing posts" do
 
   scenario "User edits a post with preview" do
     user = create(:user, password: 'known')
-    post = create(:post, user: user, subject: 'test subject')
+    post = create(:post, user: user, subject: 'test subject', editor_mode: 'html')
 
     login(user, 'known')
 
@@ -111,7 +111,7 @@ RSpec.feature "Editing posts" do
 
   scenario "Moderator edits a post" do
     user = create(:user)
-    post = create(:post, user: user, subject: 'test subject', content: 'test content')
+    post = create(:post, user: user, subject: 'test subject', content: 'test content', editor_mode: 'html')
 
     login(create(:mod_user, password: 'known'), 'known')
 
@@ -150,7 +150,7 @@ RSpec.feature "Editing posts" do
 
   scenario "Moderator edits a post with preview" do
     user = create(:user)
-    post = create(:post, user: user, subject: 'test subject')
+    post = create(:post, user: user, subject: 'test subject', editor_mode: 'html')
 
     login(create(:mod_user, password: 'known'), 'known')
 

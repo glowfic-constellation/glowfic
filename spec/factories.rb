@@ -50,6 +50,7 @@ FactoryBot.define do
     user
     board
     description { "" }
+    editor_mode { 'rtf' }
     content { "test content" }
     sequence :subject do |n|
       "test subject #{n}"
@@ -103,6 +104,7 @@ FactoryBot.define do
     end
     user
     post
+    editor_mode { 'rtf' }
     sequence :content do |n|
       "test content #{n}"
     end
@@ -115,6 +117,7 @@ FactoryBot.define do
   factory :reply_draft do
     user
     post
+    editor_mode { 'rtf' }
     sequence :content do |n|
       "test draft #{n}"
     end
