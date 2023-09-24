@@ -1,8 +1,4 @@
-RSpec.describe RepliesController, 'POST restore' do
-  before(:each) { Reply.auditing_enabled = true }
-
-  after(:each) { Reply.auditing_enabled = false }
-
+RSpec.describe RepliesController, 'POST restore', :versioning do
   it "requires login" do
     post :restore, params: { id: -1 }
     expect(response).to redirect_to(root_url)
@@ -15,7 +11,7 @@ RSpec.describe RepliesController, 'POST restore' do
 
   it "must find the reply" do
     expect(Reply.find_by_id(99)).to be_nil
-    expect(Audited::Audit.find_by(auditable_id: 99)).to be_nil
+    expect(Reply::Version.find_by(item_id: 99)).to be_nil
     login
     post :restore, params: { id: 99 }
     expect(response).to redirect_to(continuities_url)
@@ -24,11 +20,11 @@ RSpec.describe RepliesController, 'POST restore' do
 
   it "must be a deleted reply" do
     reply = create(:reply)
-    Audited::Audit.where(action: 'create').find_by(auditable_id: reply.id).update!(action: 'destroy')
+    Reply::Version.where(event: 'create').find_by(item_id: reply.id).update!(event: 'destroy')
     login_as(reply.user)
-    post :restore, params: { id: 99 }
-    expect(response).to redirect_to(continuities_url)
-    expect(flash[:error]).to eq("Reply could not be found.")
+    post :restore, params: { id: reply.id }
+    expect(response).to redirect_to(post_url(reply.post))
+    expect(flash[:error]).to eq("Reply does not need restoring.")
   end
 
   it "must be your reply" do
@@ -41,88 +37,214 @@ RSpec.describe RepliesController, 'POST restore' do
     expect(flash[:error]).to eq('You do not have permission to modify this reply.')
   end
 
-  it "handles mid reply deletion" do
-    rpost = create(:post)
-    replies = create_list(:reply, 4, post: rpost, user: rpost.user)
-    deleted_reply = replies[2]
-    deleted_reply.destroy!
-    Timecop.freeze(rpost.reload.tagged_at + 1.day) { create(:reply, post: rpost, user: rpost.user) }
-    post_attributes = Post.find_by_id(rpost.id).attributes
+  context "with audited" do
+    before(:each) { Audited.auditing_enabled = true }
 
-    login_as(rpost.user)
-    post :restore, params: { id: deleted_reply.id }
+    after(:each) { Audited.auditing_enabled = false }
 
-    expect(Reply.find_by_id(deleted_reply.id)).to eq(deleted_reply)
-    reloaded_post = Post.find_by_id(rpost.id)
-    new_attributes = reloaded_post.attributes
-    post_attributes.each do |key, val|
-      expect(new_attributes[key]).to eq(val)
+    it "handles mid reply deletion" do
+      rpost = create(:post)
+      replies = create_list(:reply, 4, post: rpost, user: rpost.user)
+      deleted_reply = replies[2]
+      deleted_reply.destroy!
+      Timecop.freeze(rpost.reload.tagged_at + 1.day) { create(:reply, post: rpost, user: rpost.user) }
+      post_attributes = Post.find_by_id(rpost.id).attributes
+
+      login_as(rpost.user)
+      post :restore, params: { id: deleted_reply.id }
+
+      expect(Reply.find_by_id(deleted_reply.id)).to eq(deleted_reply)
+      reloaded_post = Post.find_by_id(rpost.id)
+      new_attributes = reloaded_post.attributes
+      post_attributes.each do |key, val|
+        expect(new_attributes[key]).to eq(val)
+      end
+      expect(reloaded_post.replies.pluck(:reply_order).sort).to eq(0.upto(4).to_a)
     end
-    expect(reloaded_post.replies.pluck(:reply_order).sort).to eq(0.upto(4).to_a)
+
+    it "handles first reply deletion" do
+      rpost = create(:post)
+      replies = create_list(:reply, 2, post: rpost, user: rpost.user)
+      deleted_reply = replies.first
+      deleted_reply.destroy!
+      Timecop.freeze(rpost.reload.tagged_at + 1.day) { create(:reply, post: rpost, user: rpost.user) }
+      post_attributes = Post.find_by_id(rpost.id).attributes
+
+      login_as(rpost.user)
+      post :restore, params: { id: deleted_reply.id }
+
+      expect(Reply.find_by_id(deleted_reply.id)).to eq(deleted_reply)
+      reloaded_post = Post.find_by_id(rpost.id)
+      new_attributes = reloaded_post.attributes
+      post_attributes.each do |key, val|
+        expect(new_attributes[key]).to eq(val)
+      end
+      expect(reloaded_post.replies.pluck(:reply_order).sort).to eq(0.upto(2).to_a)
+    end
+
+    it "handles last reply deletion" do
+      rpost = create(:post)
+      create_list(:reply, 2, post: rpost, user: rpost.user)
+      deleted_reply = Timecop.freeze(rpost.reload.tagged_at + 1.day) { create(:reply, post: rpost) }
+      deleted_reply.destroy!
+      post_attributes = Post.find_by_id(rpost.id).attributes
+
+      login_as(deleted_reply.user)
+      post :restore, params: { id: deleted_reply.id }
+
+      expect(Reply.find_by_id(deleted_reply.id)).to eq(deleted_reply)
+      reloaded_post = Post.find_by_id(rpost.id)
+      new_attributes = reloaded_post.attributes
+      post_attributes.each do |key, val|
+        next if %w(last_reply_id last_user_id updated_at tagged_at).include?(key.to_s)
+        expect(new_attributes[key]).to eq(val), "#{key}s did not match, #{new_attributes[key]} should have been #{val}"
+      end
+      expect(reloaded_post.last_user).to eq(deleted_reply.user)
+      expect(reloaded_post.last_reply).to eq(deleted_reply)
+      expect(reloaded_post.replies.pluck(:reply_order).sort).to eq(0.upto(2).to_a)
+    end
+
+    it "handles only reply deletion" do
+      rpost = create(:post)
+      expect(rpost.last_user).to eq(rpost.user)
+      expect(rpost.last_reply).to be_nil
+
+      deleted_reply = Timecop.freeze(rpost.reload.tagged_at + 1.day) { create(:reply, post: rpost) }
+      rpost = Post.find(rpost.id)
+      expect(rpost.last_user).to eq(deleted_reply.user)
+      expect(rpost.last_reply).to eq(deleted_reply)
+
+      deleted_reply.destroy!
+      rpost = Post.find(rpost.id)
+      expect(rpost.last_user).to eq(rpost.user)
+      expect(rpost.last_reply).to be_nil
+
+      login_as(deleted_reply.user)
+      post :restore, params: { id: deleted_reply.id }
+      rpost = Post.find(rpost.id)
+      expect(rpost.last_user).to eq(deleted_reply.user)
+      expect(rpost.last_reply).to eq(deleted_reply)
+    end
   end
 
-  it "handles first reply deletion" do
-    rpost = create(:post)
-    replies = create_list(:reply, 2, post: rpost, user: rpost.user)
-    deleted_reply = replies.first
-    deleted_reply.destroy!
-    Timecop.freeze(rpost.reload.tagged_at + 1.day) { create(:reply, post: rpost, user: rpost.user) }
-    post_attributes = Post.find_by_id(rpost.id).attributes
+  context "with papertrail", :versioning do
+    let(:user) { create(:user) }
+    let(:rpost) { create(:post, user: user) }
 
-    login_as(rpost.user)
-    post :restore, params: { id: deleted_reply.id }
+    before(:each) { login_as(user) }
 
-    expect(Reply.find_by_id(deleted_reply.id)).to eq(deleted_reply)
-    reloaded_post = Post.find_by_id(rpost.id)
-    new_attributes = reloaded_post.attributes
-    post_attributes.each do |key, val|
-      expect(new_attributes[key]).to eq(val)
+    after(:each) { Audited.auditing_enabled = false }
+
+    it "handles mid reply deletion" do
+      replies = create_list(:reply, 4, post: rpost, user: user)
+      deleted_reply = replies[2]
+      deleted_reply.destroy!
+      Timecop.freeze(rpost.reload.tagged_at + 1.day) { create(:reply, post: rpost, user: user) }
+      post_attributes = Post.find_by_id(rpost.id).attributes
+
+      post :restore, params: { id: deleted_reply.id }
+
+      expect(Reply.find_by_id(deleted_reply.id)).to eq(deleted_reply)
+      reloaded_post = Post.find_by_id(rpost.id)
+      new_attributes = reloaded_post.attributes
+      post_attributes.each do |key, val|
+        expect(new_attributes[key]).to eq(val)
+      end
+      expect(reloaded_post.replies.pluck(:reply_order).sort).to eq(0.upto(4).to_a)
     end
-    expect(reloaded_post.replies.pluck(:reply_order).sort).to eq(0.upto(2).to_a)
-  end
 
-  it "handles last reply deletion" do
-    rpost = create(:post)
-    create_list(:reply, 2, post: rpost, user: rpost.user)
-    deleted_reply = Timecop.freeze(rpost.reload.tagged_at + 1.day) { create(:reply, post: rpost) }
-    deleted_reply.destroy!
-    post_attributes = Post.find_by_id(rpost.id).attributes
+    it "handles first reply deletion" do
+      replies = create_list(:reply, 2, post: rpost, user: user)
+      deleted_reply = replies.first
+      deleted_reply.destroy!
+      Timecop.freeze(rpost.reload.tagged_at + 1.day) { create(:reply, post: rpost, user: user) }
+      post_attributes = Post.find_by_id(rpost.id).attributes
 
-    login_as(deleted_reply.user)
-    post :restore, params: { id: deleted_reply.id }
+      post :restore, params: { id: deleted_reply.id }
 
-    expect(Reply.find_by_id(deleted_reply.id)).to eq(deleted_reply)
-    reloaded_post = Post.find_by_id(rpost.id)
-    new_attributes = reloaded_post.attributes
-    post_attributes.each do |key, val|
-      next if %w(last_reply_id last_user_id updated_at tagged_at).include?(key.to_s)
-      expect(new_attributes[key]).to eq(val), "#{key}s did not match, #{new_attributes[key]} should have been #{val}"
+      expect(Reply.find_by_id(deleted_reply.id)).to eq(deleted_reply)
+      reloaded_post = Post.find_by_id(rpost.id)
+      new_attributes = reloaded_post.attributes
+      post_attributes.each do |key, val|
+        expect(new_attributes[key]).to eq(val)
+      end
+      expect(reloaded_post.replies.pluck(:reply_order).sort).to eq(0.upto(2).to_a)
     end
-    expect(reloaded_post.last_user).to eq(deleted_reply.user)
-    expect(reloaded_post.last_reply).to eq(deleted_reply)
-    expect(reloaded_post.replies.pluck(:reply_order).sort).to eq(0.upto(2).to_a)
-  end
 
-  it "handles only reply deletion" do
-    rpost = create(:post)
-    expect(rpost.last_user).to eq(rpost.user)
-    expect(rpost.last_reply).to be_nil
+    it "handles last reply deletion" do
+      create_list(:reply, 2, post: rpost)
+      deleted_reply = Timecop.freeze(rpost.reload.tagged_at + 1.day) { create(:reply, post: rpost, user: user) }
+      deleted_reply.destroy!
+      post_attributes = Post.find_by_id(rpost.id).attributes
 
-    deleted_reply = Timecop.freeze(rpost.reload.tagged_at + 1.day) { create(:reply, post: rpost) }
-    rpost = Post.find(rpost.id)
-    expect(rpost.last_user).to eq(deleted_reply.user)
-    expect(rpost.last_reply).to eq(deleted_reply)
+      post :restore, params: { id: deleted_reply.id }
 
-    deleted_reply.destroy!
-    rpost = Post.find(rpost.id)
-    expect(rpost.last_user).to eq(rpost.user)
-    expect(rpost.last_reply).to be_nil
+      expect(Reply.find_by_id(deleted_reply.id)).to eq(deleted_reply)
+      reloaded_post = Post.find_by_id(rpost.id)
+      new_attributes = reloaded_post.attributes
+      post_attributes.each do |key, val|
+        next if %w(last_reply_id last_user_id updated_at tagged_at).include?(key.to_s)
+        expect(new_attributes[key]).to eq(val), "#{key}s did not match, #{new_attributes[key]} should have been #{val}"
+      end
+      expect(reloaded_post.last_user).to eq(deleted_reply.user)
+      expect(reloaded_post.last_reply).to eq(deleted_reply)
+      expect(reloaded_post.replies.pluck(:reply_order).sort).to eq(0.upto(2).to_a)
+    end
 
-    login_as(deleted_reply.user)
-    post :restore, params: { id: deleted_reply.id }
-    rpost = Post.find(rpost.id)
-    expect(rpost.last_user).to eq(deleted_reply.user)
-    expect(rpost.last_reply).to eq(deleted_reply)
+    it "handles only reply deletion" do
+      rpost = create(:post)
+      expect(rpost.last_user).to eq(rpost.user)
+      expect(rpost.last_reply).to be_nil
+
+      deleted_reply = Timecop.freeze(rpost.reload.tagged_at + 1.day) { create(:reply, post: rpost, user: user) }
+      rpost = Post.find(rpost.id)
+      expect(rpost.last_user).to eq(deleted_reply.user)
+      expect(rpost.last_reply).to eq(deleted_reply)
+
+      deleted_reply.destroy!
+      rpost = Post.find(rpost.id)
+      expect(rpost.last_user).to eq(rpost.user)
+      expect(rpost.last_reply).to be_nil
+
+      post :restore, params: { id: deleted_reply.id }
+      rpost = Post.find(rpost.id)
+      expect(rpost.last_user).to eq(deleted_reply.user)
+      expect(rpost.last_reply).to eq(deleted_reply)
+    end
+
+    it "correctly restores a reply previously restored from audits" do
+      reply = nil
+
+      PaperTrail.request(enabled: false) do
+        Audited.auditing_enabled = true
+        reply = create(:reply, content: 'not yet restored')
+        login_as(reply.user)
+
+        expect(reply.audits.size).to eq(1)
+        expect(reply.versions).to be_empty
+
+        reply.destroy!
+
+        post :restore, params: { id: reply.id }
+
+        expect(flash[:success]).to eq("Reply restored.")
+        Audited.auditing_enabled = false
+      end
+
+      reply = Reply.find_by(id: reply.id)
+      expect(reply.audits.size).to eq(3)
+      expect(reply.versions.size).to eq(1)
+
+      reply.update!(content: 'restored right')
+      expect(reply.audits.size).to eq(3)
+      expect(reply.versions.size).to eq(2)
+      reply.destroy!
+
+      post :restore, params: { id: reply.id }
+      expect(flash[:success]).to eq("Reply restored.")
+      reply = Reply.find_by(id: reply.id)
+      expect(reply.content).to eq('restored right')
+    end
   end
 
   it "does not allow restoring something already restored" do

@@ -259,6 +259,9 @@ GEM
     nokogiri (1.15.4)
       mini_portile2 (~> 2.8.2)
       racc (~> 1.4)
+    paper_trail (12.0.0)
+      activerecord (>= 5.2)
+      request_store (~> 1.1)
     parallel (1.23.0)
     parser (3.2.2.3)
       ast (~> 2.4.1)
@@ -507,6 +510,7 @@ DEPENDENCIES
   newrelic_rpm
   nilify_blanks
   nokogiri
+  paper_trail (~> 12.0)
   pg (~> 1.5)
   pg_search
   puma

@@ -52,7 +52,7 @@ class ReplyScraper < Object
       @reply.edited_at = created_at
     end
 
-    Audited.audit_class.as_user(@reply.user) do
+    PaperTrail.request(whodunnit: @reply.user_id) do
       @reply.save!
     end
   end

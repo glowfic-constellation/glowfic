@@ -167,15 +167,14 @@ RSpec.describe Post do
       expect(post.edited_at).to eq(post.created_at)
     end
 
-    it "should update correctly when characters are edited" do
-      Post.auditing_enabled = true
+    it "should update correctly when characters are edited", :versioning do
       time = Time.zone.now
       post = Timecop.freeze(time - 5.minutes) do
         create(:post)
       end
       expect(post.edited_at).to be_the_same_time_as(time - 5.minutes)
       expect(post.updated_at).to be_the_same_time_as(time - 5.minutes)
-      expect(post.audits.count).to eq(1)
+      expect(post.versions.count).to eq(1)
 
       Timecop.freeze(time) do
         post.update!(character: create(:character, user: post.user))
@@ -183,9 +182,8 @@ RSpec.describe Post do
 
       # editing a post's character changes edit and makes audit but does not tag
       expect(post.edited_at).to be_the_same_time_as(time)
-      expect(post.audits.count).to eq(2)
+      expect(post.versions.count).to eq(2)
       expect(post.tagged_at).to be_the_same_time_as(time - 5.minutes)
-      Post.auditing_enabled = false
     end
   end
 
@@ -681,8 +679,7 @@ RSpec.describe Post do
         expect(post.first_unread_for(post.user)).to eq(unread)
       end
 
-      it "handles status changes" do
-        Post.auditing_enabled = true
+      it "handles status changes", :versioning do
         post.mark_read(post.user)
         unread = create(:reply, post: post)
         expect(post.first_unread_for(post.user)).to eq(unread)
@@ -690,16 +687,13 @@ RSpec.describe Post do
 
         Timecop.freeze(unread.created_at + 1.day) do
           post.update!(status: :complete)
-
-          post.description = 'new description to add another audit'
-          post.save!
+          post.update!(description: 'new description to add another audit')
         end
 
         post.reload
         expect(post.edited_at).to be > unread.updated_at
         expect(post.first_unread_for(post.user)).to eq(unread)
         expect(post.read_time_for(post.replies)).to be_the_same_time_as(post.edited_at)
-        Post.auditing_enabled = false
       end
     end
 
@@ -1219,6 +1213,62 @@ RSpec.describe Post do
         json.merge!({ content: post.content, character: char_json, icon: icon_json })
         expect(post.as_json(include: [:content, :character, :icon])).to match_hash(json)
       end
+    end
+  end
+
+  describe "#read_time_for" do
+    let(:time) { 10.days.ago }
+    let(:author) { create(:user) }
+    let(:coauthor) { create(:user) }
+    let(:post) { Timecop.freeze(time) { create(:post, user: author, unjoined_authors: [coauthor]) } }
+    let(:replies) do
+      10.times do |i|
+        user = i.even? ? author : coauthor
+        Timecop.freeze(time + i.minutes) { create(:reply, post: post, user: user) }
+      end
+      post.replies
+    end
+    let(:last_reply) { replies.last }
+
+    after(:each) { Audited.auditing_enabled = false }
+
+    it "returns post edited_at with no replies" do
+      post.update!(privacy: :registered)
+      expect(post.read_time_for([])).to be_the_same_time_as(post.edited_at)
+    end
+
+    it "returns last reply created_at when not on last page" do
+      viewing_replies = replies[0..5]
+      last_reply = viewing_replies.last
+      last_reply.update!(content: 'new content')
+      expect(post.read_time_for(viewing_replies)).to be_the_same_time_as(last_reply.created_at)
+    end
+
+    it "returns last reply updated_at if after post edited at" do
+      Timecop.freeze(time + 1.day) { post.update!(status: :complete) }
+      Timecop.freeze(time + 2.days) { last_reply.update!(content: 'new content') }
+      expect(post).to be_complete
+      expect(post.read_time_for(replies)).to be_the_same_time_as(last_reply.updated_at)
+    end
+
+    it "returns tagged_at with more recent completion with versions", :versioning do
+      Timecop.freeze(time + 1.day) { last_reply.update!(content: 'new content') }
+      Timecop.freeze(time + 2.days) { post.update!(status: :complete) }
+      expect(post.read_time_for(replies)).to be_the_same_time_as(post.tagged_at)
+    end
+
+    it "returns tagged_at with more recent completion with audits" do
+      Audited.auditing_enabled = true
+      Timecop.freeze(time + 1.day) { last_reply.update!(content: 'new content') }
+      Timecop.freeze(time + 2.days) { post.update!(status: :complete) }
+      expect(post.read_time_for(replies)).to be_the_same_time_as(post.tagged_at)
+      Audited.auditing_enabled = false
+    end
+
+    it "returns updated_at even with more recent other status change" do
+      Timecop.freeze(time + 1.day) { last_reply.update!(content: 'new content') }
+      Timecop.freeze(time + 2.days) { post.update!(status: :abandoned) }
+      expect(post.read_time_for(replies)).to be_the_same_time_as(last_reply.updated_at)
     end
   end
 

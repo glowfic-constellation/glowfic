@@ -263,37 +263,30 @@ RSpec.describe Character do
     end
   end
 
-  describe "audits" do
-    before(:each) do
-      Character.auditing_enabled = true
-      expect(Audited::Audit.count).to eq(0) # rubocop:disable RSpec/ExpectInHook
-    end
-
-    after(:each) { Character.auditing_enabled = false }
-
+  describe "audits", :versioning do
     it "is not created on create" do
       create(:character)
-      Audited.audit_class.as_user(create(:user)) { create(:character) }
-      expect(Audited::Audit.count).to eq(0)
+      Version.as_user(create(:user)) { create(:character) }
+      expect(Character::Version.count).to eq(0)
     end
 
     it "is only created on mod update" do
       character = create(:character)
-      Audited.audit_class.as_user(character.user) do
+      Version.as_user(character.user) do
         character.update(name: character.name + 'notmod')
       end
-      Audited.audit_class.as_user(create(:user)) do
+      Version.as_user(create(:mod_user)) do
         character.update(name: character.name + 'mod', audit_comment: 'mod')
       end
-      expect(Audited::Audit.count).to eq(1)
+      expect(Character::Version.count).to eq(1)
     end
 
     it "is not created on destroy" do
       character = create(:character)
-      Audited.audit_class.as_user(create(:user)) do
+      Version.as_user(create(:user)) do
         character.destroy
       end
-      expect(Audited::Audit.count).to eq(0)
+      expect(Character::Version.count).to eq(0)
     end
   end
 
