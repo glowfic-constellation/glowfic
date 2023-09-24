@@ -460,15 +460,20 @@ RSpec.describe Post do
       coauthor2 = create(:user)
       create(:block, blocking_user: coauthor1, blocked_user: coauthor2, block_interactions: true)
       post = build(:post, unjoined_authors: [coauthor1, coauthor2])
-      expect(post).not_to be_valid
+      # expect(post).not_to be_valid - validation can't be checked successfully until failing to save
+      expect { post.save! }.to raise_error(ActiveRecord::RecordInvalid)
     end
 
     it "should not allow adding two coauthors who have blocked each other on update" do
       coauthor1 = create(:user)
       coauthor2 = create(:user)
       create(:block, blocking_user: coauthor1, blocked_user: coauthor2, block_interactions: true)
-      post.unjoined_authors = [coauthor1, coauthor2]
-      expect(post).not_to be_valid
+      expect {
+        post.unjoined_authors = [coauthor1, coauthor2]
+      }.to raise_error(ActiveRecord::RecordInvalid)
+      post.reload
+      expect(post.author_ids).not_to include(coauthor1.id)
+      expect(post.author_ids).not_to include(coauthor2.id)
     end
 
     it "should not allow adding someone your coauthor has blocked" do
@@ -478,8 +483,11 @@ RSpec.describe Post do
       create(:reply, post: post, user: joined)
       post.reload
       expect(post.joined_author_ids).to include(joined.id)
-      post.unjoined_authors << [add]
-      expect(post).not_to be_valid
+      expect {
+        post.unjoined_authors << [add]
+      }.to raise_error(ActiveRecord::RecordInvalid)
+      post.reload
+      expect(post.author_ids).not_to include(add.id)
     end
 
     it "should not allow adding someone who has blocked your coauthor" do
@@ -489,8 +497,11 @@ RSpec.describe Post do
       create(:reply, post: post, user: joined)
       post.reload
       expect(post.joined_author_ids).to include(joined.id)
-      post.unjoined_authors << add
-      expect(post).not_to be_valid
+      expect {
+        post.unjoined_authors << add
+      }.to raise_error(ActiveRecord::RecordInvalid)
+      post.reload
+      expect(post.author_ids).not_to include(add.id)
     end
   end
 

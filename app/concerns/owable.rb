@@ -3,24 +3,22 @@ module Owable
 
   included do
     has_many :post_authors, inverse_of: :post, class_name: 'Post::Author', dependent: :destroy
-    has_many :authors, class_name: 'User', through: :post_authors, source: :user, dependent: :destroy
+    has_many :authors, class_name: 'User', through: :post_authors, source: :user, dependent: :destroy, validate: true
 
     # list of users who owe replies on this post, whether or not they have posted yet
     has_many :tagging_post_authors, -> { where(can_owe: true) }, class_name: 'Post::Author', inverse_of: :post
-    has_many :tagging_authors, class_name: 'User', through: :tagging_post_authors, source: :user, dependent: :destroy
+    has_many :tagging_authors, class_name: 'User', through: :tagging_post_authors, source: :user, dependent: :destroy, validate: true
 
     # quick way to pull author list without calculating from post + replies
     has_many :joined_post_authors, -> { where(joined: true) }, class_name: 'Post::Author', inverse_of: :post
-    has_many :joined_authors, class_name: 'User', through: :joined_post_authors, source: :user, dependent: :destroy
+    has_many :joined_authors, class_name: 'User', through: :joined_post_authors, source: :user, dependent: :destroy, validate: true
 
     # used in the post#write UI to handle inviting users
     has_many :unjoined_post_authors, -> { where(joined: false) }, class_name: 'Post::Author', inverse_of: :post
-    has_many :unjoined_authors, class_name: 'User', through: :unjoined_post_authors, source: :user, dependent: :destroy
+    has_many :unjoined_authors, class_name: 'User', through: :unjoined_post_authors, source: :user, dependent: :destroy, validate: true
 
     after_create :add_creator_to_authors
     after_save :update_board_cameos
-
-    validate :valid_coauthors
 
     attr_accessor :private_note
 
@@ -59,19 +57,6 @@ module Owable
       new_cameos = all_authors.uniq.map(&:id) - board.board_authors.map(&:user_id)
       return if new_cameos.empty?
       new_cameos.each { |author| board.board_authors.create!(user_id: author, cameo: true) }
-    end
-
-    def valid_coauthors
-      new_author_ids = self.unjoined_post_authors.reject(&:persisted?).map(&:user_id)
-      return if new_author_ids.empty?
-
-      blocked_ids = User.where(id: new_author_ids).map(&:user_ids_uninteractable).flatten
-      return if blocked_ids.empty?
-
-      all_author_ids = (new_author_ids + self.author_ids + [self.user_id]).uniq
-      self.authors.reset # clear association cache
-      return unless all_author_ids.intersect?(blocked_ids)
-      errors.add(:post_author, "cannot be added")
     end
   end
 end
