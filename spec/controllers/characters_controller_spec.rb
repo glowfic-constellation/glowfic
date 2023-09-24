@@ -78,6 +78,15 @@ RSpec.describe CharactersController do
         expect(response.body).to include('ExistingCharacter')
         expect(response.body).not_to include('RetiredCharacter')
       end
+
+      it "skips retired characters when specified as a default setting" do
+        character = create(:character, name: 'ExistingCharacter')
+        character.user.update(default_hide_retired_characters: true)
+        create(:character, user: character.user, retired: true, name: 'RetiredCharacter')
+        get :index, params: { user_id: character.user_id }
+        expect(response.body).to include('ExistingCharacter')
+        expect(response.body).not_to include('RetiredCharacter')
+      end
     end
   end
 

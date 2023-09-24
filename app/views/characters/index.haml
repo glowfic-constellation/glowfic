@@ -38,14 +38,14 @@
         = link_to character_menu_link(character_split: 'template') do
           .view-button
             Group
-      - if params[:retired] == 'false'
-        = link_to character_menu_link(retired: nil) do
-          .view-button
-            All Characters
-      - else
+      - if show_retired
         = link_to character_menu_link(retired: false) do
           .view-button
             Hide Retired
+      - else
+        = link_to character_menu_link(retired: true) do
+          .view-button
+            All Characters
   - partial_type = (page_view == 'list') ? 'characters/list_section' : 'characters/icon_view'
   %tr
     %th.subber.padding-10{colspan: colspan}

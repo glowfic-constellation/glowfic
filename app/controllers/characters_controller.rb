@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 class CharactersController < ApplicationController
   include Taggable
-  include CharacterSplit
+  include CharacterFilter
 
   before_action :login_required, except: [:index, :show, :facecasts, :search]
   before_action :find_model, only: [:show, :edit, :update, :duplicate, :destroy, :replace, :do_replace]
