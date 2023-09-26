@@ -42,7 +42,7 @@ gem 'sassc-rails'
 gem 'scout_apm'
 gem 'select2-rails'
 gem 'sprockets'
-gem 'test-unit', '~> 3.0' # required by Heroku for production console
+gem 'test-unit', '~> 3.6' # required by Heroku for production console
 gem 'tinymce-rails', '~> 5.10'
 gem 'uglifier'
 gem 'will_paginate'
