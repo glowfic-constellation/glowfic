@@ -175,7 +175,7 @@ GEM
       i18n (>= 0.7)
       multi_json
       request_store (>= 1.0)
-    haml (6.1.2)
+    haml (6.2.0)
       temple (>= 0.8.2)
       thor
       tilt
@@ -184,8 +184,8 @@ GEM
       activesupport (>= 5.1)
       haml (>= 4.0.6)
       railties (>= 5.1)
-    haml_lint (0.50.0)
-      haml (>= 4.0, < 6.2)
+    haml_lint (0.51.0)
+      haml (>= 4.0)
       parallel (~> 1.10)
       rainbow
       rubocop (>= 1.0)
@@ -494,7 +494,7 @@ DEPENDENCIES
   get_process_mem
   gon (~> 6.4)
   haml-rails
-  haml_lint (~> 0.50.0)
+  haml_lint (~> 0.51.0)
   html-proofer
   httparty
   jquery-fileupload-rails
