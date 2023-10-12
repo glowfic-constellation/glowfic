@@ -1048,6 +1048,9 @@ Style/ReturnNilInPredicateMethodDefinition: # new in 1.53
 Style/SelectByRegexp: # new in 1.22
   Enabled: true
 
+Style/SingleLineDoEndBlock: # new in 1.57
+  Enabled: true
+
 Style/SlicingWithRange:
   Enabled: false
 
