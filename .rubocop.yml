@@ -628,6 +628,9 @@ RSpec/ExcessiveDocstringSpacing: # new in 2.5
 RSpec/ExpectChange:
   EnforcedStyle: block
 
+RSpec/FilePath:
+  Enabled: false
+
 RSpec/HookArgument:
   EnforcedStyle: each
 
@@ -1043,6 +1046,9 @@ Style/ReturnNilInPredicateMethodDefinition: # new in 1.53
   Enabled: true
 
 Style/SelectByRegexp: # new in 1.22
+  Enabled: true
+
+Style/SingleLineDoEndBlock: # new in 1.57
   Enabled: true
 
 Style/SlicingWithRange:
