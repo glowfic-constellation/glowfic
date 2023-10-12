@@ -98,7 +98,7 @@ function addNewRow() {
   urlField.show();
   urlField.attr('id', 'icons_'+index+'_url');
 
-  newRow.insertBefore($(".submit-row"));
+  newRow.insertAfter(oldRow);
   $("td:has(input)", newRow).each(function() {
     $(this).keydown(processDirectionalKey);
   });
