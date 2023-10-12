@@ -13,49 +13,49 @@ var keyDown = 40;
 $(document).ready(function() {
   fixButtons();
   $(".icon-row td:has(input)").each(function() {
-    $(this).keydown(function(event) {
-      if ([keyLeft, keyUp, keyRight, keyDown].indexOf(event.which) < 0) return; // skip if not a directional key
-      var input = $('input', this);
-      if (input.get(0).type !== 'text') { return; } // skip if not text
-      if (input.get(0).selectionStart !== input.get(0).selectionEnd) { return; } // skip processing if user has text selected
-      processDirectionalKey(event, input);
-    });
+    $(this).keydown(processDirectionalKey);
   });
 });
 
-function processDirectionalKey(event, input) {
+function processDirectionalKey(event) {
+  if ([keyLeft, keyUp, keyRight, keyDown].indexOf(event.which) < 0) return; // skip if not a directional key
+  var tdBinding = $(this);
+  var input = $('input', tdBinding);
+  if (input.get(0).type !== 'text') { return; } // skip if not text
+  if (input.get(0).selectionStart !== input.get(0).selectionEnd) { return; } // skip processing if user has text selected
+
   var caret = input.get(0).selectionStart;
-  var index = $(this).closest('td').index();
+  var index = tdBinding.closest('td').index();
 
   var consume = false;
   switch (event.which) {
   case keyLeft:
-    consume = processKeyLeft(caret);
+    consume = processKeyLeft(tdBinding, caret);
     break;
   case keyRight:
-    consume = processKeyRight(caret, input.val().length);
+    consume = processKeyRight(tdBinding, caret, input.val().length);
     break;
   case keyUp:
-    $(this).closest('tr').prev('.icon-row').children().eq(index).find('input').focus();
+    tdBinding.closest('tr').prev('.icon-row').children().eq(index).find('input').focus();
     consume = true;
     break;
   case keyDown:
-    $(this).closest('tr').next('.icon-row').children().eq(index).find('input').focus();
+    tdBinding.closest('tr').next('.icon-row').children().eq(index).find('input').focus();
     consume = true;
     break;
   }
   if (consume) event.preventDefault();
 }
 
-function processKeyLeft(caret) {
+function processKeyLeft(binding, caret) {
   if (caret !== 0) { return false; }
-  $(this).closest('td').prev().find('input').focus();
+  binding.closest('td').prev().find('input').focus();
   return true;
 }
 
-function processKeyRight(caret, length) {
-  if (caret <= length) { return false; }
-  $(this).closest('td').next().find('input').focus();
+function processKeyRight(binding, caret, length) {
+  if (caret < length) { return false; }
+  binding.closest('td').next().find('input').focus();
   return true;
 }
 
