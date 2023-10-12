@@ -17,6 +17,7 @@ $(document).ready(function() {
   });
 });
 
+// eslint-disable-next-line complexity
 function processDirectionalKey(event) {
   if ([keyLeft, keyUp, keyRight, keyDown].indexOf(event.which) < 0) return; // skip if not a directional key
   var tdBinding = $(this);
