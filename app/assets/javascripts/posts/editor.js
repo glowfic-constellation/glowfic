@@ -186,6 +186,8 @@ function hideSelect(target, selectBox, selectHolder) {
 
 function fixWritableFormCaching() {
   // Hack to deal with Firefox's "helpful" caching of form values on soft refresh (now via IDs)
+  // TODO: fix caching for is_npc + the input field for creating it?
+  // TODO: Retrigger select2 filter based on the input?
   var selectedCharID = $("#reply_character_id").val();
   var displayCharID = String($("#post-editor .post-character").data('character-id'));
   var selectedIconID = $("#reply_icon_id").val();
@@ -322,17 +324,19 @@ function setFormData(characterId, resp, options) {
 
   setAliases(resp.aliases, resp.name);
   setAliasFromID('');
-  if (restoreAlias)
+  if (restoreAlias) {
     setAliasFromID(selectedAliasID);
-  else if (resp.alias_id_for_post)
+  } else if (resp.alias_id_for_post) {
     setAliasFromID(resp.alias_id_for_post);
+  }
 
   setGalleriesAndDefault(resp.galleries, resp.default_icon);
   setIcon('');
-  if (restoreIcon)
+  if (restoreIcon) {
     setIconFromId(selectedIconID);
-  else if (resp.default_icon)
+  } else if (resp.default_icon) {
     setIcon(resp.default_icon.id, resp.default_icon.url, resp.default_icon.keyword, resp.default_icon.keyword);
+  }
 }
 
 function setInfoBoxFields(characterId, name, screenname) {
@@ -433,6 +437,7 @@ function getAndSetCharacterData(characterId, options) {
       data.default_icon = avatar;
       data.galleries.push({icons: [avatar]});
     }
+    // TODO: is_npc
     setFormData(characterId, data, options);
     return; // Don't need to load data from server
   }

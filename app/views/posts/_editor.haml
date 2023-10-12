@@ -30,7 +30,8 @@
             = select_tag :active_character,
             option_groups_from_collection_for_select(@templates, :plucked_characters, :name, :first, :last, item.character_id),
             { prompt: current_user.username, class: 'chosen-select' }
-            %br
+            %button.view-button#npc-character{type: 'button', data: { is_npc: item.character.try(:is_npc) }} NPC
+            = hidden_field :is_npc, value: item.character.try(:is_npc)
       - if item.is_a?(Reply)
         .post-char-access
           - char_count = 10
