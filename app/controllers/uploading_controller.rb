@@ -7,12 +7,6 @@ class UploadingController < ApplicationController
 
     presign_conf = {}
     unless Rails.env.production?
-      if S3_BUCKET.nil?
-        logger.error "S3_BUCKET does not exist; icon upload will FAIL."
-        @s3_direct_post = Struct.new(:url, :fields).new('', nil)
-        return
-      end
-
       # for minio and Docker compatibility, replace the guest-compatible "minio" host with the host-compatible "localhost" path
       if ENV.key?('MINIO_ENDPOINT') && ENV.key?('MINIO_ENDPOINT_EXTERNAL')
         standard_endpoint = ENV.fetch('MINIO_ENDPOINT', nil)
