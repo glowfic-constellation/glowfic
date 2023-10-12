@@ -628,6 +628,9 @@ RSpec/ExcessiveDocstringSpacing: # new in 2.5
 RSpec/ExpectChange:
   EnforcedStyle: block
 
+RSpec/FilePath:
+  Enabled: false
+
 RSpec/HookArgument:
   EnforcedStyle: each
 
