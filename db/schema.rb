@@ -125,7 +125,7 @@ ActiveRecord::Schema.define(version: 2023_09_30_053037) do
     t.text "description"
     t.boolean "retired", default: false
     t.string "cluster"
-    t.boolean "is_npc"
+    t.boolean "is_npc", default: false, null: false
     t.index ["character_group_id"], name: "index_characters_on_character_group_id"
     t.index ["template_id"], name: "index_characters_on_template_id"
     t.index ["user_id"], name: "index_characters_on_user_id"
