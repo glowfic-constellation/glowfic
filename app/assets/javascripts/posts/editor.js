@@ -172,8 +172,8 @@ function setupWritableEditor() {
   $(document).click(function(e) {
     var target = e.target;
     hideSelect(target, iconSelectBox, '#current-icon-holder');
-    hideSelect(target, '#character-selector', '#swap-character');
-    hideSelect(target, '#alias-selector', '#swap-alias');
+    hideSelect(target, $('#character-selector'), '#swap-character');
+    hideSelect(target, $('#alias-selector'), '#swap-alias');
   });
 }
 
