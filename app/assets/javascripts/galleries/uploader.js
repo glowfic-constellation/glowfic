@@ -20,7 +20,7 @@ $(document).ready(function() {
     var unusedUrls = uploadedUrls.filter(function(x) { return usedUrls.indexOf(x) < 0; });
     if (unusedUrls.length < 1) { return true; }
     deleteUnusedIcons($.map(unusedUrls, function(url) { return uploadedIcons[url]; }));
-    return false;
+    return true;
   });
 });
 
