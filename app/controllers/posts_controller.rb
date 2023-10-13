@@ -336,9 +336,7 @@ class PostsController < WritableController
     @post.assign_attributes(permitted_params(false))
     @post.board ||= Board.find_by_id(3)
 
-    if permitted_character_params[:is_npc] && @post.character_id.nil?
-      @post.build_character(permitted_character_params.merge(default_icon_id: @post.icon_id))
-    end
+    process_npc(@post, permitted_character_params)
 
     @author_ids = params.fetch(:post, {}).fetch(:unjoined_author_ids, [])
     @viewer_ids = params.fetch(:post, {}).fetch(:viewer_ids, [])
