@@ -168,7 +168,7 @@ function setupWritableEditor() {
     var id = $(this).data('character-id');
     $("#reply_character_id").val(id);
     getAndSetCharacterData({ id: id });
-    updateCharDropdown(id, isNPC);
+    updateCharDropdown(id, isNPC); // TODO: isNPC?
   });
 
   $("#character_alias").change(function() {
