@@ -43,12 +43,12 @@ function setupMetadataEditor() {
   createSelect2('#active_npc', {
     tags: true,
     // https://select2.org/dropdown#templating
-    templateResult: function (state) {
+    templateResult: function(state) {
       // used to show "Create new:" before new NPC entries
       if (!state.element) return "Create New: " + state.text;
       return state.text;
     },
-    createTag: function (params) {
+    createTag: function(params) {
       // used to remove ID (defaults to params.term, but then we try doing an API lookup)
       return { id: "new", text: params.term };
     }
@@ -154,7 +154,7 @@ function setupWritableEditor() {
     getAndSetCharacterData({ id: id });
   });
 
-  $("#active_npc").change(function () {
+  $("#active_npc").change(function() {
     var id = $(this).val();
     var item = $("option:selected", this);
     var name = item.text();
@@ -210,7 +210,6 @@ function hideSelect(target, selectBox, selectHolder) {
 
 function fixWritableFormCaching() {
   // Hack to deal with Firefox's "helpful" caching of form values on soft refresh (now via IDs)
-  // TODO: Retrigger select2 filter based on the input?
   var isNPC = $("#character_is_npc").val() === "true";
   var selectedNPC = $("#character_name").val();
   var selectedCharID = $("#reply_character_id").val();
@@ -471,7 +470,7 @@ function getAndSetCharacterData(character, options) {
   }
 
   var postID = $("#reply_post_id").val();
-  $.authenticatedGet('/api/v1/characters/' + character.id, { post_id: postID }, function (resp) {
+  $.authenticatedGet('/api/v1/characters/' + character.id, { post_id: postID }, function(resp) {
     setFormData(character.id, resp, options);
   });
 }
