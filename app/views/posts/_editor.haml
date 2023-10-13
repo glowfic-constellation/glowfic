@@ -25,7 +25,7 @@
         = item.user.username
         - if current_user.characters.present?
           = image_tag swap_icon_url, id: 'swap-character', alt: 'Choose Character', title: 'Choose Character', class: 'selector-popup-button'
-          #character-selector.selector-popup{style: "min-width: 300px"}
+          #character-selector.selector-popup
             #swap-character-character
               %h4 Choose Character
               = select_tag :active_character,

@@ -386,7 +386,7 @@ div.post-subheader { width: 100%; }
   }
 
   #post-form-wrapper { margin-left: 0; }
-  #character-selector { left: 0; }
+  #character-selector { left: 0; min-width: 300px; }
   .post-character { background-color: $bg_color_post_character_narrow; }
   .post-author { background-color: $bg_color_post_author_narrow; }
 
