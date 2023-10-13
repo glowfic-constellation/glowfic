@@ -130,32 +130,33 @@ function setupWritableEditor() {
     $('html, body').scrollTop($("#post-editor").offset().top);
   });
 
-  $("#active_character, #character_alias").on('select2:close', function() {
+  $("#active_character, #active_npc, #character_alias").on('select2:close', function() {
     $('html, body').scrollTop($("#post-editor").offset().top);
   });
 
-  $("#active_character").change(function() {
-    // Set the ID
+  $("#active_character, #active_npc").change(function() {
     var id = $(this).val();
     $("#reply_character_id").val(id);
-    getAndSetCharacterData(id);
+    getAndSetCharacterData({ id: id });
+    // TODO: active NPC on new entry?
   });
 
   $(".char-access-icon").click(function() {
     var id = $(this).data('character-id');
     $("#reply_character_id").val(id);
-    $("#active_character").val(id).trigger('change.select2');
-    getAndSetCharacterData(id);
+    getAndSetCharacterData({ id: id });
+    updateCharDropdown(id, isNPC);
   });
 
   $("#character_alias").change(function() {
-    // Set the ID
     var id = $(this).val();
     $("#reply_character_alias_id").val(id);
     $("#post-editor .post-character #name").text($('#character_alias option:selected').text());
     $('#alias-selector').hide();
     $("#post-editor .post-character").data('alias-id', id);
   });
+
+  $('#select-character, #select-npc').click(toggleNPC);
 
   // Hides selectors when you hit the escape key
   $(document).bind("keydown", function(e) {
@@ -186,8 +187,9 @@ function hideSelect(target, selectBox, selectHolder) {
 
 function fixWritableFormCaching() {
   // Hack to deal with Firefox's "helpful" caching of form values on soft refresh (now via IDs)
-  // TODO: fix caching for is_npc + the input field for creating it?
   // TODO: Retrigger select2 filter based on the input?
+  var isNPC = $("#character_is_npc").val();
+  var selectedNPC = $("#character_name").val();
   var selectedCharID = $("#reply_character_id").val();
   var displayCharID = String($("#post-editor .post-character").data('character-id'));
   var selectedIconID = $("#reply_icon_id").val();
@@ -199,6 +201,7 @@ function fixWritableFormCaching() {
       bindIcon();
       bindGallery();
     }
+    setNPC(selectedNPC, isNPC);
     if (selectedIconID !== displayIconID) {
       setIconFromId(selectedIconID); // Handle the case where just the icon was cached
     }
@@ -206,8 +209,8 @@ function fixWritableFormCaching() {
       setAliasFromID(selectedAliasID);
     }
   } else {
-    getAndSetCharacterData(selectedCharID, {restore_icon: true, restore_alias: true});
-    $("#active_character").val(selectedCharID).trigger("change.select2");
+    getAndSetCharacterData({ id: selectedCharID, is_npc: isNPC, name: selectedNPC }, { restore_icon: true, restore_alias: true });
+    updateCharDropdown(selectedCharID, isNPC);
   }
 
   // Set the quick-switcher's selected character
@@ -308,19 +311,22 @@ function setupTinyMCE() {
 function setFormData(characterId, resp, options) {
   var restoreIcon = false;
   var restoreAlias = false;
+  var hideCharacterSelect = true;
 
   if (typeof options !== 'undefined') {
     restoreIcon = options.restore_icon;
     restoreAlias = options.restore_alias;
+    hideCharacterSelect = options.hideCharacterSelect;
   }
 
   setSwitcherListSelected(characterId);
 
   var selectedIconID = $("#reply_icon_id").val();
   var selectedAliasID = $("#reply_character_alias_id").val();
-  $("#character-selector").hide();
+  if (hideCharacterSelect) $("#character-selector").hide();
 
   setInfoBoxFields(characterId, resp.name, resp.screenname);
+  setNPC(resp.name, resp.is_npc);
 
   setAliases(resp.aliases, resp.name);
   setAliasFromID('');
@@ -426,25 +432,24 @@ function setGalleries(galleries) {
   }
 }
 
-function getAndSetCharacterData(characterId, options) {
+function getAndSetCharacterData(character, options) {
   // Handle page interactions
 
   // Handle special case where just setting to your base account
-  if (characterId === '') {
+  if (character.id === '') {
     var avatar = gon.editor_user.avatar;
-    var data = {aliases: [], galleries: []};
+    var data = {aliases: [], galleries: [], is_npc: character.is_npc, name: character.name};
     if (avatar) {
       data.default_icon = avatar;
       data.galleries.push({icons: [avatar]});
     }
-    // TODO: is_npc
-    setFormData(characterId, data, options);
+    setFormData(character.id, data, options);
     return; // Don't need to load data from server
   }
 
   var postID = $("#reply_post_id").val();
-  $.authenticatedGet('/api/v1/characters/' + characterId, {post_id: postID}, function(resp) {
-    setFormData(characterId, resp, options);
+  $.authenticatedGet('/api/v1/characters/' + character.id, {post_id: postID}, function(resp) {
+    setFormData(character.id, resp, options);
   });
 }
 
@@ -476,6 +481,55 @@ function setIcon(id, url, title, alt) {
   $("#current-icon").attr('src', url);
   $("#current-icon").attr('title', title);
   $("#current-icon").attr('alt', alt);
+}
+
+function toggleNPC() {
+  var isNPC = this.id === "select-npc";
+
+  // TODO: when the NPC button is clicked, the button should change to say "Character" so you can switch back (makes it clear)
+  // TODO: when searching for an NPC in the Select2 box, regardless of whether it already exists, should present option to create with given name
+
+  // TODO: tweak the options of active_character ?
+
+  if (!isNPC) {
+    getAndSetCharacterData({ id: "", is_npc: false, name: "" }, { hideCharacterSelect: false });
+    return;
+  }
+
+  // TODO: repopulate character dropdown with NPCs from other threads (this seems ... hard? #active_character seems to be 100% server-side at present)
+  // maybe switch out #active_character with #active_npc, and generate both on server side? but NPC lists are expected to get super long, so probably just AJAX it somehow
+  // https://select2.org/programmatic-control/add-select-clear-items#preselecting-options-in-an-remotely-sourced-ajax-select2
+  // TODO: start off just creating two active_character controls, one for NPCs, server-side? then switch them out based on the NPC thing being clicked or not
+  // also edit the "Choose Character" label to "Choose NPC" maybe?
+  // TODO: allow user to create new NPC
+  // TODO: also make sure thread NPC characters are in the thread NPCs list on the NPCs side of things, not the regular thread characters list
+  // creating a new NPC should be a fixed form box, rather than leaving the form up to edit - they "commit" to a value and that sticks in the sidebar and goes into the form behind.
+
+  // TODO: setNPC(name, isNPC)
+  // TODO: switch to author character only when they click to create a new NPC?
+  $("#reply_character_id").val("");
+  getAndSetCharacterData({ id: "", is_npc: true, name: "NPC" }, { hideCharacterSelect: false });
+}
+
+function setNPC(name, isNPC) {
+  $("#select-npc").toggleClass("selected", isNPC);
+  $("#select-character").toggleClass("selected", !isNPC);
+  $("#swap-character-character").toggleClass("hidden", isNPC);
+  $("#swap-character-npc").toggleClass("hidden", !isNPC);
+
+  $("#character_is_npc").val(isNPC);
+  $("#character_name").val(name);
+  $("#post-editor .post-character #name").text(name);
+}
+
+function updateCharDropdown(id, isNPC) {
+  if (isNPC) {
+    $("#active_character").val("");
+    $("#active_npc").val(id).trigger('change.select2');
+  } else {
+    $("#active_npc").val("");
+    $("#active_character").val(id).trigger('change.select2');
+  }
 }
 
 function setSections() {

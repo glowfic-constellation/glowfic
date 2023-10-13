@@ -140,6 +140,8 @@ class PostsController < WritableController
     @post.content_warnings = process_tags(ContentWarning, obj_param: :post, id_param: :content_warning_ids)
     @post.labels = process_tags(Label, obj_param: :post, id_param: :label_ids)
 
+    # TODO: create NPC if appropriate?
+
     begin
       @post.save!
     rescue ActiveRecord::RecordInvalid
@@ -213,6 +215,8 @@ class PostsController < WritableController
     change_status and return if params[:status].present?
     change_authors_locked and return if params[:authors_locked].present?
     preview and return if params[:button_preview].present?
+
+    # TODO: create NPC if appropriate? (incl taking the icon as default)
 
     @post.assign_attributes(permitted_params)
     @post.board ||= Board.find_by(id: Board::ID_SANDBOX)

@@ -23,6 +23,9 @@
         = f.hidden_field :icon_id, id: 'reply_icon_id'
         = f.hidden_field :character_alias_id, id: 'reply_character_alias_id'
         = f.hidden_field :editor_mode, id: 'editor_mode'
+        = fields_for :character, post.character do |cf|
+          = cf.hidden_field :name, id: 'character_name'
+          = cf.hidden_field :is_npc, id: 'character_is_npc'
       = render 'posts/editor_help'
   - content_for :buttons do
     - if post.id.present? && !post.editable_by?(current_user)

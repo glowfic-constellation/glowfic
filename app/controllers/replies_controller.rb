@@ -97,6 +97,8 @@ class RepliesController < WritableController
   end
 
   def create
+    # TODO: create NPC if appropriate? or what to do about drafts actually, should we embed the npc details in the draft bit?
+    # should try to embed in the draft but if it's a lot of effort then NM, just create the NPC already
     if params[:button_draft]
       draft = make_draft
       redirect_to posts_path and return unless draft.post
@@ -174,6 +176,7 @@ class RepliesController < WritableController
 
   def update
     @reply.assign_attributes(permitted_params)
+    # TODO: create NPC if appropriate?
     preview(@reply) and return if params[:button_preview]
 
     if current_user.id != @reply.user_id && @reply.audit_comment.blank?
