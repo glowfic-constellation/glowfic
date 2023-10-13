@@ -680,7 +680,7 @@ RSpec.describe GalleriesController do
     end
 
     it "makes sure devs set up their S3 bucket correctly" do
-      fake_bucket = instance_double("Aws::S3::Bucket", url: "http://fake-url.example.com/my-bucket")
+      fake_bucket = instance_double(Aws::S3::Bucket, url: "http://fake-url.example.com/my-bucket")
       stub_const("S3_BUCKET", fake_bucket)
       allow(ENV).to receive(:fetch).with("MINIO_ENDPOINT", nil).and_return("http://invalid-url.example.com/")
       allow(ENV).to receive(:fetch).with("MINIO_ENDPOINT_EXTERNAL", nil).and_return("http://updated-url.example.com/")
@@ -689,7 +689,7 @@ RSpec.describe GalleriesController do
     end
 
     it "works with Docker minio mapping for devs" do
-      fake_bucket = instance_double("Aws::S3::Bucket", url: "http://old-url.example.com/my-bucket")
+      fake_bucket = instance_double(Aws::S3::Bucket, url: "http://old-url.example.com/my-bucket")
       stub_const("S3_BUCKET", fake_bucket)
       allow(ENV).to receive(:fetch).with("MINIO_ENDPOINT", nil).and_return("http://old-url.example.com/")
       allow(ENV).to receive(:fetch).with("MINIO_ENDPOINT_EXTERNAL", nil).and_return("http://updated-url.example.com/")
