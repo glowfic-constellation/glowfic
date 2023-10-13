@@ -110,6 +110,7 @@ class RepliesController < WritableController
 
     reply = Reply.new(permitted_params)
     reply.user = current_user
+    process_npc(reply, permitted_character_params)
 
     if reply.post.present?
       last_seen_reply_order = reply.post.last_seen_reply_for(current_user).try(:reply_order)
@@ -176,7 +177,7 @@ class RepliesController < WritableController
 
   def update
     @reply.assign_attributes(permitted_params)
-    # TODO: create NPC if appropriate?
+    process_npc(@reply, permitted_character_params)
     preview(@reply) and return if params[:button_preview]
 
     if current_user.id != @reply.user_id && @reply.audit_comment.blank?
@@ -311,6 +312,8 @@ class RepliesController < WritableController
       draft = ReplyDraft.new(permitted_params)
       draft.user = current_user
     end
+    # TODO: Add NPCs to drafts (should we create the character in the meantime?)
+    # process_npc(draft, permitted_character_params)
 
     begin
       draft.save!

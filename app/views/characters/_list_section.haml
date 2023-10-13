@@ -1,6 +1,6 @@
 - col_count = 7
 - col_count += 1 if local_assigns[:show_template]
-- characters = name.characters.ordered unless local_assigns[:characters]
+- characters = name.characters.where(is_npc: false).ordered unless local_assigns[:characters]
 - characters = characters.where(retired: false) unless show_retired
 
 - if @template.nil? && name.present?

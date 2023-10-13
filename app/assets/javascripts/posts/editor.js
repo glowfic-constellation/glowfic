@@ -40,6 +40,20 @@ function setupMetadataEditor() {
     placeholder: 'Choose user(s) to invite to reply to this post'
   });
 
+  createSelect2('#active_npc', {
+    tags: true,
+    // https://select2.org/dropdown#templating
+    templateResult: function (state) {
+      // used to show "Create new:" before new NPC entries
+      if (!state.element) return "Create New: " + state.text;
+      return state.text;
+    },
+    createTag: function (params) {
+      // used to remove ID (defaults to params.term, but then we try doing an API lookup)
+      return { id: "new", text: params.term };
+    }
+  });
+
   createTagSelect("Label", "label", "post");
   createTagSelect("Setting", "setting", "post");
   createTagSelect("ContentWarning", "content_warning", "post");
@@ -134,11 +148,20 @@ function setupWritableEditor() {
     $('html, body').scrollTop($("#post-editor").offset().top);
   });
 
-  $("#active_character, #active_npc").change(function() {
+  $("#active_character").change(function() {
     var id = $(this).val();
     $("#reply_character_id").val(id);
     getAndSetCharacterData({ id: id });
-    // TODO: active NPC on new entry?
+  });
+
+  $("#active_npc").change(function () {
+    var id = $(this).val();
+    var item = $("option:selected", this);
+    var name = item.text();
+    if (id === "") name = "NPC"; // placeholder corresponds to a basic "NPC" user
+    if (id === "new") id = "";
+    $("#reply_character_id").val(id);
+    getAndSetCharacterData({ id: id, name: name, is_npc: true });
   });
 
   $(".char-access-icon").click(function() {
@@ -188,7 +211,7 @@ function hideSelect(target, selectBox, selectHolder) {
 function fixWritableFormCaching() {
   // Hack to deal with Firefox's "helpful" caching of form values on soft refresh (now via IDs)
   // TODO: Retrigger select2 filter based on the input?
-  var isNPC = $("#character_is_npc").val();
+  var isNPC = $("#character_is_npc").val() === "true";
   var selectedNPC = $("#character_name").val();
   var selectedCharID = $("#reply_character_id").val();
   var displayCharID = String($("#post-editor .post-character").data('character-id'));
@@ -435,7 +458,7 @@ function setGalleries(galleries) {
 function getAndSetCharacterData(character, options) {
   // Handle page interactions
 
-  // Handle special case where just setting to your base account
+  // Handle special case where setting to your base account or a new NPC (no ID)
   if (character.id === '') {
     var avatar = gon.editor_user.avatar;
     var data = {aliases: [], galleries: [], is_npc: character.is_npc, name: character.name};
@@ -448,7 +471,7 @@ function getAndSetCharacterData(character, options) {
   }
 
   var postID = $("#reply_post_id").val();
-  $.authenticatedGet('/api/v1/characters/' + character.id, {post_id: postID}, function(resp) {
+  $.authenticatedGet('/api/v1/characters/' + character.id, { post_id: postID }, function (resp) {
     setFormData(character.id, resp, options);
   });
 }
@@ -485,30 +508,17 @@ function setIcon(id, url, title, alt) {
 
 function toggleNPC() {
   var isNPC = this.id === "select-npc";
-
-  // TODO: when the NPC button is clicked, the button should change to say "Character" so you can switch back (makes it clear)
-  // TODO: when searching for an NPC in the Select2 box, regardless of whether it already exists, should present option to create with given name
-
-  // TODO: tweak the options of active_character ?
-
+  $("#reply_character_id").val("");
   if (!isNPC) {
+    $("#reply_character_id").val("");
     getAndSetCharacterData({ id: "", is_npc: false, name: "" }, { hideCharacterSelect: false });
+    updateCharDropdown("", false);
     return;
   }
 
-  // TODO: repopulate character dropdown with NPCs from other threads (this seems ... hard? #active_character seems to be 100% server-side at present)
-  // maybe switch out #active_character with #active_npc, and generate both on server side? but NPC lists are expected to get super long, so probably just AJAX it somehow
-  // https://select2.org/programmatic-control/add-select-clear-items#preselecting-options-in-an-remotely-sourced-ajax-select2
-  // TODO: start off just creating two active_character controls, one for NPCs, server-side? then switch them out based on the NPC thing being clicked or not
-  // also edit the "Choose Character" label to "Choose NPC" maybe?
-  // TODO: allow user to create new NPC
-  // TODO: also make sure thread NPC characters are in the thread NPCs list on the NPCs side of things, not the regular thread characters list
-  // creating a new NPC should be a fixed form box, rather than leaving the form up to edit - they "commit" to a value and that sticks in the sidebar and goes into the form behind.
-
-  // TODO: setNPC(name, isNPC)
-  // TODO: switch to author character only when they click to create a new NPC?
-  $("#reply_character_id").val("");
+  // TODO: add thread names to NPC descriptions so we know which one it is
   getAndSetCharacterData({ id: "", is_npc: true, name: "NPC" }, { hideCharacterSelect: false });
+  updateCharDropdown("", true);
 }
 
 function setNPC(name, isNPC) {

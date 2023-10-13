@@ -48,6 +48,11 @@
     %th.sub.vtop= f.label :description
     %td{class: cycle('even', 'odd')}= f.text_area :description, placeholder: 'Description', class: 'text', cols: 35
   %tr
+    %th.sub= f.label :is_npc, 'NPC?'
+    %td{class: cycle('even', 'odd')}
+      = f.check_box :is_npc, class: 'vmid'
+      = f.label :is_npc, 'Remove from character page and show in separate dropdown when writing', class: 'no-margin'
+  %tr
     %th.sub= f.label :retired, 'Retired?'
     %td{class: cycle('even', 'odd')}
       = f.check_box :retired, class: 'vmid'

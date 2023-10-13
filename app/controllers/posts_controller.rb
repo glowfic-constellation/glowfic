@@ -139,8 +139,7 @@ class PostsController < WritableController
     @post.settings = process_tags(Setting, obj_param: :post, id_param: :setting_ids)
     @post.content_warnings = process_tags(ContentWarning, obj_param: :post, id_param: :content_warning_ids)
     @post.labels = process_tags(Label, obj_param: :post, id_param: :label_ids)
-
-    # TODO: create NPC if appropriate?
+    process_npc(@post, permitted_character_params)
 
     begin
       @post.save!
@@ -216,10 +215,9 @@ class PostsController < WritableController
     change_authors_locked and return if params[:authors_locked].present?
     preview and return if params[:button_preview].present?
 
-    # TODO: create NPC if appropriate? (incl taking the icon as default)
-
     @post.assign_attributes(permitted_params)
     @post.board ||= Board.find_by(id: Board::ID_SANDBOX)
+    process_npc(@post, permitted_character_params)
     settings = process_tags(Setting, obj_param: :post, id_param: :setting_ids)
     warnings = process_tags(ContentWarning, obj_param: :post, id_param: :content_warning_ids)
     labels = process_tags(Label, obj_param: :post, id_param: :label_ids)
@@ -337,6 +335,10 @@ class PostsController < WritableController
     @post ||= Post.new(user: current_user)
     @post.assign_attributes(permitted_params(false))
     @post.board ||= Board.find_by_id(3)
+
+    if permitted_character_params[:is_npc] && @post.character_id.nil?
+      @post.build_character(permitted_character_params.merge(default_icon_id: @post.icon_id))
+    end
 
     @author_ids = params.fetch(:post, {}).fetch(:unjoined_author_ids, [])
     @viewer_ids = params.fetch(:post, {}).fetch(:viewer_ids, [])

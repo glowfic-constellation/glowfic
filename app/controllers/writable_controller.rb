@@ -7,19 +7,26 @@ class WritableController < ApplicationController
     user ||= current_user
 
     faked = Struct.new(:name, :id, :plucked_characters)
-    pluck = Arel.sql("id, concat_ws(' | ', name, nickname, screenname)")
+    faked_npcs = Struct.new(:name, :id, :plucked_npcs)
     templates = user.templates.ordered
-    templateless = faked.new('Templateless', nil, user.characters.where(template_id: nil, retired: false).ordered.pluck(pluck))
+    templateless = faked.new('Templateless', nil, user.characters.where(template_id: nil, retired: false).ordered.pluck(Template::CHAR_PLUCK))
     @templates = templates + [templateless]
+    @npcs = []
 
     if @post
       uniq_chars_ids = @post.replies.where(user_id: user.id).where.not(character_id: nil).group(:character_id).pluck(:character_id)
       uniq_chars_ids << @post.character_id if @post.user_id == user.id && @post.character_id.present?
-      uniq_chars = Character.where(id: uniq_chars_ids).ordered.pluck(pluck)
+      uniq_chars = Character.where(id: uniq_chars_ids, is_npc: false).ordered.pluck(Template::CHAR_PLUCK)
       threadchars = faked.new('Thread characters', nil, uniq_chars)
       @templates.insert(0, threadchars)
+
+      uniq_npcs = Character.where(id: uniq_chars_ids, is_npc: true).ordered.pluck(Template::NPC_PLUCK)
+      threadnpcs = faked_npcs.new('Thread NPCs', nil, uniq_npcs)
+      @npcs.insert(0, threadnpcs)
     end
     @templates.reject! { |template| template.plucked_characters.empty? }
+
+    @npcs << faked_npcs.new('All NPCs', nil, user.characters.where(retired: false, is_npc: true).ordered.pluck(Template::NPC_PLUCK))
 
     gon.editor_user = user.gon_attributes
   end
@@ -170,6 +177,13 @@ class WritableController < ApplicationController
     }
   end
 
+  def process_npc(writable, permitted_character_params)
+    return unless writable.character.nil?
+    return unless permitted_character_params[:is_npc]
+
+    writable.build_character(permitted_character_params.merge(default_icon_id: writable.icon_id, user_id: writable.user_id))
+  end
+
   def permitted_params(param_hash=nil)
     (param_hash || params).fetch(:reply, {}).permit(
       :post_id,
@@ -179,6 +193,13 @@ class WritableController < ApplicationController
       :audit_comment,
       :character_alias_id,
       :editor_mode,
+    )
+  end
+
+  def permitted_character_params(param_hash=nil)
+    (param_hash || params).fetch(:character, {}).permit(
+      :name,
+      :is_npc,
     )
   end
 end

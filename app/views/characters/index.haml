@@ -64,15 +64,15 @@
       = render 'group', group: @group, page_view: page_view, colspan: colspan
     - elsif @user.character_groups.exists?
       = render partial: 'group', collection: @user.character_groups.order(id: :asc), locals: { page_view: page_view, colspan: colspan }
-      - if @user.characters.where(character_group_id: nil).exists?
-        = render 'group', characters: @user.characters.where(character_group_id: nil), group: nil, skip_grouped_templates: true, page_view: page_view, colspan: colspan
+      - if @user.characters.where(character_group_id: nil, is_npc: false).exists?
+        = render 'group', characters: @user.characters.where(character_group_id: nil, is_npc: false), group: nil, skip_grouped_templates: true, page_view: page_view, colspan: colspan
     - elsif @user.characters.exists?
       = render partial: partial_type, collection: @user.templates.ordered, as: :name
-      - if @user.characters.where(template_id: nil).exists?
-        = render partial_type, name: "No Template", characters: @user.characters.where(template_id: nil).ordered, show_new_character_button: @user.id == current_user&.id
+      - if @user.characters.where(template_id: nil, is_npc: false).exists?
+        = render partial_type, name: "No Template", characters: @user.characters.where(template_id: nil, is_npc: false).ordered, show_new_character_button: @user.id == current_user&.id
     - else
       %tr
         %td.centered.padding-5{class: cycle('even', 'odd'), colspan: colspan} — No characters yet —
   - else
-    - characters = @user.characters.includes(:template).ordered
+    - characters = @user.characters.where(is_npc: false).includes(:template).ordered
     = render partial_type, name: nil, characters: characters, show_template: true
