@@ -167,8 +167,7 @@ function setupWritableEditor() {
   $(".char-access-icon").click(function() {
     var id = $(this).data('character-id');
     $("#reply_character_id").val(id);
-    getAndSetCharacterData({ id: id });
-    updateCharDropdown(id, isNPC); // TODO: isNPC?
+    getAndSetCharacterData({ id: id }, { updateCharDropdowns: true });
   });
 
   $("#character_alias").change(function() {
@@ -231,8 +230,7 @@ function fixWritableFormCaching() {
       setAliasFromID(selectedAliasID);
     }
   } else {
-    getAndSetCharacterData({ id: selectedCharID, is_npc: isNPC, name: selectedNPC }, { restore_icon: true, restore_alias: true });
-    updateCharDropdown(selectedCharID, isNPC);
+    getAndSetCharacterData({ id: selectedCharID, is_npc: isNPC, name: selectedNPC }, { restore_icon: true, restore_alias: true, updateCharDropdowns: true });
   }
 
   // Set the quick-switcher's selected character
@@ -334,11 +332,13 @@ function setFormData(characterId, resp, options) {
   var restoreIcon = false;
   var restoreAlias = false;
   var hideCharacterSelect = true;
+  var updateCharDropdowns = false;
 
   if (typeof options !== 'undefined') {
     restoreIcon = options.restore_icon;
     restoreAlias = options.restore_alias;
     hideCharacterSelect = options.hideCharacterSelect;
+    updateCharDropdowns = options.updateCharDropdowns;
   }
 
   setSwitcherListSelected(characterId);
@@ -365,6 +365,8 @@ function setFormData(characterId, resp, options) {
   } else if (resp.default_icon) {
     setIcon(resp.default_icon.id, resp.default_icon.url, resp.default_icon.keyword, resp.default_icon.keyword);
   }
+
+  if (updateCharDropdowns) updateCharDropdown(characterId, resp.is_npc);
 }
 
 function setInfoBoxFields(characterId, name, screenname) {
@@ -510,13 +512,11 @@ function toggleNPC() {
   $("#reply_character_id").val("");
   if (!isNPC) {
     $("#reply_character_id").val("");
-    getAndSetCharacterData({ id: "", is_npc: false, name: "" }, { hideCharacterSelect: false });
-    updateCharDropdown("", false);
+    getAndSetCharacterData({ id: "", is_npc: false, name: "" }, { hideCharacterSelect: false, updateCharDropdowns: true });
     return;
   }
 
-  getAndSetCharacterData({ id: "", is_npc: true, name: "NPC" }, { hideCharacterSelect: false });
-  updateCharDropdown("", true);
+  getAndSetCharacterData({ id: "", is_npc: true, name: "NPC" }, { hideCharacterSelect: false, updateCharDropdowns: true });
 }
 
 function setNPC(name, isNPC) {
