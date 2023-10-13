@@ -515,7 +515,6 @@ function toggleNPC() {
     return;
   }
 
-  // TODO: add thread names to NPC descriptions so we know which one it is
   getAndSetCharacterData({ id: "", is_npc: true, name: "NPC" }, { hideCharacterSelect: false });
   updateCharDropdown("", true);
 }

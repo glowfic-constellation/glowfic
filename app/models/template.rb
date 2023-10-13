@@ -9,7 +9,7 @@ class Template < ApplicationRecord
   scope :ordered, -> { order(name: :asc, created_at: :asc, id: :asc) }
 
   CHAR_PLUCK = Arel.sql("id, concat_ws(' | ', name, nickname, screenname)")
-  NPC_PLUCK = Arel.sql("id, concat_ws(' | ', name)") # TODO: recent threads?
+  NPC_PLUCK = Arel.sql("id, concat_ws(' | ', name, nickname)")
 
   def plucked_characters
     characters.where(retired: false, is_npc: false).pluck(CHAR_PLUCK)

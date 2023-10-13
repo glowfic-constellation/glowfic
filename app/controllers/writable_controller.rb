@@ -181,7 +181,13 @@ class WritableController < ApplicationController
     return unless writable.character.nil?
     return unless permitted_character_params[:is_npc]
 
-    writable.build_character(permitted_character_params.merge(default_icon_id: writable.icon_id, user_id: writable.user_id))
+    post_name = if writable.is_a? Post
+      writable.subject
+    else
+      writable.post.subject
+    end
+
+    writable.build_character(permitted_character_params.merge(default_icon_id: writable.icon_id, user_id: writable.user_id, nickname: post_name))
   end
 
   def permitted_params(param_hash=nil)
