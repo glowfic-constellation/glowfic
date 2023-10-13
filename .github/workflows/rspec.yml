@@ -73,3 +73,9 @@ jobs:
         with:
           name: rspec-logs
           path: rspec-results.html
+      - name: Upload Coverage files
+        if: ${{ always() }}
+        uses: actions/upload-artifact@v3
+        with:
+          name: coverage
+          path: coverage/
