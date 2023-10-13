@@ -39,6 +39,8 @@ jobs:
       GLOWFIC_DATABASE_PORT: 5432
       CC_TEST_REPORTER_ID: 1e0c6dba9930e839038860b6d73301226c821937f57ed35d06fc0e4b7bddf5f6
       RAILS_ENV: test
+      MINIO_ENDPOINT: http://localhost:9000/
+      MINIO_ENDPOINT_EXTERNAL: http://localhost:9000/
 
     steps:
       - uses: actions/checkout@v4
@@ -48,7 +50,7 @@ jobs:
         run: |
           wget --show-progress --progress=dot:mega https://dl.min.io/server/minio/release/linux-amd64/minio
           chmod +x minio
-          MINIO_ACCESS_KEY=minioadmin MINIO_SECRET_KEY=minioadmin ./minio server /data 2>&1 > minio.log &
+          MINIO_ACCESS_KEY=minioadmin MINIO_SECRET_KEY=minioadmin ./minio server ./minio-data 2>&1 > minio.log &
       - name: Set up Ruby
         uses: ruby/setup-ruby@v1
         with:
