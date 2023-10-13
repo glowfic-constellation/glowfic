@@ -97,8 +97,6 @@ class RepliesController < WritableController
   end
 
   def create
-    # TODO: create NPC if appropriate? or what to do about drafts actually, should we embed the npc details in the draft bit?
-    # should try to embed in the draft but if it's a lot of effort then NM, just create the NPC already
     if params[:button_draft]
       draft = make_draft
       redirect_to posts_path and return unless draft.post
@@ -312,8 +310,8 @@ class RepliesController < WritableController
       draft = ReplyDraft.new(permitted_params)
       draft.user = current_user
     end
-    # TODO: Add NPCs to drafts (should we create the character in the meantime?)
-    # process_npc(draft, permitted_character_params)
+    process_npc(draft, permitted_character_params)
+    new_npc = !draft.character.nil? && !draft.character.persisted?
 
     begin
       draft.save!
@@ -323,7 +321,11 @@ class RepliesController < WritableController
         array: draft.errors.full_messages,
       }
     else
-      flash[:success] = "Draft saved." if show_message
+      if show_message
+        msg = "Draft saved."
+        msg += " Your new NPC character has also been persisted!" if new_npc
+        flash[:success] = msg
+      end
     end
     draft
   end
