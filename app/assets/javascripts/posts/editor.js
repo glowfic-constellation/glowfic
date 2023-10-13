@@ -328,6 +328,7 @@ function setupTinyMCE() {
   }
 }
 
+// eslint-disable-next-line complexity
 function setFormData(characterId, resp, options) {
   var restoreIcon = false;
   var restoreAlias = false;
