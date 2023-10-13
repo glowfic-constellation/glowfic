@@ -678,6 +678,25 @@ RSpec.describe GalleriesController do
       expect(response).to redirect_to(user_gallery_path(id: 0, user_id: user_id))
       expect(flash[:error]).to eq('Cannot add existing icons to galleryless. Please remove from existing galleries instead.')
     end
+
+    it "makes sure devs set up their S3 bucket correctly" do
+      fake_bucket = instance_double("Aws::S3::Bucket", url: "http://fake-url.example.com/my-bucket")
+      stub_const("S3_BUCKET", fake_bucket)
+      allow(ENV).to receive(:fetch).with("MINIO_ENDPOINT", nil).and_return("http://invalid-url.example.com/")
+      allow(ENV).to receive(:fetch).with("MINIO_ENDPOINT_EXTERNAL", nil).and_return("http://updated-url.example.com/")
+      login
+      expect { get :add, params: { id: 0 } }.to raise_error(RuntimeError, /couldn't find minio endpoint.*invalid-url.*in.*fake-url.*/)
+    end
+
+    it "works with Docker minio mapping for devs" do
+      fake_bucket = instance_double("Aws::S3::Bucket", url: "http://old-url.example.com/my-bucket")
+      stub_const("S3_BUCKET", fake_bucket)
+      allow(ENV).to receive(:fetch).with("MINIO_ENDPOINT", nil).and_return("http://old-url.example.com/")
+      allow(ENV).to receive(:fetch).with("MINIO_ENDPOINT_EXTERNAL", nil).and_return("http://updated-url.example.com/")
+      expect(fake_bucket).to receive(:presigned_post).with(hash_including(url: "http://updated-url.example.com/my-bucket"))
+      login
+      get :add, params: { id: 0 }
+    end
   end
 
   describe "POST icon" do
