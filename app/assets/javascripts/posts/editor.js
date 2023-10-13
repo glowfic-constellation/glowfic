@@ -202,7 +202,7 @@ function setupWritableEditor() {
 }
 
 function hideSelect(target, selectBox, selectHolder) {
-  if (!$(target).closest(selectHolder).length && !$(target).closest(selectBox).length) {
+  if (!$(target).closest(selectHolder).length && !$(target).closest(selectBox).length && !$(target).closest(".select2-container").length) {
     if (selectHolder === '#current-icon-holder') { $('#icon-overlay').hide(); }
     selectBox.hide();
   }
