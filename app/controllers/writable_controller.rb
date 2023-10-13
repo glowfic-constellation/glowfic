@@ -11,7 +11,8 @@ class WritableController < ApplicationController
     templates = user.templates.ordered
     templateless = faked.new('Templateless', nil, user.characters.where(template_id: nil, retired: false).ordered.pluck(Template::CHAR_PLUCK))
     @templates = templates + [templateless]
-    @npcs = []
+    all_npcs = faked_npcs.new('All NPCs', nil, user.characters.where(retired: false, is_npc: true).ordered.pluck(Template::NPC_PLUCK))
+    @npcs = [all_npcs]
 
     if @post
       uniq_chars_ids = @post.replies.where(user_id: user.id).where.not(character_id: nil).group(:character_id).pluck(:character_id)
@@ -25,8 +26,7 @@ class WritableController < ApplicationController
       @npcs.insert(0, threadnpcs)
     end
     @templates.reject! { |template| template.plucked_characters.empty? }
-
-    @npcs << faked_npcs.new('All NPCs', nil, user.characters.where(retired: false, is_npc: true).ordered.pluck(Template::NPC_PLUCK))
+    @npcs.reject! { |group| group.plucked_npcs.empty? }
 
     gon.editor_user = user.gon_attributes
   end
