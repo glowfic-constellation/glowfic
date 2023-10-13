@@ -9,7 +9,7 @@ class WritableController < ApplicationController
     faked = Struct.new(:name, :id, :plucked_characters)
     faked_npcs = Struct.new(:name, :id, :plucked_npcs)
     templates = user.templates.ordered
-    templateless = faked.new('Templateless', nil, user.characters.where(template_id: nil, retired: false).ordered.pluck(Template::CHAR_PLUCK))
+    templateless = faked.new('Templateless', nil, user.characters.where(template_id: nil, retired: false, is_npc: false).ordered.pluck(Template::CHAR_PLUCK))
     @templates = templates + [templateless]
     all_npcs = faked_npcs.new('All NPCs', nil, user.characters.where(retired: false, is_npc: true).ordered.pluck(Template::NPC_PLUCK))
     @npcs = [all_npcs]
