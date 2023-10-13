@@ -27,6 +27,9 @@
         - if @character.screenname
           %br
           %span.character-screenname= breakable_text(@character.screenname)
+        - if @character.is_npc
+          %br
+          %span.character-is-npc (NPC)
   %tbody
     - if @character.default_icon
       %tr
@@ -111,7 +114,11 @@
       - nicknames = ([@character.nickname] + @character.aliases.ordered.pluck(:name)).compact
       - if nicknames.present?
         %tr
-          %th.sub.vtop.width-150 Nickname(s)
+          %th.sub.vtop.width-150
+            - if @character.is_npc
+              Original post(s)
+            - else
+              Nickname(s)
           %td.character-template-nickname{class: cycle('even', 'odd')}= nicknames.join(", ")
       - if @character.template
         %tr
