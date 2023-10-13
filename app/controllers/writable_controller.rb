@@ -179,7 +179,7 @@ class WritableController < ApplicationController
 
   def process_npc(writable, permitted_character_params)
     return unless writable.character.nil?
-    return unless permitted_character_params[:is_npc]
+    return unless permitted_character_params[:is_npc] == 'true'
 
     post_name = if writable.is_a? Post
       writable.subject
