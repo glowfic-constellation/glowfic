@@ -40,7 +40,7 @@
   padding: 5px 20px 10px 20px;
   z-index: 2;
   background-color: $bg_color_selectionpopup;
-  min-width: 200px;
+  min-width: 250px;
   display: none;
   text-align: left;
 
@@ -386,7 +386,7 @@ div.post-subheader { width: 100%; }
   }
 
   #post-form-wrapper { margin-left: 0; }
-  #character-selector { left: 0; min-width: 300px; }
+  #character-selector { left: 0; }
   .post-character { background-color: $bg_color_post_character_narrow; }
   .post-author { background-color: $bg_color_post_author_narrow; }
 
