@@ -181,6 +181,7 @@ class WritableController < ApplicationController
     return unless writable.character.nil?
     return unless permitted_character_params[:is_npc] == 'true'
 
+    # we take the NPC's first post's subject as its nickname, for disambiguation in dropdowns etc
     post_name = if writable.is_a? Post
       writable.subject
     else
