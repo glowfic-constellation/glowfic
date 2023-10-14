@@ -8,6 +8,7 @@ Aws.config.update({
 
 s3_config = {}
 if ENV.key?('MINIO_ENDPOINT')
+  bucket_name += ENV.fetch('TEST_ENV_NUMBER', '') if Rails.env.test?
   s3_config = {
     endpoint: ENV['MINIO_ENDPOINT'],
     force_path_style: true,
