@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 class TemplatesController < ApplicationController
-  include CharacterSplit
+  include CharacterFilter
 
   before_action :login_required, except: [:show, :search]
   before_action :find_model, only: [:show, :destroy, :edit, :update]

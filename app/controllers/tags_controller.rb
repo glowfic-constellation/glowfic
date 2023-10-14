@@ -1,5 +1,6 @@
 # frozen_string_literal: true
 class TagsController < ApplicationController
+  include CharacterFilter
   include Taggable
 
   before_action :login_required, except: [:index, :show]
@@ -29,6 +30,7 @@ class TagsController < ApplicationController
       @posts = posts_from_relation(@tag.posts.ordered)
     elsif @view == 'characters'
       @characters = @tag.characters.includes(:user, :template).ordered.paginate(page: page)
+      @show_retired = true # page has no buttons for filters, show retired characters by default
     elsif @view == 'galleries'
       @galleries = @tag.galleries.with_icon_count.ordered_by_name
       use_javascript('galleries/expander')

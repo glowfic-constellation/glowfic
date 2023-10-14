@@ -215,6 +215,7 @@ class UsersController < ApplicationController
       :icon_picker_grouping,
       :default_view,
       :default_character_split,
+      :default_hide_retired_characters,
       :default_editor,
       :moiety,
       :moiety_name,
