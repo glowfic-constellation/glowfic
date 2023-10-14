@@ -120,6 +120,47 @@ RSpec.feature "Creating replies" do
     end
   end
 
+  scenario "User creates a reply with an NPC", :js do
+    post = create(:post, subject: 'Sample post')
+
+    user = login
+    create(:character, user: user) # user must have at least 1 character to be able to pick a character
+
+    visit post_path(post)
+    page.find('.post-expander', text: 'Join Thread').click
+    page.find('img[title="Choose Character"]').click
+    click_button 'NPC'
+    page.find('.select2-selection__rendered', text: 'Select NPC or type to create').click
+    page.find('.select2-container--open .select2-search__field').set('Jade')
+    page.find('li', text: 'Create New: Jade').click
+    expect(page).to have_selector('#name', exact_text: 'Jade')
+    click_button 'Preview'
+
+    # verify preview, change
+    expect(page).to have_no_selector('.error')
+    expect(page).to have_text("Draft saved. Your new NPC character has also been persisted!")
+    expect(page).to have_selector('.content-header', exact_text: 'Sample post')
+    expect(page).to have_selector('.post-container', count: 1)
+    expect(page).to have_selector('#post-editor')
+    within('#post-editor') do
+      expect(page).to have_selector('#name', exact_text: 'Jade')
+    end
+    click_button 'Post'
+
+    # reply uses NPC
+    expect(page).to have_no_selector(".error")
+    expect(page).to have_selector('.success', exact_text: 'Reply posted.')
+    expect(page).to have_selector('.post-reply', count: 1)
+
+    within('.post-reply') do
+      expect(page).to have_text('Jade')
+      click_link 'Jade'
+    end
+
+    expect(page).to have_text(/Jade\s+\(NPC\)/)
+    expect(page).to have_text(/Original post\(s\).*Sample post/)
+  end
+
   scenario "User tries to reply to locked post" do
     post = create(:post, authors_locked: true)
 

@@ -72,6 +72,47 @@ RSpec.feature "Creating posts" do
     end
   end
 
+  scenario "User creates a post with an NPC", :js do
+    user = login
+    create(:board)
+    create(:character, user: user) # user must have at least 1 character to be able to pick a character
+
+    visit new_post_path
+
+    fill_in "post_subject", with: "test subject"
+    page.find('img[title="Choose Character"]').click
+    click_button 'NPC'
+    page.find('.select2-selection__rendered', text: 'Select NPC or type to create').click
+    page.find('.select2-container--open .select2-search__field').set('Adam')
+    page.find('li', text: 'Create New: Adam').click
+    expect(page).to have_selector('#name', exact_text: 'Adam')
+    click_button 'Preview'
+
+    # verify preview, change
+    expect(page).to have_no_selector('.error')
+    expect(page).to have_selector('.content-header', exact_text: 'test subject')
+    expect(page).to have_selector('.post-container', count: 1)
+    expect(page).to have_selector('#post-editor')
+    within('#post-editor') do
+      expect(page).to have_field('Subject', with: 'test subject')
+      expect(page).to have_selector('#name', exact_text: 'Adam')
+    end
+    click_button 'Post'
+
+    # post preserved NPC
+    expect(page).to have_no_selector(".error")
+    expect(page).to have_selector('.success', exact_text: 'Post created.')
+    expect(page).to have_selector('.post-container', count: 1)
+
+    within('.post-container') do
+      expect(page).to have_text('Adam')
+      click_link 'Adam'
+    end
+
+    expect(page).to have_text(/Adam\s+\(NPC\)/)
+    expect(page).to have_text(/Original post\(s\).*test subject/)
+  end
+
   scenario "Fields are preserved on failed post#create", :js do
     login
     visit new_post_path
