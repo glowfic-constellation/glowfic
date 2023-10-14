@@ -74,9 +74,11 @@ RSpec.describe CharactersController do
       it "skips retired characters when specified" do
         character = create(:character, name: 'ExistingCharacter')
         create(:character, user: character.user, retired: true, name: 'RetiredCharacter')
+        create(:character, user: character.user, is_npc: true, name: 'NPCCharacter')
         get :index, params: { user_id: character.user_id, retired: 'false' }
         expect(response.body).to include('ExistingCharacter')
         expect(response.body).not_to include('RetiredCharacter')
+        expect(response.body).not_to include('NPCCharacter')
       end
 
       it "skips retired characters when specified as a default setting" do
@@ -212,6 +214,33 @@ RSpec.describe CharactersController do
       expect(character.pb).to eq('Facecast')
       expect(character.description).to eq('Desc')
       expect(character.galleries).to match_array([gallery])
+    end
+
+    it "succeeds for NPC" do
+      expect(Character.count).to eq(0)
+      test_name = 'NPC character'
+      user = create(:user)
+      gallery = create(:gallery, user: user)
+
+      login_as(user)
+      post :create, params: {
+        character: {
+          name: test_name,
+          nickname: 'TempName',
+          ungrouped_gallery_ids: [gallery.id],
+          is_npc: true,
+        },
+      }
+
+      expect(response).to redirect_to(assigns(:character))
+      expect(flash[:success]).to eq("Character created.")
+      expect(Character.count).to eq(1)
+      character = assigns(:character).reload
+      expect(character.name).to eq(test_name)
+      expect(character.user_id).to eq(user.id)
+      expect(character.nickname).to eq('TempName')
+      expect(character.galleries).to match_array([gallery])
+      expect(character.is_npc).to eq(true)
     end
 
     it "creates new templates when specified" do
@@ -559,6 +588,33 @@ RSpec.describe CharactersController do
       expect(character.pb).to eq('Actor')
       expect(character.description).to eq('Description')
       expect(character.galleries).to match_array([gallery])
+    end
+
+    it "succeeds for NPC" do
+      character = create(:character, is_npc: true)
+      user = character.user
+      login_as(user)
+      put :update, params: {
+        id: character.id,
+        character: {
+          nickname: 'TemplateName',
+        },
+      }
+      expect(response).to redirect_to(assigns(:character))
+      expect(flash[:success]).to eq("Character updated.")
+      character.reload
+      expect(character.nickname).to eq('TemplateName')
+
+      put :update, params: {
+        id: character.id,
+        character: {
+          is_npc: false,
+        },
+      }
+      expect(response).to redirect_to(assigns(:character))
+      expect(flash[:success]).to eq("Character updated.")
+      character.reload
+      expect(character.is_npc).to eq(false)
     end
 
     it "does not persist values when invalid" do

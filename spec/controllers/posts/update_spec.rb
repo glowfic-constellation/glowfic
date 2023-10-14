@@ -872,6 +872,35 @@ RSpec.describe PostsController, 'PUT update' do
       expect(post.authors).to match_array([user, coauthor, joined_user])
     end
 
+    it "creates NPCs" do
+      post = create(:post, user: user, character: templateless_character)
+
+      expect {
+        put :update, params: {
+          id: post.id,
+          post: {
+            board_id: board.id,
+            character_id: nil,
+            icon_id: icon.id,
+          },
+          character: {
+            name: 'NPC',
+            is_npc: true,
+          },
+        }
+      }.to change { Character.count }.by(1)
+      expect(response).to redirect_to(post_url(post))
+      expect(flash[:success]).to eq("Post updated.")
+
+      post = assigns(:post).reload
+      expect(post.character_id).not_to eq(templateless_character.id)
+      expect(post.icon_id).to eq(icon.id)
+      expect(post.character.name).to eq('NPC')
+      expect(post.character.is_npc).to eq(true)
+      expect(post.character.default_icon_id).to eq(icon.id)
+      expect(post.character.nickname).to eq(post.subject)
+    end
+
     it "does not allow coauthors to edit post text" do
       skip "Is not currently implemented on saving data"
       login_as(coauthor)

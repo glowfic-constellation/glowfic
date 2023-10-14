@@ -114,6 +114,18 @@ RSpec.describe RepliesController, 'PUT update' do
     expect(reply.reload.reply_order).to eq(1)
   end
 
+  it "preserves NPC" do
+    user = create(:user)
+    reply = create(:reply, user: user)
+    login_as(user)
+
+    expect {
+      put :update, params: { id: reply.id, reply: { character_id: nil }, character: { name: 'NPC', is_npc: true } }
+    }.to change { Character.count }.by(1)
+    expect(reply.reload.character.name).to eq('NPC')
+    expect(reply.reload.character.nickname).to eq(reply.post.subject)
+  end
+
   context "preview" do
     it "takes correct actions" do
       Reply.auditing_enabled = true
@@ -175,6 +187,28 @@ RSpec.describe RepliesController, 'PUT update' do
       expect(templateless.name).to eq('Templateless')
       expect(templateless.plucked_characters).to eq([[char.id, char.name]])
       Reply.auditing_enabled = false
+    end
+
+    it "preserves NPC without database" do
+      user = create(:user)
+      reply = create(:reply, user: user)
+      login_as(user)
+
+      # update preview doesn't create a draft, so we don't save the character in the database
+      expect {
+        put :update, params: {
+          id: reply.id,
+          button_preview: true,
+          reply: { character_id: nil },
+          character: { name: 'NPC', is_npc: true },
+        }
+      }.not_to change { Character.count }
+      written = assigns(:written)
+      expect(written.character.name).to eq('NPC')
+      expect(written.character.nickname).to eq(reply.post.subject)
+
+      reply.reload
+      expect(reply.character).to be_nil
     end
 
     it "takes correct actions for moderators" do
