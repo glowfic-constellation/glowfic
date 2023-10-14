@@ -79,7 +79,7 @@ RSpec.describe PostsController, 'GET edit' do
     templates = assigns(:templates)
     expect(templates.length).to eq(3)
     thread_chars = templates.first
-    expect(thread_chars.name).to eq('Thread characters')
+    expect(thread_chars.name).to eq('Post characters')
     expected = [char1, char2].sort_by { |c| c.name.downcase }.map { |c| [c.id, c.name] }
     expect(thread_chars.plucked_characters).to eq(expected)
     template_chars = templates[1]

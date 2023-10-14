@@ -21,11 +21,11 @@ class WritableController < ApplicationController
       uniq_chars_ids = @post.replies.where(user_id: user.id).where.not(character_id: nil).group(:character_id).pluck(:character_id)
       uniq_chars_ids << @post.character_id if @post.user_id == user.id && @post.character_id.present?
       uniq_chars = Character.where(id: uniq_chars_ids, is_npc: false).ordered.pluck(Template::CHAR_PLUCK)
-      threadchars = faked.new('Thread characters', nil, uniq_chars)
+      threadchars = faked.new('Post characters', nil, uniq_chars)
       @templates.insert(0, threadchars)
 
       uniq_npcs = Character.where(id: uniq_chars_ids, is_npc: true).ordered.pluck(Template::NPC_PLUCK)
-      threadnpcs = faked_npcs.new('Thread NPCs', nil, uniq_npcs)
+      threadnpcs = faked_npcs.new('Post NPCs', nil, uniq_npcs)
       @npcs.insert(0, threadnpcs)
     end
     @templates.reject! { |template| template.plucked_characters.empty? }

@@ -492,7 +492,7 @@ RSpec.describe PostsController, 'PUT update' do
       templateless_select = [[templateless_character.id, templateless_character.name]]
       templates = assigns(:templates)
       expect(templates.length).to eq(3)
-      expect(templates[0].name).to eq('Thread characters')
+      expect(templates[0].name).to eq('Post characters')
       expect(templates[0].plucked_characters).to eq(templateless_select)
       expect(templates[1]).to eq(templated_character.template)
       expect(templates[2].name).to eq('Templateless')

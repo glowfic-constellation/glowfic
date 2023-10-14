@@ -176,9 +176,11 @@ RSpec.describe WritableController do
         controller.send(:build_template_groups)
         templates = assigns(:templates)
         expect(templates.count).to eq(2) # thread chars, all chars
+        expect(templates.first.name).to eq("Post characters")
         expect(templates.first.plucked_characters.map(&:first)).to eq([char1, char2, char3].map(&:id))
         npcs = assigns(:npcs)
         expect(npcs.count).to eq(2) # thread npcs, all npcs
+        expect(npcs.first.name).to eq("Post NPCs")
         expect(npcs.first.plucked_npcs.map(&:first)).to eq([npc1, npc2, npc3].map(&:id))
       end
     end
