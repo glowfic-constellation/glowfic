@@ -44,8 +44,7 @@ jobs:
 
     steps:
       - uses: actions/checkout@v4
-      - name: Set up Chrome
-        run: sudo apt-get update && sudo apt-get install -y chromium-browser
+      - uses: browser-actions/setup-chrome@v1
       - name: Set up MinIO
         run: |
           wget --show-progress --progress=dot:mega https://dl.min.io/server/minio/release/linux-amd64/minio
