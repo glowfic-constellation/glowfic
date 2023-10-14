@@ -72,7 +72,7 @@ RSpec.feature "Creating replies" do
     end
   end
 
-  skip "User interacts with javascript", :js do
+  scenario "User interacts with javascript", :js do
     post = create(:post)
 
     user = login
@@ -110,7 +110,7 @@ RSpec.feature "Creating replies" do
     end
 
     expect(page).to have_no_selector('.error')
-    expect(page).to have_selector('.success', exact_text: 'Posted!')
+    expect(page).to have_selector('.success', exact_text: 'Reply posted.')
     expect(page).to have_selector('.post-container', count: 2)
     within('.post-reply') do
       expect(page).to have_text(user.username)
