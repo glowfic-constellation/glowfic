@@ -67,6 +67,25 @@ RSpec.feature "Creating a new character" do
     end
   end
 
+  scenario "Create an NPC character", :js do
+    login
+    visit new_character_path
+    expect(page).to have_no_selector('.flash.error')
+    within('.form-table') do
+      fill_in 'Character Name', with: 'Example character'
+      check 'NPC?'
+      expect(page).to have_field('Screenname', disabled: true)
+      expect(page).to have_field('Template Cluster Name', disabled: true)
+      click_button 'Save'
+    end
+    expect(page).to have_no_selector('.flash.error')
+    expect(page).to have_selector('.flash.success')
+    within('.flash.success') do
+      expect(page).to have_text('Character created.')
+    end
+    expect(page).to have_text(/Example character\s+\(NPC\)/)
+  end
+
   scenario "Creating character with icon, description and extant template", :js do
     user = login
     create_list(:icon, 2, user: user)
