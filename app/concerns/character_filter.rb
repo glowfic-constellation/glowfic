@@ -14,7 +14,7 @@ module CharacterFilter
   def show_retired
     return @show_retired if @show_retired
     if logged_in?
-      @show_retired = params.fetch(:retired, current_user.default_hide_retired_characters ? 'false' : 'true') != 'false'
+      @show_retired = params.fetch(:retired, (!current_user.default_hide_retired_characters).to_s) != 'false'
     else
       @show_retired = session.fetch(:retired, params.fetch(:retired, 'true')) != 'false'
     end
