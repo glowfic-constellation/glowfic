@@ -662,7 +662,7 @@ RSpec.describe PostsController, 'PUT update' do
         main_author = user_post.author_for(user)
         expect(main_author.can_owe).to eq(true)
         expect(main_author.joined).to eq(true)
-        expect(main_author.joined_at).to be_the_same_time_as(post.created_at)
+        expect(main_author.joined_at).to be_the_same_time_as(user_post.created_at)
 
         # doesn't set joined time but does set invited status when inviting new user
         new_author = user_post.author_for(coauthor)
