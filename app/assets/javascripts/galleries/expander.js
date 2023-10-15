@@ -69,7 +69,7 @@ function displayGallery(elem) {
     url: "/api/v1/galleries/" + galleryId,
     data: {user_id: gon.user_id}
   }).done(function(resp) {
-    $.each(resp.icons, function(index, icon) {
+    $.each(resp.icons, function(_, icon) {
       var iconDiv = $("<div>").attr({class: 'gallery-icon'});
       var iconLink = $("<a>").attr({href: "/icons/" + icon.id});
       var iconImg = $("<img>").attr({src: icon.url, alt: icon.keyword, title: icon.keyword, 'class': 'icon'});
@@ -85,8 +85,8 @@ function displayGallery(elem) {
       $("#icons-" + galleryId + " .gallery").append(iconDiv);
     });
     elem.data('loading', false).data('loaded', true);
-  }).fail(function() {
+  }).fail(function(_, textStatus, errorThrown) {
     elem.data('loading', false).trigger('click');
-    // TODO: notify user?
+    alert("Error loading gallery " + galleryId + "! Please reload the page and try again.\nTechnical details: " + textStatus + " " + errorThrown);
   });
 }
