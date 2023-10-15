@@ -40,7 +40,12 @@
   border: 1px $border_color_character_iconless solid;
   width: 102px;
   height: 102px;
+  padding: 20px 5px;
   text-align: center;
+
+  color: $font_color_page;
+  font-size: 90%;
+  font-style: italic;
 
   &.icon {
     max-width: 102px;
