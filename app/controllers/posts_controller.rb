@@ -286,10 +286,10 @@ class PostsController < WritableController
     @search_results = @search_results.where(id: Setting.find(params[:setting_id]).post_tags.pluck(:post_id)) if params[:setting_id].present?
     if params[:subject].present?
       if params[:abbrev].present?
-        search = params[:subject].downcase.chars.join('% ')
-        @search_results = @search_results.where('LOWER(subject) LIKE ?', "%#{search}%")
+        search = params[:subject].chars.join('% ')
+        @search_results = @search_results.where('subject ILIKE ?', "%#{search}%")
       else
-        @search_results = @search_results.search(params[:subject]).where('LOWER(subject) LIKE ?', "%#{params[:subject].downcase}%")
+        @search_results = @search_results.search(params[:subject]).where('subject ILIKE ?', "%#{params[:subject].downcase}%")
       end
     end
     @search_results = @search_results.complete if params[:completed].present?

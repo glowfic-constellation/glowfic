@@ -286,9 +286,9 @@ class CharactersController < ApplicationController
 
     if params[:name].present?
       where_calc = []
-      where_calc << "name LIKE ?" if params[:search_name].present?
-      where_calc << "screenname LIKE ?" if params[:search_screenname].present?
-      where_calc << "nickname LIKE ?" if params[:search_nickname].present?
+      where_calc << "name ILIKE ?" if params[:search_name].present?
+      where_calc << "screenname ILIKE ?" if params[:search_screenname].present?
+      where_calc << "nickname ILIKE ?" if params[:search_nickname].present?
 
       @search_results = @search_results.where(where_calc.join(' OR '), *(['%' + params[:name].to_s + '%'] * where_calc.length))
     end
