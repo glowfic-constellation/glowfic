@@ -277,7 +277,12 @@ class PostsController < WritableController
     @setting = Setting.where(id: params[:setting_id]) if params[:setting_id].present?
     @character = Character.where(id: params[:character_id]) if params[:character_id].present?
     @user = User.active.where(id: params[:author_id]).ordered if params[:author_id].present?
-    @board = Board.where(id: params[:board_id]) if params[:board_id].present?
+
+    no_tests = true
+    if params[:board_id].present?
+      @board = Board.where(id: params[:board_id])
+      no_tests = false # skip default board_id filter if we have a board_id (allows searching Site testing)
+    end
 
     return unless params[:commit].present?
 
@@ -304,7 +309,7 @@ class PostsController < WritableController
       post_ids = Reply.where(character_id: params[:character_id]).select(:post_id).distinct.pluck(:post_id)
       @search_results = @search_results.where(character_id: params[:character_id]).or(@search_results.where(id: post_ids))
     end
-    @search_results = posts_from_relation(@search_results, show_blocked: !!params[:show_blocked])
+    @search_results = posts_from_relation(@search_results, show_blocked: !!params[:show_blocked], no_tests: no_tests)
   end
 
   def warnings
