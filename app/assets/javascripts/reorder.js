@@ -119,7 +119,7 @@ function syncRowOrders(orderBox, path, param) {
   // Reduce race conditions by only allowing one update at a time
   unbindArrows(orderBox);
   disableSortable(orderBox);
-  $("#loading", orderBox).show();
+  $(".loading", orderBox).show();
   $(".saveconf", orderBox).stop(true, true).hide();
 
   // Switch the row order pre-emptively
@@ -152,14 +152,14 @@ function syncRowOrders(orderBox, path, param) {
     reorderRows(orderBox);
 
     // Re-enable the buttons
-    $("#loading", orderBox).hide();
+    $(".loading", orderBox).hide();
     $(".saveconf", orderBox).show().delay(2000).fadeOut();
     bindArrows(orderBox, path, param);
     enableSortable(orderBox);
   }).fail(function(resp) {
     // Display an error and debug to console, warn and block
-    $("#loading", orderBox).hide();
-    $("#saveerror", orderBox).show();
+    $(".loading", orderBox).hide();
+    $(".saveerror", orderBox).show();
     var sectionWarning = getOrCreateWarningBox(orderBox);
     var specificMessage = '';
     if (resp.status === 404) {
