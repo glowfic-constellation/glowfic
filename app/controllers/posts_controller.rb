@@ -289,7 +289,7 @@ class PostsController < WritableController
         search = params[:subject].chars.join('% ')
         @search_results = @search_results.where('subject ILIKE ?', "%#{search}%")
       else
-        @search_results = @search_results.search(params[:subject]).where('subject ILIKE ?', "%#{params[:subject].downcase}%")
+        @search_results = @search_results.search(params[:subject]).where('subject ILIKE ?', "%#{params[:subject]}%")
       end
     end
     @search_results = @search_results.complete if params[:completed].present?
