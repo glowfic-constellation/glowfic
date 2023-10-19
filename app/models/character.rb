@@ -33,6 +33,8 @@ class Character < ApplicationRecord
 
   scope :ordered, -> { order(name: :asc).order(Arel.sql('lower(screenname) asc'), created_at: :asc, id: :asc) }
   scope :with_name, ->(charname) { where("concat_ws(' | ', name, nickname, screenname) ILIKE ?", "%#{charname}%") }
+  scope :npcs, -> { where(npc: true) }
+  scope :non_npcs, -> { where(npc: false) }
 
   accepts_nested_attributes_for :template, reject_if: :all_blank
 
