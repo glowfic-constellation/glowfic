@@ -120,7 +120,7 @@ RSpec.feature "Creating replies" do
     end
   end
 
-  scenario "User creates a reply with an NPC", :js do
+  scenario "User creates a reply with a new NPC", :js do
     post = create(:post, subject: 'Sample post')
 
     user = login
@@ -130,9 +130,9 @@ RSpec.feature "Creating replies" do
     page.find('.post-expander', text: 'Join Thread').click
     page.find('img[title="Choose Character"]').click
     click_button 'NPC'
-    page.find('.select2-selection__rendered', text: 'Select NPC or type to create').click
+    page.find('.select2-selection__rendered', exact_text: 'Select NPC or type to create').click
     page.find('.select2-container--open .select2-search__field').set('Jade')
-    page.find('li', text: 'Create New: Jade').click
+    page.find('li', exact_text: 'Create New: Jade').click
     expect(page).to have_selector('#name', exact_text: 'Jade')
     click_button 'Preview'
 
@@ -159,6 +159,43 @@ RSpec.feature "Creating replies" do
 
     expect(page).to have_text(/Jade\s+\(NPC\)/)
     expect(page).to have_text(/Original post\(s\).*Sample post/)
+  end
+
+  scenario "User creates a reply with an existing NPC", :js do
+    post = create(:post, subject: 'Sample post')
+
+    user = login
+    create(:character, user: user) # user must have at least 1 character to be able to pick a character
+    npc = create(:character, user: user, name: "Janet", nickname: "Post number 1", npc: true)
+
+    visit post_path(post)
+    page.find('.post-expander', text: 'Join Thread').click
+    page.find('img[title="Choose Character"]').click
+    click_button 'NPC'
+    page.find('.select2-selection__rendered', exact_text: 'Select NPC or type to create').click
+    page.find('li', exact_text: 'Janet | Post number 1').click
+    expect(page).to have_selector('#name', exact_text: 'Janet')
+    click_button 'Preview'
+
+    # verify preview, change
+    expect(page).to have_no_selector('.error')
+    expect(page).to have_text("Draft saved.") # (no NPC created)
+    expect(page).to have_selector('.content-header', exact_text: 'Sample post')
+    expect(page).to have_selector('.post-container', count: 1)
+    expect(page).to have_selector('#post-editor')
+    within('#post-editor') do
+      expect(page).to have_selector('#name', exact_text: 'Janet')
+    end
+    click_button 'Post'
+
+    # reply uses NPC
+    expect(page).to have_no_selector(".error")
+    expect(page).to have_selector('.success', exact_text: 'Reply posted.')
+    expect(page).to have_selector('.post-reply', count: 1)
+
+    within('.post-reply') do
+      expect(page).to have_link('Janet', href: character_path(npc)) # should be the same Janet as before
+    end
   end
 
   scenario "User tries to reply to locked post" do
