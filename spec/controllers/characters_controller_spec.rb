@@ -415,6 +415,42 @@ RSpec.describe CharactersController do
       expect(meta_og[:title]).to eq('John Doe » John')
       expect(meta_og[:description]).to eq("Original post: first thread")
     end
+
+    context "render views" do
+      render_views
+
+      it "shows details for a non-NPC character" do
+        get :show, params: { id: expanded_character.id }
+
+        expect(response.status).to eq(200)
+        expect(response).to render_template(:show)
+        expect(response.body).to include('Alice')
+        expect(response.body).to match(/character-screenname.*player_<wbr>one/)
+        expect(response.body).to match(/character-icon.*img.*src="#{Regexp.quote(expanded_character.default_icon.url)}"/m)
+        expect(response.body).not_to include("NPC")
+        expect(response.body).to match(/Nickname.*Lis/m)
+        expect(response.body).not_to include("Original post")
+        expect(response.body).to match(/Setting.*<a[^>]*>Infosec<\/a>/m)
+        expect(response.body).to match(/Description.*Alice is a character/m)
+        expect(response.body).to match(/Template.*<a[^>]*>A<\/a>/m)
+      end
+
+      it "shows details for an NPC character" do
+        get :show, params: { id: npc_character.id }
+
+        expect(response.status).to eq(200)
+        expect(response).to render_template(:show)
+        expect(response.body).to include('John')
+        expect(response.body).not_to include('character-screenname')
+        expect(response.body).to match(/character-icon.*img.*src="#{Regexp.quote(npc_character.default_icon.url)}"/m)
+        expect(response.body).to include('(NPC)')
+        expect(response.body).not_to include('Nickname')
+        expect(response.body).to match(/Original post.*first thread/m)
+        expect(response.body).not_to include("Setting")
+        expect(response.body).not_to include("Description")
+        expect(response.body).not_to include("Template")
+      end
+    end
   end
 
   describe "GET edit" do
