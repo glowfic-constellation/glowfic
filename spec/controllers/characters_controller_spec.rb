@@ -71,14 +71,20 @@ RSpec.describe CharactersController do
         expect(response.status).to eq(200)
       end
 
+      it "skips NPC characters" do
+        character = create(:character, name: 'ExistingCharacter')
+        create(:character, user: character.user, npc: true, name: 'NPCCharacter')
+        get :index, params: { user_id: character.user_id }
+        expect(response.body).to include('ExistingCharacter')
+        expect(response.body).not_to include('NPCCharacter')
+      end
+
       it "skips retired characters when specified" do
         character = create(:character, name: 'ExistingCharacter')
         create(:character, user: character.user, retired: true, name: 'RetiredCharacter')
-        create(:character, user: character.user, npc: true, name: 'NPCCharacter')
         get :index, params: { user_id: character.user_id, retired: 'false' }
         expect(response.body).to include('ExistingCharacter')
         expect(response.body).not_to include('RetiredCharacter')
-        expect(response.body).not_to include('NPCCharacter')
       end
 
       it "skips retired characters when specified as a default setting" do
