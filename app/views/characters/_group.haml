@@ -10,8 +10,8 @@
   - ::Template.where(id: template_ids).ordered.each do |template|
     - next if skip_grouped_templates && template.characters.where.not(character_group_id: nil).exists?
     = render partial_type, name: template, characters: template.characters.ordered
-  - if characters.where(template_id: nil, is_npc: false).exists?
-    = render partial_type, name: 'No Template', characters: characters.where(template_id: nil, is_npc: false).ordered, show_new_character_button: @user.id == current_user&.id
+  - if characters.where(template_id: nil, npc: false).exists?
+    = render partial_type, name: 'No Template', characters: characters.where(template_id: nil, npc: false).ordered, show_new_character_button: @user.id == current_user&.id
 - else
   %tr
     %td.centered.padding-5{class: cycle('even', 'odd'), colspan: 6} — No characters yet —

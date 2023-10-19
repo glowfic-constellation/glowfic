@@ -27,7 +27,7 @@
         - if @character.screenname
           %br
           %span.character-screenname= breakable_text(@character.screenname)
-        - if @character.is_npc
+        - if @character.npc?
           %br
           %span.character-is-npc (NPC)
   %tbody
@@ -115,7 +115,7 @@
       - if nicknames.present?
         %tr
           %th.sub.vtop.width-150
-            - if @character.is_npc
+            - if @character.npc?
               Original post(s)
             - else
               Nickname(s)

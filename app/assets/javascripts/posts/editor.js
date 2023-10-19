@@ -161,7 +161,7 @@ function setupWritableEditor() {
     if (id === "") name = "NPC"; // placeholder corresponds to a basic "NPC" user
     if (id === "new") id = "";
     $("#reply_character_id").val(id);
-    getAndSetCharacterData({ id: id, name: name, is_npc: true });
+    getAndSetCharacterData({ id: id, name: name, npc: true });
   });
 
   $(".char-access-icon").click(function() {
@@ -209,7 +209,7 @@ function hideSelect(target, selectBox, selectHolder) {
 
 function fixWritableFormCaching() {
   // Hack to deal with Firefox's "helpful" caching of form values on soft refresh (now via IDs)
-  var isNPC = $("#character_is_npc").val() === "true";
+  var isNPC = $("#character_npc").val() === "true";
   var selectedNPC = $("#character_name").val();
   var selectedCharID = $("#reply_character_id").val();
   var displayCharID = String($("#post-editor .post-character").data('character-id'));
@@ -230,7 +230,7 @@ function fixWritableFormCaching() {
       setAliasFromID(selectedAliasID);
     }
   } else {
-    getAndSetCharacterData({ id: selectedCharID, is_npc: isNPC, name: selectedNPC }, { restore_icon: true, restore_alias: true, updateCharDropdowns: true });
+    getAndSetCharacterData({ id: selectedCharID, npc: isNPC, name: selectedNPC }, { restore_icon: true, restore_alias: true, updateCharDropdowns: true });
   }
 
   // Set the quick-switcher's selected character
@@ -349,7 +349,7 @@ function setFormData(characterId, resp, options) {
   if (hideCharacterSelect) $("#character-selector").hide();
 
   setInfoBoxFields(characterId, resp.name, resp.screenname);
-  setNPC(resp.name, resp.is_npc);
+  setNPC(resp.name, resp.npc);
 
   setAliases(resp.aliases, resp.name);
   setAliasFromID('');
@@ -367,7 +367,7 @@ function setFormData(characterId, resp, options) {
     setIcon(resp.default_icon.id, resp.default_icon.url, resp.default_icon.keyword, resp.default_icon.keyword);
   }
 
-  if (updateCharDropdowns) updateCharDropdown(characterId, resp.is_npc);
+  if (updateCharDropdowns) updateCharDropdown(characterId, resp.npc);
 }
 
 function setInfoBoxFields(characterId, name, screenname) {
@@ -463,7 +463,7 @@ function getAndSetCharacterData(character, options) {
   // Handle special case where setting to your base account or a new NPC (no ID)
   if (character.id === '') {
     var avatar = gon.editor_user.avatar;
-    var data = {aliases: [], galleries: [], is_npc: character.is_npc, name: character.name};
+    var data = {aliases: [], galleries: [], npc: character.npc, name: character.name};
     if (avatar) {
       data.default_icon = avatar;
       data.galleries.push({icons: [avatar]});
@@ -513,11 +513,11 @@ function toggleNPC() {
   $("#reply_character_id").val("");
   if (!isNPC) {
     $("#reply_character_id").val("");
-    getAndSetCharacterData({ id: "", is_npc: false, name: "" }, { hideCharacterSelect: false, updateCharDropdowns: true });
+    getAndSetCharacterData({ id: "", npc: false, name: "" }, { hideCharacterSelect: false, updateCharDropdowns: true });
     return;
   }
 
-  getAndSetCharacterData({ id: "", is_npc: true, name: "NPC" }, { hideCharacterSelect: false, updateCharDropdowns: true });
+  getAndSetCharacterData({ id: "", npc: true, name: "NPC" }, { hideCharacterSelect: false, updateCharDropdowns: true });
 }
 
 function setNPC(name, isNPC) {
@@ -526,7 +526,7 @@ function setNPC(name, isNPC) {
   $("#swap-character-character").toggleClass("hidden", isNPC);
   $("#swap-character-npc").toggleClass("hidden", !isNPC);
 
-  $("#character_is_npc").val(isNPC);
+  $("#character_npc").val(isNPC);
   $("#character_name").val(name);
   $("#post-editor .post-character #name").text(name);
 }

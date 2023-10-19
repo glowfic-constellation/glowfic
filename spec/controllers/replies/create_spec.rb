@@ -113,7 +113,7 @@ RSpec.describe RepliesController, 'POST create' do
           },
           character: {
             name: 'NPC',
-            is_npc: true,
+            npc: true,
           },
         }
       }.to change { Character.count }.by(1)
@@ -122,7 +122,7 @@ RSpec.describe RepliesController, 'POST create' do
       expect(assigns(:written)).to be_a_new_record
       expect(assigns(:written).character).not_to be_a_new_record
       expect(assigns(:written).character.name).to eq('NPC')
-      expect(assigns(:written).character.is_npc).to eq(true)
+      expect(assigns(:written).character).to be_npc
       expect(assigns(:written).character.default_icon_id).to eq(icon.id)
       expect(assigns(:written).character.nickname).to eq(reply_post.subject)
     end
@@ -191,7 +191,7 @@ RSpec.describe RepliesController, 'POST create' do
           },
           character: {
             name: 'NPC',
-            is_npc: true,
+            npc: true,
           },
         }
       }.to change { Character.count }.by(1)
@@ -201,7 +201,7 @@ RSpec.describe RepliesController, 'POST create' do
 
       draft = ReplyDraft.last
       expect(draft.character.name).to eq('NPC')
-      expect(draft.character.is_npc).to eq(true)
+      expect(draft.character).to be_npc
       expect(draft.character.default_icon_id).to eq(icon.id)
       expect(draft.character.nickname).to eq(reply_post.subject)
     end

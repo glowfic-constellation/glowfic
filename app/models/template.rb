@@ -12,6 +12,6 @@ class Template < ApplicationRecord
   NPC_PLUCK = Arel.sql("id, concat_ws(' | ', name, nickname)")
 
   def plucked_characters
-    characters.where(retired: false, is_npc: false).pluck(CHAR_PLUCK)
+    characters.where(retired: false, npc: false).pluck(CHAR_PLUCK)
   end
 end

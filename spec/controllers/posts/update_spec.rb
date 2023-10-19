@@ -885,7 +885,7 @@ RSpec.describe PostsController, 'PUT update' do
           },
           character: {
             name: 'NPC',
-            is_npc: true,
+            npc: true,
           },
         }
       }.to change { Character.count }.by(1)
@@ -896,7 +896,7 @@ RSpec.describe PostsController, 'PUT update' do
       expect(post.character_id).not_to eq(templateless_character.id)
       expect(post.icon_id).to eq(icon.id)
       expect(post.character.name).to eq('NPC')
-      expect(post.character.is_npc).to eq(true)
+      expect(post.character).to be_npc
       expect(post.character.default_icon_id).to eq(icon.id)
       expect(post.character.nickname).to eq(post.subject)
     end

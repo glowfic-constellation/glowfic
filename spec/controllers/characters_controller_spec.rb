@@ -74,7 +74,7 @@ RSpec.describe CharactersController do
       it "skips retired characters when specified" do
         character = create(:character, name: 'ExistingCharacter')
         create(:character, user: character.user, retired: true, name: 'RetiredCharacter')
-        create(:character, user: character.user, is_npc: true, name: 'NPCCharacter')
+        create(:character, user: character.user, npc: true, name: 'NPCCharacter')
         get :index, params: { user_id: character.user_id, retired: 'false' }
         expect(response.body).to include('ExistingCharacter')
         expect(response.body).not_to include('RetiredCharacter')
@@ -228,7 +228,7 @@ RSpec.describe CharactersController do
           name: test_name,
           nickname: 'TempName',
           ungrouped_gallery_ids: [gallery.id],
-          is_npc: true,
+          npc: true,
         },
       }
 
@@ -240,7 +240,7 @@ RSpec.describe CharactersController do
       expect(character.user_id).to eq(user.id)
       expect(character.nickname).to eq('TempName')
       expect(character.galleries).to match_array([gallery])
-      expect(character.is_npc).to eq(true)
+      expect(character).to be_npc
     end
 
     it "creates new templates when specified" do
@@ -591,7 +591,7 @@ RSpec.describe CharactersController do
     end
 
     it "succeeds for NPC" do
-      character = create(:character, is_npc: true)
+      character = create(:character, npc: true)
       user = character.user
       login_as(user)
       put :update, params: {
@@ -608,13 +608,13 @@ RSpec.describe CharactersController do
       put :update, params: {
         id: character.id,
         character: {
-          is_npc: false,
+          npc: false,
         },
       }
       expect(response).to redirect_to(assigns(:character))
       expect(flash[:success]).to eq("Character updated.")
       character.reload
-      expect(character.is_npc).to eq(false)
+      expect(character).not_to be_npc
     end
 
     it "does not persist values when invalid" do

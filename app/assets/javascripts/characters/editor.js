@@ -134,10 +134,10 @@ $(document).ready(function() {
     width: '300px'
   });
 
-  $("#character_is_npc").change(function() {
+  $("#character_npc").change(function() {
     disableNPCBoxes($(this).is(":checked"));
   });
-  disableNPCBoxes($("#character_is_npc").is(":checked"));
+  disableNPCBoxes($("#character_npc").is(":checked"));
 });
 
 function findGalleryInGroups(galleryId) {

@@ -35,7 +35,7 @@ RSpec.feature "Editing a character" do
 
   scenario "Updating an NPC character", :js do
     user = login
-    character = create(:character, name: "MyChar", user: user, is_npc: true, nickname: "Thread")
+    character = create(:character, name: "MyChar", user: user, npc: true, nickname: "Thread")
 
     # update facecast of NPC
     visit edit_character_path(character)

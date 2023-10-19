@@ -120,7 +120,7 @@ RSpec.describe RepliesController, 'PUT update' do
     login_as(user)
 
     expect {
-      put :update, params: { id: reply.id, reply: { character_id: nil }, character: { name: 'NPC', is_npc: true } }
+      put :update, params: { id: reply.id, reply: { character_id: nil }, character: { name: 'NPC', npc: true } }
     }.to change { Character.count }.by(1)
     expect(reply.reload.character.name).to eq('NPC')
     expect(reply.reload.character.nickname).to eq(reply.post.subject)
@@ -200,7 +200,7 @@ RSpec.describe RepliesController, 'PUT update' do
           id: reply.id,
           button_preview: true,
           reply: { character_id: nil },
-          character: { name: 'NPC', is_npc: true },
+          character: { name: 'NPC', npc: true },
         }
       }.not_to change { Character.count }
       written = assigns(:written)

@@ -11,20 +11,20 @@ class WritableController < ApplicationController
     templates = user.templates.ordered
     templateless = faked.new(
       'Templateless', nil,
-      user.characters.where(template_id: nil, retired: false, is_npc: false).ordered.pluck(Template::CHAR_PLUCK),
+      user.characters.where(template_id: nil, retired: false, npc: false).ordered.pluck(Template::CHAR_PLUCK),
     )
     @templates = templates + [templateless]
-    all_npcs = faked_npcs.new('All NPCs', nil, user.characters.where(retired: false, is_npc: true).ordered.pluck(Template::NPC_PLUCK))
+    all_npcs = faked_npcs.new('All NPCs', nil, user.characters.where(retired: false, npc: true).ordered.pluck(Template::NPC_PLUCK))
     @npcs = [all_npcs]
 
     if @post
       uniq_chars_ids = @post.replies.where(user_id: user.id).where.not(character_id: nil).group(:character_id).pluck(:character_id)
       uniq_chars_ids << @post.character_id if @post.user_id == user.id && @post.character_id.present?
-      uniq_chars = Character.where(id: uniq_chars_ids, is_npc: false).ordered.pluck(Template::CHAR_PLUCK)
+      uniq_chars = Character.where(id: uniq_chars_ids, npc: false).ordered.pluck(Template::CHAR_PLUCK)
       threadchars = faked.new('Post characters', nil, uniq_chars)
       @templates.insert(0, threadchars)
 
-      uniq_npcs = Character.where(id: uniq_chars_ids, is_npc: true).ordered.pluck(Template::NPC_PLUCK)
+      uniq_npcs = Character.where(id: uniq_chars_ids, npc: true).ordered.pluck(Template::NPC_PLUCK)
       threadnpcs = faked_npcs.new('Post NPCs', nil, uniq_npcs)
       @npcs.insert(0, threadnpcs)
     end
@@ -182,7 +182,7 @@ class WritableController < ApplicationController
 
   def process_npc(writable, permitted_character_params)
     return unless writable.character.nil?
-    return unless permitted_character_params[:is_npc] == 'true'
+    return unless permitted_character_params[:npc] == 'true'
 
     # we take the NPC's first post's subject as its nickname, for disambiguation in dropdowns etc
     post_name = if writable.is_a? Post
@@ -209,7 +209,7 @@ class WritableController < ApplicationController
   def permitted_character_params(param_hash=nil)
     (param_hash || params).fetch(:character, {}).permit(
       :name,
-      :is_npc,
+      :npc,
     )
   end
 end

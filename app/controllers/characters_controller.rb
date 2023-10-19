@@ -394,7 +394,7 @@ class CharactersController < ApplicationController
       :description,
       :audit_comment,
       :retired,
-      :is_npc,
+      :npc,
       :cluster,
       ungrouped_gallery_ids: [],
     ]
