@@ -289,6 +289,31 @@ RSpec.describe CharactersController do
 
   describe "GET show" do
     let(:character) { create(:character) }
+    let(:user) { create(:user, username: 'John Doe') }
+    let(:expanded_character) do
+      create(:character,
+        user: user,
+        template: create(:template, name: "A"),
+        name: "Alice",
+        nickname: "Lis",
+        screenname: "player_one",
+        settings: [
+          create(:setting, name: 'Infosec'),
+          create(:setting, name: 'Wander'),
+        ],
+        description: "Alice is a character",
+        with_default_icon: true,
+      )
+    end
+    let(:npc_character) do
+      create(:character,
+        user: user,
+        npc: true,
+        name: "John",
+        nickname: "first thread",
+        with_default_icon: true,
+      )
+    end
 
     it "requires valid character logged out" do
       get :show, params: { id: -1 }
@@ -349,7 +374,6 @@ RSpec.describe CharactersController do
     end
 
     it "calculates OpenGraph meta for basic character" do
-      user = create(:user, username: 'John Doe')
       character = create(:character,
         user: user,
         name: "Alice",
@@ -367,35 +391,29 @@ RSpec.describe CharactersController do
     end
 
     it "calculates OpenGraph meta for expanded character" do
-      user = create(:user, username: 'John Doe')
-      character = create(:character,
-        user: user,
-        template: create(:template, name: "A"),
-        name: "Alice",
-        nickname: "Lis",
-        screenname: "player_one",
-        settings: [
-          create(:setting, name: 'Infosec'),
-          create(:setting, name: 'Wander'),
-        ],
-        description: "Alice is a character",
-        with_default_icon: true,
-      )
-      create(:alias, character: character, name: "Alicia")
-      create(:post, character: character, user: user)
-      create(:reply, character: character, user: user)
+      create(:alias, character: expanded_character, name: "Alicia")
+      create(:post, character: expanded_character, user: user)
+      create(:reply, character: expanded_character, user: user)
 
-      get :show, params: { id: character.id }
+      get :show, params: { id: expanded_character.id }
 
       meta_og = assigns(:meta_og)
       expect(meta_og.keys).to match_array([:url, :title, :description, :image])
-      expect(meta_og[:url]).to eq(character_url(character))
+      expect(meta_og[:url]).to eq(character_url(expanded_character))
       expect(meta_og[:title]).to eq('John Doe » A » Alice | player_one')
       expect(meta_og[:description]).to eq("Nicknames: Lis, Alicia. Settings: Infosec, Wander\nAlice is a character\n2 posts")
       expect(meta_og[:image].keys).to match_array([:src, :width, :height])
-      expect(meta_og[:image][:src]).to eq(character.default_icon.url)
+      expect(meta_og[:image][:src]).to eq(expanded_character.default_icon.url)
       expect(meta_og[:image][:height]).to eq('75')
       expect(meta_og[:image][:width]).to eq('75')
+    end
+
+    it "calculates OpenGraph meta for NPC character" do
+      get :show, params: { id: npc_character.id }
+      meta_og = assigns(:meta_og)
+      expect(meta_og.keys).to match_array([:url, :title, :description, :image])
+      expect(meta_og[:title]).to eq('John Doe » John')
+      expect(meta_og[:description]).to eq("Original post: first thread")
     end
   end
 
