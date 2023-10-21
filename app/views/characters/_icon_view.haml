@@ -1,4 +1,5 @@
-- characters = name.characters.non_npcs.ordered unless local_assigns[:characters]
+- characters = name.characters.ordered unless local_assigns[:characters]
+- characters = characters.non_npcs unless local_assigns[:show_npcs]
 - characters = characters.where(retired: false) unless show_retired
 
 - if @template.nil? && name.present?
