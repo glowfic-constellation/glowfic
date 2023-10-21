@@ -492,7 +492,7 @@ RSpec.describe PostsController, 'PUT update' do
       templateless_select = [[templateless_character.id, templateless_character.name]]
       templates = assigns(:templates)
       expect(templates.length).to eq(3)
-      expect(templates[0].name).to eq('Thread characters')
+      expect(templates[0].name).to eq('Post characters')
       expect(templates[0].plucked_characters).to eq(templateless_select)
       expect(templates[1]).to eq(templated_character.template)
       expect(templates[2].name).to eq('Templateless')
@@ -870,6 +870,35 @@ RSpec.describe PostsController, 'PUT update' do
       expect(post.tagging_authors).to match_array([user, joined_user, coauthor])
       expect(post.joined_authors).to match_array([user, joined_user])
       expect(post.authors).to match_array([user, coauthor, joined_user])
+    end
+
+    it "creates NPCs" do
+      post = create(:post, user: user, character: templateless_character)
+
+      expect {
+        put :update, params: {
+          id: post.id,
+          post: {
+            board_id: board.id,
+            character_id: nil,
+            icon_id: icon.id,
+          },
+          character: {
+            name: 'NPC',
+            npc: true,
+          },
+        }
+      }.to change { Character.count }.by(1)
+      expect(response).to redirect_to(post_url(post))
+      expect(flash[:success]).to eq("Post updated.")
+
+      post = assigns(:post).reload
+      expect(post.character_id).not_to eq(templateless_character.id)
+      expect(post.icon_id).to eq(icon.id)
+      expect(post.character.name).to eq('NPC')
+      expect(post.character).to be_npc
+      expect(post.character.default_icon_id).to eq(icon.id)
+      expect(post.character.nickname).to eq(post.subject)
     end
 
     it "does not allow coauthors to edit post text" do

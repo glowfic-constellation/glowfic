@@ -269,6 +269,10 @@ td, .table-list li { font-size: $font_size_small; }
         vertical-align: middle;
       }
     }
+
+    button[disabled], input[disabled] {
+      background-color: $bg_color_input_disabled;
+    }
   }
 
   textarea {

@@ -12,6 +12,9 @@
     = f.hidden_field :icon_id
     = f.hidden_field :character_alias_id
     = f.hidden_field :editor_mode, id: 'editor_mode'
+    = fields_for :character, reply.character do |cf|
+      = cf.hidden_field :name
+      = cf.hidden_field :npc
     = hidden_field_tag :allow_dupe, @allow_dupe
     - if params[:per_page]
       = hidden_field_tag :per_page, params[:per_page]

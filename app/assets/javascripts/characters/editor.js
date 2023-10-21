@@ -133,6 +133,11 @@ $(document).ready(function() {
     },
     width: '300px'
   });
+
+  $("#character_npc").change(function() {
+    disableNPCBoxes($(this).is(":checked"));
+  });
+  disableNPCBoxes($("#character_npc").is(":checked"));
 });
 
 function findGalleryInGroups(galleryId) {
@@ -211,4 +216,8 @@ function updateIcon(id) {
   } else {
     $("#character_default_icon_id").val(id);
   }
+}
+
+function disableNPCBoxes(disable) {
+  $("#character_screenname, #character_template_id, #new_template, #character_template_attributes_name, #character_cluster").prop("disabled", disable);
 }

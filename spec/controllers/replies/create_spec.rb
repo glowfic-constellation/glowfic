@@ -93,6 +93,39 @@ RSpec.describe RepliesController, 'POST create' do
 
       expect(flash[:success]).to be_present
     end
+
+    it "preserves NPC" do
+      user = create(:user)
+      reply_post = create(:post, user: user)
+      login_as(user)
+
+      icon = create(:icon, user: user)
+
+      expect {
+        post :create, params: {
+          button_preview: true,
+          reply: {
+            content: 'example',
+            character_id: nil,
+            icon_id: icon.id,
+            post_id: reply_post.id,
+            editor_mode: 'html',
+          },
+          character: {
+            name: 'NPC',
+            npc: true,
+          },
+        }
+      }.to change { Character.count }.by(1)
+      expect(response).to render_template(:preview)
+
+      expect(assigns(:written)).to be_a_new_record
+      expect(assigns(:written).character).not_to be_a_new_record
+      expect(assigns(:written).character.name).to eq('NPC')
+      expect(assigns(:written).character).to be_npc
+      expect(assigns(:written).character.default_icon_id).to eq(icon.id)
+      expect(assigns(:written).character.nickname).to eq(reply_post.subject)
+    end
   end
 
   context "draft" do
@@ -137,6 +170,40 @@ RSpec.describe RepliesController, 'POST create' do
       expect(draft.content).to eq('testcontent')
       expect(draft.character_alias_id).to eq(calias.id)
       expect(draft.editor_mode).to eq('html')
+    end
+
+    it "preserves NPC" do
+      user = create(:user)
+      reply_post = create(:post, user: user)
+      login_as(user)
+
+      icon = create(:icon, user: user)
+
+      expect {
+        post :create, params: {
+          button_draft: true,
+          reply: {
+            content: 'example',
+            character_id: nil,
+            icon_id: icon.id,
+            post_id: reply_post.id,
+            editor_mode: 'html',
+          },
+          character: {
+            name: 'NPC',
+            npc: true,
+          },
+        }
+      }.to change { Character.count }.by(1)
+      expect(response).to redirect_to(post_url(reply_post, page: :unread, anchor: :unread))
+      expect(flash[:success]).to eq("Draft saved. Your new NPC character has also been persisted!")
+      expect(ReplyDraft.count).to eq(1)
+
+      draft = ReplyDraft.last
+      expect(draft.character.name).to eq('NPC')
+      expect(draft.character).to be_npc
+      expect(draft.character.default_icon_id).to eq(icon.id)
+      expect(draft.character.nickname).to eq(reply_post.subject)
     end
 
     it "updates the existing draft if one exists" do

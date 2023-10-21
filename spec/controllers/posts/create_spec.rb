@@ -125,7 +125,7 @@ RSpec.describe PostsController, 'POST create' do
       templateless_pluck = [[templateless_character.id, templateless_character.name]]
       templates = assigns(:templates)
       expect(templates.length).to eq(3)
-      expect(templates[0].name).to eq('Thread characters')
+      expect(templates[0].name).to eq('Post characters')
       expect(templates[0].plucked_characters).to eq(templateless_pluck)
       expect(templates[1]).to eq(templated_character.template)
       expect(templates[2].name).to eq('Templateless')
@@ -348,7 +348,7 @@ RSpec.describe PostsController, 'POST create' do
       templateless_pluck = [[templateless_character.id, templateless_character.name]]
       templates = assigns(:templates)
       expect(templates.length).to eq(3)
-      expect(templates[0].name).to eq('Thread characters')
+      expect(templates[0].name).to eq('Post characters')
       expect(templates[0].plucked_characters).to eq(templateless_pluck)
       expect(templates[1]).to eq(templated_character.template)
       expect(templates[2].name).to eq('Templateless')
@@ -428,6 +428,34 @@ RSpec.describe PostsController, 'POST create' do
       expect(ContentWarning.count).to eq(3)
       expect(Label.count).to eq(3)
       expect(PostTag.count).to eq(9)
+    end
+
+    it "creates NPCs" do
+      expect {
+        post :create, params: {
+          post: {
+            subject: 'asubjct',
+            board_id: board.id,
+            character_id: nil,
+            icon_id: icon.id,
+          },
+          character: {
+            name: 'NPC',
+            npc: true,
+          },
+        }
+      }.to change { Post.count }.by(1).and change { Character.count }.by(1)
+      expect(response).to redirect_to(post_path(assigns(:post)))
+      expect(flash[:success]).to eq("Post created.")
+
+      post = assigns(:post).reload
+      expect(post).to be_persisted
+      expect(post.character_id).not_to eq(templateless_character.id)
+      expect(post.icon_id).to eq(icon.id)
+      expect(post.character.name).to eq('NPC')
+      expect(post.character).to be_npc
+      expect(post.character.default_icon_id).to eq(icon.id)
+      expect(post.character.nickname).to eq('asubjct') # post disambiguator
     end
 
     it "generates a flat post" do

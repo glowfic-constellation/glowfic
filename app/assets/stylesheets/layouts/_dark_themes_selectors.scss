@@ -38,6 +38,10 @@
     color: $font_color_input;
     border-color: $border_color_input;
   }
+
+  button[disabled], input[disabled] {
+    background-color: $bg_color_input_disabled;
+  }
 }
 
 textarea#post_private_note {

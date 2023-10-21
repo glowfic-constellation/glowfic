@@ -7,19 +7,29 @@ class WritableController < ApplicationController
     user ||= current_user
 
     faked = Struct.new(:name, :id, :plucked_characters)
-    pluck = Arel.sql("id, concat_ws(' | ', name, nickname, screenname)")
+    faked_npcs = Struct.new(:name, :id, :plucked_npcs)
     templates = user.templates.ordered
-    templateless = faked.new('Templateless', nil, user.characters.where(template_id: nil, retired: false).ordered.pluck(pluck))
+    templateless = faked.new(
+      'Templateless', nil,
+      user.characters.non_npcs.where(template_id: nil, retired: false).ordered.pluck(Template::CHAR_PLUCK),
+    )
     @templates = templates + [templateless]
+    all_npcs = faked_npcs.new('All NPCs', nil, user.characters.where(retired: false).npcs.ordered.pluck(Template::NPC_PLUCK))
+    @npcs = [all_npcs]
 
     if @post
       uniq_chars_ids = @post.replies.where(user_id: user.id).where.not(character_id: nil).group(:character_id).pluck(:character_id)
       uniq_chars_ids << @post.character_id if @post.user_id == user.id && @post.character_id.present?
-      uniq_chars = Character.where(id: uniq_chars_ids).ordered.pluck(pluck)
-      threadchars = faked.new('Thread characters', nil, uniq_chars)
+      uniq_chars = Character.non_npcs.where(id: uniq_chars_ids).ordered.pluck(Template::CHAR_PLUCK)
+      threadchars = faked.new('Post characters', nil, uniq_chars)
       @templates.insert(0, threadchars)
+
+      uniq_npcs = Character.npcs.where(id: uniq_chars_ids).ordered.pluck(Template::NPC_PLUCK)
+      threadnpcs = faked_npcs.new('Post NPCs', nil, uniq_npcs)
+      @npcs.insert(0, threadnpcs)
     end
     @templates.reject! { |template| template.plucked_characters.empty? }
+    @npcs.reject! { |group| group.plucked_npcs.empty? }
 
     gon.editor_user = user.gon_attributes
   end
@@ -170,6 +180,20 @@ class WritableController < ApplicationController
     }
   end
 
+  def process_npc(writable, permitted_character_params)
+    return unless writable.character.nil?
+    return unless permitted_character_params[:npc] == 'true'
+
+    # we take the NPC's first post's subject as its nickname, for disambiguation in dropdowns etc
+    post_name = if writable.is_a? Post
+      writable.subject
+    else
+      writable.post.subject
+    end
+
+    writable.build_character(permitted_character_params.merge(default_icon_id: writable.icon_id, user_id: writable.user_id, nickname: post_name))
+  end
+
   def permitted_params(param_hash=nil)
     (param_hash || params).fetch(:reply, {}).permit(
       :post_id,
@@ -179,6 +203,13 @@ class WritableController < ApplicationController
       :audit_comment,
       :character_alias_id,
       :editor_mode,
+    )
+  end
+
+  def permitted_character_params(param_hash=nil)
+    (param_hash || params).fetch(:character, {}).permit(
+      :name,
+      :npc,
     )
   end
 end

@@ -108,6 +108,7 @@ class RepliesController < WritableController
 
     reply = Reply.new(permitted_params)
     reply.user = current_user
+    process_npc(reply, permitted_character_params)
 
     if reply.post.present?
       last_seen_reply_order = reply.post.last_seen_reply_for(current_user).try(:reply_order)
@@ -174,6 +175,7 @@ class RepliesController < WritableController
 
   def update
     @reply.assign_attributes(permitted_params)
+    process_npc(@reply, permitted_character_params)
     preview(@reply) and return if params[:button_preview]
 
     if current_user.id != @reply.user_id && @reply.audit_comment.blank?
@@ -308,6 +310,8 @@ class RepliesController < WritableController
       draft = ReplyDraft.new(permitted_params)
       draft.user = current_user
     end
+    process_npc(draft, permitted_character_params)
+    new_npc = !draft.character.nil? && !draft.character.persisted?
 
     begin
       draft.save!
@@ -317,7 +321,11 @@ class RepliesController < WritableController
         array: draft.errors.full_messages,
       }
     else
-      flash[:success] = "Draft saved." if show_message
+      if show_message
+        msg = "Draft saved."
+        msg += " Your new NPC character has also been persisted!" if new_npc
+        flash[:success] = msg
+      end
     end
     draft
   end

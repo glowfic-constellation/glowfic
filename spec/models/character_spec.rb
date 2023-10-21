@@ -425,7 +425,7 @@ RSpec.describe Character do
     end
     let(:post) { create(:post, user: user, character: character) }
     let(:calias) { create(:alias, character: character) }
-    let(:json) { { id: character.id, name: character.name, screenname: character.screenname } }
+    let(:json) { { id: character.id, name: character.name, screenname: character.screenname, npc: false } }
 
     before(:each) do
       create_list(:alias, 2, character: character)

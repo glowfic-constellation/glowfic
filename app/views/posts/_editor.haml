@@ -26,11 +26,18 @@
         - if current_user.characters.present?
           = image_tag swap_icon_url, id: 'swap-character', alt: 'Choose Character', title: 'Choose Character', class: 'selector-popup-button'
           #character-selector.selector-popup
-            %h4 Choose Character
-            = select_tag :active_character,
-            option_groups_from_collection_for_select(@templates, :plucked_characters, :name, :first, :last, item.character_id),
-            { prompt: current_user.username, class: 'chosen-select' }
-            %br
+            #swap-character-character
+              %h4 Choose Character
+              = select_tag :active_character,
+              option_groups_from_collection_for_select(@templates, :plucked_characters, :name, :first, :last, item.character_id),
+              { prompt: current_user.username, class: 'chosen-select' }
+            #swap-character-npc
+              %h4 Choose NPC
+              = select_tag :active_npc,
+              option_groups_from_collection_for_select(@npcs, :plucked_npcs, :name, :first, :last, item.character_id),
+              { prompt: "Select NPC or type to create" }
+            %button.view-button#select-character{type: 'button'} Character
+            %button.view-button#select-npc{type: 'button'} NPC
       - if item.is_a?(Reply)
         .post-char-access
           - char_count = 10

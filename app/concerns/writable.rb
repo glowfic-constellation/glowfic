@@ -7,6 +7,8 @@ module Writable
     belongs_to :user, optional: false
     belongs_to :character_alias, optional: true
 
+    accepts_nested_attributes_for :character
+
     validate :character_ownership, :icon_ownership
     validates :editor_mode, inclusion: { in: ['html', 'rtf'] }, allow_nil: true
 

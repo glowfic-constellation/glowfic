@@ -361,7 +361,13 @@ class CharactersController < ApplicationController
 
     linked = []
     nicknames = ([@character.nickname] + @character.aliases.pluck(:name)).uniq.compact
-    linked << ("Nickname".pluralize(nicknames.count) + ": " + nicknames.join(', ')) if nicknames.present?
+
+    nickname_prefix = if @character.npc?
+      "Original post"
+    else
+      "Nickname"
+    end
+    linked << (nickname_prefix.pluralize(nicknames.count) + ": " + nicknames.join(', ')) if nicknames.present?
     settings = @character.settings.pluck(:name)
     linked << ("Setting".pluralize(settings.count) + ": " + settings.join(', ')) if settings.present?
     desc = [linked.join('. ')].compact_blank
@@ -394,6 +400,7 @@ class CharactersController < ApplicationController
       :description,
       :audit_comment,
       :retired,
+      :npc,
       :cluster,
       ungrouped_gallery_ids: [],
     ]

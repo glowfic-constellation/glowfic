@@ -139,6 +139,7 @@ class PostsController < WritableController
     @post.settings = process_tags(Setting, obj_param: :post, id_param: :setting_ids)
     @post.content_warnings = process_tags(ContentWarning, obj_param: :post, id_param: :content_warning_ids)
     @post.labels = process_tags(Label, obj_param: :post, id_param: :label_ids)
+    process_npc(@post, permitted_character_params)
 
     begin
       @post.save!
@@ -216,6 +217,7 @@ class PostsController < WritableController
 
     @post.assign_attributes(permitted_params)
     @post.board ||= Board.find_by(id: Board::ID_SANDBOX)
+    process_npc(@post, permitted_character_params)
     settings = process_tags(Setting, obj_param: :post, id_param: :setting_ids)
     warnings = process_tags(ContentWarning, obj_param: :post, id_param: :content_warning_ids)
     labels = process_tags(Label, obj_param: :post, id_param: :label_ids)
@@ -333,6 +335,8 @@ class PostsController < WritableController
     @post ||= Post.new(user: current_user)
     @post.assign_attributes(permitted_params(false))
     @post.board ||= Board.find_by_id(3)
+
+    process_npc(@post, permitted_character_params)
 
     @author_ids = params.fetch(:post, {}).fetch(:unjoined_author_ids, [])
     @viewer_ids = params.fetch(:post, {}).fetch(:viewer_ids, [])

@@ -40,6 +40,20 @@ function setupMetadataEditor() {
     placeholder: 'Choose user(s) to invite to reply to this post'
   });
 
+  createSelect2('#active_npc', {
+    tags: true,
+    // https://select2.org/dropdown#templating
+    templateResult: function(state) {
+      // used to show "Create new:" before new NPC entries
+      if (!state.element) return "Create New: " + state.text;
+      return state.text;
+    },
+    createTag: function(params) {
+      // used to remove ID (defaults to params.term, but then we try doing an API lookup)
+      return { id: "new", text: params.term };
+    }
+  });
+
   createTagSelect("Label", "label", "post");
   createTagSelect("Setting", "setting", "post");
   createTagSelect("ContentWarning", "content_warning", "post");
@@ -130,32 +144,41 @@ function setupWritableEditor() {
     $('html, body').scrollTop($("#post-editor").offset().top);
   });
 
-  $("#active_character, #character_alias").on('select2:close', function() {
+  $("#active_character, #active_npc, #character_alias").on('select2:close', function() {
     $('html, body').scrollTop($("#post-editor").offset().top);
   });
 
   $("#active_character").change(function() {
-    // Set the ID
     var id = $(this).val();
     $("#reply_character_id").val(id);
-    getAndSetCharacterData(id);
+    getAndSetCharacterData({ id: id });
+  });
+
+  $("#active_npc").change(function() {
+    var id = $(this).val();
+    var item = $("option:selected", this);
+    var name = item.text();
+    if (id === "") name = "NPC"; // placeholder corresponds to a basic "NPC" user
+    if (id === "new") id = "";
+    $("#reply_character_id").val(id);
+    getAndSetCharacterData({ id: id, name: name, npc: true });
   });
 
   $(".char-access-icon").click(function() {
     var id = $(this).data('character-id');
     $("#reply_character_id").val(id);
-    $("#active_character").val(id).trigger('change.select2');
-    getAndSetCharacterData(id);
+    getAndSetCharacterData({ id: id }, { updateCharDropdowns: true });
   });
 
   $("#character_alias").change(function() {
-    // Set the ID
     var id = $(this).val();
     $("#reply_character_alias_id").val(id);
     $("#post-editor .post-character #name").text($('#character_alias option:selected').text());
     $('#alias-selector').hide();
     $("#post-editor .post-character").data('alias-id', id);
   });
+
+  $('#select-character, #select-npc').click(toggleNPC);
 
   // Hides selectors when you hit the escape key
   $(document).bind("keydown", function(e) {
@@ -178,7 +201,7 @@ function setupWritableEditor() {
 }
 
 function hideSelect(target, selectBox, selectHolder) {
-  if (!$(target).closest(selectHolder).length && !$(target).closest(selectBox).length) {
+  if (!$(target).closest(selectHolder).length && !$(target).closest(selectBox).length && !$(target).closest(".select2-container").length) {
     if (selectHolder === '#current-icon-holder') { $('#icon-overlay').hide(); }
     selectBox.hide();
   }
@@ -186,6 +209,8 @@ function hideSelect(target, selectBox, selectHolder) {
 
 function fixWritableFormCaching() {
   // Hack to deal with Firefox's "helpful" caching of form values on soft refresh (now via IDs)
+  var isNPC = $("#character_npc").val() === "true";
+  var selectedNPC = $("#character_name").val();
   var selectedCharID = $("#reply_character_id").val();
   var displayCharID = String($("#post-editor .post-character").data('character-id'));
   var selectedIconID = $("#reply_icon_id").val();
@@ -197,6 +222,7 @@ function fixWritableFormCaching() {
       bindIcon();
       bindGallery();
     }
+    setNPC(selectedNPC, isNPC);
     if (selectedIconID !== displayIconID) {
       setIconFromId(selectedIconID); // Handle the case where just the icon was cached
     }
@@ -204,8 +230,7 @@ function fixWritableFormCaching() {
       setAliasFromID(selectedAliasID);
     }
   } else {
-    getAndSetCharacterData(selectedCharID, {restore_icon: true, restore_alias: true});
-    $("#active_character").val(selectedCharID).trigger("change.select2");
+    getAndSetCharacterData({ id: selectedCharID, npc: isNPC, name: selectedNPC }, { restore_icon: true, restore_alias: true, updateCharDropdowns: true });
   }
 
   // Set the quick-switcher's selected character
@@ -303,36 +328,46 @@ function setupTinyMCE() {
   }
 }
 
+// eslint-disable-next-line complexity
 function setFormData(characterId, resp, options) {
   var restoreIcon = false;
   var restoreAlias = false;
+  var hideCharacterSelect = true;
+  var updateCharDropdowns = false;
 
   if (typeof options !== 'undefined') {
     restoreIcon = options.restore_icon;
     restoreAlias = options.restore_alias;
+    hideCharacterSelect = options.hideCharacterSelect;
+    updateCharDropdowns = options.updateCharDropdowns;
   }
 
   setSwitcherListSelected(characterId);
 
   var selectedIconID = $("#reply_icon_id").val();
   var selectedAliasID = $("#reply_character_alias_id").val();
-  $("#character-selector").hide();
+  if (hideCharacterSelect) $("#character-selector").hide();
 
   setInfoBoxFields(characterId, resp.name, resp.screenname);
+  setNPC(resp.name, resp.npc);
 
   setAliases(resp.aliases, resp.name);
   setAliasFromID('');
-  if (restoreAlias)
+  if (restoreAlias) {
     setAliasFromID(selectedAliasID);
-  else if (resp.alias_id_for_post)
+  } else if (resp.alias_id_for_post) {
     setAliasFromID(resp.alias_id_for_post);
+  }
 
   setGalleriesAndDefault(resp.galleries, resp.default_icon);
   setIcon('');
-  if (restoreIcon)
+  if (restoreIcon) {
     setIconFromId(selectedIconID);
-  else if (resp.default_icon)
+  } else if (resp.default_icon) {
     setIcon(resp.default_icon.id, resp.default_icon.url, resp.default_icon.keyword, resp.default_icon.keyword);
+  }
+
+  if (updateCharDropdowns) updateCharDropdown(characterId, resp.npc);
 }
 
 function setInfoBoxFields(characterId, name, screenname) {
@@ -422,24 +457,24 @@ function setGalleries(galleries) {
   }
 }
 
-function getAndSetCharacterData(characterId, options) {
+function getAndSetCharacterData(character, options) {
   // Handle page interactions
 
-  // Handle special case where just setting to your base account
-  if (characterId === '') {
+  // Handle special case where setting to your base account or a new NPC (no ID)
+  if (character.id === '') {
     var avatar = gon.editor_user.avatar;
-    var data = {aliases: [], galleries: []};
+    var data = {aliases: [], galleries: [], npc: character.npc, name: character.name};
     if (avatar) {
       data.default_icon = avatar;
       data.galleries.push({icons: [avatar]});
     }
-    setFormData(characterId, data, options);
+    setFormData(character.id, data, options);
     return; // Don't need to load data from server
   }
 
   var postID = $("#reply_post_id").val();
-  $.authenticatedGet('/api/v1/characters/' + characterId, {post_id: postID}, function(resp) {
-    setFormData(characterId, resp, options);
+  $.authenticatedGet('/api/v1/characters/' + character.id, { post_id: postID }, function(resp) {
+    setFormData(character.id, resp, options);
   });
 }
 
@@ -471,6 +506,39 @@ function setIcon(id, url, title, alt) {
   $("#current-icon").attr('src', url);
   $("#current-icon").attr('title', title);
   $("#current-icon").attr('alt', alt);
+}
+
+function toggleNPC() {
+  var isNPC = this.id === "select-npc";
+  $("#reply_character_id").val("");
+  if (!isNPC) {
+    $("#reply_character_id").val("");
+    getAndSetCharacterData({ id: "", npc: false, name: "" }, { hideCharacterSelect: false, updateCharDropdowns: true });
+    return;
+  }
+
+  getAndSetCharacterData({ id: "", npc: true, name: "NPC" }, { hideCharacterSelect: false, updateCharDropdowns: true });
+}
+
+function setNPC(name, isNPC) {
+  $("#select-npc").toggleClass("selected", isNPC);
+  $("#select-character").toggleClass("selected", !isNPC);
+  $("#swap-character-character").toggleClass("hidden", isNPC);
+  $("#swap-character-npc").toggleClass("hidden", !isNPC);
+
+  $("#character_npc").val(isNPC);
+  $("#character_name").val(name);
+  $("#post-editor .post-character #name").text(name);
+}
+
+function updateCharDropdown(id, isNPC) {
+  if (isNPC) {
+    $("#active_character").val("");
+    $("#active_npc").val(id).trigger('change.select2');
+  } else {
+    $("#active_npc").val("");
+    $("#active_character").val(id).trigger('change.select2');
+  }
 }
 
 function setSections() {

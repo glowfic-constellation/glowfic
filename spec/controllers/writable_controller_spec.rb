@@ -139,22 +139,49 @@ RSpec.describe WritableController do
       expect(templates.first.plucked_characters.map(&:first)).to eq([char1, char2, char3].map(&:id))
     end
 
+    it "splits NPCs into a separate variable" do
+      user = create(:user)
+      char = create(:character, user: user, name: "a")
+      npc = create(:character, user: user, npc: true, name: "npc")
+      login_as(user)
+      controller.send(:build_template_groups)
+      templates = assigns(:templates)
+      expect(templates.count).to eq(1)
+      expect(templates.first.plucked_characters.map(&:first)).to eq([char.id])
+      npcs = assigns(:npcs)
+      expect(npcs.count).to eq(1)
+      expect(npcs.first.plucked_npcs.map(&:first)).to eq([npc.id])
+    end
+
     describe "with post" do
-      it "orders thread characters correctly" do
+      it "orders thread characters and NPCs correctly" do
         user = create(:user)
         login_as(user)
+
         char3 = create(:character, user: user, name: 'c')
         char1 = create(:character, user: user, name: 'a')
         char2 = create(:character, user: user, name: 'b')
+        npc3 = create(:character, user: user, name: 'npc_c', npc: true)
+        npc1 = create(:character, user: user, name: 'npc_a', npc: true)
+        npc2 = create(:character, user: user, name: 'npc_b', npc: true)
         create(:character, user: user)
         post = create(:post, user: user, character: char2)
         create(:reply, post: post, user: user, character: char3)
         create(:reply, post: post, user: user, character: char1)
+        create(:reply, post: post, user: user, character: npc2)
+        create(:reply, post: post, user: user, character: npc3)
+        create(:reply, post: post, user: user, character: npc1)
+
         controller.instance_variable_set(:@post, post)
         controller.send(:build_template_groups)
         templates = assigns(:templates)
-        expect(templates.count).to eq(2)
+        expect(templates.count).to eq(2) # thread chars, all chars
+        expect(templates.first.name).to eq("Post characters")
         expect(templates.first.plucked_characters.map(&:first)).to eq([char1, char2, char3].map(&:id))
+        npcs = assigns(:npcs)
+        expect(npcs.count).to eq(2) # thread npcs, all npcs
+        expect(npcs.first.name).to eq("Post NPCs")
+        expect(npcs.first.plucked_npcs.map(&:first)).to eq([npc1, npc2, npc3].map(&:id))
       end
     end
 

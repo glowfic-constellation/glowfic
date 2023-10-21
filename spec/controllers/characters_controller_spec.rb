@@ -71,6 +71,14 @@ RSpec.describe CharactersController do
         expect(response.status).to eq(200)
       end
 
+      it "skips NPC characters" do
+        character = create(:character, name: 'ExistingCharacter')
+        create(:character, user: character.user, npc: true, name: 'NPCCharacter')
+        get :index, params: { user_id: character.user_id }
+        expect(response.body).to include('ExistingCharacter')
+        expect(response.body).not_to include('NPCCharacter')
+      end
+
       it "skips retired characters when specified" do
         character = create(:character, name: 'ExistingCharacter')
         create(:character, user: character.user, retired: true, name: 'RetiredCharacter')
@@ -214,6 +222,33 @@ RSpec.describe CharactersController do
       expect(character.galleries).to match_array([gallery])
     end
 
+    it "succeeds for NPC" do
+      expect(Character.count).to eq(0)
+      test_name = 'NPC character'
+      user = create(:user)
+      gallery = create(:gallery, user: user)
+
+      login_as(user)
+      post :create, params: {
+        character: {
+          name: test_name,
+          nickname: 'TempName',
+          ungrouped_gallery_ids: [gallery.id],
+          npc: true,
+        },
+      }
+
+      expect(response).to redirect_to(assigns(:character))
+      expect(flash[:success]).to eq("Character created.")
+      expect(Character.count).to eq(1)
+      character = assigns(:character).reload
+      expect(character.name).to eq(test_name)
+      expect(character.user_id).to eq(user.id)
+      expect(character.nickname).to eq('TempName')
+      expect(character.galleries).to match_array([gallery])
+      expect(character).to be_npc
+    end
+
     it "creates new templates when specified" do
       expect(Template.count).to eq(0)
       login
@@ -260,6 +295,31 @@ RSpec.describe CharactersController do
 
   describe "GET show" do
     let(:character) { create(:character) }
+    let(:user) { create(:user, username: 'John Doe') }
+    let(:expanded_character) do
+      create(:character,
+        user: user,
+        template: create(:template, name: "A"),
+        name: "Alice",
+        nickname: "Lis",
+        screenname: "player_one",
+        settings: [
+          create(:setting, name: 'Infosec'),
+          create(:setting, name: 'Wander'),
+        ],
+        description: "Alice is a character",
+        with_default_icon: true,
+      )
+    end
+    let(:npc_character) do
+      create(:character,
+        user: user,
+        npc: true,
+        name: "John",
+        nickname: "first thread",
+        with_default_icon: true,
+      )
+    end
 
     it "requires valid character logged out" do
       get :show, params: { id: -1 }
@@ -320,7 +380,6 @@ RSpec.describe CharactersController do
     end
 
     it "calculates OpenGraph meta for basic character" do
-      user = create(:user, username: 'John Doe')
       character = create(:character,
         user: user,
         name: "Alice",
@@ -338,35 +397,65 @@ RSpec.describe CharactersController do
     end
 
     it "calculates OpenGraph meta for expanded character" do
-      user = create(:user, username: 'John Doe')
-      character = create(:character,
-        user: user,
-        template: create(:template, name: "A"),
-        name: "Alice",
-        nickname: "Lis",
-        screenname: "player_one",
-        settings: [
-          create(:setting, name: 'Infosec'),
-          create(:setting, name: 'Wander'),
-        ],
-        description: "Alice is a character",
-        with_default_icon: true,
-      )
-      create(:alias, character: character, name: "Alicia")
-      create(:post, character: character, user: user)
-      create(:reply, character: character, user: user)
+      create(:alias, character: expanded_character, name: "Alicia")
+      create(:post, character: expanded_character, user: user)
+      create(:reply, character: expanded_character, user: user)
 
-      get :show, params: { id: character.id }
+      get :show, params: { id: expanded_character.id }
 
       meta_og = assigns(:meta_og)
       expect(meta_og.keys).to match_array([:url, :title, :description, :image])
-      expect(meta_og[:url]).to eq(character_url(character))
+      expect(meta_og[:url]).to eq(character_url(expanded_character))
       expect(meta_og[:title]).to eq('John Doe » A » Alice | player_one')
       expect(meta_og[:description]).to eq("Nicknames: Lis, Alicia. Settings: Infosec, Wander\nAlice is a character\n2 posts")
       expect(meta_og[:image].keys).to match_array([:src, :width, :height])
-      expect(meta_og[:image][:src]).to eq(character.default_icon.url)
+      expect(meta_og[:image][:src]).to eq(expanded_character.default_icon.url)
       expect(meta_og[:image][:height]).to eq('75')
       expect(meta_og[:image][:width]).to eq('75')
+    end
+
+    it "calculates OpenGraph meta for NPC character" do
+      get :show, params: { id: npc_character.id }
+      meta_og = assigns(:meta_og)
+      expect(meta_og.keys).to match_array([:url, :title, :description, :image])
+      expect(meta_og[:title]).to eq('John Doe » John')
+      expect(meta_og[:description]).to eq("Original post: first thread")
+    end
+
+    context "render views" do
+      render_views
+
+      it "shows details for a non-NPC character" do
+        get :show, params: { id: expanded_character.id }
+
+        expect(response.status).to eq(200)
+        expect(response).to render_template(:show)
+        expect(response.body).to include('Alice')
+        expect(response.body).to match(/character-screenname.*player_<wbr>one/)
+        expect(response.body).to match(/character-icon.*img.*src="#{Regexp.quote(expanded_character.default_icon.url)}"/m)
+        expect(response.body).not_to include("NPC")
+        expect(response.body).to match(/Nickname.*Lis/m)
+        expect(response.body).not_to include("Original post")
+        expect(response.body).to match(/Setting.*<a[^>]*>Infosec<\/a>/m)
+        expect(response.body).to match(/Description.*Alice is a character/m)
+        expect(response.body).to match(/Template.*<a[^>]*>A<\/a>/m)
+      end
+
+      it "shows details for an NPC character" do
+        get :show, params: { id: npc_character.id }
+
+        expect(response.status).to eq(200)
+        expect(response).to render_template(:show)
+        expect(response.body).to include('John')
+        expect(response.body).not_to include('character-screenname')
+        expect(response.body).to match(/character-icon.*img.*src="#{Regexp.quote(npc_character.default_icon.url)}"/m)
+        expect(response.body).to include('(NPC)')
+        expect(response.body).not_to include('Nickname')
+        expect(response.body).to match(/Original post.*first thread/m)
+        expect(response.body).not_to include("Setting")
+        expect(response.body).not_to include("Description")
+        expect(response.body).not_to include("Template")
+      end
     end
   end
 
@@ -559,6 +648,33 @@ RSpec.describe CharactersController do
       expect(character.pb).to eq('Actor')
       expect(character.description).to eq('Description')
       expect(character.galleries).to match_array([gallery])
+    end
+
+    it "succeeds for NPC" do
+      character = create(:character, npc: true)
+      user = character.user
+      login_as(user)
+      put :update, params: {
+        id: character.id,
+        character: {
+          nickname: 'TemplateName',
+        },
+      }
+      expect(response).to redirect_to(assigns(:character))
+      expect(flash[:success]).to eq("Character updated.")
+      character.reload
+      expect(character.nickname).to eq('TemplateName')
+
+      put :update, params: {
+        id: character.id,
+        character: {
+          npc: false,
+        },
+      }
+      expect(response).to redirect_to(assigns(:character))
+      expect(flash[:success]).to eq("Character updated.")
+      character.reload
+      expect(character).not_to be_npc
     end
 
     it "does not persist values when invalid" do

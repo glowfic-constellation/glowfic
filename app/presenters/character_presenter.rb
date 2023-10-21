@@ -6,7 +6,7 @@ class CharacterPresenter
   end
 
   def as_json(options={})
-    char_json = character.as_json_without_presenter(only: [:id, :name, :screenname])
+    char_json = character.as_json_without_presenter(only: [:id, :name, :screenname, :npc])
     return char_json unless options[:include].present? || options[:post_for_alias].present?
 
     if options[:post_for_alias].present?

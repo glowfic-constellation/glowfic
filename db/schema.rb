@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2023_09_24_003255) do
+ActiveRecord::Schema.define(version: 2023_09_30_053037) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "citext"
@@ -125,6 +125,7 @@ ActiveRecord::Schema.define(version: 2023_09_24_003255) do
     t.text "description"
     t.boolean "retired", default: false
     t.string "cluster"
+    t.boolean "npc", default: false, null: false
     t.index ["character_group_id"], name: "index_characters_on_character_group_id"
     t.index ["template_id"], name: "index_characters_on_template_id"
     t.index ["user_id"], name: "index_characters_on_user_id"
