@@ -198,6 +198,64 @@ RSpec.feature "Creating replies" do
     end
   end
 
+  scenario "User creates a reply with an alias", :js do
+    post = create(:post)
+
+    user = login
+    char = create(:character, name: "Base Character", user: user)
+    create(:alias, name: "Alias 1", character: char)
+    create(:alias, name: "Alias 2", character: char)
+
+    # select alias in UI
+    visit post_path(post)
+    page.find('.post-expander', text: 'Join Thread').click
+    page.find('img[title="Choose Character"]').click
+    page.find('#swap-character-character .select2-selection__rendered').click
+    page.find('li', exact_text: 'Base Character').click
+    expect(page).to have_selector('#name', exact_text: 'Base Character')
+    page.find('img[title="Choose Alias"]').click
+    page.find('.select2-selection__rendered', exact_text: "Base Character").click
+    page.find('li', exact_text: 'Alias 2').click
+    expect(page).to have_selector('#name', exact_text: 'Alias 2')
+    click_button 'Preview'
+
+    # verify preview
+    expect(page).to have_no_selector('.error')
+    expect(page).to have_text("Draft saved.")
+    within('.post-reply') do
+      expect(page).to have_selector('.post-character', exact_text: 'Alias 2')
+    end
+    within('#post-editor') do
+      expect(page).to have_selector('#name', exact_text: 'Alias 2')
+    end
+    click_button 'Post'
+
+    # reply uses alias
+    expect(page).to have_no_selector(".error")
+    expect(page).to have_selector('.success', exact_text: 'Reply posted.')
+    expect(page).to have_selector('.post-reply', count: 1)
+
+    within('.post-reply') do
+      expect(page).to have_link('Alias 2', href: character_path(char))
+    end
+
+    # new editor should have the same alias selected for continuity
+    within('#post-editor') do
+      expect(page).to have_selector('#name', exact_text: 'Alias 2')
+      click_button "HTML"
+      fill_in id: "reply_content", with: "test reply!"
+    end
+    click_button "Post"
+
+    # and should save this alias correctly
+    expect(page).to have_selector('.post-reply', count: 2)
+    page.find_all(".post-reply").each do |reply|
+      within(reply) do
+        expect(page).to have_link('Alias 2', href: character_path(char))
+      end
+    end
+  end
+
   scenario "User tries to reply to locked post" do
     post = create(:post, authors_locked: true)
 
