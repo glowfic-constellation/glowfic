@@ -9,7 +9,7 @@ class Board::Searcher < Object
       if params[:abbrev].present?
         search_acronym(params[:name])
       else
-        @search_results = @search_results.where("name LIKE ?", "%#{params[:name]}%")
+        @search_results = @search_results.where("name ILIKE ?", "%#{params[:name]}%")
       end
     end
     @search_results
@@ -24,7 +24,7 @@ class Board::Searcher < Object
   end
 
   def search_acronym(name)
-    search = name.downcase.chars.join('% ')
-    @search_results = @search_results.where('LOWER(name) LIKE ?', "%#{search}%")
+    search = name.chars.join('% ')
+    @search_results = @search_results.where('name ILIKE ?', "%#{search}%")
   end
 end

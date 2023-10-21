@@ -46,7 +46,7 @@ class RepliesController < WritableController
         exact_phrases.each do |phrase|
           phrase = phrase.first.strip
           next if phrase.blank?
-          @search_results = @search_results.where("replies.content LIKE ?", "%#{phrase}%")
+          @search_results = @search_results.where("replies.content ILIKE ?", "%#{phrase}%")
         end
       end
     end

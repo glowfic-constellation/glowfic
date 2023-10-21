@@ -10,7 +10,7 @@ class Api::V1::PostsController < Api::ApiController
   param :q, String, required: false, desc: 'Subject search term'
   def index
     queryset = Post.order(Arel.sql('LOWER(subject) asc'))
-    queryset = queryset.where('LOWER(subject) LIKE ?', "%#{params[:q].downcase}%") if params[:q].present?
+    queryset = queryset.where('subject ILIKE ?', "%#{params[:q]}%") if params[:q].present?
 
     posts = paginate queryset, per_page: 25
     posts = posts.visible_to(current_user)

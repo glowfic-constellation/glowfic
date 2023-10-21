@@ -133,17 +133,17 @@ RSpec.describe RepliesController, 'GET search' do
       expect(assigns(:search_results)).to match_array([reply, cap_reply])
     end
 
-    it "filters by exact match" do
+    it "filters by exact match case insensitively" do
       create(:reply, content: 'contains forks')
       create(:reply, content: 'Forks is capital')
-      reply = create(:reply, content: 'Forks High is capital')
-      create(:reply, content: 'Forks high is kinda capital')
-      create(:reply, content: 'forks High is different capital')
-      create(:reply, content: 'forks high is not capital')
+      reply1 = create(:reply, content: 'Forks High is capital')
+      reply2 = create(:reply, content: 'Forks high is kinda capital')
+      reply3 = create(:reply, content: 'forks High is different capital')
+      reply4 = create(:reply, content: 'forks high is not capital')
       create(:reply, content: 'Forks is split from High')
       create(:reply, content: 'nope')
       get :search, params: { commit: true, subj_content: '"Forks High"' }
-      expect(assigns(:search_results)).to match_array([reply])
+      expect(assigns(:search_results)).to match_array([reply1, reply2, reply3, reply4])
     end
 
     it "only shows from visible posts" do

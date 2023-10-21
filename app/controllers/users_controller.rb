@@ -136,7 +136,7 @@ class UsersController < ApplicationController
     @page_title = 'Search Users'
     return unless params[:commit].present?
     username = '%' + params[:username].to_s + '%'
-    @search_results = User.active.where("username LIKE ?", username).ordered.paginate(page: page)
+    @search_results = User.active.where("username ILIKE ?", username).ordered.paginate(page: page)
   end
 
   def output

@@ -32,7 +32,7 @@ class Character < ApplicationRecord
   after_destroy :clear_char_ids
 
   scope :ordered, -> { order(name: :asc).order(Arel.sql('lower(screenname) asc'), created_at: :asc, id: :asc) }
-  scope :with_name, ->(charname) { where("lower(concat_ws(' | ', name, nickname, screenname)) LIKE ?", "%#{charname.downcase}%") }
+  scope :with_name, ->(charname) { where("concat_ws(' | ', name, nickname, screenname) ILIKE ?", "%#{charname}%") }
 
   accepts_nested_attributes_for :template, reject_if: :all_blank
 
