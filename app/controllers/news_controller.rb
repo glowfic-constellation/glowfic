@@ -88,7 +88,7 @@ class NewsController < ApplicationController
   end
 
   def require_staff
-    return if current_user.admin? || current_user.mod?
+    return if current_user.has_permission?(:create_news)
     flash[:error] = "You do not have permission to manage news posts."
     redirect_to news_index_path
   end

@@ -29,6 +29,24 @@ RSpec.describe NewsController do
 
       expect(NewsView.find_by(user: user).news).to eq(news)
     end
+
+    context "with views" do
+      render_views
+
+      it "does not show 'New' button for regular user" do
+        create(:news)
+        login
+        get :index
+        expect(response.body).not_to include("New News Post")
+      end
+
+      it "shows 'New' button for mod" do
+        create(:news)
+        login_as(create(:mod_user))
+        get :index
+        expect(response.body).to include("New News Post")
+      end
+    end
   end
 
   describe "GET new" do

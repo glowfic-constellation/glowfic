@@ -1,6 +1,6 @@
 .content-header
   Site News
-  - if current_user&.admin?
+  - if current_user&.has_permission?(:create_news)
     = link_to new_news_path do
       .link-box.action-new + New News Post
 = render @news
