@@ -13,6 +13,7 @@ module Permissible
     # :edit_tags,
     # :delete_tags,
     # :edit_continuities
+    :create_news,
   ]
 
   def has_permission?(permission)
