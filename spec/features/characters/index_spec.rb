@@ -192,10 +192,10 @@ RSpec.feature "Listing characters" do
 
       visit user_characters_path(user_id: user.id)
       expect(page).to have_text("Test character")
-      expect(page).not_to have_text("MyNPC")
+      expect(page).to have_no_text("MyNPC")
       click_link "NPCs"
 
-      expect(page).not_to have_text("Test character")
+      expect(page).to have_no_text("Test character")
       expect(page).to have_text("MyNPC")
     end
   end
