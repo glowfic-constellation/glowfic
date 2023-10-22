@@ -1,0 +1,22 @@
+- content_for :breadcrumbs do
+  = link_to "Admin Tools", admin_path
+  &raquo;
+  Regenerate Flat Posts
+
+= form_with url: do_regenerate_posts_path, method: :post do |f|
+  %table.form-table
+    %thead
+      %tr
+        %th.editor-title{colspan: 2} Regenerate Flatposts
+      %tr
+        %th.sub= f.label :before, 'Last Regenerated Before'
+        %td{class: cycle('even', 'odd')}= f.datetime_field :before, value: params[:before] || Time.zone.now
+      %tr
+        %td.sub Force Regenerate?
+        %td.padding-5{class: cycle('even', 'odd')}
+          = f.check_box :force, checked: params[:force], class: 'vmid no-margin', style: 'margin-bottom: 3px;'
+          = f.label :force, "Include Flatposts Regenerated Since Post Last Tagged"
+    %tfoot
+      %tr
+        %th.form-table-ender{colspan: 2}
+          = f.submit 'Regenerate', class: 'button', id: 'submit_button', data: { disable_with: 'Regenerating...' }

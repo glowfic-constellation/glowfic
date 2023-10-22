@@ -1,0 +1,11 @@
+- content_for :breadcrumbs do
+  = link_to "Admin Tools", admin_path
+  &raquo;
+  = link_to "Character Relocate", relocate_characters_path
+  &raquo;
+  Preview
+
+Transferring the following characters from #{@characters.first.user.user_name} to #{@user.username}
+= render 'characters/_icon_view', characters: @characters
+
+= render 'relocate'
