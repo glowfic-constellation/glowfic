@@ -594,34 +594,47 @@ RSpec.describe UsersController do
       expect(assigns(:total)).to eq(0)
     end
 
-    it "works for default of today" do
-      login_as(user)
+    context "with views" do
+      render_views
+      it "works for default of today" do
+        login_as(user)
 
-      Timecop.freeze(Time.zone.now) do
-        post = create(:post, user: user, content: 'two words')
-        create_list(:reply, 2, user: user, post: post, content: 'three words each')
-        get :output, params: { id: user.id }
+        Timecop.freeze(Time.zone.now) do
+          post = create(:post, user: user, content: 'two words')
+          create_list(:reply, 2, user: user, post: post, content: 'three words each')
+          get :output, params: { id: user.id }
+        end
+
+        expect(response).to have_http_status(200)
+        expect(flash[:error]).to eq('Please note that this page does not include edit history.')
+        expect(assigns(:total)).to eq(8)
+
+        expect(response.body).not_to include("Next Day")
+        expect(response.body).to include("Your Daily Output: 8 words")
+        expect(response.body).to include("two words")
+        expect(response.body).to match(/three words each.*three words each/m)
       end
 
-      expect(response).to have_http_status(200)
-      expect(flash[:error]).to eq('Please note that this page does not include edit history.')
-      expect(assigns(:total)).to eq(8)
-    end
+      it "works for previous days" do
+        login_as(user)
 
-    it "works for previous days" do
-      login_as(user)
+        day = Time.zone.now.to_date - 1.day
+        Timecop.freeze(day) do
+          post = create(:post, user: user, content: 'two words')
+          create_list(:reply, 2, user: user, post: post, content: 'three words each')
+        end
+        create(:post, user: user, content: 'not in word count')
 
-      day = Time.zone.now.to_date - 1.day
-      Timecop.freeze(day) do
-        post = create(:post, user: user, content: 'two words')
-        create_list(:reply, 2, user: user, post: post, content: 'three words each')
+        get :output, params: { id: user.id, day: day.to_s }
+        expect(response).to have_http_status(200)
+        expect(flash[:error]).to eq('Please note that this page does not include edit history.')
+        expect(assigns(:total)).to eq(8)
+
+        expect(response.body).to include("Next Day")
+        expect(response.body).to include("Your Daily Output: 8 words")
+        expect(response.body).to include("two words")
+        expect(response.body).to match(/three words each.*three words each/m)
       end
-      create(:post, user: user, content: 'not in word count')
-
-      get :output, params: { id: user.id, day: day.to_s }
-      expect(response).to have_http_status(200)
-      expect(flash[:error]).to eq('Please note that this page does not include edit history.')
-      expect(assigns(:total)).to eq(8)
     end
   end
 end

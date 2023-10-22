@@ -146,10 +146,14 @@ class UsersController < ApplicationController
     @day = calculate_day
     daystart = @day.beginning_of_day
     dayend = @day.end_of_day
-    @posts = Post.where(user: current_user).where('created_at between ? AND ?', daystart, dayend).ordered_by_id.pluck(:content)
-    @replies = Reply.where(user: current_user).where('created_at between ? AND ?', daystart, dayend).order(post_id: :asc).ordered.pluck(:content)
 
-    @total = @posts + @replies
+    @posts, @replies = [Post, Reply].map do |klass|
+      klass.where(user: current_user).where('created_at between ? AND ?', daystart, dayend)
+    end
+    @posts = @posts.ordered_by_id.pluck(:content, :editor_mode)
+    @replies = @replies.order(post_id: :asc).ordered.pluck(:content, :editor_mode)
+
+    @total = (@posts + @replies).map { |x, _| x }
     if @total.empty?
       @total = 0
     else
