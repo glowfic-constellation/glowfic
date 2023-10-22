@@ -99,9 +99,7 @@ RSpec.feature "Creating replies" do
 
       page.find_by_id('current-icon-holder').click
       expect(page).to have_text("icons of the <strong>")
-      within(page.find(".gallery-icon", text: "<strong> icon")) do
-        page.find("img").click
-      end
+      page.find(:xpath, "//*[contains(@class,'gallery-icon')][contains(text(),'<strong> icon')]//img").click
 
       page.find_by_id('html').click
 
