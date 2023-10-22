@@ -185,22 +185,22 @@ end
 
 RSpec::Matchers.define :be_the_same_time_as do |expected|
   match do |actual|
-    expected.in_time_zone.to_s(:iso8601) == actual.in_time_zone.to_s(:iso8601)
+    expected.in_time_zone.to_fs(:iso8601) == actual.in_time_zone.to_fs(:iso8601)
   end
 
   failure_message do |actual|
     <<~FAILURE
       expected #{actual} to be the same time as #{expected}
-      compared: #{actual.in_time_zone.to_s(:iso8601)}
-          with: #{expected.in_time_zone.to_s(:iso8601)}
+      compared: #{actual.in_time_zone.to_fs(:iso8601)}
+          with: #{expected.in_time_zone.to_fs(:iso8601)}
     FAILURE
   end
 
   failure_message_when_negated do |actual|
     <<~FAILURE
       expected #{actual} not to be the same time as #{expected}
-      compared: #{actual.in_time_zone.to_s(:iso8601)}
-          with: #{expected.in_time_zone.to_s(:iso8601)}
+      compared: #{actual.in_time_zone.to_fs(:iso8601)}
+          with: #{expected.in_time_zone.to_fs(:iso8601)}
     FAILURE
   end
 end
