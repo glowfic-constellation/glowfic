@@ -151,6 +151,7 @@ table { border-color: #555555; } // TODO: what does this style
   border-color: $border_color_icon_editor;
   background-color: $bg_color_icon_editor;
 }
+.character-no-icon { background-color: $bg_color_even; color: $font_color_page; }
 
 /* - tag items */
 .tag-item {

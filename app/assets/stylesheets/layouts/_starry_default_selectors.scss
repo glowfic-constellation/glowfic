@@ -162,6 +162,7 @@ a:visited { color: $font_color_link_visited; }
   border-color: $border_color_icon_editor;
   background-color: $bg_color_icon_editor;
 }
+.character-no-icon { background-color: $bg_color_even; color: $font_color_page; }
 
 tr.gallery-tags .tag-item {
   background-color: $bg_color_tag_item;
