@@ -186,6 +186,18 @@ RSpec.feature "Listing characters" do
     end
 
     include_examples "characters#index", false
+
+    scenario "Viewing NPCs" do
+      create(:character, user: user, npc: true, name: "MyNPC")
+
+      visit user_characters_path(user_id: user.id)
+      expect(page).to have_text("Test character")
+      expect(page).to have_no_text("MyNPC")
+      click_link "NPCs"
+
+      expect(page).to have_no_text("Test character")
+      expect(page).to have_text("MyNPC")
+    end
   end
 
   context "with character groups" do

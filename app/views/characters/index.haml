@@ -11,17 +11,20 @@
 %table
   %tr
     %th.table-title{colspan: colspan}
+      - obj_name = "Characters"
+      - if character_split == 'npcs'
+        - obj_name = "NPCs"
       - if @group
         Character Group:
         = @group.name
       - elsif @user.id == current_user&.id
-        Your Characters
+        Your #{obj_name}
         = link_to new_character_path(character_group_id: @group.try(:id)) do
           .link-box.action-new + New Character
         = link_to new_template_path do
           .link-box.action-new + New Template
       - else
-        = @user.username + "'s Characters"
+        = @user.username + "'s #{obj_name}"
       = link_to character_menu_link(view: 'icons') do
         .view-button{class: (:selected unless page_view == 'list')}
           = image_tag "icons/grid.png", class: 'icon-view', alt: ''
@@ -30,11 +33,15 @@
         .view-button{class: (:selected if page_view == 'list')}
           = image_tag "icons/list.png", class: 'list-view', alt: ''
           List
-      - if character_split == 'template'
+      - unless character_split == 'npcs'
+        = link_to character_menu_link(character_split: 'npcs') do
+          .view-button
+            NPCs
+      - unless character_split == 'none'
         = link_to character_menu_link(character_split: 'none') do
           .view-button
             Ungroup
-      - else
+      - unless character_split == 'template'
         = link_to character_menu_link(character_split: 'template') do
           .view-button
             Group
@@ -73,6 +80,9 @@
     - else
       %tr
         %td.centered.padding-5{class: cycle('even', 'odd'), colspan: colspan} — No characters yet —
+  - elsif character_split == 'npcs'
+    - characters = @user.characters.npcs.ordered
+    = render partial_type, name: nil, characters: characters, show_template: false
   - else
     - characters = @user.characters.non_npcs.includes(:template).ordered
     = render partial_type, name: nil, characters: characters, show_template: true
