@@ -72,7 +72,7 @@ RSpec.feature "Creating replies" do
     end
   end
 
-  skip "User interacts with javascript", :js do
+  scenario "User interacts with javascript", :js do
     post = create(:post)
 
     user = login
@@ -91,26 +91,24 @@ RSpec.feature "Creating replies" do
     page.find(".post-expander", text: "+ Join Thread").click
 
     within('#post-editor') do
-      page.find_by_id('swap-character').click
+      page.find('img[title="Choose Character"]').click
       select "Fred the <strong>!", from: "active_character"
 
-      page.find_by_id('swap-alias').click
+      page.find('img[title="Choose Alias"]').click
       select "The <strong>!", from: "character_alias"
 
       page.find_by_id('current-icon-holder').click
       expect(page).to have_text("icons of the <strong>")
-      within(page.find(".gallery-icon", text: "<strong> icon")) do
-        page.find("img").click
-      end
+      page.find(:xpath, "//*[contains(@class,'gallery-icon')][contains(text(),'<strong> icon')]//img").click
 
-      page.find_by_id('html').click
+      click_button "HTML"
 
       fill_in id: "reply_content", with: "test reply!"
       click_button "Post"
     end
 
     expect(page).to have_no_selector('.error')
-    expect(page).to have_selector('.success', exact_text: 'Posted!')
+    expect(page).to have_selector('.success', exact_text: 'Reply posted.')
     expect(page).to have_selector('.post-container', count: 2)
     within('.post-reply') do
       expect(page).to have_text(user.username)
