@@ -223,12 +223,8 @@ function fixWritableFormCaching() {
       bindGallery();
     }
     setNPC(selectedNPC, isNPC);
-    if (selectedIconID !== displayIconID) {
-      setIconFromId(selectedIconID); // Handle the case where just the icon was cached
-    }
-    if (selectedAliasID !== displayAliasID) {
-      setAliasFromID(selectedAliasID);
-    }
+    setIconFromId(selectedIconID); // Handle the case where just the icon was cached
+    setAliasFromID(selectedAliasID);
   } else {
     getAndSetCharacterData({ id: selectedCharID, npc: isNPC, name: selectedNPC }, { restore_icon: true, restore_alias: true, updateCharDropdowns: true });
   }
