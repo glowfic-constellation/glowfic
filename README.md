@@ -39,7 +39,7 @@ This README mostly focuses on how to get started developing this project with Do
 
 If you haven't already, start by installing [Docker](https://docs.docker.com/install/) and [Docker Compose](https://docs.docker.com/compose/install/).
 
-Then run `docker-compose up` within the glowfic directory.
+Then run `docker compose up` within the glowfic directory.
 This will set up a Postgres server, a Redis server, and a Glowfic app server which can talk to both of them.
 
 There are some scripts for interacting with the Glowfic server in bin-docker.
@@ -58,15 +58,15 @@ This will set up the database and add some sample information – currently thes
 
 If you encounter an error involving the 'citext' extension:
 
-*   Ensure the postgres container is running, with `docker-compose up postgres &`
-*   Execute `docker-compose exec postgres psql`, and then in the prompt that appears:
+*   Ensure the postgres container is running, with `docker compose up postgres &`
+*   Execute `docker compose exec postgres psql`, and then in the prompt that appears:
 *   `CREATE EXTENSION IF NOT EXISTS citext;`
 
 You will need to re-run `bin-docker/rake db:migrate`.
 
 ### Executing the server
 
-The server should have started itself when you ran `docker-compose up`.
+The server should have started itself when you ran `docker compose up`.
 When it's started, go to [http://localhost:3000/](http://localhost:3000/), where you should see a local copy of the Constellation.
 To stop the server, either close the Terminal or use `Ctrl+C` to stop the process.
 
@@ -81,7 +81,7 @@ This will go through the [rspec](http://rspec.info/) tests.
 If you encounter a `PG::UndefinedTable` error, mentioning that a relation doesn't exist, ensure you've also migrated your test database.
 This can be done with:
 
-*   `docker-compose run -e RAILS_ENV=test web rake db:migrate`
+*   `docker compose run -e RAILS_ENV=test web rake db:migrate`
 
 After this, you should be able to re-run the tests.
 
@@ -98,9 +98,9 @@ Then look at this README again, to make sure the version of Ruby hasn't changed;
 As of writing, this is `ruby '3.2.2'`.
 If it has changed, you can rebuild the glowfic image with:
 
-*   `docker-compose stop`
-*   `docker-compose build`
-*   `docker-compose up`
+*   `docker compose stop`
+*   `docker compose build`
+*   `docker compose up`
 
 Now, update the gems used for the project:
 
