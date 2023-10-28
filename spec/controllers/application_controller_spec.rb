@@ -20,20 +20,20 @@ RSpec.describe ApplicationController do
       login_as(create(:user, timezone: different_zone))
 
       get :index
-      expect(response.json['zone']).to eq(different_zone)
+      expect(response.parsed_body['zone']).to eq(different_zone)
     end
 
     it "succeeds when logged out" do
       current_zone = Time.zone.name
       get :index
-      expect(response.json['zone']).to eq(current_zone)
+      expect(response.parsed_body['zone']).to eq(current_zone)
     end
 
     it "succeeds when logged in user has no zone set" do
       current_zone = Time.zone.name
       login_as(create(:user, timezone: nil))
       get :index
-      expect(response.json['zone']).to eq(current_zone)
+      expect(response.parsed_body['zone']).to eq(current_zone)
     end
   end
 
@@ -445,7 +445,7 @@ RSpec.describe ApplicationController do
       user = create(:user)
       login_as(user)
       get :index
-      expect(response.json['logged_in']).to be(true)
+      expect(response.parsed_body['logged_in']).to be(true)
     end
 
     it "logs out suspended" do
@@ -454,7 +454,7 @@ RSpec.describe ApplicationController do
       user.role_id = Permissible::SUSPENDED
       user.save!
       get :index
-      expect(response.json['logged_in']).to eq(false)
+      expect(response.parsed_body['logged_in']).to eq(false)
     end
 
     it "logs out deleted" do
@@ -463,7 +463,7 @@ RSpec.describe ApplicationController do
       user.deleted = true
       user.save!
       get :index
-      expect(response.json['logged_in']).to eq(false)
+      expect(response.parsed_body['logged_in']).to eq(false)
     end
   end
 
@@ -475,7 +475,7 @@ RSpec.describe ApplicationController do
       cookies.signed[:user_id] = user.id
 
       get :index
-      expect(response.json['zone']).to eq(different_zone)
+      expect(response.parsed_body['zone']).to eq(different_zone)
     end
   end
 

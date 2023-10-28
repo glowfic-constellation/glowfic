@@ -20,7 +20,7 @@ RSpec.describe BugsController do
       expect(ExceptionNotifier).to receive(:notify_exception).with(an_instance_of(Icon::UploadError), data: params)
       post :create, params: data
       expect(response.status).to eq(200)
-      expect(response.json).to eq({})
+      expect(response.parsed_body).to eq({})
     end
   end
 end
