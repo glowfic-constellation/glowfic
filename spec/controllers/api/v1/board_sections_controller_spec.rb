@@ -3,7 +3,7 @@ RSpec.describe Api::V1::BoardSectionsController do
     it "requires login", :show_in_doc do
       post :reorder
       expect(response).to have_http_status(401)
-      expect(response.json['errors'][0]['message']).to eq("You must be logged in to view that page.")
+      expect(response.parsed_body['errors'][0]['message']).to eq("You must be logged in to view that page.")
     end
 
     it "requires a board you have access to" do
@@ -38,7 +38,7 @@ RSpec.describe Api::V1::BoardSectionsController do
       api_login_as(user)
       post :reorder, params: { ordered_section_ids: section_ids }
       expect(response).to have_http_status(422)
-      expect(response.json['errors'][0]['message']).to eq('Sections must be from one continuity')
+      expect(response.parsed_body['errors'][0]['message']).to eq('Sections must be from one continuity')
       expect(board_section1.reload.section_order).to eq(0)
       expect(board_section2.reload.section_order).to eq(0)
       expect(board_section3.reload.section_order).to eq(1)
@@ -55,7 +55,7 @@ RSpec.describe Api::V1::BoardSectionsController do
       api_login_as(board.creator)
       post :reorder, params: { ordered_section_ids: section_ids }
       expect(response).to have_http_status(404)
-      expect(response.json['errors'][0]['message']).to eq('Some sections could not be found: -1')
+      expect(response.parsed_body['errors'][0]['message']).to eq('Some sections could not be found: -1')
       expect(board_section1.reload.section_order).to eq(0)
       expect(board_section2.reload.section_order).to eq(1)
     end
@@ -80,7 +80,7 @@ RSpec.describe Api::V1::BoardSectionsController do
       api_login_as(board.creator)
       post :reorder, params: { ordered_section_ids: section_ids }
       expect(response).to have_http_status(200)
-      expect(response.json).to eq({ 'section_ids' => section_ids })
+      expect(response.parsed_body).to eq({ 'section_ids' => section_ids })
       expect(board_section1.reload.section_order).to eq(1)
       expect(board_section2.reload.section_order).to eq(3)
       expect(board_section3.reload.section_order).to eq(0)
@@ -108,7 +108,7 @@ RSpec.describe Api::V1::BoardSectionsController do
       api_login_as(board.creator)
       post :reorder, params: { ordered_section_ids: section_ids }
       expect(response).to have_http_status(200)
-      expect(response.json).to eq({ 'section_ids' => [board_section3.id, board_section1.id, board_section2.id, board_section4.id] })
+      expect(response.parsed_body).to eq({ 'section_ids' => [board_section3.id, board_section1.id, board_section2.id, board_section4.id] })
       expect(board_section1.reload.section_order).to eq(1)
       expect(board_section2.reload.section_order).to eq(2)
       expect(board_section3.reload.section_order).to eq(0)

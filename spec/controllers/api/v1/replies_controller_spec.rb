@@ -3,15 +3,15 @@ RSpec.describe Api::V1::RepliesController do
     it "requires valid post", :show_in_doc do
       get :index, params: { post_id: 0 }
       expect(response).to have_http_status(404)
-      expect(response.json['errors'].size).to eq(1)
-      expect(response.json['errors'][0]['message']).to eq("Post could not be found.")
+      expect(response.parsed_body['errors'].size).to eq(1)
+      expect(response.parsed_body['errors'][0]['message']).to eq("Post could not be found.")
     end
 
     it "requires access to post", :show_in_doc do
       post = create(:post, privacy: :private)
       get :index, params: { post_id: post.id }
       expect(response).to have_http_status(403)
-      expect(response.json['errors'][0]['message']).to eq("You do not have permission to perform this action.")
+      expect(response.parsed_body['errors'][0]['message']).to eq("You do not have permission to perform this action.")
     end
 
     it "succeeds with valid post", :show_in_doc do
@@ -21,12 +21,12 @@ RSpec.describe Api::V1::RepliesController do
       expect(calias.name).not_to eq(reply.character.name)
       get :index, params: { post_id: post.id }
       expect(response).to have_http_status(200)
-      expect(response.json.size).to eq(3)
-      expect(response.json[2]['id']).to eq(reply.id)
-      expect(response.json[2]['icon']['id']).to eq(reply.icon_id)
-      expect(response.json[2]['character']['id']).to eq(reply.character_id)
-      expect(response.json[2]['character']['name']).to eq(calias.character.name)
-      expect(response.json[2]['character_name']).to eq(calias.name)
+      expect(response.parsed_body.size).to eq(3)
+      expect(response.parsed_body[2]['id']).to eq(reply.id)
+      expect(response.parsed_body[2]['icon']['id']).to eq(reply.icon_id)
+      expect(response.parsed_body[2]['character']['id']).to eq(reply.character_id)
+      expect(response.parsed_body[2]['character']['name']).to eq(calias.character.name)
+      expect(response.parsed_body[2]['character_name']).to eq(calias.name)
     end
 
     it "paginates" do
@@ -37,7 +37,7 @@ RSpec.describe Api::V1::RepliesController do
       expect(response.headers['Page'].to_i).to eq(3)
       expect(response.headers['Total'].to_i).to eq(5)
       expect(response.headers['Link']).not_to be_nil
-      expect(response.json.size).to eq(1)
+      expect(response.parsed_body.size).to eq(1)
     end
   end
 end

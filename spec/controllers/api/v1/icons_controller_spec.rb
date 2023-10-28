@@ -4,7 +4,7 @@ RSpec.describe Api::V1::IconsController do
       expect(S3_BUCKET).not_to receive(:delete_objects)
       post :s3_delete
       expect(response).to have_http_status(401)
-      expect(response.json['errors'][0]['message']).to eq("You must be logged in to view that page.")
+      expect(response.parsed_body['errors'][0]['message']).to eq("You must be logged in to view that page.")
     end
 
     it "should require s3_key param" do
@@ -12,7 +12,7 @@ RSpec.describe Api::V1::IconsController do
       api_login
       post :s3_delete
       expect(response).to have_http_status(422)
-      expect(response.json['errors'][0]['message']).to eq("Missing parameter s3_key")
+      expect(response.parsed_body['errors'][0]['message']).to eq("Missing parameter s3_key")
     end
 
     it "should require your own icon" do
@@ -23,7 +23,7 @@ RSpec.describe Api::V1::IconsController do
       post :s3_delete, params: { s3_key: "users/#{user.id}1/icons/hash_name.png" }
 
       expect(response).to have_http_status(403)
-      expect(response.json['errors'][0]['message']).to eq("You do not have permission to modify this icon.")
+      expect(response.parsed_body['errors'][0]['message']).to eq("You do not have permission to modify this icon.")
     end
 
     it "should not allow deleting a URL in use" do
@@ -32,7 +32,7 @@ RSpec.describe Api::V1::IconsController do
       expect(S3_BUCKET).not_to receive(:delete_objects)
       post :s3_delete, params: { s3_key: icon.s3_key }
       expect(response).to have_http_status(422)
-      expect(response.json['errors'][0]['message']).to eq("Only unused icons can be deleted.")
+      expect(response.parsed_body['errors'][0]['message']).to eq("Only unused icons can be deleted.")
     end
 
     it "should delete the URL" do
@@ -43,7 +43,7 @@ RSpec.describe Api::V1::IconsController do
       expect(S3_BUCKET).to receive(:delete_objects).with(delete_key)
       post :s3_delete, params: { s3_key: icon.s3_key }
       expect(response).to have_http_status(200)
-      expect(response.json).to eq({})
+      expect(response.parsed_body).to eq({})
     end
   end
 end
