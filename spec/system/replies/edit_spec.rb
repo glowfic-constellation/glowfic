@@ -1,4 +1,4 @@
-RSpec.describe "Creating replies", type: :system do
+RSpec.describe "Creating replies" do
   def find_reply_on_page(reply)
     find('.post-reply') { |x| x.has_selector?('a', id: "reply-#{reply.id}") }
   end

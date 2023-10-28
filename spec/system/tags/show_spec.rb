@@ -1,4 +1,4 @@
-RSpec.describe "Viewing a tag", type: :system do
+RSpec.describe "Viewing a tag" do
   scenario "Viewing a setting" do
     # set up sample data
     setting_owner = create(:user, username: 'setting owner')

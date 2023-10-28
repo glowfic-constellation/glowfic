@@ -1,4 +1,4 @@
-RSpec.describe "Logging out", type: :system do
+RSpec.describe "Logging out" do
   scenario "Log out while correctly logged in", :js do
     user = login
     expect(page).to have_selector('#user-info', text: user.username)

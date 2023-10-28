@@ -1,4 +1,4 @@
-RSpec.describe "Post stats", type: :system do
+RSpec.describe "Post stats" do
   scenario "User views a stats page" do
     post = create(:post, subject: "stats post test")
     character = create(:character, user: post.user, name: "statchar")

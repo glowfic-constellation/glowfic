@@ -1,4 +1,4 @@
-RSpec.describe "Editing posts", type: :system do
+RSpec.describe "Editing posts" do
   scenario "Logged-out user tries to edit a post" do
     post = create(:post, subject: 'test subject')
 

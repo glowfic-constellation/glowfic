@@ -1,4 +1,4 @@
-RSpec.describe "Viewing a template", type: :system do
+RSpec.describe "Viewing a template" do
   let!(:user) { create(:user) }
   let!(:template) { create(:template, user: user, name: 'sample template') }
 

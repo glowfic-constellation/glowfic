@@ -1,4 +1,4 @@
-RSpec.describe "Editing a character", type: :system do
+RSpec.describe "Editing a character" do
   scenario "Updating a basic character", :js do
     user = create(:user, password: 'known')
     character = create(:character, user: user)

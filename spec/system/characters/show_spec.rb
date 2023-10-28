@@ -1,4 +1,4 @@
-RSpec.describe "Viewing a character", type: :system do
+RSpec.describe "Viewing a character" do
   def create_basic_character(user)
     default_icon = create(:icon, user: user, keyword: 'Default', url: 'https://example.com/image.png')
     icon2 = create(:icon, user: user, keyword: 'Test')

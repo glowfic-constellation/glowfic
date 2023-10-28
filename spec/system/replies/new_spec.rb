@@ -1,4 +1,4 @@
-RSpec.describe "Creating replies", type: :system do
+RSpec.describe "Creating replies" do
   scenario "User replies to own post" do
     user = login
     post = create(:post, user: user)

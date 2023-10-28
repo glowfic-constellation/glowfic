@@ -1,4 +1,4 @@
-RSpec.describe "About pages", type: :system do
+RSpec.describe "About pages" do
   scenario "Terms of Service page" do
     visit tos_path
     within("#tos-content h1") do

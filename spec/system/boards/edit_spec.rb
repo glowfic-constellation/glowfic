@@ -1,4 +1,4 @@
-RSpec.describe "Edit a single continuity", type: :system do
+RSpec.describe "Edit a single continuity" do
   scenario "Continuity can be edited" do
     board = create(:board, name: "Test board")
     login(board.creator, 'password')

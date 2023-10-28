@@ -1,4 +1,4 @@
-RSpec.describe "Listing characters", type: :system do
+RSpec.describe "Listing characters" do
   def with_template(characters, template)
     {
       template: template,

@@ -1,4 +1,4 @@
-RSpec.describe "Searching posts", type: :system do
+RSpec.describe "Searching posts" do
   scenario "Searching a mixture of posts" do
     post = create(:post, subject: 'First post')
 

@@ -1,4 +1,4 @@
-RSpec.describe "Viewing posts", type: :system do
+RSpec.describe "Viewing posts" do
   scenario "with a user layout set" do
     user = login
     post = create(:post, user: user)

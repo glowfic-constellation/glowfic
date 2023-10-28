@@ -1,4 +1,4 @@
-RSpec.describe "Adding a character alias", type: :system do
+RSpec.describe "Adding a character alias" do
   scenario "Adding successfully" do
     user = login
     character = create(:character, user: user)

@@ -1,4 +1,4 @@
-RSpec.describe "Message threads", type: :system do
+RSpec.describe "Message threads" do
   scenario "User views a message thread" do
     user = login
 

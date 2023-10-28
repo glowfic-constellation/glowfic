@@ -1,4 +1,4 @@
-RSpec.describe "Replacing characters", type: :system do
+RSpec.describe "Replacing characters" do
   scenario "Selecting a character with aliases", :js do
     user = login
     fred = create(:character, user: user, name: "Fred the <strong>!")

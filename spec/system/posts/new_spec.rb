@@ -1,4 +1,4 @@
-RSpec.describe "Creating posts", type: :system do
+RSpec.describe "Creating posts" do
   scenario "User creates a post", :js do
     visit new_post_path
     within(".error") { expect(page).to have_text("You must be logged in") }

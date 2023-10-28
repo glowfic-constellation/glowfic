@@ -1,4 +1,4 @@
-RSpec.describe "Resetting password", type: :system do
+RSpec.describe "Resetting password" do
   scenario "Resetting your password" do
     # request reset
     user = create(:user)

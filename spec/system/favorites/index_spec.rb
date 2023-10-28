@@ -1,4 +1,4 @@
-RSpec.describe "Favorites page", type: :system do
+RSpec.describe "Favorites page" do
   scenario "User views normal favorites" do
     user = create(:user, username: "usert")
     create(:post, user: user, subject: "user post") # user_post

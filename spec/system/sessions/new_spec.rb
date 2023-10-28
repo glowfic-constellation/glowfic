@@ -1,6 +1,6 @@
 # Sessions#new is primarily for mobile logins.
 # The other flow is tested (implicitly) everywhere that uses the login method.
-RSpec.describe "Logging in", type: :system do
+RSpec.describe "Logging in" do
   scenario "Log in with invalid details" do
     visit login_path
     expect(page).to have_no_selector('.flash')

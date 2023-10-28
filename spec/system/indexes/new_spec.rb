@@ -1,4 +1,4 @@
-RSpec.describe "Creating a new index", type: :system do
+RSpec.describe "Creating a new index" do
   scenario "Create a simple index" do
     login
     visit new_index_path

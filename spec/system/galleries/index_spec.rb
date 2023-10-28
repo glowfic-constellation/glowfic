@@ -1,4 +1,4 @@
-RSpec.describe "Show a list of galleries", type: :system do
+RSpec.describe "Show a list of galleries" do
   def setup_sample_data
     user = create(:user, username: 'Test user', password: 'known')
     create(:icon, user: user) # galleryless icon

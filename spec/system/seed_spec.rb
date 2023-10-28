@@ -1,4 +1,4 @@
-RSpec.describe "Seeding database", type: :system do
+RSpec.describe "Seeding database" do
   scenario "Loading seed data throws no errors" do
     allow(STDOUT).to receive(:puts)
     DatabaseCleaner.clean_with(:truncation)
