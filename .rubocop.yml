@@ -428,6 +428,9 @@ Rails/EagerEvaluationLogMessage: # new in 2.11
 Rails/EnvironmentVariableAccess: # (new in 2.10)
   Enabled: false
 
+Rails/EnvLocal: # new in 2.22
+  Enabled: true
+
 Rails/ExpandedDateRange: # new in 2.11
   Enabled: true
 
