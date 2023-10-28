@@ -45,30 +45,7 @@ require 'support/spec_test_helper'
 require 'support/spec_feature_helper'
 require 'support/api_test_helper'
 require 'support/posts_controller_shared'
-
-require 'selenium/webdriver'
-
-Capybara.register_driver :chrome do |app|
-  Capybara::Selenium::Driver.new(app, browser: :chrome)
-end
-
-Capybara.register_driver :headless_chrome do |app|
-  options = Selenium::WebDriver::Chrome::Options.new
-
-  options.add_argument('--headless')
-  options.add_argument('--no-sandbox')
-  options.add_argument("--user-data-dir=#{ENV['CHROMEDRIVER_CONFIG']}") if ENV['CHROMEDRIVER_CONFIG']
-  # options.add_argument('--disable-popup-blocking')
-  options.add_argument('--window-size=1366,768')
-
-  Capybara::Selenium::Driver.new(app, browser: :chrome, options: options)
-end
-
-Capybara.javascript_driver = :headless_chrome
-
-Capybara.configure do |config|
-  config.server = :puma, { Silent: true }
-end
+require 'capybara/rspec'
 
 RSpec.configure do |config|
   # rspec-expectations config goes here. You can use an alternate
@@ -97,7 +74,7 @@ RSpec.configure do |config|
   config.include FactoryBot::Syntax::Methods
   config.include SpecTestHelper, type: :controller
   config.include ApiTestHelper, type: :controller
-  config.include SpecFeatureHelper, type: :feature
+  config.include SpecSystemHelper, type: :system
 
   config.filter_run show_in_doc: true if ENV['APIPIE_RECORD']
 
@@ -164,6 +141,18 @@ RSpec.configure do |config|
       Audited.audit_class.as_user(user) { board.destroy! }
     end
     user.destroy!
+  end
+
+  config.before(:each, type: :system) do
+    driven_by :rack_test
+  end
+
+  config.before(:each, type: :system, js: true) do
+    driven_by :selenium, using: :headless_chrome do |options|
+      options.add_argument('--no-sandbox')
+      options.add_argument("--user-data-dir=#{ENV['CHROMEDRIVER_CONFIG']}") if ENV['CHROMEDRIVER_CONFIG']
+      options.add_argument('--window-size=1366,768')
+    end
   end
 
   if ENV['APIPIE_RECORD']
