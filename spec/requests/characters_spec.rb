@@ -56,7 +56,8 @@ RSpec.describe "Characters" do
       body = Nokogiri::HTML5::Document.parse(response.body)
       expect(body.at_css("meta[property='og:url']")[:content]).to eq(character_url(expanded_character))
       expect(body.at_css("meta[property='og:title']")[:content]).to eq('John Doe » A » Alice | player_one')
-      expect(body.at_css("meta[property='og:description']")[:content]).to eq("Nicknames: Lis, Alicia. Settings: Infosec, Wander\nAlice is a character\n2 posts")
+      desc = "Nicknames: Lis, Alicia. Settings: Infosec, Wander\nAlice is a character\n2 posts"
+      expect(body.at_css("meta[property='og:description']")[:content]).to eq(desc)
       expect(body.at_css("meta[property='og:image']")[:content]).to eq(expanded_character.default_icon.url)
       expect(body.at_css("meta[property='og:image:height']")[:content]).to eq('75')
       expect(body.at_css("meta[property='og:image:width']")[:content]).to eq('75')
