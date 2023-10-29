@@ -1,4 +1,4 @@
-module SpecFeatureHelper
+module SpecSystemHelper
   # if given a user, the password must be 'known' or given as a parameter
   # otherwise, the helper will create a user with a given password
   # returns the user it logs in as, navigates to root_path
