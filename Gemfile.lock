@@ -322,7 +322,7 @@ GEM
       thor (~> 1.0)
       zeitwerk (~> 2.5)
     rainbow (3.1.1)
-    rake (13.0.6)
+    rake (13.1.0)
     rb-fsevent (0.11.2)
     rb-inotify (0.10.1)
       ffi (~> 1.0)
@@ -520,7 +520,7 @@ DEPENDENCIES
   rack-timeout (>= 0.6.0)
   rails (~> 7.0.8)
   rails-controller-testing
-  rake (~> 13.0)
+  rake (~> 13.1)
   redis (~> 5.0)
   resque
   resque-heroku-signals
