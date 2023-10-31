@@ -41,8 +41,9 @@ end
 
 require 'factory_bot_rails'
 require 'rails_helper'
-require 'support/spec_test_helper'
 require 'support/spec_feature_helper'
+require 'support/spec_request_helper'
+require 'support/spec_test_helper'
 require 'support/api_test_helper'
 require 'support/posts_controller_shared'
 require 'capybara/rspec'
@@ -74,6 +75,7 @@ RSpec.configure do |config|
   config.include FactoryBot::Syntax::Methods
   config.include SpecTestHelper, type: :controller
   config.include ApiTestHelper, type: :controller
+  config.include SpecRequestHelper, type: :request
   config.include SpecSystemHelper, type: :system
 
   config.filter_run show_in_doc: true if ENV['APIPIE_RECORD']
