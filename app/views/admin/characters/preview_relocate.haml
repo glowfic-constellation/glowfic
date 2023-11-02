@@ -5,7 +5,7 @@
   &raquo;
   Preview
 
-Transferring the following characters from #{@characters.first.user.user_name} to #{@user.username}
-= render 'characters/_icon_view', characters: @characters
+Transferring the following characters from #{@characters.first.user.username} to #{@new_user.username}
+= render 'characters/icon_view', name: 'User characters', characters: @characters, show_retired: true
 
 = render 'relocate'
