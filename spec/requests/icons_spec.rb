@@ -1,4 +1,4 @@
-RSpec.describe "Icons" do
+RSpec.describe "Icon" do
   describe "editing" do
     it "updates an icon" do
       user = login
@@ -39,6 +39,42 @@ RSpec.describe "Icons" do
         expect(response.body).to include("Test credit")
         expect(response.body).to include("https://example.com/icon.png")
       end
+    end
+  end
+
+  describe "replace" do
+    it "replaces post and reply icons" do
+      user = login
+      icon = create(:icon, user: user, keyword: "original")
+      other = create(:icon, user: user, keyword: "target")
+
+      model = create(:post, user: user, icon: icon)
+      reply = create(:reply, post: model, user: user, icon: icon)
+      unaffected = create(:reply, user: user)
+
+      get "/icons/#{icon.id}/replace"
+      aggregate_failures do
+        expect(response).to have_http_status(200)
+        expect(response).to render_template(:replace)
+        expect(response.body).to include("Replace All Uses of Icon")
+        expect(response.body).to include("original")
+        expect(response.body).to include("target")
+      end
+
+      post "/icons/#{icon.id}/do_replace", params: {
+        icon_dropdown: other.id,
+      }
+      aggregate_failures do
+        expect(response).to redirect_to(icon_path(icon))
+        expect(flash[:error]).to be_nil
+        expect(flash[:success]).to eq("All uses of this icon will be replaced.")
+      end
+
+      perform_enqueued_jobs
+
+      expect(model.reload.icon).to eq(other)
+      expect(reply.reload.icon).to eq(other)
+      expect(unaffected.reload.icon).not_to eq(other)
     end
   end
 end

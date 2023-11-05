@@ -1,5 +1,5 @@
-RSpec.describe "Characters" do
-  describe "GET /characters/:id" do
+RSpec.describe "Character" do
+  describe "show" do
     let(:user) { create(:user, username: 'John Doe') }
     let(:expanded_character) do
       create(:character,
@@ -94,6 +94,30 @@ RSpec.describe "Characters" do
       expect(response.body).not_to include("Setting")
       expect(response.body).not_to include("Description")
       expect(response.body).not_to include("Template")
+    end
+  end
+
+  describe "facecasts" do
+    it "shows facecasts for several characters" do
+      main_user = create(:user, username: 'John Doe', password: 'known')
+      other_user = create(:user, username: 'Jane Doe')
+      login(main_user)
+
+      create(:character, user: main_user, name: "Alex", pb: "Sebastian Stan")
+      create(:character, user: main_user, name: "John", pb: "Sebastian Stan", template: create(:template, user: main_user, name: "Jons"))
+      create(:character, user: other_user, name: "Aisha", pb: "Gal Gadot")
+
+      get "/characters/facecasts"
+      aggregate_failures do
+        expect(response).to have_http_status(200)
+        expect(response).to render_template(:facecasts)
+        page = Nokogiri::HTML5::Document.parse(response.body)
+        entries = page.css("tbody tr")
+        expect(entries.count).to eq(3)
+        expect(entries[0].text).to match(/Gal Gadot.*Character.*Aisha.*Jane Doe/m)
+        expect(entries[1].text).to match(/Sebastian Stan.*Character.*Alex.*John Doe/m)
+        expect(entries[2].text).to match(/Sebastian Stan.*Template.*Jons.*John Doe/m)
+      end
     end
   end
 end
