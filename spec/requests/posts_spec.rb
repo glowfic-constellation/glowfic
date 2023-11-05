@@ -2,7 +2,7 @@ RSpec.describe "Post" do
   describe "hidden list" do
     it "shows hidden posts" do
       user = login
-      shown = create(:post, subject: "Shown post")
+      create(:post, subject: "Shown post")
       hidden = create(:post, subject: "Hidden post")
       hidden.ignore(user)
 
