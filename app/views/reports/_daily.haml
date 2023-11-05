@@ -9,17 +9,17 @@
         - if @day == Time.zone.today
           %em (Incomplete)
           - if logged_in?
-            = link_to output_user_path(current_user) do
+            = link_to output_user_path(current_user), class: 'view-button-link' do
               .view-button
                 = image_tag 'icons/book_open.png', class: 'list-view', alt: ''
                 Your Output Today
         - if @new_today
-          = link_to url_for(day: @day) do
+          = link_to url_for(day: @day), class: 'view-button-link' do
             .view-button
               = image_tag "icons/list.png", class: 'list-view', alt: ''
               All Today
         - else
-          = link_to url_for(day: @day, new_today: true) do
+          = link_to url_for(day: @day, new_today: true), class: 'view-button-link' do
             .view-button
               = image_tag "icons/new.png", class: 'list-view', alt: 'New', title: 'New Today'
               Only New Today

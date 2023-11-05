@@ -112,7 +112,7 @@ function addNewRow() {
 
 function bindRem() {
   $(".icon-row-rem").click(function() {
-    var remRow = $(this).parent().parent();
+    var remRow = $(this).parents('tr');
     var removingKey = $(remRow.find('input')[1]).val();
     remRow.remove();
     fixButtons();

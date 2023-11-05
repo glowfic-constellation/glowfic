@@ -25,32 +25,32 @@
           .link-box.action-new + New Template
       - else
         = @user.username + "'s #{obj_name}"
-      = link_to character_menu_link(view: 'icons') do
+      = link_to character_menu_link(view: 'icons'), class: 'view-button-link' do
         .view-button{class: (:selected unless page_view == 'list')}
           = image_tag "icons/grid.png", class: 'icon-view', alt: ''
           Icons
-      = link_to character_menu_link(view: 'list') do
+      = link_to character_menu_link(view: 'list'), class: 'view-button-link' do
         .view-button{class: (:selected if page_view == 'list')}
           = image_tag "icons/list.png", class: 'list-view', alt: ''
           List
       - unless character_split == 'npcs'
-        = link_to character_menu_link(character_split: 'npcs') do
+        = link_to character_menu_link(character_split: 'npcs'), class: 'view-button-link' do
           .view-button
             NPCs
       - unless character_split == 'none'
-        = link_to character_menu_link(character_split: 'none') do
+        = link_to character_menu_link(character_split: 'none'), class: 'view-button-link' do
           .view-button
             Ungroup
       - unless character_split == 'template'
-        = link_to character_menu_link(character_split: 'template') do
+        = link_to character_menu_link(character_split: 'template'), class: 'view-button-link' do
           .view-button
             Group
       - if show_retired
-        = link_to character_menu_link(retired: false) do
+        = link_to character_menu_link(retired: false), class: 'view-button-link' do
           .view-button
             Hide Retired
       - else
-        = link_to character_menu_link(retired: true) do
+        = link_to character_menu_link(retired: true), class: 'view-button-link' do
           .view-button
             All Characters
   - partial_type = (page_view == 'list') ? 'characters/list_section' : 'characters/icon_view'

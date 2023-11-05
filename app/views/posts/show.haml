@@ -121,10 +121,10 @@
 - if @prev_post || @next_post
   .post-navheader
     - if @next_post
-      = link_to post_path(@next_post) do
+      = link_to post_path(@next_post), class: 'view-button-link' do
         .view-button Next Post &raquo;
     - if @prev_post
-      = link_to post_path(@prev_post) do
+      = link_to post_path(@prev_post), class: 'view-button-link' do
         .view-button.float-none &laquo; Previous Post
 - if page.to_i == 1
   = render 'replies/single', reply: @post
@@ -141,10 +141,10 @@
   - if @prev_post || @next_post
     .post-navheader
       - if @next_post
-        = link_to post_path(@next_post) do
+        = link_to post_path(@next_post), class: 'view-button-link' do
           .view-button Next Post &raquo;
       - if @prev_post
-        = link_to post_path(@prev_post) do
+        = link_to post_path(@prev_post), class: 'view-button-link' do
           .view-button.float-none &laquo; Previous Post
 - if @post.on_hiatus? && (@replies.empty? || (@replies.last.id == @post.last_reply_id))
   .post-ender This Thread Is On Hiatus
