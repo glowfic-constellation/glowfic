@@ -139,7 +139,7 @@ RSpec.describe "Index" do
         expect(response).to render_template(:edit)
         expect(response.body).to include("Edit Post")
       end
-      
+
       patch "/index_posts/#{ipost.id}", params: {
         index_post: {
           description: "test description 2",
