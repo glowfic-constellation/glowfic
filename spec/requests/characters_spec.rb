@@ -120,4 +120,27 @@ RSpec.describe "Character" do
       end
     end
   end
+
+  describe "search" do
+    it "works" do
+      create(:character, name: "Sample character")
+      create(:character, name: "Other character")
+
+      get "/characters/search"
+      aggregate_failures do
+        expect(response).to have_http_status(200)
+        expect(response).to render_template(:search)
+        expect(response.body).to include("Search Characters")
+      end
+
+      get "/characters/search?name=Sample&search_name=true&commit=Search"
+      aggregate_failures do
+        expect(response).to have_http_status(200)
+        expect(response).to render_template(:search)
+        expect(response.body).to include("Search Characters")
+        expect(response.body).to include("Sample character")
+        expect(response.body).not_to include("Other character")
+      end
+    end
+  end
 end
