@@ -116,7 +116,7 @@ RSpec.describe "Continuities" do
       patch "/board_sections/#{section.id}", params: {
         board_section: {
           name: "Updated section name",
-        }
+        },
       }
 
       aggregate_failures do
