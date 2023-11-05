@@ -24,6 +24,7 @@ unless ENV.fetch('SKIP_COVERAGE', false) || ENV.fetch('APIPIE_RECORD', false) ||
     add_group "API", "app/controllers/api"
     add_group "Services", "app/services"
     add_group "Exceptions", "app/exceptions"
+    add_group "Views", "app/views"
     SimpleCov.groups.delete('Channels')
     changed_files = `git status --untracked=all --porcelain`
     unless changed_files.empty?
