@@ -23,6 +23,9 @@ class IndexPostsController < ApplicationController
   def create
     @index_post = IndexPost.new(permitted_params)
 
+    # populate index if appropriate:
+    @index_post.validate
+
     if @index_post.index && !@index_post.index.editable_by?(current_user)
       flash[:error] = "You do not have permission to modify this index." # rubocop:disable Rails/ActionControllerFlashBeforeRender
       redirect_to @index_post.index and return

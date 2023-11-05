@@ -4,6 +4,6 @@
   .content-header
     Create a new post
     - if current_user.has_permission?(:import_posts)
-      = link_to new_post_path(view: :import) do
+      = link_to new_post_path(view: :import), class: 'view-button-link' do
         .view-button Import &raquo;
   = render 'write', post: @post

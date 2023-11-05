@@ -1,6 +1,6 @@
 - content_for :posts_title do
   Your Favorites
-  = link_to favorites_path(view: 'bucket') do
+  = link_to favorites_path(view: 'bucket'), class: 'view-button-link' do
     .view-button
       Grouped &raquo;
 
@@ -10,7 +10,7 @@
       %tr
         %th.table-title{colspan: 2}
           Your Favorites
-          = link_to favorites_path do
+          = link_to favorites_path, class: 'view-button-link' do
             .view-button
               Ungrouped &raquo;
       %tr

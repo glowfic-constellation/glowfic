@@ -320,8 +320,11 @@ td, .table-list li { font-size: $font_size_small; }
 }
 
 /* Buttons like List View or Outbox View in top right of page */
+.view-button-link {
+  // applied to <a> objects wrapping .view-buttons to fix their size on the page
+  float: right;
+}
 .view-button {
-  display: inline-block;
   float: right;
   margin: 0;
   margin-left: 5px;

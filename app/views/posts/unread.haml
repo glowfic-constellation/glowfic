@@ -4,9 +4,9 @@
   - else
     Unread
   Posts
-  = link_to hidden_posts_path do
+  = link_to hidden_posts_path, class: 'view-button-link' do
     .view-button Hidden &raquo;
-  = link_to unread_posts_path(started: !@started) do
+  = link_to unread_posts_path(started: !@started), class: 'view-button-link' do
     .view-button
       - if @started
         All Threads &raquo;

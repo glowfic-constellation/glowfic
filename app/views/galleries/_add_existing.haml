@@ -2,7 +2,7 @@
   = hidden_field_tag :image_ids
   .content-header
     %span.vmid Add Existing Icons to Gallery: #{@gallery.name}
-    = link_to add_gallery_path(@gallery) do
+    = link_to add_gallery_path(@gallery), class: 'view-button-link' do
       .view-button
         = image_tag "icons/list.png", class: 'list-view', alt: ''
         Add New Icons &raquo;

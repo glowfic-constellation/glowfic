@@ -10,6 +10,8 @@ var keyUp = 38;
 var keyRight = 39;
 var keyDown = 40;
 
+var emptyGif = "data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==";
+
 $(document).ready(function() {
   fixButtons();
   $(".icon-row td:has(input)").each(function() {
@@ -89,7 +91,7 @@ function addNewRow() {
   inputs.val('');
 
   // clear preview icon
-  newRow.find(".preview-icon").attr('src', '').attr('title', '').attr('alt', '');
+  newRow.find(".preview-icon").attr('src', emptyGif).attr('title', '').attr('alt', '');
 
   // handle the URL field specially
   // because uploads have special UI
@@ -97,7 +99,9 @@ function addNewRow() {
   newRow.find('.conf').hide();
   newRow.find('.conf .filename').text('');
   urlField.show();
-  urlField.attr('id', 'icons_'+index+'_url');
+  inputs.each(function() {
+    $(this).attr('id', $(this).attr('id').replace(/_\d+_/g, '_'+index+'_'));
+  });
 
   newRow.insertAfter(oldRow);
   $("td:has(input)", newRow).each(function() {
@@ -108,7 +112,7 @@ function addNewRow() {
 
 function bindRem() {
   $(".icon-row-rem").click(function() {
-    var remRow = $(this).parent().parent();
+    var remRow = $(this).parents('tr');
     var removingKey = $(remRow.find('input')[1]).val();
     remRow.remove();
     fixButtons();
