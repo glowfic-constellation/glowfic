@@ -24,6 +24,7 @@ unless ENV.fetch('SKIP_COVERAGE', false) || ENV.fetch('APIPIE_RECORD', false) ||
     add_group "API", "app/controllers/api"
     add_group "Services", "app/services"
     add_group "Exceptions", "app/exceptions"
+    add_group "Views", "app/views"
     SimpleCov.groups.delete('Channels')
     changed_files = `git status --untracked=all --porcelain`
     unless changed_files.empty?
@@ -35,7 +36,8 @@ unless ENV.fetch('SKIP_COVERAGE', false) || ENV.fetch('APIPIE_RECORD', false) ||
       end
     end
     enable_coverage :branch
-    minimum_coverage line: 99.9, branch: 93.0
+    minimum_coverage line: 95.7, branch: 77.4
+    enable_coverage_for_eval
   end
 end
 
