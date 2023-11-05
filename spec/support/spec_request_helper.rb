@@ -6,6 +6,12 @@ module SpecRequestHelper
   def login(user=nil, password='known')
     user ||= create(:user, password: password)
     post login_path, params: { username: user.username, password: password }
+
+    aggregate_failures do
+      expect(flash[:error]).to be_nil
+      expect(flash[:success]).to include("You are now logged in")
+    end
+
     user
   end
 end
