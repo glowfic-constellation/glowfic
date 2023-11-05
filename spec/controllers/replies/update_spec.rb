@@ -54,7 +54,7 @@ RSpec.describe RepliesController, 'PUT update' do
     admin = create(:admin_user)
     login_as(admin)
     put :update, params: { id: reply.id, reply: { content: 'b', audit_comment: 'note' } }
-    expect(flash[:success]).to eq("Post updated")
+    expect(flash[:success]).to eq("Reply updated.")
     expect(reply.reload.content).to eq('b')
     expect(reply.audits.last.comment).to eq('note')
     Reply.auditing_enabled = false
@@ -90,7 +90,7 @@ RSpec.describe RepliesController, 'PUT update' do
 
     put :update, params: { id: reply.id, reply: { content: newcontent, character_id: char.id, icon_id: icon.id, character_alias_id: calias.id } }
     expect(response).to redirect_to(reply_url(reply, anchor: "reply-#{reply.id}"))
-    expect(flash[:success]).to eq("Post updated")
+    expect(flash[:success]).to eq("Reply updated.")
 
     reply.reload
     expect(reply.content).to eq(newcontent)
@@ -110,7 +110,7 @@ RSpec.describe RepliesController, 'PUT update' do
     expect(reply_post.replies.ordered.last).not_to eq(reply)
     reply_post.mark_read(reply_post.user)
     put :update, params: { id: reply.id, reply: { content: 'new content' } }
-    expect(flash[:success]).to eq("Post updated")
+    expect(flash[:success]).to eq("Reply updated.")
     expect(reply.reload.reply_order).to eq(1)
   end
 

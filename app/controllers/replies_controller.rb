@@ -195,7 +195,7 @@ class RepliesController < WritableController
       editor_setup
       render :edit
     else
-      flash[:success] = "Post updated"
+      flash[:success] = "Reply updated."
       redirect_to reply_path(@reply, anchor: "reply-#{@reply.id}")
     end
   end

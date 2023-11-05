@@ -38,7 +38,7 @@ RSpec.describe "Creating replies" do
     end
 
     expect(page).to have_no_selector('.error')
-    expect(page).to have_selector('.success', exact_text: 'Post updated')
+    expect(page).to have_selector('.success', exact_text: 'Reply updated.')
     expect(page).to have_selector('.post-container', count: 2)
     within(find_reply_on_page(reply)) do
       expect(page).to have_selector('.post-content', exact_text: 'other text')
@@ -82,7 +82,7 @@ RSpec.describe "Creating replies" do
     end
 
     expect(page).to have_no_selector('.error')
-    expect(page).to have_selector('.success', exact_text: 'Post updated')
+    expect(page).to have_selector('.success', exact_text: 'Reply updated.')
     expect(page).to have_selector('.post-container', count: 2)
     within(find_reply_on_page(reply)) do
       expect(page).to have_selector('.post-content', exact_text: 'third text')
@@ -125,7 +125,7 @@ RSpec.describe "Creating replies" do
     end
 
     expect(page).to have_no_selector('.error')
-    expect(page).to have_selector('.success', exact_text: 'Post updated')
+    expect(page).to have_selector('.success', exact_text: 'Reply updated.')
     expect(page).to have_selector('.post-container', count: 2)
     within(find_reply_on_page(reply)) do
       expect(page).to have_selector('.post-content', exact_text: 'other text')
@@ -174,7 +174,7 @@ RSpec.describe "Creating replies" do
     end
 
     expect(page).to have_no_selector('.error')
-    expect(page).to have_selector('.success', exact_text: 'Post updated')
+    expect(page).to have_selector('.success', exact_text: 'Reply updated.')
     expect(page).to have_selector('.post-container', count: 2)
     within(find_reply_on_page(reply)) do
       expect(page).to have_selector('.post-content', exact_text: 'third text')
