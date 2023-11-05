@@ -15,7 +15,7 @@ RSpec.describe "Reports" do
   it "renders the monthly view" do
     login
 
-    ignored = create(:post, subject: "New today")
+    create(:post, subject: "New today")
     present = create(:post, subject: "Old post")
     present.update!(created_at: 1.month.ago.end_of_month, tagged_at: 1.month.ago.end_of_month)
 
