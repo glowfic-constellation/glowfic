@@ -131,5 +131,17 @@ RSpec.describe "Writable" do
         expect(response.body).to include("Edited text")
       end
     end
+
+    it "renders the post import page" do
+      user = create(:importing_user, password: "known")
+      login(user)
+
+      get "/posts/new?view=import"
+      aggregate_failures do
+        expect(response).to have_http_status(200)
+        expect(response).to render_template(:new)
+        expect(response.body).to include("Import a post")
+      end
+    end
   end
 end
