@@ -133,4 +133,27 @@ RSpec.describe "Continuities" do
       end
     end
   end
+
+  describe "search" do
+    it "works" do
+      create(:board, name: "Sample board")
+      create(:board, name: "Other board")
+
+      get "/boards/search"
+      aggregate_failures do
+        expect(response).to have_http_status(200)
+        expect(response).to render_template(:search)
+        expect(response.body).to include("Search Continuities")
+      end
+
+      get "/boards/search?name=Sample&commit=Search"
+      aggregate_failures do
+        expect(response).to have_http_status(200)
+        expect(response).to render_template(:search)
+        expect(response.body).to include("Search Continuities")
+        expect(response.body).to include("Sample board")
+        expect(response.body).not_to include("Other board")
+      end
+    end
+  end
 end
