@@ -277,7 +277,7 @@ RSpec.describe BoardSectionsController do
       delete :destroy, params: { id: section.id }
       expect(response).to redirect_to(edit_continuity_url(section.board))
       expect(flash[:success]).to eq("Section deleted.")
-      expect(BoardSection.find_by_id(section.id)).to be_nil
+      expect(BoardSection.find_by(id: section.id)).to be_nil
     end
 
     it "handles destroy failure" do

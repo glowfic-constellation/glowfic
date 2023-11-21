@@ -14,7 +14,7 @@ RSpec.describe RepliesController, 'POST restore' do
   end
 
   it "must find the reply" do
-    expect(Reply.find_by_id(99)).to be_nil
+    expect(Reply.find_by(id: 99)).to be_nil
     expect(Audited::Audit.find_by(auditable_id: 99)).to be_nil
     login
     post :restore, params: { id: 99 }
@@ -47,13 +47,13 @@ RSpec.describe RepliesController, 'POST restore' do
     deleted_reply = replies[2]
     deleted_reply.destroy!
     Timecop.freeze(rpost.reload.tagged_at + 1.day) { create(:reply, post: rpost, user: rpost.user) }
-    post_attributes = Post.find_by_id(rpost.id).attributes
+    post_attributes = Post.find_by(id: rpost.id).attributes
 
     login_as(rpost.user)
     post :restore, params: { id: deleted_reply.id }
 
-    expect(Reply.find_by_id(deleted_reply.id)).to eq(deleted_reply)
-    reloaded_post = Post.find_by_id(rpost.id)
+    expect(Reply.find_by(id: deleted_reply.id)).to eq(deleted_reply)
+    reloaded_post = Post.find_by(id: rpost.id)
     new_attributes = reloaded_post.attributes
     post_attributes.each do |key, val|
       expect(new_attributes[key]).to eq(val)
@@ -67,13 +67,13 @@ RSpec.describe RepliesController, 'POST restore' do
     deleted_reply = replies.first
     deleted_reply.destroy!
     Timecop.freeze(rpost.reload.tagged_at + 1.day) { create(:reply, post: rpost, user: rpost.user) }
-    post_attributes = Post.find_by_id(rpost.id).attributes
+    post_attributes = Post.find_by(id: rpost.id).attributes
 
     login_as(rpost.user)
     post :restore, params: { id: deleted_reply.id }
 
-    expect(Reply.find_by_id(deleted_reply.id)).to eq(deleted_reply)
-    reloaded_post = Post.find_by_id(rpost.id)
+    expect(Reply.find_by(id: deleted_reply.id)).to eq(deleted_reply)
+    reloaded_post = Post.find_by(id: rpost.id)
     new_attributes = reloaded_post.attributes
     post_attributes.each do |key, val|
       expect(new_attributes[key]).to eq(val)
@@ -86,13 +86,13 @@ RSpec.describe RepliesController, 'POST restore' do
     create_list(:reply, 2, post: rpost, user: rpost.user)
     deleted_reply = Timecop.freeze(rpost.reload.tagged_at + 1.day) { create(:reply, post: rpost) }
     deleted_reply.destroy!
-    post_attributes = Post.find_by_id(rpost.id).attributes
+    post_attributes = Post.find_by(id: rpost.id).attributes
 
     login_as(deleted_reply.user)
     post :restore, params: { id: deleted_reply.id }
 
-    expect(Reply.find_by_id(deleted_reply.id)).to eq(deleted_reply)
-    reloaded_post = Post.find_by_id(rpost.id)
+    expect(Reply.find_by(id: deleted_reply.id)).to eq(deleted_reply)
+    reloaded_post = Post.find_by(id: rpost.id)
     new_attributes = reloaded_post.attributes
     post_attributes.each do |key, val|
       next if %w(last_reply_id last_user_id updated_at tagged_at).include?(key.to_s)

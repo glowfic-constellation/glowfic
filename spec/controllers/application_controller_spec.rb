@@ -524,7 +524,7 @@ RSpec.describe ApplicationController do
     it "succeeds" do
       expect(obj).to receive(:destroy).and_call_original
 
-      allow(klass).to receive(:find_by).with(id: obj.id.to_s).and_return(obj)
+      allow(klass).to receive(:find_by).with({ id: obj.id.to_s }).and_return(obj)
       expect(klass).to receive(:find_by)
 
       delete :destroy, params: { id: obj.id }
@@ -540,7 +540,7 @@ RSpec.describe ApplicationController do
         false
       end
 
-      allow(klass).to receive(:find_by).with(id: obj.id.to_s).and_return(obj)
+      allow(klass).to receive(:find_by).with({ id: obj.id.to_s }).and_return(obj)
       expect(klass).to receive(:find_by)
 
       delete :destroy, params: { id: obj.id }
@@ -557,7 +557,7 @@ RSpec.describe ApplicationController do
       allow(obj).to receive(:destroy).and_return(false)
       expect(obj).to receive(:destroy)
 
-      allow(klass).to receive(:find_by).with(id: obj.id.to_s).and_return(obj)
+      allow(klass).to receive(:find_by).with({ id: obj.id.to_s }).and_return(obj)
       expect(klass).to receive(:find_by)
 
       expect(controller).to receive(:log_error)
