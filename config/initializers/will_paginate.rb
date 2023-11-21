@@ -1,4 +1,5 @@
 require 'will_paginate/view_helpers/action_view'
+require 'will_paginate/view_helpers/link_renderer'
 
 module WillPaginate
   class Collection
@@ -9,7 +10,7 @@ module WillPaginate
 
   module ActionView
     protected
-    class LinkRenderer < ViewHelpers::LinkRenderer
+    class LinkRenderer < WillPaginate::ViewHelpers::LinkRenderer
       def container_attributes
         super.except(:first_label, :last_label, :summary_label, :mobile_view)
       end
