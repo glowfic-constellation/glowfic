@@ -410,6 +410,9 @@ class ActionMailbox::InboundEmail
     end
     def one?(&block); end
 
+    sig { params(options: T::Hash[Symbol, Integer]).returns(PrivateRelation) }
+    def paginate(options); end
+
     sig { params(column_names: T.untyped).returns(T.untyped) }
     def pick(*column_names); end
 
