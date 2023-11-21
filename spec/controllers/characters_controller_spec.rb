@@ -938,7 +938,7 @@ RSpec.describe CharactersController do
       delete :destroy, params: { id: character.id }
       expect(response).to redirect_to(user_characters_url(character.user_id))
       expect(flash[:success]).to eq("Character deleted.")
-      expect(Character.find_by_id(character.id)).to be_nil
+      expect(Character.find_by(id: character.id)).to be_nil
     end
 
     it "handles destroy failure" do

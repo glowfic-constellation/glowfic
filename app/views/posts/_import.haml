@@ -8,7 +8,7 @@
     %br
     = label_tag :board_id, "Continuity", style: "width: 150px; display: inline-block;"
     = select_tag :board_id, options_from_collection_for_select(Board.ordered.select { |b| current_user.writes_in?(b) }, :id, :name, params[:board_id]), id: 'post_board_id'
-    #section{class: ('hidden' unless params[:board_id].present? && (board = Board.find_by_id(params[:board_id])) && board.board_sections.exists?)}
+    #section{class: ('hidden' unless params[:board_id].present? && (board = Board.find_by(id: params[:board_id])) && board.board_sections.exists?)}
       = label_tag :section_id, 'Subsection', style: "width: 150px; display: inline-block;"
       = select_tag :section_id, options_from_collection_for_select(BoardSection.where(board_id: params[:board_id]).ordered, :id, :name, params[:section_id]), include_blank: '— Choose Section —', id: 'post_section_id'
     %br

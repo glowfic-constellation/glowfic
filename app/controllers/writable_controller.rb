@@ -47,7 +47,7 @@ class WritableController < ApplicationController
         @paginate_params['at_id'] = @unread.try(:id)
         @unread
       else
-        Reply.find_by_id(params[:at_id].to_i)
+        Reply.find_by(id: params[:at_id].to_i)
       end
 
       if reply && reply.post_id == @post.id

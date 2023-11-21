@@ -16,7 +16,7 @@ class GenerateFlatPostJob < ApplicationJob
 
   def perform(post_id)
     Rails.logger.info("[GenerateFlatPostJob] updating flat post for post #{post_id}")
-    return unless (post = Post.find_by_id(post_id))
+    return unless (post = Post.find_by(id: post_id))
 
     lock_key = self.class.lock_key(post_id)
 

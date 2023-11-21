@@ -27,7 +27,7 @@ class MessagesController < ApplicationController
 
   def new
     @message = Message.new
-    recipient = User.active.full.find_by_id(params[:recipient_id])
+    recipient = User.active.full.find_by(id: params[:recipient_id])
     @message.recipient = recipient unless recipient && current_user.has_interaction_blocked?(recipient)
     @page_title = 'Compose Message'
   end
@@ -62,7 +62,7 @@ class MessagesController < ApplicationController
   end
 
   def show
-    unless (message = Message.find_by_id(params[:id]))
+    unless (message = Message.find_by(id: params[:id]))
       flash[:error] = "Message could not be found."
       redirect_to messages_path(view: 'inbox') and return
     end
@@ -144,7 +144,7 @@ class MessagesController < ApplicationController
   end
 
   def set_message_parent(parent_id)
-    @message.parent = Message.find_by_id(parent_id)
+    @message.parent = Message.find_by(id: parent_id)
     unless @message.parent.present?
       @message.parent = nil
       flash.now[:error] = "Message parent could not be found."

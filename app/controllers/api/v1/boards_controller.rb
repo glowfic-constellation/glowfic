@@ -19,7 +19,7 @@ class Api::V1::BoardsController < Api::ApiController
   param :id, :number, required: true, desc: 'Continuity ID'
   error 404, "Continuity not found"
   def show
-    unless (board = Board.find_by_id(params[:id]))
+    unless (board = Board.find_by(id: params[:id]))
       error = { message: "Continuity could not be found." }
       render json: { errors: [error] }, status: :not_found and return
     end
@@ -32,7 +32,7 @@ class Api::V1::BoardsController < Api::ApiController
   param :page, :number, required: false, desc: 'Page in results (25 per page)'
   error 404, "Continuity not found"
   def posts
-    unless (board = Board.find_by_id(params[:id]))
+    unless (board = Board.find_by(id: params[:id]))
       error = { message: "Continuity could not be found." }
       render json: { errors: [error] }, status: :not_found and return
     end

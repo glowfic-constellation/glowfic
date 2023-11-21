@@ -549,7 +549,7 @@ RSpec.describe GalleriesController do
       expect(response).to redirect_to(edit_gallery_url(gallery))
       expect(flash[:success]).to eq('Gallery updated.')
       expect(gallery.reload.icons).to be_empty
-      expect(Icon.find_by_id(icon.id)).to be_nil
+      expect(Icon.find_by(id: icon.id)).to be_nil
     end
 
     it "creates new gallery groups" do
@@ -620,7 +620,7 @@ RSpec.describe GalleriesController do
       delete :destroy, params: { id: gallery.id }
       expect(response).to redirect_to(user_galleries_url(user_id))
       expect(flash[:success]).to eq("Gallery deleted.")
-      expect(Gallery.find_by_id(gallery.id)).to be_nil
+      expect(Gallery.find_by(id: gallery.id)).to be_nil
     end
 
     it "modifies associations relevantly" do

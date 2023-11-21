@@ -5,7 +5,7 @@ class IndexPostsController < ApplicationController
   before_action :find_model, only: [:edit, :update, :destroy]
 
   def new
-    unless (index = Index.find_by_id(params[:index_id]))
+    unless (index = Index.find_by(id: params[:index_id]))
       flash[:error] = "Index could not be found."
       redirect_to indexes_path and return
     end
@@ -75,7 +75,7 @@ class IndexPostsController < ApplicationController
   end
 
   def find_model
-    unless (@index_post = IndexPost.find_by_id(params[:id]))
+    unless (@index_post = IndexPost.find_by(id: params[:id]))
       flash[:error] = "Index post could not be found."
       redirect_to indexes_path and return
     end

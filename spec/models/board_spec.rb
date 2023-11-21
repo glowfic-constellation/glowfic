@@ -132,7 +132,7 @@ RSpec.describe Board do
     post.reload
     expect(post.board_id).to eq(3)
     expect(post.section).to be_nil
-    expect(BoardSection.find_by_id(section.id)).to be_nil
+    expect(BoardSection.find_by(id: section.id)).to be_nil
   end
 
   describe "#as_json" do
