@@ -174,8 +174,6 @@ GEM
       railties (>= 6.1.0)
     ffi (1.17.1-aarch64-linux-gnu)
     ffi (1.17.1-aarch64-linux-musl)
-    ffi (1.17.1-arm-linux-gnu)
-    ffi (1.17.1-arm-linux-musl)
     ffi (1.17.1-arm64-darwin)
     ffi (1.17.1-x86_64-darwin)
     ffi (1.17.1-x86_64-linux-gnu)
@@ -190,9 +188,6 @@ GEM
       i18n (>= 0.7)
       multi_json
       request_store (>= 1.0)
-    google-protobuf (4.30.2)
-      bigdecimal
-      rake (>= 13)
     google-protobuf (4.30.2-aarch64-linux)
       bigdecimal
       rake (>= 13)
@@ -291,6 +286,7 @@ GEM
       timeout
     net-smtp (0.5.1)
       net-protocol
+    netrc (0.11.0)
     newrelic_rpm (9.24.0)
     nilify_blanks (1.4.0)
       activerecord (>= 4.0.0)
@@ -399,6 +395,12 @@ GEM
     rb-fsevent (0.11.2)
     rb-inotify (0.11.1)
       ffi (~> 1.0)
+    rbi (0.3.8)
+      prism (~> 1.0)
+      rbs (>= 3.4.4)
+    rbs (4.0.0.dev.4)
+      logger
+      prism (>= 1.3.0)
     rdoc (7.0.3)
       erb
       psych (>= 4.0.0)
@@ -415,6 +417,7 @@ GEM
       io-console (~> 0.5)
     request_store (1.7.0)
       rack (>= 1.4)
+    require-hooks (0.2.2)
     resque (2.7.0)
       mono_logger (~> 1)
       multi_json (~> 1.0)
@@ -477,6 +480,14 @@ GEM
       lint_roller (~> 1.1)
       rubocop (~> 1.72, >= 1.72.1)
       rubocop-rspec (~> 3.5)
+    ruby-lsp (0.26.4)
+      language_server-protocol (~> 3.17.0)
+      prism (>= 1.2, < 2.0)
+      rbs (>= 3, < 5)
+    ruby-lsp-rails (0.4.8)
+      ruby-lsp (>= 0.26.0, < 0.27.0)
+    ruby-lsp-rspec (0.1.28)
+      ruby-lsp (~> 0.26.0)
     ruby-progressbar (1.13.0)
     ruby2_keywords (0.0.5)
     rubyzip (3.2.2)
@@ -486,10 +497,6 @@ GEM
     sass-embedded (1.88.0-aarch64-linux-gnu)
       google-protobuf (~> 4.30)
     sass-embedded (1.88.0-aarch64-linux-musl)
-      google-protobuf (~> 4.30)
-    sass-embedded (1.88.0-arm-linux-gnueabihf)
-      google-protobuf (~> 4.30)
-    sass-embedded (1.88.0-arm-linux-musleabihf)
       google-protobuf (~> 4.30)
     sass-embedded (1.88.0-arm64-darwin)
       google-protobuf (~> 4.30)
@@ -529,6 +536,23 @@ GEM
       rack-protection (= 4.2.0)
       rack-session (>= 2.0.0, < 3)
       tilt (~> 2.0)
+    sorbet (0.6.12872)
+      sorbet-static (= 0.6.12872)
+    sorbet-runtime (0.6.12872)
+    sorbet-static (0.6.12872-aarch64-linux)
+    sorbet-static (0.6.12872-universal-darwin)
+    sorbet-static (0.6.12872-x86_64-linux)
+    sorbet-static-and-runtime (0.6.12872)
+      sorbet (= 0.6.12872)
+      sorbet-runtime (= 0.6.12872)
+    spoom (1.7.11)
+      erubi (>= 1.10.0)
+      prism (>= 0.28.0)
+      rbi (>= 0.3.3)
+      rbs (>= 4.0.0.dev.4)
+      rexml (>= 3.2.6)
+      sorbet-static-and-runtime (>= 0.5.10187)
+      thor (>= 0.19.2)
     sprockets (4.2.2)
       concurrent-ruby (~> 1.0)
       logger
@@ -540,6 +564,17 @@ GEM
     statsd-ruby (1.5.0)
     stringio (3.2.0)
     sysexits (1.2.0)
+    tapioca (0.17.10)
+      benchmark
+      bundler (>= 2.2.25)
+      netrc (>= 0.11.0)
+      parallel (>= 1.21.0)
+      rbi (>= 0.3.7)
+      require-hooks (>= 0.2.2)
+      sorbet-static-and-runtime (>= 0.5.11087)
+      spoom (>= 1.7.9)
+      thor (>= 1.2.0)
+      yard-sorbet
     temple (0.10.4)
     terser (1.2.6)
       execjs (>= 0.3.0, < 3)
@@ -575,6 +610,10 @@ GEM
     will_paginate (4.0.1)
     xpath (3.2.0)
       nokogiri (~> 1.8)
+    yard (0.9.38)
+    yard-sorbet (0.9.0)
+      sorbet-runtime
+      yard
     yell (2.2.2)
     zeitwerk (2.7.4)
 
@@ -582,10 +621,6 @@ PLATFORMS
   aarch64-linux
   aarch64-linux-gnu
   aarch64-linux-musl
-  arm-linux-gnu
-  arm-linux-gnueabihf
-  arm-linux-musl
-  arm-linux-musleabihf
   arm64-darwin
   x86_64-darwin
   x86_64-linux-gnu
@@ -650,14 +685,18 @@ DEPENDENCIES
   rubocop-rails (~> 2.34.2)
   rubocop-rspec (~> 3.7.0)
   rubocop-rspec_rails (~> 2.32.0)
+  ruby-lsp-rails
+  ruby-lsp-rspec
   sanitize
   scout_apm
   seed_dump (~> 3.4)
   select2-rails
   selenium-webdriver
   simplecov
+  sorbet-static-and-runtime (~> 0.6.12872)
   sprockets
   sprockets-rails
+  tapioca (>= 0.17)
   terser
   test-unit (~> 3.7)
   timecop
