@@ -978,7 +978,7 @@ RSpec.describe PostsController, 'PUT update' do
           private_note: 'look a note!',
         },
       }
-      expect(Post.find_by_id(post.id).author_for(post.user).private_note).not_to be_nil
+      expect(Post.find_by(id: post.id).author_for(post.user).private_note).not_to be_nil
     end
 
     it "updates with other changes" do
@@ -991,7 +991,7 @@ RSpec.describe PostsController, 'PUT update' do
           content: 'new',
         },
       }
-      expect(Post.find_by_id(post.id).author_for(post.user).private_note).not_to be_nil
+      expect(Post.find_by(id: post.id).author_for(post.user).private_note).not_to be_nil
       expect(post.reload.content).to eq('new')
     end
 
@@ -1003,7 +1003,7 @@ RSpec.describe PostsController, 'PUT update' do
           private_note: 'look a note!',
         },
       }
-      expect(Post.find_by_id(post.id).author_for(reply.user).private_note).not_to be_nil
+      expect(Post.find_by(id: post.id).author_for(reply.user).private_note).not_to be_nil
     end
   end
 

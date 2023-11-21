@@ -297,7 +297,7 @@ RSpec.describe NewsController do
       expect {
         delete :destroy, params: { id: news.id }
       }.to change { News.count }.by(-1)
-      expect(News.find_by_id(news.id)).to be_nil
+      expect(News.find_by(id: news.id)).to be_nil
       expect(response).to redirect_to(news_index_url)
       expect(flash[:success]).to eq("News post deleted.")
     end
@@ -308,7 +308,7 @@ RSpec.describe NewsController do
       expect {
         delete :destroy, params: { id: news.id }
       }.to change { News.count }.by(-1)
-      expect(News.find_by_id(news.id)).to be_nil
+      expect(News.find_by(id: news.id)).to be_nil
       expect(response).to redirect_to(news_index_url)
       expect(flash[:success]).to eq("News post deleted.")
     end

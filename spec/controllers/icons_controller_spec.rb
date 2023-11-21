@@ -131,15 +131,15 @@ RSpec.describe IconsController do
       it "removes int ids from gallery" do
         icon = create(:icon, user: user)
         delete :delete_multiple, params: { marked_ids: [icon.id] }
-        expect(Icon.find_by_id(icon.id)).to be_nil
+        expect(Icon.find_by(id: icon.id)).to be_nil
       end
 
       it "removes string ids from gallery" do
         icon = create(:icon, user: user)
         icon2 = create(:icon, user: user)
         delete :delete_multiple, params: { marked_ids: [icon.id.to_s, icon2.id.to_s] }
-        expect(Icon.find_by_id(icon.id)).to be_nil
-        expect(Icon.find_by_id(icon2.id)).to be_nil
+        expect(Icon.find_by(id: icon.id)).to be_nil
+        expect(Icon.find_by(id: icon2.id)).to be_nil
         expect(response).to redirect_to(user_gallery_path(id: 0, user_id: user.id))
       end
 
@@ -148,7 +148,7 @@ RSpec.describe IconsController do
         gallery = create(:gallery, user: user)
         gallery.icons << icon
         delete :delete_multiple, params: { marked_ids: [icon.id], gallery_id: gallery.id, return_to: 'index' }
-        expect(Icon.find_by_id(icon.id)).to be_nil
+        expect(Icon.find_by(id: icon.id)).to be_nil
         expect(response).to redirect_to(user_galleries_url(user.id, anchor: "gallery-#{gallery.id}"))
       end
 
@@ -159,7 +159,7 @@ RSpec.describe IconsController do
         group.galleries << gallery
         gallery.icons << icon
         delete :delete_multiple, params: { marked_ids: [icon.id], gallery_id: gallery.id, return_tag: group.id }
-        expect(Icon.find_by_id(icon.id)).to be_nil
+        expect(Icon.find_by(id: icon.id)).to be_nil
         expect(response).to redirect_to(tag_url(group, anchor: "gallery-#{gallery.id}"))
       end
     end
@@ -453,7 +453,7 @@ RSpec.describe IconsController do
       expect(response.status).to eq(302)
       expect(response.redirect_url).to eq(user_galleries_url(user_id))
       expect(flash[:success]).to eq("Icon deleted.")
-      expect(Icon.find_by_id(icon.id)).to be_nil
+      expect(Icon.find_by(id: icon.id)).to be_nil
     end
 
     it "successfully goes to gallery if one" do
@@ -465,7 +465,7 @@ RSpec.describe IconsController do
       expect(response.status).to eq(302)
       expect(response.redirect_url).to eq(gallery_url(gallery))
       expect(flash[:success]).to eq("Icon deleted.")
-      expect(Icon.find_by_id(icon.id)).to be_nil
+      expect(Icon.find_by(id: icon.id)).to be_nil
     end
 
     it "handles destroy failure" do

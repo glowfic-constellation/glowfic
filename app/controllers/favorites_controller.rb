@@ -26,19 +26,19 @@ class FavoritesController < ApplicationController
     favorite = nil
 
     if params[:user_id].present?
-      unless (favorite = User.active.find_by_id(params[:user_id]))
+      unless (favorite = User.active.find_by(id: params[:user_id]))
         flash[:error] = "User could not be found."
         redirect_to users_path and return
       end
       fav_path = favorite
     elsif params[:board_id].present?
-      unless (favorite = Board.find_by_id(params[:board_id]))
+      unless (favorite = Board.find_by(id: params[:board_id]))
         flash[:error] = "Continuity could not be found."
         redirect_to continuities_path and return
       end
       fav_path = continuity_path(favorite)
     elsif params[:post_id].present?
-      unless (favorite = Post.find_by_id(params[:post_id]))
+      unless (favorite = Post.find_by(id: params[:post_id]))
         flash[:error] = "Post could not be found."
         redirect_to posts_path and return
       end
@@ -65,7 +65,7 @@ class FavoritesController < ApplicationController
   end
 
   def destroy
-    unless (fav = Favorite.find_by_id(params[:id]))
+    unless (fav = Favorite.find_by(id: params[:id]))
       flash[:error] = "Favorite could not be found."
       redirect_to favorites_path and return
     end
