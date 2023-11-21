@@ -30,10 +30,10 @@ class ApplicationController
     include ::ActionView::Helpers::TagHelper
     include ::ApipieHelper
 
-    sig { returns(T.untyped) }
+    sig { returns(T.nilable(::User)) }
     def current_user; end
 
-    sig { params(msg: T.untyped).returns(T.untyped) }
+    sig { params(msg: ::String).returns(::String) }
     def generate_short(msg); end
 
     sig { returns(T.untyped) }
@@ -42,13 +42,13 @@ class ApplicationController
     sig { returns(T.untyped) }
     def opened_ids; end
 
-    sig { params(allow_special: T.untyped).returns(T.untyped) }
+    sig { params(allow_special: T::Boolean).returns(::Integer) }
     def page(allow_special: T.unsafe(nil)); end
 
-    sig { returns(T.untyped) }
+    sig { returns(::String) }
     def page_view; end
 
-    sig { returns(T.untyped) }
+    sig { returns(::Integer) }
     def per_page; end
 
     sig do
@@ -64,7 +64,7 @@ class ApplicationController
     end
     def posts_from_relation(relation, no_tests: T.unsafe(nil), with_pagination: T.unsafe(nil), select: T.unsafe(nil), max: T.unsafe(nil), with_unread: T.unsafe(nil), show_blocked: T.unsafe(nil)); end
 
-    sig { returns(T.untyped) }
+    sig { returns(T::Boolean) }
     def tos_skippable?; end
 
     sig { returns(T.untyped) }

@@ -10,7 +10,7 @@ class ErrorEnumerable
     @stopped = false
   end
 
-  def each
+  def each(&)
     raise StopIteration.new(@err) if @stopped
     @range.each { |i| yield i }
     @stopped = true
