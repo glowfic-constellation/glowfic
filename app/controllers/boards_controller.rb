@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 # typed: true
 class BoardsController < ApplicationController
+  extend T::Sig
   before_action :login_required, except: [:index, :show, :search]
   before_action :find_model, only: [:show, :edit, :update, :destroy]
   before_action :editor_setup, only: [:new, :edit]
@@ -176,6 +177,7 @@ class BoardsController < ApplicationController
     redirect_to continuity_path(@board)
   end
 
+  sig { params(relation: Board::PrivateRelation).returns(Board::PrivateRelation) }
   def boards_from_relation(relation)
     sql = <<~SQL.squish
       boards.*,
