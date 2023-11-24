@@ -456,7 +456,7 @@ GEM
     tilt (2.3.0)
     timecop (0.9.8)
     timeout (0.4.0)
-    tinymce-rails (5.10.7)
+    tinymce-rails (6.8.0)
       railties (>= 3.1.1)
     traceroute (0.8.1)
       rails (>= 3.0.0)
@@ -547,7 +547,7 @@ DEPENDENCIES
   test-unit (~> 3.6)
   thin
   timecop
-  tinymce-rails (~> 5.10)
+  tinymce-rails (~> 6.8)
   traceroute
   webmock
   will_paginate
