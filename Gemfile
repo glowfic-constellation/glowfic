@@ -56,7 +56,7 @@ group :production do
 end
 
 group :development do
-  gem "brakeman", '~> 6.0.1', require: false
+  gem "brakeman", '~> 6.1.0', require: false
   gem 'haml_lint', '~> 0.51.0', require: false
   gem 'listen'
   gem 'memory_profiler'
