@@ -167,6 +167,9 @@ Lint/IncompatibleIoSelectWithFiberScheduler: # new in 1.21
 Lint/LambdaWithoutLiteralBlock: # (new in 1.8)
   Enabled: true
 
+Lint/LiteralAssignmentInCondition: # new in 1.58
+  Enabled: true
+
 Lint/MissingSuper:
   Exclude:
     - 'app/services/daily_report.rb'
@@ -795,6 +798,10 @@ Style/ArgumentsForwarding: # (new in 1.1)
   Enabled: true
   UseAnonymousForwarding: false  # TODO: consider enabling
 
+Style/ArrayFirstLast: # new in 1.58
+  # unsafe
+  Enabled: false
+
 Style/ArrayIntersect: # new in 1.40
   Enabled: true
 
@@ -1064,6 +1071,10 @@ Style/StringConcatenation:
   Enabled: false
 
 Style/StringLiterals:
+  Enabled: false
+
+Style/SuperWithArgsParentheses: # new in 1.58
+  # unlikely in our code
   Enabled: false
 
 Style/SwapValues: # (new in 1.1)
