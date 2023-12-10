@@ -2,7 +2,7 @@ inherit_from: .rubocop_todo.yml
 
 AllCops:
   TargetRubyVersion: 3.2
-  TargetRailsVersion: 7.0
+  TargetRailsVersion: 7.1
   DisabledByDefault: false
   Exclude:
     - 'config/initializers/audited.rb'

@@ -5,11 +5,11 @@
 ### Dependencies
 
 *   [Ruby](https://www.ruby-lang.org/en/) 3.2.2
-*   [Rails](http://rubyonrails.org/) 7.0
+*   [Rails](http://rubyonrails.org/) 7.1
 *   [Redis](https://redis.io/topics/quickstart)
 *   [PostgreSQL](https://www.postgresql.org/)
 
-If you are not acquainted with Rails, it may help to go through the [Getting Started with Rails](http://guides.rubyonrails.org/v7.0/getting_started.html) tutorial for Rails 7.0.
+If you are not acquainted with Rails, it may help to go through the [Getting Started with Rails](http://guides.rubyonrails.org/v7.1/getting_started.html) tutorial for Rails 7.1.
 If you wish to learn Ruby, try out the [quickstart](https://www.ruby-lang.org/en/documentation/quickstart/) guide provided on their website, or if you are already acquainted with various programming languages, try the [Learn X in Y minutes](https://learnxinyminutes.com/docs/ruby/) tutorial for Ruby.
 
 This README mostly focuses on how to get started developing this project with Docker – in any environment with Docker installed you should be able to have the Glowfic server up and running.
