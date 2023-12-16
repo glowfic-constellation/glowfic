@@ -164,6 +164,9 @@ Lint/EmptyInPattern: # new in 1.16
 Lint/IncompatibleIoSelectWithFiberScheduler: # new in 1.21
   Enabled: false # unlikely to use IO select
 
+Lint/ItWithoutArgumentsInBlock: # new in 1.59
+  Enabled: true # future compatibility lint
+
 Lint/LambdaWithoutLiteralBlock: # (new in 1.8)
   Enabled: true
 
