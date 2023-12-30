@@ -41,7 +41,7 @@ gem 'resque_mailer'
 gem 'sanitize'
 gem 'scout_apm'
 gem 'select2-rails'
-gem 'sorbet-runtime', '0.5.11164'
+gem 'sorbet-runtime', '~> 0.5.11406'
 gem 'sprockets'
 gem 'sprockets-rails'
 gem 'terser'
@@ -69,7 +69,7 @@ group :development do
   gem 'rubocop-rspec', '~> 2.29.2', require: false
   gem 'ruby-lsp-rails'
   gem 'ruby-lsp-rspec', require: false
-  gem 'sorbet', '0.5.11406'
+  gem 'sorbet', '~> 0.5.11406'
   gem 'tapioca', require: false
   gem 'traceroute'
 end
