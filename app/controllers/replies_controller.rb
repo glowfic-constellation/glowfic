@@ -112,8 +112,7 @@ class RepliesController < WritableController
           array: draft&.errors&.full_messages,
         }
       end
-      redirect_to post_path(post_id)
-      return
+      redirect_to post_path(post_id, page: :unread, anchor: :unread) and return
     elsif params[:button_preview]
       draft = make_draft
       preview(ReplyDraft.reply_from_draft(draft)) and return
