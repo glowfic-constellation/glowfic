@@ -210,7 +210,7 @@ RSpec.describe PostsController, 'PUT update' do
           put :update, params: { id: post.id, status: status }
           expect(response).to redirect_to(post_url(post))
           expect(flash[:success]).to eq("Post has been marked #{status}.")
-          expect(post.reload.send("#{status}?")).to eq(true)
+          expect(post.reload.send(:"#{status}?")).to eq(true)
         end
 
         it "works for coauthor" do
@@ -218,7 +218,7 @@ RSpec.describe PostsController, 'PUT update' do
           put :update, params: { id: post.id, status: status }
           expect(response).to redirect_to(post_url(post))
           expect(flash[:success]).to eq("Post has been marked #{status}.")
-          expect(post.reload.send("#{status}?")).to eq(true)
+          expect(post.reload.send(:"#{status}?")).to eq(true)
         end
 
         it "works for admin" do
@@ -226,7 +226,7 @@ RSpec.describe PostsController, 'PUT update' do
           put :update, params: { id: post.id, status: status }
           expect(response).to redirect_to(post_url(post))
           expect(flash[:success]).to eq("Post has been marked #{status}.")
-          expect(post.reload.send("#{status}?")).to eq(true)
+          expect(post.reload.send(:"#{status}?")).to eq(true)
         end
       end
     end

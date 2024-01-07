@@ -720,7 +720,8 @@ RSpec/Capybara/FeatureMethods:
   EnabledMethods: [feature, scenario]
 
 Capybara/ClickLinkOrButtonStyle: # new in 2.19
-  Enabled: true
+  # disabled because we have lots of buttons wrapped in links that cause ambiguous matches
+  Enabled: false
 
 Capybara/MatchStyle: # new in 2.17
   Enabled: true
