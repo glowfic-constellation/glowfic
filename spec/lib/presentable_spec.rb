@@ -31,7 +31,7 @@ RSpec.describe Presentable do
     include Presentable
     def initialize(**attrs)
       attrs.each do |key, value|
-        self.instance_variable_set("@#{key}", value)
+        self.instance_variable_set(:"@#{key}", value)
       end
     end
   end

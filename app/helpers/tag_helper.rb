@@ -8,7 +8,7 @@ module TagHelper
 
   def tag_select(obj, form, assoc, opts={})
     attr_name = assoc.to_s.singularize + "_ids"
-    preview_collection = instance_variable_get("@#{assoc}")
+    preview_collection = instance_variable_get(:"@#{assoc}")
 
     collection = if preview_collection.nil? # if I used || it would skip []s
       obj.send(assoc) # form.object != obj
