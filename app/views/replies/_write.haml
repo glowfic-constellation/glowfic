@@ -29,6 +29,8 @@
       = submit_tag "Preview", class: 'button', id: 'preview_button', name: 'button_preview', data: { disable_with: 'Previewing...' }
       - if reply.new_record?
         = submit_tag "Save Draft", class: 'button', id: 'draft_button', data: { disable_with: 'Drafting...' }, name: 'button_draft'
+      - if @draft.present?
+        = submit_tag "Delete Draft", class: 'button', id: 'delete_draft_button', data: { disable_with: 'Deleting...', confirm: "Delete draft?" }, name: 'button_delete_draft'
     - if reply.post.author_for(current_user).present?
       %hr.clear
       .post-note-editor

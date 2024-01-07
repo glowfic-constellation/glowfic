@@ -101,6 +101,19 @@ class RepliesController < WritableController
       draft = make_draft
       redirect_to posts_path and return unless draft.post
       redirect_to post_path(draft.post, page: :unread, anchor: :unread) and return
+    elsif params[:button_delete_draft]
+      post_id = params[:reply][:post_id]
+      draft = ReplyDraft.draft_for(post_id, current_user.id)
+      if draft&.destroy
+        flash[:success] = "Draft deleted."
+      else
+        flash[:error] = {
+          message: "Draft could not be deleted",
+          array: draft&.errors&.full_messages,
+        }
+      end
+      redirect_to post_path(post_id)
+      return
     elsif params[:button_preview]
       draft = make_draft
       preview(ReplyDraft.reply_from_draft(draft)) and return

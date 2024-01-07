@@ -126,6 +126,7 @@ class WritableController < ApplicationController
 
         @reply = @post.build_new_reply_for(current_user, reply_hash)
         @reply.editor_mode ||= params[:editor_mode] || current_user.default_editor
+        @draft = ReplyDraft.draft_for(@post.id, current_user.id)
       end
 
       @post.mark_read(current_user, at_time: @post.read_time_for(@replies))
