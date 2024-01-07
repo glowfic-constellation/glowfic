@@ -38,7 +38,7 @@ module Authentication::Web
     end
 
     def set_user
-      @current_user ||= User.find_by_id(session[:user_id])
+      @current_user ||= User.find_by(id: session[:user_id])
       return unless @current_user
       set_user_token
     end

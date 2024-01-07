@@ -11,7 +11,7 @@ class GalleriesController < UploadingController
 
   def index
     if params[:user_id].present?
-      unless (@user = User.active.full.find_by_id(params[:user_id]))
+      unless (@user = User.active.full.find_by(id: params[:user_id]))
         flash[:error] = 'User could not be found.'
         redirect_to root_path and return
       end
@@ -65,7 +65,7 @@ class GalleriesController < UploadingController
   def show
     if params[:id].to_s == '0' # avoids casting nils to 0
       if params[:user_id].present?
-        unless (@user = User.active.full.find_by_id(params[:user_id]))
+        unless (@user = User.active.full.find_by(id: params[:user_id]))
           flash[:error] = 'User could not be found.'
           redirect_to root_path and return
         end
@@ -76,7 +76,7 @@ class GalleriesController < UploadingController
       end
       @page_title = 'Galleryless Icons'
     else
-      @gallery = Gallery.find_by_id(params[:id])
+      @gallery = Gallery.find_by(id: params[:id])
       unless @gallery
         flash[:error] = "Gallery could not be found."
         redirect_to(logged_in? ? user_galleries_path(current_user) : root_path) and return
@@ -213,7 +213,7 @@ class GalleriesController < UploadingController
   private
 
   def find_model
-    @gallery = Gallery.find_by_id(params[:id])
+    @gallery = Gallery.find_by(id: params[:id])
 
     unless @gallery
       flash[:error] = "Gallery could not be found."

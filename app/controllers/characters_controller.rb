@@ -17,7 +17,7 @@ class CharactersController < ApplicationController
     end
 
     @user = if params[:user_id].present?
-      User.active.full.find_by_id(params[:user_id])
+      User.active.full.find_by(id: params[:user_id])
     else
       current_user
     end
@@ -201,7 +201,7 @@ class CharactersController < ApplicationController
   end
 
   def do_replace
-    unless params[:icon_dropdown].blank? || (new_char = Character.find_by_id(params[:icon_dropdown]))
+    unless params[:icon_dropdown].blank? || (new_char = Character.find_by(id: params[:icon_dropdown]))
       flash[:error] = "Character could not be found."
       redirect_to replace_character_path(@character) and return
     end
@@ -213,7 +213,7 @@ class CharactersController < ApplicationController
 
     orig_alias = nil
     if params[:orig_alias].present? && params[:orig_alias] != 'all'
-      orig_alias = CharacterAlias.find_by_id(params[:orig_alias])
+      orig_alias = CharacterAlias.find_by(id: params[:orig_alias])
       unless orig_alias && orig_alias.character_id == @character.id
         flash[:error] = "Invalid old alias."
         redirect_to replace_character_path(@character) and return
@@ -222,7 +222,7 @@ class CharactersController < ApplicationController
 
     new_alias_id = nil
     if params[:alias_dropdown].present?
-      new_alias = CharacterAlias.find_by_id(params[:alias_dropdown])
+      new_alias = CharacterAlias.find_by(id: params[:alias_dropdown])
       unless new_alias && new_alias.character_id == new_char.try(:id)
         flash[:error] = "Invalid new alias."
         redirect_to replace_character_path(@character) and return
@@ -299,7 +299,7 @@ class CharactersController < ApplicationController
   private
 
   def find_model
-    return if (@character = Character.find_by_id(params[:id]))
+    return if (@character = Character.find_by(id: params[:id]))
     flash[:error] = "Character could not be found."
     if logged_in?
       redirect_to user_characters_path(current_user)
@@ -310,7 +310,7 @@ class CharactersController < ApplicationController
 
   def find_group
     return unless params[:group_id].present?
-    @group = CharacterGroup.find_by_id(params[:group_id])
+    @group = CharacterGroup.find_by(id: params[:group_id])
   end
 
   def require_create_permission

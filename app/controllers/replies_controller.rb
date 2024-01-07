@@ -12,8 +12,8 @@ class RepliesController < WritableController
     @page_title = 'Search Replies'
     use_javascript('posts/search')
 
-    @post = Post.find_by_id(params[:post_id]) if params[:post_id].present?
-    @icon = Icon.find_by_id(params[:icon_id]) if params[:icon_id].present?
+    @post = Post.find_by(id: params[:post_id]) if params[:post_id].present?
+    @icon = Icon.find_by(id: params[:icon_id]) if params[:icon_id].present?
     if @post.try(:visible_to?, current_user)
       @users = @post.authors.active
       char_ids = @post.replies.select(:character_id).distinct.pluck(:character_id) + [@post.character_id]
@@ -263,7 +263,7 @@ class RepliesController < WritableController
   private
 
   def find_model
-    @reply = Reply.find_by_id(params[:id])
+    @reply = Reply.find_by(id: params[:id])
 
     unless @reply
       flash[:error] = "Post could not be found."

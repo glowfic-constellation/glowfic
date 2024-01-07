@@ -41,6 +41,7 @@ gem 'sanitize'
 gem 'sassc-rails'
 gem 'scout_apm'
 gem 'select2-rails'
+gem 'sorbet-runtime', '0.5.11164'
 gem 'sprockets'
 gem 'sprockets-rails'
 gem 'terser'
@@ -65,6 +66,10 @@ group :development do
   gem 'rubocop-performance', '~> 1.20.1', require: false
   gem 'rubocop-rails', '~> 2.23.1', require: false
   gem 'rubocop-rspec', '~> 2.25.0', require: false
+  gem 'ruby-lsp-rails'
+  gem 'ruby-lsp-rspec', require: false
+  gem 'sorbet', '0.5.11164'
+  gem 'tapioca', require: false
   gem 'traceroute'
 end
 

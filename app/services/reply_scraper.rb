@@ -79,7 +79,7 @@ class ReplyScraper < Object
     raise UnrecognizedUsernameError.new("Unrecognized username: #{username}") unless @console_import
     print('User ID or username for ' + username + '? ')
     input = STDIN.gets.chomp
-    return User.find_by_id(input) if input.to_s == input.to_i.to_s
+    return User.find_by(id: input) if input.to_s == input.to_i.to_s
     User.where('lower(username) = ?', input.downcase).first
   end
 
