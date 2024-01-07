@@ -683,6 +683,12 @@ RSpec/ReceiveMessages: # new in 2.23
 RSpec/RedundantAround: # new in 2.19
   Enabled: true
 
+RSpec/RedundantPredicateMatcher: # new in 2.26
+  Enabled: true
+
+RSpec/RemoveConst: # new in 2.26
+  Enabled: true
+
 RSpec/SkipBlockInsideExample: # new in 2.19
   Enabled: true
 
