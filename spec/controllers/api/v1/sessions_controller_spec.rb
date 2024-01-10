@@ -56,7 +56,7 @@ RSpec.describe Api::V1::SessionsController do
 
       expect(response).to have_http_status(200)
       expect(response.parsed_body).to have_key('token')
-      decoded_token = JWT.decode(response.parsed_body['token'], Rails.application.secrets.secret_key_api)[0]
+      decoded_token = JWT.decode(response.parsed_body['token'], Authentication.secret_key_api)[0]
       expect(decoded_token['user_id']).to eq(user.id)
     end
 
@@ -73,7 +73,7 @@ RSpec.describe Api::V1::SessionsController do
 
       expect(response).to have_http_status(200)
       expect(response.parsed_body).to have_key('token')
-      decoded_token = JWT.decode(response.parsed_body['token'], Rails.application.secrets.secret_key_api)[0]
+      decoded_token = JWT.decode(response.parsed_body['token'], Authentication.secret_key_api)[0]
       expect(decoded_token['user_id']).to eq(user.id)
       expect(user.reload.salt_uuid).not_to be_nil
       expect(user.authenticate(password)).to eq(true)

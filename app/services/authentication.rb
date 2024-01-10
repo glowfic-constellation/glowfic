@@ -1,6 +1,10 @@
 class Authentication < Object
   EXPIRY = 30.days
 
+  KEY_API_DEVELOPMENT =
+    "7eb344b36d448da51c98879c76a393612146d49d57e5a168daab980681d62737" \
+    "3d77fb35e9748fc5f4765ba83ffc88fd10ca2b3e9a47712a916cb1485dff0717"
+
   attr_reader :user, :error
 
   def authenticate(username, password)
@@ -30,7 +34,16 @@ class Authentication < Object
       user_id: user.id,
       exp: Authentication::EXPIRY.from_now.to_i,
     }
-    JWT.encode(payload, Rails.application.secrets.secret_key_api)
+    JWT.encode(payload, Authentication.secret_key_api)
+  end
+
+  def self.read_api_token(value)
+    JWT.decode(value, Authentication.secret_key_api)[0]
+  end
+
+  def self.secret_key_api
+    return KEY_API_DEVELOPMENT unless Rails.env.production?
+    ENV.fetch("SECRET_KEY_API")
   end
 
   private
