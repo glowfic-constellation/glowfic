@@ -48,7 +48,7 @@ Rails.application.config.action_dispatch.default_headers = {
 # Instead, run these callbacks on the instance most likely to have internal
 # state which matches what was committed to the database, typically the last
 # instance to save.
-# Rails.application.config.active_record.run_commit_callbacks_on_first_saved_instances_in_transaction = false
+Rails.application.config.active_record.run_commit_callbacks_on_first_saved_instances_in_transaction = false
 
 # Configures SQLite with a strict strings mode, which disables double-quoted string literals.
 #
@@ -57,10 +57,10 @@ Rails.application.config.action_dispatch.default_headers = {
 # it then considers them as string literals. Because of this, typos can silently go unnoticed.
 # For example, it is possible to create an index for a non existing column.
 # See https://www.sqlite.org/quirks.html#double_quoted_string_literals_are_accepted for more details.
-# Rails.application.config.active_record.sqlite3_adapter_strict_strings_by_default = true
+Rails.application.config.active_record.sqlite3_adapter_strict_strings_by_default = true
 
 # Disable deprecated singular associations names
-# Rails.application.config.active_record.allow_deprecated_singular_associations_name = false
+Rails.application.config.active_record.allow_deprecated_singular_associations_name = false
 
 # Enable the Active Job `BigDecimal` argument serializer, which guarantees
 # roundtripping. Without this serializer, some queue adapters may serialize
@@ -134,12 +134,12 @@ Rails.application.config.action_dispatch.default_headers = {
 # Enable raising on assignment to attr_readonly attributes. The previous
 # behavior would allow assignment but silently not persist changes to the
 # database.
-# Rails.application.config.active_record.raise_on_assign_to_attr_readonly = true
+Rails.application.config.active_record.raise_on_assign_to_attr_readonly = true
 
 # Enable validating only parent-related columns for presence when the parent is mandatory.
 # The previous behavior was to validate the presence of the parent record, which performed an extra query
 # to get the parent every time the child record was updated, even when parent has not changed.
-# Rails.application.config.active_record.belongs_to_required_validates_foreign_key = false
+Rails.application.config.active_record.belongs_to_required_validates_foreign_key = false
 
 # Enable precompilation of `config.filter_parameters`. Precompilation can
 # improve filtering performance, depending on the quantity and types of filters.
@@ -148,7 +148,7 @@ Rails.application.config.action_dispatch.default_headers = {
 # Enable before_committed! callbacks on all enrolled records in a transaction.
 # The previous behavior was to only run the callbacks on the first copy of a record
 # if there were multiple copies of the same record enrolled in the transaction.
-# Rails.application.config.active_record.before_committed_on_all_records = true
+Rails.application.config.active_record.before_committed_on_all_records = true
 
 # Disable automatic column serialization into YAML.
 # To keep the historic behavior, you can set it to `YAML`, however it is
@@ -168,15 +168,15 @@ Rails.application.config.action_dispatch.default_headers = {
 # Run `after_commit` and `after_*_commit` callbacks in the order they are defined in a model.
 # This matches the behaviour of all other callbacks.
 # In previous versions of Rails, they ran in the inverse order.
-# Rails.application.config.active_record.run_after_transaction_callbacks_in_order_defined = true
+Rails.application.config.active_record.run_after_transaction_callbacks_in_order_defined = true
 
 # Whether a `transaction` block is committed or rolled back when exited via `return`, `break` or `throw`.
 #
-# Rails.application.config.active_record.commit_transaction_on_non_local_return = true
+Rails.application.config.active_record.commit_transaction_on_non_local_return = true
 
 # Controls when to generate a value for <tt>has_secure_token</tt> declarations.
 #
-# Rails.application.config.active_record.generate_secure_token_on = :initialize
+Rails.application.config.active_record.generate_secure_token_on = :initialize
 
 # ** Please read carefully, this must be configured in config/application.rb **
 # Change the format of the cache entry.
