@@ -302,7 +302,7 @@ RSpec.describe PostsController, 'GET show' do
       allow(Post).to receive(:find_by_id).with(post.id.to_s).and_return(post)
 
       allow(post).to receive(:build_new_reply_for).and_call_original
-      expect(post).to receive(:build_new_reply_for).with(user, {})
+      expect(post).to receive(:build_new_reply_for).with(user, an_instance_of(ActionController::Parameters).and(be_empty))
       expect(controller).to receive(:setup_layout_gon).and_call_original
 
       get :show, params: { id: post.id }
@@ -328,7 +328,7 @@ RSpec.describe PostsController, 'GET show' do
       allow(Post).to receive(:find_by_id).with(post.id.to_s).and_return(post)
 
       allow(post).to receive(:build_new_reply_for).and_call_original
-      expect(post).to receive(:build_new_reply_for).with(user, {}).and_call_original
+      expect(post).to receive(:build_new_reply_for).with(user, an_instance_of(ActionController::Parameters).and(be_empty)).and_call_original
 
       get :show, params: { id: post.id }
       expect(response).to have_http_status(200)
