@@ -26,19 +26,19 @@ class SessionsController < ApplicationController
     else
       flash[:error] = auth.error
     end
-    redirect_to session[:previous_url] || root_url
+    redirect_to session[:previous_url] || root_url # allow_other_host: false
   end
 
   def confirm_tos
     cookies.permanent[:accepted_tos] = cookie_hash(User::CURRENT_TOS_VERSION)
-    redirect_to session[:previous_url] || root_url
+    redirect_to session[:previous_url] || root_url # allow_other_host: false
   end
 
   def destroy
     url = session[:previous_url] || root_url
     logout
     flash[:success] = "You have been logged out."
-    redirect_to url
+    redirect_to url # allow_other_host: false
   end
 
   private

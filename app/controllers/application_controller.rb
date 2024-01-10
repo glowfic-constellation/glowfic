@@ -207,7 +207,7 @@ class ApplicationController < ActionController::Base
     return if request.host.match?(/(^|\.)glowfic\.com$/)
     return if request.host.match?(/(^|\.)glowfic-staging\.herokuapp\.com$/)
     glowfic_url = root_url(host: ENV.fetch('DOMAIN_NAME'), protocol: 'https')[0...-1] + request.fullpath # strip double slash
-    redirect_to glowfic_url, status: :moved_permanently
+    redirect_to glowfic_url, status: :moved_permanently, allow_other_host: true
   end
 
   def check_tos
