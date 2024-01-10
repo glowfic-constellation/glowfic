@@ -58,9 +58,6 @@ module Glowfic
     # use newer 7.0 cache format
     config.active_support.cache_format_version = 7.0
 
-    # fix issue with optional: false on reply belongs_to post
-    config.active_record.has_many_inversing = false
-
     # Please, add to the `ignore` list any other `lib` subdirectories that do
     # not contain `.rb` files, or that should not be reloaded or eager loaded.
     # Common ones are `templates`, `generators`, or `middleware`, for example.
