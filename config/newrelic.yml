@@ -25,8 +25,6 @@ common: &default_settings
   log_level: info
 
   backport_fast_active_record_connection_lookup: true
-  instrumentation:
-    redis: "chain"
 
 
 # Environment-specific settings are in this section.
