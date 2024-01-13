@@ -50,6 +50,7 @@ gem 'will_paginate'
 
 group :production do
   gem 'puma'
+  gem 'rack-attack'
   gem 'rack-cors'
   gem 'rack-timeout', '>= 0.6.0'
   gem 'resque-heroku-signals'
