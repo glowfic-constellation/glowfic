@@ -74,6 +74,9 @@
     %br
     = f.label :label_ids, 'Labels:'
     = tag_select(post, f, :labels)
+    %br
+    = f.label :font_ids, 'Custom fonts:'
+    = f.collection_select(:fonts, @fonts, :id, :name, { selected: @font_ids }, { multiple: true })
 
   - if !post.persisted? || post.author_ids.include?(current_user.id)
     #post-notes.subber Notes
