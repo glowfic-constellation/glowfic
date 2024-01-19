@@ -27,8 +27,8 @@ class Post < ApplicationRecord
   has_many :content_warnings, -> { ordered_by_post_tag }, through: :post_tags, source: :content_warning,
     after_add: :reset_warnings, dependent: :destroy
 
-  has_many :posts_fonts, dependent: :destroy
-  has_many :fonts, through: :posts_fonts, dependent: :destroy
+  has_many :post_fonts, dependent: :destroy
+  has_many :fonts, through: :post_fonts, dependent: :destroy
 
   has_many :index_posts, inverse_of: :post, dependent: :destroy
   has_many :indexes, inverse_of: :posts, through: :index_posts, dependent: :destroy
