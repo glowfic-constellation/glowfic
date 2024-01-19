@@ -336,7 +336,7 @@ class PostsController < WritableController
     @settings = process_tags(Setting, obj_param: :post, id_param: :setting_ids)
     @content_warnings = process_tags(ContentWarning, obj_param: :post, id_param: :content_warning_ids)
     @labels = process_tags(Label, obj_param: :post, id_param: :label_ids)
-    @font_ids = params.fetch(:post, []),fetch(:font_ids, [])
+    @fonts = @post.fonts
 
     @written = @post
 
