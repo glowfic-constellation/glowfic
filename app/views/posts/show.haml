@@ -2,6 +2,10 @@
 
 %span.time-loaded= pretty_time(DateTime.now.in_time_zone)
 
+- if @fonts.present?
+  - @fonts.each do |font|
+    %style= raw font.css
+
 - if @warnings.present?
   - content_for :flashes do
     .flash.error
