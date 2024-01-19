@@ -357,11 +357,11 @@ ActiveRecord::Schema[7.1].define(version: 2024_01_19_030357) do
     t.index ["user_id"], name: "index_posts_on_user_id"
   end
 
-  create_table "posts_fonts", force: :cascade do |t|
+  create_table "post_fonts", force: :cascade do |t|
     t.integer "post_id", null: false
     t.integer "font_id", null: false
-    t.index ["font_id"], name: "index_posts_fonts_on_font_id"
-    t.index ["post_id"], name: "index_posts_fonts_on_post_id"
+    t.index ["font_id"], name: "index_post_fonts_on_font_id"
+    t.index ["post_id"], name: "index_post_fonts_on_post_id"
   end
 
   create_table "replies", id: :serial, force: :cascade do |t|

@@ -93,6 +93,12 @@ function setupMetadataEditor() {
   createTagSelect("Setting", "setting", "post");
   createTagSelect("ContentWarning", "content_warning", "post");
 
+  createSelect2("#post_font_ids", {
+    width: "300px",
+    minimumResultsForSearch: 20,
+    placeholder: "Choose custom fonts for this post",
+  });
+
   if ($("#post_privacy").val() !== 'access_list') {
     $("#access_list").hide();
   }
