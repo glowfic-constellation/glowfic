@@ -6,7 +6,7 @@ class CreateFonts < ActiveRecord::Migration[7.1]
       t.timestamps
     end
 
-    create_table :posts_fonts do |t|
+    create_table :post_fonts do |t|
       t.belongs_to :post
       t.belongs_to :font
       t.timestamps
