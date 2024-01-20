@@ -41,7 +41,11 @@
             - (total_pages - 2).upto(total_pages) do |index|
               = link_to index, post_path(post, page: index)
   - unless local_assigns[:hide_continuity]
-    %td.post-board.vtop{class: klass}= link_to post.board_name, anchored_continuity_path(post)
+    %td.post-board.vtop{class: klass}
+      = link_to anchored_continuity_path(post), title: post.section_name do
+        = post.board_name
+        - if post.section_name.present?
+          %span.post-section= post.section_name
   %td.post-authors.vtop{class: klass}= author_links(post)
   %td.width-70.post-replies.vtop{class: klass}= link_to replies_count, stats_post_path(post)
   - if logged_in? && local_assigns[:show_unread_count]
