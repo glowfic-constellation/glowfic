@@ -381,7 +381,7 @@ RSpec.describe User do
       end
     end
 
-    Permissible::PERMS[5..].each do |permission|
+    Permissible::PERMS[8..].each do |permission|
       context permission.to_s do
         let(:permission) { permission }
 
