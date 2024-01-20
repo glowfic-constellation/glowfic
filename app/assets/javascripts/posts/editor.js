@@ -301,25 +301,33 @@ function setupTinyMCE() {
   } else {
     const height = ($(selector).height() || 150) + 15;
     tinyMCE.init({
+      // integration configs
       selector: selector,
-      menubar: false,
+      plugins: ["wordcount", "image", "link", "autoresize"],
+      cache_suffix: '?v=6.8.2',
+      // interface configs
+      menubar: false, // disable "File", "Edit", etc
+      contextmenu: false,
+      min_height: height,
+      // - toolbar
       toolbar: ["bold italic underline strikethrough forecolor | link image | blockquote hr bullist numlist | undo redo"],
-      branding: false,
-      plugins: "wordcount,image,hr,link,autoresize",
-      custom_undo_redo_levels: 10,
-      content_css: gon.tinymce_css_path,
+      // - statusbar
       statusbar: true,
+      branding: false,
       elementpath: false,
       resize: true,
-      autoresize_bottom_margin: 5,
-      min_height: height,
+      // editor content behavior
+      body_class: gon.editor_class,
+      custom_undo_redo_levels: 10,
+      content_css: gon.tinymce_css_path,
       browser_spellcheck: true,
+      document_base_url: gon.base_url,
       relative_urls: false,
       remove_script_host: true,
-      document_base_url: gon.base_url,
-      body_class: gon.editor_class,
-      contextmenu: false,
-      cache_suffix: '?v=5.1.4.1'
+      text_patterns: false, // disable markdown-like autoformatting from TinyMCE 6 (for now)
+      // plugin configs
+      // - autoresize
+      autoresize_bottom_margin: 5,
     });
     tinyMCEInit = true;
   }
