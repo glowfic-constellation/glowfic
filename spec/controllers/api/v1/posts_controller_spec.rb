@@ -135,6 +135,18 @@ RSpec.describe Api::V1::PostsController do
       expect(response.parsed_body['private_note']).to eq("<p>Shiny new note</p>")
       expect(post.author_for(user).private_note).to eq('Shiny new note')
     end
+
+    it "allows empty notes to blank them out", :show_in_doc do
+      user = api_login
+      post = create(:post, user: user)
+      post.author_for(user).update(private_note: "some text here")
+
+      patch :update, params: { id: post.id, private_note: '' }
+
+      expect(response).to have_http_status(200)
+      expect(response.parsed_body['private_note']).to eq("<p></p>")
+      expect(post.author_for(user).private_note).to eq('')
+    end
   end
 
   describe "POST reorder" do
