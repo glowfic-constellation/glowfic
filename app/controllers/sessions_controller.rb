@@ -17,7 +17,7 @@ class SessionsController < ApplicationController
       flash[:success] = "You are now logged in as #{user.username}. Welcome back!"
       session[:user_id] = user.id
       session[:api_token] = {
-        "value" => auth.api_token,
+        "value"   => auth.api_token,
         "expires" => Authentication::EXPIRY.from_now.to_i,
       }
       cookies.permanent.signed[:user_id] = cookie_hash(user.id) if params[:remember_me].present?
