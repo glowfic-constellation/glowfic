@@ -138,6 +138,38 @@ Tools we do not currently use but are interested in evaluating:
 * [Reek](https://github.com/troessner/reek) and [Flog](https://github.com/seattlerb/flog) if they're not already included by CodeClimate or other gems (Marri's brain thinks they might be, the way flay is in duplication, but isn't citing its sources)
 * [Reek's brother and sister gems](https://github.com/troessner/reek#brothers-and-sisters)
 
+### Backstop - UI validation
+
+We use [BackstopJS](https://github.com/garris/BackstopJS) to run regression tests on the UI + CSS.
+
+Before each test, we automatically run `script/before_backstop.rb` to set up a consistent environment.
+To perform a test:
+
+```bash
+# you may wish to recreate + reseed your database for consistent images:
+# bin-docker/rails db:drop db:setup
+
+# set the layout you want to validate
+export LAYOUT=starrylight
+
+# switch to the branch you want to use as a reference
+git switch main
+# create reference images and save them to backstop/
+bin-docker/backstop reference $LAYOUT
+
+# switch to the branch you want to test
+git switch feature/update-css
+# validate the layout against the reference images
+bin-docker/backstop test $LAYOUT
+
+# see a list of other commands you can run:
+bin-docker/backstop --help
+# view a report in your browser:
+open backstop/reports/$LAYOUT/index.html
+# promote the images to reference images if the changes are intentional:
+bin-docker/backstop approve $LAYOUT
+```
+
 ### Attribution
 
 We make use of the [famfamfam silk](http://www.famfamfam.com/lab/icons/silk/) pack of icons, which is licensed under a Creative Commons Attribution license, including some icons that have been modified from the originals.

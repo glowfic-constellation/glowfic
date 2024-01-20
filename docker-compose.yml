@@ -31,6 +31,8 @@ services:
     environment:
       <<: *env
       BIND_HOST: 0.0.0.0
+      # allow accessing the server from backstop
+      RAILS_DEVELOPMENT_HOSTS: web:3000
   worker:
     <<: *svc
     command: bundle exec rake resque:work
