@@ -5,7 +5,7 @@ $(document).ready(function() {
       url: '/api/v1/posts',
       data: function(params) { return queryTransform(params); },
       processResults: function(data, params) {
-        var total = this._request.getResponseHeader('Total');
+        const total = this._request.getResponseHeader('Total');
         return processResults(data, params, total, 'subject');
       },
     },

@@ -1,23 +1,23 @@
 /* global addUploadedIcon, setLoadingIcon, addCallback, failCallback */
 /* export deleteUnusedIcons */
 
-var uploadedIcons = {};
-var formKey = '';
-var numFiles = 0;
+const uploadedIcons = {};
+let formKey = '';
+let numFiles = 0;
 
 $(document).ready(function() {
-  var form = $('form.icon-upload');
-  var submitButton = form.find('input[type="submit"]');
-  var formData = form.data('form-data');
+  const form = $('form.icon-upload');
+  const submitButton = form.find('input[type="submit"]');
+  const formData = form.data('form-data');
 
   $(".icon_files").each(function(index, fileInput) {
     bindFileInput($(fileInput), form, submitButton, formData);
   });
 
   $("form.icon-upload").submit(function() {
-    var usedUrls = $.map($('form.icon-upload').find('input[id$=_url]'), function(input) { return $(input).val(); });
-    var uploadedUrls = $.map(uploadedIcons, function(value, key) { return key; });
-    var unusedUrls = uploadedUrls.filter(function(x) { return usedUrls.indexOf(x) < 0; });
+    const usedUrls = $.map($('form.icon-upload').find('input[id$=_url]'), function(input) { return $(input).val(); });
+    const uploadedUrls = $.map(uploadedIcons, function(value, key) { return key; });
+    const unusedUrls = uploadedUrls.filter(function(x) { return usedUrls.indexOf(x) < 0; });
     if (unusedUrls.length < 1) { return true; }
     deleteUnusedIcons($.map(unusedUrls, function(url) { return uploadedIcons[url]; }));
     return true;
@@ -29,8 +29,8 @@ function randomString() {
 }
 
 function bindFileInput(fileInput, form, submitButton, formData) {
-  var limit = form.data('limit');
-  var uploadArgs = {
+  const limit = form.data('limit');
+  const uploadArgs = {
     fileInput: fileInput,
     url: form.data('url'),
     type: 'POST',
@@ -45,7 +45,7 @@ function bindFileInput(fileInput, form, submitButton, formData) {
 
     add: function(e, data) {
       if (exceedsMaxFiles(limit, fileInput, data)) return;
-      var fileType = data.files[0].type;
+      const fileType = data.files[0].type;
       if (invalidFileType(fileType)) return;
 
       if (typeof addCallback !== 'undefined') addCallback();
@@ -55,11 +55,11 @@ function bindFileInput(fileInput, form, submitButton, formData) {
 
       // seed the AWS key with a random string here, not serverside, so each upload has a unique string
       if (formKey === '') formKey = data.formData.key;
-      var pieces = formKey.split('$');
-      var newKey = pieces[0] + randomString() + '_$' + pieces[1];
+      const pieces = formKey.split('$');
+      const newKey = pieces[0] + randomString() + '_$' + pieces[1];
       data.formData.key = newKey;
 
-      var uploader = $(this);
+      const uploader = $(this);
       data.process(function() {
         return uploader.fileupload('process', data);
       }).done(function() {
@@ -75,8 +75,8 @@ function bindFileInput(fileInput, form, submitButton, formData) {
       submitButton.prop('disabled', false);
 
       // extract key and generate URL from response
-      var s3Key = $(data.jqXHR.responseXML).find("Key").text();
-      var url = $(data.jqXHR.responseXML).find("Location").text();
+      const s3Key = $(data.jqXHR.responseXML).find("Key").text();
+      const url = $(data.jqXHR.responseXML).find("Location").text();
       uploadedIcons[url] = s3Key;
 
       // Handled differently by different pages; handles UI and form updates
@@ -86,10 +86,10 @@ function bindFileInput(fileInput, form, submitButton, formData) {
       submitButton.prop('disabled', false);
       if (typeof failCallback !== 'undefined') { failCallback(); }
       unsetLoadingIcon();
-      var response = data.response().jqXHR;
-      var responseText = response.responseText;
-      var badFiletype = responseText.includes("Policy Condition failed") && responseText.includes('"$Content-Type", "image/"');
-      var bugsData = {
+      const response = data.response().jqXHR;
+      const responseText = response.responseText;
+      const badFiletype = responseText.includes("Policy Condition failed") && responseText.includes('"$Content-Type", "image/"');
+      const bugsData = {
         'response_status': response.status,
         'response_body': response.responseText,
         'response_text': response.statusText,
@@ -119,15 +119,15 @@ function bindFileInput(fileInput, form, submitButton, formData) {
 function exceedsMaxFiles(limit, fileInput, data) {
   if (typeof limit === 'undefined' || limit <= 1) return false;
 
-  var numUploading = fileInput[0].files.length;
-  var isFirstFile = (fileInput[0].files[0] === data.files[0]);
-  var isLastFile = (fileInput[0].files[numUploading - 1] === data.files[0]);
+  const numUploading = fileInput[0].files.length;
+  const isFirstFile = (fileInput[0].files[0] === data.files[0]);
+  const isLastFile = (fileInput[0].files[numUploading - 1] === data.files[0]);
 
   return checkMaxFiles(limit, fileInput, isFirstFile, isLastFile);
 }
 
 function checkMaxFiles(limit, fileInput, isFirstFile, isLastFile) {
-  var numUploading = fileInput[0].files.length;
+  const numUploading = fileInput[0].files.length;
   if (isFirstFile) numFiles += numUploading;
   if (numFiles <= limit) return false;
 

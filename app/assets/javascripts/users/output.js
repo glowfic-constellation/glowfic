@@ -7,9 +7,9 @@ $(document).ready(function() {
 
 function copyToClipboard(elem) {
   // set up content in hidden textarea
-  var currentFocus = document.activeElement;
-  var inserted = $("<textarea id='_hiddenCopyText_'>").insertAfter(elem);
-  var target = inserted[0]; // must be DOM not JQuery object for select range functions
+  const currentFocus = document.activeElement;
+  const inserted = $("<textarea id='_hiddenCopyText_'>").insertAfter(elem);
+  const target = inserted[0]; // must be DOM not JQuery object for select range functions
   target.textContent = $.trim(elem.text());
 
   // select the content
@@ -26,11 +26,11 @@ function copyToClipboard(elem) {
 }
 
 function selectContent(target) {
-  var end = target.value.length;
+  const end = target.value.length;
   if (target.setSelectionRange) {
     target.focus(); target.setSelectionRange(0, end);
   } else if (target.createTextRange) { /* IE */
-    var range = target.createTextRange();
+    const range = target.createTextRange();
     range.collapse(true);
     range.moveEnd('character', end);
     range.moveStart('character', 0);

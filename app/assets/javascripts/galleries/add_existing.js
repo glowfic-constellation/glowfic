@@ -1,11 +1,11 @@
-var imageIds = [];
-var skipWarning = false;
+const imageIds = [];
+let skipWarning = false;
 $(document).ready(function() {
   bindGalleryIcons(".add-gallery-icon");
 
   $(".select-all").click(function() {
-    var galleryId = $(this).val();
-    var icons = $("#icons-"+galleryId+" .gallery-icon img");
+    const galleryId = $(this).val();
+    const icons = $("#icons-"+galleryId+" .gallery-icon img");
     $.each(icons, function(index, icon) {
       selectIcon(icon);
     });
@@ -19,7 +19,7 @@ $(document).ready(function() {
   });
 
   $(".gallery-minmax").click(function() {
-    var galleryId = $(this).data('id');
+    const galleryId = $(this).data('id');
 
     // Hide icons if they're already visible
     if ($("#icons-" + galleryId).is(':visible')) {
@@ -36,8 +36,8 @@ $(document).ready(function() {
     // Load and bind icons if they have not already been loaded
     $.authenticatedGet("/api/v1/galleries/" + galleryId, {}, function(resp) {
       $.each(resp.icons, function(index, icon) {
-        var iconDiv = $("<div>").attr({class: 'gallery-icon'});
-        var iconImg = $("<img>").attr({src: icon.url, alt: icon.keyword, title: icon.keyword, 'class': 'icon add-gallery-icon', 'data-id': icon.id});
+        const iconDiv = $("<div>").attr({class: 'gallery-icon'});
+        const iconImg = $("<img>").attr({src: icon.url, alt: icon.keyword, title: icon.keyword, 'class': 'icon add-gallery-icon', 'data-id': icon.id});
         iconDiv.append(iconImg).append("<br>").append($("<span>").attr({class: 'icon-keyword'}).text(icon.keyword));
         $("#icons-" + galleryId).append(iconDiv);
       });

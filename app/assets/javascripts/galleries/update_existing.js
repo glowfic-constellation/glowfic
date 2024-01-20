@@ -5,13 +5,13 @@ function addUploadedIcon(url, s3Key, _data, _fileInput) {
   $(".icon_url_field").hide();
   $("#icon_url").hide().val(url);
   $("#icon_s3_key").val(s3Key);
-  var iconID= $("#icon_id").val();
+  const iconID= $("#icon_id").val();
   $("#loading-"+iconID).hide();
   $("#icon-"+iconID).attr('src', url).show().removeClass('uploading-icon');
 }
 
 function setLoadingIcon(_fileInput) {
-  var iconID= $("#icon_id").val();
+  const iconID= $("#icon_id").val();
   $("#icon-"+iconID).hide().addClass('uploading-icon');
   $("#loading-"+iconID).show();
 }
