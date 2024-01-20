@@ -55,11 +55,11 @@ jobs:
         with:
           bundler-cache: true  # runs bundle install (with version based on Gemfile.lock) and automatically caches result
       - name: Load database schema
-        run: bundle exec rails db:schema:load --trace
+        run: bundle exec rake parallel:load_schema
       - name: Run rspec tests and report coverage
         uses: paambaati/codeclimate-action@v5.0.0
         with:
-          coverageCommand: bundle exec rspec spec --format documentation --format html --out rspec-results.html
+          coverageCommand: bundle exec rake parallel:spec
       - name: Upload MinIO logs
         if: ${{ always() }}
         uses: actions/upload-artifact@v4
@@ -71,7 +71,10 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: rspec-logs
-          path: rspec-results.html
+          path: |
+            tmp/rspec-results.html
+            tmp/parallel_runtime_rspec.log
+            tmp/failing_specs.log
       - name: Upload Coverage files
         if: ${{ always() }}
         uses: actions/upload-artifact@v4

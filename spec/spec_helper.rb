@@ -36,6 +36,13 @@ unless ENV.fetch('SKIP_COVERAGE', false) || ENV.fetch('APIPIE_RECORD', false) ||
     end
     enable_coverage :branch
     minimum_coverage line: 99.85, branch: 93.0
+
+    if ENV['TEST_ENV_NUMBER'] # parallel specs
+      SimpleCov.at_exit do
+        result = SimpleCov.result
+        result.format! if ParallelTests.number_of_running_processes <= 1
+      end
+    end
   end
 end
 
@@ -48,7 +55,11 @@ require 'support/api_test_helper'
 require 'support/posts_controller_shared'
 require 'capybara/rspec'
 
+Capybara.server_port = 9887 + ENV["TEST_ENV_NUMBER"].to_i
+
 RSpec.configure do |config|
+  config.silence_filter_announcements = true if ENV['TEST_ENV_NUMBER']
+
   # rspec-expectations config goes here. You can use an alternate
   # assertion/expectation library such as wrong or the stdlib/minitest
   # assertions if you prefer.

@@ -283,6 +283,8 @@ GEM
       mini_portile2 (~> 2.8.2)
       racc (~> 1.4)
     parallel (1.24.0)
+    parallel_tests (4.4.0)
+      parallel
     parser (3.3.0.4)
       ast (~> 2.4.1)
       racc
@@ -546,6 +548,7 @@ DEPENDENCIES
   newrelic_rpm
   nilify_blanks
   nokogiri
+  parallel_tests
   pg (~> 1.5)
   pg_search
   puma
