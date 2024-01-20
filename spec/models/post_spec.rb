@@ -1135,9 +1135,9 @@ RSpec.describe Post do
     end
 
     context "with complex post" do
-      let(:author) { create(:user) }
-      let(:coauthor) { create(:user) }
-      let(:unjoined) { create(:user) }
+      let(:author) { create(:user, username: "Author") }
+      let(:coauthor) { create(:user, username: "Coauthor") }
+      let(:unjoined) { create(:user, username: "Unjoined") }
       let(:board) { create(:board) }
       let(:section) { create(:board_section, board: board) }
       let(:character) { create(:character, user: author, screenname: 'testing_home') }
@@ -1159,7 +1159,7 @@ RSpec.describe Post do
           id: post.id,
           subject: post.subject,
           description: 'test description',
-          authors: [author, coauthor],
+          authors: [author, coauthor], # alphabetical order by username
           board: board,
           section: section,
           section_order: 0,
