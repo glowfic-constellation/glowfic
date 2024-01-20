@@ -36,10 +36,12 @@ module Authentication::Api
       ActiveSupport::HashWithIndifferentAccess.new(body)
     rescue JWT::ExpiredSignature
       error = { message: "Authorization token has expired." }
+      session[:api_token] = nil
       render json: { errors: [error] }, status: :unauthorized
       {}
     rescue JWT::DecodeError
       error = { message: "Authorization token is not valid." }
+      session[:api_token] = nil
       render json: { errors: [error] }, status: :unprocessable_entity
       {}
     end
