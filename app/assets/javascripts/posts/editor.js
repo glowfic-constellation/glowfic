@@ -310,6 +310,7 @@ function setupTinyMCE() {
       contextmenu: false,
       min_height: height,
       // - toolbar
+      toolbar_sticky: true,
       toolbar: ["bold italic underline strikethrough forecolor | link image | blockquote hr bullist numlist | undo redo"],
       // - statusbar
       statusbar: true,
