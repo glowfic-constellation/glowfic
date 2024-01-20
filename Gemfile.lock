@@ -155,6 +155,12 @@ GEM
       rexml
     crass (1.0.6)
     daemons (1.4.1)
+    dartsass-sprockets (3.1.0)
+      railties (>= 4.0.0)
+      sassc-embedded (~> 1.69)
+      sprockets (> 3.0)
+      sprockets-rails
+      tilt
     database_cleaner (2.0.2)
       database_cleaner-active_record (>= 2, < 3)
     database_cleaner-active_record (2.1.0)
@@ -193,6 +199,7 @@ GEM
       i18n (>= 0.7)
       multi_json
       request_store (>= 1.0)
+    google-protobuf (3.25.2)
     haml (6.3.0)
       temple (>= 0.8.2)
       thor
@@ -256,7 +263,6 @@ GEM
     memory_profiler (1.0.1)
     mercenary (0.4.0)
     mini_mime (1.1.5)
-    mini_portile2 (2.8.5)
     minitest (5.21.2)
     mono_logger (1.1.2)
     multi_json (1.15.0)
@@ -278,8 +284,13 @@ GEM
       activerecord (>= 4.0.0)
       activesupport (>= 4.0.0)
     nio4r (2.7.0)
-    nokogiri (1.16.0)
-      mini_portile2 (~> 2.8.2)
+    nokogiri (1.16.0-aarch64-linux)
+      racc (~> 1.4)
+    nokogiri (1.16.0-arm64-darwin)
+      racc (~> 1.4)
+    nokogiri (1.16.0-x86_64-darwin)
+      racc (~> 1.4)
+    nokogiri (1.16.0-x86_64-linux)
       racc (~> 1.4)
     parallel (1.24.0)
     parser (3.3.0.4)
@@ -434,14 +445,22 @@ GEM
     sanitize (6.1.0)
       crass (~> 1.0.2)
       nokogiri (>= 1.12.0)
+    sass-embedded (1.70.0-aarch64-linux-gnu)
+      google-protobuf (~> 3.25)
+    sass-embedded (1.70.0-aarch64-linux-musl)
+      google-protobuf (~> 3.25)
+    sass-embedded (1.70.0-arm64-darwin)
+      google-protobuf (~> 3.25)
+    sass-embedded (1.70.0-x86_64-darwin)
+      google-protobuf (~> 3.25)
+    sass-embedded (1.70.0-x86_64-linux-gnu)
+      google-protobuf (~> 3.25)
+    sass-embedded (1.70.0-x86_64-linux-musl)
+      google-protobuf (~> 3.25)
     sassc (2.4.0)
       ffi (~> 1.9)
-    sassc-rails (2.1.2)
-      railties (>= 4.0.0)
-      sassc (>= 2.0)
-      sprockets (> 3.0)
-      sprockets-rails
-      tilt
+    sassc-embedded (1.70.0)
+      sass-embedded (~> 1.70)
     scout_apm (5.3.5)
       parser
     seed_dump (3.3.1)
@@ -511,7 +530,12 @@ GEM
     zeitwerk (2.6.12)
 
 PLATFORMS
-  ruby
+  aarch64-linux-gnu
+  aarch64-linux-musl
+  arm64-darwin
+  x86_64-darwin
+  x86_64-linux
+  x86_64-linux-musl
 
 DEPENDENCIES
   api-pagination
@@ -525,6 +549,7 @@ DEPENDENCIES
   brakeman (~> 6.1.1)
   byebug
   capybara
+  dartsass-sprockets
   database_cleaner
   dotenv-rails
   exception_notification
@@ -567,7 +592,6 @@ DEPENDENCIES
   rubocop-rails (~> 2.23.1)
   rubocop-rspec (~> 2.26.1)
   sanitize
-  sassc-rails
   scout_apm
   seed_dump (~> 3.2)
   select2-rails
