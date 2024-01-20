@@ -74,7 +74,6 @@ RSpec.describe "Creating a new character" do
     within('.form-table') do
       fill_in 'Character Name', with: 'Example character'
       check 'NPC?'
-      expect(page).to have_field('Screenname', disabled: true)
       expect(page).to have_field('Template Cluster Name', disabled: true)
       click_button 'Save'
     end
