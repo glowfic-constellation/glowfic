@@ -217,7 +217,6 @@ class PostsController < WritableController
 
     @post.assign_attributes(permitted_params)
     @post.board ||= Board.find_by(id: Board::ID_SANDBOX)
-    process_npc(@post, permitted_character_params)
     settings = process_tags(Setting, obj_param: :post, id_param: :setting_ids)
     warnings = process_tags(ContentWarning, obj_param: :post, id_param: :content_warning_ids)
     labels = process_tags(Label, obj_param: :post, id_param: :label_ids)
@@ -234,6 +233,7 @@ class PostsController < WritableController
         @post.settings = settings
         @post.content_warnings = warnings
         @post.labels = labels
+        process_npc(@post, permitted_character_params)
         @post.save!
         @post.author_for(current_user).update!(private_note: @post.private_note) if is_author
       end

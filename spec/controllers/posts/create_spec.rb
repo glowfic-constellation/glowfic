@@ -438,6 +438,7 @@ RSpec.describe PostsController, 'POST create' do
             board_id: board.id,
             character_id: nil,
             icon_id: icon.id,
+            setting_ids: setting_ids,
           },
           character: {
             name: 'NPC',
@@ -456,6 +457,7 @@ RSpec.describe PostsController, 'POST create' do
       expect(post.character).to be_npc
       expect(post.character.default_icon_id).to eq(icon.id)
       expect(post.character.nickname).to eq('asubjct') # post disambiguator
+      expect(post.character.settings.map(&:id_for_select)).to match_array(settings.map(&:id) + [Setting.last.id])
     end
 
     it "generates a flat post" do

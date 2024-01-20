@@ -118,7 +118,8 @@ RSpec.describe "Creating replies" do
   end
 
   scenario "User creates a reply with a new NPC", :js do
-    post = create(:post, subject: 'Sample post')
+    setting = create(:setting, name: "Settingsverse")
+    post = create(:post, subject: 'Sample post', settings: [setting])
 
     user = login
     create(:character, user: user) # user must have at least 1 character to be able to pick a character
@@ -156,6 +157,7 @@ RSpec.describe "Creating replies" do
 
     expect(page).to have_text(/Jade\s+\(NPC\)/)
     expect(page).to have_text(/Original post\(s\).*Sample post/)
+    expect(page).to have_text(/Setting.*Settingsverse/)
   end
 
   scenario "User creates a reply with an existing NPC", :js do

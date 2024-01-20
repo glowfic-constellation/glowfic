@@ -186,13 +186,21 @@ class WritableController < ApplicationController
     return unless permitted_character_params[:npc] == 'true'
 
     # we take the NPC's first post's subject as its nickname, for disambiguation in dropdowns etc
-    post_name = if writable.is_a? Post
-      writable.subject
+    # additionally, we grab the post's settings and attach those to the character
+    post = if writable.is_a? Post
+      writable
     else
-      writable.post.subject
+      writable.post
     end
 
-    writable.build_character(permitted_character_params.merge(default_icon_id: writable.icon_id, user_id: writable.user_id, nickname: post_name))
+    writable.build_character(
+      permitted_character_params.merge(
+        default_icon_id: writable.icon_id,
+        user_id: writable.user_id,
+        nickname: post.subject,
+        settings: post.settings,
+      )
+    )
   end
 
   def permitted_params(param_hash=nil)

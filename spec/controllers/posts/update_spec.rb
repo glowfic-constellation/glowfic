@@ -882,6 +882,7 @@ RSpec.describe PostsController, 'PUT update' do
             board_id: board.id,
             character_id: nil,
             icon_id: icon.id,
+            setting_ids: [setting.id],
           },
           character: {
             name: 'NPC',
@@ -899,6 +900,7 @@ RSpec.describe PostsController, 'PUT update' do
       expect(post.character).to be_npc
       expect(post.character.default_icon_id).to eq(icon.id)
       expect(post.character.nickname).to eq(post.subject)
+      expect(post.character.settings).to eq([setting])
     end
 
     it "does not allow coauthors to edit post text" do
