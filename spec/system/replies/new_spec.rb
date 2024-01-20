@@ -156,7 +156,7 @@ RSpec.describe "Creating replies" do
     end
 
     expect(page).to have_text(/Jade\s+\(NPC\)/)
-    expect(page).to have_text(/Original post\(s\).*Sample post/)
+    expect(page).to have_text(/Original post.*Sample post/)
     expect(page).to have_text(/Setting.*Settingsverse/)
   end
 

@@ -111,15 +111,19 @@
       %tr
         %th.table-title{colspan: 2} Info
     %tbody
-      - nicknames = ([@character.nickname] + @character.aliases.ordered.pluck(:name)).compact
-      - if nicknames.present?
+      - if @character.nickname.present?
         %tr
           %th.sub.vtop.width-150
             - if @character.npc?
-              Original post(s)
+              Original post
             - else
-              Nickname(s)
-          %td.character-template-nickname{class: cycle('even', 'odd')}= nicknames.join(", ")
+              Nickname
+          %td.character-nickname{class: cycle('even', 'odd')}= @character.nickname
+      - aliases = @character.aliases.ordered.pluck(:name)
+      - if aliases.present?
+        %tr
+          %th.sub.vtop.width-150 Aliases
+          %td.character-aliases{class: cycle('even', 'odd')}= aliases.join(", ")
       - if @character.template
         %tr
           %th.sub.vtop.width-150 Template
