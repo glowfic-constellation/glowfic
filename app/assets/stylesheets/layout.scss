@@ -227,6 +227,15 @@ table { width: 100%; }
 
 td, .table-list li { font-size: $font_size_small; }
 
+.post-section { display: none; }
+@media (max-width: 600px) {
+  .post-section {
+    display: inline;
+    font-size: $font_size_mini;
+    line-height: $font_size_mini;
+  }
+}
+
 /* Subs and subbers */
 .sub {
   padding: 10px;

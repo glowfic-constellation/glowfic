@@ -110,7 +110,8 @@ class ApplicationController < ActionController::Base
         posts.*,
         max(boards.name) as board_name,
         max(users.username) as last_user_name,
-        bool_or(users.deleted) as last_user_deleted
+        bool_or(users.deleted) as last_user_deleted,
+        max(board_sections.name) as section_name
         #{select}
       SQL
     else
@@ -118,7 +119,8 @@ class ApplicationController < ActionController::Base
         posts.*,
         boards.name as board_name,
         users.username as last_user_name,
-        users.deleted as last_user_deleted
+        users.deleted as last_user_deleted,
+        board_sections.name as section_name
         #{select}
       SQL
     end
@@ -126,6 +128,7 @@ class ApplicationController < ActionController::Base
     relation
       .select(select)
       .joins(:board)
+      .left_joins(:section)
       .joins(:last_user)
       .includes(:authors)
       .with_has_content_warnings
