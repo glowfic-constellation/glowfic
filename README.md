@@ -54,7 +54,7 @@ If you have added these scripts to your PATH you can leave off "bin-docker/" in 
 Once you've taken these steps, you should be able to set up the contents of the glowfic database with some example data:
 *   `bin-docker/rake db:setup`
 
-This will set up the database and add some sample information – currently these are users, continuities, characters, galleries, icons and templates; no posts will be created.
+This will set up the database and add some sample information – currently these are users, continuities, characters, galleries, icons and templates, and some posts and replies.
 
 If you encounter an error involving the 'citext' extension:
 
