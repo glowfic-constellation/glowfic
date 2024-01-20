@@ -591,6 +591,3 @@ Post::View.create!([
   { post_id: 32, user_id: 3, read_at: "2015-07-23 00:57:00" },
   { post_id: 33, user_id: 3, read_at: "2019-08-18 21:22:42" },
 ])
-
-puts "Queuing flat post generation (will not update until jobs are run)"
-FlatPost.regenerate_all
