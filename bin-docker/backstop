@@ -3,11 +3,12 @@
 set -e
 
 NUM_CONTAINERS=$(docker compose ps | wc -l)
+DOCKER_COMPOSE="docker compose -f docker-compose.yml -f docker-compose-backstop.yml"
 
 if [ "$1" == 'test' ] || [ "$1" == 'reference' ] && [ "$2" != 'logged_out' ]; then
-  docker compose run --rm web bin/rails runner script/before_backstop.rb $2
+  $DOCKER_COMPOSE run --rm web bin/rails runner script/before_backstop.rb "$2"
 fi
-docker compose -f docker-compose.yml -f docker-compose-backstop.yml run --rm backstop $1 --config $2
+$DOCKER_COMPOSE run --rm backstop --config "$2" "$1" "${@:3}"
 
 if [ $NUM_CONTAINERS == 2 ]; then
 	docker compose down
