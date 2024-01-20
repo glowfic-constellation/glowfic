@@ -139,7 +139,7 @@ RSpec.describe Api::V1::PostsController do
     it "allows empty notes to blank them out", :show_in_doc do
       user = api_login
       post = create(:post, user: user)
-      post.author_for(user).update(private_note: "some text here")
+      post.author_for(user).update!(private_note: "some text here")
 
       patch :update, params: { id: post.id, private_note: '' }
 
