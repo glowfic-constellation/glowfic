@@ -1093,7 +1093,7 @@ RSpec.describe Post do
         {
           id: post.id,
           subject: post.subject,
-          description: nil,
+          description: "",
           authors: post.joined_authors,
           board: post.board,
           section: nil,

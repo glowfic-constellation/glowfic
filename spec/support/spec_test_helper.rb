@@ -9,16 +9,14 @@ module SpecTestHelper
 
   RSpec::Matchers.define :match_hash do |expected|
     match do |actual|
-      return false unless expected.is_a?(Hash) && actual.is_a?(Hash)
-      @actual = transform(actual)
-      @expected = transform(expected)
-      @actual.eql?(@expected)
+      @actual = actual.is_a?(Hash) ? transform(actual) : actual
+      @expected = expected.is_a?(Hash) ? transform(expected) : expected
+      values_match?(@expected, @actual)
     end
 
     def transform(parameter)
-      parameter.transform_keys!(&:to_s)
+      parameter.transform_keys! { |k| k.is_a?(Symbol) ? k.to_s : k }
       parameter.transform_values! { |v| transform_element(v) }
-      parameter.sort_by { |k, _v| k }.to_h
     end
 
     def transform_element(ele)
@@ -26,16 +24,15 @@ module SpecTestHelper
         ele = ele.ordered if ele.respond_to?(:ordered)
         ele.to_a
       elsif ele.is_a?(Array)
-        ele = ele.sort unless ele[0].is_a?(Hash)
         ele.map { |e| transform_element(e) }
       elsif ele.is_a?(Hash)
         transform(ele)
-      elsif ele.is_a?(ActiveRecord::Base)
-        ele
       elsif ele.is_a?(ActiveSupport::TimeWithZone)
         ele.in_time_zone.iso8601(3)
-      else
+      elsif ele.is_a?(Symbol)
         ele.to_s
+      else
+        ele
       end
     end
 
