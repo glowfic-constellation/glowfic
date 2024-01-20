@@ -125,6 +125,12 @@ textarea#post_private_note {
 
 #content .tox-statusbar__resize-handle svg { fill: $font_color_input; }
 
+#content .tox-split-button {
+  &:focus, &:hover { background-color: $bg_color_input; }
+}
+#content .tox-tbtn--enabled {
+  &, &:focus, &:hover { background-color: $bg_color_input; }
+}
 #content .tox .tox-tbtn {
   box-sizing: content-box;
 
@@ -137,7 +143,7 @@ textarea#post_private_note {
     }
   }
 
-  &:hover { background-color: $bg_color_input; }
+  &:active, &:hover, &:focus { background-color: $bg_color_input; }
 
   &.tox-tbtn--disabled {
     svg {

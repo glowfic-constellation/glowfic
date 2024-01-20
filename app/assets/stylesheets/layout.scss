@@ -531,18 +531,48 @@ The copy box can't be invisible/hidden or copy fails but opacity works
   text-align: right;
 }
 
-#content .tox-tinymce--toolbar-sticky-on .tox-editor-header {
-  // visual indicator that the sticky toolbar is covering content
-  box-shadow: rgba(0, 0, 0, 0.5) 0px 10px 10px;
-}
+#content {
+  .tox-editor-header {
+    padding: 0;
+    background-color: transparent;
+    box-shadow: none;
+  }
 
-#content .tox-toolbar {
-  background-color: $bg_color_mce_panel;
-  border-bottom: 1px solid $border_color_mce_panel;
+  .tox-toolbar, .tox-toolbar__overflow, .tox-toolbar__primary {
+    background-image: none;
+    background-color: $bg_color_mce_panel;
+    border-bottom: 1px solid $border_color_mce_panel;
+    padding: 2px 0;
+  }
 
   .tox-tbtn {
     height: 30px;
     width: 30px;
+  }
+  .tox-split-button, .tox-tbtn {
+    margin-top: 0;
+    margin-bottom: 0;
+  }
+  .tox-split-button:hover {
+    box-shadow: none;
+  }
+  .tox-split-button:focus, .tox-tbtn--enabled:hover {
+    background: unset;
+  }
+  .tox-toolbar__group {
+    padding: 0 4px 0 4px;
+    border-color: $border_color_mce_panel;
+  }
+
+  .tox-tinymce {
+    &--toolbar-sticky-on .tox-editor-header {
+      // visual indicator that the sticky toolbar is covering content
+      box-shadow: rgba(0, 0, 0, 0.5) 0px 10px 10px;
+    }
+
+    border-radius: 0;
+    border-width: 1px;
+    border-color: $border_color_mce_panel;
   }
 }
 
