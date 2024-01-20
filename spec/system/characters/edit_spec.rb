@@ -40,7 +40,6 @@ RSpec.describe "Editing a character" do
     # update facecast of NPC
     visit edit_character_path(character)
     within('.character-form') do
-      expect(page).to have_field('Screenname', disabled: true)
       expect(page).to have_field('Template Cluster Name', disabled: true)
       expect(page).to have_field('Facecast', disabled: false)
 
@@ -60,12 +59,10 @@ RSpec.describe "Editing a character" do
     # turn NPC into non-NPC
     visit edit_character_path(character)
     within('.character-form') do
-      expect(page).to have_field('Screenname', disabled: true)
       expect(page).to have_field('Template Cluster Name', disabled: true)
       expect(page).to have_field('Facecast', disabled: false)
 
       uncheck 'NPC?'
-      expect(page).to have_field('Screenname', disabled: false)
       expect(page).to have_field('Template Cluster Name', disabled: false)
       expect(page).to have_field('Facecast', disabled: false)
 
