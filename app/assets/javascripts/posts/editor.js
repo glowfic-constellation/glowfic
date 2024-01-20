@@ -215,9 +215,9 @@ function fixWritableFormCaching() {
   const selectedCharID = $("#reply_character_id").val();
   const displayCharID = String($("#post-editor .post-character").data('character-id'));
   const selectedIconID = $("#reply_icon_id").val();
-  const displayIconID = String($("#current-icon").data('icon-id'));
+  // const displayIconID = String($("#current-icon").data('icon-id'));
   const selectedAliasID = $("#reply_character_alias_id").val();
-  const displayAliasID = String($("#post-editor .post-character").data('alias-id'));
+  // const displayAliasID = String($("#post-editor .post-character").data('alias-id'));
   if (selectedCharID === displayCharID) {
     if ($(".gallery-icon").length > 1) { /* Bind icon & gallery only if not resetting character, else it duplicate binds */
       bindIcon();
