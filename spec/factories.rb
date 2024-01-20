@@ -1,6 +1,35 @@
+class ErrorEnumerable
+  # returns an enumerable that repeatedly raises an error when it reaches the
+  # end of the range - even when used as an enumerator.
+
+  include Enumerable
+
+  def initialize(range, err)
+    @range = range
+    @err = err
+    @stopped = false
+  end
+
+  def each
+    raise StopIteration.new(@err) if @stopped
+    @range.each { |i| yield i }
+    @stopped = true
+    raise StopIteration.new(@err)
+  end
+end
+
+def ordered_numbers
+  # used in sequences to ensure an ordered list of (padded) numbers,
+  # which returns an error when we reach the limit of the sequence.
+  ErrorEnumerable.new(
+    "00000".."99999",
+    "FactoryBot sequence exhausted - please increment the range of ordered_numbers in spec/factories.rb",
+  ).to_enum
+end
+
 FactoryBot.define do
   factory :user, aliases: [:creator, :sender, :recipient, :blocking_user, :blocked_user] do
-    sequence :username, ("10000".."99999").cycle do |n|
+    sequence :username, ordered_numbers do |n|
       "JohnDoe#{n}"
     end
     password { "password" }
@@ -29,13 +58,13 @@ FactoryBot.define do
   factory :board do
     creator
     authors_locked { writer_ids.present? || writers.present? }
-    sequence :name, ("10000".."99999").cycle do |n|
+    sequence :name, ordered_numbers do |n|
       "test board #{n}"
     end
   end
 
   factory :board_section do
-    sequence :name, ("10000".."99999").cycle do |n|
+    sequence :name, ordered_numbers do |n|
       "TestSection#{n}"
     end
     board
@@ -52,7 +81,7 @@ FactoryBot.define do
     description { "" }
     editor_mode { 'rtf' }
     content { "test content" }
-    sequence :subject, ("10000".."99999").cycle do |n|
+    sequence :subject, ordered_numbers do |n|
       "test subject #{n}"
     end
     before(:create) do |post, evaluator|
@@ -67,7 +96,7 @@ FactoryBot.define do
 
   factory :gallery do
     user
-    sequence :name, ("10000".."99999").cycle do |n|
+    sequence :name, ordered_numbers do |n|
       "test gallery #{n}"
     end
     transient do
@@ -83,15 +112,15 @@ FactoryBot.define do
   factory :icon do
     user
     url { "http://www.fakeicon.com" }
-    sequence :keyword, ("10000".."99999").cycle do |n|
+    sequence :keyword, ordered_numbers do |n|
       "totally fake #{n}"
     end
 
     factory :uploaded_icon do
-      sequence :url, ("10000".."99999").cycle do |n|
+      sequence :url, ordered_numbers do |n|
         "https://d1anwqy6ci9o1i.cloudfront.net/users%2F#{user.id}%2Ficons%2Fnonsense-fakeimg-#{n}.png"
       end
-      sequence :s3_key, ("10000".."99999").cycle do |n|
+      sequence :s3_key, ordered_numbers do |n|
         "users/#{user.id}/icons/nonsense-fakeimg-#{n}.png"
       end
     end
@@ -105,7 +134,7 @@ FactoryBot.define do
     user
     post
     editor_mode { 'rtf' }
-    sequence :content, ("10000".."99999").cycle do |n|
+    sequence :content, ordered_numbers do |n|
       "test content #{n}"
     end
     before(:create) do |reply, evaluator|
@@ -118,7 +147,7 @@ FactoryBot.define do
     user
     post
     editor_mode { 'rtf' }
-    sequence :content, ("10000".."99999").cycle do |n|
+    sequence :content, ordered_numbers do |n|
       "test draft #{n}"
     end
   end
@@ -128,7 +157,7 @@ FactoryBot.define do
       with_default_icon { false }
     end
     user
-    sequence :name, ("10000".."99999").cycle do |n|
+    sequence :name, ordered_numbers do |n|
       "test character #{n}"
     end
     factory :template_character do
@@ -146,21 +175,21 @@ FactoryBot.define do
 
   factory :alias, class: :character_alias do
     character
-    sequence :name, ("10000".."99999").cycle do |n|
+    sequence :name, ordered_numbers do |n|
       "TestAlias#{n}"
     end
   end
 
   factory :template do
     user
-    sequence :name, ("10000".."99999").cycle do |n|
+    sequence :name, ordered_numbers do |n|
       "test template #{n}"
     end
   end
 
   factory :character_group do
     user
-    sequence :name, ("10000".."99999").cycle do |n|
+    sequence :name, ordered_numbers do |n|
       "test character group #{n}"
     end
   end
@@ -176,7 +205,7 @@ FactoryBot.define do
   end
 
   factory :tag do
-    sequence :name, ("10000".."99999").cycle do |n|
+    sequence :name, ordered_numbers do |n|
       "Tag#{n}"
     end
     user
@@ -202,7 +231,7 @@ FactoryBot.define do
     sender
     recipient
     message { 'test message' }
-    sequence :subject, ("10000".."99999").cycle do |n|
+    sequence :subject, ordered_numbers do |n|
       "Message#{n}"
     end
   end
@@ -228,14 +257,14 @@ FactoryBot.define do
 
   factory :index do
     user
-    sequence :name, ("10000".."99999").cycle do |n|
+    sequence :name, ordered_numbers do |n|
       "Index#{n}"
     end
   end
 
   factory :index_section do
     index
-    sequence :name, ("10000".."99999").cycle do |n|
+    sequence :name, ordered_numbers do |n|
       "IndexSection#{n}"
     end
   end
@@ -252,7 +281,7 @@ FactoryBot.define do
 
   factory :news do
     user { association(:mod_user) }
-    sequence :content, ("10000".."99999").cycle do |n|
+    sequence :content, ordered_numbers do |n|
       "content for news post #{n}"
     end
   end
