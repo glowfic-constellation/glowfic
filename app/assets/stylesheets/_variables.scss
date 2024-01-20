@@ -1,3 +1,4 @@
+@use "sass:math";
 @import 'palette';
 
 // Variables
@@ -155,7 +156,7 @@ $bg_color_content_border: transparent !default; // from river, is 0-width in def
 // produces the semi-transparent color needed to lay over $from to produce $target, at $opacity opacity
 // do not provide this function an opacity of 0.
 @function calculate-transparent-color($from, $target, $opacity) {
-  @return rgba(mix-allow-heavy($target, $from, ($opacity - 1) / $opacity), $opacity);
+  @return rgba(mix-allow-heavy($target, $from, math.div($opacity - 1, $opacity)), $opacity);
 }
 
 $opacity_blockquote: 0.2 !default;
