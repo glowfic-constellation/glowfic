@@ -1,6 +1,6 @@
 FactoryBot.define do
   factory :user, aliases: [:creator, :sender, :recipient, :blocking_user, :blocked_user] do
-    sequence :username do |n|
+    sequence :username, ("10000".."99999").cycle do |n|
       "JohnDoe#{n}"
     end
     password { "password" }
@@ -29,13 +29,13 @@ FactoryBot.define do
   factory :board do
     creator
     authors_locked { writer_ids.present? || writers.present? }
-    sequence :name do |n|
+    sequence :name, ("10000".."99999").cycle do |n|
       "test board #{n}"
     end
   end
 
   factory :board_section do
-    sequence :name do |n|
+    sequence :name, ("10000".."99999").cycle do |n|
       "TestSection#{n}"
     end
     board
@@ -52,7 +52,7 @@ FactoryBot.define do
     description { "" }
     editor_mode { 'rtf' }
     content { "test content" }
-    sequence :subject do |n|
+    sequence :subject, ("10000".."99999").cycle do |n|
       "test subject #{n}"
     end
     before(:create) do |post, evaluator|
@@ -67,7 +67,7 @@ FactoryBot.define do
 
   factory :gallery do
     user
-    sequence :name do |n|
+    sequence :name, ("10000".."99999").cycle do |n|
       "test gallery #{n}"
     end
     transient do
@@ -83,15 +83,15 @@ FactoryBot.define do
   factory :icon do
     user
     url { "http://www.fakeicon.com" }
-    sequence :keyword do |n|
+    sequence :keyword, ("10000".."99999").cycle do |n|
       "totally fake #{n}"
     end
 
     factory :uploaded_icon do
-      sequence :url do |n|
+      sequence :url, ("10000".."99999").cycle do |n|
         "https://d1anwqy6ci9o1i.cloudfront.net/users%2F#{user.id}%2Ficons%2Fnonsense-fakeimg-#{n}.png"
       end
-      sequence :s3_key do |n|
+      sequence :s3_key, ("10000".."99999").cycle do |n|
         "users/#{user.id}/icons/nonsense-fakeimg-#{n}.png"
       end
     end
@@ -105,7 +105,7 @@ FactoryBot.define do
     user
     post
     editor_mode { 'rtf' }
-    sequence :content do |n|
+    sequence :content, ("10000".."99999").cycle do |n|
       "test content #{n}"
     end
     before(:create) do |reply, evaluator|
@@ -118,7 +118,7 @@ FactoryBot.define do
     user
     post
     editor_mode { 'rtf' }
-    sequence :content do |n|
+    sequence :content, ("10000".."99999").cycle do |n|
       "test draft #{n}"
     end
   end
@@ -128,7 +128,7 @@ FactoryBot.define do
       with_default_icon { false }
     end
     user
-    sequence :name do |n|
+    sequence :name, ("10000".."99999").cycle do |n|
       "test character #{n}"
     end
     factory :template_character do
@@ -146,21 +146,21 @@ FactoryBot.define do
 
   factory :alias, class: :character_alias do
     character
-    sequence :name do |n|
+    sequence :name, ("10000".."99999").cycle do |n|
       "TestAlias#{n}"
     end
   end
 
   factory :template do
     user
-    sequence :name do |n|
+    sequence :name, ("10000".."99999").cycle do |n|
       "test template #{n}"
     end
   end
 
   factory :character_group do
     user
-    sequence :name do |n|
+    sequence :name, ("10000".."99999").cycle do |n|
       "test character group #{n}"
     end
   end
@@ -176,7 +176,7 @@ FactoryBot.define do
   end
 
   factory :tag do
-    sequence :name do |n|
+    sequence :name, ("10000".."99999").cycle do |n|
       "Tag#{n}"
     end
     user
@@ -202,7 +202,7 @@ FactoryBot.define do
     sender
     recipient
     message { 'test message' }
-    sequence :subject do |n|
+    sequence :subject, ("10000".."99999").cycle do |n|
       "Message#{n}"
     end
   end
@@ -228,14 +228,14 @@ FactoryBot.define do
 
   factory :index do
     user
-    sequence :name do |n|
+    sequence :name, ("10000".."99999").cycle do |n|
       "Index#{n}"
     end
   end
 
   factory :index_section do
     index
-    sequence :name do |n|
+    sequence :name, ("10000".."99999").cycle do |n|
       "IndexSection#{n}"
     end
   end
@@ -252,7 +252,7 @@ FactoryBot.define do
 
   factory :news do
     user { association(:mod_user) }
-    sequence :content do |n|
+    sequence :content, ("10000".."99999").cycle do |n|
       "content for news post #{n}"
     end
   end
