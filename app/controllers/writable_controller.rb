@@ -199,7 +199,7 @@ class WritableController < ApplicationController
         user_id: writable.user_id,
         nickname: post.subject,
         settings: post.settings,
-      )
+      ),
     )
   end
 
