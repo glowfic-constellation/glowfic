@@ -147,7 +147,7 @@ To perform a test:
 
 ```bash
 # you may wish to recreate + reseed your database for consistent images:
-# bin-docker/rails db:drop db:setup
+# bin-docker/rails db:reset
 
 # set the layout you want to validate
 export LAYOUT=starrylight
