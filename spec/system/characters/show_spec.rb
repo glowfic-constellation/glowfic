@@ -227,7 +227,10 @@ RSpec.describe "Viewing a character" do
     within('.character-right-content-box') do
       expect(page).to have_selector('th', text: 'Nickname')
       within(row_for('Nickname')) do
-        expect(page).to have_selector('td', exact_text: 'Char, Alias Person')
+        expect(page).to have_selector('td', exact_text: 'Char')
+      end
+      within(row_for('Aliases')) do
+        expect(page).to have_selector('td', exact_text: 'Alias Person')
       end
 
       expect(page).to have_selector('th', text: 'Template')

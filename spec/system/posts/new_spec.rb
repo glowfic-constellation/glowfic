@@ -110,7 +110,7 @@ RSpec.describe "Creating posts" do
     end
 
     expect(page).to have_text(/Adam\s+\(NPC\)/)
-    expect(page).to have_text(/Original post\(s\).*test subject/)
+    expect(page).to have_text(/Original post.*test subject/)
   end
 
   scenario "User creates a post with an existing NPC", :js do

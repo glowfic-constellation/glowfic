@@ -54,7 +54,7 @@ RSpec.describe "Editing a character" do
     end
     expect(page).to have_text(/MyChar\s+\(NPC\)/)
     expect(page).to have_text('Example facecast')
-    expect(page).to have_text(/Original post\(s\).*Thread/)
+    expect(page).to have_text(/Original post.*Thread/)
 
     # turn NPC into non-NPC
     visit edit_character_path(character)
@@ -77,6 +77,6 @@ RSpec.describe "Editing a character" do
     end
     expect(page).to have_no_text('(NPC)')
     expect(page).to have_text('example_screenname')
-    expect(page).to have_text(/Nickname\(s\).*Thread/)
+    expect(page).to have_text(/Nickname.*Thread/)
   end
 end
