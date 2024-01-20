@@ -85,6 +85,9 @@ load Rails.root.join('db', 'seeds', 'post.rb')
 puts "Creating replies..."
 load Rails.root.join('db', 'seeds', 'reply.rb')
 
+puts "Queuing flat post generation (will not update until jobs are run)"
+FlatPost.regenerate_all
+
 puts "Creating tags..."
 load Rails.root.join('db', 'seeds', 'tag.rb')
 
