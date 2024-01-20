@@ -128,9 +128,11 @@ textarea#post_private_note {
 #content .tox-split-button {
   &:focus, &:hover { background-color: $bg_color_input; }
 }
+
 #content .tox-tbtn--enabled {
   &, &:focus, &:hover { background-color: $bg_color_input; }
 }
+
 #content .tox .tox-tbtn {
   box-sizing: content-box;
 

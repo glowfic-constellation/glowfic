@@ -333,6 +333,7 @@ td, .table-list li { font-size: $font_size_small; }
   // applied to <a> objects wrapping .view-buttons to fix their size on the page
   float: right;
 }
+
 .view-button {
   float: right;
   margin: 0;
@@ -549,30 +550,34 @@ The copy box can't be invisible/hidden or copy fails but opacity works
     height: 30px;
     width: 30px;
   }
+
   .tox-split-button, .tox-tbtn {
     margin-top: 0;
     margin-bottom: 0;
   }
+
   .tox-split-button:hover {
     box-shadow: none;
   }
+
   .tox-split-button:focus, .tox-tbtn--enabled:hover {
     background: unset;
   }
+
   .tox-toolbar__group {
     padding: 0 4px 0 4px;
     border-color: $border_color_mce_panel;
   }
 
   .tox-tinymce {
+    border-radius: 0;
+    border-width: 1px;
+    border-color: $border_color_mce_panel;
+
     &--toolbar-sticky-on .tox-editor-header {
       // visual indicator that the sticky toolbar is covering content
       box-shadow: rgba(0, 0, 0, 0.5) 0px 10px 10px;
     }
-
-    border-radius: 0;
-    border-width: 1px;
-    border-color: $border_color_mce_panel;
   }
 }
 
