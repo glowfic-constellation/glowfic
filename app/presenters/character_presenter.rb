@@ -19,7 +19,7 @@ class CharacterPresenter
 
     char_json[:selector_name] = character.selector_name if options[:include].include?(:selector_name)
     char_json[:default_icon] = character.default_icon.try(:as_json) if options[:include].include?(:default_icon)
-    char_json[:aliases] = character.aliases if options[:include].include?(:aliases)
+    char_json[:aliases] = character.aliases.ordered if options[:include].include?(:aliases)
     char_json[:nickname] = character.nickname if options[:include].include?(:nickname)
     return char_json unless options[:include].include?(:galleries)
 
@@ -36,13 +36,13 @@ class CharacterPresenter
     galleries.map do |gallery|
       {
         name: gallery.name,
-        icons: gallery.icons,
+        icons: gallery.icons.ordered,
       }
     end
   end
 
   def single_gallery_json
-    icons = character.icons
+    icons = character.icons.ordered
     icons |= [character.default_icon] if character.default_icon.present?
     return [] unless icons.present?
     [{ icons: icons }]
