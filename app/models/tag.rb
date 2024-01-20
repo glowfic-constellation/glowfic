@@ -51,7 +51,7 @@ class Tag < ApplicationRecord
 
     g_tags = gallery_tags.joins(:gallery)
     g_tags = g_tags.where(galleries: { user_id: options[:user_id] }) if options[:user_id].present?
-    tag_json[:gallery_ids] = g_tags.pluck(:gallery_id)
+    tag_json[:gallery_ids] = g_tags.pluck(:gallery_id).sort
     tag_json
   end
 
