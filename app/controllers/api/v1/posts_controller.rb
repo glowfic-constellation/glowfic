@@ -28,7 +28,7 @@ class Api::V1::PostsController < Api::ApiController
   api :PATCH, '/posts/:id', 'Update a single post. Currently only supports saving the private note for an author.'
   header 'Authorization', 'Authorization token for a user in the format "Authorization" : "Bearer [token]"', required: true
   param :id, :number, required: true, desc: "Post ID"
-  param :private_note, String, required: true, desc: "Author's private notes about this post"
+  param :private_note, String, required: true, allow_blank: true, desc: "Author's private notes about this post"
   error 403, "Post is not visible to the user"
   error 404, "Post not found"
   error 422, "Invalid parameters provided"
