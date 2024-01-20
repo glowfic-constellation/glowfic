@@ -240,8 +240,8 @@ function toggleEditor() {
     $("#editor_mode").val('rtf');
     $(this).addClass('selected');
     if (tinyMCEInit) {
-      tinyMCE.execCommand('mceAddEditor', true, 'post_content');
-      tinyMCE.execCommand('mceAddEditor', true, 'reply_content');
+      if (tinyMCE.get('post_content')) tinyMCE.get('post_content').show();
+      if (tinyMCE.get('reply_content')) tinyMCE.get('reply_content').show();
     } else {
       setupTinyMCE();
     }
@@ -249,8 +249,8 @@ function toggleEditor() {
     $("#rtf").removeClass('selected');
     $("#editor_mode").val('html');
     $(this).addClass('selected');
-    tinyMCE.execCommand('mceRemoveEditor', false, 'post_content');
-    tinyMCE.execCommand('mceRemoveEditor', false, 'reply_content');
+    if (tinyMCE.get('post_content')) tinyMCE.get('post_content').hide();
+    if (tinyMCE.get('reply_content')) tinyMCE.get('reply_content').hide();
   }
 }
 
