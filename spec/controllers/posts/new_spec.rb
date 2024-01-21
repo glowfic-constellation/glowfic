@@ -56,7 +56,7 @@ RSpec.describe PostsController, 'GET new' do
     end
 
     it "works for importer" do
-      user.update!(role_id: Permissible::IMPORTER)
+      user.update!(role_id: :importer)
       get :new, params: { view: :import }
       expect(response).to have_http_status(200)
     end

@@ -160,7 +160,7 @@ RSpec.describe NewsController do
       login
       get :edit, params: { id: create(:news).id }
       expect(response).to redirect_to(news_index_url)
-      expect(flash[:error]).to eq("You do not have permission to manage news posts.")
+      expect(flash[:error]).to eq("You do not have permission to modify this news post.")
     end
 
     it "errors if wrong mod" do
@@ -207,7 +207,7 @@ RSpec.describe NewsController do
       login
       patch :update, params: { id: create(:news).id }
       expect(response).to redirect_to(news_index_url)
-      expect(flash[:error]).to eq("You do not have permission to manage news posts.")
+      expect(flash[:error]).to eq("You do not have permission to modify this news post.")
     end
 
     it "errors if wrong mod" do
@@ -263,7 +263,7 @@ RSpec.describe NewsController do
       login
       delete :destroy, params: { id: create(:news).id }
       expect(response).to redirect_to(news_index_url)
-      expect(flash[:error]).to eq("You do not have permission to manage news posts.")
+      expect(flash[:error]).to eq("You do not have permission to modify this news post.")
     end
 
     it "errors if wrong mod" do

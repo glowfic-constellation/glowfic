@@ -59,7 +59,7 @@ RSpec.describe PostsController, 'GET unread' do
     end
 
     it "succeeds for reader accounts" do
-      user.update!(role_id: Permissible::READONLY)
+      user.update!(role_id: :read_only)
       get :unread
       expect(response).to have_http_status(200)
       expect(assigns(:started)).not_to eq(true)
