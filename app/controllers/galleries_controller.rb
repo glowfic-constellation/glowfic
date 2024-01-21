@@ -3,24 +3,16 @@ class GalleriesController < UploadingController
   include Taggable
 
   before_action :login_required, except: [:index, :show, :search]
-  before_action :find_model, only: [:destroy, :edit, :update] # assumes login_required
+  before_action :find_model, only: [:destroy, :edit, :update]
+  before_action :require_edit_permission, only: [:edit, :update, :destroy]
   before_action :require_create_permission, only: [:new, :create, :add, :icon]
+  before_action :find_user, only: [:index]
+  before_action :require_own_gallery, only: [:add, :icon]
   before_action :setup_new_icons, only: [:add, :icon]
   before_action :set_s3_url, only: [:edit, :add, :icon]
   before_action :editor_setup, only: [:new, :edit]
 
   def index
-    if params[:user_id].present?
-      unless (@user = User.active.full.find_by_id(params[:user_id]))
-        flash[:error] = 'User could not be found.'
-        redirect_to root_path and return
-      end
-    else
-      return if login_required
-      return if readonly_forbidden
-      @user = current_user
-    end
-
     @page_title = if @user.id == current_user.try(:id)
       "Your Galleries"
     else
@@ -62,40 +54,17 @@ class GalleriesController < UploadingController
 
   def show
     if params[:id].to_s == '0' # avoids casting nils to 0
-      if params[:user_id].present?
-        unless (@user = User.active.full.find_by_id(params[:user_id]))
-          flash[:error] = 'User could not be found.'
-          redirect_to root_path and return
-        end
-      else
-        return if login_required
-        return if readonly_forbidden
-        @user = current_user
-      end
+      find_user
+      return if performed?
       @page_title = 'Galleryless Icons'
     else
-      @gallery = Gallery.find_by_id(params[:id])
-      unless @gallery
-        flash[:error] = "Gallery could not be found."
-        redirect_to(logged_in? ? user_galleries_path(current_user) : root_path) and return
-      end
-
+      return unless find_model
       @user = @gallery.user
       @page_title = @gallery.name + ' (Gallery)'
       @meta_og = og_data
     end
     icons = @gallery ? @gallery.icons : @user.galleryless_icons
-    if page_view == 'list'
-      posts = Post.visible_to(current_user).where(icon_id: icons.map(&:id))
-      post_counts = posts.select(:icon_id).group(:icon_id).count
-      replies = Reply.visible_to(current_user).where(icon_id: icons.map(&:id))
-      reply_counts = replies.select(:icon_id).group(:icon_id).count
-      post_ids = replies.select(:icon_id, :post_id).distinct.pluck(:icon_id, :post_id)
-      post_ids += posts.select(:icon_id, :id).distinct.pluck(:icon_id, :id)
-
-      @times_used = post_counts.merge(reply_counts) { |_, p, r| p + r }
-      @posts_used = post_ids.uniq.group_by(&:first).transform_values(&:size)
-    end
+    @times_used, @posts_used = Icon.times_used(icons, current_user) if page_view == 'list'
     render :show, locals: { icons: icons }
   end
 
@@ -130,61 +99,17 @@ class GalleriesController < UploadingController
 
   def icon
     if params[:image_ids].present?
-      unless @gallery # gallery required for adding icons from other galleries
-        flash[:error] = "Gallery could not be found."
-        redirect_to user_galleries_path(current_user) and return
-      end
+      return unless find_model # gallery required for adding icons from other galleries
 
       icon_ids = params[:image_ids].split(',').map(&:to_i).reject(&:zero?)
-      icon_ids -= @gallery.icons.pluck(:id)
-      icons = Icon.where(id: icon_ids)
-      icons.each do |icon|
-        next unless icon.user_id == current_user.id
-        @gallery.icons << icon
-      end
+      icon_ids -= @gallery.icons.ids
+      icons = Icon.where(id: icon_ids, user_id: current_user.id)
+      @gallery.icons += icons
+
       flash[:success] = "Icons added to gallery."
-      redirect_to @gallery and return
-    end
-
-    icons = (params[:icons] || []).reject { |icon| icon.values.all?(&:blank?) }
-    if icons.empty?
-      flash.now[:error] = "You have to enter something."
-      render :add and return
-    end
-
-    failed = false
-    @icons = icons
-    icons = []
-    @icons.each_with_index do |icon, index|
-      icon = Icon.new(icon_params(icon.except('filename', 'file')))
-      icon.user = current_user
-      unless icon.valid?
-        @icons[index]['url'] = @icons[index]['s3_key'] = '' if icon.errors.messages[:url]&.include?('is invalid')
-        flash.now[:error] ||= {}
-        flash.now[:error][:array] ||= []
-        flash.now[:error][:array] += icon.errors.full_messages.map { |m| "Icon #{index + 1}: #{m.downcase}" }
-        failed = true and next
-      end
-      icons << icon
-    end
-
-    if failed
-      flash.now[:error][:message] = "Your icons could not be saved."
-      render :add and return
-    elsif icons.empty?
-      @icons = []
-      flash.now[:error] = "Your icons could not be saved."
-      render :add
-    elsif icons.all?(&:save)
-      flash[:success] = "Icons saved."
-      if @gallery
-        icons.each { |icon| @gallery.icons << icon }
-        redirect_to @gallery and return
-      end
-      redirect_to user_gallery_path(id: 0, user_id: current_user.id)
+      redirect_to @gallery
     else
-      flash.now[:error] = "Your icons could not be saved."
-      render :add
+      add_new_icons
     end
   end
 
@@ -206,13 +131,13 @@ class GalleriesController < UploadingController
   private
 
   def find_model
-    @gallery = Gallery.find_by_id(params[:id])
+    return true if (@gallery = Gallery.find_by_id(params[:id]))
+    flash[:error] = "Gallery could not be found."
+    redirect_to(logged_in? ? user_galleries_path(current_user) : root_path)
+    false
+  end
 
-    unless @gallery
-      flash[:error] = "Gallery could not be found."
-      redirect_to user_galleries_path(current_user) and return
-    end
-
+  def require_edit_permission
     return if @gallery.user_id == current_user.id
     flash[:error] = "You do not have permission to modify this gallery."
     redirect_to user_galleries_path(current_user)
@@ -224,6 +149,72 @@ class GalleriesController < UploadingController
     redirect_to continuities_path
   end
 
+  def require_own_gallery
+    return if params[:id].to_s == '0'
+    return unless find_model
+    require_edit_permission
+  end
+
+  def find_user
+    if params[:user_id].present?
+      unless (@user = User.active.full.find_by_id(params[:user_id]))
+        flash[:error] = 'User could not be found.'
+        redirect_to root_path
+      end
+    else
+      return if login_required
+      return if readonly_forbidden
+      @user = current_user
+    end
+  end
+
+  def add_new_icons
+    @icons = (params[:icons] || []).reject { |icon| icon.values.all?(&:blank?) }
+
+    if @icons.empty?
+      flash.now[:error] = "You have to enter something."
+      render :add and return
+    end
+
+    icons = @icons.map { |hash| Icon.new(icon_params(hash.except('filename', 'file')).merge(user: current_user)) }
+
+    if icons.any? { |i| !i.valid? }
+      flash.now[:error] = {
+        message: "Icons could not be saved because of the following problems:",
+        array: [],
+      }
+
+      icons.each_with_index do |icon, index|
+        next if icon.valid?
+        @icons[index]['url'] = @icons[index]['s3_key'] = '' if icon.errors.added?(:url, :invalid)
+        flash.now[:error][:array] += icon.get_errors(index)
+      end
+
+      render :add and return
+    end
+
+    errors = []
+    Icon.transaction do
+      icons.each_with_index do |icon, index|
+        next if icon.save
+        errors += icon.errors.present? ? icon.get_errors(index) : ["Icon #{index + 1} could not be saved."]
+      end
+      raise ActiveRecord::Rollback if errors.present?
+      @gallery.icons += icons if @gallery
+    end
+
+    if errors.present?
+      flash.now[:error] = {
+        message: "Icons could not be saved because of the following problems:",
+        array: errors,
+      }
+      render :add
+    else
+      flash[:success] = "Icons saved."
+      redirect_to @gallery || user_gallery_path(id: 0, user_id: current_user.id)
+    end
+  end
+
   def setup_new_icons
     if params[:type] == "existing"
       use_javascript('galleries/add_existing')
@@ -232,7 +223,6 @@ class GalleriesController < UploadingController
       use_javascript('galleries/uploader')
     end
     @icons = []
-    find_model unless params[:id] == '0'
     @unassigned = current_user.galleryless_icons
     @page_title = "Add Icons"
     @page_title += ": " + @gallery.name unless @gallery.nil?
