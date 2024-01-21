@@ -35,9 +35,6 @@ class BlocksController < ApplicationController
       flash[:success] = "User blocked."
       redirect_to blocks_path
     end
-
-    flash[:success] = "User blocked."
-    redirect_to blocks_path
   end
 
   def edit
@@ -58,9 +55,6 @@ class BlocksController < ApplicationController
       flash[:success] = "Block updated."
       redirect_to blocks_path
     end
-
-    flash[:success] = "Block updated."
-    redirect_to blocks_path
   end
 
   def destroy
