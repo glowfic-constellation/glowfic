@@ -528,7 +528,7 @@ RSpec.describe IconsController do
       post :avatar, params: { id: icon.id }
 
       expect(response).to redirect_to(icon_url(icon))
-      expect(flash[:error][:message]).to eq("Avatar could not be set because of the following problems:")
+      expect(flash[:error]).to eq("Avatar could not be set.")
       expect(user.reload.avatar_id).to be_nil
     end
 
