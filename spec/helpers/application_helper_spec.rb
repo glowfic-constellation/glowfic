@@ -202,12 +202,26 @@ RSpec.describe ApplicationHelper do
 
     it "uses given format" do
       format = '%Y-%m-%d %l:%M %p'
-      expect(helper.pretty_time(time, format: format)).to eq('2016-12-25  9:34 PM')
+
+      html = content_tag(:time, datetime: time.utc.iso8601, title: time.utc.strftime("%Y-%m-%d %H:%M %Z")) do
+        '2016-12-25  9:34 PM'
+      end
+
+      Time.use_zone('UTC') do
+        expect(helper.pretty_time(time, format: format)).to eq(html)
+      end
     end
 
     it "uses user format" do
       user.update!(time_display: '%m-%d-%Y %l:%M:%S %p')
-      expect(helper.pretty_time(time)).to eq('12-25-2016  9:34:56 PM')
+
+      html = content_tag(:time, datetime: time.utc.iso8601, title: time.utc.strftime("%Y-%m-%d %H:%M %Z")) do
+        '12-25-2016  9:34:56 PM'
+      end
+
+      Time.use_zone('UTC') do
+        expect(helper.pretty_time(time)).to eq(html)
+      end
     end
 
     it "uses default format" do
@@ -215,9 +229,23 @@ RSpec.describe ApplicationHelper do
         allow(helper).to receive(:current_user).and_return(nil)
       end
 
-      Time.use_zone('UTC') do
-        expect(helper.pretty_time(time)).to eq('Dec 25, 2016  9:34 PM')
+      html = content_tag(:time, datetime: time.utc.iso8601, title: time.utc.strftime("%Y-%m-%d %H:%M %Z")) do
+        'Dec 25, 2016  9:34 PM'
       end
+
+      Time.use_zone('UTC') do
+        expect(helper.pretty_time(time)).to eq(html)
+      end
+    end
+
+    it "uses time zone" do
+      user.update!(time_display: '%Y-%m-%d %l:%M %p')
+
+      html = content_tag(:time, datetime: time.utc.iso8601, title: time.utc.strftime("%Y-%m-%d %H:%M %Z")) do
+        time.in_time_zone.strftime(user.time_display)
+      end
+
+      expect(helper.pretty_time(time)).to eq(html)
     end
   end
 
