@@ -611,7 +611,7 @@ RSpec.describe GalleriesController do
       delete :destroy, params: { id: gallery.id }
 
       expect(response).to redirect_to(gallery_url(gallery))
-      expect(flash[:error][:message]).to eq("Gallery could not be deleted because of the following problems:")
+      expect(flash[:error]).to eq("Gallery could not be deleted.")
       expect(icon.reload.galleries).to eq([gallery])
     end
   end

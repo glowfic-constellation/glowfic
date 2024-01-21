@@ -487,7 +487,7 @@ RSpec.describe BoardsController do
       delete :destroy, params: { id: board.id }
 
       expect(response).to redirect_to(continuity_url(board))
-      expect(flash[:error][:message]).to eq("Continuity could not be deleted because of the following problems:")
+      expect(flash[:error]).to eq("Continuity could not be deleted.")
       expect(post.reload.board).to eq(board)
     end
   end

@@ -481,7 +481,7 @@ RSpec.describe IconsController do
       delete :destroy, params: { id: icon.id }
 
       expect(response).to redirect_to(icon_url(icon))
-      expect(flash[:error][:message]).to eq("Icon could not be deleted because of the following problems:")
+      expect(flash[:error]).to eq("Icon could not be deleted.")
       expect(post.reload.icon).to eq(icon)
     end
   end

@@ -267,7 +267,7 @@ RSpec.describe TemplatesController do
       delete :destroy, params: { id: template.id }
 
       expect(response).to redirect_to(template_url(template))
-      expect(flash[:error][:message]).to eq("Template could not be deleted because of the following problems:")
+      expect(flash[:error]).to eq("Template could not be deleted.")
       expect(character.reload.template).to eq(template)
     end
   end

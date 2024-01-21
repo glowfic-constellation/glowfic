@@ -428,7 +428,7 @@ RSpec.describe TagsController do
       delete :destroy, params: { id: tag.id }
 
       expect(response).to redirect_to(tag_url(tag))
-      expect(flash[:error][:message]).to eq("Label could not be deleted because of the following problems:")
+      expect(flash[:error]).to eq("Label could not be deleted.")
       expect(Tag.find_by(id: tag.id)).not_to be_nil
     end
   end

@@ -903,7 +903,7 @@ RSpec.describe CharactersController do
       delete :destroy, params: { id: character.id }
 
       expect(response).to redirect_to(character_url(character))
-      expect(flash[:error][:message]).to eq("Character could not be deleted because of the following problems:")
+      expect(flash[:error]).to eq("Character could not be deleted.")
       expect(post.reload.character).to eq(character)
     end
   end
