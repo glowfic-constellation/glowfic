@@ -35,11 +35,8 @@ class PasswordResetsController < ApplicationController
     password_reset = PasswordReset.new(user: user)
     begin
       password_reset.save!
-    rescue ActiveRecord::RecordInvalid
-      flash.now[:error] = {
-        message: "Password reset could not be created because of the following problems:",
-        array: password_reset.errors.full_messages,
-      }
+    rescue ActiveRecord::RecordInvalid => e
+      render_errors(password_reset, action: 'created', now: true, err: e)
       render :new
     else
       UserMailer.password_reset_link(password_reset.id).deliver
@@ -63,11 +60,10 @@ class PasswordResetsController < ApplicationController
         @password_reset.user.save!
         @password_reset.update!(used: true)
       end
-    rescue ActiveRecord::RecordInvalid
-      flash.now[:error] = {
-        message: "Password could not be updated because of the following problems:",
-        array: @password_reset.errors.full_messages + @password_reset.user.errors.full_messages,
-      }
+    rescue ActiveRecord::RecordInvalid => e
+      @password_reset.errors.merge!(@password_reset.user.errors)
+      render_errors(@password_reset, action: 'updated', now: true, class_name: 'Password', err: e)
+
       @page_title = 'Change Password'
       render :show
     else

@@ -19,11 +19,9 @@ class BoardSectionsController < ApplicationController
 
     begin
       @board_section.save!
-    rescue ActiveRecord::RecordInvalid
-      flash.now[:error] = {
-        message: "Section could not be created because of the following problems:",
-        array: @board_section.errors.full_messages,
-      }
+    rescue ActiveRecord::RecordInvalid => e
+      render_errors(@board_section, action: 'created', now: true, class_name: 'Section', err: e)
+
       @page_title = 'New Section'
       render :new
     else
@@ -51,11 +49,9 @@ class BoardSectionsController < ApplicationController
 
     begin
       @board_section.save!
-    rescue ActiveRecord::RecordInvalid
-      flash.now[:error] = {
-        message: "Section could not be updated because of the following problems:",
-        array: @board_section.errors.full_messages,
-      }
+    rescue ActiveRecord::RecordInvalid => e
+      render_errors(@board_section, action: 'updated', now: true, class_name: 'Section', err: e)
+
       @page_title = 'Edit ' + @board_section.name_was
       use_javascript('board_sections')
       gon.section_id = @board_section.id
@@ -69,11 +65,8 @@ class BoardSectionsController < ApplicationController
   def destroy
     begin
       @board_section.destroy!
-    rescue ActiveRecord::RecordNotDestroyed
-      flash[:error] = {
-        message: "Section could not be deleted because of the following problems:",
-        array: @board_section.errors.full_messages,
-      }
+    rescue ActiveRecord::RecordNotDestroyed => e
+      render_errors(@board_section, action: 'deleted', class_name: 'Section', err: e)
       redirect_to board_section_path(@board_section)
     else
       flash[:success] = "Section deleted."

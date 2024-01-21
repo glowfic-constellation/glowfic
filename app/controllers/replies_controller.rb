@@ -159,11 +159,9 @@ class RepliesController < WritableController
 
     begin
       reply.save!
-    rescue ActiveRecord::RecordInvalid
-      flash[:error] = {
-        message: "Reply could not be created because of the following problems:",
-        array: reply.errors.full_messages,
-      }
+    rescue ActiveRecord::RecordInvalid => e
+      render_errors(reply, action: 'created', now: true, err: e)
+
       redirect_to posts_path and return unless reply.post
       redirect_to post_path(reply.post)
     else
@@ -198,11 +196,9 @@ class RepliesController < WritableController
 
     begin
       @reply.save!
-    rescue ActiveRecord::RecordInvalid
-      flash[:error] = {
-        message: "Reply could not be updated because of the following problems:",
-        array: @reply.errors.full_messages,
-      }
+    rescue ActiveRecord::RecordInvalid => e
+      render_errors(@reply, action: 'updated', now: true, err: e)
+
       @audits = { @reply.id => @post.audits.count }
       editor_setup
       render :edit
@@ -224,11 +220,8 @@ class RepliesController < WritableController
     # to destroy subsequent replies, do @reply.destroy_subsequent_replies
     begin
       @reply.destroy!
-    rescue ActiveRecord::RecordNotDestroyed
-      flash[:error] = {
-        message: "Reply could not be deleted because of the following problems:",
-        array: @reply.errors.full_messages,
-      }
+    rescue ActiveRecord::RecordNotDestroyed => e
+      render_errors(@reply, action: 'deleted', err: e)
       redirect_to reply_path(@reply, anchor: "reply-#{@reply.id}")
     else
       flash[:success] = "Reply deleted."
@@ -327,11 +320,8 @@ class RepliesController < WritableController
 
     begin
       draft.save!
-    rescue ActiveRecord::RecordInvalid
-      flash[:error] = {
-        message: "Draft could not be saved because of the following problems:",
-        array: draft.errors.full_messages,
-      }
+    rescue ActiveRecord::RecordInvalid => e
+      render_errors(draft, action: 'saved', class_name: 'Draft', err: e)
     else
       if show_message
         msg = "Draft saved."

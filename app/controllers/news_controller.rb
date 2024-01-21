@@ -22,11 +22,9 @@ class NewsController < ApplicationController
 
     begin
       @news.save!
-    rescue ActiveRecord::RecordInvalid
-      flash.now[:error] = {
-        message: "News post could not be created because of the following problems:",
-        array: @news.errors.full_messages,
-      }
+    rescue ActiveRecord::RecordInvalid => e
+      render_errors(@news, action: 'created', now: true, class_name: 'News post', err: e)
+
       @page_title = 'Create News Post'
       render :new
     else
@@ -47,11 +45,8 @@ class NewsController < ApplicationController
   def update
     begin
       @news.update!(permitted_params)
-    rescue ActiveRecord::RecordInvalid
-      flash.now[:error] = {
-        message: "News post could not be updated because of the following problems:",
-        array: @news.errors.full_messages,
-      }
+    rescue ActiveRecord::RecordInvalid => e
+      render_errors(@news, action: 'updated', now: true, class_name: 'News post', err: e)
       @page_title = "Edit News Post"
       render :edit
     else
@@ -68,11 +63,8 @@ class NewsController < ApplicationController
 
     begin
       @news.destroy!
-    rescue ActiveRecord::RecordNotDestroyed
-      flash[:error] = {
-        message: "News post could not be deleted because of the following problems:",
-        array: @news.errors.full_messages,
-      }
+    rescue ActiveRecord::RecordNotDestroyed => e
+      render_errors(@news, action: 'deleted', class_name: 'News post', err: e)
     else
       flash[:success] = "News post deleted."
     end

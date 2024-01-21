@@ -11,6 +11,17 @@ RSpec.describe ApplicationController do
     def show
       render template: 'sessions/index' # used by check_tos for a GET with a layout
     end
+
+    def destroy
+      obj = User.find_by(id: params[:id])
+      begin
+        obj.destroy!
+      rescue ActiveRecord::RecordNotDestroyed => e
+        render_errors(obj, action: 'deleted', class_name: 'Object', err: e)
+      else
+        flash[:success] = "Object removed."
+      end
+    end
   end
 
   describe "#set_timezone" do
@@ -503,6 +514,59 @@ RSpec.describe ApplicationController do
       expect(flash[:error]).to include("Oops, looks like your session expired!")
       session_save = session[:attempted_reply].permit!
       expect(session_save.to_h).to eq(reply_param)
+    end
+  end
+
+  describe "exception flow" do
+    let!(:klass) { User }
+    let!(:obj) { create(:user) }
+
+    it "succeeds" do
+      expect(obj).to receive(:destroy).and_call_original
+
+      allow(klass).to receive(:find_by).with(id: obj.id.to_s).and_return(obj)
+      expect(klass).to receive(:find_by)
+
+      delete :destroy, params: { id: obj.id }
+      aggregate_failures do
+        expect(flash[:success]).to eq("Object removed.")
+        expect(flash[:error]).to be_nil
+      end
+    end
+
+    it "handles destroy failure with model errors" do
+      expect(obj).to receive(:destroy) do
+        obj.errors.add(:base, "fake error")
+        false
+      end
+
+      allow(klass).to receive(:find_by).with(id: obj.id.to_s).and_return(obj)
+      expect(klass).to receive(:find_by)
+
+      delete :destroy, params: { id: obj.id }
+      aggregate_failures do
+        expect(flash[:success]).to be_nil
+        expect(flash[:error]).to eq({
+          message: "Object could not be deleted because of the following problems:",
+          array: ["fake error"],
+        })
+      end
+    end
+
+    it "handles destroy failure with unknown errors" do
+      allow(obj).to receive(:destroy).and_return(false)
+      expect(obj).to receive(:destroy)
+
+      allow(klass).to receive(:find_by).with(id: obj.id.to_s).and_return(obj)
+      expect(klass).to receive(:find_by)
+
+      expect(controller).to receive(:log_error)
+
+      delete :destroy, params: { id: obj.id }
+      aggregate_failures do
+        expect(flash[:success]).to be_nil
+        expect(flash[:error]).to eq("Object could not be deleted.")
+      end
     end
   end
 end

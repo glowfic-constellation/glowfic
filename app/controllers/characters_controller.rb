@@ -49,11 +49,9 @@ class CharactersController < ApplicationController
 
     begin
       @character.save!
-    rescue ActiveRecord::RecordInvalid
-      flash.now[:error] = {
-        message: "Character could not be created because of the following problems:",
-        array: @character.errors.full_messages,
-      }
+    rescue ActiveRecord::RecordInvalid => e
+      render_errors(@character, action: 'created', now: true, err: e)
+
       @page_title = "New Character"
       editor_setup
       render :new
@@ -90,11 +88,9 @@ class CharactersController < ApplicationController
         @character.gallery_groups = process_tags(GalleryGroup, obj_param: :character, id_param: :gallery_group_ids)
         @character.save!
       end
-    rescue ActiveRecord::RecordInvalid
-      flash.now[:error] = {
-        message: "Character could not be updated because of the following problems:",
-        array: @character.errors.full_messages,
-      }
+    rescue ActiveRecord::RecordInvalid => e
+      render_errors(@character, action: 'updated', now: true, err: e)
+
       @page_title = "Edit Character: " + @character.name
       editor_setup
       render :edit
@@ -119,11 +115,8 @@ class CharactersController < ApplicationController
         end
         dupe.save!
       end
-    rescue ActiveRecord::RecordInvalid
-      flash[:error] = {
-        message: "Character could not be duplicated because of the following problems:",
-        array: dupe.errors.full_messages,
-      }
+    rescue ActiveRecord::RecordInvalid => e
+      render_errors(dupe, action: 'duplicated', err: e)
       redirect_to @character
     else
       flash[:success] = "Character duplicated. You are now editing the new character."
@@ -139,11 +132,8 @@ class CharactersController < ApplicationController
 
     begin
       @character.destroy!
-    rescue ActiveRecord::RecordNotDestroyed
-      flash[:error] = {
-        message: "Character could not be deleted because of the following problems:",
-        array: @character.errors.full_messages,
-      }
+    rescue ActiveRecord::RecordNotDestroyed => e
+      render_errors(@character, action: 'deleted', err: e)
       redirect_to @character
     else
       flash[:success] = "Character deleted."
