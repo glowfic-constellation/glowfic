@@ -5,6 +5,40 @@ let tinyMCEInit = false;
 let shownIcons = [];
 let iconSelectBox;
 
+function tinyMCEConfig(selector) {
+  const height = ($(selector).height() || 150) + 15;
+  return {
+    // integration configs
+    selector: selector,
+    plugins: ["wordcount", "image", "link", "autoresize"],
+    cache_suffix: '?v=6.8.2',
+    // interface configs
+    menubar: false, // disable "File", "Edit", etc
+    contextmenu: false,
+    min_height: height,
+    // - toolbar
+    toolbar_sticky: true,
+    toolbar: ["bold italic underline strikethrough forecolor | link image | blockquote hr bullist numlist | undo redo"],
+    // - statusbar
+    statusbar: true,
+    branding: false,
+    elementpath: false,
+    resize: true,
+    // editor content behavior
+    body_class: gon.editor_class,
+    custom_undo_redo_levels: 10,
+    content_css: gon.tinymce_css_path,
+    browser_spellcheck: true,
+    document_base_url: gon.base_url,
+    relative_urls: false,
+    remove_script_host: true,
+    text_patterns: false, // disable markdown-like autoformatting from TinyMCE 6 (for now)
+    // plugin configs
+    // - autoresize
+    autoresize_bottom_margin: 5,
+  };
+}
+
 $(document).ready(function() {
   setupMetadataEditor();
   iconSelectBox = $('#reply-icon-selector');
@@ -240,8 +274,8 @@ function toggleEditor() {
     $("#editor_mode").val('rtf');
     $(this).addClass('selected');
     if (tinyMCEInit) {
-      if (tinyMCE.get('post_content')) tinyMCE.get('post_content').show();
-      if (tinyMCE.get('reply_content')) tinyMCE.get('reply_content').show();
+      tinyMCE.execCommand('mceAddEditor', true, { id: 'post_content', options: tinyMCEConfig('#post_content') });
+      tinyMCE.execCommand('mceAddEditor', true, { id: 'reply_content', options: tinyMCEConfig('#reply_content') });
     } else {
       setupTinyMCE();
     }
@@ -249,8 +283,8 @@ function toggleEditor() {
     $("#rtf").removeClass('selected');
     $("#editor_mode").val('html');
     $(this).addClass('selected');
-    if (tinyMCE.get('post_content')) tinyMCE.get('post_content').hide();
-    if (tinyMCE.get('reply_content')) tinyMCE.get('reply_content').hide();
+    tinyMCE.execCommand('mceRemoveEditor', false, 'post_content');
+    tinyMCE.execCommand('mceRemoveEditor', false, 'reply_content');
   }
 }
 
@@ -299,37 +333,7 @@ function setupTinyMCE() {
   if (typeof tinyMCE === 'undefined') {
     setTimeout(arguments.callee, 50);
   } else {
-    const height = ($(selector).height() || 150) + 15;
-    tinyMCE.init({
-      // integration configs
-      selector: selector,
-      plugins: ["wordcount", "image", "link", "autoresize"],
-      cache_suffix: '?v=6.8.2',
-      // interface configs
-      menubar: false, // disable "File", "Edit", etc
-      contextmenu: false,
-      min_height: height,
-      // - toolbar
-      toolbar_sticky: true,
-      toolbar: ["bold italic underline strikethrough forecolor | link image | blockquote hr bullist numlist | undo redo"],
-      // - statusbar
-      statusbar: true,
-      branding: false,
-      elementpath: false,
-      resize: true,
-      // editor content behavior
-      body_class: gon.editor_class,
-      custom_undo_redo_levels: 10,
-      content_css: gon.tinymce_css_path,
-      browser_spellcheck: true,
-      document_base_url: gon.base_url,
-      relative_urls: false,
-      remove_script_host: true,
-      text_patterns: false, // disable markdown-like autoformatting from TinyMCE 6 (for now)
-      // plugin configs
-      // - autoresize
-      autoresize_bottom_margin: 5,
-    });
+    tinyMCE.init(tinyMCEConfig(selector));
     tinyMCEInit = true;
   }
 }
