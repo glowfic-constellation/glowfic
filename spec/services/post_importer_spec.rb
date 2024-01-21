@@ -9,31 +9,31 @@ RSpec.describe PostImporter do
     context "when validating url" do
       it "raises error on nil url" do
         importer = PostImporter.new(nil)
-        expect { importer.import(nil, nil) }.to raise_error(InvalidDreamwidthURL)
+        expect { importer.import({}, user: nil) }.to raise_error(InvalidDreamwidthURL)
         expect(ScrapePostJob).not_to have_been_enqueued
       end
 
       it "raises error on empty url" do
         importer = PostImporter.new('')
-        expect { importer.import(nil, nil) }.to raise_error(InvalidDreamwidthURL)
+        expect { importer.import({}, user: nil) }.to raise_error(InvalidDreamwidthURL)
         expect(ScrapePostJob).not_to have_been_enqueued
       end
 
       it "raises error without dreamwidth url" do
         importer = PostImporter.new('http://www.google.com')
-        expect { importer.import(nil, nil) }.to raise_error(InvalidDreamwidthURL)
+        expect { importer.import({}, user: nil) }.to raise_error(InvalidDreamwidthURL)
         expect(ScrapePostJob).not_to have_been_enqueued
       end
 
       it "raises error without dreamwidth.org url" do
         importer = PostImporter.new('http://www.dreamwidth.com')
-        expect { importer.import(nil, nil) }.to raise_error(InvalidDreamwidthURL)
+        expect { importer.import({}, user: nil) }.to raise_error(InvalidDreamwidthURL)
         expect(ScrapePostJob).not_to have_been_enqueued
       end
 
       it "raises error on malformed url" do
         importer = PostImporter.new('http://localhostdreamwidth:3000index')
-        expect { importer.import(nil, nil) }.to raise_error(InvalidDreamwidthURL)
+        expect { importer.import({}, user: nil) }.to raise_error(InvalidDreamwidthURL)
         expect(ScrapePostJob).not_to have_been_enqueued
       end
     end
@@ -48,19 +48,22 @@ RSpec.describe PostImporter do
 
       it "does not raise error on threaded imports" do
         importer = PostImporter.new(url)
-        expect { importer.import(post.board_id, nil, threaded: true) }.not_to raise_error
+        params = { board_id: post.board_id, threaded: true }
+        expect { importer.import(params, user: nil) }.not_to raise_error
         expect(ScrapePostJob).to have_been_enqueued
       end
 
       it "does not raise error on different continuity imports" do
         importer = PostImporter.new(url)
-        expect { importer.import(post.board_id + 1, nil) }.not_to raise_error
+        params = { board_id: post.board_id + 1 }
+        expect { importer.import(params, user: nil) }.not_to raise_error
         expect(ScrapePostJob).to have_been_enqueued
       end
 
       it "raises error on duplicate" do
         importer = PostImporter.new(url)
-        expect { importer.import(post.board_id, nil) }.to raise_error(AlreadyImported)
+        params = { board_id: post.board_id }
+        expect { importer.import(params, user: nil) }.to raise_error(AlreadyImported)
         expect(ScrapePostJob).not_to have_been_enqueued
       end
     end
@@ -69,7 +72,7 @@ RSpec.describe PostImporter do
       it "requires usernames to exist" do
         stub_fixture(url, 'scrape_no_replies')
         importer = PostImporter.new(url)
-        expect { importer.import(nil, nil) }.to raise_error(MissingUsernames)
+        expect { importer.import({}, user: nil) }.to raise_error(MissingUsernames)
         expect(ScrapePostJob).not_to have_been_enqueued
       end
 
@@ -77,7 +80,7 @@ RSpec.describe PostImporter do
         create(:character, screenname: 'wild-pegasus-appeared')
         stub_fixture(url, 'scrape_no_replies')
         importer = PostImporter.new(url)
-        expect { importer.import(nil, nil) }.not_to raise_error
+        expect { importer.import({}, user: nil) }.not_to raise_error
         expect(ScrapePostJob).to have_been_enqueued
       end
     end
@@ -86,8 +89,10 @@ RSpec.describe PostImporter do
       create(:character, screenname: 'wild_pegasus_appeared')
       stub_fixture(url, 'scrape_no_replies')
       importer = PostImporter.new(url)
-      expect { importer.import(5, 2, section_id: 3, status: 1, threaded: true) }.not_to raise_error
-      expect(ScrapePostJob).to have_been_enqueued.with(url, 5, 3, 1, true, 2).on_queue('low')
+      params = { board_id: 5, section_id: 3, status: 1, threaded: true }
+      user = User.find_by(id: 2)
+      expect { importer.import(params, user: user) }.not_to raise_error
+      expect(ScrapePostJob).to have_been_enqueued.with(url, params, user: user).on_queue('low')
     end
   end
 end

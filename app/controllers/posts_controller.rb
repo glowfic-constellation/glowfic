@@ -413,7 +413,7 @@ class PostsController < WritableController
   def import_thread
     begin
       importer = PostImporter.new(params[:dreamwidth_url])
-      importer.import(params[:board_id], current_user.id, section_id: params[:section_id], status: params[:status], threaded: params[:threaded])
+      importer.import(import_params, user: current_user)
     rescue PostImportError => e
       flash.now[:error] = e.api_error
       params[:view] = 'import'
@@ -486,5 +486,15 @@ class PostsController < WritableController
     end
 
     params.fetch(:post, {}).permit(allowed_params)
+  end
+
+  def import_params
+    allowed_params = [
+      :board_id,
+      :section_id,
+      :status,
+      :threaded,
+    ]
+    params.permit(allowed_params)
   end
 end
