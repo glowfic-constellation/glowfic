@@ -16,7 +16,7 @@ class PostImporter < Object
     # errors when actually querying the URL are handled by ScrapePostJob
     return false if url.blank? || url.exclude?('dreamwidth')
     parsed_url = URI.parse(url)
-    parsed_url.host&.ends_with?('dreamwidth.org')
+    !!parsed_url.host&.ends_with?('dreamwidth.org')
   rescue URI::InvalidURIError
     false
   end
