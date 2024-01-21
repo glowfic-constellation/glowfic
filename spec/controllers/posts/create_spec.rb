@@ -46,13 +46,7 @@ RSpec.describe PostsController, 'POST create' do
     end
 
     context "with importer" do
-      let(:user) { create(:importing_user) }
-      let(:url) { 'http://wild-pegasus-appeared.dreamwidth.org/403.html?style=site&view=flat' }
-
-      before(:each) do
-        clear_enqueued_jobs
-        login_as(user)
-      end
+      before(:each) { login_as(user) }
 
       it "requires valid dreamwidth url" do
         post :create, params: { button_import: true, dreamwidth_url: 'http://www.google.com' }
