@@ -100,6 +100,7 @@ class ReplyScraper < Object
 
   def parse_url(url)
     uri = URI(url)
+    uri.scheme = "https"
     uri.host ||= 'v.dreamwidth.org'
     uri.to_s
   end
