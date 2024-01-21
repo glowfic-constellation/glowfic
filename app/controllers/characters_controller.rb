@@ -50,8 +50,7 @@ class CharactersController < ApplicationController
     begin
       @character.save!
     rescue ActiveRecord::RecordInvalid => e
-      render_errors(@character, action: 'created', now: true)
-      log_error(e) unless @character.errors.present?
+      render_errors(@character, action: 'created', now: true, err: e)
 
       @page_title = "New Character"
       editor_setup
@@ -90,8 +89,7 @@ class CharactersController < ApplicationController
         @character.save!
       end
     rescue ActiveRecord::RecordInvalid => e
-      render_errors(@character, action: 'updated', now: true)
-      log_error(e) unless @character.errors.present?
+      render_errors(@character, action: 'updated', now: true, err: e)
 
       @page_title = "Edit Character: " + @character.name
       editor_setup
@@ -118,8 +116,7 @@ class CharactersController < ApplicationController
         dupe.save!
       end
     rescue ActiveRecord::RecordInvalid => e
-      render_errors(dupe, action: 'duplicated')
-      log_error(e) unless dupe.errors.present?
+      render_errors(dupe, action: 'duplicated', err: e)
       redirect_to @character
     else
       flash[:success] = "Character duplicated. You are now editing the new character."
@@ -136,8 +133,7 @@ class CharactersController < ApplicationController
     begin
       @character.destroy!
     rescue ActiveRecord::RecordNotDestroyed => e
-      render_errors(@character, action: 'deleted')
-      log_error(e) unless @character.errors.present?
+      render_errors(@character, action: 'deleted', err: e)
       redirect_to @character
     else
       flash[:success] = "Character deleted."

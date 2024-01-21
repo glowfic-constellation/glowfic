@@ -36,8 +36,7 @@ class PasswordResetsController < ApplicationController
     begin
       password_reset.save!
     rescue ActiveRecord::RecordInvalid => e
-      render_errors(password_reset, action: 'created', now: true)
-      log_error(e) unless password_reset.errors.present?
+      render_errors(password_reset, action: 'created', now: true, err: e)
       render :new
     else
       UserMailer.password_reset_link(password_reset.id).deliver
@@ -63,8 +62,7 @@ class PasswordResetsController < ApplicationController
       end
     rescue ActiveRecord::RecordInvalid => e
       @password_reset.errors.merge!(@password_reset.user.errors)
-      render_errors(@password_reset, action: 'updated', now: true, class_name: 'Password')
-      log_error(e) unless @password_reset.errors.present?
+      render_errors(@password_reset, action: 'updated', now: true, class_name: 'Password', err: e)
 
       @page_title = 'Change Password'
       render :show

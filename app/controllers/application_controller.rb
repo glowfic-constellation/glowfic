@@ -226,7 +226,7 @@ class ApplicationController < ActionController::Base
     request.get? && !request.xhr?
   end
 
-  def render_errors(model, action:, now: false, class_name: nil, msg: nil)
+  def render_errors(model, action:, now: false, class_name: nil, msg: nil, err: nil)
     class_name ||= model.class.name.underscore.humanize
     msg ||= "#{class_name} could not be #{action}"
     if model.errors.present?
@@ -235,6 +235,7 @@ class ApplicationController < ActionController::Base
         array: model.errors.full_messages,
       }
     else
+      log_error(err) if err
       msg += '.'
     end
 

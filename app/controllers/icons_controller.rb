@@ -70,8 +70,7 @@ class IconsController < UploadingController
     begin
       @icon.update!(permitted_params)
     rescue ActiveRecord::RecordInvalid => e
-      render_errors(@icon, action: 'updated', now: true)
-      log_error(e) unless @icon.errors.present?
+      render_errors(@icon, action: 'updated', now: true, err: e)
 
       @page_title = 'Edit icon: ' + @icon.keyword_was
       use_javascript('galleries/update_existing')
@@ -127,8 +126,7 @@ class IconsController < UploadingController
     begin
       @icon.destroy!
     rescue ActiveRecord::RecordNotDestroyed => e
-      render_errors(@icon, action: 'deleted')
-      log_error(e) unless @icon.errors.present?
+      render_errors(@icon, action: 'deleted', err: e)
       redirect_to @icon
     else
       flash[:success] = "Icon deleted."

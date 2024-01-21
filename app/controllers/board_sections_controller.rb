@@ -20,8 +20,7 @@ class BoardSectionsController < ApplicationController
     begin
       @board_section.save!
     rescue ActiveRecord::RecordInvalid => e
-      render_errors(@board_section, action: 'created', now: true, class_name: 'Section')
-      log_error(e) unless @board_section.errors.present?
+      render_errors(@board_section, action: 'created', now: true, class_name: 'Section', err: e)
 
       @page_title = 'New Section'
       render :new
@@ -51,8 +50,7 @@ class BoardSectionsController < ApplicationController
     begin
       @board_section.save!
     rescue ActiveRecord::RecordInvalid => e
-      render_errors(@board_section, action: 'updated', now: true, class_name: 'Section')
-      log_error(e) unless @board_section.errors.present?
+      render_errors(@board_section, action: 'updated', now: true, class_name: 'Section', err: e)
 
       @page_title = 'Edit ' + @board_section.name_was
       use_javascript('board_sections')
@@ -68,8 +66,7 @@ class BoardSectionsController < ApplicationController
     begin
       @board_section.destroy!
     rescue ActiveRecord::RecordNotDestroyed => e
-      render_errors(@board_section, action: 'deleted', class_name: 'Section')
-      log_error(e) unless @board_section.errors.present?
+      render_errors(@board_section, action: 'deleted', class_name: 'Section', err: e)
       redirect_to board_section_path(@board_section)
     else
       flash[:success] = "Section deleted."

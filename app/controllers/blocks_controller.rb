@@ -54,8 +54,7 @@ class BlocksController < ApplicationController
     begin
       @block.destroy!
     rescue ActiveRecord::RecordNotDestroyed => e
-      render_errors(@block, action: 'delete', msg: 'User could not be unblocked')
-      log_error(e) unless @block.errors.present?
+      render_errors(@block, action: 'delete', msg: 'User could not be unblocked', err: e)
     else
       flash[:success] = "User unblocked."
     end
