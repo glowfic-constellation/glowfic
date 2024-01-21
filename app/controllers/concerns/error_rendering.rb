@@ -5,16 +5,16 @@ module ErrorRendering
       @source = source
     end
 
-    def now(*args)
-      @source.send(:render_err_target, @target.now, *args)
+    def now(*args, **kwargs)
+      @source.send(:render_err_target, @target.now, *args, **kwargs)
     end
   end
 
-  def render_err(chain=:chain, *args)
+  def render_err(chain=:chain, *args, **kwargs)
     if chain == :chain
       ErrorRenderer.new(flash, self)
     else
-      render_err_target(flash, chain, *args)
+      render_err_target(flash, chain, *args, **kwargs)
     end
   end
 
