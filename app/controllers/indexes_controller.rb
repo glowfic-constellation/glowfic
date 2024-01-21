@@ -23,8 +23,7 @@ class IndexesController < ApplicationController
     begin
       @index.save!
     rescue ActiveRecord::RecordInvalid => e
-      render_errors(@index, action: 'created', now: true)
-      log_error(e) unless @index.errors.present?
+      render_errors(@index, action: 'created', now: true, err: e)
 
       @page_title = 'New Index'
       render :new
@@ -54,8 +53,7 @@ class IndexesController < ApplicationController
     begin
       @index.update!(permitted_params)
     rescue ActiveRecord::RecordInvalid => e
-      render_errors(@index, action: 'updated', now: true)
-      log_error(e) unless @index.errors.present?
+      render_errors(@index, action: 'updated', now: true, err: e)
       editor_setup
       render :edit
     else
@@ -68,8 +66,7 @@ class IndexesController < ApplicationController
     begin
       @index.destroy!
     rescue ActiveRecord::RecordNotDestroyed => e
-      render_errors(@index, action: 'deleted')
-      log_error(e) unless @index.errors.present?
+      render_errors(@index, action: 'deleted', err: e)
       redirect_to @index
     else
       redirect_to indexes_path

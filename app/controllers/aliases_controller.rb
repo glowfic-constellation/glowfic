@@ -17,8 +17,7 @@ class AliasesController < ApplicationController
     begin
       @alias.save!
     rescue ActiveRecord::RecordInvalid => e
-      render_errors(@alias, action: 'created', now: true, class_name: 'Alias')
-      log_error(e) unless @alias.errors.present?
+      render_errors(@alias, action: 'created', now: true, class_name: 'Alias', err: e)
 
       @page_title = "New Alias: " + @character.name
       render :new
@@ -32,8 +31,7 @@ class AliasesController < ApplicationController
     begin
       @alias.destroy!
     rescue ActiveRecord::RecordNotDestroyed => e
-      render_errors(@alias, action: 'deleted', class_name: 'Alias')
-      log_error(e) unless @alias.errors.present?
+      render_errors(@alias, action: 'deleted', class_name: 'Alias', err: e)
     else
       flash[:success] = "Alias removed."
     end

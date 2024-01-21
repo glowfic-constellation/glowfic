@@ -19,8 +19,7 @@ class TemplatesController < ApplicationController
     begin
       @template.save!
     rescue ActiveRecord::RecordInvalid => e
-      render_errors(@template, action: 'created', now: true)
-      log_error(e) unless @template.errors.present?
+      render_errors(@template, action: 'created', now: true, err: e)
 
       editor_setup
       @page_title = "New Template"
@@ -49,8 +48,7 @@ class TemplatesController < ApplicationController
     begin
       @template.update!(permitted_params)
     rescue ActiveRecord::RecordInvalid => e
-      render_errors(@template, action: 'updated', now: true)
-      log_error(e) unless @template.errors.present?
+      render_errors(@template, action: 'updated', now: true, err: e)
 
       editor_setup
       @page_title = 'Edit Template: ' + @template.name_was
@@ -65,8 +63,7 @@ class TemplatesController < ApplicationController
     begin
       @template.destroy!
     rescue ActiveRecord::RecordNotDestroyed => e
-      render_errors(@template, action: 'deleted')
-      log_error(e) unless @template.errors.present?
+      render_errors(@template, action: 'deleted', err: e)
       redirect_to @template
     else
       flash[:success] = "Template deleted."

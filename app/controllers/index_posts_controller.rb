@@ -61,8 +61,7 @@ class IndexPostsController < ApplicationController
     begin
       @index_post.destroy!
     rescue ActiveRecord::RecordNotDestroyed => e
-      render_errors(@index_post, action: 'removed', msg: 'Post could not be removed from index')
-      log_error(e) unless @index_post.errors.present?
+      render_errors(@index_post, action: 'removed', msg: 'Post could not be removed from index', err: e)
     else
       flash[:success] = "Post removed from index."
     end

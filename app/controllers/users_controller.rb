@@ -79,8 +79,7 @@ class UsersController < ApplicationController
     begin
       current_user.update!(user_params)
     rescue ActiveRecord::RecordInvalid => e
-      render_errors(current_user, action: 'saved', now: true, class_name: 'Changes')
-      log_error(e) unless current_user.errors.present?
+      render_errors(current_user, action: 'saved', now: true, class_name: 'Changes', err: e)
 
       use_javascript('users/edit')
       @page_title = 'Edit Account'

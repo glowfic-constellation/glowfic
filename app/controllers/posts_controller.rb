@@ -144,8 +144,7 @@ class PostsController < WritableController
     begin
       @post.save!
     rescue ActiveRecord::RecordInvalid => e
-      render_errors(@post, action: 'created', now: true)
-      log_error(e) unless @post.errors.present?
+      render_errors(@post, action: 'created', now: true, err: e)
 
       editor_setup
       @page_title = 'New Post'
@@ -237,8 +236,7 @@ class PostsController < WritableController
         @post.author_for(current_user).update!(private_note: @post.private_note) if is_author
       end
     rescue ActiveRecord::RecordInvalid => e
-      render_errors(@post, action: 'updated', now: true)
-      log_error(e) unless @post.errors.present?
+      render_errors(@post, action: 'updated', now: true, err: e)
 
       @audits = { post: @post.audits.count }
       editor_setup
@@ -258,8 +256,7 @@ class PostsController < WritableController
     begin
       @post.destroy!
     rescue ActiveRecord::RecordNotDestroyed => e
-      render_errors(@post, action: 'deleted')
-      log_error(e) unless @post.errors.present?
+      render_errors(@post, action: 'deleted', err: e)
       redirect_to @post
     else
       flash[:success] = "Post deleted."
@@ -387,8 +384,7 @@ class PostsController < WritableController
         @post.mark_read(current_user, at_time: @post.tagged_at)
       end
     rescue ActiveRecord::RecordInvalid => e
-      render_errors(@post, action: 'updated', class_name: 'Status')
-      log_error(e) unless @post.errors.present?
+      render_errors(@post, action: 'updated', class_name: 'Status', err: e)
     else
       flash[:success] = "Post has been marked #{@post.status}."
     end
@@ -400,8 +396,7 @@ class PostsController < WritableController
     begin
       @post.save!
     rescue ActiveRecord::RecordInvalid => e
-      render_errors(@post, action: 'updated')
-      log_error(e) unless @post.errors.present?
+      render_errors(@post, action: 'updated', err: e)
     else
       flash[:success] = "Post has been #{@post.authors_locked? ? 'locked to' : 'unlocked from'} current authors."
     end
