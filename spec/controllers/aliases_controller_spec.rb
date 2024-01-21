@@ -187,7 +187,7 @@ RSpec.describe AliasesController do
       delete :destroy, params: { id: calias.id, character_id: calias.character.id }
 
       expect(response).to redirect_to(edit_character_path(calias.character))
-      expect(flash[:error][:message]).to eq("Alias could not be deleted because of the following problems:")
+      expect(flash[:error]).to eq("Alias could not be deleted.")
       expect(reply.reload.character_alias).to eq(calias)
     end
   end

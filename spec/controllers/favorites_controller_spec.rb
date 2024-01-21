@@ -267,7 +267,7 @@ RSpec.describe FavoritesController do
       delete :destroy, params: { id: favorite.id }
 
       expect(response).to redirect_to(favorites_path)
-      expect(flash[:error][:message]).to eq("Favorite could not be deleted because of the following problems:")
+      expect(flash[:error]).to eq("Favorite could not be deleted.")
       expect(Favorite.find_by(id: favorite.id)).not_to be_nil
     end
   end

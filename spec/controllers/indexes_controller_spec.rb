@@ -250,7 +250,7 @@ RSpec.describe IndexesController do
       delete :destroy, params: { id: index.id }
 
       expect(response).to redirect_to(index_url(index))
-      expect(flash[:error][:message]).to eq("Index could not be deleted because of the following problems:")
+      expect(flash[:error]).to eq("Index could not be deleted.")
       expect(section.reload.index).to eq(index)
     end
   end

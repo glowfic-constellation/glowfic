@@ -293,7 +293,7 @@ RSpec.describe BoardSectionsController do
       delete :destroy, params: { id: section.id }
 
       expect(response).to redirect_to(board_section_url(section))
-      expect(flash[:error][:message]).to eq("Section could not be deleted because of the following problems:")
+      expect(flash[:error]).to eq("Section could not be deleted.")
       expect(post.reload.section).to eq(section)
     end
   end
