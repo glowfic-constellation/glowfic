@@ -222,13 +222,12 @@ FactoryBot.define do
       type { 'ContentWarning' }
     end
 
-    factory :font, class: :font do
-      type { 'Font' }
-    end
-
     factory :gallery_group, class: :gallery_group do
       type { 'GalleryGroup' }
     end
+  end
+
+  factory :font, class: :font do
   end
 
   factory :message do
