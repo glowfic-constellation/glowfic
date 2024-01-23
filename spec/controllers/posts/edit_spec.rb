@@ -96,6 +96,6 @@ RSpec.describe PostsController, 'GET edit' do
     expect(assigns(:post).content_warnings.map(&:id_for_select)).to match_array([warning.id])
     expect(assigns(:post).labels.map(&:id_for_select)).to match_array([label.id])
 
-    expect(assigns(:post).fonts.map(&:id_for_select)).to match_array([font.id])
+    expect(assigns(:post).fonts.map(&:id)).to match_array([font.id])
   end
 end

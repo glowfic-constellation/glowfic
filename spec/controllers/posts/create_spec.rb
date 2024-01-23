@@ -11,7 +11,7 @@ RSpec.describe PostsController, 'POST create' do
   let(:setting_ids) { [settings[0].id, "_ #{settings[1].name}", '_other'] }
   let(:warning_ids) { [warnings[0].id, "_#{warnings[1].name}", '_other'] }
   let(:label_ids) { [labels[0].id, "_#{labels[1].name}", '_other'] }
-  let(:font_ids) { [fonts[0].id, "_ #{fonts[1].name}", '_other'] }
+  let(:font_ids) { fonts.map(&:id) }
 
   let(:templateless_character) { create(:character, user: user) }
   let(:templated_character) { create(:template_character, user: user) }
@@ -135,7 +135,7 @@ RSpec.describe PostsController, 'POST create' do
       expect(assigns(:settings).map(&:id_for_select)).to match_array(settings.map(&:id) + ['_other'])
       expect(assigns(:content_warnings).map(&:id_for_select)).to match_array(warnings.map(&:id) + ['_other'])
       expect(assigns(:labels).map(&:id_for_select)).to match_array(labels.map(&:id) + ['_other'])
-      expect(assigns(:fonts).map(&:id_for_select)).to match_array(fonts.map(&:id) + ['_other'])
+      expect(assigns(:fonts).map(&:id)).to match_array(fonts.map(&:id))
       expect(Setting.count).to eq(2)
       expect(ContentWarning.count).to eq(2)
       expect(Label.count).to eq(2)
@@ -385,11 +385,11 @@ RSpec.describe PostsController, 'POST create' do
       expect(post.settings.size).to eq(3)
       expect(post.content_warnings.size).to eq(3)
       expect(post.labels.size).to eq(3)
-      expect(post.fonts.size).to eq(3)
+      expect(post.fonts.size).to eq(2)
       expect(post.settings.map(&:id_for_select)).to match_array(settings.map(&:id) + ['_other'])
       expect(post.content_warnings.map(&:id_for_select)).to match_array(warnings.map(&:id) + ['_other'])
       expect(post.labels.map(&:id_for_select)).to match_array(labels.map(&:id) + ['_other'])
-      expect(post.fonts.map(&:id_for_select)).to match_array(fonts.map(&:id) + ['_other'])
+      expect(post.fonts.map(&:id)).to match_array(fonts.map(&:id))
       expect(Setting.count).to eq(2)
       expect(ContentWarning.count).to eq(2)
       expect(Label.count).to eq(2)
@@ -451,15 +451,15 @@ RSpec.describe PostsController, 'POST create' do
       expect(post.settings.size).to eq(3)
       expect(post.content_warnings.size).to eq(3)
       expect(post.labels.size).to eq(3)
-      expect(post.fonts.size).to eq(3)
+      expect(post.fonts.size).to eq(2)
       expect(post.settings.map(&:id_for_select)).to match_array(settings.map(&:id) + [Setting.last.id])
       expect(post.content_warnings.map(&:id_for_select)).to match_array(warnings.map(&:id) + [ContentWarning.last.id])
       expect(post.labels.map(&:id_for_select)).to match_array(labels.map(&:id) + [Label.last.id])
-      expect(post.fonts.map(&:id_for_select)).to match_array(fonts.map(&:id) + [Font.last.id])
+      expect(post.fonts.map(&:id)).to match_array(fonts.map(&:id))
       expect(Setting.count).to eq(3)
       expect(ContentWarning.count).to eq(3)
       expect(Label.count).to eq(3)
-      expect(Font.count).to eq(3)
+      expect(Font.count).to eq(2)
       expect(PostTag.count).to eq(9)
     end
 
