@@ -24,13 +24,19 @@ RSpec.describe PostsController, 'PUT update' do
   let(:regular_tags) { [setting, warning, label] }
   let(:duplicate_tags) { [duplicate_setting, duplicate_warning, duplicate_label] }
   let(:removed_tags) { [removed_setting, removed_warning, removed_label] }
+  let(:font) { create(:font, name: 'font') }
+  let(:removed_font) { create(:font) }
+  let(:duplicate_font) { create(:font, name: 'dupefont') }
+
 
   let(:setting_ids) { [setting.id, '_newsetting', '_dupesetting'] }
   let(:warning_ids) { [warning.id, '_newwarning', '_dupewarning'] }
   let(:label_ids) { [label.id, '_newlabel', '_dupelabel'] }
+  let(:font_ids) { [font.id, '_newfont', '_dupefont'] }
   let(:settings_select) { [setting.id, duplicate_setting.id, '_newsetting'] }
   let(:warnings_select) { [warning.id, duplicate_warning.id, '_newwarning'] }
   let(:labels_select) { [label.id, duplicate_label.id, '_newlabel'] }
+  let(:fonts_select) { [font.id, duplicate_font.id, '_newfont'] }
 
   let(:templateless_character) { create(:character, user: user) }
   let(:templated_character) { create(:template_character, user: user) }
@@ -403,6 +409,7 @@ RSpec.describe PostsController, 'PUT update' do
         settings: [setting, removed_setting],
         content_warnings: [warning, removed_warning],
         labels: [label, removed_label],
+        fonts: [font, removed_font],
       )
       duplicate_tags
 
@@ -410,6 +417,7 @@ RSpec.describe PostsController, 'PUT update' do
       expect(ContentWarning.count).to eq(3)
       expect(Label.count).to eq(3)
       expect(PostTag.count).to eq(6)
+      expect(Font.count).to eq(3)
 
       # for each type: keep one, remove one, create one, existing one
       put :update, params: {
@@ -419,6 +427,7 @@ RSpec.describe PostsController, 'PUT update' do
           setting_ids: setting_ids,
           content_warning_ids: warning_ids,
           label_ids: label_ids,
+          font_ids: font_ids,
         },
       }
       expect(response).to render_template(:preview)
@@ -427,12 +436,15 @@ RSpec.describe PostsController, 'PUT update' do
       expect(post.settings.size).to eq(2)
       expect(post.content_warnings.size).to eq(2)
       expect(post.labels.size).to eq(2)
+      expect(post.fonts.size).to eq(2)
       expect(assigns(:settings).map(&:id_for_select)).to match_array(settings_select)
       expect(assigns(:content_warnings).map(&:id_for_select)).to match_array(warnings_select)
       expect(assigns(:labels).map(&:id_for_select)).to match_array(labels_select)
+      expect(assigns(:fonts).map(&:id_for_select)).to match_array(fonts_select)
       expect(Setting.count).to eq(3)
       expect(ContentWarning.count).to eq(3)
       expect(Label.count).to eq(3)
+      expect(Font.count).to eq(3)
       expect(PostTag.count).to eq(6)
       expect(PostTag.where(post: post, tag: regular_tags).count).to eq(3)
       expect(PostTag.where(post: post, tag: duplicate_tags).count).to eq(0)
@@ -461,6 +473,7 @@ RSpec.describe PostsController, 'PUT update' do
           setting_ids: setting_ids,
           content_warning_ids: warning_ids,
           label_ids: label_ids,
+          font_ids: font_ids,
           unjoined_author_ids: [coauthor.id],
           viewer_ids: [viewer.id],
         },
@@ -502,12 +515,15 @@ RSpec.describe PostsController, 'PUT update' do
       expect(assigns(:post).settings.size).to eq(0)
       expect(assigns(:post).content_warnings.size).to eq(0)
       expect(assigns(:post).labels.size).to eq(0)
+      expect(assigns(:post).fonts.size).to eq(0)
       expect(assigns(:settings).map(&:id_for_select)).to match_array(settings_select)
       expect(assigns(:content_warnings).map(&:id_for_select)).to match_array(warnings_select)
       expect(assigns(:labels).map(&:id_for_select)).to match_array(labels_select)
+      expect(assigns(:fonts).map(&:id_for_select)).to match_array(fonts_select)
       expect(Setting.count).to eq(2)
       expect(ContentWarning.count).to eq(2)
       expect(Label.count).to eq(2)
+      expect(Font.count).to eq(2)
       expect(PostTag.count).to eq(0)
 
       # in storage
@@ -757,6 +773,7 @@ RSpec.describe PostsController, 'PUT update' do
         settings: [setting, removed_setting],
         content_warnings: [warning, removed_warning],
         labels: [label, removed_label],
+        fonts: [font, removed_font],
       )
 
       duplicate_tags
@@ -766,6 +783,7 @@ RSpec.describe PostsController, 'PUT update' do
       expect(Setting.count).to eq(3)
       expect(ContentWarning.count).to eq(3)
       expect(Label.count).to eq(3)
+      expect(Font.count).to eq(3)
       expect(PostTag.count).to eq(6)
 
       expect(controller).to receive(:editor_setup).and_call_original
@@ -779,6 +797,7 @@ RSpec.describe PostsController, 'PUT update' do
           setting_ids: setting_ids,
           content_warning_ids: warning_ids,
           label_ids: label_ids,
+          font_ids: font_ids,
           unjoined_author_ids: [coauthor.id],
         },
       }
@@ -804,12 +823,15 @@ RSpec.describe PostsController, 'PUT update' do
       expect(post.settings.size).to eq(3)
       expect(post.content_warnings.size).to eq(3)
       expect(post.labels.size).to eq(3)
+      expect(post.fonts.size).to eq(3)
       expect(post.settings.map(&:id_for_select)).to match_array(settings_select)
       expect(post.content_warnings.map(&:id_for_select)).to match_array(warnings_select)
       expect(post.labels.map(&:id_for_select)).to match_array(labels_select)
+      expect(post.fonts.map(&:id_for_select)).to match_array(fonts_select)
       expect(Setting.count).to eq(3)
       expect(ContentWarning.count).to eq(3)
       expect(Label.count).to eq(3)
+      expect(Font.count).to eq(3)
       expect(PostTag.count).to eq(6)
       expect(PostTag.where(post: post, tag: regular_tags).count).to eq(3)
       expect(PostTag.where(post: post, tag: duplicate_tags).count).to eq(0)
@@ -845,6 +867,7 @@ RSpec.describe PostsController, 'PUT update' do
           setting_ids: [setting.id],
           content_warning_ids: [warning.id],
           label_ids: [label.id],
+          font_ids: [font.id],
           unjoined_author_ids: [coauthor.id],
         },
       }
@@ -865,6 +888,7 @@ RSpec.describe PostsController, 'PUT update' do
       expect(post.settings).to eq([setting])
       expect(post.content_warnings).to eq([warning])
       expect(post.labels).to eq([label])
+      expect(post.fonts).to eq([font])
       expect(post.reload).to be_visible_to(viewer)
       expect(post.reload).not_to be_visible_to(create(:user))
       expect(post.tagging_authors).to match_array([user, joined_user, coauthor])

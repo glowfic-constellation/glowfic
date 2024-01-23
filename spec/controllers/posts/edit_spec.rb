@@ -32,6 +32,7 @@ RSpec.describe PostsController, 'GET edit' do
     setting = create(:setting)
     warning = create(:content_warning)
     label = create(:label)
+    font = create(:font)
     unjoined = create(:user)
     post = create(:post,
       user: user,
@@ -39,6 +40,7 @@ RSpec.describe PostsController, 'GET edit' do
       settings: [setting],
       content_warnings: [warning],
       labels: [label],
+      fonts: [font],
       unjoined_authors: [unjoined],
     )
     expect(post.icon).to be_nil
@@ -58,6 +60,7 @@ RSpec.describe PostsController, 'GET edit' do
     create(:setting)
     create(:content_warning)
     create(:label)
+    create(:font)
     create(:user)
 
     expect(controller).to receive(:editor_setup).and_call_original
@@ -92,5 +95,7 @@ RSpec.describe PostsController, 'GET edit' do
     expect(assigns(:post).settings.map(&:id_for_select)).to match_array([setting.id])
     expect(assigns(:post).content_warnings.map(&:id_for_select)).to match_array([warning.id])
     expect(assigns(:post).labels.map(&:id_for_select)).to match_array([label.id])
+
+    expect(assigns(:post).fonts.map(&:id_for_select)).to match_array([font.id])
   end
 end

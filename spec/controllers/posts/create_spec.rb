@@ -7,9 +7,11 @@ RSpec.describe PostsController, 'POST create' do
   let(:settings) { create_list(:setting, 2) }
   let(:warnings) { create_list(:content_warning, 2) }
   let(:labels) { create_list(:label, 2) }
+  let(:fonts) { create_list(:font, 2) }
   let(:setting_ids) { [settings[0].id, "_ #{settings[1].name}", '_other'] }
   let(:warning_ids) { [warnings[0].id, "_#{warnings[1].name}", '_other'] }
   let(:label_ids) { [labels[0].id, "_#{labels[1].name}", '_other'] }
+  let(:font_ids) { [fonts[0].id, "_ #{fonts[1].name}", '_other'] }
 
   let(:templateless_character) { create(:character, user: user) }
   let(:templated_character) { create(:template_character, user: user) }
@@ -110,6 +112,7 @@ RSpec.describe PostsController, 'POST create' do
           setting_ids: setting_ids,
           content_warning_ids: warning_ids,
           label_ids: label_ids,
+          font_ids: font_ids,
           unjoined_author_ids: [user.id, coauthor.id],
         },
       }
@@ -128,12 +131,15 @@ RSpec.describe PostsController, 'POST create' do
       expect(assigns(:post).settings.size).to eq(0)
       expect(assigns(:post).content_warnings.size).to eq(0)
       expect(assigns(:post).labels.size).to eq(0)
+      expect(assigns(:post).fonts.size).to eq(0)
       expect(assigns(:settings).map(&:id_for_select)).to match_array(settings.map(&:id) + ['_other'])
       expect(assigns(:content_warnings).map(&:id_for_select)).to match_array(warnings.map(&:id) + ['_other'])
       expect(assigns(:labels).map(&:id_for_select)).to match_array(labels.map(&:id) + ['_other'])
+      expect(assigns(:fonts).map(&:id_for_select)).to match_array(fonts.map(&:id) + ['_other'])
       expect(Setting.count).to eq(2)
       expect(ContentWarning.count).to eq(2)
       expect(Label.count).to eq(2)
+      expect(Font.count).to eq(2)
       expect(PostTag.count).to eq(0)
 
       # editor_setup:
@@ -184,7 +190,7 @@ RSpec.describe PostsController, 'POST create' do
   context "make changes" do
     before(:each) { login_as(user) }
 
-    [Label, Setting, ContentWarning].each do |tag_class|
+    [Label, Setting, ContentWarning, Font].each do |tag_class|
       it "creates new #{tag_class.table_name.humanize(capitalize: false)}" do
         # rubocop:disable Rails/SaveBang
         snake_class = tag_class.name.underscore
@@ -345,6 +351,7 @@ RSpec.describe PostsController, 'POST create' do
           setting_ids: setting_ids,
           content_warning_ids: warning_ids,
           label_ids: label_ids,
+          font_ids: font_ids,
           character_id: templateless_character.id,
           unjoined_author_ids: [user.id, coauthor.id],
         },
@@ -378,12 +385,15 @@ RSpec.describe PostsController, 'POST create' do
       expect(post.settings.size).to eq(3)
       expect(post.content_warnings.size).to eq(3)
       expect(post.labels.size).to eq(3)
+      expect(post.fonts.size).to eq(3)
       expect(post.settings.map(&:id_for_select)).to match_array(settings.map(&:id) + ['_other'])
       expect(post.content_warnings.map(&:id_for_select)).to match_array(warnings.map(&:id) + ['_other'])
       expect(post.labels.map(&:id_for_select)).to match_array(labels.map(&:id) + ['_other'])
+      expect(post.fonts.map(&:id_for_select)).to match_array(fonts.map(&:id) + ['_other'])
       expect(Setting.count).to eq(2)
       expect(ContentWarning.count).to eq(2)
       expect(Label.count).to eq(2)
+      expect(Font.count).to eq(2)
       expect(PostTag.count).to eq(0)
     end
 
@@ -407,6 +417,7 @@ RSpec.describe PostsController, 'POST create' do
             setting_ids: setting_ids,
             content_warning_ids: warning_ids,
             label_ids: label_ids,
+            font_ids: font_ids,
             unjoined_author_ids: [coauthor.id],
           },
         }
@@ -440,12 +451,15 @@ RSpec.describe PostsController, 'POST create' do
       expect(post.settings.size).to eq(3)
       expect(post.content_warnings.size).to eq(3)
       expect(post.labels.size).to eq(3)
+      expect(post.fonts.size).to eq(3)
       expect(post.settings.map(&:id_for_select)).to match_array(settings.map(&:id) + [Setting.last.id])
       expect(post.content_warnings.map(&:id_for_select)).to match_array(warnings.map(&:id) + [ContentWarning.last.id])
       expect(post.labels.map(&:id_for_select)).to match_array(labels.map(&:id) + [Label.last.id])
+      expect(post.fonts.map(&:id_for_select)).to match_array(fonts.map(&:id) + [Font.last.id])
       expect(Setting.count).to eq(3)
       expect(ContentWarning.count).to eq(3)
       expect(Label.count).to eq(3)
+      expect(Font.count).to eq(3)
       expect(PostTag.count).to eq(9)
     end
 
