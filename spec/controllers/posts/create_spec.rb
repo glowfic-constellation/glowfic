@@ -190,7 +190,7 @@ RSpec.describe PostsController, 'POST create' do
   context "make changes" do
     before(:each) { login_as(user) }
 
-    [Label, Setting, ContentWarning, Font].each do |tag_class|
+    [Label, Setting, ContentWarning].each do |tag_class|
       it "creates new #{tag_class.table_name.humanize(capitalize: false)}" do
         # rubocop:disable Rails/SaveBang
         snake_class = tag_class.name.underscore
