@@ -11,7 +11,7 @@ function tinyMCEConfig(selector) {
     // integration configs
     selector: selector,
     plugins: ["wordcount", "image", "link", "autoresize"],
-    cache_suffix: '?v=6.8.2',
+    cache_suffix: '?v=6.8.2-2024-01-23',
     // interface configs
     menubar: false, // disable "File", "Edit", etc
     contextmenu: false,
