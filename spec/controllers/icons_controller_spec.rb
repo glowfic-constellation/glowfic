@@ -36,6 +36,19 @@ RSpec.describe IconsController do
 
       before(:each) { login_as(user) }
 
+      it "succeeds" do
+        gallery = create(:gallery, user: user, icon_count: 3)
+        icons = gallery.reload.icons
+        expect(icons.count).to eq(3)
+        delete :delete_multiple, params: {
+          marked_ids: icons.ids.map(&:to_s),
+          gallery_id: gallery.id,
+          gallery_delete: true,
+        }
+        expect(gallery.reload.icons.count).to eq(0)
+        expect(response).to redirect_to(gallery)
+      end
+
       it "goes back to index page if given" do
         icon = create(:icon, user: user)
         gallery = create(:gallery, user: user)
@@ -73,6 +86,18 @@ RSpec.describe IconsController do
       let(:user) { create(:user) }
 
       before(:each) { login_as(user) }
+
+      it "succeeds" do
+        gallery = create(:gallery, user: user, icon_count: 3)
+        icons = gallery.reload.icons
+        expect(icons.count).to eq(3)
+        delete :delete_multiple, params: {
+          marked_ids: icons.ids.map(&:to_s),
+          gallery_id: gallery.id,
+        }
+        expect(gallery.reload.icons.count).to eq(0)
+        expect(response).to redirect_to(gallery)
+      end
 
       it "goes back to index page if given" do
         icon = create(:icon, user: user)
