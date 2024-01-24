@@ -12,7 +12,7 @@ class Icon::MultiRemover < Generic::Service
     if params[:gallery_delete]
       remove(user)
     else
-      @icons.destroy_all
+      Audited.audit_class.as_user(user) { @icons.destroy_all }
     end
   end
 
@@ -20,6 +20,6 @@ class Icon::MultiRemover < Generic::Service
     @errors.add(:gallery, "could not be found.") unless @gallery
     @errors.add(:base, "You do not have permission to modify this gallery.") if @gallery && @gallery.user_id != user.id
     return if @errors.present?
-    @icons.each { |icon| @gallery.icons.destroy(icon) }
+    Audited.audit_class.as_user(user) { @icons.each { |icon| @gallery.icons.destroy(icon) } }
   end
 end
