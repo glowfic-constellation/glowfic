@@ -40,7 +40,7 @@ class PostsController < WritableController
     @posts = posts_from_relation(@posts.ordered)
     @page_title = 'Replies Owed'
     @page_title = "[#{@posts.count}] Replies Owed" if @posts.count > 0
-    fresh_when(etag: @posts, public: false)
+    fresh_when(etag: [@posts, @unread_views], public: false)
   end
 
   def unread

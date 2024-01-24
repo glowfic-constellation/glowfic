@@ -6,6 +6,8 @@ class Post::View < ApplicationRecord
 
   after_create :mark_favorite_read
 
+  alias_attribute :updated_at, :read_at # used to support use in fresh_when
+
   private
 
   def mark_favorite_read

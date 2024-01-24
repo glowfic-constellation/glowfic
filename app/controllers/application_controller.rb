@@ -140,13 +140,13 @@ class ApplicationController < ActionController::Base
     @opened_ids ||= post_views.pluck(:post_id)
 
     opened_posts = post_views.where(post_id: posts.map(&:id)).select([:post_id, :read_at])
-    unread_views = opened_posts.select do |view|
+    @unread_views = opened_posts.select do |view|
       post = posts.detect { |p| p.id == view.post_id }
       post && view.read_at < post.tagged_at
     end
 
     @unread_ids ||= []
-    @unread_ids += unread_views.map(&:post_id)
+    @unread_ids += @unread_views.map(&:post_id)
 
     return unless with_unread
 
