@@ -86,7 +86,7 @@ class IconsController < UploadingController
   def replace
     @page_title = "Replace Icon: " + @icon.keyword
     replacer = Icon::Replacer.new(@icon)
-    replacer.setup(user: current_user, no_icon_url: view_context.image_path('icons/no-icon.png'))
+    replacer.setup(view_context.image_path('icons/no-icon.png'))
 
     @alts = replacer.alts
     use_javascript('icons')

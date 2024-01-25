@@ -20,7 +20,7 @@ class Icon::Replacer < Generic::Replacer
     all_icons = if @icon.has_gallery?
       @icon.galleries.flat_map(&:icons).uniq.compact
     else
-      user.galleryless_icons
+      @icon.user.galleryless_icons
     end
     all_icons -= [@icon]
     @alts = all_icons.sort_by { |i| i.keyword.downcase }
