@@ -21,9 +21,10 @@ class Generic::Replacer < Generic::Service
   end
 
   def check_target(klass, id:, user:)
-    model = klass.model_name.param_key.to_sym
-    @errors.add(model, "could not be found.") unless id.blank? || (new_model = klass.find_by(id: id))
-    @errors.add(:base, "You do not have permission to modify this #{model.model_name.humanize}.") if new_model && new_model.user_id != user.id
+    model_key = klass.model_name.param_key.to_sym
+    model_name = klass.model_name.human.downcase
+    @errors.add(model_key, "could not be found.") unless id.blank? || (new_model = klass.find_by(id: id))
+    @errors.add(:base, "You do not have permission to modify this #{model_name}.") if new_model && new_model.user_id != user.id
     new_model
   end
 end
