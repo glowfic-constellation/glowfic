@@ -730,6 +730,9 @@ Capybara/NegationMatcher: # new in 2.14
   Enabled: true
   EnforcedStyle: have_no
 
+Capybara/RedundantWithinFind: # new in 2.20
+  Enabled: true
+
 Capybara/RSpec/HaveSelector: # new in 2.19
   Enabled: false
 
@@ -752,6 +755,10 @@ FactoryBot/AssociationStyle: # new in 2.23
 
 FactoryBot/ConsistentParenthesesStyle: # new in 2.14
   Enabled: true
+
+FactoryBot/ExcessiveCreateList: # new in 2.25
+  Enabled: true
+  MaxAmount: 27 # to allow pagination tests
 
 FactoryBot/FactoryAssociationWithStrategy: # new in 2.23
   Enabled: true
