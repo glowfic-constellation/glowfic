@@ -9,5 +9,5 @@ class Generic::Service < Object
     @errors = ActiveModel::Errors.new(self)
   end
 
-  alias :read_attribute_for_validation :send
+  alias read_attribute_for_validation :send
 end
