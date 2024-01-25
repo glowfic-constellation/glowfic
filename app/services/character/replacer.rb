@@ -33,7 +33,7 @@ class Character::Replacer < Generic::Replacer
     else
       alts = @character.user.characters.where(template_id: nil)
     end
-    alts -= [@character] unless @alts.size <= 1 || @character.aliases.exists?
+    alts -= [@character] unless alts.size <= 1 || @character.aliases.exists?
     alts
   end
 
