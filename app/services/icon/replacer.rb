@@ -1,6 +1,7 @@
 class Icon::Replacer < Generic::Replacer
   def initialize(icon)
     @icon = icon
+    @icons = []
     super()
   end
 
@@ -17,13 +18,13 @@ class Icon::Replacer < Generic::Replacer
   private
 
   def find_alts
-    all_icons = if @icon.has_gallery?
+    @icons = if @icon.has_gallery?
       @icon.galleries.flat_map(&:icons).uniq.compact
     else
       @icon.user.galleryless_icons
     end
-    all_icons -= [@icon]
-    @alts = all_icons.sort_by { |i| i.keyword.downcase }
+    @icons -= [@icon]
+    @alts = @icons.sort_by { |i| i.keyword.downcase }
   end
 
   def find_posts
@@ -31,7 +32,7 @@ class Icon::Replacer < Generic::Replacer
   end
 
   def construct_gallery(no_icon_url)
-    gallery = all_icons.to_h { |i| [i.id, { url: i.url, keyword: i.keyword }] }
+    gallery = @icons.to_h { |i| [i.id, { url: i.url, keyword: i.keyword }] }
     gallery[''] = { url: no_icon_url, keyword: 'No Icon' }
     gallery
   end
