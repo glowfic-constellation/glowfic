@@ -59,7 +59,7 @@
             %b= privacy_state(Post.privacies.key(audit.audited_changes['privacy'][0]))
             to
             %b= privacy_state(cur.privacy)
-      - if audit.action != 'destroy' && (audit.action == 'create' || (audit.audited_changes.keys & %w(character_alias_id character_id content description icon_id subject)).present?)
+      - if audit.action != 'destroy' && (audit.action == 'create' || audit.audited_changes.keys.intersect?(%w(character_alias_id character_id content description icon_id subject)))
         %tr
           %th.sub.vtop Content
           %td{class: cycle('even', 'odd')}
