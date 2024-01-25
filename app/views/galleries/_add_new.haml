@@ -30,7 +30,9 @@
         - s3_key = @icons[i].try(:[], :s3_key)
         - url = @icons[i].try(:[], :url)
         - keyword = @icons[i].try(:[], :keyword)
-        - purl, pkey = url, keyword if s3_key.present?
+        - if s3_key.present?
+          - purl = url
+          - pkey = keyword
         %tr.icon-row{data: { index: i }}
           - empty_gif = 'data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw=='
           %td.width-15{class: klass, style: 'padding: 0px;'}= icon_mem_tag purl || empty_gif, pkey || '', class: 'vmid preview-icon'
