@@ -26,31 +26,6 @@ linters:
   LineLength:
     enabled: false
 
-  RuboCop:
-    ignored_cops:
-      - Lint/BlockAlignment
-      - Lint/EndAlignment
-      - Lint/Void
-      - Layout/ArgumentAlignment
-      - Layout/CaseIndentation
-      - Layout/ElseAlignment
-      - Layout/EndOfLine
-      - Layout/HashAlignment
-      - Layout/IndentationWidth
-      - Layout/LeadingCommentSpace # added
-      - Layout/LineLength
-      - Layout/ParameterAlignment
-      - Layout/TrailingEmptyLines
-      - Layout/TrailingWhitespace
-      - Metrics/BlockLength
-      - Metrics/BlockNesting
-      - Naming/FileName
-      - Rails/OutputSafety # added
-      - Style/FrozenStringLiteralComment
-      - Style/IfUnlessModifier
-      - Style/Next
-      - Style/WhileUntilModifier
-
   SpaceBeforeScript:
     enabled: false
 

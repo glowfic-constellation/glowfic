@@ -21,7 +21,7 @@
           alt: 'Three stars, colored green, purple and blue',
           width: '48',
           height: '48',
-        }) # rubocop:disable Style/TrailingCommaInArguments
+        })
       %meta{property: 'og:image', content: image_hash[:src]}
       - [:type, :alt, :width, :height].each do |prop|
         - if image_hash.key?(prop)
