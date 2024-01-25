@@ -27,7 +27,7 @@ class Icon::Replacer < Generic::Replacer
   end
 
   def find_posts
-    super({icon_id: @icon.id})
+    super({ icon_id: @icon.id })
   end
 
   def construct_gallery(no_icon_url)

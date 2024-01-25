@@ -56,7 +56,7 @@ class Character::Replacer < Generic::Replacer
       name << alt.try(:screenname)
       name << alt.try(:template_name)
       name << alt.settings.pluck(:name).join(' & ') if alt.settings.present?
-      [name.reject(&:nil?).join(' | '), alt.id]
+      [name.compact.join(' | '), alt.id]
     end
   end
 

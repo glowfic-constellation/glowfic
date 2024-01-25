@@ -1,10 +1,6 @@
 class Generic::Replacer < Generic::Service
   attr_reader :alts, :posts, :gallery
 
-  def initialize
-    super
-  end
-
   def setup(no_icon_url)
     @alts = find_alts
     @posts = find_posts
