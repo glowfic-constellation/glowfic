@@ -1,0 +1,19 @@
+inherit_from: ../../.rubocop.yml
+
+Layout/ArgumentAlignment:
+  Enabled: false
+
+Rails/OutputSafety:
+  Enabled: false
+
+Style/IfUnlessModifier:
+  Enabled: false
+
+Style/Next:
+  Enabled: false
+
+Style/RedundantConstantBase:
+  Enabled: false # Template resolves to ActionView::Template in views
+
+Style/TrailingCommaInArguments:
+  EnforcedStyleForMultiline: comma

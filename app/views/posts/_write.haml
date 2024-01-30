@@ -34,7 +34,6 @@
       = submit_tag (post.new_record? ? 'Post' : 'Save'), class: 'button', id: 'submit_button', data: { disable_with: 'Saving...' }
       = submit_tag "Preview", class: 'button', id: 'preview_button', name: 'button_preview', data: { disable_with: 'Previewing...' }
 
-
   .subber Metadata
   .even
     = f.label :board_id, 'Continuity:'
@@ -57,7 +56,6 @@
         = safe_join(authors.map { |author| user_link(author) }, ', ')
       - else
         = user_link(current_user)
-
 
     %div{title: 'Invite users to be authors in this post. Once they post, they will be removed from this section and moved to a Current Authors section. Invited authors will have this post show on their Replies Owed page, even if they have not yet joined the post. If the post is locked, invited users will have permission to reply. This field will not override privacy settings. You are automatically added as an author when you create a new post.'}
       = f.label :unjoined_author_ids, 'Invite coauthors:'
