@@ -66,10 +66,10 @@ RSpec.describe WritableHelper do
   end
 
   describe "#sanitize_written_content" do
-    ['RTF', 'HTML'].each do |editor_mode|
+    ['rtf', 'html', 'md'].each do |editor_mode|
       # applies only for single-line input
       def format_input(text, editor_mode)
-        return text if editor_mode == 'HTML'
+        return text if editor_mode == 'html'
         "<p>#{text}</p>"
       end
 
@@ -127,8 +127,12 @@ RSpec.describe WritableHelper do
       it "permits some attributes on only some tags" do
         text = '<p><a width="100%" href="https://example.com">test</a></p> <hr width="100%">'
         expected = '<p><a href="https://example.com">test</a></p> <hr width="100%">'
-        expect(helper.sanitize_written_content(text, 'html')).to eq(expected)
         expect(helper.sanitize_written_content(text, 'rtf')).to eq(expected)
+
+        text = '<a width="100%" href="https://example.com">test</a> <hr width="100%">'
+        expected = '<p><a href="https://example.com">test</a> </p><hr width="100%"><p></p>'
+        expect(helper.sanitize_written_content(text, 'html')).to eq(expected)
+        expect(helper.sanitize_written_content(text, 'md')).to eq(expected)
       end
 
       it "does not convert linebreaks in text with <br> tags" do
@@ -154,6 +158,7 @@ RSpec.describe WritableHelper do
 
       it "does not convert linebreaks in text with complicated <p> tags" do
         text = "<p style=\"width: 100%;\">line1\nline2</p>"
+        expect(helper.sanitize_written_content(text, 'html')).to eq(text)
         expect(helper.sanitize_written_content(text, 'rtf')).to eq(text)
       end
 
@@ -162,6 +167,7 @@ RSpec.describe WritableHelper do
         expected = "<blockquote>Blah. Blah.<br>Blah.</blockquote>\n<blockquote>Blah blah.</blockquote>\n<p>Blah.</p>"
         expect(helper.sanitize_written_content(text, 'rtf')).to eq(expected)
         expect(helper.sanitize_written_content(text, 'html')).to eq(expected)
+        expect(helper.sanitize_written_content(text, 'md')).to eq(expected.gsub("\n", "\n\n"))
       end
     end
 
@@ -197,6 +203,48 @@ RSpec.describe WritableHelper do
         text = "line1<b>text\n\nline2</b>"
         expected = "<p>line1<b>text</b></p><b>\n\n</b><p><b>line2</b></p>"
         expect(helper.sanitize_written_content(text, 'html')).to eq(expected)
+      end
+    end
+
+    context "markdown formatter" do
+      it "automatically converts linebreaks" do
+        text = "line1\nline2\n\nline3"
+        result = helper.sanitize_written_content(text, 'md')
+        expect(result).to eq("<p>line1<br>\nline2</p>\n\n<p>line3</p>")
+        expect(result).to be_html_safe
+      end
+
+      it "supports blockquotes" do
+        text = "> Blah. Blah.\r\n> Blah.\r\n>\r\n> Blah blah.\r\n\r\nBlah."
+        expected = "<blockquote>\n<p>Blah. Blah.<br>\nBlah.</p>\n\n<p>Blah blah.</p>\n</blockquote>\n\n<p>Blah.</p>"
+        expect(helper.sanitize_written_content(text, 'md')).to eq(expected)
+      end
+
+      skip "does not mangle large breaks" do
+        # TODO: markdown renderer doesn't support hard breaks with so many lines
+        text = "line1\n\n\nline2"
+        expected = "<p>line1</p>\n\n<p>\n<br>line2</p>"
+        expect(helper.sanitize_written_content(text, 'md')).to eq(expected)
+
+        text = "line1\n\n\n\nline2"
+        expected = "<p>line1</p>\n\n<p>&nbsp;</p>\n\n<p>line2</p>" # U+00A0 is NBSP
+        expect(helper.sanitize_written_content(text, 'md')).to eq(expected)
+      end
+
+      it "does not mangle tags continuing over linebreaks" do
+        text = "line1<b>text\nline2</b>"
+        expected = "<p>line1<b>text<br>\nline2</b></p>"
+        expect(helper.sanitize_written_content(text, 'md')).to eq(expected)
+
+        text = "line1<b>text\n\nline2</b>"
+        expected = "<p>line1<b>text</b></p><b>\n\n</b><p><b>line2</b></p>"
+        expect(helper.sanitize_written_content(text, 'md')).to eq(expected)
+      end
+
+      it "renders markdown" do
+        text = "here is _some_ text that has **formatting** in like a link to http://google.com/"
+        expected = "<p>here is <em>some</em> text that has <strong>formatting</strong> in like a link to <a href=\"http://google.com/\">http://google.com/</a></p>"
+        expect(helper.sanitize_written_content(text, 'md')).to eq(expected)
       end
     end
   end

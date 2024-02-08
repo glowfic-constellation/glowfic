@@ -2,6 +2,7 @@
   - content_for :form do
     - unless post.id.present? && !post.editable_by?(current_user)
       %button.view-button#rtf{type: 'button', class: ('selected' if @post.editor_mode == 'rtf')} Rich Text
+      %button.view-button#md{type: 'button', class: ('selected' if @post.editor_mode == 'md')} Markdown
       %button.view-button#html{type: 'button', class: ('selected' if @post.editor_mode == 'html')} HTML
       %button.view-button#editor-help{type: 'button', title: 'Help'} ?
     = f.label :subject, 'Subject:'
