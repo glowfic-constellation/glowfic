@@ -5,35 +5,35 @@
         %th.table-title{colspan: 2} Sign Up
     %tbody
       %tr#signup-username
-        %th.sub.vtop Username
+        %th.sub.vtop= f.label :username
         %td.even
           = f.text_field :username, placeholder: "Username"
           .user-alert.hidden
             = image_tag 'icons/exclamation.png', alt: '!', title: '', class: 'vmid'
             %span.msg
       %tr#signup-email
-        %th.sub.vtop Email
+        %th.sub.vtop= f.label :email
         %td.odd
           = f.text_field :email, placeholder: "Email address"
           .user-alert.hidden
             = image_tag 'icons/exclamation.png', alt: '!', title: '', class: 'vmid'
             %span.msg
       %tr#signup-password
-        %th.sub.vtop Password
+        %th.sub.vtop= f.label :password
         %td.even
           = f.password_field :password, placeholder: "Password"
           .user-alert.hidden
             = image_tag 'icons/exclamation.png', alt: '!', title: '', class: 'vmid'
             %span.msg
       %tr#signup-password-confirmation
-        %th.sub.vtop Confirm
+        %th.sub.vtop= f.label :password_confirmation, 'Confirm'
         %td.odd
           = f.password_field :password_confirmation, placeholder: "Confirm Password"
           .user-alert.hidden
             = image_tag 'icons/exclamation.png', alt: '!', title: '', class: 'vmid'
             %span.msg
       %tr#signup-secret
-        %th.sub.vtop Secret
+        %th.sub.vtop= f.label :secret
         %td.even
           = text_field_tag :secret, params[:secret], placeholder: "Secret"
       %tr#signup-captcha
