@@ -26,6 +26,8 @@ class User < ApplicationRecord
   has_many :indexes
   has_many :news
   has_one :report_view
+  has_many :user_tags, class_name: 'Tag::UserTag', inverse_of: :user
+
   belongs_to :avatar, class_name: 'Icon', inverse_of: :user, optional: true
   belongs_to :active_character, class_name: 'Character', inverse_of: :user, optional: true
 
@@ -91,7 +93,10 @@ class User < ApplicationRecord
 
   def visible_posts
     Rails.cache.fetch(PostViewer.cache_string_for(self.id), expires_in: 1.month) do
-      PostViewer.where(user: self).pluck(:post_id)
+      viewer_post_ids = PostViewer.where(user: self).pluck(:post_id)
+      circle_ids = user_tags.pluck(:tag_id)
+      circle_post_ids = PostTag.where(tag_id: circle_ids).select(:post_id).distinct.pluck(:post_id)
+      (viewer_post_ids + circle_post_ids).uniq
     end
   end
 
