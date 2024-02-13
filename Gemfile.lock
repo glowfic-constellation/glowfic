@@ -367,9 +367,9 @@ GEM
       ffi (~> 1.0)
     rdoc (6.6.2)
       psych (>= 4.0.0)
-    redis (5.0.8)
+    redis (5.1.0)
       redis-client (>= 0.17.0)
-    redis-client (0.17.1)
+    redis-client (0.19.1)
       connection_pool
     redis-namespace (1.11.0)
       redis (>= 4)
@@ -583,7 +583,7 @@ DEPENDENCIES
   rails (~> 7.1.3)
   rails-controller-testing
   rake (~> 13.1)
-  redis (~> 5.0)
+  redis (~> 5.1)
   resque
   resque-heroku-signals
   resque_mailer
