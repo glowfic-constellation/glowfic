@@ -172,9 +172,6 @@ GEM
     diff-lcs (1.5.0)
     docile (1.4.0)
     dotenv (3.0.0)
-    dotenv-rails (3.0.0)
-      dotenv (= 3.0.0)
-      railties (>= 6.1)
     drb (2.2.0)
       ruby2_keywords
     erubi (1.12.0)
@@ -553,7 +550,7 @@ DEPENDENCIES
   capybara
   dartsass-sprockets
   database_cleaner
-  dotenv-rails
+  dotenv
   exception_notification
   factory_bot_rails
   get_process_mem
