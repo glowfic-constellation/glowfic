@@ -72,7 +72,7 @@ end
 group :development, :test do
   gem 'byebug'
   gem 'database_cleaner'
-  gem 'dotenv-rails'
+  gem 'dotenv'
   gem 'html-proofer'
   gem 'rake', '~> 13.1'
   gem 'rspec-rails'
