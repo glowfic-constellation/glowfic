@@ -171,10 +171,10 @@ GEM
     date (3.3.4)
     diff-lcs (1.5.0)
     docile (1.4.0)
-    dotenv (2.8.1)
-    dotenv-rails (2.8.1)
-      dotenv (= 2.8.1)
-      railties (>= 3.2)
+    dotenv (3.0.0)
+    dotenv-rails (3.0.0)
+      dotenv (= 3.0.0)
+      railties (>= 6.1)
     drb (2.2.0)
       ruby2_keywords
     erubi (1.12.0)
@@ -231,7 +231,7 @@ GEM
     i18n (1.14.1)
       concurrent-ruby (~> 1.0)
     io-console (0.7.2)
-    irb (1.11.1)
+    irb (1.11.2)
       rdoc
       reline (>= 0.4.2)
     jmespath (1.6.2)
@@ -264,7 +264,7 @@ GEM
     memory_profiler (1.0.1)
     mercenary (0.4.0)
     mini_mime (1.1.5)
-    minitest (5.21.2)
+    minitest (5.22.2)
     mono_logger (1.1.2)
     multi_json (1.15.0)
     multi_xml (0.6.0)
@@ -529,7 +529,7 @@ GEM
     xpath (3.2.0)
       nokogiri (~> 1.8)
     yell (2.2.2)
-    zeitwerk (2.6.12)
+    zeitwerk (2.6.13)
 
 PLATFORMS
   aarch64-linux-gnu
