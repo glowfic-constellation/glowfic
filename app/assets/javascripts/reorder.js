@@ -93,7 +93,7 @@ function swapRows(sourceRow, targetRow, orderBox, path, param) {
 function setToDisplayedOrder(orderBox, path, param) {
   const arrowBox = $('tbody, .table-list', orderBox);
   const rows = $('.section-ordered', arrowBox);
-  rows.each(function(_, index) {
+  rows.each(function(index, _elem) {
     $(this).data('order', index);
   });
   syncRowOrders(orderBox, path, param);
