@@ -494,7 +494,7 @@ GEM
     temple (0.10.3)
     terser (1.2.0)
       execjs (>= 0.3.0, < 3)
-    test-unit (3.6.1)
+    test-unit (3.6.2)
       power_assert
     thin (1.8.2)
       daemons (~> 1.0, >= 1.0.9)
