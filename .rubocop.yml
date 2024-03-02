@@ -649,6 +649,9 @@ RSpec/IdenticalEqualityAssertion: # new in 2.4
 RSpec/IndexedLet: # new in 2.20
   Enabled: false
 
+RSpec/IsExpectedSpecify: # new in 2.27
+  Enabled: true
+
 RSpec/LeakyConstantDeclaration:
   Exclude:
     - 'spec/lib/presentable_spec.rb'
@@ -687,6 +690,9 @@ RSpec/RedundantPredicateMatcher: # new in 2.26
   Enabled: true
 
 RSpec/RemoveConst: # new in 2.26
+  Enabled: true
+
+RSpec/RepeatedSubjectCall: # new in 2.27
   Enabled: true
 
 RSpec/SkipBlockInsideExample: # new in 2.19
