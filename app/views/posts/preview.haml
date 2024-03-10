@@ -1,3 +1,7 @@
+- if @fonts.present?
+  - @fonts.each do |font|
+    %style= raw font.css
+
 .content-header= @post.subject
 - if @post.description.present?
   .post-subheader= sanitize_simple_link_text(@post.description)
