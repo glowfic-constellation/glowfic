@@ -10,6 +10,7 @@ class Gallery < ApplicationRecord
 
   has_many :gallery_tags, inverse_of: :gallery, dependent: :destroy
   has_many :gallery_groups, -> { ordered_by_gallery_tag }, through: :gallery_tags, source: :gallery_group, dependent: :destroy
+  has_many :facecasts, -> { ordered_by_gallery_tag }, through: :gallery_tags, source: :facecast, dependent: :destroy
 
   validates :name, presence: true
 

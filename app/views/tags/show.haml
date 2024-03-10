@@ -16,7 +16,7 @@
         = link_to tag_path(@tag) do
           = image_tag "icons/chart_bar.png", class: 'vmid', alt: ''
           Info
-    - if @tag.is_a?(GalleryGroup)
+    - if %w(GalleryGroup Facecast).include?(@tag.type)
       %tr
         %td.centered{class: cycle('even', 'odd')}
           = link_to tag_path(@tag, view: 'galleries') do
@@ -28,7 +28,7 @@
           = link_to tag_path(@tag, view: 'posts') do
             = image_tag "icons/book_open.png", class: 'vmid', alt: ''
             Posts
-    - if @tag.is_a?(Setting) || @tag.is_a?(GalleryGroup)
+    - if %w(Setting GalleryGroup Facecast).include?(@tag.type)
       %tr
         %td.centered{class: cycle('even', 'odd')}
           = link_to tag_path(@tag, view: 'characters') do
