@@ -136,7 +136,7 @@
       - if @character.pb?
         %tr
           %th.sub.vtop.width-150 Facecast
-          - facecast_links = @character.facecast.map { |pb| link_to(pb.name, tag_path(pb)) }
+          - facecast_links = @character.facecasts.map { |pb| link_to(pb.name, tag_path(pb)) }
           %td.character-pb{class: cycle('even', 'odd')}= safe_join(facecast_links, ', ')
       - if @character.settings.present?
         %tr
