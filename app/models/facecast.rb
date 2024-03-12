@@ -1,0 +1,2 @@
+class Facecast < Tag
+end
