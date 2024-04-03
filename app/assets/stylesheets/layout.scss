@@ -186,7 +186,7 @@ table { width: 100%; }
   margin: 0;
 }
 
-.table-title, .content-header, .search-results-header {
+%shared-table-title {
   background-color: $bg_color_head;
   color: $font_color_head;
   padding: 15px;
@@ -194,18 +194,20 @@ table { width: 100%; }
   font-weight: normal;
 }
 
+.table-title, .content-header, .search-results-header { @extend %shared-table-title; }
+
 .info-box-header, .editor-title {
-  @extend .table-title;
+  @extend %shared-table-title;
   text-align: center;
 }
 
 .search-params-header {
-  @extend .table-title;
+  @extend %shared-table-title;
   width: 150px;
 }
 
 .gallery-table-title {
-  @extend .table-title;
+  @extend %shared-table-title;
   &, &.subber { padding: 10px; }
 }
 
