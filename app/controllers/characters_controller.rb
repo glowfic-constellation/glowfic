@@ -313,7 +313,7 @@ class CharactersController < ApplicationController
 
   def require_delete_permission
     return if @character.deletable_by?(current_user)
-    flash[:error] = "You do not have permission to edit that character."
+    flash[:error] = "You do not have permission to modify this character."
     redirect_to user_characters_path(current_user)
   end
 
