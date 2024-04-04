@@ -34,7 +34,7 @@ class UsersController < ApplicationController
       render :new and return
     end
 
-    @user.role_id = Permissible::READONLY if params[:secret] != ENV["ACCOUNT_SECRET"]
+    @user.role_id = :read_only if params[:secret] != ENV["ACCOUNT_SECRET"]
 
     begin
       @user.save!
