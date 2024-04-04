@@ -232,8 +232,8 @@ function disableNPCBoxes(disable) {
 
 function bindScreenname(obj) {
   console.log('binding screenname');
-  $(".character-icon", obj).click(function() {
-    // bind screenname here
+  $("#character_screenname", obj).blur(function() {
+    console.log("you left it!")
   });
 }
 
