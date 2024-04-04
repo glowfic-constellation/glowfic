@@ -4,8 +4,7 @@ class IndexPostsController < ApplicationController
   before_action :readonly_forbidden
   before_action :find_model, only: [:edit, :update, :destroy]
   before_action :find_parent
-  before_action :require_edit_permission, only: [:edit, :update, :destroy]
-  before_action :require_create_permission, only: [:new, :create]
+  before_action :require_permission, only: [:new, :create, :edit, :update, :destroy]
 
   def new
     @index_post = IndexPost.new(index: @index, index_section_id: params[:index_section_id])
@@ -75,13 +74,7 @@ class IndexPostsController < ApplicationController
     redirect_to indexes_path
   end
 
-  def require_create_permission
-    return if @index.editable_by?(current_user)
-    flash[:error] = "You do not have permission to modify this index."
-    redirect_to @index
-  end
-
-  def require_edit_permission
+  def require_permission
     return if @index.editable_by?(current_user)
     flash[:error] = "You do not have permission to modify this index."
     redirect_to @index
