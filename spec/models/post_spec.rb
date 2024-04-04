@@ -400,15 +400,16 @@ RSpec.describe Post do
   end
 
   describe "validations" do
+    let(:author) { create(:user) }
+    let(:post) { create(:post, user: author) }
+
     it "requires user" do
-      post = create(:post)
       expect(post.valid?).to eq(true)
       post.user = nil
       expect(post.valid?).not_to eq(true)
     end
 
     it "requires user's character" do
-      post = create(:post)
       character = create(:character)
       expect(post.user).not_to eq(character.user)
       post.character = character
@@ -416,7 +417,6 @@ RSpec.describe Post do
     end
 
     it "requires user's icon" do
-      post = create(:post)
       icon = create(:icon)
       expect(post.user).not_to eq(icon.user)
       post.icon = icon
@@ -425,22 +425,72 @@ RSpec.describe Post do
 
     it "requires board the user can access" do
       board = create(:board, authors_locked: true)
-      post = create(:post)
       expect(post.valid?).to eq(true)
       post.board = board
       expect(post.valid?).not_to eq(true)
     end
 
     it "requires board section matching board" do
-      post = create(:post)
       expect(post.valid?).to eq(true)
       post.section = create(:board_section)
       expect(post.valid?).not_to eq(true)
     end
 
     it "should allow blank content" do
-      post = create(:post, content: '')
-      expect(post.id).not_to be_nil
+      post.content = ''
+      expect(post).to be_valid
+    end
+
+    it "should not allow adding a coauthor who's blocked you" do
+      coauthor = create(:user)
+      create(:block, blocking_user: coauthor, blocked_user: author, block_interactions: true)
+      post = build(:post, user: author, unjoined_authors: [coauthor])
+      expect(post).not_to be_valid
+    end
+
+    it "should not allow adding a coauthor you've blocked" do
+      coauthor = create(:user)
+      create(:block, blocking_user: author, blocked_user: coauthor, block_interactions: true)
+      post = build(:post, user: author, unjoined_authors: [coauthor])
+      expect(post).not_to be_valid
+    end
+
+    it "should not allow adding two coauthors who have blocked each other on creation" do
+      coauthor1 = create(:user)
+      coauthor2 = create(:user)
+      create(:block, blocking_user: coauthor1, blocked_user: coauthor2, block_interactions: true)
+      post = build(:post, unjoined_authors: [coauthor1, coauthor2])
+      expect(post).not_to be_valid
+    end
+
+    it "should not allow adding two coauthors who have blocked each other on update" do
+      coauthor1 = create(:user)
+      coauthor2 = create(:user)
+      create(:block, blocking_user: coauthor1, blocked_user: coauthor2, block_interactions: true)
+      post.unjoined_authors = [coauthor1, coauthor2]
+      expect(post).not_to be_valid
+    end
+
+    it "should not allow adding someone your coauthor has blocked" do
+      joined = create(:user)
+      add = create(:user)
+      create(:block, blocking_user: joined, blocked_user: add, block_interactions: true)
+      create(:reply, post: post, user: joined)
+      post.reload
+      expect(post.joined_author_ids).to include(joined.id)
+      post.unjoined_authors << [add]
+      expect(post).not_to be_valid
+    end
+
+    it "should not allow adding someone who has blocked your coauthor" do
+      joined = create(:user)
+      add = create(:user)
+      create(:block, blocking_user: add, blocked_user: joined, block_interactions: true)
+      create(:reply, post: post, user: joined)
+      post.reload
+      expect(post.joined_author_ids).to include(joined.id)
+      post.unjoined_authors << add
+      expect(post).not_to be_valid
     end
   end
 
