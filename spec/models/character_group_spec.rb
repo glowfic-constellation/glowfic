@@ -64,7 +64,7 @@ RSpec.describe CharacterGroup do
       create(:character_group, user: user, characters: [character])
       group = build(:character_group, user: user, characters: [character])
       expect(group).not_to be_valid
-      expect(group.errors.full_messages).to eq(['Character tags is invalid'])
+      expect(group.errors.full_messages).to match_array(['Character tags is invalid', 'Characters is invalid'])
       expect(group.character_tags.first.errors.full_messages).to eq(['Character has already been taken'])
     end
 
