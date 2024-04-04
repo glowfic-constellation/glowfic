@@ -25,6 +25,9 @@ $(document).ready(function() {
 
   bindIcons();
 
+  bindScreenname();
+  checkDuplicateScreenname();
+
   oldTemplate = $("#character_template_id").val();
   $("#new_template").change(function() {
     $("#character_template_attributes_name").val('');
@@ -226,3 +229,17 @@ function disableNPCBoxes(disable) {
     $("label[for='character_nickname']").text("Nickname");
   }
 }
+
+function bindScreenname(obj) {
+  console.log('binding screenname');
+  $(".character-icon", obj).click(function() {
+    // bind screenname here
+  });
+}
+
+
+function checkDuplicateScreenname() {
+  console.log('Hello World');
+}
+
+
