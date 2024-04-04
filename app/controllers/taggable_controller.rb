@@ -43,7 +43,7 @@ class TaggableController < ApplicationController
 
   private
 
-  def require_permission
+  def require_edit_permission
     return if @tag.editable_by?(current_user)
     flash[:error] = "You do not have permission to modify this #{tag_or_setting}."
     redirect_to tag_or_setting_path(@tag)
@@ -66,8 +66,10 @@ class TaggableController < ApplicationController
     stats = []
     post_count = @tag.posts.privacy_public.count
     stats << ("#{post_count} " + "post".pluralize(post_count)) if post_count > 0
-    gallery_count = @tag.galleries.count
-    stats << ("#{gallery_count} " + "gallery".pluralize(gallery_count)) if gallery_count > 0
+    if @tag.is_a?(GalleryGroup)
+      gallery_count = @tag.galleries.count
+      stats << ("#{gallery_count} " + "gallery".pluralize(gallery_count)) if gallery_count > 0
+    end
     character_count = @tag.characters.count
     stats << ("#{character_count} " + "character".pluralize(character_count)) if character_count > 0
     desc << stats.join(', ')
@@ -92,10 +94,9 @@ class TaggableController < ApplicationController
   end
 
   def find_model(klass, path)
-    unless (@tag = klass.find_by(id: params[:id]))
-      flash[:error] = "#{klass.model_name.to_s.titleize} could not be found."
-      redirect_to path
-    end
+    return if (@tag = klass.find_by(id: params[:id]))
+    flash[:error] = "#{klass.model_name.to_s.titleize} could not be found."
+    redirect_to path
   end
 
   def tag_or_setting

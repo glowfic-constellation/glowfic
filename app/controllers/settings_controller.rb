@@ -20,30 +20,31 @@ class SettingsController < TaggableController
         @setting.parent_settings = process_tags(Setting, obj_param: :setting, id_param: :parent_setting_ids)
         @setting.save!
       end
-    rescue ActiveRecord::RecordInvalid
-      flash.now[:error] = {
-        message: "Setting could not be saved because of the following problems:",
-        array: @setting.errors.full_messages,
-      }
+    rescue ActiveRecord::RecordInvalid => e
+      render_errors(@tag, action: 'updated', now: true, err: e)
+
       @page_title = "Edit Setting: #{@setting.name}"
       build_editor
       render :edit
     else
-      flash[:success] = "Setting saved!"
+      flash[:success] = "Setting updated."
       redirect_to setting_path(@setting)
     end
   end
 
   def destroy
-    if @setting.destroy
-      flash[:success] = "Setting deleted."
-      redirect_to settings_path(url_params)
+    begin
+      @setting.destroy!
+    rescue ActiveRecord::RecordNotDestroyed => e
+      render_errors(@tag, action: 'deleted', err: e)
+      redirect_to @setting
     else
-      flash[:error] = {
-        message: "Setting could not be deleted.",
-        array: @setting.errors.full_messages,
-      }
-      redirect_to setting_path(@setting)
+      flash[:success] = "Setting deleted."
+
+      url_params = {}
+      url_params[:page] = page if params[:page].present?
+      url_params[:view] = params[:view] if params[:view].present?
+      redirect_to settings_path(url_params)
     end
   end
 

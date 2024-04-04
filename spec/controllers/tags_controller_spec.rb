@@ -276,7 +276,7 @@ RSpec.describe TagsController do
       login_as(create(:admin_user))
       put :update, params: { id: tag.id, tag: { name: nil } }
       expect(response.status).to eq(200)
-      expect(flash[:error][:message]).to eq("Setting could not be updated because of the following problems:")
+      expect(flash[:error][:message]).to eq("Label could not be updated because of the following problems:")
     end
 
     it "allows admin to update the tag" do

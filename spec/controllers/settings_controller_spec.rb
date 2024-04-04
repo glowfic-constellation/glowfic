@@ -170,7 +170,7 @@ RSpec.describe SettingsController do
       login
       get :edit, params: { id: setting.id }
       expect(response).to redirect_to(setting_url(setting))
-      expect(flash[:error]).to eq("You do not have permission to edit this setting.")
+      expect(flash[:error]).to eq("You do not have permission to modify this setting.")
     end
 
     it "allows admin to edit the setting" do
@@ -208,7 +208,7 @@ RSpec.describe SettingsController do
       setting = create(:setting, owned: true)
       put :update, params: { id: setting.id }
       expect(response).to redirect_to(setting_url(setting))
-      expect(flash[:error]).to eq("You do not have permission to edit this setting.")
+      expect(flash[:error]).to eq("You do not have permission to modify this setting.")
     end
 
     it "requires valid params" do
@@ -216,7 +216,7 @@ RSpec.describe SettingsController do
       login_as(create(:admin_user))
       put :update, params: { id: setting.id, setting: { name: nil } }
       expect(response.status).to eq(200)
-      expect(flash[:error][:message]).to eq("Setting could not be saved because of the following problems:")
+      expect(flash[:error][:message]).to eq("Setting could not be updated because of the following problems:")
     end
 
     it "allows admin to update the setting" do
@@ -225,7 +225,7 @@ RSpec.describe SettingsController do
       login_as(create(:admin_user))
       put :update, params: { id: setting.id, setting: { name: name } }
       expect(response).to redirect_to(setting_url(setting))
-      expect(flash[:success]).to eq("Setting saved!")
+      expect(flash[:success]).to eq("Setting updated.")
       expect(setting.reload.name).to eq(name)
     end
 
@@ -259,7 +259,7 @@ RSpec.describe SettingsController do
       login
       delete :destroy, params: { id: setting.id }
       expect(response).to redirect_to(setting_url(setting))
-      expect(flash[:error]).to eq("You do not have permission to edit this setting.")
+      expect(flash[:error]).to eq("You do not have permission to modify this setting.")
     end
 
     it "allows admin to destroy the setting" do
@@ -279,7 +279,7 @@ RSpec.describe SettingsController do
       expect(setting).to receive(:destroy)
       delete :destroy, params: { id: setting.id }
       expect(response).to redirect_to(setting_url(setting))
-      expect(flash[:error]).to eq({ message: "Setting could not be deleted.", array: [] })
+      expect(flash[:error]).to eq("Setting could not be deleted.")
       expect(Setting.find_by(id: setting.id)).not_to be_nil
     end
   end
