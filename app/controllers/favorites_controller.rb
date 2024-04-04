@@ -67,9 +67,9 @@ class FavoritesController < ApplicationController
 
   def destroy
     begin
-      fav.destroy!
+      @fav.destroy!
     rescue ActiveRecord::RecordNotDestroyed => e
-      render_errors(fav, action: 'deleted', err: e)
+      render_errors(@fav, action: 'deleted', err: e)
       redirect_to favorites_path
     else
       flash[:success] = "Favorite removed."

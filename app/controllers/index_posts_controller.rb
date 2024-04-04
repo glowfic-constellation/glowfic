@@ -68,8 +68,10 @@ class IndexPostsController < ApplicationController
   end
 
   def find_parent
+    return if (@index = @index_post&.index)
     id = params[:index_id] || permitted_params[:index_id]
-    return if (@index = @index_post&.index || Index.find_by(id: id))
+    section_id = permitted_params[:index_section_id]
+    return if (@index = Index.find_by(id: id) || IndexSection.find_by(id: section_id).index)
     flash[:error] = "Index could not be found."
     redirect_to indexes_path
   end

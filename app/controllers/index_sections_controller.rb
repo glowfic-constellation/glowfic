@@ -68,7 +68,7 @@ class IndexSectionsController < ApplicationController
 
   def find_parent
     id = params[:index_id] || permitted_params[:index_id]
-    return if (@index = @section.index || Index.find_by(id: id))
+    return if (@index = @section&.index || Index.find_by(id: id))
     flash[:error] = "Index could not be found."
     redirect_to indexes_path
   end
