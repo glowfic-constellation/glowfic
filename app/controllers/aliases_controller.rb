@@ -6,7 +6,7 @@ class AliasesController < ApplicationController
   before_action :find_model, only: :destroy
 
   def new
-    @page_title = "New Alias: " + @character.name
+    @page_title = t('.title', name: @character.name)
     @alias = CharacterAlias.new(character: @character)
   end
 
@@ -19,10 +19,10 @@ class AliasesController < ApplicationController
     rescue ActiveRecord::RecordInvalid => e
       render_errors(@alias, action: 'created', now: true, class_name: 'Alias', err: e)
 
-      @page_title = "New Alias: " + @character.name
+      @page_title = t('.new.title', name: @character.name)
       render :new
     else
-      flash[:success] = "Alias created."
+      flash[:success] = t('.success')
       redirect_to edit_character_path(@character)
     end
   end
@@ -33,7 +33,7 @@ class AliasesController < ApplicationController
     rescue ActiveRecord::RecordNotDestroyed => e
       render_errors(@alias, action: 'deleted', class_name: 'Alias', err: e)
     else
-      flash[:success] = "Alias removed."
+      flash[:success] = t('.success')
     end
     redirect_to edit_character_path(@character)
   end
@@ -42,30 +42,30 @@ class AliasesController < ApplicationController
 
   def require_permission
     return unless current_user&.read_only?
-    flash[:error] = "You do not have permission to create aliases."
+    flash[:error] = t('.errors.no_access')
     redirect_to continuities_path
   end
 
   def find_character
     unless (@character = Character.find_by_id(params[:character_id]))
-      flash[:error] = "Character could not be found."
+      flash[:error] = t('.errors.parent_not_found')
       redirect_to user_characters_path(current_user) and return
     end
 
     return if @character.user == current_user
-    flash[:error] = "You do not have permission to modify this character."
+    flash[:error] = t('.errors.no_edit_permission')
     redirect_to user_characters_path(current_user)
   end
 
   def find_model
     unless (@alias = CharacterAlias.find_by_id(params[:id]))
-      flash[:error] = "Alias could not be found."
+      flash[:error] = t('.errors.not_found')
       redirect_to edit_character_path(@character) and return
     end
 
     return if @alias.character_id == @character.id
 
-    flash[:error] = "Alias could not be found for that character."
+    flash[:error] = t('.errors.not_matched')
     redirect_to edit_character_path(@character)
   end
 

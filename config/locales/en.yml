@@ -30,8 +30,24 @@
 # available at https://guides.rubyonrails.org/i18n.html.
 
 en:
-  hello: "Hello world"
+  save: Save
+  edit: Edit
   will_paginate:
     previous_label: "&lsaquo; Previous"
     next_label: "Next &rsaquo;"
     page_gap: "&hellip;"
+  aliases:
+    new:
+      title: "New Alias: %{name}"
+      form_title: "New Alias"
+      placeholder: "Alias"
+    create:
+      success: "Alias created."
+    destroy:
+      success: "Alias removed."
+    errors:
+      no_access: "You do not have permission to create aliases."
+      no_edit_permission: "You do not have permission to modify this character."
+      parent_not_found: "Character could not be found."
+      not_found: "Alias could not be found."
+      not_matched: "Alias could not be found for that character."
