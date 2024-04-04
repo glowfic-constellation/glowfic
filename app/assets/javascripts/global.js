@@ -147,11 +147,7 @@ function processTotal(key) {
 
 function createTagSelect(tagType, selector, formType, scope) {
   foundTags[selector] = [];
-  if (tagType === 'Setting') {
-    const url = '/api/v1/settings';
-  } else {
-    const url = '/api/v1/tags';
-  }
+  const url = (tagType === 'Setting') ? '/api/v1/settings' : '/api/v1/tags';
 
   createSelect2("#"+formType+"_"+selector+"_ids", {
     tags: true,
