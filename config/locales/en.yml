@@ -43,18 +43,18 @@ en:
   aliases:
     new:
       title: "New Alias: %{name}"
-      form_title: "New Alias"
-      placeholder: "Alias"
+      form_title: New Alias
+      placeholder: Alias
     create:
-      success: "Alias created."
+      success: Alias created.
     destroy:
-      success: "Alias removed."
+      success: Alias removed.
     errors:
-      no_access: "You do not have permission to create aliases."
-      no_edit_permission: "You do not have permission to modify this character."
-      parent_not_found: "Character could not be found."
-      not_found: "Alias could not be found."
-      not_matched: "Alias could not be found for that character."
+      no_access: You do not have permission to create aliases.
+      no_edit_permission: You do not have permission to modify this character.
+      parent_not_found: Character could not be found.
+      not_found: Alias could not be found.
+      not_matched: Alias could not be found for that character.
   blocks:
     index:
       title: Blocked Users
