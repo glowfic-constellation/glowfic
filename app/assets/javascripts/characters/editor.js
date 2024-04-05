@@ -24,9 +24,7 @@ $(document).ready(function() {
   });
 
   bindIcons();
-
   bindScreenname();
-  checkDuplicateScreenname();
 
   oldTemplate = $("#character_template_id").val();
   $("#new_template").change(function() {
@@ -234,11 +232,28 @@ function bindScreenname(obj) {
   console.log('binding screenname');
   $("#character_screenname", obj).blur(function() {
     console.log("you left it!")
+    screenname=$("#character_screenname", obj).val()
+    console.log(screenname)
+    checkDuplicateScreenname(screenname);
   });
 }
 
 
-function checkDuplicateScreenname() {
+function checkDuplicateScreenname(screenname) {
+  res = $.ajax({
+    url: '/api/v1/characters/',
+    type: 'GET',
+    dataType: 'json',
+    success: function(res) {
+      charArray=res['results'];
+      charArray.forEach((char) => {
+        console.log(char['screenname']);
+        if(char['screenname'] == screenname){
+          console.log("HEY");
+        }
+      })
+    }
+  })
   console.log('Hello World');
 }
 
