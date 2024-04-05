@@ -8,12 +8,12 @@
       - else
         = f.select :blocked_user_id, options_from_collection_for_select(@users,
           :id, :username, params.fetch(:block, {})[:blocked_user_id]),
-          { class: 'text chosen-select', prompt: t('.choose_user') }
+          { class: 'text chosen-select', prompt: t('.prompt.user') }
   %tr
-    %th.sub= f.label :block_interactions, t('.interactions_label')
+    %th.sub= f.label :block_interactions, t('.label.interactions.short')
     %td{class: klass}
       = f.check_box :block_interactions
-      = f.label :block_interactions, t('.interactions_explaination')
+      = f.label :block_interactions, t('.label.interactions.long')
   %tr
     %th.sub= f.label :hide_them
     %td{class: klass}

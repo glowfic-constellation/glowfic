@@ -32,15 +32,25 @@
 en:
   button:
     save: Save
-    delete: Delete
+    delete: x Delete
     search: Search
     edit: Edit
+    new:
+      block: + Block User
+      post: + New Post
   breadcrumbs:
     edit: Edit
     new: New
+  alt:
+    delete: Delete
+    edit: Edit
   status:
     saved: Saved
     error: Error
+  confirm:
+    destroy:
+      block: "Are you sure you want to unblock %{name}?"
+      section: Are you sure you want to delete this section?
   will_paginate:
     previous_label: "&lsaquo; Previous"
     next_label: "Next &rsaquo;"
@@ -70,8 +80,6 @@ en:
       title: Blocked Users
       status: "Warning: full blocking is not yet implemented, and will function the same as simply blocking posts.
     Additionally, any threads not locked to their authors will not be covered by post blocking."
-      button:
-        new: + Block User
       header:
         user: Blocked User
         interaction: Blocked Interaction
@@ -81,7 +89,6 @@ en:
         all: All
         posts: Posts
         none: None
-      delete_confirm: "Are you sure you want to unblock %{name}?"
       empty: — No blocks yet —
       'yes': "Yes"
       'no': "No"
@@ -106,9 +113,12 @@ en:
       posts: Just posts
       all: Everything
     editor:
-      choose_user: — Choose User —
-      interactions_label: Interactions
-      interactions_explaination: Prevent them from interacting with you?
+      prompt:
+        user: — Choose User —
+      label:
+        interactions:
+          short: Interactions
+          long: Prevent them from interacting with you?
       hide_them_text: "Prevent you from seeing their:"
       hide_you_text: "Prevent them from seeing your:"
   board_sections:
@@ -120,10 +130,6 @@ en:
     edit:
       title: "Edit %{name}"
       organize: Organize Section Posts
-    show:
-      button:
-        new: + New Post
-      destroy_confirm: Are you sure you want to delete this section?
     update:
       success: Section updated.
     destroy:

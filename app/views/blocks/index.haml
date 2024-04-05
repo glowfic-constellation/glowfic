@@ -11,7 +11,7 @@
       %th.table-title{colspan: 5}
         = @page_title
         = link_to new_block_path do
-          .link-box.action-new= t('.button.new')
+          .link-box.action-new= t('button.new.block')
     %tr
       %th.sub= t('.header.user')
       %th.sub= t('.header.interaction')
@@ -27,23 +27,23 @@
         %td.padding-5{class: klass}= block.block_interactions? ? t('.yes') : t('.no')
         %td.padding-5{class: klass}
           - if block.hide_them_all?
-            = t('.status.all')
+            = t('.option.all')
           - elsif block.hide_them_posts?
-            = t('.status.posts')
+            = t('.option.posts')
           - else
-            = t('.status.none')
+            = t('.option.none')
         %td.padding-5{class: klass}
           - if block.hide_me_all?
-            = t('.status.all')
+            = t('.option.all')
           - elsif block.hide_me_posts?
-            = t('.status.posts')
+            = t('.option.posts')
           - else
-            = t('.status.none')
+            = t('.option.none')
         %td.width-70.right-align{class: klass}
           = link_to edit_block_path(block) do
-            = image_tag "icons/pencil.png", alt: t('button.edit')
-          = link_to block_path(block), method: :delete, data: { confirm: t('.delete_confirm', name: block.blocked_user.username) } do
-            = image_tag "icons/cross.png", alt: t('button.delete')
+            = image_tag "icons/pencil.png", alt: t('alt.edit')
+          = link_to block_path(block), method: :delete, data: { confirm: t('confirm.destroy.block', name: block.blocked_user.username) } do
+            = image_tag "icons/cross.png", alt: t('alt.delete')
           &nbsp;
     - if @blocks.empty?
       %tr
