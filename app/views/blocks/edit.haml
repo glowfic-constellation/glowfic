@@ -1,13 +1,13 @@
 - content_for :breadcrumbs do
-  = link_to 'Blocks', blocks_path
+  = link_to Block.model_name.human.pluralize, blocks_path
   &raquo;
-  Block on #{@block.blocked_user.username}
+  = t('.block_on', name: @block.blocked_user.username)
   &raquo;
-  %b Edit
+  %b= t('breadcrumbs.edit')
 
 = form_for @block, url: block_path(@block), method: :put do |f|
   %table.form-table
     %thead
       %tr
-        %th.editor-title{colspan: 2} Edit Block
+        %th.editor-title{colspan: 2}= t('.form_title')
     = render 'editor', f: f, blocked_user: @block.blocked_user

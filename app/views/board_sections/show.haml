@@ -1,5 +1,5 @@
 - content_for :breadcrumbs do
-  = link_to "Continuities", continuities_path
+  = link_to Board.model_name.human.pluralize, continuities_path
   &raquo;
   = link_to @board_section.board.name, continuity_path(@board_section.board)
   &raquo;
@@ -9,13 +9,13 @@
   = @board_section.name
   - if @board_section.board.open_to?(current_user)
     = link_to new_post_path params: { board_id: @board_section.board.id, section_id: @board_section.id } do
-      .link-box.action-new + New Post
+      .link-box.action-new= t('.button.new')
   - if @board_section.board.editable_by?(current_user)
     = link_to edit_board_section_path(@board_section) do
       .link-box.action-edit
         = image_tag "icons/pencil.png", alt: ''
-        Edit
-    = link_to board_section_path(@board_section), method: :delete, data: { confirm: 'Are you sure you want to delete this section?' } do
+        = t('button.edit')
+    = link_to board_section_path(@board_section), method: :delete, data: { confirm: '.destroy_confirm' } do
       .link-box.action-delete x Delete
 
 - if @board_section.description.present?

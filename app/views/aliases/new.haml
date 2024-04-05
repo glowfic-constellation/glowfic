@@ -1,24 +1,24 @@
 - content_for :breadcrumbs do
-  = link_to "Characters", user_characters_path(current_user)
+  = link_to Character.model_name.human.pluralize, user_characters_path(current_user)
   - if @character.template
     &raquo;
     = link_to @character.template.name, template_path(@character.template)
   &raquo;
   = link_to @character.name, @character
   &raquo;
-  = link_to 'Edit', edit_character_path(@character)
+  = link_to t('breadcrumbs.edit'), edit_character_path(@character)
   &raquo;
-  %b New Alias
+  %b= t('.form_title')
 
 = form_for @alias, url: character_aliases_path(@character), method: :post do |f|
   %table.form-table
     %thead
       %tr
-        %th.editor-title{colspan: 2}= "New Alias"
+        %th.editor-title{colspan: 2}= t('.form_title')
     %tbody
       %tr
         %th.sub= f.label :name
-        %td.even= f.text_field :name, placeholder: "Alias", class: 'text'
+        %td.even= f.text_field :name, placeholder: t('.placeholder'), class: 'text'
     %tfoot
       %tr
-        %th.form-table-ender{colspan: 2}= submit_tag "Save", class: 'button'
+        %th.form-table-ender{colspan: 2}= submit_tag t('button.save'), class: 'button'

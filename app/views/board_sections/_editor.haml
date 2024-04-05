@@ -1,5 +1,5 @@
 %tr
-  %th.sub= f.label :board_id, 'Continuity'
+  %th.sub= f.label :board_id
   %td.odd
     - if @board_section.posts.present?
       = @board_section.board.name
@@ -7,9 +7,9 @@
       = f.select :board_id, options_from_collection_for_select(allowed_boards(@board_section, current_user), :id, :name, @board_section.board_id), {}, class: 'chosen-select'
 %tr
   %th.sub= f.label :name
-  %td.even= f.text_field :name, placeholder: "Section Name", class: 'text'
+  %td.even= f.text_field :name, placeholder: t('.placeholder.name'), class: 'text'
 %tr
   %th.sub.vtop= f.label :description
   %td.odd= f.text_area :description
 %tr
-  %th.form-table-ender{colspan: 2}= submit_tag "Save", class: 'button'
+  %th.form-table-ender{colspan: 2}= submit_tag t('button.save'), class: 'button'
