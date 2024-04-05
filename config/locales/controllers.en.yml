@@ -1,10 +1,5 @@
 ---
 en:
-  activerecord:
-    models:
-      board:
-        one: Continuity
-        other: Continuities
   aliases:
     create:
       success: Alias created.
@@ -20,9 +15,6 @@ en:
       form_title: New Alias
       placeholder: Alias
       title: 'New Alias: %{name}'
-  alt:
-    delete: Delete
-    edit: Edit
   blocks:
     create:
       failure: User could not be blocked
@@ -146,21 +138,6 @@ en:
       empty: "— No posts yet —"
     update:
       success: Continuity updated.
-  breadcrumbs:
-    edit: Edit
-    new: New
-  button:
-    delete: x Delete
-    edit: Edit
-    favorite: Favorite
-    new:
-      block: "+ Block User"
-      board: "+ New Continuity"
-      post: "+ New Post"
-      section: "+ New Section"
-    save: Save
-    search: Search
-    unfavorite: Unfavorite
   characters:
     errors:
       no_permission:
@@ -170,25 +147,3 @@ en:
       block: Are you sure you want to unblock %{name}?
       board: Are you sure you want to delete this continuity?
       section: Are you sure you want to delete this section?
-  helpers:
-    label:
-      block:
-        hide_you: Hide yourself
-      board:
-        author_id: Author
-        cameo_ids: Cameos
-        coauthor_ids: Coauthors
-      board_section:
-        board_id: Continuity
-  reorder:
-    move_down: Move Down
-    move_up: Move Up
-    reorder: Reorder
-    save_error: Error, please refresh
-  status:
-    error: Error
-    saved: Saved
-  will_paginate:
-    next_label: Next &rsaquo;
-    page_gap: "&hellip;"
-    previous_label: "&lsaquo; Previous"

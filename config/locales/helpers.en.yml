@@ -1,0 +1,12 @@
+---
+en:
+  helpers:
+    label:
+      block:
+        hide_you: Hide yourself
+      board:
+        author_id: Author
+        cameo_ids: Cameos
+        coauthor_ids: Coauthors
+      board_section:
+        board_id: Continuity

@@ -1,0 +1,37 @@
+---
+en:
+  activerecord:
+    models:
+      board:
+        one: Continuity
+        other: Continuities
+  alt:
+    delete: Delete
+    edit: Edit
+  breadcrumbs:
+    edit: Edit
+    new: New
+  button:
+    delete: x Delete
+    edit: Edit
+    favorite: Favorite
+    new:
+      block: "+ Block User"
+      board: "+ New Continuity"
+      post: "+ New Post"
+      section: "+ New Section"
+    save: Save
+    search: Search
+    unfavorite: Unfavorite
+  reorder:
+    move_down: Move Down
+    move_up: Move Up
+    reorder: Reorder
+    save_error: Error, please refresh
+  status:
+    error: Error
+    saved: Saved
+  will_paginate:
+    next_label: Next &rsaquo;
+    page_gap: "&hellip;"
+    previous_label: "&lsaquo; Previous"
