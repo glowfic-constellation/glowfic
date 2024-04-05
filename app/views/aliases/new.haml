@@ -6,7 +6,7 @@
   &raquo;
   = link_to @character.name, @character
   &raquo;
-  = link_to t(:edit), edit_character_path(@character)
+  = link_to t('breadcrumbs.edit'), edit_character_path(@character)
   &raquo;
   %b= t('.form_title')
 
@@ -21,4 +21,4 @@
         %td.even= f.text_field :name, placeholder: t('.placeholder'), class: 'text'
     %tfoot
       %tr
-        %th.form-table-ender{colspan: 2}= submit_tag t(:save), class: 'button'
+        %th.form-table-ender{colspan: 2}= submit_tag t('button.save'), class: 'button'

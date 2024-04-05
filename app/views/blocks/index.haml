@@ -24,7 +24,7 @@
       %tr
         %td.padding-5{class: klass}
           = user_link(block.blocked_user)
-        %td.padding-5{class: klass}= block.block_interactions? ? t(:yes) : t(:no)
+        %td.padding-5{class: klass}= block.block_interactions? ? t('.yes') : t('.no')
         %td.padding-5{class: klass}
           - if block.hide_them_all?
             = t('.status.all')
@@ -41,9 +41,9 @@
             = t('.status.none')
         %td.width-70.right-align{class: klass}
           = link_to edit_block_path(block) do
-            = image_tag "icons/pencil.png", alt: t(:edit)
+            = image_tag "icons/pencil.png", alt: t('button.edit')
           = link_to block_path(block), method: :delete, data: { confirm: t('.delete_confirm', name: block.blocked_user.username) } do
-            = image_tag "icons/cross.png", alt: t(:delete)
+            = image_tag "icons/cross.png", alt: t('button.delete')
           &nbsp;
     - if @blocks.empty?
       %tr

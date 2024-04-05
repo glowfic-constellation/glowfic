@@ -14,7 +14,7 @@
     = link_to edit_board_section_path(@board_section) do
       .link-box.action-edit
         = image_tag "icons/pencil.png", alt: ''
-        = t(:edit)
+        = t('button.edit')
     = link_to board_section_path(@board_section), method: :delete, data: { confirm: '.destroy_confirm' } do
       .link-box.action-delete x Delete
 

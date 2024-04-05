@@ -1,7 +1,7 @@
 - content_for :breadcrumbs do
   = link_to Block.model_name.human.pluralize, blocks_path
   &raquo;
-  %b= t(:new)
+  %b= t('breadcrumbs.new')
 
 = form_for @block do |f|
   %table.form-table

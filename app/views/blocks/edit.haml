@@ -3,7 +3,7 @@
   &raquo;
   = t('.block_on', name: @block.blocked_user.username)
   &raquo;
-  %b= t(:edit)
+  %b= t('breadcrumbs.edit')
 
 = form_for @block, url: block_path(@block), method: :put do |f|
   %table.form-table

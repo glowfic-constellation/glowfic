@@ -28,4 +28,4 @@
       = f.select :hide_me, options_from_collection_for_select(@options.to_a, :second, :first, @block.hide_me), { class: 'text chosen-select' }
 %tfoot
   %tr
-    %th.form-table-ender{colspan: 2}= submit_tag t(:save), class: 'button'
+    %th.form-table-ender{colspan: 2}= submit_tag t('button.save'), class: 'button'

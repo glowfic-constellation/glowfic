@@ -30,14 +30,17 @@
 # available at https://guides.rubyonrails.org/i18n.html.
 
 en:
-  save: Save
-  saved: Saved
-  edit: Edit
-  new: New
-  delete: Delete
-  'yes': "Yes"
-  'no': "No"
-  error: Error
+  button:
+    save: Save
+    delete: Delete
+    search: Search
+    edit: Edit
+  breadcrumbs:
+    edit: Edit
+    new: New
+  status:
+    saved: Saved
+    error: Error
   will_paginate:
     previous_label: "&lsaquo; Previous"
     next_label: "Next &rsaquo;"
@@ -80,6 +83,8 @@ en:
         none: None
       delete_confirm: "Are you sure you want to unblock %{name}?"
       empty: — No blocks yet —
+      'yes': "Yes"
+      'no': "No"
     new:
       title: Block User
     create:
@@ -115,10 +120,6 @@ en:
     edit:
       title: "Edit %{name}"
       organize: Organize Section Posts
-      save_error: Error, please refresh
-      reorder: Reorder
-      move_up: Move Up
-      move_down: Move Down
     show:
       button:
         new: + New Post
@@ -133,6 +134,11 @@ en:
     editor:
       placeholder:
         name: Section Name
+  reorder:
+    save_error: Error, please refresh
+    reorder: Reorder
+    move_up: Move Up
+    move_down: Move Down
   helpers:
     label:
       block:
