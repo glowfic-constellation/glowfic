@@ -10,6 +10,7 @@ x-env: &env
   S3_BUCKET_NAME: glowfic-dev
   MINIO_ENDPOINT: http://minio:9000/
   MINIO_ENDPOINT_EXTERNAL: http://localhost:9000/
+  ACCOUNT_SECRET: secret
 x-svc: &svc
   build: .
   image: glowfic
