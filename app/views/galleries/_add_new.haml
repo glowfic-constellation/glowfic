@@ -1,7 +1,4 @@
-= form_tag icon_gallery_path(id: @gallery&.id || 0),
-  method: :post,
-  class: 'icon-upload',
-  data: { 'form-data' => @s3_direct_post.fields, url: @s3_direct_post.url, host: URI.parse(@s3_direct_post.url).host, limit: 150 } do
+= form_tag icon_gallery_path(id: @gallery&.id || 0), method: :post, class: 'icon-upload' do
   .content-header
     %span.vmid Add New Icons to Gallery: #{@gallery.try(:name) || 'Galleryless'}
     - if @gallery
@@ -13,7 +10,7 @@
     %tr
       %th.subber.width-150.centered Upload Files
       %td.odd
-        = file_field_tag "icons[][file]", id: "icon_files", class: 'icon_files', multiple: true
+        = file_field_tag "icons[][image]", id: "icon_files", class: 'icon_files', multiple: true, direct_upload: true
         %span.progress-box{style: 'margin-left: 5px;'}
   %table.form-table#icon-table
     %thead
@@ -27,25 +24,23 @@
       - len = @icons.empty? ? 1 : @icons.size
       - len.times do |i|
         - klass = cycle('even', 'odd')
-        - s3_key = @icons[i].try(:[], :s3_key)
         - url = @icons[i].try(:[], :url)
         - keyword = @icons[i].try(:[], :keyword)
-        - if s3_key.present?
+        - uploaded = true
+        - if uploaded
           - purl = url
           - pkey = keyword
         %tr.icon-row{data: { index: i }}
           - empty_gif = 'data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw=='
           %td.width-15{class: klass, style: 'padding: 0px;'}= icon_mem_tag purl || empty_gif, pkey || '', class: 'vmid preview-icon'
           %td.padding-5{class: klass}
-            %span.conf{class: ('hidden' unless s3_key.present?)}
+            %span.conf{class: ('hidden' unless uploaded)}
               = image_tag "icons/accept.png", class: 'vmid', alt: ''
-              Uploaded
-              %span.filename= @icons[i].try(:[], :filename)
-            = text_field_tag "icons[][url]", url, placeholder: "URL", class: ('hidden' if s3_key.present?), id: "icons_#{i}_url"
-            = hidden_field_tag "icons[][s3_key]", s3_key, id: "icons_#{i}_s3_key"
+              = file_field_tag "icons[][image]", id: "icons_#{i}_files", class: 'icon_files', direct_upload: true
+            = text_field_tag "icons[][url]", url, placeholder: "URL", class: ('hidden' if uploaded), id: "icons_#{i}_url"
             = hidden_field_tag "icons[][filename]", @icons[i].try(:[], :filename), id: "icons_#{i}_filename"
-          %td.padding-5{class: klass}= text_field_tag "icons[][keyword]", keyword, placeholder: "Keyword", id: "icons_#{i}_keyword"
-          %td.padding-5{class: klass}= text_field_tag "icons[][credit]", @icons[i].try(:[], :credit), placeholder: "Credit", id: "icons_#{i}_credit"
+          %td.padding-5{class: klass}= text_field_tag "icons[][metadata][keyword]", keyword, placeholder: "Keyword", id: "icons_#{i}_keyword"
+          %td.padding-5{class: klass}= text_field_tag "icons[][metadata][credit]", @icons[i].try(:[], :credit), placeholder: "Credit", id: "icons_#{i}_credit"
           %td.right-align.icon-buttons{class: klass}
             %a{href: '#'}= image_tag "icons/add.png", class: "icon-row-add", alt: 'Add Row'
             %a{href: '#'}= image_tag "icons/minus.png", class: "icon-row-rem", alt: 'Delete Row'

@@ -9,7 +9,6 @@ class GalleriesController < UploadingController
   before_action :find_user, only: [:index]
   before_action :require_own_gallery, only: [:add, :icon]
   before_action :setup_new_icons, only: [:add, :icon]
-  before_action :set_s3_url, only: [:edit, :add, :icon]
   before_action :editor_setup, only: [:new, :edit]
 
   def index
@@ -176,7 +175,7 @@ class GalleriesController < UploadingController
       render :add and return
     end
 
-    icons = @icons.map { |hash| Icon.new(icon_params(hash.except('filename', 'file')).merge(user: current_user)) }
+    icons = @icons.map { |hash| Icon.new(icon_params(hash.except('filename')).merge(user: current_user)) }
 
     if icons.any? { |i| !i.valid? }
       flash.now[:error] = {
@@ -254,13 +253,13 @@ class GalleriesController < UploadingController
       galleries_icons_attributes: [
         :id,
         :_destroy,
-        icon_attributes: [:url, :keyword, :credit, :id, :_destroy, :s3_key],
+        icon_attributes: [:url, :keyword, :credit, :id, :_destroy, :s3_key, :image],
       ],
       icon_ids: [],
     )
   end
 
   def icon_params(paramset)
-    paramset.permit(:url, :keyword, :credit, :s3_key)
+    paramset.permit(:url, :keyword, :credit, :s3_key, :image)
   end
 end
