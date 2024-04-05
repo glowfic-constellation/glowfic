@@ -11,8 +11,8 @@ en:
     destroy:
       success: Alias removed.
     errors:
-      no_access: You do not have permission to create aliases.
-      no_edit_permission: You do not have permission to modify this character.
+      no_permission:
+        create: You do not have permission to create aliases.
       not_found: Alias could not be found.
       not_matched: Alias could not be found for that character.
       parent_not_found: Character could not be found.
@@ -80,7 +80,6 @@ en:
       placeholder:
         name: Section Name
     errors:
-      no_edit_permission: You do not have permission to modify this continuity.
       not_found: Section not found.
     new:
       form_title: Create %{name} Section
@@ -107,8 +106,9 @@ en:
       placeholder:
         name: Continuity Name
     errors:
-      no_create_permission: You do not have permission to create continuities.
-      no_edit_permission: You do not have permission to modify this continuity.
+      no_permission:
+        create: You do not have permission to create continuities.
+        edit: You do not have permission to modify this continuity.
       not_found: Continuity could not be found.
       user_not_found: User could not be found.
     index:
@@ -161,6 +161,10 @@ en:
     save: Save
     search: Search
     unfavorite: Unfavorite
+  characters:
+    errors:
+      no_permission:
+        edit: You do not have permission to modify this character.
   confirm:
     destroy:
       block: Are you sure you want to unblock %{name}?

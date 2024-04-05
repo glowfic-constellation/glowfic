@@ -161,13 +161,13 @@ class BoardsController < ApplicationController
 
   def require_create_permission
     return unless current_user.read_only?
-    flash[:error] = t('boards.errors.no_create_permission')
+    flash[:error] = t('boards.errors.no_permission.create')
     redirect_to continuities_path
   end
 
   def require_edit_permission
     return if @board.editable_by?(current_user)
-    flash[:error] = t('boards.errors.no_edit_permission')
+    flash[:error] = t('boards.errors.no_permission.edit')
     redirect_to continuity_path(@board)
   end
 

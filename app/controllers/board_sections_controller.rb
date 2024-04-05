@@ -13,7 +13,7 @@ class BoardSectionsController < ApplicationController
   def create
     @board_section = BoardSection.new(permitted_params)
     unless @board_section.board.nil? || @board_section.board.editable_by?(current_user)
-      flash[:error] = t('board_sections.errors.no_edit_permission') # rubocop:disable Rails/ActionControllerFlashBeforeRender
+      flash[:error] = t('boards.errors.no_permission.edit') # rubocop:disable Rails/ActionControllerFlashBeforeRender
       redirect_to continuities_path and return
     end
 
@@ -85,7 +85,7 @@ class BoardSectionsController < ApplicationController
   def require_permission
     return unless (board = @board_section.try(:board) || Board.find_by_id(params[:board_id]))
     return if board.editable_by?(current_user)
-    flash[:error] = t('board_sections.errors.no_edit_permission')
+    flash[:error] = t('boards.errors.no_permission.edit')
     redirect_to continuities_path
   end
 

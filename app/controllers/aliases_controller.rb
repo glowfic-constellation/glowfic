@@ -42,7 +42,7 @@ class AliasesController < ApplicationController
 
   def require_permission
     return unless current_user&.read_only?
-    flash[:error] = t('aliases.errors.no_access')
+    flash[:error] = t('aliases.errors.no_permission.create')
     redirect_to continuities_path
   end
 
@@ -53,7 +53,7 @@ class AliasesController < ApplicationController
     end
 
     return if @character.user == current_user
-    flash[:error] = t('aliases.errors.no_edit_permission')
+    flash[:error] = t('characters.errors.no_permission.edit')
     redirect_to user_characters_path(current_user)
   end
 
