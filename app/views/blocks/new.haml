@@ -1,5 +1,5 @@
 - content_for :breadcrumbs do
-  = link_to Block.model_name.pluralize, blocks_path
+  = link_to Block.model_name.human.pluralize, blocks_path
   &raquo;
   %b= t(:new)
 

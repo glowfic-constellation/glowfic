@@ -43,7 +43,7 @@
           = link_to edit_block_path(block) do
             = image_tag "icons/pencil.png", alt: t(:edit)
           = link_to block_path(block), method: :delete, data: { confirm: t('.delete_confirm', name: block.blocked_user.username) } do
-            = image_tag "icons/cross.png", alt: 'Delete'
+            = image_tag "icons/cross.png", alt: t(:delete)
           &nbsp;
     - if @blocks.empty?
       %tr
