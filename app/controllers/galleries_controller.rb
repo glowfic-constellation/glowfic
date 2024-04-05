@@ -35,7 +35,7 @@ class GalleriesController < UploadingController
     begin
       @gallery.save!
     rescue ActiveRecord::RecordInvalid => e
-      render_errors(@gallery, action: 'created', now: true, err: e)
+      render_err.now(@gallery, :create_failed, err: e)
 
       @page_title = 'New Gallery'
       editor_setup
@@ -83,7 +83,7 @@ class GalleriesController < UploadingController
         @gallery.save!
       end
     rescue ActiveRecord::RecordInvalid => e
-      render_errors(@gallery, action: 'updated', now: true, err: e)
+      render_err.now(@gallery, :update_failed, err: e)
 
       @page_title = 'Edit Gallery: ' + @gallery.name_was
       use_javascript('galleries/uploader')
@@ -117,7 +117,7 @@ class GalleriesController < UploadingController
     begin
       @gallery.destroy!
     rescue ActiveRecord::RecordNotDestroyed => e
-      render_errors(@gallery, action: 'deleted', err: e)
+      render_err(@gallery, :delete_failed, err: e)
       redirect_to @gallery
     else
       flash[:success] = "Gallery deleted."

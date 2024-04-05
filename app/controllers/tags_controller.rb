@@ -53,7 +53,7 @@ class TagsController < ApplicationController
         @tag.save!
       end
     rescue ActiveRecord::RecordInvalid => e
-      render_errors(@tag, action: 'updated', now: true, err: e)
+      render_err.now(@tag, :update_failed, err: e)
 
       @page_title = "Edit Tag: #{@tag.name}"
       build_editor
@@ -73,7 +73,7 @@ class TagsController < ApplicationController
     begin
       @tag.destroy!
     rescue ActiveRecord::RecordNotDestroyed => e
-      render_errors(@tag, action: 'deleted', err: e)
+      render_err(@tag, :delete_failed, err: e)
       redirect_to tag_path(@tag)
     else
       flash[:success] = "Tag deleted."

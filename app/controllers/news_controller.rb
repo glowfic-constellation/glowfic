@@ -23,7 +23,7 @@ class NewsController < ApplicationController
     begin
       @news.save!
     rescue ActiveRecord::RecordInvalid => e
-      render_errors(@news, action: 'created', now: true, class_name: 'News post', err: e)
+      render_err.now(@news, :create_failed, err: e)
 
       @page_title = 'Create News Post'
       render :new
@@ -46,7 +46,7 @@ class NewsController < ApplicationController
     begin
       @news.update!(permitted_params)
     rescue ActiveRecord::RecordInvalid => e
-      render_errors(@news, action: 'updated', now: true, class_name: 'News post', err: e)
+      render_err.now(@news, :update_failed, err: e)
       @page_title = "Edit News Post"
       render :edit
     else
@@ -64,7 +64,7 @@ class NewsController < ApplicationController
     begin
       @news.destroy!
     rescue ActiveRecord::RecordNotDestroyed => e
-      render_errors(@news, action: 'deleted', class_name: 'News post', err: e)
+      render_err(@news, :delete_failed, err: e)
     else
       flash[:success] = "News post deleted."
     end
