@@ -1,4 +1,4 @@
-= form_for @gallery, url: galleries_path, method: :post do |f|
+= form_with model: @gallery, method: :post do |f|
   - icons_present = current_user.galleryless_icons.present?
   %table.form-table{style: (icons_present ? 'width: 100%;' : nil)}
     %thead
@@ -11,13 +11,13 @@
           %th.vtop.sub Icons
           %td{class: cycle('even', 'odd')}
             - current_user.galleryless_icons.each do |icon|
-              = label_tag "gallery_icon_ids_#{icon.id}" do
+              = f.label "gallery_icon_ids_#{icon.id}" do
                 .gallery-icon
                   = icon_tag icon, id: icon.id, pointer: true
                   %br>
                   %span.icon-keyword= icon.keyword
                   - box_selected = params[:gallery].try(:[], :icon_ids).try(:include?, icon.id.to_s)
-                  .select-button= check_box_tag "gallery[icon_ids][]", icon.id, box_selected, id: "gallery_icon_ids_#{icon.id}"
+                  .select-button= f.check_box "gallery[icon_ids][]", value: icon.id, checked: box_selected, id: "gallery_icon_ids_#{icon.id}"
     %tfoot
       %tr
-        %th.form-table-ender{colspan: 2}= submit_tag "Create", class: 'button'
+        %th.form-table-ender{colspan: 2}= f.submit "Create", class: 'button'

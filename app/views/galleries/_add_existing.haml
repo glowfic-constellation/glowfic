@@ -1,5 +1,5 @@
-= form_tag icon_gallery_path(@gallery), method: :post, id: 'add-gallery-icons' do
-  = hidden_field_tag :image_ids
+= form_with url: icon_gallery_path(@gallery), method: :post, id: 'add-gallery-icons' do |f|
+  = f.hidden_field :image_ids
   .content-header
     %span.vmid Add Existing Icons to Gallery: #{@gallery.name}
     = link_to add_gallery_path(@gallery), class: 'view-button-link' do
@@ -23,7 +23,7 @@
             %span.icon-keyword= icon.keyword
     %tr
       %td.form-table-ender.padding-5
-        = submit_tag "Add Icons to Gallery", class: 'button'
+        = f.submit "Add Icons to Gallery", class: 'button'
     - current_user.galleries.ordered_by_name.each do |gallery|
       - next if gallery.id == @gallery.id
       %tr
@@ -37,4 +37,4 @@
           %br
     %tr
       %td.form-table-ender.padding-5
-        = submit_tag "Add Icons to Gallery", class: 'button'
+        = f.submit "Add Icons to Gallery", class: 'button'
