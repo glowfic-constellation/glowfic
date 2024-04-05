@@ -294,6 +294,9 @@ GEM
       racc (~> 1.4)
     nokogiri (1.16.3-x86_64-linux)
       racc (~> 1.4)
+    paper_trail (12.0.0)
+      activerecord (>= 5.2)
+      request_store (~> 1.1)
     parallel (1.24.0)
     parser (3.3.0.5)
       ast (~> 2.4.1)
@@ -576,6 +579,7 @@ DEPENDENCIES
   newrelic_rpm
   nilify_blanks
   nokogiri
+  paper_trail (~> 12.0)
   pg (~> 1.5)
   pg_search
   puma

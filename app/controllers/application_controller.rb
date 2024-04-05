@@ -13,6 +13,7 @@ class ApplicationController < ActionController::Base
   before_action :require_glowfic_domain
   before_action :set_login_gon
   before_action :check_forced_logout
+  before_action :set_paper_trail_whodunnit
   around_action :set_timezone
   after_action :store_location
 
@@ -254,5 +255,13 @@ class ApplicationController < ActionController::Base
       user_id: current_user.try(:id),
     }
     ExceptionNotifier.notify_exception(exception, data: data)
+  end
+
+  def info_for_paper_trail
+    {
+      comment: params.fetch(controller_name.singularize, {}).fetch(:audit_comment, nil),
+      ip: request.remote_ip,
+      request_uuid: request.uuid,
+    }
   end
 end

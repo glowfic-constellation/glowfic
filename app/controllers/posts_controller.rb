@@ -1,3 +1,5 @@
+require 'will_paginate/array'
+
 # frozen_string_literal: true
 class PostsController < WritableController
   include Taggable
@@ -161,18 +163,41 @@ class PostsController < WritableController
   end
 
   def history
+    @written = @post
+    super
   end
 
   def delete_history
-    audit_ids = @post.associated_audits.where(action: 'destroy').where(auditable_type: 'Reply') # all destroyed replies
-    audit_ids = audit_ids.joins('LEFT JOIN replies ON replies.id = audits.auditable_id').where(replies: { id: nil }) # not restored
-    audit_ids = audit_ids.group(:auditable_id).pluck(Arel.sql('MAX(audits.id)')) # only most recent per reply
-    @deleted_audits = Audited::Audit.where(id: audit_ids).paginate(per_page: 1, page: page)
+    audit_ids = @post.associated_audits
+      .where(action: 'destroy', auditable_type: 'Reply') # all destroyed replies
+      .joins('LEFT JOIN replies ON replies.id = audits.auditable_id')
+      .where(replies: { id: nil }) # not restored
+      .group(:auditable_id)
+      .pluck(Arel.sql('MAX(audits.id)')) # only most recent per reply
+
+    deleted_versions = Reply::Version.where(post: @post, event: 'destroy') # all destroyed replies
+      .joins('LEFT JOIN replies ON replies.id = reply_versions.item_id')
+      .where(replies: { id: nil }) # not restored
+      .select('DISTINCT ON (reply_versions.item_id) item_id, reply_versions.*')
+      .order(:item_id).order(created_at: :desc) # only most recent per reply
+
+    versions_exist = deleted_versions.exists?
+    audits = Audited::Audit.where(id: audit_ids)
+
+    if audit_ids.present? && versions_exist
+      @deleted_audits = audits.to_a + deleted_versions.to_a
+    elsif versions_exist
+      @deleted_audits = deleted_versions
+    else
+      @deleted_audits = audits
+    end
+
+    @deleted_audits = @deleted_audits.paginate(per_page: 1, page: page)
 
     return unless @deleted_audits.present?
 
     @audit = @deleted_audits.first
-    @deleted = Reply.new(@audit.audited_changes)
+    @deleted = @audit.is_a?(Reply::Version) ? @audit.load_destroyed : @deleted = Reply.new(@audit.audited_changes)
     @preceding = @post.replies.where('id < ?', @audit.auditable_id).order(id: :desc).limit(2).reverse
     @preceding = [@post] unless @preceding.present?
     @following = @post.replies.where('id > ?', @audit.auditable_id).order(id: :asc).limit(2)
@@ -238,7 +263,7 @@ class PostsController < WritableController
     rescue ActiveRecord::RecordInvalid => e
       render_errors(@post, action: 'updated', now: true, err: e)
 
-      @audits = { post: @post.audits.count }
+      @audits = { post: @post.audits.count + @post.versions.count }
       editor_setup
       render :edit
     else
@@ -339,7 +364,7 @@ class PostsController < WritableController
 
     @written = @post
 
-    @audits = { post: @post.audits.count } if @post.id.present?
+    @audits = { post: @post.audits.count + @post.versions.count } if @post.id.present?
 
     editor_setup
     @page_title = 'Previewing: ' + @post.subject.to_s

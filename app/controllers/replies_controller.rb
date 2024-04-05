@@ -127,7 +127,9 @@ class RepliesController < WritableController
       @unseen_replies = reply.post.replies.ordered.paginate(page: 1, per_page: 10)
       if last_seen_reply_order.present?
         @unseen_replies = @unseen_replies.where('reply_order > ?', last_seen_reply_order)
-        @audits = Audited::Audit.where(auditable_id: @unseen_replies.map(&:id)).group(:auditable_id).count
+        audits = Audited::Audit.where(auditable_id: @unseen_replies.map(&:id)).group(:auditable_id).count
+        versions = Reply::Version.where(item_id: @unseen_replies.map(&:id)).group(:item_id).count
+        @audits = audits.merge(versions) { |_, audit_count, version_count| audit_count + version_count }
       end
       most_recent_unseen_reply = @unseen_replies.last
 
@@ -178,6 +180,8 @@ class RepliesController < WritableController
   end
 
   def history
+    @written = @reply
+    super
   end
 
   def edit
@@ -199,7 +203,7 @@ class RepliesController < WritableController
     rescue ActiveRecord::RecordInvalid => e
       render_errors(@reply, action: 'updated', now: true, err: e)
 
-      @audits = { @reply.id => @post.audits.count }
+      @audits = { @reply.id => @reply.audits.count + @reply.versions.count }
       editor_setup
       render :edit
     else
@@ -230,7 +234,8 @@ class RepliesController < WritableController
   end
 
   def restore
-    audit = Audited::Audit.where(action: 'destroy').order(id: :desc).find_by(auditable_id: params[:id])
+    audit = Reply::Version.where(event: 'destroy').order(created_at: :desc).find_by(item_id: params[:id])
+    audit ||= Audited::Audit.where(action: 'destroy').order(id: :desc).find_by(auditable_id: params[:id])
     unless audit
       flash[:error] = "Reply could not be found."
       redirect_to continuities_path and return
@@ -241,8 +246,7 @@ class RepliesController < WritableController
       redirect_to post_path(audit.associated) and return
     end
 
-    new_reply = Reply.new(audit.audited_changes)
-    new_reply.created_at = Audited::Audit.order(id: :asc).find_by(action: 'create', auditable_id: params[:id]).created_at
+    new_reply = audit.is_a?(Reply::Version) ? audit.load_destroyed : Reply.new(audit.audited_changes)
     unless new_reply.editable_by?(current_user)
       flash[:error] = "You do not have permission to modify this reply."
       redirect_to post_path(new_reply.post) and return
@@ -300,7 +304,7 @@ class RepliesController < WritableController
     @written = written
     @post = @written.post
     @written.user = current_user unless @written.user
-    @audits = @written.id.present? ? { @written.id => @written.audits.count } : {}
+    @audits = @written.id.present? ? { @written.id => @written.audits.count + @written.versions.count } : {}
 
     @page_title = @post.subject
 

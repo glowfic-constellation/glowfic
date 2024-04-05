@@ -207,27 +207,25 @@ RSpec.describe RepliesController, 'GET search' do
       expect(assigns(:search_results)).to eq([reply, reply2])
     end
 
-    it "does not include audits" do
-      Reply.auditing_enabled = true
+    it "does not include audits", :versioning do
       user = create(:user)
 
-      replies = Audited.audit_class.as_user(user) do
+      replies = Version.as_user(user) do
         create_list(:reply, 6, user: user)
       end
 
-      Audited.audit_class.as_user(user) do
+      Version.as_user(user) do
         replies[1].touch # rubocop:disable Rails/SkipsModelValidations
         replies[3].update!(character: create(:character, user: user))
         replies[2].update!(content: 'new content')
         1.upto(5) { |i| replies[4].update!(content: 'message' + i.to_s) }
       end
-      Audited.audit_class.as_user(create(:mod_user)) do
+      Version.as_user(create(:mod_user)) do
         replies[5].update!(content: 'new content')
       end
 
       get :search, params: { commit: true, sort: 'created_old' }
       expect(assigns(:audits)).to be_empty
-      Reply.auditing_enabled = false
     end
   end
 end

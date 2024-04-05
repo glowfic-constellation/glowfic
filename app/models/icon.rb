@@ -86,8 +86,8 @@ class Icon < ApplicationRecord
   end
 
   def clear_icon_ids
-    UpdateModelJob.perform_later(Post.to_s, { icon_id: id }, { icon_id: nil }, audited_user_id)
-    UpdateModelJob.perform_later(Reply.to_s, { icon_id: id }, { icon_id: nil }, audited_user_id)
+    UpdateModelJob.perform_later(Post.to_s, { icon_id: id }, { icon_id: nil }, PaperTrail.request.whodunnit)
+    UpdateModelJob.perform_later(Reply.to_s, { icon_id: id }, { icon_id: nil }, PaperTrail.request.whodunnit)
   end
 
   def update_flat_posts

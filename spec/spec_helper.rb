@@ -140,7 +140,7 @@ RSpec.configure do |config|
     user = FactoryBot.create(:user)
     5.times do
       board = FactoryBot.create(:board, creator: user)
-      Audited.audit_class.as_user(user) { board.destroy! }
+      Version.as_user(user) { board.destroy! }
     end
     user.destroy!
   end
@@ -204,8 +204,4 @@ WebMock.disable_net_connect!(
   allow: "chromedriver.storage.googleapis.com",
 )
 
-# disable auditing by default unless specifically turned on for a test
-Post.auditing_enabled = false
-Reply.auditing_enabled = false
-Character.auditing_enabled = false
-Block.auditing_enabled = false
+require 'paper_trail/frameworks/rspec'

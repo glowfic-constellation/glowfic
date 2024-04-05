@@ -41,6 +41,8 @@ class Character < ApplicationRecord
   nilify_blanks
 
   audited on: :update, mod_only: true, update_with_comment_only: false
+  has_paper_trail on: :update, ignore: [:updated_at], versions: { class_name: Character::Version.to_s },
+    if: Proc.new { |c| c.user_id != PaperTrail.request.whodunnit }
 
   def editable_by?(user)
     self.class.editable_by?(user, self.user_id)
@@ -174,8 +176,8 @@ class Character < ApplicationRecord
   end
 
   def clear_char_ids
-    UpdateModelJob.perform_later(Post.to_s, { character_id: id }, { character_id: nil }, audited_user_id)
-    UpdateModelJob.perform_later(Reply.to_s, { character_id: id }, { character_id: nil }, audited_user_id)
+    UpdateModelJob.perform_later(Post.to_s, { character_id: id }, { character_id: nil }, PaperTrail.request.whodunnit)
+    UpdateModelJob.perform_later(Reply.to_s, { character_id: id }, { character_id: nil }, PaperTrail.request.whodunnit)
   end
 
   def strip_spaces

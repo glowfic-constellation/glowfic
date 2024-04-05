@@ -49,7 +49,7 @@ class Board < ApplicationRecord
   private
 
   def move_posts_to_sandbox
-    UpdateModelJob.perform_later(Post.to_s, { board_id: id }, { board_id: ID_SANDBOX, section_id: nil }, audited_user_id)
+    UpdateModelJob.perform_later(Post.to_s, { board_id: id }, { board_id: ID_SANDBOX, section_id: nil }, PaperTrail.request.whodunnit)
   end
 
   def add_creator_to_authors

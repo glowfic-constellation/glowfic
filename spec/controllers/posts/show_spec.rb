@@ -120,21 +120,18 @@ RSpec.describe PostsController, 'GET show' do
     end
   end
 
-  it "calculates audits" do
-    Reply.auditing_enabled = true
-    Post.auditing_enabled = true
-
-    replies = Audited.audit_class.as_user(post.user) do
+  it "calculates audits", :versioning do
+    replies = Version.as_user(post.user) do
       create_list(:reply, 6, post: post, user: post.user)
     end
 
-    Audited.audit_class.as_user(post.user) do
-      replies[1].touch # rubocop:disable Rails/SkipsModelValidations
+    Version.as_user(post.user) do
+      # replies[1].touch # Papertrail creates audit on touches
       replies[3].update!(character: create(:character, user: post.user))
       replies[2].update!(content: 'new content')
       1.upto(5) { |i| replies[4].update!(content: 'message' + i.to_s) }
     end
-    Audited.audit_class.as_user(create(:mod_user)) do
+    Version.as_user(create(:mod_user)) do
       replies[5].update!(content: 'new content')
     end
 
@@ -143,8 +140,6 @@ RSpec.describe PostsController, 'GET show' do
 
     get :show, params: { id: post.id }
     expect(assigns(:audits)).to eq(counts)
-    Reply.auditing_enabled = false
-    Post.auditing_enabled = false
   end
 
   context "with render_views" do

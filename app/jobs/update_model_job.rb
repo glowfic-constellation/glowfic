@@ -21,7 +21,7 @@ class UpdateModelJob < ApplicationJob
       return
     end
 
-    Audited.audit_class.as_user(user) do
+    PaperTrail.request(whodunnit: user.id) do
       update_records(klass, where_vals, new_attrs)
     end
   end
