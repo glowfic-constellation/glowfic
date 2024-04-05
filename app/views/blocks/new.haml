@@ -1,11 +1,11 @@
 - content_for :breadcrumbs do
-  = link_to 'Blocks', blocks_path
+  = link_to Block.model_name.pluralize, blocks_path
   &raquo;
-  %b New
+  %b= t(:new)
 
 = form_for @block do |f|
   %table.form-table
     %thead
       %tr
-        %th.editor-title{colspan: 2} Block User
+        %th.editor-title{colspan: 2}= t('.title')
     = render 'editor', f: f

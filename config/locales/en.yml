@@ -32,6 +32,9 @@
 en:
   save: Save
   edit: Edit
+  new: New
+  'yes': "Yes"
+  'no': "No"
   will_paginate:
     previous_label: "&lsaquo; Previous"
     next_label: "Next &rsaquo;"
@@ -51,3 +54,51 @@ en:
       parent_not_found: "Character could not be found."
       not_found: "Alias could not be found."
       not_matched: "Alias could not be found for that character."
+  blocks:
+    index:
+      title: Blocked Users
+      status: "Warning: full blocking is not yet implemented, and will function the same as simply blocking posts.
+    Additionally, any threads not locked to their authors will not be covered by post blocking."
+      button:
+        new: + Block User
+      header:
+        user: Blocked User
+        interaction: Blocked Interaction
+        theirs: Hidden (Theirs)
+        yours: Hidden (Yours)
+      option:
+        all: All
+        posts: Posts
+        none: None
+      delete_confirm: "Are you sure you want to unblock %{name}?"
+      empty: — No blocks yet —
+    new:
+      title: "Block User"
+    create:
+      success: "User blocked."
+      failure: "User could not be blocked"
+    edit:
+      title: "Edit Block: %{name}"
+      form_title: "Edit Block"
+      block_on: "Block on %{name}"
+    update:
+      success: "Block updated."
+    destroy:
+      success: "User unblocked."
+      failure: "User could not be unblocked"
+    errors:
+      not_found: "Block could not be found."
+    options:
+      none: "Nothing"
+      posts: "Just posts"
+      all: "Everything"
+    editor:
+      choose_user: '— Choose User —'
+      interactions_label: 'Interactions'
+      interactions_explaination: "Prevent them from interacting with you?"
+      hide_them_text: "Prevent you from seeing their:"
+      hide_you_text: "Prevent them from seeing your:"
+  helpers:
+    label:
+      block:
+        hide_you: "Hide yourself"
