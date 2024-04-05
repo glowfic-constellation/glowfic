@@ -410,7 +410,7 @@ class PostsController < WritableController
     @author_ids = permitted_params[:unjoined_author_ids].compact_blank.map(&:to_i) if permitted_params.key?(:unjoined_author_ids)
     @author_ids ||= @post.try(:unjoined_author_ids) || []
     @fonts = Font.all
-    @font_ids = @post.try(:font_ids)
+    @font_ids = @post.try(:font_ids) || []
   end
 
   def import_thread
