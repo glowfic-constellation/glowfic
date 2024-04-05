@@ -10,7 +10,6 @@ en:
         create: You do not have permission to create aliases.
       not_found: Alias could not be found.
       not_matched: Alias could not be found for that character.
-      parent_not_found: Character could not be found.
     new:
       form_title: New Alias
       placeholder: Alias
@@ -20,6 +19,7 @@ en:
       failure: User could not be blocked
       success: User blocked.
     destroy:
+      confirm: Are you sure you want to unblock %{name}?
       failure: User could not be unblocked
       success: User unblocked.
     edit:
@@ -53,6 +53,7 @@ en:
       title: Blocked Users
       'yes': 'Yes'
     new:
+      button: "+ Block User"
       title: Block User
     options:
       all: Everything
@@ -64,6 +65,7 @@ en:
     create:
       success: New section, %{section_name}, created for %{board_name}.
     destroy:
+      confirm: Are you sure you want to delete this section?
       success: Section deleted.
     edit:
       organize: Organize Section Posts
@@ -74,6 +76,7 @@ en:
     errors:
       not_found: Section not found.
     new:
+      button: "+ New Section"
       form_title: Create %{name} Section
       title: New Section
     update:
@@ -83,6 +86,7 @@ en:
     create:
       success: Continuity created.
     destroy:
+      confirm: Are you sure you want to delete this continuity?
       success: Continuity deleted.
     edit:
       form_title: Edit Continuity
@@ -121,6 +125,7 @@ en:
         hide: "%{name} hidden from this page."
         read: "%{name} marked as read."
     new:
+      button: "+ New Continuity"
       form_title: Create Continuity
       title: New Continuity
     reorder_sections:
@@ -142,8 +147,7 @@ en:
     errors:
       no_permission:
         edit: You do not have permission to modify this character.
-  confirm:
-    destroy:
-      block: Are you sure you want to unblock %{name}?
-      board: Are you sure you want to delete this continuity?
-      section: Are you sure you want to delete this section?
+      not_found: Character could not be found.
+  posts:
+    new:
+      button: "+ New Post"

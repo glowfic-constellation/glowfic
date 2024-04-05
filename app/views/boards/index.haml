@@ -13,7 +13,7 @@
         = @page_title
         - if logged_in? && (@user.nil? || @user.id == current_user.id)
           = link_to new_continuity_path do
-            .link-box.action-new= t('button.new.board')
+            .link-box.action-new= t('boards.new.button')
     %tr
       %th.subber.padding-10{colspan: 3}
         = form_tag search_continuities_path, method: :get do

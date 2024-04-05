@@ -11,7 +11,7 @@
       %th.table-title{colspan: 5}
         = @page_title
         = link_to new_block_path do
-          .link-box.action-new= t('button.new.block')
+          .link-box.action-new= t('blocks.new.button')
     %tr
       %th.sub= t('.header.user')
       %th.sub= t('.header.interaction')
@@ -42,7 +42,7 @@
         %td.width-70.right-align{class: klass}
           = link_to edit_block_path(block) do
             = image_tag "icons/pencil.png", alt: t('alt.edit')
-          = link_to block_path(block), method: :delete, data: { confirm: t('confirm.destroy.block', name: block.blocked_user.username) } do
+          = link_to block_path(block), method: :delete, data: { confirm: t('blocks.destroy.confirm', name: block.blocked_user.username) } do
             = image_tag "icons/cross.png", alt: t('alt.delete')
           &nbsp;
     - if @blocks.empty?

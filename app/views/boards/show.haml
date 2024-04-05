@@ -8,15 +8,15 @@
   - if logged_in?
     - if @board.open_to?(current_user)
       = link_to new_post_path params: { board_id: @board.id } do
-        .link-box.action-new= t('button.new.post')
+        .link-box.action-new= t('posts.new.button')
     - if @board.editable_by?(current_user)
       = link_to new_board_section_path params: { board_id: @board.id } do
-        .link-box.action-new= t('button.new.section')
+        .link-box.action-new= t('board_sections.new.button')
       = link_to edit_continuity_path(@board) do
         .link-box.action-edit
           = image_tag "icons/pencil.png", alt: ''
           = t('button.edit')
-      = link_to continuity_path(@board), method: :delete, data: { confirm: t('confirm.destroy.board') } do
+      = link_to continuity_path(@board), method: :delete, data: { confirm: t('boards.destroy.confirm') } do
         .link-box.action-delete= t('button.delete')
     - if (fav = Favorite.between(current_user, @board))
       = link_to favorite_path(fav), method: :delete do

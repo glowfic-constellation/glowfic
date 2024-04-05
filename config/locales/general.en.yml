@@ -15,11 +15,6 @@ en:
     delete: x Delete
     edit: Edit
     favorite: Favorite
-    new:
-      block: "+ Block User"
-      board: "+ New Continuity"
-      post: "+ New Post"
-      section: "+ New Section"
     save: Save
     search: Search
     unfavorite: Unfavorite

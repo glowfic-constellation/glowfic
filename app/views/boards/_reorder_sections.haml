@@ -21,7 +21,7 @@
           = image_tag "icons/arrow_down.png", class: "section-down disabled-arrow", alt: t('reorder.move_down')
           = link_to edit_polymorphic_path(section) do
             = image_tag "icons/pencil.png", alt: t('alt.edit')
-          = link_to section, method: :delete, data: { confirm: t('confirm.destroy.section') } do
+          = link_to section, method: :delete, data: { confirm: t('board_sections.destroy.confirm') } do
             = image_tag "icons/cross.png", alt: t('alt.delete')
     - if sections.empty?
       %li.centered.padding-10{class: cycle('even', 'odd')}= t('.empty')

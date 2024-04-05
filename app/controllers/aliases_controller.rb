@@ -48,7 +48,7 @@ class AliasesController < ApplicationController
 
   def find_character
     unless (@character = Character.find_by_id(params[:character_id]))
-      flash[:error] = t('aliases.errors.parent_not_found')
+      flash[:error] = t('characters.errors.not_found')
       redirect_to user_characters_path(current_user) and return
     end
 

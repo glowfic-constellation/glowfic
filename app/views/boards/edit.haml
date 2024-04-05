@@ -18,7 +18,7 @@
 - content_for :reorder_title do
   = t('.organize_sections')
   = link_to new_board_section_path params: { board_id: @board.id } do
-    .link-box.action-new= t('button.new.section')
+    .link-box.action-new= t('board_sections.new.button')
 = render 'reorder_sections', sections: @board_sections
 
 - if @board.ordered?

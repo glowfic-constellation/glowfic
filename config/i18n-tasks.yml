@@ -27,6 +27,8 @@ data:
     # - ['{devise, simple_form}.*', 'config/locales/\1.%{locale}.yml']
     ## Catch-all default:
     # - config/locales/%{locale}.yml
+    - ['helpers.*', 'config/locales/helpers.%{locale}.yml']
+    - config/locales/controllers.%{locale}.yml
 
   # External locale data (e.g. gems).
   # This data is not considered unused and is never written to.
