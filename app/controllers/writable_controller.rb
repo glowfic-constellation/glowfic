@@ -133,6 +133,7 @@ class WritableController < ApplicationController
     end
 
     @warnings = @post.content_warnings if display_warnings?
+    @fonts = @post.fonts
 
     render 'posts/show'
   end

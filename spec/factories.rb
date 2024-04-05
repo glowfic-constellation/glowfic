@@ -227,6 +227,10 @@ FactoryBot.define do
     end
   end
 
+  factory :font, class: :font do
+    name { "Example font" }
+  end
+
   factory :message do
     sender
     recipient
