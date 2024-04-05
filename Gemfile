@@ -74,6 +74,7 @@ group :development, :test do
   gem 'database_cleaner'
   gem 'dotenv'
   gem 'html-proofer'
+  gem 'i18n-tasks', '~> 1.0.13', require: false
   gem 'rake', '~> 13.1'
   gem 'rspec-rails'
   gem 'seed_dump', '~> 3.2'

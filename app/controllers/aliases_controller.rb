@@ -19,7 +19,7 @@ class AliasesController < ApplicationController
     rescue ActiveRecord::RecordInvalid => e
       render_errors(@alias, action: 'created', now: true, class_name: 'Alias', err: e)
 
-      @page_title = t('.new.title', name: @character.name)
+      @page_title = t('aliases.new.title', name: @character.name)
       render :new
     else
       flash[:success] = t('.success')
@@ -42,30 +42,30 @@ class AliasesController < ApplicationController
 
   def require_permission
     return unless current_user&.read_only?
-    flash[:error] = t('.errors.no_access')
+    flash[:error] = t('aliases.errors.no_access')
     redirect_to continuities_path
   end
 
   def find_character
     unless (@character = Character.find_by_id(params[:character_id]))
-      flash[:error] = t('.errors.parent_not_found')
+      flash[:error] = t('aliases.errors.parent_not_found')
       redirect_to user_characters_path(current_user) and return
     end
 
     return if @character.user == current_user
-    flash[:error] = t('.errors.no_edit_permission')
+    flash[:error] = t('aliases.errors.no_edit_permission')
     redirect_to user_characters_path(current_user)
   end
 
   def find_model
     unless (@alias = CharacterAlias.find_by_id(params[:id]))
-      flash[:error] = t('.errors.not_found')
+      flash[:error] = t('aliases.errors.not_found')
       redirect_to edit_character_path(@character) and return
     end
 
     return if @alias.character_id == @character.id
 
-    flash[:error] = t('.errors.not_matched')
+    flash[:error] = t('aliases.errors.not_matched')
     redirect_to edit_character_path(@character)
   end
 

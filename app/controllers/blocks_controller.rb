@@ -26,7 +26,7 @@ class BlocksController < ApplicationController
       render_errors(@block, action: 'create', now: true, msg: t('.failure'))
       editor_setup
       @users = [@block.blocked_user].compact
-      @page_title = '.new.title'
+      @page_title = 'blocks.new.title'
       render :new and return
     end
 
@@ -42,7 +42,7 @@ class BlocksController < ApplicationController
     unless @block.update(permitted_params)
       render_errors(@block, action: 'updated', now: true)
       editor_setup
-      @page_title = t('.title', name: @block.blocked_user.username)
+      @page_title = t('blocks.edit.title', name: @block.blocked_user.username)
       render :edit and return
     end
 
@@ -69,22 +69,22 @@ class BlocksController < ApplicationController
 
   def require_permission
     return if @block.editable_by?(current_user)
-    flash[:error] = t('.errors.not_found') # Return the same error message as if it didn't exist
+    flash[:error] = t('blocks.errors.not_found') # Return the same error message as if it didn't exist
     redirect_to blocks_path
   end
 
   def find_model
     return if (@block = Block.find_by(id: params[:id]))
-    flash[:error] = t('.errors.not_found')
+    flash[:error] = t('blocks.errors.not_found')
     redirect_to blocks_path
   end
 
   def editor_setup
     use_javascript('blocks')
     @options = {
-      t('.options.none')  => :none,
-      t('.options.posts') => :posts,
-      t('.options.all')   => :all,
+      t('blocks.options.none')  => :none,
+      t('blocks.options.posts') => :posts,
+      t('blocks.options.all')   => :all,
     }
   end
 end

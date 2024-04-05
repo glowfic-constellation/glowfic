@@ -13,7 +13,7 @@ class BoardSectionsController < ApplicationController
   def create
     @board_section = BoardSection.new(permitted_params)
     unless @board_section.board.nil? || @board_section.board.editable_by?(current_user)
-      flash[:error] = t('.errors.no_edit_permission') # rubocop:disable Rails/ActionControllerFlashBeforeRender
+      flash[:error] = t('board_sections.errors.no_edit_permission') # rubocop:disable Rails/ActionControllerFlashBeforeRender
       redirect_to continuities_path and return
     end
 
@@ -22,7 +22,7 @@ class BoardSectionsController < ApplicationController
     rescue ActiveRecord::RecordInvalid => e
       render_errors(@board_section, action: 'created', now: true, class_name: 'Section', err: e)
 
-      @page_title = t('.new.title')
+      @page_title = t('board_sections.new.title')
       render :new
     else
       flash[:success] = t('.success', section_name: @board_section.name, board_name: @board_section.board.name)
@@ -52,7 +52,7 @@ class BoardSectionsController < ApplicationController
     rescue ActiveRecord::RecordInvalid => e
       render_errors(@board_section, action: 'updated', now: true, class_name: 'Section', err: e)
 
-      @page_title = t('.edit.title', name: @board_section.name_was)
+      @page_title = t('board_sections.edit.title', name: @board_section.name_was)
       use_javascript('board_sections')
       gon.section_id = @board_section.id
       render :edit
@@ -78,14 +78,14 @@ class BoardSectionsController < ApplicationController
 
   def find_model
     return if (@board_section = BoardSection.find_by(id: params[:id]))
-    flash[:error] = t('.errors.not_found')
+    flash[:error] = t('board_sections.errors.not_found')
     redirect_to continuities_path
   end
 
   def require_permission
     return unless (board = @board_section.try(:board) || Board.find_by_id(params[:board_id]))
     return if board.editable_by?(current_user)
-    flash[:error] = t('.errors.no_edit_permission')
+    flash[:error] = t('board_sections.errors.no_edit_permission')
     redirect_to continuities_path
   end
 
