@@ -1,24 +1,24 @@
 - content_for :breadcrumbs do
-  = link_to "Continuities", continuities_path
+  = link_to Board.model_name.human.pluralize, continuities_path
   &raquo;
   = link_to @board.name, continuity_path(@board)
   &raquo;
-  %b Edit
+  %b= t('breadcrumbs.edit')
 
 = form_for @board, url: continuity_path(@board), method: :put do |f|
   %table.form-table
     %thead
       %tr
-        %th.editor-title{colspan: 2} Edit Continuity
+        %th.editor-title{colspan: 2}= t('.form_title')
     = render 'editor', f: f
 
 %br
 %br
 
 - content_for :reorder_title do
-  Organize Continuity Sections
+  = t('.organize_sections')
   = link_to new_board_section_path params: { board_id: @board.id } do
-    .link-box.action-new + New Section
+    .link-box.action-new= t('button.new.section')
 = render 'reorder_sections', sections: @board_sections
 
 - if @board.ordered?

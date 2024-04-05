@@ -9,14 +9,14 @@ class BoardsController < ApplicationController
   def index
     if params[:user_id].present?
       unless (@user = User.active.full.find_by_id(params[:user_id]))
-        flash[:error] = "User could not be found."
+        flash[:error] = t('boards.errors.user_not_found')
         redirect_to root_path and return
       end
 
       @page_title = if @user.id == current_user.try(:id)
-        "Your Continuities"
+        t('.title.yours')
       else
-        @user.username + "'s Continuities"
+        t('.title.user', name: @user.username)
       end
 
       board_ids = BoardAuthor.where(user_id: @user.id, cameo: false).select(:board_id).distinct.pluck(:board_id)
@@ -24,7 +24,7 @@ class BoardsController < ApplicationController
       cameo_ids = BoardAuthor.where(user_id: @user.id, cameo: true).select(:board_id).distinct.pluck(:board_id)
       @cameo_boards = boards_from_relation(Board.where(id: cameo_ids))
     else
-      @page_title = 'Continuities'
+      @page_title = t('.title.all')
       @boards = boards_from_relation(Board.all).paginate(page: page)
     end
   end
@@ -32,7 +32,7 @@ class BoardsController < ApplicationController
   def new
     @board = Board.new
     @board.creator = current_user
-    @page_title = 'New Continuity'
+    @page_title = t('.title')
   end
 
   def create
@@ -44,11 +44,11 @@ class BoardsController < ApplicationController
     rescue ActiveRecord::RecordInvalid => e
       render_errors(@board, action: 'created', now: true, class_name: 'Continuity', err: e)
 
-      @page_title = 'New Continuity'
+      @page_title = t('boards.new.title')
       editor_setup
       render :new
     else
-      flash[:success] = "Continuity created."
+      flash[:success] = t('.success')
       redirect_to continuities_path
     end
   end
@@ -68,7 +68,7 @@ class BoardsController < ApplicationController
   end
 
   def edit
-    @page_title = 'Edit Continuity: ' + @board.name
+    @page_title = t('.title', name: @board.name)
     use_javascript('boards/edit')
     @board_sections = @board.board_sections.ordered
     @unsectioned_posts = @board.posts.where(section_id: nil).ordered_in_section if @board.ordered?
@@ -80,13 +80,13 @@ class BoardsController < ApplicationController
     rescue ActiveRecord::RecordInvalid => e
       render_errors(@board, action: 'updated', now: true, class_name: 'Continuity', err: e)
 
-      @page_title = 'Edit Continuity: ' + @board.name_was
+      @page_title = t('boards.edit.title', name: @board.name_was)
       editor_setup
       use_javascript('board_sections')
       @board_sections = @board.board_sections.ordered
       render :edit
     else
-      flash[:success] = "Continuity updated."
+      flash[:success] = t('.success')
       redirect_to continuity_path(@board)
     end
   end
@@ -98,14 +98,14 @@ class BoardsController < ApplicationController
       render_errors(@board, action: 'deleted', class_name: 'Continuity', err: e)
       redirect_to continuity_path(@board)
     else
-      flash[:success] = "Continuity deleted."
+      flash[:success] = t('.success')
       redirect_to continuities_path
     end
   end
 
   def mark
     unless (board = Board.find_by_id(params[:board_id]))
-      flash[:error] = "Continuity could not be found."
+      flash[:error] = t('boards.errors.not_found')
       redirect_to unread_posts_path and return
     end
 
@@ -116,18 +116,18 @@ class BoardsController < ApplicationController
         post_views = Post::View.joins(post: :board).where(user: current_user, boards: { id: board.id })
         post_views.update_all(read_at: read_time, updated_at: read_time) # rubocop:disable Rails/SkipsModelValidations
       end
-      flash[:success] = "#{board.name} marked as read."
+      flash[:success] = t('.success.read', name: board.name)
     elsif params[:commit] == "Hide from Unread"
       board.ignore(current_user)
-      flash[:success] = "#{board.name} hidden from this page."
+      flash[:success] = t('.success.hide', name: board.name)
     else
-      flash[:error] = "Please choose a valid action."
+      flash[:error] = t('.invalid')
     end
     redirect_to unread_posts_path
   end
 
   def search
-    @page_title = 'Search Continuities'
+    @page_title = t('.title')
     @user = User.active.where(id: params[:author_id]).ordered if params[:author_id].present?
     use_javascript('boards/search')
     return unless params[:commit].present?
@@ -155,19 +155,19 @@ class BoardsController < ApplicationController
 
   def find_model
     return if (@board = Board.find_by_id(params[:id]))
-    flash[:error] = "Continuity could not be found."
+    flash[:error] = t('boards.errors.not_found')
     redirect_to continuities_path
   end
 
   def require_create_permission
     return unless current_user.read_only?
-    flash[:error] = "You do not have permission to create continuities."
+    flash[:error] = t('boards.errors.no_create_permission')
     redirect_to continuities_path
   end
 
   def require_edit_permission
     return if @board.editable_by?(current_user)
-    flash[:error] = "You do not have permission to modify this continuity."
+    flash[:error] = t('boards.errors.no_edit_permission')
     redirect_to continuity_path(@board)
   end
 

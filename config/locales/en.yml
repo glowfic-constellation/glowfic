@@ -38,6 +38,10 @@ en:
     new:
       block: + Block User
       post: + New Post
+      board: + New Continuity
+      section: + New Section
+    unfavorite: Unfavorite
+    favorite: Favorite
   breadcrumbs:
     edit: Edit
     new: New
@@ -51,6 +55,7 @@ en:
     destroy:
       block: "Are you sure you want to unblock %{name}?"
       section: Are you sure you want to delete this section?
+      board: Are you sure you want to delete this continuity?
   will_paginate:
     previous_label: "&lsaquo; Previous"
     next_label: "Next &rsaquo;"
@@ -140,6 +145,65 @@ en:
     editor:
       placeholder:
         name: Section Name
+  boards:
+    index:
+      title:
+        yours: Your Continuities
+        user: "%{name}'s Continuities"
+        all: Continuities
+      search_label: 'Search by name:'
+      header:
+        name: Name
+        authors: Authors
+        updated: Last Updated
+      empty: — No continuities yet —
+      cameos_head: Cameo Continuities
+    new:
+      title: New Continuity
+      form_title: Create Continuity
+    create:
+      success: Continuity created.
+    show:
+      empty: — No posts yet —
+    edit:
+      title: "Edit Continuity: %{name}"
+      form_title: Edit Continuity
+      organize_sections: Organize Continuity Sections
+      organize_posts: Organize Unsectioned Posts
+    update:
+      success: Continuity updated.
+    destroy:
+      success: Continuity deleted.
+    mark:
+      success:
+        read: "%{name} marked as read."
+        hide: "%{name} hidden from this page."
+      invalid: Please choose a valid action.
+    search:
+      title: Search Continuities
+      results_count: "- %{entries} results"
+      label:
+        abbrev:
+          short: Acronym
+          long: Search for acronym
+      prompt:
+        author: — Choose Author —
+    errors:
+      user_not_found: User could not be found.
+      not_found: Continuity could not be found.
+      no_create_permission: You do not have permission to create continuities.
+      no_edit_permission: You do not have permission to modify this continuity.
+    editor:
+      placeholder:
+        name: Continuity Name
+      creator: Creator
+      label:
+        locked:
+          short: Locked?
+          long: Only allow authors to create new posts in this continuity
+    reorder_sections:
+      empty: — No items yet —
+    anyone: Anyone
   reorder:
     save_error: Error, please refresh
     reorder: Reorder
@@ -151,3 +215,7 @@ en:
         hide_you: Hide yourself
       board_section:
         board_id: Continuity
+      board:
+        coauthor_ids: Coauthors
+        cameo_ids: Cameos
+        author_id: Author
