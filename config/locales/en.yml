@@ -1,75 +1,11 @@
-# Files in the config/locales directory are used for internationalization
-# and are automatically loaded by Rails. If you want to use locales other
-# than English, add the necessary files in this directory.
-#
-# To use the locales, use `I18n.t`:
-#
-#     I18n.t 'hello'
-#
-# In views, this is aliased to just `t`:
-#
-#     <%= t('hello') %>
-#
-# To use a different locale, set it with `I18n.locale`:
-#
-#     I18n.locale = :es
-#
-# This would use the information in config/locales/es.yml.
-#
-# The following keys must be escaped otherwise they will not be retrieved by
-# the default I18n backend:
-#
-# true, false, on, off, yes, no
-#
-# Instead, surround them with single quotes.
-#
-# en:
-#   'true': 'foo'
-#
-# To learn more, please read the Rails Internationalization guide
-# available at https://guides.rubyonrails.org/i18n.html.
-
+---
 en:
-  button:
-    save: Save
-    delete: x Delete
-    search: Search
-    edit: Edit
-    new:
-      block: + Block User
-      post: + New Post
-      board: + New Continuity
-      section: + New Section
-    unfavorite: Unfavorite
-    favorite: Favorite
-  breadcrumbs:
-    edit: Edit
-    new: New
-  alt:
-    delete: Delete
-    edit: Edit
-  status:
-    saved: Saved
-    error: Error
-  confirm:
-    destroy:
-      block: "Are you sure you want to unblock %{name}?"
-      section: Are you sure you want to delete this section?
-      board: Are you sure you want to delete this continuity?
-  will_paginate:
-    previous_label: "&lsaquo; Previous"
-    next_label: "Next &rsaquo;"
-    page_gap: "&hellip;"
   activerecord:
     models:
       board:
         one: Continuity
         other: Continuities
   aliases:
-    new:
-      title: "New Alias: %{name}"
-      form_title: New Alias
-      placeholder: Alias
     create:
       success: Alias created.
     destroy:
@@ -77,145 +13,178 @@ en:
     errors:
       no_access: You do not have permission to create aliases.
       no_edit_permission: You do not have permission to modify this character.
-      parent_not_found: Character could not be found.
       not_found: Alias could not be found.
       not_matched: Alias could not be found for that character.
-  blocks:
-    index:
-      title: Blocked Users
-      status: "Warning: full blocking is not yet implemented, and will function the same as simply blocking posts.
-    Additionally, any threads not locked to their authors will not be covered by post blocking."
-      header:
-        user: Blocked User
-        interaction: Blocked Interaction
-        theirs: Hidden (Theirs)
-        yours: Hidden (Yours)
-      option:
-        all: All
-        posts: Posts
-        none: None
-      empty: — No blocks yet —
-      'yes': "Yes"
-      'no': "No"
+      parent_not_found: Character could not be found.
     new:
-      title: Block User
+      form_title: New Alias
+      placeholder: Alias
+      title: 'New Alias: %{name}'
+  alt:
+    delete: Delete
+    edit: Edit
+  blocks:
     create:
-      success: User blocked.
       failure: User could not be blocked
-    edit:
-      title: "Edit Block: %{name}"
-      form_title: Edit Block
-      block_on: "Block on %{name}"
-    update:
-      success: Block updated.
+      success: User blocked.
     destroy:
-      success: User unblocked.
       failure: User could not be unblocked
-    errors:
-      not_found: Block could not be found.
-    options:
-      none: Nothing
-      posts: Just posts
-      all: Everything
+      success: User unblocked.
+    edit:
+      block_on: Block on %{name}
+      form_title: Edit Block
+      title: 'Edit Block: %{name}'
     editor:
-      prompt:
-        user: — Choose User —
+      hide_them_text: 'Prevent you from seeing their:'
+      hide_you_text: 'Prevent them from seeing your:'
       label:
         interactions:
-          short: Interactions
           long: Prevent them from interacting with you?
-      hide_them_text: "Prevent you from seeing their:"
-      hide_you_text: "Prevent them from seeing your:"
-  board_sections:
+          short: Interactions
+      prompt:
+        user: "— Choose User —"
+    errors:
+      not_found: Block could not be found.
+    index:
+      empty: "— No blocks yet —"
+      header:
+        interaction: Blocked Interaction
+        theirs: Hidden (Theirs)
+        user: Blocked User
+        yours: Hidden (Yours)
+      'no': 'No'
+      option:
+        all: All
+        none: None
+        posts: Posts
+      status: 'Warning: full blocking is not yet implemented, and will function the same as simply blocking posts. Additionally, any threads not locked to their authors will not be covered by post blocking.'
+      title: Blocked Users
+      'yes': 'Yes'
     new:
-      title: New Section
-      form_title: "Create %{name} Section"
-    create:
-      success: "New section, %{section_name}, created for %{board_name}."
-    edit:
-      title: "Edit %{name}"
-      organize: Organize Section Posts
+      title: Block User
+    options:
+      all: Everything
+      none: Nothing
+      posts: Just posts
     update:
-      success: Section updated.
+      success: Block updated.
+  board_sections:
+    create:
+      success: New section, %{section_name}, created for %{board_name}.
     destroy:
       success: Section deleted.
-    errors:
-      no_edit_permission: You do not have permission to modify this continuity.
-      not_found: Section not found.
+    edit:
+      organize: Organize Section Posts
+      title: Edit %{name}
     editor:
       placeholder:
         name: Section Name
-  boards:
-    index:
-      title:
-        yours: Your Continuities
-        user: "%{name}'s Continuities"
-        all: Continuities
-      search_label: 'Search by name:'
-      header:
-        name: Name
-        authors: Authors
-        updated: Last Updated
-      empty: — No continuities yet —
-      cameos_head: Cameo Continuities
+    errors:
+      no_edit_permission: You do not have permission to modify this continuity.
+      not_found: Section not found.
     new:
-      title: New Continuity
-      form_title: Create Continuity
+      form_title: Create %{name} Section
+      title: New Section
+    update:
+      success: Section updated.
+  boards:
+    anyone: Anyone
     create:
       success: Continuity created.
-    show:
-      empty: — No posts yet —
-    edit:
-      title: "Edit Continuity: %{name}"
-      form_title: Edit Continuity
-      organize_sections: Organize Continuity Sections
-      organize_posts: Organize Unsectioned Posts
-    update:
-      success: Continuity updated.
     destroy:
       success: Continuity deleted.
-    mark:
-      success:
-        read: "%{name} marked as read."
-        hide: "%{name} hidden from this page."
-      invalid: Please choose a valid action.
-    search:
-      title: Search Continuities
-      results_count: "- %{entries} results"
-      label:
-        abbrev:
-          short: Acronym
-          long: Search for acronym
-      prompt:
-        author: — Choose Author —
-    errors:
-      user_not_found: User could not be found.
-      not_found: Continuity could not be found.
-      no_create_permission: You do not have permission to create continuities.
-      no_edit_permission: You do not have permission to modify this continuity.
+    edit:
+      form_title: Edit Continuity
+      organize_posts: Organize Unsectioned Posts
+      organize_sections: Organize Continuity Sections
+      title: 'Edit Continuity: %{name}'
     editor:
-      placeholder:
-        name: Continuity Name
       creator: Creator
       label:
         locked:
-          short: Locked?
           long: Only allow authors to create new posts in this continuity
+          short: Locked?
+      placeholder:
+        name: Continuity Name
+    errors:
+      no_create_permission: You do not have permission to create continuities.
+      no_edit_permission: You do not have permission to modify this continuity.
+      not_found: Continuity could not be found.
+      user_not_found: User could not be found.
+    index:
+      cameos_head: Cameo Continuities
+      empty: "— No continuities yet —"
+      header:
+        authors: Authors
+        name: Name
+        updated: Last Updated
+      search_label: 'Search by name:'
+      title:
+        all: Continuities
+        user: "%{name}'s Continuities"
+        yours: Your Continuities
+    mark:
+      invalid: Please choose a valid action.
+      success:
+        hide: "%{name} hidden from this page."
+        read: "%{name} marked as read."
+    new:
+      form_title: Create Continuity
+      title: New Continuity
     reorder_sections:
-      empty: — No items yet —
-    anyone: Anyone
-  reorder:
-    save_error: Error, please refresh
-    reorder: Reorder
-    move_up: Move Up
-    move_down: Move Down
+      empty: "— No items yet —"
+    search:
+      label:
+        abbrev:
+          long: Search for acronym
+          short: Acronym
+      prompt:
+        author: "— Choose Author —"
+      results_count: "- %{entries} results"
+      title: Search Continuities
+    show:
+      empty: "— No posts yet —"
+    update:
+      success: Continuity updated.
+  breadcrumbs:
+    edit: Edit
+    new: New
+  button:
+    delete: x Delete
+    edit: Edit
+    favorite: Favorite
+    new:
+      block: "+ Block User"
+      board: "+ New Continuity"
+      post: "+ New Post"
+      section: "+ New Section"
+    save: Save
+    search: Search
+    unfavorite: Unfavorite
+  confirm:
+    destroy:
+      block: Are you sure you want to unblock %{name}?
+      board: Are you sure you want to delete this continuity?
+      section: Are you sure you want to delete this section?
   helpers:
     label:
       block:
         hide_you: Hide yourself
+      board:
+        author_id: Author
+        cameo_ids: Cameos
+        coauthor_ids: Coauthors
       board_section:
         board_id: Continuity
-      board:
-        coauthor_ids: Coauthors
-        cameo_ids: Cameos
-        author_id: Author
+  reorder:
+    move_down: Move Down
+    move_up: Move Up
+    reorder: Reorder
+    save_error: Error, please refresh
+  status:
+    error: Error
+    saved: Saved
+  will_paginate:
+    next_label: Next &rsaquo;
+    page_gap: "&hellip;"
+    previous_label: "&lsaquo; Previous"
