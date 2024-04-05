@@ -12,7 +12,6 @@ en:
       not_matched: Alias could not be found for that character.
     new:
       form_title: New Alias
-      placeholder: Alias
       title: 'New Alias: %{name}'
   blocks:
     create:
@@ -70,9 +69,6 @@ en:
     edit:
       organize: Organize Section Posts
       title: Edit %{name}
-    editor:
-      placeholder:
-        name: Section Name
     errors:
       not_found: Section not found.
     new:
@@ -99,8 +95,6 @@ en:
         locked:
           long: Only allow authors to create new posts in this continuity
           short: Locked?
-      placeholder:
-        name: Continuity Name
     errors:
       no_permission:
         create: You do not have permission to create continuities.

@@ -10,3 +10,10 @@ en:
         coauthor_ids: Coauthors
       board_section:
         board_id: Continuity
+    placeholder:
+      aliases:
+        name: Alias
+      board_section:
+        name: Section Name
+      boards:
+        name: Continuity Name

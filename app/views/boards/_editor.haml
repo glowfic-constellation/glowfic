@@ -1,7 +1,7 @@
 %tbody
   %tr
     %th.sub= f.label :name
-    %td.even= f.text_field :name, placeholder: t('.placeholder.name'), class: 'text'
+    %td.even= f.text_field :name, placeholder: true, class: 'text'
   %tr
     %th.sub= t('.creator')
     %td.odd= @board.creator.username

@@ -7,7 +7,7 @@
       = f.select :board_id, options_from_collection_for_select(allowed_boards(@board_section, current_user), :id, :name, @board_section.board_id), {}, class: 'chosen-select'
 %tr
   %th.sub= f.label :name
-  %td.even= f.text_field :name, placeholder: t('.placeholder.name'), class: 'text'
+  %td.even= f.text_field :name, placeholder: true, class: 'text'
 %tr
   %th.sub.vtop= f.label :description
   %td.odd= f.text_area :description

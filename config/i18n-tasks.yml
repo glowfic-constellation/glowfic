@@ -111,6 +111,7 @@ ignore_unused:
 # - 'simple_form.{error_notification,required}.:'
 - activerecord.models.*
 - helpers.label.*
+- helpers.placeholder.*
 - will_paginate.*
 
 ## Exclude these keys from the `i18n-tasks eq-base' report:
