@@ -18,6 +18,8 @@ en:
     save: Save
     search: Search
     unfavorite: Unfavorite
+  errors:
+    no_reason: You must provide a reason for your moderator edit.
   reorder:
     move_down: Move Down
     move_up: Move Up

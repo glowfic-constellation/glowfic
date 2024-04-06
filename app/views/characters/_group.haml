@@ -4,7 +4,7 @@
 - unless local_assigns[:no_header]
   %tr
     %th.sub{colspan: colspan}
-      = group ? "Group: #{group.name}" : 'Ungrouped Characters'
+      = group ? t('.header.group', name: group.name) : t('.header.ungrouped')
 - if characters.try(:exists?)
   - template_ids = characters.group(:template_id).pluck(:template_id).uniq.compact
   - ::Template.where(id: template_ids).ordered.each do |template|

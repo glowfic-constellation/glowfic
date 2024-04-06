@@ -23,19 +23,19 @@ class CharactersController < ApplicationController
     end
 
     unless @user
-      flash[:error] = "User could not be found."
+      flash[:error] = t('users.errors.not_found')
       redirect_to users_path and return
     end
 
     @page_title = if @user.id == current_user.try(:id)
-      "Your Characters"
+      t('.title.yours')
     else
-      @user.username + "'s Characters"
+      t('.title.user', name: @user.username)
     end
   end
 
   def new
-    @page_title = 'New Character'
+    @page_title = t('.title')
     @character = Character.new(template_id: params[:template_id], user: current_user)
     @character.build_template(user: current_user) unless @character.template
   end
@@ -52,11 +52,11 @@ class CharactersController < ApplicationController
     rescue ActiveRecord::RecordInvalid => e
       render_errors(@character, action: 'created', now: true, err: e)
 
-      @page_title = "New Character"
+      @page_title = t('characters.new.title')
       editor_setup
       render :new
     else
-      flash[:success] = "Character created."
+      flash[:success] = t('.success')
       redirect_to @character
     end
   end
@@ -69,12 +69,12 @@ class CharactersController < ApplicationController
   end
 
   def edit
-    @page_title = 'Edit Character: ' + @character.name
+    @page_title = t('.title', name: @character.name)
   end
 
   def update
     if current_user.id != @character.user_id && params.fetch(:character, {}).fetch(:audit_comment, nil).blank?
-      flash.now[:error] = "You must provide a reason for your moderator edit."
+      flash.now[:error] = t('errors.no_reason')
       editor_setup
       render :edit and return
     end
@@ -91,11 +91,11 @@ class CharactersController < ApplicationController
     rescue ActiveRecord::RecordInvalid => e
       render_errors(@character, action: 'updated', now: true, err: e)
 
-      @page_title = "Edit Character: " + @character.name
+      @page_title = t('characters.edit.title', name: @character.name)
       editor_setup
       render :edit
     else
-      flash[:success] = "Character updated."
+      flash[:success] = t('.success')
       redirect_to @character
     end
   end
@@ -119,14 +119,14 @@ class CharactersController < ApplicationController
       render_errors(dupe, action: 'duplicated', err: e)
       redirect_to @character
     else
-      flash[:success] = "Character duplicated. You are now editing the new character."
+      flash[:success] = t('.success')
       redirect_to edit_character_path(dupe)
     end
   end
 
   def destroy
     unless @character.deletable_by?(current_user)
-      flash[:error] = "You do not have permission to modify this character."
+      flash[:error] = t('characters.errors.no_permission.edit')
       redirect_to user_characters_path(current_user) and return
     end
 
@@ -136,13 +136,13 @@ class CharactersController < ApplicationController
       render_errors(@character, action: 'deleted', err: e)
       redirect_to @character
     else
-      flash[:success] = "Character deleted."
+      flash[:success] = t('.success')
       redirect_to user_characters_path(current_user)
     end
   end
 
   def facecasts
-    @page_title = 'Facecasts'
+    @page_title = t('.title')
     chars = Character.where(users: { deleted: false }).where.not(pb: nil)
       .joins(:user)
       .left_outer_joins(:template)
@@ -163,7 +163,7 @@ class CharactersController < ApplicationController
   end
 
   def replace
-    @page_title = 'Replace Character: ' + @character.name
+    @page_title = t('.title', name: @character.name)
     if @character.template
       @alts = @character.template.characters
     else
@@ -192,12 +192,12 @@ class CharactersController < ApplicationController
 
   def do_replace
     unless params[:icon_dropdown].blank? || (new_char = Character.find_by_id(params[:icon_dropdown]))
-      flash[:error] = "Character could not be found."
+      flash[:error] = t('characters.errors.not_found')
       redirect_to replace_character_path(@character) and return
     end
 
     if new_char && new_char.user_id != current_user.id
-      flash[:error] = "You do not have permission to modify this character."
+      flash[:error] = t('characters.errors.no_permission.edit')
       redirect_to replace_character_path(@character) and return
     end
 
@@ -205,7 +205,7 @@ class CharactersController < ApplicationController
     if params[:orig_alias].present? && params[:orig_alias] != 'all'
       orig_alias = CharacterAlias.find_by_id(params[:orig_alias])
       unless orig_alias && orig_alias.character_id == @character.id
-        flash[:error] = "Invalid old alias."
+        flash[:error] = t('.errors.invalid.old')
         redirect_to replace_character_path(@character) and return
       end
     end
@@ -214,7 +214,7 @@ class CharactersController < ApplicationController
     if params[:alias_dropdown].present?
       new_alias = CharacterAlias.find_by_id(params[:alias_dropdown])
       unless new_alias && new_alias.character_id == new_char.try(:id)
-        flash[:error] = "Invalid new alias."
+        flash[:error] = t('.errors.invalid.new')
         redirect_to replace_character_path(@character) and return
       end
       new_alias_id = new_alias.id
@@ -226,7 +226,8 @@ class CharactersController < ApplicationController
 
     if params[:post_ids].present?
       wheres[:post_id] = params[:post_ids]
-      success_msg = " in the specified " + 'post'.pluralize(params[:post_ids].size)
+      post_word = Post.model_name.human.pluralize(params[:post_ids].size).downcase
+      success_msg = t('.success_mod', post: post_word)
     end
 
     wheres[:character_alias_id] = orig_alias.try(:id) if @character.aliases.exists? && params[:orig_alias] != 'all'
@@ -235,12 +236,12 @@ class CharactersController < ApplicationController
     wheres[:id] = wheres.delete(:post_id) if params[:post_ids].present?
     UpdateModelJob.perform_later(Post.to_s, wheres, updates, current_user.id)
 
-    flash[:success] = "All uses of this character#{success_msg} will be replaced."
+    flash[:success] = t('.success', mod: success_msg)
     redirect_to @character
   end
 
   def search
-    @page_title = 'Search Characters'
+    @page_title = t('.title')
     use_javascript('posts/search')
     @users = []
     @templates = []
@@ -253,7 +254,7 @@ class CharactersController < ApplicationController
       if @users.present?
         @search_results = @search_results.where(user_id: params[:author_id])
       else
-        flash.now[:error] = "The specified author could not be found."
+        flash.now[:error] = t('.errors.not_found.author')
       end
     end
 
@@ -262,13 +263,13 @@ class CharactersController < ApplicationController
       template = @templates.first
       if template.present?
         if @users.present? && template.user_id != @users.first.id
-          flash.now[:error] = "The specified author and template do not match; template filter will be ignored."
+          flash.now[:error] = t('.errors.no_match')
           @templates = []
         else
           @search_results = @search_results.where(template_id: params[:template_id])
         end
       else
-        flash.now[:error] = "The specified template could not be found."
+        flash.now[:error] = t('.errors.not_found.template')
       end
     elsif params[:author_id].present?
       @templates = Template.where(user_id: params[:author_id]).ordered.limit(25)
@@ -290,7 +291,7 @@ class CharactersController < ApplicationController
 
   def find_model
     return if (@character = Character.find_by_id(params[:id]))
-    flash[:error] = "Character could not be found."
+    flash[:error] = t('characters.errors.not_found')
     if logged_in?
       redirect_to user_characters_path(current_user)
     else
@@ -305,13 +306,13 @@ class CharactersController < ApplicationController
 
   def require_create_permission
     return unless current_user.read_only?
-    flash[:error] = "You do not have permission to create characters."
+    flash[:error] = t('characters.errors.no_permission.create')
     redirect_to continuities_path and return
   end
 
   def require_edit_permission
     return if @character.editable_by?(current_user)
-    flash[:error] = "You do not have permission to modify this character."
+    flash[:error] = t('characters.errors.no_permission.edit')
     redirect_to user_characters_path(current_user)
   end
 

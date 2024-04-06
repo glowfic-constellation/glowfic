@@ -10,6 +10,12 @@ en:
         coauthor_ids: Coauthors
       board_section:
         board_id: Continuity
+      character:
+        audit_comment: Moderator Note
+        gallery_group_ids: Gallery Groups
+        pb: Facecast
+        setting_ids: Setting
+        ungrouped_gallery_ids: Galleries
     placeholder:
       aliases:
         name: Alias
@@ -17,3 +23,11 @@ en:
         name: Section Name
       boards:
         name: Continuity Name
+      character:
+        audit_comment: Explain reason for moderation here
+        cluster: Template Cluster Name
+        description: Description
+        name: Character Name
+        nickname: Template Nickname
+        pb: Facecast
+        screenname: Screen Name

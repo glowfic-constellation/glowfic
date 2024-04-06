@@ -1,66 +1,66 @@
 %tbody
   %tr
     %th.sub= f.label :name
-    %td{class: cycle('even', 'odd')}= f.text_field :name, placeholder: "Character Name", class: 'text'
+    %td{class: cycle('even', 'odd')}= f.text_field :name, placeholder: true, class: 'text'
   %tr
     %th.sub= f.label :nickname
-    %td{class: cycle('even', 'odd')}= f.text_field :nickname, placeholder: "Template Nickname", class: 'text'
+    %td{class: cycle('even', 'odd')}= f.text_field :nickname, placeholder: true, class: 'text'
   %tr
     %th.sub= f.label :screenname
-    %td{class: cycle('even', 'odd')}= f.text_field :screenname, placeholder: "Screen Name", class: 'text'
+    %td{class: cycle('even', 'odd')}= f.text_field :screenname, placeholder: true, class: 'text'
   %tr
-    %th.sub= f.label :setting_ids, 'Setting'
+    %th.sub= f.label :setting_ids
     %td{class: cycle('even', 'odd')}= tag_select(@character, f, :settings)
   %tr
     - klass = cycle('even', 'odd')
     %th.sub.vtop= f.label :template_id
     %td{class: klass}
-      = f.collection_select :template_id, @templates, :id, :name, { include_blank: '— Choose Template —' },
+      = f.collection_select :template_id, @templates, :id, :name, { include_blank: t('.prompt.template') },
         { class: 'text chosen-select', disabled: params[:new_template].present? }
       - if @character.user == current_user
         %br
         = check_box_tag :new_template, '1', params[:new_template].present?
-        = label_tag :new_template, 'Create New Template'
+        = label_tag :new_template, t('.label.new_template')
   - if @character.user == current_user
     %tr#create_template{class: ('hidden' unless params[:new_template])}
       = f.fields_for :template do |ff|
         %th.sub= ff.label :name, '↳ Name'
         %td{class: klass}
           = ff.hidden_field :id
-          = ff.text_field :name, placeholder: "Template Name", class: 'text'
+          = ff.text_field :name, placeholder: t('.placeholder.new_template_name'), class: 'text'
   %tr
     %th.sub= f.label :cluster
-    %td{class: cycle('even', 'odd')}= f.text_field :cluster, placeholder: "Template Cluster Name", class: 'text'
+    %td{class: cycle('even', 'odd')}= f.text_field :cluster, placeholder: true, class: 'text'
   - if @character.user.galleries.present?
     %tr
-      %th.sub= f.label :ungrouped_gallery_ids, 'Galleries'
+      %th.sub= f.label :ungrouped_gallery_ids
       %td{class: cycle('even', 'odd')}
         = f.collection_select(:ungrouped_gallery_ids,
         @character.user.galleries.ordered_by_name,
         :id, :name, { selected: @character.ungrouped_gallery_ids }, { multiple: true })
     %tr
-      %th.sub= f.label :gallery_group_ids, 'Gallery Groups'
+      %th.sub= f.label :gallery_group_ids
       %td{class: cycle('even', 'odd')}= tag_select(@character, f, :gallery_groups)
   %tr
-    %th.sub= f.label :pb, 'Facecast'
-    %td{class: cycle('even', 'odd')}= f.text_field :pb, placeholder: "Facecast", class: 'text'
+    %th.sub= f.label :pb
+    %td{class: cycle('even', 'odd')}= f.text_field :pb, placeholder: true, class: 'text'
   %tr
     %th.sub.vtop= f.label :description
-    %td{class: cycle('even', 'odd')}= f.text_area :description, placeholder: 'Description', class: 'text', cols: 35
+    %td{class: cycle('even', 'odd')}= f.text_area :description, placeholder: true, class: 'text', cols: 35
   %tr
-    %th.sub= f.label :npc, 'NPC?'
+    %th.sub= f.label :npc, t('.label.npc.short')
     %td{class: cycle('even', 'odd')}
       = f.check_box :npc, class: 'vmid'
-      = f.label :npc, 'Remove from character page and show in separate dropdown when writing', class: 'no-margin'
+      = f.label :npc, t('.label.npc.long'), class: 'no-margin'
   %tr
-    %th.sub= f.label :retired, 'Retired?'
+    %th.sub= f.label :retired, t('.label.retired.short')
     %td{class: cycle('even', 'odd')}
       = f.check_box :retired, class: 'vmid'
-      = f.label :retired, 'Do not display in character selector', class: 'no-margin'
+      = f.label :retired, t('.label.retired.long'), class: 'no-margin'
   - if current_user.id != @character.user_id
     %tr
-      %th.sub.vtop= f.label :audit_comment, 'Moderator Note'
-      %td{class: cycle('even', 'odd')}= f.text_area :audit_comment, placeholder: 'Explain reason for moderation here', class: 'text', cols: 35
+      %th.sub.vtop= f.label :audit_comment
+      %td{class: cycle('even', 'odd')}= f.text_area :audit_comment, placeholder: true, class: 'text', cols: 35
 %tfoot
   %tr
-    %th.form-table-ender{colspan: 2}= submit_tag "Save", class: 'button'
+    %th.form-table-ender{colspan: 2}= submit_tag t('button.save'), class: 'button'

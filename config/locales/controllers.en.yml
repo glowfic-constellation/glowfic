@@ -138,10 +138,84 @@ en:
     update:
       success: Continuity updated.
   characters:
+    new:
+      button:
+        instance: + New Instance
+        generic: + New Character
+    create:
+      success: Character created.
+    destroy:
+      success: Character deleted.
+      confirm: "Are you sure you want to delete %{name}?"
+    do_replace:
+      errors:
+        invalid:
+          new: Invalid new alias.
+          old: Invalid old alias.
+      success: All uses of this character%{mod} will be replaced.
+      success_mod: " in the specified %{post}"
+    duplicate:
+      success: Character duplicated. You are now editing the new character.
+    edit:
+      title: 'Edit Character: %{name}'
+    editor:
+      label:
+        new_template: Create New Template
+        npc:
+          long: Remove from character page and show in separate dropdown when writing
+          short: NPC?
+        retired:
+          long: Do not display in character selector
+          short: Retired?
+      placeholder:
+        new_template_name: Template Name
+      prompt:
+        template: — Choose Template —
+    group:
+      header:
+        group: "Group: %{name}"
+        ungrouped: Ungrouped Characters
     errors:
       no_permission:
+        create: You do not have permission to create characters.
         edit: You do not have permission to modify this character.
       not_found: Character could not be found.
+    facecasts:
+      title: Facecasts
+    index:
+      title:
+        user: "%{name}'s Characters"
+        yours: Your Characters
+      empty: — No characters yet —
+    list_section:
+      header:
+        name: Name
+        template: Template
+        cluster: Cluster
+        nickname: Nickname
+        screenname: Screenname
+        facecast: Facecast
+        user: User
+        setting: Setting
+    new:
+      title: New Character
+    replace:
+      title: 'Replace Character: %{name}'
+    search:
+      errors:
+        no_match: The specified author and template do not match; template filter will be ignored.
+        not_found:
+          author: The specified author could not be found.
+          template: The specified template could not be found.
+      title: Search Characters
+    update:
+      success: Character updated.
   posts:
     new:
       button: "+ New Post"
+  template:
+    destroy:
+      confirm: Are you sure you want to delete this template?
+  users:
+    errors:
+      not_found: User could not be found.
