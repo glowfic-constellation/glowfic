@@ -31,3 +31,6 @@ en:
         nickname: Template Nickname
         pb: Facecast
         screenname: Screen Name
+    submit:
+      create: Save
+      update: Save

@@ -63,4 +63,4 @@
       %td{class: cycle('even', 'odd')}= f.text_area :audit_comment, placeholder: true, class: 'text', cols: 35
 %tfoot
   %tr
-    %th.form-table-ender{colspan: 2}= submit_tag t('button.save'), class: 'button'
+    %th.form-table-ender{colspan: 2}= f.submit class: 'button'
