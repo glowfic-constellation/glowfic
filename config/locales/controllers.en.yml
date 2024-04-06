@@ -33,11 +33,11 @@ en:
           long: Prevent them from interacting with you?
           short: Interactions
       prompt:
-        user: — Choose User —
+        user: "— Choose User —"
     errors:
       not_found: Block could not be found.
     index:
-      empty: — No blocks yet —
+      empty: "— No blocks yet —"
       header:
         theirs: Hidden (Theirs)
         yours: Hidden (Yours)
@@ -100,7 +100,7 @@ en:
       not_found: Continuity could not be found.
     index:
       cameos_head: Cameo Continuities
-      empty: — No continuities yet —
+      empty: "— No continuities yet —"
       search_label: 'Search by name:'
       title:
         all: Continuities
@@ -116,30 +116,26 @@ en:
       form_title: Create Continuity
       title: New Continuity
     reorder_sections:
-      empty: — No items yet —
+      empty: "— No items yet —"
     search:
       label:
         abbrev:
           long: Search for acronym
           short: Acronym
       prompt:
-        author: — Choose Author —
+        author: "— Choose Author —"
       results_count: "- %{entries} results"
       title: Search Continuities
     show:
-      empty: — No posts yet —
+      empty: "— No posts yet —"
     update:
       success: Continuity updated.
   characters:
-    new:
-      button:
-        instance: + New Instance
-        generic: + New Character
     create:
       success: Character created.
     destroy:
+      confirm: Are you sure you want to delete %{name}?
       success: Character deleted.
-      confirm: "Are you sure you want to delete %{name}?"
     do_replace:
       errors:
         invalid:
@@ -163,11 +159,7 @@ en:
       placeholder:
         new_template_name: Template Name
       prompt:
-        template: — Choose Template —
-    group:
-      header:
-        group: "Group: %{name}"
-        ungrouped: Ungrouped Characters
+        template: "— Choose Template —"
     errors:
       no_permission:
         create: You do not have permission to create characters.
@@ -175,13 +167,20 @@ en:
       not_found: Character could not be found.
     facecasts:
       title: Facecasts
+    group:
+      header:
+        group: 'Group: %{name}'
+        ungrouped: Ungrouped Characters
     index:
+      empty: "— No characters yet —"
       title:
         user: "%{name}'s Characters"
         yours: Your Characters
-      empty: — No characters yet —
     new:
       title: New Character
+      button:
+        instance: + New Instance
+        generic: + New Character
     replace:
       title: 'Replace Character: %{name}'
     search:
@@ -195,7 +194,7 @@ en:
       success: Character updated.
   posts:
     new:
-      button: + New Post
+      button: "+ New Post"
   template:
     destroy:
       confirm: Are you sure you want to delete this template?
