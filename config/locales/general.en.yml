@@ -1,10 +1,5 @@
 ---
 en:
-  activerecord:
-    models:
-      board:
-        one: Continuity
-        other: Continuities
   alt:
     delete: Delete
     edit: Edit

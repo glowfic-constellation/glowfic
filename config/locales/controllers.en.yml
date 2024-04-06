@@ -39,9 +39,7 @@ en:
     index:
       empty: — No blocks yet —
       header:
-        interaction: Blocked Interaction
         theirs: Hidden (Theirs)
-        user: Blocked User
         yours: Hidden (Yours)
       'no': 'No'
       option:
@@ -100,13 +98,8 @@ en:
         create: You do not have permission to create continuities.
         edit: You do not have permission to modify this continuity.
       not_found: Continuity could not be found.
-      user_not_found: User could not be found.
     index:
       cameos_head: Cameo Continuities
-      header:
-        authors: Authors
-        name: Name
-        updated: Last Updated
       empty: — No continuities yet —
       search_label: 'Search by name:'
       title:
@@ -187,16 +180,6 @@ en:
         user: "%{name}'s Characters"
         yours: Your Characters
       empty: — No characters yet —
-    list_section:
-      header:
-        name: Name
-        template: Template
-        cluster: Cluster
-        nickname: Nickname
-        screenname: Screenname
-        facecast: Facecast
-        user: User
-        setting: Setting
     new:
       title: New Character
     replace:

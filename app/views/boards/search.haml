@@ -34,9 +34,9 @@
           %table
             %thead
               %tr
-                %th.sub= t('boards.index.header.name')
-                %th.sub= t('boards.index.header.authors')
-                %th.sub= t('boards.index.header.updated')
+                %th.sub= Board.human_attribute_name(:name)
+                %th.sub= Board.human_attribute_name(:board_authors)
+                %th.sub= Board.human_attribute_name(:last_updated)
             %tbody
               = render partial: 'list_item', collection: @search_results, as: :board
 

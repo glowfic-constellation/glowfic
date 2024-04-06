@@ -1,0 +1,37 @@
+---
+en:
+  activerecord:
+    attributes:
+      block:
+        block_interactions: Blocked Interactions
+        blocked_user: Blocked User
+      board:
+        board_authors: Authors
+        last_updated: Last Updated
+        name: Name
+      character:
+        cluster: Cluster
+        name: Name
+        nickname: Nickname
+        pb: Facecast
+        screenname: Screenname
+        settings:
+          one: Setting
+          other: Settings
+        user: User
+    models:
+      block:
+        one: Block
+        other: Blocks
+      board:
+        one: Continuity
+        other: Continuities
+      board_section:
+        one: Section
+        other: Sections
+      character_alias:
+        one: Alias
+        other: Aliases
+      post:
+        one: Post
+        other: Posts

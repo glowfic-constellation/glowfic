@@ -13,8 +13,8 @@
         = link_to new_block_path do
           .link-box.action-new= t('blocks.new.button')
     %tr
-      %th.sub= t('.header.user')
-      %th.sub= t('.header.interaction')
+      %th.sub= Block.human_attribute_name(:blocked_user)
+      %th.sub= Block.human_attribute_name(:block_interactions)
       %th.sub= t('.header.theirs')
       %th.sub= t('.header.yours')
       %th.sub

@@ -21,9 +21,9 @@
           = text_field_tag :name, params[:name], style: 'margin: 0px 5px;', id: :name
           = submit_tag t('button.search'), class: 'button'
     %tr
-      %th.sub= t('.header.name')
-      %th.sub= t('.header.authors')
-      %th.sub= t('.header.updated')
+      %th.sub= Board.human_attribute_name(:name)
+      %th.sub= Board.human_attribute_name(:board_authors)
+      %th.sub= Board.human_attribute_name(:last_updated)
   %tbody
     = render partial: 'list_item', collection: @boards, as: :board
     - if @boards.empty?

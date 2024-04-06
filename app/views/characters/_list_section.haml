@@ -13,7 +13,7 @@
             .link-box.action-new{style: 'font-size: 14px'}= 'characters.new.button.generic'
       - else
         %b
-          Template:
+          = ::Template.model_name.human + ":"
           = link_to name.name, template_path(name)
         - if current_user.try(:id) == name.user_id
           = link_to new_character_path(template_id: name.id) do
@@ -37,23 +37,23 @@
   %tr
     - klass = cycle('even', 'odd')
     %td.padding-5{class: klass}
-      %b= tr('.header.name')
+      %b= Character.human_attribute_name(:name)
     - if local_assigns[:show_template]
       %td.padding-5{class: klass}
-        %b= tr('.header.template')
+        %b= ::Template.model_name.human
     %td.padding-5{class: klass}
-      %b= tr('.header.cluster')
+      %b= Character.human_attribute_name(:cluster)
     %td.padding-5{class: klass}
-      %b= tr('.header.nickname')
+      %b= Character.human_attribute_name(:nickname)
     %td.padding-5{class: klass}
-      %b= tr('.header.screenname')
+      %b= Character.human_attribute_name(:screenname)
     %td.padding-5{class: klass}
-      %b= tr('.header.facecast')
+      %b= Character.human_attribute_name(:pb)
     %td.padding-5{class: klass}
       - if local_assigns[:show_user]
-        %b= tr('.header.user')
+        %b= User.model_name.human
       - else
-        %b= tr('.header.setting')
+        %b= Character.human_attribute_name(:settings, count: 1)
     %td.padding-5{class: klass}
   - pluck = characters_list(characters.ordered, local_assigns[:show_template])
   - params = { show_template: local_assigns[:show_template], show_user: local_assigns[:show_user], hide_buttons: local_assigns[:hide_buttons] }
