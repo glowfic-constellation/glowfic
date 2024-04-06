@@ -409,7 +409,8 @@ RSpec.describe PostsController, 'PUT update' do
       expect(Setting.count).to eq(3)
       expect(ContentWarning.count).to eq(3)
       expect(Label.count).to eq(3)
-      expect(PostTag.count).to eq(6)
+      expect(PostTag.count).to eq(4)
+      expect(Setting::Post.count).to eq(2)
 
       # for each type: keep one, remove one, create one, existing one
       put :update, params: {
@@ -433,10 +434,13 @@ RSpec.describe PostsController, 'PUT update' do
       expect(Setting.count).to eq(3)
       expect(ContentWarning.count).to eq(3)
       expect(Label.count).to eq(3)
-      expect(PostTag.count).to eq(6)
-      expect(PostTag.where(post: post, tag: regular_tags).count).to eq(3)
-      expect(PostTag.where(post: post, tag: duplicate_tags).count).to eq(0)
-      expect(PostTag.where(post: post, tag: removed_tags).count).to eq(3)
+      expect(PostTag.count).to eq(4)
+      expect(PostTag.where(post: post, tag: [warning, label]).count).to eq(2)
+      expect(PostTag.where(post: post, tag: [duplicate_warning, duplicate_label]).count).to eq(0)
+      expect(PostTag.where(post: post, tag: [removed_warning, removed_label]).count).to eq(2)
+      expect(Setting::Post.count).to eq(2)
+      expect(Setting::Post.where(post: post, setting: removed_setting).exists?).to eq(true)
+      expect(Setting::Post.where(post: post, setting: duplicate_setting).exists?).to eq(false)
     end
 
     it "sets expected variables" do
@@ -509,6 +513,7 @@ RSpec.describe PostsController, 'PUT update' do
       expect(ContentWarning.count).to eq(2)
       expect(Label.count).to eq(2)
       expect(PostTag.count).to eq(0)
+      expect(Setting::Post.count).to eq(0)
 
       # in storage
       post = assigns(:post).reload
@@ -569,7 +574,8 @@ RSpec.describe PostsController, 'PUT update' do
         expect(Setting.count).to eq(3)
         expect(ContentWarning.count).to eq(3)
         expect(Label.count).to eq(3)
-        expect(PostTag.count).to eq(6)
+        expect(PostTag.count).to eq(4)
+        expect(Setting::Post.count).to eq(2)
 
         # for each type: keep one, remove one, create one, existing one
         put :update, params: {
@@ -594,10 +600,13 @@ RSpec.describe PostsController, 'PUT update' do
         expect(Setting.count).to eq(4)
         expect(ContentWarning.count).to eq(4)
         expect(Label.count).to eq(4)
-        expect(PostTag.count).to eq(9)
-        expect(PostTag.where(post: post, tag: regular_tags).count).to eq(3)
-        expect(PostTag.where(post: post, tag: duplicate_tags).count).to eq(3)
-        expect(PostTag.where(post: post, tag: removed_tags).count).to eq(0)
+        expect(PostTag.count).to eq(6)
+        expect(PostTag.where(post: post, tag: [warning, label]).count).to eq(2)
+        expect(PostTag.where(post: post, tag: [duplicate_warning, duplicate_label]).count).to eq(2)
+        expect(PostTag.where(post: post, tag: [removed_warning, removed_label]).count).to eq(0)
+        expect(Setting::Post.count).to eq(3)
+        expect(Setting::Post.where(post: post, setting: removed_setting).exists?).to eq(false)
+        expect(Setting::Post.where(post: post, setting: duplicate_setting).exists?).to eq(true)
       end
 
       it "uses extant tags if available" do
@@ -766,7 +775,8 @@ RSpec.describe PostsController, 'PUT update' do
       expect(Setting.count).to eq(3)
       expect(ContentWarning.count).to eq(3)
       expect(Label.count).to eq(3)
-      expect(PostTag.count).to eq(6)
+      expect(PostTag.count).to eq(4)
+      expect(Setting::Post.count).to eq(2)
 
       expect(controller).to receive(:editor_setup).and_call_original
       expect(controller).to receive(:setup_layout_gon).and_call_original
@@ -810,10 +820,13 @@ RSpec.describe PostsController, 'PUT update' do
       expect(Setting.count).to eq(3)
       expect(ContentWarning.count).to eq(3)
       expect(Label.count).to eq(3)
-      expect(PostTag.count).to eq(6)
-      expect(PostTag.where(post: post, tag: regular_tags).count).to eq(3)
-      expect(PostTag.where(post: post, tag: duplicate_tags).count).to eq(0)
-      expect(PostTag.where(post: post, tag: removed_tags).count).to eq(3)
+      expect(PostTag.count).to eq(4)
+      expect(PostTag.where(post: post, tag: [warning, label]).count).to eq(2)
+      expect(PostTag.where(post: post, tag: [duplicate_warning, duplicate_label]).count).to eq(0)
+      expect(PostTag.where(post: post, tag: [removed_warning, removed_label]).count).to eq(2)
+      expect(Setting::Post.count).to eq(2)
+      expect(Setting::Post.where(post: post, setting: removed_setting).exists?).to eq(true)
+      expect(Setting::Post.where(post: post, setting: duplicate_setting).exists?).to eq(false)
     end
 
     it "works" do

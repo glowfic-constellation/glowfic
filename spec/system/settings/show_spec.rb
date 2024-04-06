@@ -1,4 +1,4 @@
-RSpec.describe "Viewing a tag" do
+RSpec.describe "Viewing a setting" do
   scenario "Viewing a setting" do
     # set up sample data
     setting_owner = create(:user, username: 'setting owner')
@@ -18,7 +18,7 @@ RSpec.describe "Viewing a tag" do
     create(:character, name: 'Other character') # this character must be missing
 
     # test expectations
-    visit tag_path(setting)
+    visit setting_path(setting)
 
     expect(page).to have_selector('.tag-info-box', text: 'Setting: sample setting')
 
