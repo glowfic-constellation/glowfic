@@ -1,12 +1,12 @@
 %table
   %thead
     %tr
-      %th.table-title{colspan: 4} Facecasts
+      %th.table-title{colspan: 4}= t('.title')
     %tr
-      %th.sub= link_to 'Facecast', url_for(sort: nil)
-      %th.sub Type
-      %th.sub= link_to 'Name', url_for(sort: 'name')
-      %th.sub= link_to 'Writer', url_for(sort: 'writer')
+      %th.sub= link_to t('.header.facecast'), url_for(sort: nil)
+      %th.sub= t('.header.type')
+      %th.sub= link_to Template.human_attribute_name(:name), url_for(sort: 'name')
+      %th.sub= link_to t('.header.writer'), url_for(sort: 'writer')
   %tbody
     - @pbs.each do |obj|
       %tr

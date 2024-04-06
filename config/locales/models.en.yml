@@ -11,14 +11,13 @@ en:
         name: Name
       character:
         cluster: Cluster
+        description: Description
         name: Name
         nickname: Nickname
         pb: Facecast
         screenname: Screenname
-        settings:
-          one: Setting
-          other: Settings
-        user: User
+      template:
+        name: Name
     models:
       block:
         one: Block
@@ -35,3 +34,6 @@ en:
       post:
         one: Post
         other: Posts
+      setting:
+        one: Setting
+        other: Settings

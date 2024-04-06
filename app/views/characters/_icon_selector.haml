@@ -1,10 +1,10 @@
 #character-icon-selector
-  %strong Icons
+  %strong= Icon.model_name.human(count: 2)
   %br
-  Pick default icon (optional):
+  = t('.pick_default')
   %br
   .character-galleries-simple
-    - galleries = @character.galleries.present? ? @character.galleries.ordered : [Struct.new(:id, :name, :icons).new(0, 'Galleryless', @character.user.galleryless_icons || [])]
+    - galleries = @character.galleries.present? ? @character.galleries.ordered : [Struct.new(:id, :name, :icons).new(0, t('galleries.none'), @character.user.galleryless_icons || [])]
     - if galleries.present?
       - galleries.each do |gallery|
         %div{id: "gallery#{gallery.id}", 'data-id': gallery.id }

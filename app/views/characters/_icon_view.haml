@@ -8,19 +8,19 @@
         %b= name
         - if local_assigns[:show_new_character_button]
           = link_to new_character_path do
-            .link-box.action-new{style: 'font-size: 14px'}= 'characters.new.button.generic'
+            .link-box.action-new{style: 'font-size: 14px'}= t('characters.new.button.generic')
       - else
         %b
-          Template:
+          = t('characters.index.template_prefix')
           = link_to name.name, template_path(name)
         - if current_user.try(:id) == name.user_id
           = link_to new_character_path(template_id: name.id) do
-            .link-box.action-new{style: 'font-size: 14px'}= 'characters.new.button.instance'
+            .link-box.action-new{style: 'font-size: 14px'}= t('characters.new.button.instance')
           = link_to edit_template_path(name) do
             .link-box.action-edit{style: 'font-size: 14px'}
               = image_tag "icons/pencil.png", class: 'vmid', alt: ''
               = t('button.edit')
-          = link_to template_path(name), method: :delete, data: { confirm: t('template.destroy.confirm') } do
+          = link_to template_path(name), method: :delete, data: { confirm: t('templates.destroy.confirm') } do
             .link-box.action-delete{style: 'font-size: 14px'}= t('button.delete')
 - if @template && @template.description.present?
   %tr

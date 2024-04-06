@@ -6,6 +6,7 @@ en:
   breadcrumbs:
     edit: Edit
     new: New
+    replace: Replace
   button:
     delete: x Delete
     edit: Edit

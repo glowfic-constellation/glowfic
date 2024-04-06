@@ -2,7 +2,7 @@
   - unless @user.id == current_user.try(:id)
     = user_link(@user)
     &raquo;
-    %b #{@user.username}'s Characters
+    %b= t('.title.user', name: @user.username)
 
 - if page_view == 'list'
   - colspan = (character_split == 'none') ? 8 : 7
@@ -11,53 +11,52 @@
 %table
   %tr
     %th.table-title{colspan: colspan}
-      - obj_name = "Characters"
+      - obj_name = Character.model_name.human(count: 2)
       - if character_split == 'npcs'
-        - obj_name = "NPCs"
+        - obj_name = t('characters.npc', count: 2)
       - if @group
-        Character Group:
-        = @group.name
+        = t('.title.group', name: @group.name)
       - elsif @user.id == current_user&.id
-        Your #{obj_name}
+        = t('.table_title.yours', obj: obj_name)
         = link_to new_character_path(character_group_id: @group.try(:id)) do
-          .link-box.action-new + New Character
+          .link-box.action-new= t('characters.new.button.generic')
         = link_to new_template_path do
-          .link-box.action-new + New Template
+          .link-box.action-new= t('templates.new.button')
       - else
-        = @user.username + "'s #{obj_name}"
+        = t('.table_title.user', name: @user.username, obj: obj_name)
       = link_to character_menu_link(view: 'icons'), class: 'view-button-link' do
         .view-button{class: (:selected unless page_view == 'list')}
           = image_tag "icons/grid.png", class: 'icon-view', alt: ''
-          Icons
+          = t('.option.icon')
       = link_to character_menu_link(view: 'list'), class: 'view-button-link' do
         .view-button{class: (:selected if page_view == 'list')}
           = image_tag "icons/list.png", class: 'list-view', alt: ''
-          List
+          = t('.option.list')
       - unless character_split == 'npcs'
         = link_to character_menu_link(character_split: 'npcs'), class: 'view-button-link' do
           .view-button
-            NPCs
+            = t('characters.npc', count: 2)
       - unless character_split == 'none'
         = link_to character_menu_link(character_split: 'none'), class: 'view-button-link' do
           .view-button
-            Ungroup
+            = t('.option.ungroup')
       - unless character_split == 'template'
         = link_to character_menu_link(character_split: 'template'), class: 'view-button-link' do
           .view-button
-            Group
+            = t('.option.group')
       - if show_retired
         = link_to character_menu_link(retired: false), class: 'view-button-link' do
           .view-button
-            Hide Retired
+            = t('.option.hide_retired')
       - else
         = link_to character_menu_link(retired: true), class: 'view-button-link' do
           .view-button
-            All Characters
+            = t('.option.show_all')
   - partial_type = (page_view == 'list') ? 'characters/list_section' : 'characters/icon_view'
   %tr
     %th.subber.padding-10{colspan: colspan}
       = form_tag search_characters_path, method: :get do
-        = label_tag :name, 'Search by name:'
+        = label_tag :name, t('characters.search.label.name.long')
         = text_field_tag :name, params[:name], style: 'margin: 0px 5px;', id: :name
         = hidden_field_tag :author_id, @user.id
         = hidden_field_tag :search_name, true
@@ -76,10 +75,10 @@
     - elsif @user.characters.exists?
       = render partial: partial_type, collection: @user.templates.ordered, as: :name
       - if (templateless = @user.characters.non_npcs.where(template_id: nil)).exists?
-        = render partial_type, name: "No Template", characters: templateless.ordered, show_new_character_button: @user.id == current_user&.id
+        = render partial_type, name: t('.no_template'), characters: templateless.ordered, show_new_character_button: @user.id == current_user&.id
     - else
       %tr
-        %td.centered.padding-5{class: cycle('even', 'odd'), colspan: colspan} — No characters yet —
+        %td.centered.padding-5{class: cycle('even', 'odd'), colspan: colspan}= t('.empty')
   - elsif character_split == 'npcs'
     - characters = @user.characters.npcs.ordered
     = render partial_type, name: nil, characters: characters, show_template: false

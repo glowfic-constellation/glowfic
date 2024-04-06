@@ -1,12 +1,12 @@
 - content_for :breadcrumbs do
-  = link_to "Characters", user_characters_path(current_user)
+  = link_to Character.model_name.human(count: 2), user_characters_path(current_user)
   &raquo;
   - if @character.template.try(:persisted?)
     = link_to @character.template.name, template_path(@character.template)
     &raquo;
   = link_to @character.name, @character
   &raquo;
-  %b Edit
+  %b= t('breadcrumbs.edit')
 
 = form_for @character, url: @character, method: :put do |f|
   .character-form
@@ -21,10 +21,10 @@
       %thead
         %tr
           %th.editor-title
-            Aliases and Pseudonyms
+            = t('aliases.index.title')
             - if @character.user_id == current_user.id
               = link_to new_character_alias_path(@character) do
-                .link-box.action-new + New Alias
+                .link-box.action-new= t('aliases.new.button')
       %tbody
         - @aliases.each do |calias|
           %tr
@@ -32,10 +32,10 @@
               = calias.name
               - if @character.user_id == current_user.id
                 .float-right
-                  = link_to character_alias_path(@character, calias), method: :delete, confirm: 'Are you sure you want to delete this alias?' do
+                  = link_to character_alias_path(@character, calias), method: :delete, confirm: t('aliases.destroy.confirm') do
                     = image_tag "icons/cross.png", alt: 'Delete'
         - if @aliases.empty?
           %tr
-            %td.centered.padding-10{ class: cycle('even', 'odd'), colspan: 6 } — No aliases yet —
+            %td.centered.padding-10{ class: cycle('even', 'odd'), colspan: 6 }= t('aliases.index.empty')
 
   = render 'icon_selector'

@@ -11,7 +11,7 @@
     - next if skip_grouped_templates && template.characters.where.not(character_group_id: nil).exists?
     = render partial_type, name: template, characters: template.characters.ordered
   - if characters.non_npcs.where(template_id: nil).exists?
-    = render partial_type, name: 'No Template', characters: characters.non_npcs.where(template_id: nil).ordered, show_new_character_button: @user.id == current_user&.id
+    = render partial_type, name: t('characters.index.no_template'), characters: characters.non_npcs.where(template_id: nil).ordered, show_new_character_button: @user.id == current_user&.id
 - else
   %tr
-    %td.centered.padding-5{class: cycle('even', 'odd'), colspan: 6} — No characters yet —
+    %td.centered.padding-5{class: cycle('even', 'odd'), colspan: 6}= t('characters.index.empty')
