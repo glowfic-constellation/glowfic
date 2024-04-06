@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2023_09_30_053037) do
+ActiveRecord::Schema[7.1].define(version: 2023_09_30_053037) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "citext"
   enable_extension "plpgsql"
@@ -244,6 +244,7 @@ ActiveRecord::Schema[7.0].define(version: 2023_09_30_053037) do
     t.datetime "read_at", precision: nil
     t.datetime "created_at", precision: nil
     t.datetime "updated_at", precision: nil
+    t.integer "notification_id"
     t.index ["recipient_id", "unread"], name: "index_messages_on_recipient_id_and_unread"
     t.index ["sender_id"], name: "index_messages_on_sender_id"
     t.index ["thread_id"], name: "index_messages_on_thread_id"
@@ -262,6 +263,18 @@ ActiveRecord::Schema[7.0].define(version: 2023_09_30_053037) do
     t.datetime "updated_at", precision: nil, null: false
     t.integer "news_id"
     t.index ["user_id"], name: "index_news_views_on_user_id"
+  end
+
+  create_table "notifications", force: :cascade do |t|
+    t.integer "user_id", null: false
+    t.integer "post_id"
+    t.boolean "unread", default: true, null: false
+    t.integer "notification_type", null: false
+    t.text "error_msg"
+    t.datetime "read_at", precision: nil
+    t.datetime "created_at", precision: nil, null: false
+    t.datetime "updated_at", precision: nil, null: false
+    t.index ["user_id"], name: "index_notifications_on_user_id"
   end
 
   create_table "password_resets", id: :serial, force: :cascade do |t|
