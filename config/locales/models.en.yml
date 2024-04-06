@@ -16,6 +16,8 @@ en:
         nickname: Nickname
         pb: Facecast
         screenname: Screenname
+      favorite:
+        favorite_type: Favorite Type
       template:
         name: Name
     models:
@@ -31,6 +33,9 @@ en:
       character_alias:
         one: Alias
         other: Aliases
+      favorite:
+        one: Favorite
+        other: Favorites
       post:
         one: Post
         other: Posts

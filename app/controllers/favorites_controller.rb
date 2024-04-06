@@ -3,7 +3,7 @@ class FavoritesController < ApplicationController
   before_action :login_required
 
   def index
-    @page_title = 'Favorites'
+    @page_title = t('.title')
 
     return if params[:view] == 'bucket'
     unless (@favorites = current_user.favorites).present?
@@ -26,19 +26,19 @@ class FavoritesController < ApplicationController
 
     if params[:user_id].present?
       unless (favorite = User.active.find_by_id(params[:user_id]))
-        flash[:error] = "User could not be found."
+        flash[:error] = t('users.errors.not_found')
         redirect_to users_path and return
       end
       fav_path = favorite
     elsif params[:board_id].present?
       unless (favorite = Board.find_by_id(params[:board_id]))
-        flash[:error] = "Continuity could not be found."
+        flash[:error] = t('boards.errors.not_found')
         redirect_to continuities_path and return
       end
       fav_path = continuity_path(favorite)
     elsif params[:post_id].present?
       unless (favorite = Post.find_by_id(params[:post_id]))
-        flash[:error] = "Post could not be found."
+        flash[:error] = t('posts.errors.not_found')
         redirect_to posts_path and return
       end
       params = {}
@@ -46,7 +46,7 @@ class FavoritesController < ApplicationController
       params[:per_page] = per_page unless per_page.to_s == (current_user.try(:per_page) || 25).to_s
       fav_path = post_path(favorite, params)
     else
-      flash[:error] = "No favorite specified."
+      flash[:error] = t('favorites.errors.not_specified')
       redirect_to continuities_path and return
     end
 
@@ -58,19 +58,19 @@ class FavoritesController < ApplicationController
     rescue ActiveRecord::RecordInvalid => e
       render_errors(fav, action: 'saved', err: e)
     else
-      flash[:success] = "Your favorite has been saved."
+      flash[:success] = t('.success')
     end
     redirect_to fav_path
   end
 
   def destroy
     unless (fav = Favorite.find_by_id(params[:id]))
-      flash[:error] = "Favorite could not be found."
+      flash[:error] = t('favorites.errors.not_found')
       redirect_to favorites_path and return
     end
 
     unless fav.user_id == current_user.id
-      flash[:error] = "You do not have permission to modify this favorite."
+      flash[:error] = t('favorites.errors.no_permission.edit')
       redirect_to favorites_path and return
     end
 
@@ -80,7 +80,7 @@ class FavoritesController < ApplicationController
       render_errors(fav, action: 'deleted', err: e)
       redirect_to favorites_path
     else
-      flash[:success] = "Favorite removed."
+      flash[:success] = t('.success')
       if [User.to_s, Post.to_s].include?(fav.favorite_type)
         redirect_to fav.favorite
       else

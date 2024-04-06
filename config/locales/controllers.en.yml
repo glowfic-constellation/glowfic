@@ -246,11 +246,29 @@ en:
       original_post: Original post
     update:
       success: Character updated.
+  favorites:
+    create:
+      success: Your favorite has been saved.
+    destroy:
+      success: Favorite removed.
+    errors:
+      no_permission:
+        edit: You do not have permission to modify this favorite.
+      not_found: Favorite could not be found.
+      not_specified: No favorite specified.
+    index:
+      empty: "— No favorites yet —"
+      grouped: Grouped
+      table_title: Your Favorites
+      title: Favorites
+      ungrouped: Ungrouped
   galleries:
     index:
       empty: "— No galleries yet —"
     none: Galleryless
   posts:
+    errors:
+      not_found: Post could not be found.
     index:
       title:
         recent: Recent Threads
