@@ -126,7 +126,7 @@
           %td.character-aliases{class: cycle('even', 'odd')}= aliases.join(", ")
       - if @character.template
         %tr
-          %th.sub.vtop.width-150= Template.model_name.human
+          %th.sub.vtop.width-150= ::Template.model_name.human
           %td.character-template{class: cycle('even', 'odd')}
             = link_to @character.template.name, template_path(@character.template), class: 'character-template'
       - if @character.cluster
