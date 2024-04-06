@@ -5,7 +5,7 @@
     = user_link(@character.user)
     - unless @character.user.deleted?
       &raquo;
-      = link_to t('character.index.title.user', name: @character.user.username), user_characters_path(@character.user)
+      = link_to t('characters.index.title.user', name: @character.user.username), user_characters_path(@character.user)
   - if @character.template
     &raquo;
     = link_to @character.template.name, template_path(@character.template)

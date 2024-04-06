@@ -114,6 +114,7 @@ ignore_unused:
 - activerecord.attributes.*
 - helpers.label.*
 - helpers.placeholder.*
+- helpers.submit.*
 - will_paginate.*
 
 ## Exclude these keys from the `i18n-tasks eq-base' report:
