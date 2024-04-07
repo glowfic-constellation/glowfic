@@ -76,3 +76,9 @@ en:
       setting:
         one: Setting
         other: Settings
+      tag:
+        one: Tag
+        other: Tags
+      user:
+        one: User
+        other: Users

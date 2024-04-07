@@ -1,5 +1,16 @@
 ---
 en:
+  about:
+    contact:
+      title: Contact Us
+    contribute:
+      title: Contribute
+    dmca:
+      button: DMCA
+    privacy:
+      title: Privacy Policy
+    tos:
+      title: Terms of Service
   aliases:
     create:
       success: Alias created.
@@ -341,6 +352,8 @@ en:
       select_posts: 'Optional: Select Post(s)'
       submit: Replace
       title: Replace All Uses of %{class}
+    search:
+      title: Search
   icons:
     avatar:
       button: Make Avatar
@@ -451,6 +464,33 @@ en:
       title: New Index
     update:
       success: Index updated.
+  layouts:
+    application:
+      alt:
+        favicon: Three stars, colored green, purple and blue
+        logo: Glowfic Constellation home
+      button:
+        forgot: Forgot Password?
+        login: Login
+        logout: Log out
+        post: Post
+        signup: Sign up
+      label:
+        remember_me: Remember Me
+      logout:
+        confirm: Press OK to confirm logout
+      placeholder:
+        password: Password
+        username: Username
+      submit:
+        login: Log in
+      title:
+        fallback: Glowfic Constellation
+        postfix: " | Glowfic Constellation"
+        prefix: 'DEV: '
+  news:
+    index:
+      button: News
   posts:
     errors:
       not_found: Post could not be found.
@@ -458,8 +498,16 @@ en:
       empty: "— No posts yet —"
       title:
         recent: Recent Threads
+        updated: Recently Updated
     new:
       button: "+ New Post"
+    owed:
+      button: Replies Owed
+    unread:
+      button: Unread
+  reports:
+    daily:
+      title: Daily Report
   templates:
     destroy:
       confirm: Are you sure you want to delete this template?
