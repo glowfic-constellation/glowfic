@@ -10,7 +10,7 @@
         %b= name
         - if local_assigns[:show_new_character_button]
           = link_to new_character_path do
-            .link-box.action-new{style: 'font-size: 14px'}= t('characters.new.button.generic)'
+            .link-box.action-new{style: 'font-size: 14px'}= t('characters.new.button.generic')
       - else
         %b
           = t('characters.index.template_prefix')

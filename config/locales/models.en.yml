@@ -36,6 +36,9 @@ en:
       board_section:
         one: Section
         other: Sections
+      character:
+        one: Character
+        other: Characters
       character_alias:
         one: Alias
         other: Aliases
@@ -51,6 +54,9 @@ en:
       post:
         one: Post
         other: Posts
+      reply:
+        one: Reply
+        other: Replies
       setting:
         one: Setting
         other: Settings

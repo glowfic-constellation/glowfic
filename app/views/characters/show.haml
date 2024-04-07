@@ -29,7 +29,7 @@
           %span.character-screenname= breakable_text(@character.screenname)
         - if @character.npc?
           %br
-          %span.character-is-npc= '(' + t('character.npc') + ')'
+          %span.character-is-npc= '(' + t('characters.npc.one') + ')'
   %tbody
     - if @character.default_icon
       %tr
@@ -122,7 +122,7 @@
       - aliases = @character.aliases.ordered.pluck(:name)
       - if aliases.present?
         %tr
-          %th.sub.vtop.width-150= CharacterAlias.model_name.human(count: aliases.size)
+          %th.sub.vtop.width-150= CharacterAlias.model_name.human(count: 2)
           %td.character-aliases{class: cycle('even', 'odd')}= aliases.join(", ")
       - if @character.template
         %tr
