@@ -4,7 +4,6 @@ en:
     attributes:
       block:
         block_interactions: Blocked Interactions
-        blocked_user: Blocked User
       board:
         board_authors: Authors
         last_updated: Last Updated

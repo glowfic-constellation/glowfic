@@ -20,11 +20,11 @@ en:
         gallery_group_ids: Groups
         name: Name
     placeholder:
-      aliases:
+      character_alias:
         name: Alias
       board_section:
         name: Section Name
-      boards:
+      board:
         name: Continuity Name
       character:
         audit_comment: Explain reason for moderation here

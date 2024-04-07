@@ -46,6 +46,7 @@ en:
       header:
         theirs: Hidden (Theirs)
         yours: Hidden (Yours)
+        user: Blocked User
       'no': 'No'
       option:
         all: All
