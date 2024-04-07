@@ -45,8 +45,8 @@ en:
       empty: "— No blocks yet —"
       header:
         theirs: Hidden (Theirs)
-        yours: Hidden (Yours)
         user: Blocked User
+        yours: Hidden (Yours)
       'no': 'No'
       option:
         all: All

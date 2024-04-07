@@ -29,7 +29,7 @@
           %span.character-screenname= breakable_text(@character.screenname)
         - if @character.npc?
           %br
-          %span.character-is-npc= '(' + t('characters.npc.one') + ')'
+          %span.character-is-npc= '(' + t('characters.npc', count: 1) + ')'
   %tbody
     - if @character.default_icon
       %tr

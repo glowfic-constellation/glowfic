@@ -20,12 +20,10 @@ en:
         gallery_group_ids: Groups
         name: Name
     placeholder:
-      character_alias:
-        name: Alias
-      board_section:
-        name: Section Name
       board:
         name: Continuity Name
+      board_section:
+        name: Section Name
       character:
         audit_comment: Explain reason for moderation here
         cluster: Template Cluster Name
@@ -34,6 +32,8 @@ en:
         nickname: Template Nickname
         pb: Facecast
         screenname: Screen Name
+      character_alias:
+        name: Alias
       gallery:
         gallery_group_ids: Groups
         name: Gallery Name
