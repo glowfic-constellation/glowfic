@@ -1,20 +1,20 @@
 - content_for :breadcrumbs do
   - if @icon.user_id == current_user.try(:id)
-    = link_to "Galleries", user_galleries_path(current_user)
+    = link_to Gallery.model_name.human(count: 2), user_galleries_path(current_user)
   - else
     = user_link(@icon.user)
     - unless @icon.user.deleted?
       &raquo;
-      = link_to "#{@icon.user.username}'s Galleries", user_galleries_path(@icon.user)
+      = link_to t('galleries.index.title.user', name: @icon.user.username), user_galleries_path(@icon.user)
   &raquo;
   = link_to @icon.keyword, @icon
   &raquo;
-  %b Edit
+  %b= t('breadcrumbs.edit')
 
 %table.form-table
   %tr
     %th.table-title
-      Edit Icon
+      = t('.editor_title')
 
 - data = { 'form-data' => @s3_direct_post.fields, url: @s3_direct_post.url, host: URI.parse(@s3_direct_post.url).host, limit: 1 }
 = form_for @icon, method: :put, html: { class: 'icon-upload' }, data: data do |f|

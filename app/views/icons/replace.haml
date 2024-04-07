@@ -1,12 +1,12 @@
 - content_for :breadcrumbs do
-  = link_to "Galleries", user_galleries_path(current_user)
+  = link_to Gallery.model_name.human(count: 2), user_galleries_path(current_user)
   &raquo;
   = link_to @icon.keyword, @icon
   &raquo;
-  %b= link_to 'Replace', replace_icon_path(@icon)
+  %b= link_to t('breadcrumbs.replace'), replace_icon_path(@icon)
 
 - content_for :options do
-  = select_tag :icon_dropdown, options_for_select(@alts.map { |i| [i.keyword, i.id] }, @alts.first.try(:id)), prompt: "No Icon"
+  = select_tag :icon_dropdown, options_for_select(@alts.map { |i| [i.keyword, i.id] }, @alts.first.try(:id)), prompt: t('.prompt.no_icon')
 
 = form_for @icon, url: do_replace_icon_path(@icon), method: :post do
   = render 'global/replace', obj: @icon, name: @icon.keyword, icon: @icon, alt_icon: @alts.first

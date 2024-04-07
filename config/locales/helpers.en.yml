@@ -37,6 +37,10 @@ en:
       gallery:
         gallery_group_ids: Groups
         name: Gallery Name
+      icon:
+        credit: Credit
+        keyword: Keyword
+        url: URL
     submit:
       create: Save
       update: Save

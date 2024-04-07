@@ -10,18 +10,18 @@ class IconsController < UploadingController
     gallery = Gallery.find_by_id(params[:gallery_id])
     icon_ids = (params[:marked_ids] || []).map(&:to_i).reject(&:zero?)
     if icon_ids.empty? || (icons = Icon.where(id: icon_ids)).empty?
-      flash[:error] = "No icons selected."
+      flash[:error] = t('.errors.empty')
       redirect_to user_galleries_path(current_user) and return
     end
 
     if params[:gallery_delete]
       unless gallery
-        flash[:error] = "Gallery could not be found."
+        flash[:error] = t('galleries.errors.not_found')
         redirect_to user_galleries_path(current_user) and return
       end
 
       unless gallery.user_id == current_user.id
-        flash[:error] = "You do not have permission to modify this gallery."
+        flash[:error] = t('galleries.errors.no_permission.edit')
         redirect_to user_galleries_path(current_user) and return
       end
 
@@ -30,7 +30,7 @@ class IconsController < UploadingController
         gallery.icons.destroy(icon)
       end
 
-      flash[:success] = "Icons removed from gallery."
+      flash[:success] = t('.success.remove')
       icon_redirect(gallery) and return
     end
 
@@ -38,7 +38,7 @@ class IconsController < UploadingController
       next unless icon.user_id == current_user.id
       icon.destroy
     end
-    flash[:success] = "Icons deleted."
+    flash[:success] = t('.success.delete')
     icon_redirect(gallery) and return
   end
 
@@ -61,7 +61,7 @@ class IconsController < UploadingController
   end
 
   def edit
-    @page_title = 'Edit Icon: ' + @icon.keyword
+    @page_title = t('.title', name: @icon.keyword)
     use_javascript('galleries/update_existing')
     use_javascript('galleries/uploader')
   end
@@ -72,19 +72,19 @@ class IconsController < UploadingController
     rescue ActiveRecord::RecordInvalid => e
       render_errors(@icon, action: 'updated', now: true, err: e)
 
-      @page_title = 'Edit icon: ' + @icon.keyword_was
+      @page_title = t('icons.edit.title', name: @icon.keyword_was)
       use_javascript('galleries/update_existing')
       use_javascript('galleries/uploader')
       set_s3_url
       render :edit
     else
-      flash[:success] = "Icon updated."
+      flash[:success] = t('.success')
       redirect_to @icon
     end
   end
 
   def replace
-    @page_title = "Replace Icon: " + @icon.keyword
+    @page_title = t('.title', name: @icon.keyword)
     all_icons = if @icon.has_gallery?
       @icon.galleries.map(&:icons).flatten.uniq.compact - [@icon]
     else
@@ -102,12 +102,12 @@ class IconsController < UploadingController
 
   def do_replace
     unless params[:icon_dropdown].blank? || (new_icon = Icon.find_by_id(params[:icon_dropdown]))
-      flash[:error] = "Icon could not be found."
+      flash[:error] = t('icons.errors.not_found')
       redirect_to replace_icon_path(@icon) and return
     end
 
     if new_icon && new_icon.user_id != current_user.id
-      flash[:error] = "You do not have permission to modify this icon."
+      flash[:error] = t('icons.errors.no_permission.edit')
       redirect_to replace_icon_path(@icon) and return
     end
 
@@ -117,7 +117,7 @@ class IconsController < UploadingController
     wheres[:id] = wheres.delete(:post_id) if params[:post_ids].present?
     UpdateModelJob.perform_later(Post.to_s, wheres, { icon_id: new_icon.try(:id) }, current_user.id)
 
-    flash[:success] = "All uses of this icon will be replaced."
+    flash[:success] = t('.success')
     redirect_to @icon
   end
 
@@ -129,7 +129,7 @@ class IconsController < UploadingController
       render_errors(@icon, action: 'deleted', err: e)
       redirect_to @icon
     else
-      flash[:success] = "Icon deleted."
+      flash[:success] = t('.success')
       redirect_to gallery_path(gallery) and return if gallery
       redirect_to user_galleries_path(current_user)
     end
@@ -137,7 +137,7 @@ class IconsController < UploadingController
 
   def avatar
     if current_user.update(avatar: @icon)
-      flash[:success] = "Avatar set."
+      flash[:success] = t('.success')
     else
       @icon.errors.merge!(current_user.errors)
       render_errors(@icon, action: 'set', class_name: 'Avatar')
@@ -149,7 +149,7 @@ class IconsController < UploadingController
 
   def find_model
     return if (@icon = Icon.find_by_id(params[:id]))
-    flash[:error] = "Icon could not be found."
+    flash[:error] = t('icons.errors.not_found')
     if logged_in?
       redirect_to user_galleries_path(current_user)
     else
@@ -159,7 +159,7 @@ class IconsController < UploadingController
 
   def require_permission
     return if @icon.user_id == current_user.id
-    flash[:error] = "You do not have permission to modify this icon."
+    flash[:error] = t('icons.errors.no_permission.edit')
     redirect_to user_galleries_path(current_user)
   end
 
@@ -180,7 +180,7 @@ class IconsController < UploadingController
     if galleries.present?
       desc = "Gallery".pluralize(galleries.count) + ": " + galleries.join(', ')
     else
-      desc = "Galleryless"
+      desc = t('galleries.none')
     end
     desc += ". By #{@icon.credit}" if @icon.credit
     {
