@@ -1,13 +1,13 @@
 - content_for :breadcrumbs do
-  = link_to "Indexes", indexes_path
+  = link_to Index.model_name.human(count: 2), indexes_path
   &raquo;
   = link_to @section.index.name, @section.index
   &raquo;
-  %b Edit
+  %b= t('breadcrumbs.edit')
 
 = form_for @section, method: :put do |f|
   %table.form-table
     %thead
       %tr
-        %th.editor-title{colspan: 2} Edit Index Section
+        %th.editor-title{colspan: 2}= t('.editor_title')
     = render 'editor', f: f

@@ -23,6 +23,14 @@ en:
         credit: Credit
         keyword: Keyword
         url: URL
+      index:
+        name: Name
+        privacy: Privacy
+      index_post:
+        description: Description
+      index_section:
+        description: Description
+        name: Name
       template:
         name: Name
     models:
@@ -50,6 +58,15 @@ en:
       icon:
         one: Icon
         other: Icons
+      index:
+        one: Index
+        other: Indexes
+      index_post:
+        one: Index Post
+        other: Index Posts
+      index_section:
+        one: Index Section
+        other: Index Sections
       post:
         one: Post
         other: Posts

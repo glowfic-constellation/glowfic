@@ -1,24 +1,24 @@
 - content_for :breadcrumbs do
-  = link_to "Indexes", indexes_path
+  = link_to Index.model_name.human(count: 2), indexes_path
   &raquo;
   = link_to @index.name, @index
   &raquo;
-  %b Edit
+  %b= t('breadcrumbs.edit')
 
 = form_for @index, method: :put do |f|
   %table.form-table
     %thead
       %tr
-        %th.editor-title{colspan: 2} Edit Index
+        %th.editor-title{colspan: 2}= t('.editor_title')
     = render 'editor', f: f
 
 %br
 %br
 
 - content_for :reorder_title do
-  Organize Index Sections
+  = t('.reorder_title')
   = link_to new_index_section_path params: { index_id: @index.id } do
-    .link-box.action-new + New Section
+    .link-box.action-new= t('index_sections.new.button')
 = render 'boards/reorder_sections', sections: @index_sections
 
 %br

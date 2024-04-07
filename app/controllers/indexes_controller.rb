@@ -7,12 +7,12 @@ class IndexesController < ApplicationController
   before_action :editor_setup, only: :edit
 
   def index
-    @page_title = "Indexes"
+    @page_title = Index.model_name.human(count: 2)
     @indexes = Index.order('id asc').paginate(page: page)
   end
 
   def new
-    @page_title = "New Index"
+    @page_title = t('.title')
     @index = Index.new(user: current_user)
   end
 
@@ -25,17 +25,17 @@ class IndexesController < ApplicationController
     rescue ActiveRecord::RecordInvalid => e
       render_errors(@index, action: 'created', now: true, err: e)
 
-      @page_title = 'New Index'
+      @page_title = t('indexes.new.title')
       render :new
     else
-      flash[:success] = "Index created."
+      flash[:success] = t('.success')
       redirect_to @index and return
     end
   end
 
   def show
     unless @index.visible_to?(current_user)
-      flash[:error] = "You do not have permission to view this index."
+      flash[:error] = t('indexes.errors.no_permission.show')
       redirect_to indexes_path and return
     end
 
@@ -57,7 +57,7 @@ class IndexesController < ApplicationController
       editor_setup
       render :edit
     else
-      flash[:success] = "Index updated."
+      flash[:success] = t('.success')
       redirect_to @index
     end
   end
@@ -70,7 +70,7 @@ class IndexesController < ApplicationController
       redirect_to @index
     else
       redirect_to indexes_path
-      flash[:success] = "Index deleted."
+      flash[:success] = t('.success')
     end
   end
 
@@ -78,19 +78,19 @@ class IndexesController < ApplicationController
 
   def find_model
     return if (@index = Index.find_by_id(params[:id]))
-    flash[:error] = "Index could not be found."
+    flash[:error] = t('indexes.errors.not_found')
     redirect_to indexes_path
   end
 
   def require_create_permission
     return unless current_user.read_only?
-    flash[:error] = "You do not have permission to create indexes."
+    flash[:error] = t('indexes.errors.no_permission.create')
     redirect_to continuities_path and return
   end
 
   def require_edit_permission
     return if @index.editable_by?(current_user)
-    flash[:error] = "You do not have permission to modify this index."
+    flash[:error] = t('indexes.errors.no_permission.edit')
     redirect_to @index
   end
 
@@ -99,7 +99,7 @@ class IndexesController < ApplicationController
   end
 
   def editor_setup
-    @page_title = "Edit Index: #{@index.name}"
+    @page_title = t('indexes.edit.title', name: @index.name)
     use_javascript('posts/index_edit')
     @index_sections = @index.index_sections.ordered
     @unsectioned_posts = @index.posts.where(index_posts: { index_section_id: nil })

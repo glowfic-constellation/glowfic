@@ -19,6 +19,14 @@ en:
       gallery:
         gallery_group_ids: Groups
         name: Name
+      index:
+        authors_locked:
+          'false': Any Constellation user
+          'true': Just me
+      index_post:
+        index_id: Index
+        index_section_id: Index Section
+        post_id: Post
     placeholder:
       board:
         name: Continuity Name
@@ -41,6 +49,10 @@ en:
         credit: Credit
         keyword: Keyword
         url: URL
+      index:
+        name: Index Name
+      index_section:
+        name: Section Name
     submit:
       create: Save
       update: Save

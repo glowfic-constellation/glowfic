@@ -1,5 +1,5 @@
 - content_for :breadcrumbs do
-  = link_to "Indexes", indexes_path
+  = link_to Index.model_name.human(count: 2), indexes_path
   &raquo;
   = link_to @index_post.index.name, @index_post.index
   &raquo;
@@ -9,22 +9,22 @@
   %table.form-table
     %thead
       %tr
-        %th.editor-title{colspan: 2} Edit Post In Index
+        %th.editor-title{colspan: 2}= t('.title')
     %tbody
       %tr
-        %th.sub Index
+        %th.sub= Index.model_name.human
         %td.even
           = link_to @index_post.index.name, @index_post.index
       - if @index_post.index_section.present?
         %tr
-          %th.sub Index Section
+          %th.sub= IndexSection.model_name.human
           %td.odd
             = link_to @index_post.index_section.name, @index_post.index_section
       %tr
-        %th.sub Post
+        %th.sub= Post.model_name.human
         %td.even= link_to @index_post.post.subject, post_path(@index_post.post)
       %tr
         %th.sub.vtop= f.label :description
         %td.odd= f.text_area :description
       %tr
-        %th.form-table-ender{colspan: 2}= submit_tag "Save", class: 'button'
+        %th.form-table-ender{colspan: 2}= f.submit class: 'button'

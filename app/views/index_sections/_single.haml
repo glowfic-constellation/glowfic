@@ -12,9 +12,9 @@
       = link_to edit_index_section_path(section) do
         .link-box.action-edit
           = image_tag "icons/pencil.png", alt: ''
-          Edit
-      = link_to index_section_path(section), method: :delete, data: { confirm: 'Are you sure you want to delete this section?' } do
-        .link-box.action-delete x Delete
+          = t('button.edit')
+      = link_to index_section_path(section), method: :delete, data: { confirm: t('index_sections.destroy.confirm') } do
+        .link-box.action-delete= t('button.delete')
 - if section.description.present?
   %tr
     %th.subber.index-description{colspan: colspan}= sanitize_written_content(section.description)
@@ -23,4 +23,4 @@
   = render partial: 'posts/list_item', collection: section_posts, as: :post, locals: { index: section.index }
 - else
   %tr
-    %td.centered.padding-10.no-posts{ class: cycle('even', 'odd'), colspan: colspan } — No posts yet —
+    %td.centered.padding-10.no-posts{ class: cycle('even', 'odd'), colspan: colspan }= t('posts.index.empty')

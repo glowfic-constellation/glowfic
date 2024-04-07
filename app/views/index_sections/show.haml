@@ -1,5 +1,5 @@
 - content_for :breadcrumbs do
-  = link_to "Indexes", indexes_path
+  = link_to Index.model_name.human(count: 2), indexes_path
   &raquo;
   = link_to @section.index.name, @section.index
   &raquo;

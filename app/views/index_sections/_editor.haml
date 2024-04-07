@@ -1,7 +1,7 @@
 %tbody
   %tr
     %th.sub= f.label :name
-    %td.even= f.text_field :name, placeholder: "Section Name", class: 'text'
+    %td.even= f.text_field :name, placeholder: true, class: 'text'
   %tr
     %th.sub Index
     %td.odd
@@ -12,4 +12,4 @@
     %td.even= f.text_area :description
 %tfoot
   %tr
-    %th.form-table-ender{colspan: 2}= submit_tag "Save", class: 'button'
+    %th.form-table-ender{colspan: 2}= f.submit class: 'button'
