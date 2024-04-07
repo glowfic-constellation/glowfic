@@ -1,12 +1,12 @@
 %table.form-table
   %thead
     %tr
-      %th.editor-title{colspan: 2} Replace All Uses of #{obj.class}
+      %th.editor-title{colspan: 2}= t('generic.replace.title', class: obj.class)
   %tbody
     = content_for :disclaimer
     %tr
-      %th.sub Current
-      %th.sub New
+      %th.sub= t('generic.replace.header.current')
+      %th.sub= t('generic.replace.header.new')
     %tr
       %td.replace-icon.vtop
         = icon_tag icon
@@ -23,10 +23,10 @@
   %tbody
     - if @posts.present?
       %tr
-        %th.sub{colspan: 2} Optional: Select Post(s)
+        %th.sub{colspan: 2}= t('generic.replace.select_posts')
       %tr
         %td.odd.centered{colspan: 2}
-          .details *If none are selected, replaces all uses*
+          .details= t('generic.replace.posts_hint')
     - @posts.each do |post|
       %tr
         %td{colspan: 2, class: cycle('even', 'odd')}
@@ -34,4 +34,4 @@
           = link_to post.subject, post_path(post)
   %tfoot
     %tr
-      %th.form-table-ender{colspan: 2}= submit_tag "Replace", class: 'button'
+      %th.form-table-ender{colspan: 2}= submit_tag t('generic.replace.submit'), class: 'button'

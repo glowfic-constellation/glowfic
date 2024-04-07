@@ -332,6 +332,15 @@ en:
         list: List
     update:
       success: Gallery updated.
+  generic:
+    replace:
+      header:
+        current: Current
+        new: New
+      posts_hint: "*If none are selected, replaces all uses*"
+      select_posts: 'Optional: Select Post(s)'
+      submit: Replace
+      title: Replace All Uses of %{class}
   icons:
     delete_multiple:
       button:
