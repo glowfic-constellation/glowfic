@@ -3,12 +3,12 @@
   %table.form-table{style: (icons_present ? 'width: 100%;' : nil)}
     %thead
       %tr
-        %th.editor-title{colspan: 2}New Gallery
+        %th.editor-title{colspan: 2}= t('.title')
     %tbody
       = render 'editor', f: f, gallery: @gallery
       - if icons_present
         %tr
-          %th.vtop.sub Icons
+          %th.vtop.sub= Icon.model_name.human
           %td{class: cycle('even', 'odd')}
             - current_user.galleryless_icons.each do |icon|
               = label_tag "gallery_icon_ids_#{icon.id}" do
@@ -20,4 +20,4 @@
                   .select-button= check_box_tag "gallery[icon_ids][]", icon.id, box_selected, id: "gallery_icon_ids_#{icon.id}"
     %tfoot
       %tr
-        %th.form-table-ender{colspan: 2}= submit_tag "Create", class: 'button'
+        %th.form-table-ender{colspan: 2}= submit_tag t('.submit'), class: 'button'

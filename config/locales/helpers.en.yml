@@ -16,6 +16,9 @@ en:
         pb: Facecast
         setting_ids: Setting
         ungrouped_gallery_ids: Galleries
+      gallery:
+        gallery_group_ids: Groups
+        name: Name
     placeholder:
       aliases:
         name: Alias
@@ -31,6 +34,9 @@ en:
         nickname: Template Nickname
         pb: Facecast
         screenname: Screen Name
+      gallery:
+        gallery_group_ids: Groups
+        name: Gallery Name
     submit:
       create: Save
       update: Save

@@ -14,16 +14,16 @@ class GalleriesController < UploadingController
 
   def index
     @page_title = if @user.id == current_user.try(:id)
-      "Your Galleries"
+      t('.title.yours')
     else
-      @user.username + "'s Galleries"
+      t('.title.user', name: @user.username)
     end
     use_javascript('galleries/expander')
     gon.user_id = @user.id
   end
 
   def new
-    @page_title = 'New Gallery'
+    @page_title = t('.title')
     @gallery = Gallery.new
   end
 
@@ -37,18 +37,18 @@ class GalleriesController < UploadingController
     rescue ActiveRecord::RecordInvalid => e
       render_errors(@gallery, action: 'created', now: true, err: e)
 
-      @page_title = 'New Gallery'
+      @page_title = t('galleries.new.title')
       editor_setup
       render :new
     else
-      flash[:success] = "Gallery created."
+      flash[:success] = t('.success')
       redirect_to @gallery
     end
   end
 
   def add
     return unless params[:id] == '0' && params[:type] == 'existing'
-    flash[:error] = 'Cannot add existing icons to galleryless. Please remove from existing galleries instead.'
+    flash[:error] = t('galleries.errors.existing_galleryless')
     redirect_to user_gallery_path(id: 0, user_id: current_user.id)
   end
 
@@ -56,11 +56,11 @@ class GalleriesController < UploadingController
     if params[:id].to_s == '0' # avoids casting nils to 0
       find_user
       return if performed?
-      @page_title = 'Galleryless Icons'
+      @page_title = t('.title.none')
     else
       return unless find_model
       @user = @gallery.user
-      @page_title = @gallery.name + ' (Gallery)'
+      @page_title = t('.title.std', name: @gallery.name)
       @meta_og = og_data
     end
     icons = @gallery ? @gallery.icons : @user.galleryless_icons
@@ -69,7 +69,7 @@ class GalleriesController < UploadingController
   end
 
   def edit
-    @page_title = 'Edit Gallery: ' + @gallery.name
+    @page_title = t('.title', name: @gallery.name)
     use_javascript('galleries/uploader')
     use_javascript('galleries/edit')
   end
@@ -85,14 +85,14 @@ class GalleriesController < UploadingController
     rescue ActiveRecord::RecordInvalid => e
       render_errors(@gallery, action: 'updated', now: true, err: e)
 
-      @page_title = 'Edit Gallery: ' + @gallery.name_was
+      @page_title = t('galleries.edit.title', name: @gallery.name_was)
       use_javascript('galleries/uploader')
       use_javascript('galleries/edit')
       editor_setup
       set_s3_url
       render :edit
     else
-      flash[:success] = "Gallery updated."
+      flash[:success] = t('.success')
       redirect_to edit_gallery_path(@gallery)
     end
   end
@@ -106,7 +106,7 @@ class GalleriesController < UploadingController
       icons = Icon.where(id: icon_ids, user_id: current_user.id)
       @gallery.icons += icons
 
-      flash[:success] = "Icons added to gallery."
+      flash[:success] = t('.success.existing')
       redirect_to @gallery
     else
       add_new_icons
@@ -120,7 +120,7 @@ class GalleriesController < UploadingController
       render_errors(@gallery, action: 'deleted', err: e)
       redirect_to @gallery
     else
-      flash[:success] = "Gallery deleted."
+      flash[:success] = t('.success')
       redirect_to user_galleries_path(current_user)
     end
   end
@@ -132,20 +132,20 @@ class GalleriesController < UploadingController
 
   def find_model
     return true if (@gallery = Gallery.find_by_id(params[:id]))
-    flash[:error] = "Gallery could not be found."
+    flash[:error] = t('galleries.errors.not_found')
     redirect_to(logged_in? ? user_galleries_path(current_user) : root_path)
     false
   end
 
   def require_edit_permission
     return if @gallery.user_id == current_user.id
-    flash[:error] = "You do not have permission to modify this gallery."
+    flash[:error] = t('galleries.errors.no_permission.edit')
     redirect_to user_galleries_path(current_user)
   end
 
   def require_create_permission
     return unless current_user.read_only?
-    flash[:error] = "You do not have permission to create galleries."
+    flash[:error] = t('galleries.errors.no_permission.create')
     redirect_to continuities_path
   end
 
@@ -158,7 +158,7 @@ class GalleriesController < UploadingController
   def find_user
     if params[:user_id].present?
       unless (@user = User.active.full.find_by_id(params[:user_id]))
-        flash[:error] = 'User could not be found.'
+        flash[:error] = t('users.errors.not_found')
         redirect_to root_path
       end
     else
@@ -172,7 +172,7 @@ class GalleriesController < UploadingController
     @icons = (params[:icons] || []).reject { |icon| icon.values.all?(&:blank?) }
 
     if @icons.empty?
-      flash.now[:error] = "You have to enter something."
+      flash.now[:error] = t("galleries.errors.empty")
       render :add and return
     end
 
@@ -180,7 +180,7 @@ class GalleriesController < UploadingController
 
     if icons.any? { |i| !i.valid? }
       flash.now[:error] = {
-        message: "Icons could not be saved because of the following problems:",
+        message: t('galleries.errors.not_saved'),
         array: [],
       }
 
@@ -197,7 +197,7 @@ class GalleriesController < UploadingController
     Icon.transaction do
       icons.each_with_index do |icon, index|
         next if icon.save
-        errors += icon.errors.present? ? icon.get_errors(index) : ["Icon #{index + 1} could not be saved."]
+        errors += icon.errors.present? ? icon.get_errors(index) : [t('galleries.errors.icon_error', index: index + 1)]
       end
       raise ActiveRecord::Rollback if errors.present?
       @gallery.icons += icons if @gallery
@@ -205,12 +205,12 @@ class GalleriesController < UploadingController
 
     if errors.present?
       flash.now[:error] = {
-        message: "Icons could not be saved because of the following problems:",
+        message: t('galleries.errors.not_saved'),
         array: errors,
       }
       render :add
     else
-      flash[:success] = "Icons saved."
+      flash[:success] = t('galleries.icon.success.new')
       redirect_to @gallery || user_gallery_path(id: 0, user_id: current_user.id)
     end
   end
@@ -224,7 +224,7 @@ class GalleriesController < UploadingController
     end
     @icons = []
     @unassigned = current_user.galleryless_icons
-    @page_title = "Add Icons"
+    @page_title = t('galleries.add.title')
     @page_title += ": " + @gallery.name unless @gallery.nil?
   end
 

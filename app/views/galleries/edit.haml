@@ -3,7 +3,7 @@
   &raquo;
   = link_to @gallery.name, @gallery
   &raquo;
-  %b Edit
+  %b= t('breadcrumbs.edit')
 
 - data = { 'form-data' => @s3_direct_post.fields, url: @s3_direct_post.url, host: URI.parse(@s3_direct_post.url).host, limit: 1 }
 = form_for @gallery, method: :put, html: { class: 'icon-upload' }, data: data do |f|
@@ -11,7 +11,7 @@
     %thead
       %tr
         %th.editor-title{colspan: 2}
-          Edit Gallery
+          = t('.form_title')
     %tbody.gallery-editor
       = render 'editor', f: f, gallery: @gallery
       %tr
@@ -22,4 +22,4 @@
         = gif.fields_for :icon do |i|
           = render 'icons/editor', f: i, gif: gif
   .submit-button
-    = submit_tag "Save", class: 'button'
+    = f.submit class: 'button'

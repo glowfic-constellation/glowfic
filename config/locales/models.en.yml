@@ -18,6 +18,12 @@ en:
         screenname: Screenname
       favorite:
         favorite_type: Favorite Type
+      gallery:
+        name: Name
+      icon:
+        credit: Credit
+        keyword: Keyword
+        url: URL
       template:
         name: Name
     models:
@@ -36,6 +42,12 @@ en:
       favorite:
         one: Favorite
         other: Favorites
+      gallery:
+        one: Gallery
+        other: Galleries
+      icon:
+        one: Icon
+        other: Icons
       post:
         one: Post
         other: Posts

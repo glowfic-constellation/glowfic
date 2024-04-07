@@ -2,41 +2,41 @@
   - if @user.id != current_user.try(:id)
     = user_link(@user)
     &raquo;
-    %b #{@user.username}'s Galleries
+    %b= t('.title.user', name: @user.username)
 
 %table
   %thead
     %tr
       %th.gallery-table-title{colspan: 4}
         - if @user.id == current_user.try(:id)
-          Your Galleries
+          = t('.title.yours')
           = link_to new_gallery_path, class: 'gallery-new' do
-            .link-box.action-new + New Gallery
+            .link-box.action-new= t('galleries.new.button')
         - else
-          = @user.username + "'s Galleries"
+          = t('.title.user', name: @user.username)
     %tr
-      %th.sub Name
-      %th.sub.width-150.centered # of Icons
-      %th.sub.width-70 Manage
-      %th.sub.width-70 Expand
+      %th.sub= Gallery.human_attribute_name(:name)
+      %th.sub.width-150.centered= t('.header.num')
+      %th.sub.width-70= t('.header.manage')
+      %th.sub.width-70= t('.header.expand')
   %tbody
     %tr
-      %td.odd.gallery-name= link_to '[Galleryless]', user_gallery_path(id: 0, user_id: @user.id)
+      %td.odd.gallery-name= link_to '[' + t('galleries.none') + ']', user_gallery_path(id: 0, user_id: @user.id)
       %td.width-150.centered.odd.gallery-icon-count= @user.icons.where(has_gallery: false).count
       %td.width-70.odd.gallery-buttons
         - if @user.id == current_user.try(:id)
-          = link_to add_gallery_path(id: 0), title: "Add Icons", class: 'gallery-add' do
-            = image_tag "icons/add.png", alt: 'Add Icons'
+          = link_to add_gallery_path(id: 0), title: t('galleries.add.alt_text'), class: 'gallery-add' do
+            = image_tag "icons/add.png", alt: t('galleries.add.alt_text')
       %td.centered.width-70.odd
         .gallery-box.vmid{id: "minmax-0", style: 'display: inline-block;', data: { id: 0 }}
           .view-button{style: 'padding: 5px 7px;'}
-            = image_tag "icons/bullet_arrow_down.png", class: 'vmid down-arrow', alt: 'Show'
-            = image_tag "icons/bullet_arrow_up.png", class: 'vmid hidden up-arrow', alt: 'Hide'
+            = image_tag "icons/bullet_arrow_down.png", class: 'vmid down-arrow', alt: t('alt.show')
+            = image_tag "icons/bullet_arrow_up.png", class: 'vmid hidden up-arrow', alt: t('alt.hide')
     %tr
       %td.padding-5.hidden.odd{id: "icons-0", colspan: 4}
         = form_tag delete_multiple_icons_path, method: :delete do
           .gallery{style: 'padding: 0px;'}
           - if @user.id == current_user.try(:id)
             .clear.centered.icons-remove
-              = submit_tag "x Delete selected icons permanently", data: { confirm: "Are you sure? These icons will be gone from the site!" }
+              = submit_tag t('icons.delete_multiple.button.delete'), data: { confirm: t('icons.delete_multiple.confirm') }
     = render partial: 'galleries/expandable', collection: @user.galleries.with_icon_count.with_gallery_groups.ordered_by_name, as: :gallery

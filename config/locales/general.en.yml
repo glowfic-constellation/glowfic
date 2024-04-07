@@ -3,6 +3,8 @@ en:
   alt:
     delete: Delete
     edit: Edit
+    hide: Hide
+    show: Show
   breadcrumbs:
     edit: Edit
     new: New
@@ -23,6 +25,7 @@ en:
   status:
     error: Error
     saved: Saved
+  under_construction: Under Construction
   will_paginate:
     next_label: Next &rsaquo;
     page_gap: "&hellip;"
