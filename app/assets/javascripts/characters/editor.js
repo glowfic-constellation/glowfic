@@ -229,11 +229,8 @@ function disableNPCBoxes(disable) {
 }
 
 function bindScreenname(obj) {
-  // console.log('binding screenname');
   $("#character_screenname", obj).blur(function() {
-    // console.log("you left it!")
     screenname=$("#character_screenname", obj).val()
-    // console.log(screenname)
     checkDuplicateScreenname(screenname);
   });
 }
@@ -248,7 +245,6 @@ function checkDuplicateScreenname(screenname) {
       charArray=res['results'];
       var isDuplicate=0;
       charArray.forEach((char) => {
-        // console.log(char['screenname']);
         if(char['screenname'] == screenname){
           isDuplicate=1;
         }
@@ -260,7 +256,6 @@ function checkDuplicateScreenname(screenname) {
       }
     }
   })
-  // console.log('Hello World');
 }
 
 
