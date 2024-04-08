@@ -488,6 +488,43 @@ en:
         fallback: Glowfic Constellation
         postfix: " | Glowfic Constellation"
         prefix: 'DEV: '
+  messages:
+    create:
+      failure: 'Message could not be sent because of the following problems:'
+      success: Message sent.
+    destroy:
+      confirm: Are you sure you want to delete these messages?
+    errors:
+      no_permission:
+        reply: You do not have permission to reply to that message.
+        view: You do not have permission to view that message.
+      not_found: Message could not be found.
+      parent_not_found: Message parent could not be found.
+    inbox:
+      title: Inbox
+    index:
+      empty: "— No messages yet —"
+    mark:
+      invalid: Could not perform unknown action.
+      success: Messages updated.
+    message:
+      button:
+        collapse: Click to collapse
+      created_at: Sent %{created_at}
+      prefix:
+        recipient: 'To:'
+        sender: 'From:'
+    new:
+      breadcrumbs: New Message
+      button: "+ Write Message"
+      other: Other users
+      recent: Recently messaged
+      title: Compose Message
+    outbox:
+      title: Outbox
+    reply:
+      breadcrumbs: New Reply
+      title: Reply to Thread
   news:
     index:
       button: News

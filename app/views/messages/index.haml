@@ -5,14 +5,14 @@
       - if @messages.present?
         %tr
           %th.sub.width-15
-          %th.sub Subject
-          %th.sub= @view == 'inbox' ? 'Sender' : 'Recipient'
-          %th.sub Sent
+          %th.sub=  Message.human_attribute_name(:subject)
+          %th.sub= @view == 'inbox' ? Message.human_attribute_name(:sender) : Message.human_attribute_name(:recipient)
+          %th.sub= Message.human_attribute_name(:created_at)
           %th.sub#select-all-cell= check_box_tag :select_all, false
     %tbody
       - if @messages.empty?
         %tr
-          %td.centered.padding-10 — No messages yet —
+          %td.centered.padding-10= t('.empty')
       - else
         - @messages.each do |message|
           %tr.message-row
@@ -33,9 +33,9 @@
         %tr
           %td.right-align.padding-5{colspan: 5, class: cycle('even', 'odd')}
             - if @view == 'inbox'
-              = submit_tag "Mark Read", class: 'button'
-              = submit_tag "Mark Unread", class: 'button'
-            = submit_tag "Delete", class: 'button', data: { confirm: "Are you sure you want to delete these messages?" }
+              = submit_tag t('button.read'), class: 'button'
+              = submit_tag t('button.unread'), class: 'button'
+            = submit_tag t('alt.delete'), class: 'button', data: { confirm: t('messages.destroy.confirm') }
     - if @messages.total_pages > 1
       %tfoot
         %tr

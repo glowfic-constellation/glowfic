@@ -9,12 +9,12 @@ class MessagesController < ApplicationController
 
     includes = []
     if params[:view] == 'outbox'
-      @page_title = 'Outbox'
+      @page_title = t('messages.outbox.title')
       from_table = current_user.sent_messages.where(visible_outbox: true).ordered_by_thread.select('distinct on (thread_id) messages.*')
       from_table = from_table.where.not(recipient_id: blocked_ids).joins(:recipient).where.not(users: { deleted: true })
       includes << :recipient
     else
-      @page_title = 'Inbox'
+      @page_title = t('messages.inbox.title')
       from_table = current_user.messages.where(visible_inbox: true).ordered_by_thread.select('distinct on (thread_id) messages.*')
       from_table = from_table.where.not(sender_id: blocked_ids).left_outer_joins(:sender).where('users.deleted IS NULL OR users.deleted = false')
       includes << :sender
@@ -29,7 +29,7 @@ class MessagesController < ApplicationController
     @message = Message.new
     recipient = User.active.full.find_by_id(params[:recipient_id])
     @message.recipient = recipient unless recipient && current_user.has_interaction_blocked?(recipient)
-    @page_title = 'Compose Message'
+    @page_title = t('.title')
   end
 
   def create
@@ -41,18 +41,18 @@ class MessagesController < ApplicationController
     if params[:button_preview]
       @messages = Message.where(thread_id: @message.thread_id).ordered_by_id if @message.thread_id
       editor_setup
-      @page_title = 'Compose Message'
+      @page_title = t('messages.new.title')
       render :preview and return
     end
 
     if flash.now[:error].nil? && @message.save
-      flash[:success] = "Message sent." # rubocop:disable Rails/ActionControllerFlashBeforeRender
+      flash[:success] = t('.success') # rubocop:disable Rails/ActionControllerFlashBeforeRender
       redirect_to messages_path(view: 'inbox') and return
     end
 
     cached_error = flash.now[:error] # preserves errors from setting an invalid parent
     flash.now[:error] = {
-      message: "Message could not be sent because of the following problems:",
+      message: t('.failure'),
       array: @message.errors.full_messages,
     }
     flash.now[:error][:array] << cached_error if cached_error.present?
@@ -63,17 +63,17 @@ class MessagesController < ApplicationController
 
   def show
     unless (message = Message.find_by_id(params[:id]))
-      flash[:error] = "Message could not be found."
+      flash[:error] = t('messages.errors.not_found')
       redirect_to messages_path(view: 'inbox') and return
     end
 
     if message.sender&.deleted? || message.recipient.deleted?
-      flash[:error] = "Message could not be found."
+      flash[:error] = t('messages.errors.not_found')
       redirect_to messages_path(view: 'inbox') and return
     end
 
     unless message.visible_to?(current_user)
-      flash[:error] = "You do not have permission to view that message."
+      flash[:error] = t('messages.errors.no_permission.view')
       redirect_to messages_path(view: 'inbox') and return
     end
 
@@ -119,11 +119,11 @@ class MessagesController < ApplicationController
         end
       end
     else
-      flash[:error] = "Could not perform unknown action."
+      flash[:error] = t('.invalid')
       redirect_to messages_path and return
     end
 
-    flash[:success] = "Messages updated."
+    flash[:success] = t('.success')
     redirect_to messages_path(view: box || 'inbox')
   end
 
@@ -137,9 +137,9 @@ class MessagesController < ApplicationController
     recents = base_users.where(id: recent_ids).pluck(:username, :id).sort_by { |x| recent_ids.index(x[1]) }
     users = base_users.ordered.pluck(:username, :id)
     @select_items = if recents.present?
-      { 'Recently messaged': recents, 'Other users': users }
+      { t('messages.new.recent') => recents, t('messages.new.other') => users }
     else
-      { Users: users }
+      { User.model_name.human => users }
     end
   end
 
@@ -147,13 +147,13 @@ class MessagesController < ApplicationController
     @message.parent = Message.find_by_id(parent_id)
     unless @message.parent.present?
       @message.parent = nil
-      flash.now[:error] = "Message parent could not be found."
+      flash.now[:error] = t('messages.errors.parent_not_found')
       return
     end
 
     unless @message.parent.visible_to?(current_user)
       @message.parent = nil
-      flash.now[:error] = "You do not have permission to reply to that message."
+      flash.now[:error] = t('messages.errors.no_permission.reply')
       return
     end
 

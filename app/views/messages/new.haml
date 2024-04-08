@@ -1,6 +1,6 @@
 - content_for :breadcrumbs do
-  = link_to 'Inbox', messages_path
+  = link_to t('messages.inbox.title'), messages_path
   &raquo;
-  %b New Message
+  %b= t('.breadcrumbs')
 
 = render 'editor'

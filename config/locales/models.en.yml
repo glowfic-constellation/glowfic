@@ -31,6 +31,12 @@ en:
       index_section:
         description: Description
         name: Name
+      message:
+        created_at: Sent
+        message: Message
+        recepient: Recepient
+        sender: Sender
+        subject: Subject
       template:
         name: Name
     models:
@@ -67,6 +73,9 @@ en:
       index_section:
         one: Index Section
         other: Index Sections
+      message:
+        one: Message
+        other: Messages
       post:
         one: Post
         other: Posts

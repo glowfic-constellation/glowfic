@@ -53,6 +53,10 @@ en:
         name: Index Name
       index_section:
         name: Section Name
+      message:
+        subject: Subject
     submit:
       create: Save
+      message:
+        create: Send
       update: Save

@@ -14,8 +14,11 @@ en:
     delete: x Delete
     edit: Edit
     favorite: Favorite
+    preview: Preview
+    read: Mark Read
     search: Search
     unfavorite: Unfavorite
+    unread: Mark Unread
   errors:
     no_reason: You must provide a reason for your moderator edit.
   reorder:

@@ -13,26 +13,26 @@
     .message= generate_short(message.message)
     .float-right
       - if message.created_at
-        .message-time Sent #{pretty_time(message.created_at)}
+        .message-time= t('.created_at', created_at: pretty_time(message.created_at))
 
 .post-container.message-expanded{class: exp_klass, id: "expanded-#{message.id}"}
   - if message.id && local_assigns[:message_counter].present?
     .message-expand
       .message-menu{data: { id: message.id }}
-        .float-left.text Click to collapse
+        .float-left.text= t('.button.collapse')
         .float-right
           - if message.created_at
-            .message-time Sent #{pretty_time(message.created_at)}
+            .message-time= t('.created_at', created_at: pretty_time(message.created_at))
   .padding-10
     .post-info-box
       - if message.sender.try(:avatar)
         .post-icon= icon_tag message.sender.avatar
       .post-info-text
         .post-character
-          %b From:
+          %b= t('.prefix.sender')
           = message_sender(message)
         .post-screenname
-          %b To:
+          %b= t('.prefix.recipient')
           - if message.recipient
             = user_link(message.recipient)
     .message-content= sanitize_written_content(message.message)
