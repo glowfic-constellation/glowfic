@@ -230,22 +230,22 @@ function disableNPCBoxes(disable) {
 
 function bindScreenname(obj) {
   $("#character_screenname", obj).blur(function() {
-    screenname=$("#character_screenname", obj).val()
+    const screenname=$("#character_screenname", obj).val();
     checkDuplicateScreenname(screenname);
   });
 }
 
 
 function checkDuplicateScreenname(screenname) {
-  res = $.ajax({
+  let res = $.ajax({
     url: '/api/v1/characters/',
     type: 'GET',
     dataType: 'json',
     success: function(res) {
-      charArray=res['results'];
+      const charArray=res['results'];
       var isDuplicate=0;
       charArray.forEach((char) => {
-        if(char['screenname'] == screenname){
+        if(char.screenname == screenname){
           isDuplicate=1;
         }
       })
