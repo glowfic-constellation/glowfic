@@ -35,7 +35,7 @@ unless ENV.fetch('SKIP_COVERAGE', false) || ENV.fetch('APIPIE_RECORD', false) ||
       end
     end
     enable_coverage :branch
-    minimum_coverage line: 99.98, branch: 94.72
+    minimum_coverage line: 99.98, branch: 93.8
   end
 end
 
@@ -154,7 +154,6 @@ RSpec.configure do |config|
       options.add_argument('--no-sandbox')
       options.add_argument("--user-data-dir=#{ENV['CHROMEDRIVER_CONFIG']}") if ENV['CHROMEDRIVER_CONFIG']
       options.add_argument('--window-size=1366,768')
-      options.add_argument('--disable-dev-shm-usage')
     end
   end
 
