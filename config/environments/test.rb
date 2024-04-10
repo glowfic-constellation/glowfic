@@ -75,4 +75,7 @@ Rails.application.configure do
   # raise an error if assets aren't found
   config.assets.unknown_asset_fallback = false
   config.assets.check_precompiled_asset = ENV["CI"].present?
+
+  # don't use digest string
+  config.assets.digest = false
 end

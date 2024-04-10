@@ -200,4 +200,48 @@ RSpec.describe WritableHelper do
       end
     end
   end
+
+  describe "#privacy_icon" do
+    it "works with alt text" do
+      expected = image_tag("/assets/icons/star.png", class: 'vmid', title: 'Constellation Users', alt: 'Constellation Users')
+      expect(helper.privacy_icon(:registered)).to eq(expected)
+    end
+
+    it "works with no alt text" do
+      expected = image_tag("/assets/icons/lock.png", class: 'vmid', title: 'Private', alt: '')
+      expect(helper.privacy_icon(:private, false)).to eq(expected)
+    end
+  end
+
+  describe "#post_or_reply_link" do
+    it "requires an id" do
+      reply = build(:reply)
+      expect(helper.post_or_reply_link(reply)).to be_nil
+    end
+
+    it "delegates to post_or_reply_mem_link" do
+      reply = create(:reply)
+      allow(helper).to receive(:post_or_reply_mem_link).and_call_original
+      expect(helper).to receive(:post_or_reply_mem_link).with(id: reply.id, klass: Reply)
+      helper.post_or_reply_link(reply)
+    end
+  end
+
+  describe "#post_or_reply_mem_link" do
+    it "requires an id" do
+      expect(helper.post_or_reply_mem_link(id: nil, klass: '')).to be_nil
+    end
+
+    it "handles a reply" do
+      reply = create(:reply)
+      html = reply_path(reply.id, anchor: "reply-#{reply.id}")
+      expect(helper.post_or_reply_mem_link(id: reply.id, klass: Reply)).to eq(html)
+    end
+
+    it "handles a post" do
+      post = create(:post)
+      html = post_path(post.id)
+      expect(helper.post_or_reply_mem_link(id: post.id, klass: Post)).to eq(html)
+    end
+  end
 end

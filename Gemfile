@@ -9,8 +9,8 @@ gem 'apipie-rails'
 # - for migrations with `rails generate audited:upgrade`
 # - that the method set_audit_user has not changed, since we duplicate it in
 #   ApplicationRecord for use in callbacks to send audit user ids to background jobs.
-#   (currently https://github.com/collectiveidea/audited/blob/v5.4.2/lib/audited/audit.rb#L187)
-gem 'audited', '~> 5.4.3'
+#   (currently https://github.com/collectiveidea/audited/blob/v5.5.0/lib/audited/audit.rb#L187)
+gem 'audited', '~> 5.5.0'
 
 gem 'aws-sdk-rails', '~> 3'
 gem 'aws-sdk-s3', '~> 1'
@@ -62,10 +62,10 @@ group :development do
   gem 'listen'
   gem 'memory_profiler'
   gem 'rack-mini-profiler'
-  gem 'rubocop', '~> 1.60.2', require: false
-  gem 'rubocop-performance', '~> 1.20.2', require: false
-  gem 'rubocop-rails', '~> 2.23.1', require: false
-  gem 'rubocop-rspec', '~> 2.26.1', require: false
+  gem 'rubocop', '~> 1.62.1', require: false
+  gem 'rubocop-performance', '~> 1.21.0', require: false
+  gem 'rubocop-rails', '~> 2.24.1', require: false
+  gem 'rubocop-rspec', '~> 2.29.1', require: false
   gem 'traceroute'
 end
 
@@ -74,7 +74,7 @@ group :development, :test do
   gem 'database_cleaner'
   gem 'dotenv'
   gem 'html-proofer'
-  gem 'rake', '~> 13.1'
+  gem 'rake', '~> 13.2'
   gem 'rspec-rails'
   gem 'seed_dump', '~> 3.2'
   gem 'thin'

@@ -1,4 +1,43 @@
 RSpec.describe IconHelper do
+  describe "#icon_tag" do
+    it "requires an icon" do
+      expect(helper.icon_tag(nil)).to eq('')
+    end
+
+    it "delegates to icon_mem_tag" do
+      icon = create(:icon)
+      allow(helper).to receive(:icon_mem_tag).and_call_original
+      expect(helper).to receive(:icon_mem_tag).with(icon.url, icon.keyword)
+      helper.icon_tag(icon)
+    end
+  end
+
+  describe "#icon_mem_tag" do
+    let(:icon) { create(:icon) }
+    let(:url) { icon.url }
+    let(:keyword) { icon.keyword }
+
+    it "requires a url" do
+      expect(helper.icon_mem_tag(nil, 'foo')).to eq('')
+    end
+
+    it "returns the correct image_tag" do
+      html = image_tag url, { alt: keyword, title: keyword, class: IconHelper::ICON }
+      expect(helper.icon_mem_tag(url, keyword)).to eq(html)
+    end
+
+    it "takes a parameter for pointers" do
+      html = image_tag url, { alt: keyword, title: keyword, class: IconHelper::ICON + ' pointer' }
+      expect(helper.icon_mem_tag(url, keyword, pointer: true)).to eq(html)
+    end
+
+    it "takes a parameter for a class" do
+      klass = 'vmid preview_icon'
+      html = image_tag url, { alt: keyword, title: keyword, class: IconHelper::ICON + ' ' + klass }
+      expect(helper.icon_mem_tag(url, keyword, class: klass)).to eq(html)
+    end
+  end
+
   describe "#dropdown_icons" do
     let(:user) { create(:user) }
     let(:post) { build(:post, user: user) }

@@ -3,6 +3,12 @@ inherit_from: ../../.rubocop.yml
 Layout/ArgumentAlignment:
   Enabled: false
 
+Layout/CaseIndentation:
+  Enabled: false
+
+Layout/HashAlignment:
+  Enabled: false
+
 Rails/OutputSafety:
   Enabled: false
 
