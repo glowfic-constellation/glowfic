@@ -963,6 +963,10 @@ Style/MagicCommentFormat: # new in 1.35
 Style/MapCompactWithConditionalBlock: # new in 1.30
   Enabled: true
 
+Style/MapIntoArray: # new in 1.63
+  Enabled: false
+  # unsafe, and we don't tend to make this mistake
+
 Style/MapToHash: # new in 1.24
   Enabled: true
 
