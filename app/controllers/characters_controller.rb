@@ -8,6 +8,7 @@ class CharactersController < ApplicationController
   before_action :find_group, only: :index
   before_action :require_create_permission, only: [:new, :create]
   before_action :require_edit_permission, only: [:edit, :update, :duplicate, :replace, :do_replace]
+  before_action :require_delete_permission, only: :destroy
   before_action :editor_setup, only: [:new, :edit]
 
   def index
@@ -125,11 +126,6 @@ class CharactersController < ApplicationController
   end
 
   def destroy
-    unless @character.deletable_by?(current_user)
-      flash[:error] = "You do not have permission to modify this character."
-      redirect_to user_characters_path(current_user) and return
-    end
-
     begin
       @character.destroy!
     rescue ActiveRecord::RecordNotDestroyed => e
@@ -311,6 +307,12 @@ class CharactersController < ApplicationController
 
   def require_edit_permission
     return if @character.editable_by?(current_user)
+    flash[:error] = "You do not have permission to modify this character."
+    redirect_to user_characters_path(current_user)
+  end
+
+  def require_delete_permission
+    return if @character.deletable_by?(current_user)
     flash[:error] = "You do not have permission to modify this character."
     redirect_to user_characters_path(current_user)
   end

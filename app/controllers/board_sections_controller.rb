@@ -3,7 +3,8 @@ class BoardSectionsController < ApplicationController
   before_action :login_required, except: :show
   before_action :readonly_forbidden, except: :show
   before_action :find_model, except: [:new, :create]
-  before_action :require_permission, except: [:show, :update]
+  before_action :find_parent
+  before_action :require_permission, except: [:show]
 
   def new
     @board_section = BoardSection.new(board_id: params[:board_id])
@@ -12,11 +13,6 @@ class BoardSectionsController < ApplicationController
 
   def create
     @board_section = BoardSection.new(permitted_params)
-    unless @board_section.board.nil? || @board_section.board.editable_by?(current_user)
-      flash[:error] = "You do not have permission to modify this continuity." # rubocop:disable Rails/ActionControllerFlashBeforeRender
-      redirect_to continuities_path and return
-    end
-
     begin
       @board_section.save!
     rescue ActiveRecord::RecordInvalid => e
@@ -26,7 +22,7 @@ class BoardSectionsController < ApplicationController
       render :new
     else
       flash[:success] = "New section, #{@board_section.name}, created for #{@board_section.board.name}."
-      redirect_to edit_continuity_path(@board_section.board)
+      redirect_to edit_continuity_path(@board)
     end
   end
 
@@ -44,8 +40,6 @@ class BoardSectionsController < ApplicationController
 
   def update
     @board_section.assign_attributes(permitted_params)
-    require_permission
-    return if performed?
 
     begin
       @board_section.save!
@@ -70,7 +64,7 @@ class BoardSectionsController < ApplicationController
       redirect_to board_section_path(@board_section)
     else
       flash[:success] = "Section deleted."
-      redirect_to edit_continuity_path(@board_section.board)
+      redirect_to edit_continuity_path(@board)
     end
   end
 
@@ -82,24 +76,29 @@ class BoardSectionsController < ApplicationController
     redirect_to continuities_path
   end
 
+  def find_parent
+    board_id = params[:board_id] || permitted_params[:board_id]
+    @board = Board.find_by(id: board_id)
+    @board ||= @board_section.try(:board)
+  end
+
   def require_permission
-    return unless (board = @board_section.try(:board) || Board.find_by_id(params[:board_id]))
-    return if board.editable_by?(current_user)
+    return unless @board
+    return if @board.editable_by?(current_user)
     flash[:error] = "You do not have permission to modify this continuity."
     redirect_to continuities_path
   end
 
   def og_data
     stats = []
-    board = @board_section.board
-    stats << board.writers.where.not(deleted: true).ordered.pluck(:username).join(', ') if board.authors_locked?
+    stats << @board.writers.where.not(deleted: true).ordered.pluck(:username).join(', ') if @board.authors_locked?
     post_count = @board_section.posts.privacy_public.count
     stats << "#{post_count} #{'post'.pluralize(post_count)}"
     desc = [stats.join(' – ')]
     desc << generate_short(@board_section.description) if @board_section.description.present?
     {
       url: board_section_url(@board_section),
-      title: "#{board.name} » #{@board_section.name}",
+      title: "#{@board.name} » #{@board_section.name}",
       description: desc.join("\n"),
     }
   end
