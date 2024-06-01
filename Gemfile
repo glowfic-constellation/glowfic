@@ -70,7 +70,6 @@ group :development do
   gem 'ruby-lsp-rails'
   gem 'ruby-lsp-rspec', require: false
   gem 'sorbet', '~> 0.5.11406'
-  gem 'tapioca', require: false
   gem 'traceroute'
 end
 
@@ -82,6 +81,7 @@ group :development, :test do
   gem 'rake', '~> 13.2'
   gem 'rspec-rails'
   gem 'seed_dump', '~> 3.2'
+  gem 'tapioca', require: false
   gem 'thin'
 end
 
