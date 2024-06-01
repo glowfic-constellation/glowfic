@@ -7,10 +7,11 @@ AllCops:
   Exclude:
     - 'config/initializers/audited.rb'
     - 'config/initializers/will_paginate.rb'
-    - 'db/migrate/**.rb'
+    - 'db/migrate/*.rb'
     - 'db/schema.rb'
     - 'backstop/*'
     - 'vendor/**/*'
+    - 'sorbet/**/*'
 
 require:
   - rubocop-capybara
@@ -425,9 +426,6 @@ Rails/DurationArithmetic: # new in 2.13
 
 Rails/DynamicFindBy:
   Enabled: true
-  Whitelist:
-    - find_by_sql
-    - find_by_id
 
 Rails/EagerEvaluationLogMessage: # new in 2.11
   Enabled: true

@@ -327,7 +327,7 @@ class PostsController < WritableController
   def preview
     @post ||= Post.new(user: current_user)
     @post.assign_attributes(permitted_params(false))
-    @post.board ||= Board.find_by_id(3)
+    @post.board ||= Board.find_by(id: 3)
 
     process_npc(@post, permitted_character_params)
 
@@ -426,7 +426,7 @@ class PostsController < WritableController
   end
 
   def find_model
-    @post = Post.find_by_id(params[:id])
+    @post = Post.find_by(id: params[:id])
 
     unless @post
       flash[:error] = "Post could not be found."

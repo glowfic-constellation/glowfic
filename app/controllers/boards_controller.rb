@@ -1,5 +1,7 @@
 # frozen_string_literal: true
+# typed: true
 class BoardsController < ApplicationController
+  extend T::Sig
   before_action :login_required, except: [:index, :show, :search]
   before_action :find_model, only: [:show, :edit, :update, :destroy]
   before_action :editor_setup, only: [:new, :edit]
@@ -8,9 +10,10 @@ class BoardsController < ApplicationController
 
   def index
     if params[:user_id].present?
-      unless (@user = User.active.full.find_by_id(params[:user_id]))
+      unless (@user = User.active.full.find_by(id: params[:user_id]))
         flash[:error] = "User could not be found."
-        redirect_to root_path and return
+        redirect_to root_path
+        return
       end
 
       @page_title = if @user.id == current_user.try(:id)
@@ -104,9 +107,10 @@ class BoardsController < ApplicationController
   end
 
   def mark
-    unless (board = Board.find_by_id(params[:board_id]))
+    unless (board = Board.find_by(id: params[:board_id]))
       flash[:error] = "Continuity could not be found."
-      redirect_to unread_posts_path and return
+      redirect_to unread_posts_path
+      return
     end
 
     if params[:commit] == "Mark Read"
@@ -154,13 +158,13 @@ class BoardsController < ApplicationController
   end
 
   def find_model
-    return if (@board = Board.find_by_id(params[:id]))
+    return if (@board = Board.find_by(id: params[:id]))
     flash[:error] = "Continuity could not be found."
     redirect_to continuities_path
   end
 
   def require_create_permission
-    return unless current_user.read_only?
+    return unless current_user&.read_only?
     flash[:error] = "You do not have permission to create continuities."
     redirect_to continuities_path
   end
@@ -171,6 +175,7 @@ class BoardsController < ApplicationController
     redirect_to continuity_path(@board)
   end
 
+  T::Sig::WithoutRuntime.sig { params(relation: Board::PrivateRelation).returns(Board::PrivateRelation) }
   def boards_from_relation(relation)
     sql = <<~SQL.squish
       boards.*,
