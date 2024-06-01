@@ -1,5 +1,7 @@
+# typed: false
 module Authentication::Web
   extend ActiveSupport::Concern
+  extend T::Sig
 
   included do
     protected
@@ -17,6 +19,7 @@ module Authentication::Web
     end
     helper_method :logged_in?
 
+    sig { returns(T.nilable(User)) }
     def current_user
       return unless session[:user_id].present?
       set_user
@@ -31,6 +34,7 @@ module Authentication::Web
       @current_user = nil
     end
 
+    sig { returns(T::Hash[Symbol, String]) }
     def cookie_delete_options
       return { domain: 'glowfic-staging.herokuapp.com' } if request.host.include?('staging')
       return { domain: '.glowfic.com' } if Rails.env.production?
