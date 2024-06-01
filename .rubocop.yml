@@ -586,6 +586,10 @@ Rails/WhereNot:
 Rails/WhereNotWithMultipleConditions: # new in 2.17
   Enabled: true
 
+Rails/WhereRange: # new in 2.25
+  # we don't use this format
+  Enabled: false
+
 ################## RSpec #################################
 
 RSpec/BeEmpty: # new in 2.20
