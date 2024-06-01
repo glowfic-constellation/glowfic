@@ -11,11 +11,11 @@
 
 module Presents
   def as_json(options={})
-    return super(options) if options.delete(:without_presenter)
+    return super if options.delete(:without_presenter)
     begin
       presenter = (self.class.name + "Presenter").constantize
     rescue NameError
-      super(options)
+      super
     else
       presenter.new(self).as_json(options)
     end

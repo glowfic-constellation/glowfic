@@ -943,7 +943,7 @@ Style/HashExcept: # (new in 1.7)
   Enabled: true
 
 Style/HashSyntax:
-  EnforcedShorthandSyntax: either
+  EnforcedShorthandSyntax: either_consistent # new in 1.64
 
 Style/IfWithBooleanLiteralBranches: # (new in 1.9)
   Enabled: true
@@ -1096,6 +1096,9 @@ Style/ReturnNilInPredicateMethodDefinition: # new in 1.53
 Style/SelectByRegexp: # new in 1.22
   Enabled: true
 
+Style/SendWithLiteralMethodName: # new in 1.64
+  Enabled: true
+
 Style/SingleLineDoEndBlock: # new in 1.57
   Enabled: true
 
@@ -1110,6 +1113,9 @@ Style/StringConcatenation:
 
 Style/StringLiterals:
   Enabled: false
+
+Style/SuperArguments: # new in 1.64
+  Enabled: true
 
 Style/SuperWithArgsParentheses: # new in 1.58
   # unlikely in our code
