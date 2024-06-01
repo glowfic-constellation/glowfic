@@ -95,7 +95,10 @@ class ApplicationController < ActionController::Base
   end
   helper_method :tos_skippable?
 
-  sig { params(relation: Post::PrivateRelation, no_tests: T::Boolean, with_pagination: T::Boolean, select: String, max: T::Boolean, with_unread: T::Boolean, show_blocked: T::Boolean).returns(Post::PrivateRelation) }
+  T::Sig::WithoutRuntime.sig do
+    params(relation: Post::PrivateRelation, no_tests: T::Boolean, with_pagination: T::Boolean, select: String, max: T::Boolean,
+      with_unread: T::Boolean, show_blocked: T::Boolean,).returns(Post::PrivateRelation)
+  end
   def posts_from_relation(relation, no_tests: true, with_pagination: true, select: '', max: false, with_unread: false, show_blocked: false)
     posts = posts_relation_filter(relation, no_tests: no_tests, show_blocked: show_blocked)
     posts_count = posts.except(:select, :order, :group).count('DISTINCT posts.id')
@@ -106,14 +109,14 @@ class ApplicationController < ActionController::Base
   end
   helper_method :posts_from_relation
 
-  sig { params(posts: Post::PrivateRelation, no_tests: T::Boolean, show_blocked: T::Boolean).returns(Post::PrivateRelation) }
+  T::Sig::WithoutRuntime.sig { params(posts: Post::PrivateRelation, no_tests: T::Boolean, show_blocked: T::Boolean).returns(Post::PrivateRelation) }
   def posts_relation_filter(posts, no_tests: true, show_blocked: false)
     posts = posts.where.not(id: current_user.hidden_posts) if logged_in? && !show_blocked
     posts = posts.no_tests if no_tests
     posts.visible_to(current_user)
   end
 
-  sig { params(relation: Post::PrivateRelation, select: String, max: T::Boolean).returns(Post::PrivateRelation) }
+  T::Sig::WithoutRuntime.sig { params(relation: Post::PrivateRelation, select: String, max: T::Boolean).returns(Post::PrivateRelation) }
   def posts_list_relation(relation, select: '', max: false)
     select = if max
       <<~SQL.squish
