@@ -95,7 +95,10 @@ class ApplicationController < ActionController::Base
   end
   helper_method :tos_skippable?
 
-  T::Sig::WithoutRuntime.sig { params(relation: Post::PrivateRelation, no_tests: T::Boolean, with_pagination: T::Boolean, select: String, max: T::Boolean, with_unread: T::Boolean, show_blocked: T::Boolean).returns(Post::PrivateRelation) }
+  T::Sig::WithoutRuntime.sig do
+    params(relation: Post::PrivateRelation, no_tests: T::Boolean, with_pagination: T::Boolean, select: String, max: T::Boolean,
+      with_unread: T::Boolean, show_blocked: T::Boolean,).returns(Post::PrivateRelation)
+  end
   def posts_from_relation(relation, no_tests: true, with_pagination: true, select: '', max: false, with_unread: false, show_blocked: false)
     posts = posts_relation_filter(relation, no_tests: no_tests, show_blocked: show_blocked)
     posts_count = posts.except(:select, :order, :group).count('DISTINCT posts.id')
