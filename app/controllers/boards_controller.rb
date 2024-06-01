@@ -166,7 +166,7 @@ class BoardsController < ApplicationController
   end
 
   def require_create_permission
-    return unless current_user.read_only?
+    return unless current_user&.read_only?
     flash[:error] = "You do not have permission to create continuities."
     redirect_to continuities_path
   end

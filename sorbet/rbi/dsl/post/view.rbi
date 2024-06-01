@@ -259,7 +259,7 @@ class Post::View
     sig { params(block: T.nilable(T.proc.params(record: ::Post::View).returns(T.untyped))).returns(T::Boolean) }
     def one?(&block); end
 
-    sig { params(options: T::Hash[T.untyped, T.untyped]).returns(PrivateRelation) }
+    sig { params(options: T::Hash[Symbol, Integer]).returns(PrivateRelation) }
     def paginate(options); end
 
     sig { params(column_names: T.untyped).returns(T.untyped) }

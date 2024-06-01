@@ -285,7 +285,7 @@ class ActionText::RichText
     end
     def one?(&block); end
 
-    sig { params(options: T::Hash[T.untyped, T.untyped]).returns(PrivateRelation) }
+    sig { params(options: T::Hash[Symbol, Integer]).returns(PrivateRelation) }
     def paginate(options); end
 
     sig { params(column_names: T.untyped).returns(T.untyped) }

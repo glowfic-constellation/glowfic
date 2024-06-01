@@ -36,7 +36,7 @@ module Tapioca
         common_relation_methods_module.create_method(
           "paginate",
           parameters: [
-            create_param("options", type: "T::Hash[T.untyped, T.untyped]"),
+            create_param("options", type: "T::Hash[Symbol, Integer]"),
           ],
           return_type: "PrivateRelation",
         )
