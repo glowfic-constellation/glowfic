@@ -51,7 +51,7 @@ jobs:
         run: |
           wget --show-progress --progress=dot:mega https://dl.min.io/server/minio/release/linux-amd64/minio
           chmod +x minio
-          MINIO_ACCESS_KEY=minioadmin MINIO_SECRET_KEY=minioadmin ./minio server ./minio-data 2>&1 > minio.log &
+          MINIO_ROOT_USER=glowfic_minio MINIO_ROOT_PASSWORD=glowfic_minio ./minio server ./minio-data 2>&1 > minio.log &
       - name: Set up Ruby
         uses: ruby/setup-ruby@v1
         with:

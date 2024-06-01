@@ -1,5 +1,5 @@
-access_key_id = ENV.fetch('AWS_ACCESS_KEY_ID', 'minioadmin')
-secret_access_key = ENV.fetch('AWS_SECRET_ACCESS_KEY', 'minioadmin')
+access_key_id = ENV.fetch('AWS_ACCESS_KEY_ID', 'glowfic_minio')
+secret_access_key = ENV.fetch('AWS_SECRET_ACCESS_KEY', 'glowfic_minio')
 bucket_name = ENV.fetch('S3_BUCKET_NAME', 'glowfic-dev')
 Aws.config.update({
   region: 'us-east-1',
