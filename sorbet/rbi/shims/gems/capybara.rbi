@@ -1,1 +1,0 @@
-module Capybara::DSLRSpecProxyInstaller; end
