@@ -7,10 +7,11 @@ AllCops:
   Exclude:
     - 'config/initializers/audited.rb'
     - 'config/initializers/will_paginate.rb'
-    - 'db/migrate/**.rb'
+    - 'db/migrate/*.rb'
     - 'db/schema.rb'
     - 'backstop/*'
     - 'vendor/**/*'
+    - 'sorbet/**/*'
 
 require:
   - rubocop-capybara
