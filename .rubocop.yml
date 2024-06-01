@@ -13,6 +13,7 @@ AllCops:
     - 'db/schema.rb'
     - 'backstop/*'
     - 'vendor/**/*'
+    - 'sorbet/**/*'
 
 plugins:
   - rubocop-capybara

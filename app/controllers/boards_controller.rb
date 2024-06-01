@@ -177,7 +177,7 @@ class BoardsController < ApplicationController
     redirect_to continuity_path(@board)
   end
 
-  sig { params(relation: Board::PrivateRelation).returns(Board::PrivateRelation) }
+  T::Sig::WithoutRuntime.sig { params(relation: Board::PrivateRelation).returns(Board::PrivateRelation) }
   def boards_from_relation(relation)
     sql = <<~SQL.squish
       boards.*,
