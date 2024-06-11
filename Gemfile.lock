@@ -444,6 +444,10 @@ GEM
       unicode-display_width (>= 2.4.0, < 3.0)
     rubocop-ast (1.31.3)
       parser (>= 3.3.1.0)
+    rubocop-capybara (2.21.0)
+      rubocop (~> 1.41)
+    rubocop-factory_bot (2.26.1)
+      rubocop (~> 1.61)
     rubocop-performance (1.21.1)
       rubocop (>= 1.48.1, < 2.0)
       rubocop-ast (>= 1.31.1, < 2.0)
@@ -454,6 +458,9 @@ GEM
       rubocop-ast (>= 1.31.1, < 2.0)
     rubocop-rspec (3.0.2)
       rubocop (~> 1.61)
+    rubocop-rspec_rails (2.30.0)
+      rubocop (~> 1.61)
+      rubocop-rspec (~> 3, >= 3.0.1)
     ruby-progressbar (1.13.0)
     ruby2_keywords (0.0.5)
     rubyzip (2.3.2)
@@ -606,9 +613,12 @@ DEPENDENCIES
   resque_spec
   rspec-rails
   rubocop (~> 1.64.1)
+  rubocop-capybara (~> 2.21.0)
+  rubocop-factory_bot (~> 2.26.0)
   rubocop-performance (~> 1.21.1)
   rubocop-rails (~> 2.25.1)
   rubocop-rspec (~> 3.0.0)
+  rubocop-rspec_rails (~> 2.30.0)
   sanitize
   scout_apm
   seed_dump (~> 3.2)
