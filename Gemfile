@@ -65,7 +65,7 @@ group :development do
   gem 'rubocop', '~> 1.64.1', require: false
   gem 'rubocop-performance', '~> 1.21.1', require: false
   gem 'rubocop-rails', '~> 2.25.1', require: false
-  gem 'rubocop-rspec', '~> 2.29.2', require: false
+  gem 'rubocop-rspec', '~> 3.0.0', require: false
   gem 'traceroute'
 end
 
