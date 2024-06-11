@@ -613,6 +613,12 @@ RSpec/ContainExactly: # new in 2.19
 RSpec/ContextWording:
   Enabled: false
 
+RSpec/Dialect:
+  PreferredMethods:
+    background: :before
+    given:      :let
+    given!:     :let!
+
 RSpec/DescribedClass:
   EnforcedStyle: explicit
 
@@ -644,9 +650,6 @@ RSpec/ExcessiveDocstringSpacing: # new in 2.5
 
 RSpec/ExpectChange:
   EnforcedStyle: block
-
-RSpec/FilePath:
-  Enabled: false
 
 RSpec/HookArgument:
   EnforcedStyle: each
@@ -731,10 +734,7 @@ RSpec/UndescriptiveLiteralsDescription: # new in 2.29
 RSpec/VerifiedDoubleReference: # new in 2.10.0
   Enabled: true
 
-################## RSpec/Capybara ##############################
-
-RSpec/Capybara/FeatureMethods:
-  EnabledMethods: [feature, scenario]
+################## Capybara ####################################
 
 Capybara/ClickLinkOrButtonStyle: # new in 2.19
   # disabled because we have lots of buttons wrapped in links that cause ambiguous matches
@@ -750,12 +750,6 @@ Capybara/NegationMatcher: # new in 2.14
 Capybara/RedundantWithinFind: # new in 2.20
   Enabled: true
 
-Capybara/RSpec/HaveSelector: # new in 2.19
-  Enabled: false
-
-Capybara/RSpec/PredicateMatcher: # new in 2.19
-  Enabled: true
-
 Capybara/SpecificActions: # new in 2.14
   Enabled: true
 
@@ -765,7 +759,15 @@ Capybara/SpecificFinders: # new in 2.13
 Capybara/SpecificMatcher: # new in 2.12
   Enabled: true
 
-################## RSpec/FactoryBot ############################
+################## Capybara/RSpec ##############################
+
+Capybara/RSpec/HaveSelector: # new in 2.19
+  Enabled: false
+
+Capybara/RSpec/PredicateMatcher: # new in 2.19
+  Enabled: true
+
+################## FactoryBot ##################################
 
 FactoryBot/AssociationStyle: # new in 2.23
   Enabled: true
