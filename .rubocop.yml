@@ -592,22 +592,7 @@ Rails/WhereRange: # new in 2.25
 
 ################## RSpec #################################
 
-RSpec/BeEmpty: # new in 2.20
-  Enabled: true
-
-RSpec/BeEq: # new in 2.9.0
-  Enabled: false
-
-RSpec/BeNil: # new in 2.9.0
-  Enabled: true
-
-RSpec/ChangeByZero: # new in 2.11.0
-  Enabled: true
-
-RSpec/ClassCheck: # new in 2.13
-  Enabled: true
-
-RSpec/ContainExactly: # new in 2.19
+RSpec/ContainExactly:
   Enabled: false
 
 RSpec/ContextWording:
@@ -627,17 +612,8 @@ RSpec/DescribeMethod:
     - 'spec/controllers/posts/*'
     - 'spec/controllers/replies/*'
 
-RSpec/DuplicatedMetadata: # new in 2.16
-  Enabled: true
-
-RSpec/EmptyMetadata: # new in 2.24
-  Enabled: true
-
-RSpec/EmptyOutput: # new in 2.29
+RSpec/EmptyOutput:
   Enabled: false # we don't use the output matcher
-
-RSpec/Eq: # new in 2.24
-  Enabled: true
 
 RSpec/ExampleLength:
   Enabled: false
@@ -645,36 +621,27 @@ RSpec/ExampleLength:
 RSpec/ExampleWording:
   Enabled: false
 
-RSpec/ExcessiveDocstringSpacing: # new in 2.5
-  Enabled: true
-
 RSpec/ExpectChange:
   EnforcedStyle: block
 
 RSpec/HookArgument:
   EnforcedStyle: each
 
-RSpec/IdenticalEqualityAssertion: # new in 2.4
-  Enabled: true
-
-RSpec/IndexedLet: # new in 2.20
+RSpec/IndexedLet:
   Enabled: false
 
-RSpec/IsExpectedSpecify: # new in 2.27
-  Enabled: true
+RSpec/IsExpectedSpecify:
+  Enabled: false # we don't use specify and is_expected
 
 RSpec/LeakyConstantDeclaration:
   Exclude:
     - 'spec/lib/presentable_spec.rb'
 
-RSpec/MatchArray: # new in 2.19
+RSpec/MatchArray:
   Enabled: false
 
 RSpec/MessageSpies:
   EnforcedStyle: receive
-
-RSpec/MetadataStyle: # new in 2.24
-  Enabled: true
 
 RSpec/MultipleExpectations:
   Enabled: false
@@ -685,54 +652,23 @@ RSpec/MultipleMemoizedHelpers:
 RSpec/NestedGroups:
   Max: 5
 
-RSpec/NoExpectationExample: # new in 2.13
-  Enabled: true
-
-RSpec/PendingWithoutReason: # new in 2.16
+RSpec/PendingWithoutReason:
   Enabled: false
 
-RSpec/ReceiveMessages: # new in 2.23
-  Enabled: true
+RSpec/RepeatedSubjectCall:
+  Enabled: false # we don't use subject
 
-RSpec/RedundantAround: # new in 2.19
-  Enabled: true
-
-RSpec/RedundantPredicateMatcher: # new in 2.26
-  Enabled: true
-
-RSpec/RemoveConst: # new in 2.26
-  Enabled: true
-
-RSpec/RepeatedSubjectCall: # new in 2.27
-  Enabled: true
-
-RSpec/SkipBlockInsideExample: # new in 2.19
-  Enabled: true
-
-RSpec/SortMetadata: # new in 2.14
-  Enabled: true
-
-RSpec/SpecFilePathFormat: # new in 2.24
-  Enabled: true
+RSpec/SpecFilePathFormat:
   Exclude:
     - 'spec/controllers/posts/*'
     - 'spec/controllers/replies/*'
-
-RSpec/SpecFilePathSuffix: # new in 2.24
-  Enabled: true
 
 RSpec/StubbedMock:
   Exclude:
     - 'spec/script/post_split_spec.rb' # mocking multiple gets in order needs expect
 
-RSpec/SubjectDeclaration: # new in 2.5
-  Enabled: true
-
-RSpec/UndescriptiveLiteralsDescription: # new in 2.29
-  Enabled: true
-
-RSpec/VerifiedDoubleReference: # new in 2.10.0
-  Enabled: true
+RSpec/SubjectDeclaration:
+  Enabled: false # we don't use subject
 
 ################## Capybara ####################################
 
