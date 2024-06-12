@@ -54,3 +54,8 @@
 
 // character list view
 .character-list-template { padding: 10px; }
+
+// duplicate screen name message
+label[for=character_duplicate_screenname] {
+  display:none;
+}

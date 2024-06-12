@@ -6,8 +6,12 @@
     %th.sub= f.label :nickname
     %td{class: cycle('even', 'odd')}= f.text_field :nickname, placeholder: "Template Nickname", class: 'text'
   %tr
+    - klass = cycle('even', 'odd')
     %th.sub= f.label :screenname
-    %td{class: cycle('even', 'odd')}= f.text_field :screenname, placeholder: "Screen Name", class: 'text'
+    %td{class: klass}
+      = f.text_field :screenname, placeholder: "Screen Name", class: 'text'
+      %br
+      = f.label :duplicate_screenname, 'Screenname already in use'
   %tr
     %th.sub= f.label :setting_ids, 'Setting'
     %td{class: cycle('even', 'odd')}= tag_select(@character, f, :settings)

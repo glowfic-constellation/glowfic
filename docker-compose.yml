@@ -26,6 +26,7 @@ x-svc: &svc
 services:
   web:
     <<: *svc
+    shm_size: 1gb
     ports:
       - 3000:3000
     command: bin/rails s
