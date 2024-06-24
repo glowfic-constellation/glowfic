@@ -45,6 +45,7 @@ class CharactersController < ApplicationController
     @character.assign_attributes(permitted_params)
     @character.settings = process_tags(Setting, obj_param: :character, id_param: :setting_ids)
     @character.gallery_groups = process_tags(GalleryGroup, obj_param: :character, id_param: :gallery_group_ids)
+    @character.facecasts = process_tags(Facecast, obj_param: :character, id_param: :facecast_ids)
     build_template
 
     begin
@@ -86,6 +87,7 @@ class CharactersController < ApplicationController
 
         @character.settings = process_tags(Setting, obj_param: :character, id_param: :setting_ids)
         @character.gallery_groups = process_tags(GalleryGroup, obj_param: :character, id_param: :gallery_group_ids)
+        @character.facecasts = process_tags(Facecast, obj_param: :character, id_param: :facecast_ids)
         @character.save!
       end
     rescue ActiveRecord::RecordInvalid => e
