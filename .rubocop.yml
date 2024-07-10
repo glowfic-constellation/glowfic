@@ -592,6 +592,9 @@ Rails/WhereRange: # new in 2.25
 
 ################## RSpec #################################
 
+RSpec/BeEq: # new in 2.9.0
+  Enabled: false
+
 RSpec/ContainExactly:
   Enabled: false
 
