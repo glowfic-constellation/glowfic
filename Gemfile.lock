@@ -419,7 +419,7 @@ GEM
       rspec-core (>= 3.0.0)
       rspec-expectations (>= 3.0.0)
       rspec-mocks (>= 3.0.0)
-    rexml (3.3.2)
+    rexml (3.3.3)
       strscan
     rspec-core (3.13.0)
       rspec-support (~> 3.13.0)
