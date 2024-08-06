@@ -550,12 +550,12 @@ GEM
       rack-protection (= 4.2.0)
       rack-session (>= 2.0.0, < 3)
       tilt (~> 2.0)
-    sorbet (0.5.11406)
-      sorbet-static (= 0.5.11406)
-    sorbet-runtime (0.5.11164)
-    sorbet-static (0.5.11406-aarch64-linux)
-    sorbet-static (0.5.11406-universal-darwin)
-    sorbet-static (0.5.11406-x86_64-linux)
+    sorbet (0.5.12443)
+      sorbet-static (= 0.5.12443)
+    sorbet-runtime (0.5.12443)
+    sorbet-static (0.5.12443-aarch64-linux)
+    sorbet-static (0.5.12443-universal-darwin)
+    sorbet-static (0.5.12443-x86_64-linux)
     spoom (1.1.16)
       sorbet (>= 0.5.10187)
       sorbet-runtime (>= 0.5.9204)
@@ -706,8 +706,8 @@ DEPENDENCIES
   select2-rails
   selenium-webdriver
   simplecov
-  sorbet (= 0.5.11406)
-  sorbet-runtime (= 0.5.11164)
+  sorbet (~> 0.5.11506)
+  sorbet-runtime (~> 0.5.11506)
   sprockets
   sprockets-rails
   tapioca

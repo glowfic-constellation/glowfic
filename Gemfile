@@ -49,7 +49,7 @@ gem 'resque'
 gem 'sanitize'
 gem 'scout_apm'
 gem 'select2-rails'
-gem 'sorbet-runtime', '0.5.11164'
+gem 'sorbet-runtime', '~> 0.5.11506'
 gem 'sprockets'
 gem 'sprockets-rails'
 gem 'terser'
@@ -82,7 +82,7 @@ group :development do
 
   gem 'ruby-lsp-rails'
   gem 'ruby-lsp-rspec', require: false
-  gem 'sorbet', '0.5.11406'
+  gem 'sorbet', '~> 0.5.11506'
   gem 'tapioca', require: false
 end
 
