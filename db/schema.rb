@@ -394,6 +394,43 @@ ActiveRecord::Schema[7.0].define(version: 2023_09_30_053037) do
     t.index ["user_id"], name: "index_report_views_on_user_id"
   end
 
+  create_table "setting_characters", force: :cascade do |t|
+    t.integer "character_id", null: false
+    t.integer "setting_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["character_id"], name: "index_setting_characters_on_character_id"
+    t.index ["setting_id"], name: "index_setting_characters_on_setting_id"
+  end
+
+  create_table "setting_posts", force: :cascade do |t|
+    t.integer "post_id", null: false
+    t.integer "setting_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["post_id"], name: "index_setting_posts_on_post_id"
+    t.index ["setting_id"], name: "index_setting_posts_on_setting_id"
+  end
+
+  create_table "setting_tags", force: :cascade do |t|
+    t.integer "tagged_id", null: false
+    t.integer "tag_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["tag_id"], name: "index_setting_tags_on_tag_id"
+    t.index ["tagged_id"], name: "index_setting_tags_on_tagged_id"
+  end
+
+  create_table "settings", force: :cascade do |t|
+    t.citext "name", null: false
+    t.integer "user_id", null: false
+    t.boolean "owned", default: false
+    t.text "description"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["name"], name: "index_settings_on_name"
+  end
+
   create_table "tag_tags", id: :serial, force: :cascade do |t|
     t.integer "tagged_id", null: false
     t.integer "tag_id", null: false

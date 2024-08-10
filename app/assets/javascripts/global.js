@@ -147,13 +147,14 @@ function processTotal(key) {
 
 function createTagSelect(tagType, selector, formType, scope) {
   foundTags[selector] = [];
+  const url = (tagType === 'Setting') ? '/api/v1/settings' : '/api/v1/tags';
 
   createSelect2("#"+formType+"_"+selector+"_ids", {
     tags: true,
     tokenSeparators: [','],
     placeholder: 'Enter ' + selector.replace('_', ' ') + '(s) separated by commas',
     ajax: {
-      url: '/api/v1/tags',
+      url: url,
       data: function(params) {
         const data = queryTransform(params);
         data.t = tagType;

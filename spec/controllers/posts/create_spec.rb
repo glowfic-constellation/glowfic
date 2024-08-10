@@ -135,6 +135,7 @@ RSpec.describe PostsController, 'POST create' do
       expect(ContentWarning.count).to eq(2)
       expect(Label.count).to eq(2)
       expect(PostTag.count).to eq(0)
+      expect(Setting::Post.count).to eq(0)
 
       # editor_setup:
       expect(assigns(:javascripts)).to include('posts/editor')
@@ -385,6 +386,7 @@ RSpec.describe PostsController, 'POST create' do
       expect(ContentWarning.count).to eq(2)
       expect(Label.count).to eq(2)
       expect(PostTag.count).to eq(0)
+      expect(Setting::Post.count).to eq(0)
     end
 
     it "creates a post" do
@@ -446,7 +448,8 @@ RSpec.describe PostsController, 'POST create' do
       expect(Setting.count).to eq(3)
       expect(ContentWarning.count).to eq(3)
       expect(Label.count).to eq(3)
-      expect(PostTag.count).to eq(9)
+      expect(PostTag.count).to eq(6)
+      expect(Setting::Post.count).to eq(3)
     end
 
     it "creates NPCs" do
