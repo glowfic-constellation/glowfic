@@ -75,7 +75,7 @@ button, .button {
   }
 }
 
-.spacer {
+%shared-spacer {
   padding: 0px !important;
   height: 2px;
 
@@ -84,8 +84,10 @@ button, .button {
   }
 }
 
+.spacer { @extend %shared-spacer; }
+
 .spacer-alt {
-  @extend .spacer;
+  @extend %shared-spacer;
   background-color: $bg_color_spacer_alt;
 }
 
