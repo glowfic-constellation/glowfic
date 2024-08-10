@@ -3,6 +3,7 @@
     %li= link_to 'General editor help', '#editor-help-general'
     %li= link_to 'RTF editor', '#editor-help-rtf'
     %li= link_to 'HTML editor', '#editor-help-html'
+    %li= link_to 'Markdown editor', '#editor-help-md'
   #editor-help-general
     %h3 General editor help
     %h4 Joining a thread
@@ -79,3 +80,11 @@
             %ul.inline-list
               - attrs.each do |attribute|
                 %li <code>#{attribute}</code>
+  #editor-help-md
+    %h3 Markdown editor
+    %p
+      The markdown editor provides a step between the html and rtf editors. A guide to markdown syntax can be found
+      = link_to 'here', 'https://www.markdownguide.org/basic-syntax/', target: '_blank', rel: 'noopener'
+      , and it also supports inline html.
+    %p
+      It does not, however, support multiple inline breaks very well, unless they are manually specified. For long vertical spaces typical in some glowfic posts, you'll need to switch to another editor for now!
