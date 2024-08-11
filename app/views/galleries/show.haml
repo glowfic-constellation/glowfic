@@ -10,3 +10,8 @@
         = link_to "#{@user.username}'s Galleries", user_galleries_path(@user)
     &raquo;
     %b= @gallery ? @gallery.name : 'Galleryless Icons'
+
+  - if icons.methods.include?(:total_pages) && icons.total_pages > 1
+    %tfoot
+      %tr
+        %td{colspan: ((page_view == 'list') ? 5 : 1) }= render 'posts/paginator', paginated: icons, no_per: true

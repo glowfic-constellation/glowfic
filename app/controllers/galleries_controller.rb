@@ -65,9 +65,10 @@ class GalleriesController < UploadingController
       @page_title = @gallery.name + ' (Gallery)'
       @meta_og = og_data
     end
-    icons = @gallery ? @gallery.icons : @user.galleryless_icons
-    @times_used, @posts_used = Icon.times_used(icons, current_user) if page_view == 'list'
-    render :show, locals: { icons: icons }
+    @icons = @gallery ? @gallery.icons : @user.galleryless_icons
+    @icons = @icons.paginate(per_page: 100, page: params[:page])
+    @times_used, @posts_used = Icon.times_used(@icons, current_user) if page_view == 'list'
+    render :show, locals: { icons: @icons }
   end
 
   def edit
