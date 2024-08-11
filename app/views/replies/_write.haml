@@ -2,7 +2,6 @@
   = form_for reply, html: { id: 'post_form' } do |f|
     %b Reply
     %button.view-button#rtf{type: 'button', class: ('selected' if reply.editor_mode == 'rtf')} Rich Text
-    %button.view-button#md{type: 'button', class: ('selected' if reply.editor_mode == 'md')} Markdown
     %button.view-button#html{type: 'button', class: ('selected' if reply.editor_mode == 'html')} HTML
     %button.view-button#editor-help{type: 'button', title: 'Help'} ?
     %br

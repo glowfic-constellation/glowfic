@@ -11,7 +11,7 @@ module Writable
     accepts_nested_attributes_for :character
 
     validate :character_ownership, :icon_ownership
-    validates :editor_mode, inclusion: { in: ['html', 'rtf', 'md'] }, allow_nil: true
+    validates :editor_mode, inclusion: { in: ['html', 'rtf'] }, allow_nil: true
 
     def has_icons?
       return user.avatar_id? unless character

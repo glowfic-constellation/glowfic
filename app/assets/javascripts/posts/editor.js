@@ -155,7 +155,7 @@ function setupWritableEditor() {
     height: defaultHelpHeight
   });
 
-  $('#rtf, #html, #md').click(toggleEditor);
+  $('#rtf, #html').click(toggleEditor);
   $('#editor-help').click(function() {
     if (editorHelp.dialog('isOpen')) {
       editorHelp.dialog('close');
@@ -271,7 +271,6 @@ function fixWritableFormCaching() {
 function toggleEditor() {
   if (this.id === 'rtf') {
     $("#html").removeClass('selected');
-    $("#md").removeClass('selected');
     $("#editor_mode").val('rtf');
     $(this).addClass('selected');
     if (tinyMCEInit) {
@@ -280,16 +279,8 @@ function toggleEditor() {
     } else {
       setupTinyMCE();
     }
-  } else if (this.id === 'md') {
-    $("#html").removeClass('selected');
-    $("#rtf").removeClass('selected');
-    $("#editor_mode").val('md');
-    $(this).addClass('selected');
-    tinyMCE.execCommand('mceRemoveEditor', false, 'post_content');
-    tinyMCE.execCommand('mceRemoveEditor', false, 'reply_content');
   } else if (this.id === 'html') {
     $("#rtf").removeClass('selected');
-    $("#md").removeClass('selected');
     $("#editor_mode").val('html');
     $(this).addClass('selected');
     tinyMCE.execCommand('mceRemoveEditor', false, 'post_content');
