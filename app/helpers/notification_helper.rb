@@ -1,3 +1,4 @@
+# frozen_string_literal: true
 module NotificationHelper
   NOTIFICATION_MESSAGES = {
     'import_success'           => 'Post import succeeded',
