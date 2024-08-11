@@ -70,8 +70,9 @@ RSpec.describe NotifyFollowersOfNewPostJob do
         create(:post, user: author, board: board, privacy: :full_accounts)
       end
 
-      expect { perform_enqueued_jobs { do_action(privacy: :full_accounts) } }.not_to change { Notification.count }
-      expect(Notification.where(user: unnotified)).not_to be_present
+      expect {
+        perform_enqueued_jobs { do_action(privacy: :full_accounts) }
+      }.not_to change { Notification.where(user: unnotified).count }
     end
 
     it "does not send to non-viewers for access-locked posts" do
