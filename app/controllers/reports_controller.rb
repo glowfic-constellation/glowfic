@@ -23,7 +23,7 @@ class ReportsController < ApplicationController
       @posts = DailyReport.new(@day).posts(sort, @new_today)
       @posts = posts_from_relation(@posts, max: !@new_today)
     else
-      @posts = Post.where(tagged_at: 1.month.ago.beginning_of_month .. 1.month.ago.end_of_month)
+      @posts = Post.where(tagged_at: 1.month.ago.all_month)
     end
 
     if logged_in?
