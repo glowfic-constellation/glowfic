@@ -271,7 +271,7 @@ class PostsController < WritableController
     # don't start blank if the parameters are set
     @setting = Setting.where(id: params[:setting_id]) if params[:setting_id].present?
     @character = Character.where(id: params[:character_id]) if params[:character_id].present?
-    @user = User.active.where(id: params[:author_id]).ordered if params[:author_id].present?
+    @user = User.active.full.where(id: params[:author_id]).ordered if params[:author_id].present?
 
     no_tests = true
     if params[:board_id].present?
@@ -405,7 +405,7 @@ class PostsController < WritableController
 
   def editor_setup
     super
-    @permitted_authors = User.active.ordered - (@post.try(:joined_authors) || [])
+    @permitted_authors = User.active.full.ordered - (@post.try(:joined_authors) || [])
     @author_ids = permitted_params[:unjoined_author_ids].compact_blank.map(&:to_i) if permitted_params.key?(:unjoined_author_ids)
     @author_ids ||= @post.try(:unjoined_author_ids) || []
   end

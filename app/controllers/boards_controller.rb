@@ -128,7 +128,7 @@ class BoardsController < ApplicationController
 
   def search
     @page_title = 'Search Continuities'
-    @user = User.active.where(id: params[:author_id]).ordered if params[:author_id].present?
+    @user = User.active.full.where(id: params[:author_id]).ordered if params[:author_id].present?
     use_javascript('boards/search')
     return unless params[:commit].present?
 
@@ -140,7 +140,7 @@ class BoardsController < ApplicationController
   private
 
   def editor_setup
-    @coauthors = @cameos = User.active.ordered
+    @coauthors = @cameos = User.active.full.ordered
     if @board
       @coauthors -= @board.cameos
       @cameos -= @board.writers
