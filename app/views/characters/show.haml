@@ -133,7 +133,7 @@
         %tr
           %th.sub.vtop.width-150
           %td.character-cluster{class: cycle('even', 'odd')}= @character.cluster
-      - if @character.pb?
+      - if @character.facecasts.present?
         %tr
           %th.sub.vtop.width-150 Facecast
           - facecast_links = @character.facecasts.map { |pb| link_to(pb.name, tag_path(pb)) }
