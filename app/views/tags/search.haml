@@ -1,0 +1,78 @@
+= render 'search/breadcrumbs'
+- show_owner = false
+- show_owner = true if params[:view] == 'Setting' || !@users.empty?
+
+- col_count = 4
+- col_count += 1 unless params[:view].present?
+- col_count += 1 if show_owner
+
+%table.search-collapsible
+  %thead
+    %tr
+      %th.search-params-header
+        Search Tags
+        - if @search_results
+          = "- #{@search_results.total_entries} results"
+      %th.search-results-header
+        - if @search_results
+          = render 'posts/paginator', paginated: @search_results, no_per: true
+  %tbody
+    %tr
+      %td.search-box
+        = form_tag search_tags_path, method: :get do
+          %table.search-form
+            %tr
+              %td= label_tag :author_id, 'Author'
+              %td= select_tag :author_id, options_from_collection_for_select(@users || [], :id, :username, params[:author_id]),
+                { class: 'chosen-select', prompt: '— Choose Author —' }
+            %tr
+              %td= label_tag :name
+              %td= text_field_tag :name, style: 'width: 100%; margin: 5px 0px;'
+            %tr
+              %td= label_tag :view
+              %td= select_tag :view, options_for_select(@tag_options, params[:view]), include_blank: '— Choose Type —', class: 'chosen-select'
+      %td.vtop
+        %table
+          %thead
+            %tr
+              %th.sub Name
+              - unless params[:view].present?
+                %th.sub Type
+              - if show_owner
+                %th.sub Owner
+              %th.sub Posts
+              %th.sub Characters
+              %th.sub
+          %tbody
+            - if @search_results.present?
+              - @search_results.each do |tag|
+                - klass = cycle('even', 'odd')
+                %tr
+                  %td{class: klass}= link_to tag.name, tag_path(tag)
+                  - unless params[:view].present?
+                    %td{class: klass}= link_to tag.type.titlecase, tags_path(view: tag.type)
+                  - if show_owner
+                    %td{class: klass}
+                      = link_to tag.user do
+                        - if tag.owned?
+                          = tag.user.username
+                        - else
+                          %em= tag.user.deleted? ? 'deleted user' : tag.user.username
+                  %td{class: klass}= @post_counts.fetch(tag.id, 0)
+                  %td{class: klass}= tag.character_count
+                  %td.width-70.right-align{class: klass}
+                    - if tag.editable_by?(current_user)
+                      = link_to edit_tag_path(tag) do
+                        = image_tag "icons/pencil.png", alt: 'Edit'
+                    - if tag.deletable_by?(current_user)
+                      = link_to delete_path(tag), method: :delete, data: { confirm: "Are you sure you want to delete #{tag.name}?" } do
+                        = image_tag "icons/cross.png", alt: 'Delete'
+                      &nbsp;
+              - if @search_results.total_pages > 1
+                %tfoot
+                  %tr
+                    %th.search-params-header.empty
+                    %th.search-results-header= render 'posts/paginator', paginated: @search_results, no_per: true
+            - else
+              %tr
+                %td.centered.padding-10{ class: cycle('even', 'odd'), colspan: col_count } — No matching tags —

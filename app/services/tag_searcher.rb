@@ -3,12 +3,13 @@ class TagSearcher < Object
     @qs = Tag.ordered_by_type.select('tags.*')
   end
 
-  def search(tag_name: nil, tag_type: nil, page: 1)
+  def search(tag_name: nil, tag_type: nil, user_id: nil, page: 1)
     validate_type!(tag_type) if tag_type.present?
 
     @qs = @qs.where('name ILIKE ?', "%#{tag_name}%") if tag_name.present?
     @qs = @qs.where(type: tag_type) if tag_type.present?
-    @qs = @qs.includes(:user) if tag_type == 'Setting'
+    @qs = @qs.where(user_id: user_id) if user_id.present?
+    @qs = @qs.includes(:user) if tag_type == 'Setting' || user_id.present?
     @qs = @qs.where.not(type: 'GalleryGroup') unless tag_type == 'GalleryGroup'
     @qs.with_character_counts.paginate(page: page)
   end

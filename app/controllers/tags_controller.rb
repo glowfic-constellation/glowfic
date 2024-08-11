@@ -85,6 +85,21 @@ class TagsController < ApplicationController
     end
   end
 
+  def search
+    @page_title = 'Search Tags'
+    use_javascript('tags/search')
+    @tag_options = (Tag::TYPES - ['GalleryGroup']).sort.reverse.index_by(&:titlecase)
+    @users = User.active.where(id: params[:author_id]) if params[:author_id].present?
+    return unless params[:commit].present?
+
+    @tags = TagSearcher.new.search(tag_name: params[:name], tag_type: params[:view], user_id: params[:author_id], page: page)
+    @post_counts = Post.visible_to(current_user).joins(post_tags: :tag).where(post_tags: { tag_id: @tags.map(&:id) })
+    @post_counts = @post_counts.group('post_tags.tag_id').count
+  rescue InvalidTagType => e
+    flash[:error] = e.api_error
+    redirect_to tags_path
+  end
+
   private
 
   def find_model
