@@ -37,18 +37,4 @@ RSpec.describe UserMailer do
       expect(ActionMailer::Base.deliveries.count).to eq(1)
     end
   end
-
-  describe "#new_notification" do
-    it "sends email" do
-      ActionMailer::Base.deliveries.clear
-      UserMailer.new_notification(create(:notification).id).deliver!
-      expect(ActionMailer::Base.deliveries.count).to eq(1)
-    end
-
-    it "works when notification has error" do
-      ActionMailer::Base.deliveries.clear
-      UserMailer.new_notification(create(:error_notification).id).deliver!
-      expect(ActionMailer::Base.deliveries.count).to eq(1)
-    end
-  end
 end

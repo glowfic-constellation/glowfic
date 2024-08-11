@@ -2,7 +2,6 @@
 class UserMailer < ApplicationMailer
   helper WritableHelper
   helper IconHelper
-  include NotificationHelper
 
   def post_has_new_reply(user_id, reply_id)
     return unless (@reply = Reply.find_by_id(reply_id))
@@ -22,13 +21,5 @@ class UserMailer < ApplicationMailer
     @message = Message.find(message_id)
     @subject = "New message from #{@message.sender_name}: #{@message.unempty_subject}"
     mail(to: @message.recipient.email, subject: @subject)
-  end
-
-  def new_notification(notification_id)
-    @notification = Notification.find(notification_id)
-    @subject = subject_for_type(@notification.notification_type)
-    @subject += ": #{@notification.post.subject}" if @notification.post.present?
-    @subject += ": #{@notification.error_msg}" if @notification.error_msg.present?
-    mail(to: @notification.user.email, subject: @subject)
   end
 end

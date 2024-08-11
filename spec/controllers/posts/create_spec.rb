@@ -85,9 +85,8 @@ RSpec.describe PostsController, 'POST create' do
 
         expect(response).to redirect_to(posts_url)
         expect(flash[:success]).to eq("Post has begun importing. You will be updated on progress via site message.")
-        post = Post.find_by(subject: 'linear b')
-        expect(post).to be_present
-        expect(Notification.find_by(user: user, post: post)).to be_import_success
+        expect(Message.find_by(recipient: user, sender_id: 0).subject).to eq('Post import succeeded')
+        expect(Post.find_by(subject: 'linear b')).to be_present
       end
     end
   end
