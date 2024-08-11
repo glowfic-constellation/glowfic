@@ -4,7 +4,8 @@ RSpec.describe "Viewing a character" do
     icon2 = create(:icon, user: user, keyword: 'Test')
     gallery = create(:gallery, user: user, icons: [default_icon, icon2], name: 'Test gallery')
     setting = create(:setting, name: 'Example setting')
-    create(:character, user: user, galleries: [gallery], default_icon: default_icon, name: 'Test char', settings: [setting], pb: 'Example person')
+    pb = create(:facecast, name: 'Example person')
+    create(:character, user: user, galleries: [gallery], default_icon: default_icon, name: 'Test char', settings: [setting], facecasts: [pb])
   end
 
   def expect_basic_character_page(char)
@@ -192,6 +193,7 @@ RSpec.describe "Viewing a character" do
     template = create(:template, name: 'Example template')
     setting1 = create(:setting, name: 'Example setting')
     setting2 = create(:setting, name: 'Second setting')
+    pb = create(:facecast, name: 'Example PB')
     char = create(:character,
       user: user,
       name: 'Char Surname',
@@ -200,9 +202,9 @@ RSpec.describe "Viewing a character" do
       default_icon: icon1_1,
       galleries: [gallery2, gallery1],
       template: template,
-      pb: 'Example PB',
       description: 'Basic desc',
       settings: [setting1, setting2],
+      facecasts: [pb],
     )
     create(:alias, character: char, name: 'Alias Person')
     post = create(:post, user: user, character: char, subject: 'Example post')
