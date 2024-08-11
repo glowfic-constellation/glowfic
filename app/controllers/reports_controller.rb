@@ -18,9 +18,17 @@ class ReportsController < ApplicationController
     @hide_quicklinks = true
     @day = calculate_day
 
+    if @report_type == 'daily'
+      @new_today = params[:new_today].present?
+      @posts = DailyReport.new(@day).posts(sort, @new_today)
+      @posts = posts_from_relation(@posts, max: !@new_today)
+    else
+      @posts = Post.where(tagged_at: 1.month.ago.all_month)
+    end
+
     if logged_in?
-      @opened_posts = Post::View.where(user_id: current_user.id).select([:post_id, :read_at, :ignored])
-      @board_views = BoardView.where(user_id: current_user.id).select([:board_id, :ignored])
+      @opened_posts = Post::View.where(user_id: current_user.id, post_id: @posts.map(&:id)).select([:post_id, :read_at, :ignored])
+      @board_views = BoardView.where(user_id: current_user.id, board_id: @posts.map(&:board_id)).select([:board_id, :ignored])
       @opened_ids = @opened_posts.map(&:post_id)
 
       DailyReport.mark_read(current_user, at_time: @day) if !current_user.ignore_unread_daily_report? && @day.to_date < Time.zone.now.to_date
@@ -28,9 +36,6 @@ class ReportsController < ApplicationController
 
     return unless @report_type == 'daily'
 
-    @new_today = params[:new_today].present?
-    @posts = DailyReport.new(@day).posts(sort, @new_today)
-    @posts = posts_from_relation(@posts, max: !@new_today)
     replies_on_day = Reply.where(created_at: @day.all_day)
     @reply_counts = replies_on_day.group(:post_id).count
     first_for_day = replies_on_day.order(post_id: :asc, created_at: :asc)
