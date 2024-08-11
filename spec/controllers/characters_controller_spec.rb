@@ -60,7 +60,7 @@ RSpec.describe CharactersController do
       let!(:user) { create(:user) }
       let!(:character) { create(:character, user: user, name: 'ExistingCharacter') }
       let(:template) { create(:template, user: user) }
-      let(:template_character) { create(:character, template: template, user: user)}
+      let(:template_character) { create(:character, template: template, user: user) }
 
       it "successfully renders the page in template group" do
         template_character
@@ -103,6 +103,22 @@ RSpec.describe CharactersController do
           end
         end
 
+        context "without grouping" do
+          let(:characters) do
+            list = create_list(:character, 51, user: user) # rubocop:disable FactoryBot/ExcessiveCreateList
+            Character.where(id: list.map(&:id)).ordered
+          end
+
+          it "in icon view" do
+            get :index, params: { user_id: user.id, character_split: 'none', view: 'icons' }
+            expect(response.body).not_to include(characters.last.name)
+          end
+
+          it "in list view" do
+            get :index, params: { user_id: user.id, character_split: 'none', view: 'list' }
+            expect(response.body).not_to include(characters.to_ary[26].name)
+          end
+        end
       end
 
       context "retired" do
