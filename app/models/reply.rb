@@ -1,3 +1,4 @@
+# frozen_string_literal: true
 class Reply < ApplicationRecord
   include Presentable
   include Writable

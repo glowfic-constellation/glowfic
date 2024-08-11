@@ -866,7 +866,12 @@ Style/FormatStringToken:
   EnforcedStyle: 'template'
 
 Style/FrozenStringLiteralComment:
-  Enabled: false
+  Enabled: true
+  Exclude:
+    - 'bin/*'
+    - 'config/**/*'
+    - 'db/**/*'
+    - 'spec/**/*'
 
 Style/GlobalStdStream:
   Enabled: false

@@ -1,3 +1,4 @@
+# frozen_string_literal: true
 class Favorite < ApplicationRecord
   belongs_to :user, inverse_of: :favorites, optional: false
   belongs_to :favorite, polymorphic: true, optional: false

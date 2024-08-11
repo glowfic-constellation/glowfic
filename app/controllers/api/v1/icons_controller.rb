@@ -1,3 +1,4 @@
+# frozen_string_literal: true
 class Api::V1::IconsController < Api::ApiController
   before_action :login_required, only: :s3_delete
 

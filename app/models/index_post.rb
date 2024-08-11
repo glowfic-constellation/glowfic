@@ -1,3 +1,4 @@
+# frozen_string_literal: true
 class IndexPost < ApplicationRecord
   include Orderable
 

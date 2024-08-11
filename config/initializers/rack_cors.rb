@@ -1,3 +1,4 @@
+# frozen_string_literal: true
 ## Configure Rack CORS Middleware, so that CloudFront can serve our assets.
 ## See https://github.com/cyu/rack-cors or
 ## http://stackoverflow.com/questions/32592571/cloudfront-cors-issue-serving-fonts-on-rails-application

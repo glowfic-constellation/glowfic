@@ -1,3 +1,4 @@
+# frozen_string_literal: true
 class Admin::PostsController < Admin::AdminController
   before_action :require_split_permission, only: [:split, :do_split]
   before_action :require_regen_permission, only: [:regenerate_flat, :do_regenerate]

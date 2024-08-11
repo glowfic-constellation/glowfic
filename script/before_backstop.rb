@@ -1,4 +1,5 @@
 #!/usr/bin/env ruby
+# frozen_string_literal: true
 
 layout = ARGV[0]
 user = User.find_by(username: "Kappa")

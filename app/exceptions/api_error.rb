@@ -1,3 +1,4 @@
+# frozen_string_literal: true
 class ApiError < StandardError
   def initialize(msg, error_array=nil)
     @msg = msg

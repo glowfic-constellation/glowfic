@@ -1,3 +1,4 @@
+# frozen_string_literal: true
 class Api::V1::TagsController < Api::ApiController
   before_action :find_tag, except: :index
 

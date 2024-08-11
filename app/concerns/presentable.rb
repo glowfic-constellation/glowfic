@@ -1,3 +1,4 @@
+# frozen_string_literal: true
 # include Presentable in a model Model to have it automatically use app/presenters/ModelPresenter.rb to generate its JSON.
 #
 # Can safely be included on classes with no presenter file;

@@ -1,3 +1,4 @@
+# frozen_string_literal: true
 module Post::Status
   extend ActiveSupport::Concern
 

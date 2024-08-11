@@ -1,3 +1,4 @@
+# frozen_string_literal: true
 class Api::V1::BoardSectionsController < Api::ApiController
   before_action :login_required
 

@@ -1,3 +1,4 @@
+# frozen_string_literal: true
 class Api::V1::IndexPostsController < Api::ApiController
   before_action :login_required
   resource_description do

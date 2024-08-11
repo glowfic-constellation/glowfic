@@ -1,3 +1,4 @@
+# frozen_string_literal: true
 module ReportsHelper
   def has_unread?(post)
     return false unless @opened_posts.present?

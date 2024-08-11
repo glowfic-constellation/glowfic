@@ -1,3 +1,4 @@
+# frozen_string_literal: true
 class CharactersGallery < ApplicationRecord
   belongs_to :character, inverse_of: :characters_galleries, optional: false
   belongs_to :gallery, inverse_of: :characters_galleries, optional: false

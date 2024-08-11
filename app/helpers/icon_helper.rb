@@ -1,9 +1,10 @@
+# frozen_string_literal: true
 module IconHelper
-  ICON = 'icon'.freeze
-  NO_ICON = 'No Icon'.freeze
-  NO_ICON_URL = 'icons/no-icon.png'.freeze
-  CHAR_ICON = 'char-access-icon pointer'.freeze
-  CHAR_ICON_FAKE = 'char-access-icon char-access-fake pointer'.freeze
+  ICON = 'icon'
+  NO_ICON = 'No Icon'
+  NO_ICON_URL = 'icons/no-icon.png'
+  CHAR_ICON = 'char-access-icon pointer'
+  CHAR_ICON_FAKE = 'char-access-icon char-access-fake pointer'
 
   def icon_tag(icon, **args)
     return '' if icon.nil?

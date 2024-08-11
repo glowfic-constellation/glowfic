@@ -1,3 +1,4 @@
+# frozen_string_literal: true
 class NewsView < ApplicationRecord
   belongs_to :user, optional: false
   belongs_to :news, optional: false

@@ -1,3 +1,4 @@
+# frozen_string_literal: true
 module PostHelper
   def author_links(post, linked: true, colored: false)
     total = post.authors.size

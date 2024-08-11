@@ -1,3 +1,4 @@
+# frozen_string_literal: true
 module CharacterHelper
   def settings_info(characters)
     settings = characters.joins(:settings).group(:id)

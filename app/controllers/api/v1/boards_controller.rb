@@ -1,3 +1,4 @@
+# frozen_string_literal: true
 class Api::V1::BoardsController < Api::ApiController
   resource_description do
     name 'Continuities'

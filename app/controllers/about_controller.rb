@@ -1,3 +1,4 @@
+# frozen_string_literal: true
 class AboutController < ApplicationController
   def tos
     @page_title = 'Terms of Service'

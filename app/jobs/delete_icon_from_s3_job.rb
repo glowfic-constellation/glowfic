@@ -1,3 +1,4 @@
+# frozen_string_literal: true
 class DeleteIconFromS3Job < ApplicationJob
   queue_as :high
 

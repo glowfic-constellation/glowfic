@@ -1,5 +1,6 @@
+# frozen_string_literal: true
 module ApplicationHelper
-  TIME_FORMAT = '%b %d, %Y %l:%M %p'.freeze
+  TIME_FORMAT = '%b %d, %Y %l:%M %p'
 
   def loading_tag(**args)
     klass = 'vmid loading-icon'
@@ -70,13 +71,13 @@ module ApplicationHelper
     # so they are suitable as HTML classes for the TinyMCE editor
     layouts = {
       Default: nil,
-      Dark: 'dark'.freeze,
-      Iconless: 'iconless'.freeze,
-      Starry: 'starry'.freeze,
-      'Starry Dark' => 'starrydark'.freeze,
-      'Starry Light' => 'starrylight'.freeze,
-      Monochrome: 'monochrome'.freeze,
-      'Milky River' => 'river'.freeze,
+      Dark: 'dark',
+      Iconless: 'iconless',
+      Starry: 'starry',
+      'Starry Dark' => 'starrydark',
+      'Starry Light' => 'starrylight',
+      Monochrome: 'monochrome',
+      'Milky River' => 'river',
     }
     options_for_select(layouts, default)
   end

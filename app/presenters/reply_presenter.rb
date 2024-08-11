@@ -1,3 +1,4 @@
+# frozen_string_literal: true
 class ReplyPresenter
   attr_reader :reply
 

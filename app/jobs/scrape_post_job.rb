@@ -1,3 +1,4 @@
+# frozen_string_literal: true
 class ScrapePostJob < ApplicationJob
   queue_as :low
 

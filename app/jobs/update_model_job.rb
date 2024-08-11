@@ -1,3 +1,4 @@
+# frozen_string_literal: true
 # used to do bulk updates of a single model (e.g. Post)
 # when there are potentially too many objects to be updated,
 # slow callbacks, or similar complications such that performing
