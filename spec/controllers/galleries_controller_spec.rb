@@ -53,6 +53,14 @@ RSpec.describe GalleriesController do
         expect(response).to redirect_to(root_url)
       end
     end
+
+    it "paginates many galleries" do
+      user = create(:user)
+      create_list(:gallery, 101, user: user) # rubocop:disable FactoryBot/ExcessiveCreateList
+      get :index, params: { user_id: user.id }
+      expect(assigns(:galleries).size).to eq(100)
+      expect(assigns(:galleries).total_pages).to eq(2)
+    end
   end
 
   describe "GET new" do
