@@ -1,3 +1,4 @@
+# frozen_string_literal: true
 class CharacterAlias < ApplicationRecord
   belongs_to :character, optional: false
   has_many :reply_drafts, dependent: :nullify

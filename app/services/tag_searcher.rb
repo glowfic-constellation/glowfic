@@ -1,3 +1,4 @@
+# frozen_string_literal: true
 class TagSearcher < Object
   def initialize
     @qs = Tag.ordered_by_type.select('tags.*')

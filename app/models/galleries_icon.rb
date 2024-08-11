@@ -1,3 +1,4 @@
+# frozen_string_literal: true
 class GalleriesIcon < ApplicationRecord
   belongs_to :icon, optional: true # TODO: This is required, fix bug around validation if it is set as such
   belongs_to :gallery, optional: false

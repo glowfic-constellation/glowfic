@@ -1,3 +1,4 @@
+# frozen_string_literal: true
 require 'resque/errors'
 class ApplicationJob < ActiveJob::Base
   around_perform :retry_on_term

@@ -1,3 +1,4 @@
+# frozen_string_literal: true
 class BoardAuthor < ApplicationRecord
   belongs_to :board, optional: false
   belongs_to :user, optional: false

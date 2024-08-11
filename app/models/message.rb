@@ -1,3 +1,4 @@
+# frozen_string_literal: true
 class Message < ApplicationRecord
   # TODO drop marked_*
   belongs_to :sender, class_name: 'User', inverse_of: :sent_messages, optional: true

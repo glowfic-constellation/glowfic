@@ -1,3 +1,4 @@
+# frozen_string_literal: true
 class CharacterTag < ApplicationRecord
   belongs_to :character, inverse_of: :character_tags, optional: false
   belongs_to :tag, inverse_of: :character_tags, optional: true # TODO: This is required, fix bug around validation if it is set as such

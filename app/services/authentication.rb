@@ -1,3 +1,4 @@
+# frozen_string_literal: true
 class Authentication < Object
   EXPIRY = 30.days
 

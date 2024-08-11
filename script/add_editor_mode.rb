@@ -1,3 +1,4 @@
+# frozen_string_literal: true
 def collect_written
   replies = Reply.where(editor_mode: nil) + ReplyDraft.where(editor_mode: nil) + Post.where(editor_mode: nil)
   replies.each do |reply|

@@ -1,3 +1,4 @@
+# frozen_string_literal: true
 module WritableHelper
   def unread_warning
     return unless @replies.present?
@@ -62,10 +63,10 @@ module WritableHelper
 
   P_TAG = /<p( [^>]*)?>/
   BR_TAG = /<br *\/?>/
-  BLOCKQUOTE_QUICK_SEARCH = '<blockquote'.freeze
+  BLOCKQUOTE_QUICK_SEARCH = '<blockquote'
   BLOCKQUOTE_TAG = /<blockquote( |>)/
   LINEBREAK = /\r?\n/
-  BR = '<br>'.freeze
+  BR = '<br>'
   MD_EXTENSIONS = { tables: true, fenced_code_blocks: true, autolink: true, disable_indented_code_blocks: true,
                     strikethrough: true, lax_spacing: true, space_after_headers: true, }.freeze
   MD_RENDERER = Redcarpet::Render::HTML.new(prettify: true, hard_wrap: true, with_toc_data: true)

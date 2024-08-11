@@ -1,3 +1,4 @@
+# frozen_string_literal: true
 # log excessively slow events to make debugging & optimization easier.
 # ideally this will be replaced by proper metrics at some future point.
 

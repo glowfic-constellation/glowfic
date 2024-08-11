@@ -1,3 +1,4 @@
+# frozen_string_literal: true
 class ReplyScraper < Object
   BASE_ACCOUNTS = {
     'alicornucopia'      => 'Alicorn',

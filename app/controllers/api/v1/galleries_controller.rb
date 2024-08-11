@@ -1,3 +1,4 @@
+# frozen_string_literal: true
 class Api::V1::GalleriesController < Api::ApiController
   resource_description do
     description 'Viewing and editing galleries'

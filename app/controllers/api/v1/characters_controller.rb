@@ -1,3 +1,4 @@
+# frozen_string_literal: true
 class Api::V1::CharactersController < Api::ApiController
   before_action :login_required, only: [:update, :reorder]
   before_action :find_character, except: [:index, :reorder]

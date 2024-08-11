@@ -1,3 +1,4 @@
+# frozen_string_literal: true
 class ReportView < ApplicationRecord
   belongs_to :user, optional: false
 

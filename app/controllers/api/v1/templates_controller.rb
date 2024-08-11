@@ -1,3 +1,4 @@
+# frozen_string_literal: true
 class Api::V1::TemplatesController < Api::ApiController
   resource_description do
     description 'Viewing and searching templates'

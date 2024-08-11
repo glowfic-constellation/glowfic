@@ -1,3 +1,4 @@
+# frozen_string_literal: true
 class Board::Searcher < Object
   def initialize
     @search_results = Board.unscoped

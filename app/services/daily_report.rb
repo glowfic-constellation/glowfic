@@ -1,3 +1,4 @@
+# frozen_string_literal: true
 class DailyReport < Report
   attr_reader :day
 

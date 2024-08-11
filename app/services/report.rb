@@ -1,3 +1,4 @@
+# frozen_string_literal: true
 # This class is intended to ultimately be used as a parent
 # class for both a DailyReport and a MonthlyReport. Until then,
 # it does nothing special; see DailyReport.

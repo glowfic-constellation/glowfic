@@ -1,3 +1,4 @@
+# frozen_string_literal: true
 class Admin::CharactersController < Admin::AdminController
   before_action :require_relocate_permission, only: [:relocate, :do_relocate]
 

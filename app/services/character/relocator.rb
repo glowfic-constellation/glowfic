@@ -1,3 +1,4 @@
+# frozen_string_literal: true
 # Steps:
 # validate single user, unshared icons, galleries, and templates (if included), lack of character groups
 # collect: templates (if included), characters, posts, replies, drafts, galleries, icons

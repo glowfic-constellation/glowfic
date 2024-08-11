@@ -1,3 +1,4 @@
+# frozen_string_literal: true
 class PasswordReset < ApplicationRecord
   belongs_to :user, inverse_of: :password_resets, optional: false
 

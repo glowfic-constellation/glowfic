@@ -1,3 +1,4 @@
+# frozen_string_literal: true
 class Setting < Tag
   has_many :parent_setting_tags, class_name: 'Tag::SettingTag', foreign_key: :tag_id, inverse_of: :parent_setting, dependent: :destroy
   has_many :child_setting_tags, class_name: 'Tag::SettingTag', foreign_key: :tagged_id, inverse_of: :child_setting, dependent: :destroy

@@ -1,3 +1,4 @@
+# frozen_string_literal: true
 module Memorylogic
   def self.included(klass)
     klass.class_eval do

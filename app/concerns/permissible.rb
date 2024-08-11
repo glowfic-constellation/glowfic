@@ -1,3 +1,4 @@
+# frozen_string_literal: true
 module Permissible
   ADMIN = 1
   MOD = 2

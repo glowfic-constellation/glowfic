@@ -1,3 +1,4 @@
+# frozen_string_literal: true
 class GalleryTag < ApplicationRecord
   belongs_to :gallery, inverse_of: :gallery_tags, optional: false
   belongs_to :tag, inverse_of: :gallery_tags, optional: true # TODO: This is required, fix bug around validation if it is set as such

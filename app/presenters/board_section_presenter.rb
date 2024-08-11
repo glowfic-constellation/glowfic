@@ -1,3 +1,4 @@
+# frozen_string_literal: true
 class BoardSectionPresenter
   attr_reader :board_section
 

@@ -1,3 +1,4 @@
+# frozen_string_literal: true
 EXCLUDED_SCHEMA = {
   Icon: ['created_at', 'updated_at', 'has_gallery', 's3_key', 'credit'],
   Template: ['created_at', 'updated_at', 'description'],

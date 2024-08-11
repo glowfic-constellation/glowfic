@@ -1,3 +1,4 @@
+# frozen_string_literal: true
 module TagHelper
   def delete_path(tag)
     url_params = {}

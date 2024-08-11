@@ -1,3 +1,4 @@
+# frozen_string_literal: true
 class News < ApplicationRecord
   belongs_to :user, inverse_of: :news, optional: false
 

@@ -1,3 +1,4 @@
+# frozen_string_literal: true
 class Api::V1::SessionsController < Api::ApiController
   before_action :logout_required
 
