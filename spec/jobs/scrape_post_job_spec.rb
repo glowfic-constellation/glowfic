@@ -18,8 +18,8 @@ RSpec.describe ScrapePostJob do
       status: Post.statuses[:complete],
     }
     ScrapePostJob.perform_now(url, params, user: board.creator)
-    expect(Message.count).to eq(1)
-    expect(Message.first.subject).to eq("Post import succeeded")
+    expect(Notification.count).to eq(1)
+    expect(Notification.first.notification_type).to eq('import_success')
     expect(Post.count).to eq(1)
     expect(Post.first.authors_locked).to eq(true)
     expect(Audited::Audit.count).to eq(2)
@@ -46,9 +46,10 @@ RSpec.describe ScrapePostJob do
     begin
       ScrapePostJob.perform_now(url, params, user: board.creator)
     rescue UnrecognizedUsernameError
-      expect(Message.count).to eq(1)
-      expect(Message.first.subject).to eq("Post import failed")
-      expect(Message.first.message).to include("wild_pegasus_appeared")
+      expect(Notification.count).to eq(1)
+      notification = Notification.first
+      expect(notification.notification_type).to eq('import_fail')
+      expect(notification.error_msg).to eq('Unrecognized username: wild_pegasus_appeared')
       expect(Post.count).to eq(0)
     else
       raise "Error should be handled"
@@ -62,6 +63,8 @@ RSpec.describe ScrapePostJob do
     create(:character, screenname: 'wild_pegasus_appeared', user: board.creator)
     scraper = PostScraper.new(url, board_id: board.id)
     scraper.scrape!
+    post = Post.last
+    expect(post.subject).to eq('linear b')
 
     params = {
       board_id: board.id,
@@ -76,9 +79,10 @@ RSpec.describe ScrapePostJob do
     begin
       ScrapePostJob.perform_now(url, params, user: board.creator)
     rescue AlreadyImportedError
-      expect(Message.count).to eq(1)
-      expect(Message.first.subject).to eq("Post import failed")
-      expect(Message.first.message).to include("already imported")
+      expect(Notification.count).to eq(1)
+      notification = Notification.first
+      expect(notification.notification_type).to eq('import_fail')
+      expect(notification.post).to eq(post)
       expect(Post.count).to eq(1)
     else
       raise "Error should be handled"
