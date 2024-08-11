@@ -1,3 +1,4 @@
+# frozen_string_literal: true
 class Notification < ApplicationRecord
   belongs_to :user, inverse_of: :notifications, optional: false
   belongs_to :post, inverse_of: :notifications, optional: true
@@ -20,6 +21,10 @@ class Notification < ApplicationRecord
     import_fail: 1,
     new_favorite_post: 2,
     joined_favorite_post: 3,
+    accessible_favorite_post: 4,
+    published_favorite_post: 5,
+    resumed_favorite_post: 6,
+    coauthor_invitation: 7,
   }
 
   attr_accessor :skip_email

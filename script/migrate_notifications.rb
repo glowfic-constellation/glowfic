@@ -1,3 +1,4 @@
+# frozen_string_literal: true
 def migrate_notifications
   site_messages = Message.where(sender_id: 0, notification_id: nil).ordered_by_id
   import_success_messages = site_messages.where(subject: 'Post import succeeded')
