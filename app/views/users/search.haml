@@ -13,13 +13,13 @@
   %tbody
     %tr
       %td.search-box
-        = form_tag search_users_path, method: :get do
+        = form_with url: search_users_path, method: :get do |f|
           %table.search-form
             %tr
-              %td.width-70= label_tag :search_username, 'Username'
-              %td= text_field_tag :username, params[:username], style: 'width: 100%; margin: 5px 0px;', id: :search_username
+              %td.width-70= f.label :search_username, 'Username'
+              %td= f.text_field :username, value: params[:username], style: 'width: 100%; margin: 5px 0px;', id: :search_username
             %tr
-              %td.centered{colspan: 2}= submit_tag "Search", class: 'button'
+              %td.centered{colspan: 2}= f.submit "Search", class: 'button'
       %td.vtop
         - if @search_results.present?
           %table

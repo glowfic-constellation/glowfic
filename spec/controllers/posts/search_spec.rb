@@ -122,7 +122,7 @@ RSpec.describe PostsController, 'GET search' do
     it "filters by completed" do
       create(:post)
       post = create(:post, status: :complete)
-      get :search, params: { commit: true, completed: true }
+      get :search, params: { commit: true, completed: '1' }
       expect(assigns(:search_results)).to match_array(post)
     end
 

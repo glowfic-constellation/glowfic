@@ -19,8 +19,8 @@
         { class: 'text chosen-select', disabled: params[:new_template].present? }
       - if @character.user == current_user
         %br
-        = check_box_tag :new_template, '1', params[:new_template].present?
-        = label_tag :new_template, 'Create New Template'
+        = f.check_box :new_template, checked: params[:new_template]
+        = f.label :new_template, 'Create New Template'
   - if @character.user == current_user
     %tr#create_template{class: ('hidden' unless params[:new_template])}
       = f.fields_for :template do |ff|
@@ -63,4 +63,4 @@
       %td{class: cycle('even', 'odd')}= f.text_area :audit_comment, placeholder: 'Explain reason for moderation here', class: 'text', cols: 35
 %tfoot
   %tr
-    %th.form-table-ender{colspan: 2}= submit_tag "Save", class: 'button'
+    %th.form-table-ender{colspan: 2}= f.submit "Save", class: 'button'

@@ -8,11 +8,11 @@
   %tr
     %th.sub= f.label :coauthor_ids, 'Coauthors'
     %td.even
-      = f.collection_select(:coauthor_ids, @coauthors, :id, :username, { selected: @board.coauthors.pluck(:user_id) }, { multiple: true })
+      = f.collection_select(:coauthor_ids, @coauthors, :id, :username, { selected: @board.coauthors.pluck(:user_id) }, multiple: true)
   %tr
     %th.sub= f.label :cameo_ids, 'Cameos'
     %td.odd
-      = f.collection_select(:cameo_ids, @cameos, :id, :username, { selected: @board.cameos.pluck(:user_id) }, { multiple: true })
+      = f.collection_select(:cameo_ids, @cameos, :id, :username, { selected: @board.cameos.pluck(:user_id) }, multiple: true)
   %tr
     %th.sub= f.label :authors_locked, 'Locked?'
     %td.even
@@ -23,4 +23,4 @@
     %td.odd= f.text_area :description
 %tfoot
   %tr
-    %th.form-table-ender{colspan: 2}= submit_tag "Save", class: 'button'
+    %th.form-table-ender{colspan: 2}= f.submit "Save", class: 'button'
