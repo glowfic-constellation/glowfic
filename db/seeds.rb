@@ -30,6 +30,10 @@ teceler = User.create!(
   default_editor: 'html', layout: 'starrydark', ignore_unread_daily_report: true, created_at: "2015-12-17 19:48:00",
 )
 
+User.create!(
+  username: 'Reader', password: 'reader', email: "dummy7@example.com", role_id: Permissible::READONLY,
+)
+
 User.update_all(tos_version: 20181109) # rubocop:disable Rails/SkipsModelValidations
 
 puts "Creating avatars..."
