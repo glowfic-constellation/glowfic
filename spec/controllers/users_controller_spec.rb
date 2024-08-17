@@ -240,6 +240,9 @@ RSpec.describe UsersController do
   end
 
   describe "GET edit" do
+    let(:user)  { create(:user) }
+    let(:user_id) { user.id }
+
     it "requires login" do
       get :edit, params: { id: -1 }
       expect(response).to redirect_to(root_url)
@@ -247,15 +250,14 @@ RSpec.describe UsersController do
     end
 
     it "requires own user" do
-      user = create(:user)
       login
-      get :edit, params: { id: user.id }
+      get :edit, params: { id: user_id }
       expect(response).to redirect_to(continuities_url)
       expect(flash[:error]).to eq('You do not have permission to modify this account.')
     end
 
     it "succeeds" do
-      user_id = login
+      login_as(user)
       get :edit, params: { id: user_id }
       expect(response.status).to eq(200)
     end
@@ -264,8 +266,14 @@ RSpec.describe UsersController do
       render_views
 
       it "displays options" do
-        user_id = login
+        login_as(user)
         expect { get :edit, params: { id: user_id } }.not_to raise_error
+      end
+
+      it "displays options for readers" do
+        user = create(:reader_user)
+        login_as(user)
+        expect { get :edit, params: { id: user.id } }.not_to raise_error
       end
     end
   end
