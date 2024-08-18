@@ -121,7 +121,7 @@
           %th.editor-title{colspan: 2} Upgrade Account
       %tbody
         %tr
-          %th.sub= form_tag :secret
+          %th.sub= label_tag :secret
           %td.even= text_field_tag :secret, params[:secret], placeholder: "Secret word - ask around the community"
       %tfoot
         %tr
