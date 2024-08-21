@@ -37,7 +37,7 @@ gem 'pg_search'
 gem 'rack-pratchett'
 gem 'rails', '~> 7.1.3'
 gem "redcarpet", "~> 3.6"
-gem 'redis', '~> 5.2'
+gem 'redis', '~> 5.3'
 gem 'resque'
 gem 'resque_mailer'
 gem 'sanitize'
