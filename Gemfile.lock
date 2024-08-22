@@ -394,7 +394,7 @@ GEM
     rdoc (6.7.0)
       psych (>= 4.0.0)
     redcarpet (3.6.0)
-    redis (5.2.0)
+    redis (5.3.0)
       redis-client (>= 0.22.0)
     redis-client (0.22.2)
       connection_pool
@@ -615,7 +615,7 @@ DEPENDENCIES
   rails-controller-testing
   rake (~> 13.2)
   redcarpet (~> 3.6)
-  redis (~> 5.2)
+  redis (~> 5.3)
   resque
   resque-heroku-signals
   resque_mailer
