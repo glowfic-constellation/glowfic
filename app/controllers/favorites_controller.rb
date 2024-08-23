@@ -38,6 +38,12 @@ class FavoritesController < ApplicationController
         redirect_to continuities_path and return
       end
       fav_path = continuity_path(favorite)
+    elsif params[:character_id].present?
+      unless (favorite = Character.find_by_id(params[:character_id]))
+        flash[:error] = "Character could not be found."
+        redirect_to characters_path and return
+      end
+      fav_path = favorite
     elsif params[:post_id].present?
       unless (favorite = Post.find_by_id(params[:post_id]))
         flash[:error] = "Post could not be found."
