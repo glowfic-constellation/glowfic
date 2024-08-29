@@ -38,7 +38,7 @@ class Api::V1::BoardsController < Api::ApiController
     end
 
     queryset = board.posts
-      .privacy_public
+      .visible_to(current_user)
       .ordered_by_id
       .with_reply_count
       .select('posts.*')
