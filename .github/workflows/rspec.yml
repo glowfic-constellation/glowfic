@@ -62,7 +62,7 @@ jobs:
         with:
           coverageCommand: bundle exec rspec spec --format documentation --format html --out rspec-results.html
         env:
-          CC_TEST_REPORTER_ID: ${{ secrets.CC_TEST_REPORTER_ID }}
+          CC_TEST_REPORTER_ID: a3ae0fa6dd28afe102a694b98ced6bb567577524d44571589c4ed1a68f8cda2d
       - name: Upload MinIO logs
         if: ${{ always() }}
         uses: actions/upload-artifact@v4
