@@ -47,7 +47,7 @@ gem 'sprockets'
 gem 'sprockets-rails'
 gem 'terser'
 gem 'test-unit', '~> 3.6' # required by Heroku for production console
-gem 'tinymce-rails', '~> 6.8'
+gem 'tinymce-rails', '~> 7.3'
 gem 'will_paginate'
 
 group :production do
