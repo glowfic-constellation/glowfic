@@ -19,19 +19,12 @@ RSpec.describe FavoritesController do
     end
 
     context "it only shows favorites" do
-      let (:user) { create(:user) }
-      let (:user_post) { create(:post, user: user) }
-      let (:post) { create(:post) }
-      let (:board) { create(:board, creator: user) }
-      let (:board_post) { create(:post, board: board) }
-      let (:board_user_post) { create(:post, board: board, user: user) }
-
-      before(:each) do
-        user_post
-        post
-        board_post
-        board_user_post
-      end
+      let!(:user) { create(:user) }
+      let!(:user_post) { create(:post, user: user) }
+      let!(:post) { create(:post) }
+      let!(:board) { create(:board, creator: user) }
+      let!(:board_post) { create(:post, board: board) }
+      let!(:board_user_post) { create(:post, board: board, user: user) }
 
       it "shows user's post when user is favorited" do
         favorite = create(:favorite, favorite: user)
@@ -113,6 +106,24 @@ RSpec.describe FavoritesController do
         get :index
         expect(assigns(:posts)).to eq([board_user_post, user_post, board_post])
       end
+    end
+
+    it "hides ignored posts with that option" do
+      user = create(:user, hide_from_all: true)
+      favorited = create(:user)
+      create(:favorite, user: user, favorite: favorited)
+      coauthor = create(:user)
+      board = create(:board, authors: [favorited, coauthor])
+      board.ignore(user)
+      create(:post, board: board, user: coauthor)
+
+      post = create(:post, user: favorited)
+      post.ignore(user)
+
+      visible_post = create(:post, user: favorited)
+      login_as(user)
+      get :index
+      expect(assigns(:posts)).to eq([visible_post])
     end
   end
 

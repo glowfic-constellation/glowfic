@@ -66,5 +66,33 @@ RSpec.describe PostsController, 'GET index' do
 
   context "when logged in" do
     include_examples "logged in post list"
+
+    context "with ignored posts" do
+      let(:user) { create(:user) }
+      let!(:posts) { create_list(:post, 3) }
+      let(:ignored_post) { create(:post) }
+      let(:ignored_board) { create(:board) }
+      let(:ignored_board_post) { create(:post, board: ignored_board) }
+
+      before(:each) do
+        login_as(user)
+        ignored_post.ignore(user)
+        ignored_board.ignore(user)
+      end
+
+      it "does not hide posts with option disabled" do
+        expected_post_ids = posts.map(&:id) + [ignored_post.id, ignored_board_post.id]
+        get controller_action, params: params
+        expect(response.status).to eq(200)
+        expect(assigns(assign_variable).map(&:id)).to match_array(expected_post_ids)
+      end
+
+      it "hides posts with option enabled" do
+        user.update!(hide_from_all: true)
+        get controller_action, params: params
+        expect(response.status).to eq(200)
+        expect(assigns(assign_variable)).to match_array(posts)
+      end
+    end
   end
 end
