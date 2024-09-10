@@ -106,6 +106,13 @@ class Post < ApplicationRecord
     end
   }
 
+  scope :not_ignored_by, ->(user) {
+    joins("LEFT JOIN post_views ON post_views.post_id = posts.id AND post_views.user_id = #{user.id}")
+      .joins("LEFT JOIN board_views on board_views.board_id = posts.board_id AND board_views.user_id = #{user.id}")
+      .where(post_views: { ignored: [nil, false] })
+      .where(board_views: { ignored: [nil, false] })
+  }
+
   def visible_to?(user)
     return false if user&.author_blocking?(self, author_ids)
     return true if privacy_public?

@@ -69,6 +69,9 @@
           %br
           = f.check_box :visible_unread, class: 'width-15 vmid'
           = f.label :visible_unread, "Outline when jumping to unread"
+          %br
+          = f.check_box :hide_from_all, class: 'width-15 vmid'
+          = f.label :hide_from_all, "Hide hidden posts from recently updated and other post lists"
       %tr
         %th.sub Daily Report
         %td{class: cycle('even', 'odd')}
