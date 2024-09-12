@@ -24,6 +24,7 @@ $(document).ready(function() {
   });
 
   bindIcons();
+  bindScreenname();
 
   oldTemplate = $("#character_template_id").val();
   $("#new_template").change(function() {
@@ -226,3 +227,35 @@ function disableNPCBoxes(disable) {
     $("label[for='character_nickname']").text("Nickname");
   }
 }
+
+function bindScreenname(obj) {
+  $("#character_screenname", obj).blur(function() {
+    const screenname=$("#character_screenname", obj).val();
+    checkDuplicateScreenname(screenname);
+  });
+}
+
+
+function checkDuplicateScreenname(screenname) {
+  let res = $.ajax({
+    url: '/api/v1/characters/',
+    type: 'GET',
+    dataType: 'json',
+    success: function(res) {
+      const charArray=res['results'];
+      var isDuplicate=0;
+      charArray.forEach((char) => {
+        if(char.screenname == screenname){
+          isDuplicate=1;
+        }
+      })
+      if(isDuplicate == 1){
+        $("label[for=character_duplicate_screenname]").show();
+      } else {
+        $("label[for=character_duplicate_screenname]").hide();
+      }
+    }
+  })
+}
+
+
