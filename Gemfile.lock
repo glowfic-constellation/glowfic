@@ -210,16 +210,16 @@ GEM
       i18n (>= 0.7)
       multi_json
       request_store (>= 1.0)
-    google-protobuf (4.27.2-aarch64-linux)
+    google-protobuf (4.27.5-aarch64-linux)
       bigdecimal
       rake (>= 13)
-    google-protobuf (4.27.2-arm64-darwin)
+    google-protobuf (4.27.5-arm64-darwin)
       bigdecimal
       rake (>= 13)
-    google-protobuf (4.27.2-x86_64-darwin)
+    google-protobuf (4.27.5-x86_64-darwin)
       bigdecimal
       rake (>= 13)
-    google-protobuf (4.27.2-x86_64-linux)
+    google-protobuf (4.27.5-x86_64-linux)
       bigdecimal
       rake (>= 13)
     haml (6.3.0)
