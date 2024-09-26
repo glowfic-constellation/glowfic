@@ -44,6 +44,8 @@ class Gallery < ApplicationRecord
   }
   # rubocop:enable Style/TrailingCommaInArguments
 
+  scope :with_attached_icons, -> { includes(:icons).merge(Icon.with_attached_image) }
+
   # Converts the internal [{'f1' => id, 'f2' => name}] structure of the retrieved data
   # to [{id => id, name => name}]
   def gallery_groups_data
