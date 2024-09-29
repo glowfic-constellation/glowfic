@@ -35,3 +35,7 @@
       = render partial: 'characters/icon_item', collection: characters, as: :character
       - unless characters.present?
         .centered — No characters yet —
+- if characters.methods.include?(:total_pages) && characters.total_pages > 1
+  %tfoot
+    %tr
+      %td= render 'posts/paginator', paginated: characters

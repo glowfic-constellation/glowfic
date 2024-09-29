@@ -53,6 +53,14 @@ RSpec.describe GalleriesController do
         expect(response).to redirect_to(root_url)
       end
     end
+
+    it "paginates many galleries" do
+      user = create(:user)
+      create_list(:gallery, 101, user: user) # rubocop:disable FactoryBot/ExcessiveCreateList
+      get :index, params: { user_id: user.id }
+      expect(assigns(:galleries).size).to eq(100)
+      expect(assigns(:galleries).total_pages).to eq(2)
+    end
   end
 
   describe "GET new" do
@@ -222,6 +230,14 @@ RSpec.describe GalleriesController do
           expect(assigns(:user)).to eq(user)
         end
       end
+
+      it "paginates large galleryless" do
+        user = create(:user)
+        create_list(:icon, 101, user: user) # rubocop:disable FactoryBot/ExcessiveCreateList
+        get :show, params: { id: '0', user_id: user.id }
+        expect(assigns(:icons).size).to eq(100)
+        expect(assigns(:icons).total_pages).to eq(2)
+      end
     end
 
     context "with normal gallery id" do
@@ -279,6 +295,13 @@ RSpec.describe GalleriesController do
         expect(meta_og[:url]).to eq(gallery_url(gallery))
         expect(meta_og[:title]).to eq("user » gallery")
         expect(meta_og[:description]).to eq("16 icons\nTags: Tag 1, Tag 2")
+      end
+
+      it "paginates large gallery" do
+        gallery = create(:gallery, icon_count: 101)
+        get :show, params: { id: gallery.id }
+        expect(assigns(:icons).size).to eq(100)
+        expect(assigns(:icons).total_pages).to eq(2)
       end
     end
 
