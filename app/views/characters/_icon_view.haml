@@ -38,4 +38,4 @@
 - if characters.methods.include?(:total_pages) && characters.total_pages > 1
   %tfoot
     %tr
-      %td= render 'posts/paginator', paginated: characters
+      %td{colspan: 6}= render 'posts/paginator', paginated: characters
