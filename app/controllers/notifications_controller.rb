@@ -26,7 +26,7 @@ class NotificationsController < ApplicationController
         redirect_to notifications_path and return
     end
 
-    flash[:success] = "Messages updated"
+    flash[:success] = "Notifications updated"
     redirect_to notifications_path
   end
 end
