@@ -77,7 +77,7 @@
         = render 'group', characters: group_chars, group: nil, skip_grouped_templates: true, page_view: page_view, colspan: colspan
     - elsif @user.characters.exists?
       - templates = @user.templates.ordered
-      - templates.paginate(per_page: 25, page: params[:page]) if templates.count > 50
+      - templates = templates.paginate(per_page: 25, page: params[:page]) if templates.count > 50
       = render partial: partial_type, collection: templates, as: :name
       - if (templateless = @user.characters.non_npcs.where(template_id: nil)).exists? && (templates.methods.exclude?(:total_pages) || templates.total_pages == params[:page])
         = render partial_type, name: "No Template", characters: templateless.ordered, show_new_character_button: @user.id == current_user&.id
@@ -88,5 +88,5 @@
     - characters = @user.characters.ordered
     - characters = character_split == 'npcs' ? characters.npcs : characters.non_npcs
     - characters = characters.includes(:template) unless character_split == 'npcs'
-    - characters.paginate(per_page: per_page, page: params[:page]) if characters.count > 100
+    - characters = characters.paginate(per_page: per_page, page: params[:page]) if characters.count > 100
     = render partial_type, name: nil, characters: characters, show_template: false

@@ -59,7 +59,7 @@
     - if @board_sections.methods.include?(:total_pages) && @board_sections.total_pages > 1
       %tfoot
         %tr
-          %td= render 'posts/paginator', paginated: @board_sections, no_per: true
+          %td{colspan: 5}= render 'posts/paginator', paginated: @board_sections, no_per: true
 - else
   - if @board.description.present?
     - content_for :post_list_description do
