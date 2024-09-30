@@ -396,6 +396,11 @@ div.post-subheader { width: 100%; }
   }
 }
 
+// TODO: fix this properly, this is a hack
+@media (max-width: 600px) {
+  #post-form-wrapper { clear: both; }
+}
+
 /* Pagination */
 .pagination {
   font-size: $font_size_small;
