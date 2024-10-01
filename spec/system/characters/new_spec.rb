@@ -29,7 +29,6 @@ RSpec.describe "Creating a new character" do
     within('.form-table') do
       fill_in 'Template Nickname', with: 'Example nickname'
       fill_in 'Screen Name', with: 'example_screenname'
-      fill_in 'Facecast', with: 'Example facecast'
       fill_in 'Description', with: 'Example description'
       click_button 'Save'
     end
@@ -47,7 +46,6 @@ RSpec.describe "Creating a new character" do
     within('.form-table') do
       expect(page).to have_field('Template Nickname', with: 'Example nickname')
       expect(page).to have_field('Screen Name', with: 'example_screenname')
-      expect(page).to have_field('Facecast', with: 'Example facecast')
       expect(page).to have_field('Description', with: 'Example description')
     end
   end
@@ -101,7 +99,6 @@ RSpec.describe "Creating a new character" do
       fill_in 'Character Name', with: 'Example character'
       fill_in 'Template Nickname', with: 'Example nickname'
       fill_in 'Screen Name', with: 'example_screenname'
-      fill_in 'Facecast', with: 'Example facecast'
       fill_in 'Description', with: 'Example description'
       click_button 'Save'
     end
@@ -124,7 +121,6 @@ RSpec.describe "Creating a new character" do
 
     within('.character-right-content-box') do
       expect(page).to have_selector('.character-template', text: 'Example template')
-      expect(page).to have_selector('.character-pb', text: 'Example facecast')
       expect(page).to have_selector('.character-description', text: 'Example description')
     end
   end

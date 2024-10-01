@@ -20,6 +20,7 @@ class Character < ApplicationRecord
   has_many :character_tags, inverse_of: :character, dependent: :destroy
   has_many :settings, -> { ordered_by_char_tag }, through: :character_tags, source: :setting, dependent: :destroy
   has_many :gallery_groups, -> { ordered_by_char_tag }, through: :character_tags, source: :gallery_group, dependent: :destroy
+  has_many :facecasts, -> { ordered_by_char_tag }, through: :character_tags, source: :facecast, dependent: :destroy
 
   validates :name,
     presence: true,

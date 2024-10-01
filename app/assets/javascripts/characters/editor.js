@@ -133,6 +133,7 @@ $(document).ready(function() {
     },
     width: '300px'
   });
+  createTagSelect("Facecast", "facecast", "character");
 
   $("#character_npc").change(function() {
     disableNPCBoxes($(this).is(":checked"));

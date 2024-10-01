@@ -17,7 +17,6 @@ RSpec.describe "Editing a character" do
     within('.character-form') do
       fill_in 'Template Nickname', with: 'Example nickname'
       fill_in 'Screen Name', with: 'example_screenname'
-      fill_in 'Facecast', with: 'Example facecast'
       fill_in 'Description', with: 'Example description'
       click_button 'Save'
     end
@@ -29,7 +28,6 @@ RSpec.describe "Editing a character" do
     end
     expect(page).to have_text('Example nickname')
     expect(page).to have_text('example_screenname')
-    expect(page).to have_text('Example facecast')
     expect(page).to have_text('Example description')
   end
 
@@ -37,13 +35,13 @@ RSpec.describe "Editing a character" do
     user = login
     character = create(:character, name: "MyChar", user: user, npc: true, nickname: "Thread")
 
-    # update facecast of NPC
+    # update screenname of NPC
     visit edit_character_path(character)
     within('.character-form') do
       expect(page).to have_field('Template Cluster Name', disabled: true)
-      expect(page).to have_field('Facecast', disabled: false)
+      expect(page).to have_field('Screenname', disabled: false)
 
-      fill_in "Facecast", with: "Example facecast"
+      fill_in "Screenname", with: "example_screenname"
       click_button 'Save'
     end
 
@@ -52,21 +50,18 @@ RSpec.describe "Editing a character" do
     within('.flash.success') do
       expect(page).to have_text('Character updated.')
     end
-    expect(page).to have_text(/MyChar\s+\(NPC\)/)
-    expect(page).to have_text('Example facecast')
+    expect(page).to have_text(/MyChar\s+example_screenname\s+\(NPC\)/)
     expect(page).to have_text(/Original post.*Thread/)
 
     # turn NPC into non-NPC
     visit edit_character_path(character)
     within('.character-form') do
       expect(page).to have_field('Template Cluster Name', disabled: true)
-      expect(page).to have_field('Facecast', disabled: false)
+      expect(page).to have_field('Screenname', disabled: false)
 
       uncheck 'NPC?'
       expect(page).to have_field('Template Cluster Name', disabled: false)
-      expect(page).to have_field('Facecast', disabled: false)
-
-      fill_in "Screenname", with: "example_screenname"
+      expect(page).to have_field('Screenname', disabled: false)
       click_button 'Save'
     end
 
