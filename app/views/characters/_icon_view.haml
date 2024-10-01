@@ -31,9 +31,9 @@
 %tr
   %td.icons-box.left-align
     .character-icon-list
-      - characters = characters.left_outer_joins(:default_icon).pluck(:id, :name, :screenname, :user_id, :url, :keyword)
-      = render partial: 'characters/icon_item', collection: characters, as: :character
-      - unless characters.present?
+      - charpluck = characters.left_outer_joins(:default_icon).pluck(:id, :name, :screenname, :user_id, :url, :keyword)
+      = render partial: 'characters/icon_item', collection: charpluck, as: :character
+      - unless charpluck.present?
         .centered — No characters yet —
 - if characters.methods.include?(:total_pages) && characters.total_pages > 1
   %tfoot
