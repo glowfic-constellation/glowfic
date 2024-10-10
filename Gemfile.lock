@@ -250,10 +250,10 @@ GEM
       csv
       mini_mime (>= 1.0.0)
       multi_xml (>= 0.5.2)
-    i18n (1.14.5)
+    i18n (1.14.6)
       concurrent-ruby (~> 1.0)
     io-console (0.7.2)
-    irb (1.14.0)
+    irb (1.14.1)
       rdoc (>= 4.0.0)
       reline (>= 0.4.2)
     jmespath (1.6.2)
@@ -535,7 +535,7 @@ GEM
     tilt (2.4.0)
     timecop (0.9.10)
     timeout (0.4.1)
-    tinymce-rails (6.8.4)
+    tinymce-rails (7.4.1)
       railties (>= 3.1.1)
     traceroute (0.8.1)
       rails (>= 3.0.0)
@@ -637,7 +637,7 @@ DEPENDENCIES
   test-unit (~> 3.6)
   thin
   timecop
-  tinymce-rails (~> 6.8)
+  tinymce-rails (~> 7.4)
   traceroute
   webmock
   will_paginate
