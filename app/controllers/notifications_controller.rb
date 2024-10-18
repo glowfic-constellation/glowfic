@@ -4,11 +4,12 @@ class NotificationsController < ApplicationController
 
   def index
     @page_title = "Notifications"
-    @notifications = current_user.notifications.visible_to(current_user).ordered.paginate(page: page)
+    @notifications = current_user.notifications.visible_to(current_user).ordered
     @notifications = @notifications.not_ignored_by(current_user) if current_user&.hide_from_all
+    @notifications = @notifications.paginate(page: page)
 
     post_ids = @notifications.map(&:post_id).compact_blank
-    @posts = posts_from_relation(Post.where(id: post_ids)).index_by(&:id)
+    @posts = posts_from_relation(Post.where(id: post_ids), with_pagination: false).index_by(&:id)
   end
 
   def mark

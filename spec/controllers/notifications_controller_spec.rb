@@ -38,6 +38,17 @@ RSpec.describe NotificationsController do
       expect(flash[:error]).not_to be_present
     end
 
+    it "handles later pages" do
+      notifications = create_list(:notification, 15, user: user)
+      create_list(:notification, 25, user: user)
+      post_ids = notifications.map(&:post_id).compact_blank
+      login_as(user)
+      get :index, params: { page: 2 }
+      expect(assigns(:notifications).map(&:id)).to match_array(notifications.map(&:id))
+      expect(assigns(:posts).keys).to match_array(post_ids)
+      expect(flash[:error]).not_to be_present
+    end
+
     it "respects post visibility" do
       create(:notification, user: user, notification_type: :new_favorite_post, post: create(:post, privacy: :private))
       create(:notification, user: user, notification_type: :new_favorite_post, post: create(:post, privacy: :access_list))
