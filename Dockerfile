@@ -22,3 +22,5 @@ ADD Gemfile* /code/
 RUN bundler _${bundler_version}_ install --jobs $(nproc)
 RUN npm i -g eslint@8
 RUN npm i -g stylelint stylelint-config-standard stylelint-declaration-strict-value stylelint-order stylelint-scss
+
+RUN git config --global --add safe.directory /code
