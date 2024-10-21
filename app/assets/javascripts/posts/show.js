@@ -22,7 +22,7 @@ $(document).ready(function() {
 
     // Hides selectors when you hit the escape key
     $(document).bind("keydown", function(e) {
-      e = e || window.event;
+      e = e || window.event; // FIXME: event is deprecated
       const charCode = e.which || e.keyCode;
       if (charCode === 27) {
         $('#post-menu-box').hide();
