@@ -58,7 +58,7 @@ module PostHelper
 
   def privacy_state(privacy, dark_layout: false)
     privacy = privacy.to_sym
-    privacy_icon(privacy, dark_layout:, alt: false) + ' ' + PRIVACY_MAP[privacy][0]
+    privacy_icon(privacy, dark_layout: dark_layout, alt: false) + ' ' + PRIVACY_MAP[privacy][0]
   end
 
   def privacy_icon(privacy, dark_layout: false, alt: true)
