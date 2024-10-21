@@ -48,22 +48,23 @@ module PostHelper
   end
 
   PRIVACY_MAP = {
-    public: ['Public', 'world'],
-    registered: ['Constellation Users', 'stars_constellation'],
-    full_accounts: ['Full Users', 'star_tricolor'],
-    access_list: ['Access List', 'group'],
-    private: ['Private', 'lock'],
+    # name, icon, icon_darkmode
+    public: ['Public', 'world', 'world'],
+    registered: ['Constellation Users', 'stars_constellation', 'stars_constellation_darkmode'],
+    full_accounts: ['Full Users', 'star_tricolor', 'star_tricolor'],
+    access_list: ['Access List', 'group', 'group'],
+    private: ['Private', 'lock', 'lock'],
   }
 
-  def privacy_state(privacy)
+  def privacy_state(privacy, dark_layout: false)
     privacy = privacy.to_sym
-    privacy_icon(privacy, false) + ' ' + PRIVACY_MAP[privacy][0]
+    privacy_icon(privacy, dark_layout:, alt: false) + ' ' + PRIVACY_MAP[privacy][0]
   end
 
-  def privacy_icon(privacy, alt=true)
-    name = PRIVACY_MAP[privacy][0]
-    img = PRIVACY_MAP[privacy][1]
+  def privacy_icon(privacy, dark_layout: false, alt: true)
+    name, icon, icon_dark = PRIVACY_MAP[privacy]
     text = alt ? name : ''
+    img = dark_layout ? icon_dark : icon
     image_tag("icons/#{img}.png", class: 'vmid', title: name, alt: text)
   end
 
