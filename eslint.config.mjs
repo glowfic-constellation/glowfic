@@ -99,6 +99,11 @@ export default [
         },
       ],
 
+      // ECMAScript 6
+      "no-const-assign": 2,
+      "no-var": 2,
+      "prefer-const": 1,
+
       // Stylistic Issues
       camelcase: [
         1,
@@ -122,18 +127,56 @@ export default [
       ],
       "no-unneeded-ternary": 2,
       "operator-assignment": 1,
+      "@stylistic/dot-location": [2, "property"],
+      "@stylistic/no-floating-decimal": 2,
+      "@stylistic/no-multi-spaces": 2,
+      "@stylistic/wrap-iife": 2,
+      "@stylistic/array-bracket-spacing": 1,
+      "@stylistic/block-spacing": 1,
+      "@stylistic/brace-style": [
+        1,
+        "1tbs",
+        {
+          allowSingleLine: true,
+        },
+      ],
+      "@stylistic/comma-spacing": 1,
+      "@stylistic/comma-style": 1,
+      "@stylistic/computed-property-spacing": 1,
+      "@stylistic/eol-last": 1,
+      "@stylistic/func-call-spacing": 1,
+      "@stylistic/indent": [2, 2, {"SwitchCase": 0}],
+      "@stylistic/jsx-quotes": [1, "prefer-single"],
+      "@stylistic/key-spacing": 1,
+      "@stylistic/keyword-spacing": 2,
+      "@stylistic/linebreak-style": 1,
+      "@stylistic/new-parens": 1,
+      "@stylistic/no-mixed-operators": 2,
+      "@stylistic/no-trailing-spaces": 2,
+      "@stylistic/no-whitespace-before-property": 2,
+      "@stylistic/semi": 2,
+      "@stylistic/semi-spacing": 2,
+      "@stylistic/space-before-blocks": 2,
+      "@stylistic/space-before-function-paren": [
+        2,
+        {
+          anonymous: "never",
+          named: "never",
+          asyncArrow: "always",
+        },
+      ],
+      "@stylistic/space-in-parens": 1,
+      "@stylistic/space-unary-ops": 1,
+      "@stylistic/spaced-comment": [
+        2,
+        "always",
+        {
+          markers: ["= require"],
+        },
+      ],
 
-      // ECMAScript 6
-      "no-const-assign": 2,
-      "no-var": 2,
-      "prefer-const": 1,
-
-      // deprecated options needing replacement (possibly style):
-      "dot-location": [2, "property"],
-      "no-floating-decimal": 2,
-      "no-multi-spaces": 2,
+      // deprecated options needing replacement (not style)
       "no-return-await": 2,
-      "wrap-iife": 2,
       "callback-return": 2,
       "global-require": 2,
       "handle-callback-err": 2,
@@ -144,49 +187,6 @@ export default [
       "no-process-exit": 2,
       "no-restricted-modules": 2,
       "no-sync": 1,
-      "array-bracket-spacing": 1,
-      "block-spacing": 1,
-      "brace-style": [
-        1,
-        "1tbs",
-        {
-          allowSingleLine: true,
-        },
-      ],
-      "comma-spacing": 1,
-      "comma-style": 1,
-      "computed-property-spacing": 1,
-      "eol-last": 1,
-      "func-call-spacing": 1,
-      indent: [2, 2],
-      "jsx-quotes": [1, "prefer-single"],
-      "key-spacing": 1,
-      "keyword-spacing": 2,
-      "linebreak-style": 1,
-      "new-parens": 1,
-      "no-mixed-operators": 2,
-      "no-trailing-spaces": 2,
-      "no-whitespace-before-property": 2,
-      semi: 2,
-      "semi-spacing": 2,
-      "space-before-blocks": 2,
-      "space-before-function-paren": [
-        2,
-        {
-          anonymous: "never",
-          named: "never",
-          asyncArrow: "always",
-        },
-      ],
-      "space-in-parens": 1,
-      "space-unary-ops": 1,
-      "spaced-comment": [
-        2,
-        "always",
-        {
-          markers: ["= require"],
-        },
-      ],
     },
   },
 ];
