@@ -57,54 +57,94 @@ RSpec.describe CharactersController do
     context "with render_views" do
       render_views
 
+      let!(:user) { create(:user) }
+      let!(:character) { create(:character, user: user, name: 'ExistingCharacter') }
+      let(:template) { create(:template, user: user) }
+      let(:template_character) { create(:character, template: template, user: user) }
+
       it "successfully renders the page in template group" do
-        character = create(:character)
-        create(:template_character, user: character.user) # character2
+        template_character
         get :index, params: { user_id: character.user_id, character_split: 'template' }
         expect(response.status).to eq(200)
       end
 
       it "successfully renders the page with no group" do
-        character = create(:character)
-        create(:template_character, user: character.user) # character2
+        template_character
         get :index, params: { user_id: character.user_id, character_split: 'none' }
         expect(response.status).to eq(200)
       end
 
       it "skips NPC characters" do
-        character = create(:character, name: 'ExistingCharacter')
         create(:character, user: character.user, npc: true, name: 'NPCCharacter')
         get :index, params: { user_id: character.user_id }
         expect(response.body).to include('ExistingCharacter')
         expect(response.body).not_to include('NPCCharacter')
       end
 
-      it "skips retired characters when specified" do
-        character = create(:character, name: 'ExistingCharacter')
-        create(:character, user: character.user, retired: true, name: 'RetiredCharacter')
-        get :index, params: { user_id: character.user_id, retired: 'false' }
-        expect(response.body).to include('ExistingCharacter')
-        expect(response.body).not_to include('RetiredCharacter')
+      context "successfully paginates" do
+        render_views
+
+        let(:user) { create(:user) }
+
+        context "with template grouping" do
+          let(:templates) do
+            list = create_list(:template, 51, user: user) # rubocop:disable FactoryBot/ExcessiveCreateList
+            Template.where(id: list.map(&:id)).ordered
+          end
+
+          it "in icon view" do
+            get :index, params: { user_id: user.id, character_split: 'template', view: 'icons' }
+            expect(response.body).not_to include(templates.to_ary[26].name)
+          end
+
+          it "in list view" do
+            get :index, params: { user_id: user.id, character_split: 'template', view: 'list' }
+            expect(response.body).not_to include(templates.to_ary[26].name)
+          end
+        end
+
+        context "without grouping" do
+          let(:characters) do
+            list = create_list(:character, 51, user: user) # rubocop:disable FactoryBot/ExcessiveCreateList
+            Character.where(id: list.map(&:id)).ordered
+          end
+
+          it "in icon view" do
+            get :index, params: { user_id: user.id, character_split: 'none', view: 'icons' }
+            expect(response.body).not_to include(characters.last.name)
+          end
+
+          it "in list view" do
+            get :index, params: { user_id: user.id, character_split: 'none', view: 'list' }
+            expect(response.body).not_to include(characters.to_ary[26].name)
+          end
+        end
       end
 
-      it "skips retired characters when specified as a default setting" do
-        character = create(:character, name: 'ExistingCharacter')
-        character.user.update!(default_hide_retired_characters: true)
-        create(:character, user: character.user, retired: true, name: 'RetiredCharacter')
-        login_as(character.user)
-        get :index, params: { user_id: character.user_id }
-        expect(response.body).to include('ExistingCharacter')
-        expect(response.body).not_to include('RetiredCharacter')
-      end
+      context "retired" do
+        before(:each) { create(:character, user: user, retired: true, name: 'RetiredCharacter') }
 
-      it "still shows retired characters when default setting is overridden" do
-        character = create(:character, name: 'ExistingCharacter')
-        character.user.update!(default_hide_retired_characters: true)
-        create(:character, user: character.user, retired: true, name: 'RetiredCharacter')
-        login_as(character.user)
-        get :index, params: { user_id: character.user_id, retired: 'true' }
-        expect(response.body).to include('ExistingCharacter')
-        expect(response.body).to include('RetiredCharacter')
+        it "skips retired characters when specified" do
+          get :index, params: { user_id: user.id, retired: 'false' }
+          expect(response.body).to include('ExistingCharacter')
+          expect(response.body).not_to include('RetiredCharacter')
+        end
+
+        it "skips retired characters when specified as a default setting" do
+          user.update!(default_hide_retired_characters: true)
+          login_as(user)
+          get :index, params: { user_id: user.id }
+          expect(response.body).to include('ExistingCharacter')
+          expect(response.body).not_to include('RetiredCharacter')
+        end
+
+        it "still shows retired characters when default setting is overridden" do
+          user.update!(default_hide_retired_characters: true)
+          login_as(user)
+          get :index, params: { user_id: user.id, retired: 'true' }
+          expect(response.body).to include('ExistingCharacter')
+          expect(response.body).to include('RetiredCharacter')
+        end
       end
     end
   end

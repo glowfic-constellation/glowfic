@@ -396,6 +396,11 @@ div.post-subheader { width: 100%; }
   }
 }
 
+// TODO: fix this properly, this is a hack
+@media (max-width: 600px) {
+  #post-form-wrapper { clear: both; }
+}
+
 /* Pagination */
 .pagination {
   font-size: $font_size_small;
@@ -507,7 +512,8 @@ div.post-subheader { width: 100%; }
 /* Handle post tables */
 .post-completed {
   text-align: center;
-  width: 70px;
+  min-width: 50px;
+  max-width: 70px;
   white-space: nowrap;
 }
 

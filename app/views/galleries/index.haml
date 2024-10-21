@@ -39,4 +39,9 @@
           - if @user.id == current_user.try(:id)
             .clear.centered.icons-remove
               = submit_tag "x Delete selected icons permanently", data: { confirm: "Are you sure? These icons will be gone from the site!" }
-    = render partial: 'galleries/expandable', collection: @user.galleries.with_icon_count.with_gallery_groups.ordered_by_name, as: :gallery
+    = render partial: 'galleries/expandable', collection: @galleries.with_icon_count.with_gallery_groups, as: :gallery
+
+  - if @galleries.methods.include?(:total_pages) && @galleries.total_pages > 1
+    %tfoot
+      %tr
+        %td{colspan: 4}= render 'posts/paginator', paginated: @galleries, no_per: true
