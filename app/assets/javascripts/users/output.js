@@ -20,6 +20,7 @@ function copyToClipboard(elem) {
     document.execCommand("copy"); // FIXME: execCommand is deprecated
   } catch (e) {
     console.log("[DEBUG] Copy failed: ", e);
+    // continue regardless
   }
 
   // clean up page
