@@ -523,7 +523,7 @@ GEM
     stringio (3.1.1)
     sysexits (1.2.0)
     temple (0.10.3)
-    terser (1.2.3)
+    terser (1.2.4)
       execjs (>= 0.3.0, < 3)
     test-unit (3.6.2)
       power_assert
