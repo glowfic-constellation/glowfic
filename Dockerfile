@@ -10,7 +10,7 @@ RUN curl -fsSL https://deb.nodesource.com/gpgkey/nodesource-repo.gpg.key | gpg -
 RUN echo "Package: nodejs\nPin: origin deb.nodesource.com\nPin-Priority: 600\n\nPackage: nodejs\nPin: origin deb.debian.org\nPin-Priority: -10" > /etc/apt/preferences.d/nodejs
 RUN echo "Package: postgresql* libpq-dev\nPin: origin apt.postgresql.org\nPin-Priority: 600\n\nPackage: postgresql* libpq-dev\nPin: origin deb.debian.org\nPin-Priority: -10" > /etc/apt/preferences.d/postgresql
 RUN apt-get update \
-  && apt install -y nodejs postgresql-client-14 \
+  && apt install -y nodejs postgresql-client-16 \
   && apt install -y chromium \
   && apt-get clean
 
