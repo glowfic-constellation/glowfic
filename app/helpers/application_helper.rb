@@ -10,7 +10,7 @@ module ApplicationHelper
 
   def swap_icon_url
     return 'icons/swap.png' unless current_user.try(:layout)
-    return 'icons/swap.png' unless current_user.layout.start_with?('starry') || current_user.layout == 'dark'
+    return 'icons/swap.png' unless current_user.layout_darkmode? || current_user.layout.start_with?('starry')
     'icons/swapgray.png'
   end
 
@@ -33,16 +33,12 @@ module ApplicationHelper
   end
 
   def unread_img
-    return 'icons/note_go.png' unless current_user
-    return 'icons/note_go.png' unless current_user.layout
-    return 'icons/note_go.png' unless current_user.layout.include?('dark')
+    return 'icons/note_go.png' unless current_user&.layout_darkmode?
     'icons/bullet_go.png'
   end
 
   def lastlink_img
-    return 'icons/note_go_strong.png' unless current_user
-    return 'icons/note_go_strong.png' unless current_user.layout
-    return 'icons/note_go_strong.png' unless current_user.layout.include?('dark')
+    return 'icons/note_go_strong.png' unless current_user&.layout_darkmode?
     'icons/bullet_go_strong.png'
   end
 

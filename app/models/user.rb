@@ -81,6 +81,11 @@ class User < ApplicationRecord
     super || 'icon'
   end
 
+  def layout_darkmode?
+    return false unless layout
+    layout.include?('dark')
+  end
+
   def archive
     User.transaction do
       self.update!(email_notifications: false, deleted: true, favorite_notifications: false)
