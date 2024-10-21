@@ -344,7 +344,7 @@ class CharactersController < ApplicationController
     # Description
     # n posts.
 
-    character_desc = [@character.name, @character.screenname].select(&:present?).join(' | ')
+    character_desc = [@character.name, @character.screenname].compact_blank.join(' | ')
     title = [character_desc]
     title.prepend(@character.template.name) if @character.template.present?
     title.prepend(@character.user.username) unless @character.user.deleted?
