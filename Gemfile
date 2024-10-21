@@ -64,7 +64,7 @@ group :development do
   gem 'listen'
   gem 'memory_profiler'
   gem 'rack-mini-profiler'
-  gem 'rubocop', '~> 1.66.1', require: false
+  gem 'rubocop', '~> 1.67.0', require: false
   gem 'rubocop-capybara', '~> 2.21.0', require: false
   gem 'rubocop-factory_bot', '~> 2.26.0', require: false
   gem 'rubocop-performance', '~> 1.22.1', require: false
