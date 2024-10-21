@@ -22,7 +22,7 @@ class Notification < ApplicationRecord
       .or(left_outer_joins(:post).where(post_id: nil))
   }
 
-  enum notification_type: {
+  enum :notification_type, {
     import_success: 0,
     import_fail: 1,
     new_favorite_post: 2,

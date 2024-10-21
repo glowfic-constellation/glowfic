@@ -432,6 +432,9 @@ Rails/DynamicFindBy:
 Rails/EagerEvaluationLogMessage: # new in 2.11
   Enabled: true
 
+Rails/EnumSyntax: # new in 2.26
+  Enabled: true
+
 Rails/EnvironmentVariableAccess: # (new in 2.10)
   Enabled: false
 

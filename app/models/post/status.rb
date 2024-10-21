@@ -3,7 +3,7 @@ module Post::Status
   extend ActiveSupport::Concern
 
   included do
-    enum status: {
+    enum :status, {
       active: 0,
       complete: 1,
       hiatus: 2,
