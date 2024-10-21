@@ -20,7 +20,7 @@ RUN gem install bundler -v $bundler_version
 
 ADD Gemfile* /code/
 RUN bundler _${bundler_version}_ install --jobs $(nproc)
-RUN npm i -g eslint@9 @stylistic/eslint-plugin@2
+RUN npm i -g eslint@9 @stylistic/eslint-plugin@2 @types/eslint__js typescript typescript-eslint
 RUN npm i -g stylelint stylelint-config-standard stylelint-declaration-strict-value stylelint-order stylelint-scss
 
 RUN git config --global --add safe.directory /code

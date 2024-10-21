@@ -1,9 +1,12 @@
+// @ts-check
 import stylistic from "@stylistic/eslint-plugin";
 import globals from "globals";
 import js from "@eslint/js";
+import ts from 'typescript-eslint';
 
-export default [
+export default ts.config(
   js.configs.recommended,
+  ...ts.configs.recommended,
   {
     ignores: [
       "**/*\\{.,-}min.js",
@@ -15,6 +18,7 @@ export default [
 
     plugins: {
       "@stylistic": stylistic,
+      '@typescript-eslint': ts.plugin,
     },
 
     languageOptions: {
@@ -23,11 +27,18 @@ export default [
         ...globals.jquery,
       },
 
+      parser: ts.parser,
+      parserOptions: {
+        projectService: true,
+        tsconfigRootDir: import.meta.dirname,
+      },
+
       ecmaVersion: 6,
       sourceType: "script",
     },
 
     rules: {
+      "@typescript-eslint/no-deprecated": "error",
       // Possible Errors
       "no-console": 0,
       "no-extra-parens": 0,
@@ -269,4 +280,4 @@ export default [
       "prefer-template": 0,
     },
   },
-];
+);

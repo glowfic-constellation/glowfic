@@ -65,7 +65,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
-      - run: npm install eslint@9 @stylistic/eslint-plugin@2
+      - run: npm install eslint@9 @stylistic/eslint-plugin@2 @types/eslint__js typescript typescript-eslint
       - run: npx eslint -v
       - uses: reviewdog/action-eslint@v1
         with:
