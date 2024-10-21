@@ -42,7 +42,7 @@ $(document).ready(function() {
     });
   }
 
-  // TODO fix hack
+  // TODO: fix hack
   // Resizes screennames to be slightly smaller if they're long for UI reasons
   $(".post-screenname").each(function() {
     resizeScreenname(this);

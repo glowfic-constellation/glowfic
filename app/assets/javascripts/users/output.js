@@ -17,8 +17,10 @@ function copyToClipboard(elem) {
 
   // copy the selection
   try {
-    document.execCommand("copy");
-  } catch (e) { /* continue regardless */ }
+    document.execCommand("copy"); // FIXME: deprecated
+  } catch (e) {
+    console.log("[DEBUG] Copy failed: ", e);
+  }
 
   // clean up page
   if (currentFocus && typeof currentFocus.focus === "function") { currentFocus.focus(); }

@@ -122,7 +122,7 @@ function setupWritableEditor() {
 
   // SET UP WRITABLE EDITOR:
 
-  // TODO fix hack
+  // TODO: fix hack
   // Hack because having In Thread characters as a group in addition to Template groups
   // duplicates characters in the dropdown, and therefore multiple options are selected
   let selectd;
@@ -132,7 +132,7 @@ function setupWritableEditor() {
   });
   $(selectd).prop("selected", true);
 
-  // TODO fix hack
+  // TODO: fix hack
   // Only initialize TinyMCE if it's required
   if ($("#rtf").hasClass('selected') === true) {
     setupTinyMCE();
@@ -340,7 +340,7 @@ function iconNode(icon) {
 function setupTinyMCE() {
   const selector = 'textarea.tinymce';
   if (typeof tinyMCE === 'undefined') {
-    setTimeout(arguments.callee, 50);
+    setTimeout(setupTinyMCE, 50);
   } else {
     tinyMCE.init(tinyMCEConfig(selector));
     tinyMCEInit = true;
