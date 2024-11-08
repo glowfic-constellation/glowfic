@@ -350,7 +350,7 @@ GEM
     rack-test (2.1.0)
       rack (>= 1.3)
     rack-timeout (0.7.0)
-    rackup (1.0.1)
+    rackup (1.0.0)
       rack (< 3)
       webrick
     rails (7.1.4.1)
@@ -608,6 +608,7 @@ DEPENDENCIES
   rack-mini-profiler
   rack-pratchett
   rack-timeout (>= 0.6.0)
+  rackup (!= 1.0.1)
   rails (~> 7.1.4)
   rails-controller-testing
   rake (~> 13.2)
