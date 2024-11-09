@@ -19,19 +19,21 @@ class NotifyFollowersOfNewPostJob < ApplicationJob
     favorites = Favorite.where(favorite: post_user).or(Favorite.where(favorite: post.board))
     user_ids = favorites.select(:user_id).distinct.pluck(:user_id)
     users = filter_users(post, user_ids)
+    favorites = favorites.order(favorite_type: :desc)
 
     return if users.empty?
 
-    users.each { |user| Notification.notify_user(user, :new_favorite_post, post: post) }
+    users.each { |user| Notification.notify_user(user, :new_favorite_post, post: post, favorite: favorites.find_by(user: user.id)) }
   end
 
   def notify_of_post_joining(post, new_user)
-    users = filter_users(post, Favorite.where(favorite: new_user).pluck(:user_id))
+    favorites = Favorite.where(favorite: new_user)
+    users = filter_users(post, favorites.pluck(:user_id))
     return if users.empty?
 
     users.each do |user|
       next if already_notified_about?(post, user)
-      Notification.notify_user(user, :joined_favorite_post, post: post)
+      Notification.notify_user(user, :joined_favorite_post, post: post, favorite: favorites.find_by(user: user.id))
     end
   end
 

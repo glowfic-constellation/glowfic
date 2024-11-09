@@ -26,7 +26,7 @@ class UserMailer < ApplicationMailer
 
   def new_notification(notification_id)
     @notification = Notification.find(notification_id)
-    @subject = subject_for_type(@notification.notification_type)
+    @subject = subject_for_type(@notification.notification_type, @notification.favorite.favorite_type)
     @subject += ": #{@notification.post.subject}" if @notification.post.present?
     @subject += ": #{@notification.error_msg}" if @notification.error_msg.present?
     mail(to: @notification.user.email, subject: @subject)

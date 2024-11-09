@@ -290,6 +290,7 @@ FactoryBot.define do
     user
     post
     notification_type { :new_favorite_post }
+    favorite { association :favorite, user: user, favorite_type: 'Board', favorite: post.board }
 
     factory :error_notification do
       sequence :error_msg, ordered_numbers do |n|

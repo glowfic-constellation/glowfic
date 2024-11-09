@@ -2,6 +2,7 @@
 class Notification < ApplicationRecord
   belongs_to :user, inverse_of: :notifications, optional: false
   belongs_to :post, inverse_of: :notifications, optional: true
+  belongs_to :favorite, inverse_of: :notifications, optional: true
 
   before_create :check_read
   after_create_commit :notify_recipient
@@ -31,8 +32,8 @@ class Notification < ApplicationRecord
 
   attr_accessor :skip_email
 
-  def self.notify_user(user, type, post: nil, error: nil)
-    Notification.create!(user: user, notification_type: type, post: post, error_msg: error)
+  def self.notify_user(user, type, post: nil, error: nil, favorite: nil)
+    Notification.create!(user: user, notification_type: type, post: post, error_msg: error, favorite: favorite)
   end
 
   private

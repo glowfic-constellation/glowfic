@@ -3,6 +3,8 @@ class Favorite < ApplicationRecord
   belongs_to :user, inverse_of: :favorites, optional: false
   belongs_to :favorite, polymorphic: true, optional: false
 
+  has_many :notifications, inverse_of: :favorite, dependent: :nullify
+
   validates :user_id, uniqueness: { scope: [:favorite_id, :favorite_type] }
   validate :not_yourself
 
