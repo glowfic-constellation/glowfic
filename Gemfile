@@ -36,7 +36,7 @@ gem 'pg', '~> 1.5'
 gem 'pg_search'
 gem 'rack-pratchett'
 gem 'rackup', '!= 1.0.1', require: false # rackup 1.0.1 is incompatible with puma <= 6.4.3
-gem 'rails', '~> 7.1.4'
+gem 'rails', '~> 7.1.5'
 gem "redcarpet", "~> 3.6"
 gem 'redis', '~> 5.3'
 gem 'resque'
