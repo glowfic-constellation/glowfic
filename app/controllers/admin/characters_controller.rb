@@ -7,7 +7,7 @@ class Admin::CharactersController < Admin::AdminController
   end
 
   def do_relocate
-    @char_ids = params[:character_id]&.split(',')&.map(&:strip)&.map(&:to_i)
+    @char_ids = params.fetch(:character_id, '').split(',').map { _1.strip.to_i }
     @characters = Character.where(id: @char_ids)
     @new_user = User.find_by(id: params[:user_id])
     unless @new_user.present?
