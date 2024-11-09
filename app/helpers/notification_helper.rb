@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 module NotificationHelper
   NOTIFICATION_MESSAGES = {
-    nil       => {
+    nil     => {
       'import_success'       => 'Post import succeeded',
       'import_fail'          => 'Post import failed',
       'new_favorite_post'    => 'A once-favorited subject has a new post',
