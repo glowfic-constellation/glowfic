@@ -54,6 +54,19 @@ $(document).ready(function() {
     const msgText = 'logged ' + (e.newValue === 'true' ? 'in' : 'out');
     warningBox.html('You have <strong>' + msgText + '</strong> in another tab. Please reload before submitting any forms.');
   });
+
+  // overwrite jquery-ujs disable-with to only change text of clicked button
+  jQuery.rails.disableFormElements = function(form) {
+    form.find(jQuery.rails.disableSelector).each(function() {
+      var element = $(this);
+      var submittedBy = form.data('ujs:submit-button');
+      if (submittedBy && element.attr('name') === submittedBy.name && element.attr('value') === submittedBy.value) {
+        jQuery.rails.disableFormElement(element);
+      } else {
+        element.prop('disabled', true);
+      }
+    });
+  };
 });
 
 function addParameter(url, param, value) {
