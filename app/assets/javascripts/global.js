@@ -58,8 +58,8 @@ $(document).ready(function() {
   // overwrite jquery-ujs disable-with to only change text of clicked button
   jQuery.rails.disableFormElements = function(form) {
     form.find(jQuery.rails.disableSelector).each(function() {
-      var element = $(this);
-      var submittedBy = form.data('ujs:submit-button');
+      const element = $(this);
+      const submittedBy = form.data('ujs:submit-button');
       if (submittedBy && element.attr('name') === submittedBy.name && element.attr('value') === submittedBy.value) {
         jQuery.rails.disableFormElement(element);
       } else {
