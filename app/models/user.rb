@@ -42,7 +42,8 @@ class User < ApplicationRecord
   validates :password,
     length: { minimum: 6, if: :validate_password? },
     confirmation: { if: :validate_password? }
-  validates :moiety, format: { with: /\A([0-9A-F]{3}){0,2}\z/i }
+  validates :moiety, format: { with: /\A([0-9A-F]{3}){0,2}\z/i }, length: { maximum: 255 }
+  validates :moiety_name, length: { maximum: 255 }
   validates :password, :password_confirmation, presence: { if: :validate_password? }
   validate :username_not_reserved
 

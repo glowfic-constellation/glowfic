@@ -12,7 +12,7 @@ class Icon < ApplicationRecord
   has_many :galleries_icons, dependent: :destroy, inverse_of: :icon
   has_many :galleries, through: :galleries_icons, dependent: :destroy
 
-  validates :keyword, presence: true
+  validates :keyword, presence: true, length: { maximum: 255 }
   validates :url,
     presence: true,
     length: { maximum: 255 }
