@@ -131,7 +131,7 @@ GEM
       aws-activejob-sqs (~> 0)
       aws-record-rails (~> 0)
       railties (>= 7.1.0)
-    aws-sdk-s3 (1.171.0)
+    aws-sdk-s3 (1.172.0)
       aws-sdk-core (~> 3, >= 3.210.0)
       aws-sdk-kms (~> 1)
       aws-sigv4 (~> 1.5)
