@@ -37,7 +37,7 @@ class Post < ApplicationRecord
   attr_accessor :is_import
   attr_writer :skip_edited
 
-  validates :subject, presence: true
+  validates :subject, presence: true, length: { maximum: 255 }
   validates :description, length: { maximum: 255 }
   validate :valid_board, :valid_board_section
 

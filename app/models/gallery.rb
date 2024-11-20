@@ -12,7 +12,7 @@ class Gallery < ApplicationRecord
   has_many :gallery_tags, inverse_of: :gallery, dependent: :destroy
   has_many :gallery_groups, -> { ordered_by_gallery_tag }, through: :gallery_tags, source: :gallery_group, dependent: :destroy
 
-  validates :name, presence: true
+  validates :name, presence: true, length: { maximum: 255 }
 
   scope :ordered, -> { order('characters_galleries.section_order ASC') }
 

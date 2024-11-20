@@ -7,6 +7,7 @@ class Message < ApplicationRecord
   belongs_to :first_thread, class_name: 'Message', foreign_key: :thread_id, inverse_of: false, optional: false
 
   validates :sender, presence: { if: Proc.new { |m| m.sender_id != 0 } }
+  validates :subject, length: { maximum: 255 }
   validate :unblocked_recipient, on: :create
 
   before_validation :set_thread_id, :remove_deleted_recipient

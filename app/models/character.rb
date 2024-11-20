@@ -24,6 +24,9 @@ class Character < ApplicationRecord
   validates :name,
     presence: true,
     length: { maximum: 255 }
+  validates :screenname, length: { maximum: 255 }
+  validates :pb, length: { maximum: 255 }
+  validates :cluster, length: { maximum: 255 }
   validate :valid_group, :valid_galleries, :valid_default_icon
 
   attr_accessor :group_name

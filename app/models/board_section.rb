@@ -6,7 +6,7 @@ class BoardSection < ApplicationRecord
   belongs_to :board, inverse_of: :board_sections, optional: false
   has_many :posts, inverse_of: :section, foreign_key: :section_id, dependent: false # This is handled in callbacks
 
-  validates :name, presence: true
+  validates :name, presence: true, length: { maximum: 255 }
 
   after_destroy :clear_section_ids
 
