@@ -23,16 +23,19 @@ class BlocksController < ApplicationController
     @block.blocking_user = current_user
     @block.blocked_user_id = params.fetch(:block, {})[:blocked_user_id]
 
-    unless @block.save
-      render_errors(@block, action: 'create', now: true, msg: 'User could not be blocked')
+    begin
+      @block.save!
+    rescue ActiveRecord::RecordInvalid => e
+      render_err.now(@block, :create_failed)
+      log_error(e) unless @block.errors.present?
       editor_setup
       @users = [@block.blocked_user].compact
       @page_title = 'Block User'
-      render :new and return
+      render :new
+    else
+      flash[:success] = "User blocked."
+      redirect_to blocks_path
     end
-
-    flash[:success] = "User blocked."
-    redirect_to blocks_path
   end
 
   def edit
@@ -40,22 +43,26 @@ class BlocksController < ApplicationController
   end
 
   def update
-    unless @block.update(permitted_params)
-      render_errors(@block, action: 'updated', now: true)
+    begin
+      @block.update!(permitted_params)
+    rescue ActiveRecord::RecordInvalid => e
+      render_err.now(@block, :update_failed)
+      log_error(e) unless @block.errors.present?
+
       editor_setup
       @page_title = 'Edit Block: ' + @block.blocked_user.username
-      render :edit and return
+      render :edit
+    else
+      flash[:success] = "Block updated."
+      redirect_to blocks_path
     end
-
-    flash[:success] = "Block updated."
-    redirect_to blocks_path
   end
 
   def destroy
     begin
       @block.destroy!
     rescue ActiveRecord::RecordNotDestroyed => e
-      render_errors(@block, action: 'delete', msg: 'User could not be unblocked', err: e)
+      render_err(@block, :delete_failed, err: e)
     else
       flash[:success] = "User unblocked."
     end

@@ -160,7 +160,7 @@ class RepliesController < WritableController
     begin
       reply.save!
     rescue ActiveRecord::RecordInvalid => e
-      render_errors(reply, action: 'created', now: true, err: e)
+      render_err.now(reply, :create_failed, err: e)
 
       redirect_to posts_path and return unless reply.post
       redirect_to post_path(reply.post)
@@ -197,7 +197,7 @@ class RepliesController < WritableController
     begin
       @reply.save!
     rescue ActiveRecord::RecordInvalid => e
-      render_errors(@reply, action: 'updated', now: true, err: e)
+      render_err.now(@reply, :update_failed, err: e)
 
       @audits = { @reply.id => @post.audits.count }
       editor_setup
@@ -221,7 +221,7 @@ class RepliesController < WritableController
     begin
       @reply.destroy!
     rescue ActiveRecord::RecordNotDestroyed => e
-      render_errors(@reply, action: 'deleted', err: e)
+      render_err(@reply, :delete_failed, err: e)
       redirect_to reply_path(@reply, anchor: "reply-#{@reply.id}")
     else
       flash[:success] = "Reply deleted."
@@ -287,13 +287,13 @@ class RepliesController < WritableController
   def require_create_permission
     return unless current_user.read_only?
     flash[:error] = "You do not have permission to create replies."
-    redirect_to continuities_path and return
+    redirect_to continuities_path
   end
 
   def require_edit_permission
     return if @reply.editable_by?(current_user)
     flash[:error] = "You do not have permission to modify this reply."
-    redirect_to post_path(@reply.post)
+    redirect_to @reply.post
   end
 
   def preview(written)
@@ -321,7 +321,7 @@ class RepliesController < WritableController
     begin
       draft.save!
     rescue ActiveRecord::RecordInvalid => e
-      render_errors(draft, action: 'saved', class_name: 'Draft', err: e)
+      render_err(draft, :create_failed, err: e)
     else
       if show_message
         msg = "Draft saved."

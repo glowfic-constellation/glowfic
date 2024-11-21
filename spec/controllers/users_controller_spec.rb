@@ -290,7 +290,7 @@ RSpec.describe UsersController do
       login_as(user)
       put :update, params: { id: user.id, user: { moiety: 'A' } }
       expect(response).to render_template(:edit)
-      expect(flash[:error][:message]).to eq('Changes could not be saved because of the following problems:')
+      expect(flash[:error][:message]).to eq('Account settings could not be updated because of the following problems:')
     end
 
     it "does not update another user" do
@@ -324,7 +324,7 @@ RSpec.describe UsersController do
 
       put :update, params: { id: user.id, user: user_details }
       expect(response).to redirect_to(edit_user_url(user))
-      expect(flash[:success]).to eq('Changes saved.')
+      expect(flash[:success]).to eq('Account settings saved.')
 
       user.reload
       user_details.each do |key, value|
@@ -339,7 +339,7 @@ RSpec.describe UsersController do
       login_as(user)
       put :update, params: { id: user.id, user: { username: 'user124' } }
       expect(response).to redirect_to(edit_user_url(user))
-      expect(flash[:success]).to eq('Changes saved.')
+      expect(flash[:success]).to eq('Account settings saved.')
 
       user.reload
       expect(user.username).to eq('user124')

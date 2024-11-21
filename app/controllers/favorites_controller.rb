@@ -57,7 +57,7 @@ class FavoritesController < ApplicationController
     begin
       fav.save!
     rescue ActiveRecord::RecordInvalid => e
-      render_errors(fav, action: 'saved', err: e)
+      render_err(fav, :create_failed, err: e)
     else
       flash[:success] = "Your favorite has been saved."
     end
@@ -78,7 +78,7 @@ class FavoritesController < ApplicationController
     begin
       fav.destroy!
     rescue ActiveRecord::RecordNotDestroyed => e
-      render_errors(fav, action: 'deleted', err: e)
+      render_err(fav, :delete_failed, err: e)
       redirect_to favorites_path
     else
       flash[:success] = "Favorite removed."
