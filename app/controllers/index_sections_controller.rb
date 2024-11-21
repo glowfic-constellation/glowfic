@@ -3,31 +3,16 @@ class IndexSectionsController < ApplicationController
   before_action :login_required, except: [:show]
   before_action :readonly_forbidden, except: [:show]
   before_action :find_model, except: [:new, :create]
-  before_action :require_permission, except: [:new, :create, :show]
+  before_action :find_parent, except: :show
+  before_action :require_permission, except: [:show]
 
   def new
-    unless (index = Index.find_by_id(params[:index_id]))
-      flash[:error] = "Index could not be found."
-      redirect_to indexes_path and return
-    end
-
-    unless index.editable_by?(current_user)
-      flash[:error] = "You do not have permission to modify this index."
-      redirect_to index_path(index) and return
-    end
-
     @page_title = "New Index Section"
-    @section = IndexSection.new(index: index)
+    @section = IndexSection.new(index: @index)
   end
 
   def create
     @section = IndexSection.new(permitted_params)
-
-    if @section.index && !@section.index.editable_by?(current_user)
-      flash[:error] = "You do not have permission to modify this index." # rubocop:disable Rails/ActionControllerFlashBeforeRender
-      redirect_to @section.index and return
-    end
-
     begin
       @section.save!
     rescue ActiveRecord::RecordInvalid => e
@@ -37,7 +22,7 @@ class IndexSectionsController < ApplicationController
       render :new
     else
       flash[:success] = "New section, #{@section.name}, created for #{@section.index.name}."
-      redirect_to @section.index
+      redirect_to @index
     end
   end
 
@@ -58,7 +43,7 @@ class IndexSectionsController < ApplicationController
       render :edit
     else
       flash[:success] = "Index section updated."
-      redirect_to @section.index
+      redirect_to @index
     end
   end
 
@@ -70,7 +55,7 @@ class IndexSectionsController < ApplicationController
     else
       flash[:success] = "Index section deleted."
     end
-    redirect_to @section.index
+    redirect_to @index
   end
 
   private
@@ -81,10 +66,17 @@ class IndexSectionsController < ApplicationController
     redirect_to indexes_path
   end
 
+  def find_parent
+    id = params[:index_id] || permitted_params[:index_id]
+    return if (@index = @section&.index || Index.find_by(id: id))
+    flash[:error] = "Index could not be found."
+    redirect_to indexes_path
+  end
+
   def require_permission
-    return if @section.index.editable_by?(current_user)
+    return if @index.editable_by?(current_user)
     flash[:error] = "You do not have permission to modify this index."
-    redirect_to @section.index
+    redirect_to @index
   end
 
   def permitted_params

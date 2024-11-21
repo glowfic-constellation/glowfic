@@ -4,9 +4,11 @@ require 'will_paginate/array'
 class RepliesController < WritableController
   before_action :login_required, except: [:search, :show, :history]
   before_action :find_model, only: [:show, :history, :edit, :update, :destroy]
+  before_action :find_parent, only: [:show, :history, :edit, :update, :destroy]
   before_action :editor_setup, only: [:edit]
   before_action :require_create_permission, only: [:create]
   before_action :require_edit_permission, only: [:edit, :update]
+  before_action :require_delete_permission, only: :destroy
 
   def search
     @page_title = 'Search Replies'
@@ -209,11 +211,6 @@ class RepliesController < WritableController
   end
 
   def destroy
-    unless @reply.deletable_by?(current_user)
-      flash[:error] = "You do not have permission to modify this reply."
-      redirect_to post_path(@reply.post) and return
-    end
-
     previous_reply = @reply.send(:previous_reply)
     to_page = previous_reply.try(:post_page, per_page) || 1
 
@@ -268,13 +265,12 @@ class RepliesController < WritableController
   private
 
   def find_model
-    @reply = Reply.find_by_id(params[:id])
+    return if (@reply = Reply.find_by_id(params[:id]))
+    flash[:error] = "Post could not be found."
+    redirect_to continuities_path and return
+  end
 
-    unless @reply
-      flash[:error] = "Post could not be found."
-      redirect_to continuities_path and return
-    end
-
+  def find_parent
     @post = @reply.post
     unless @post.visible_to?(current_user)
       flash[:error] = "You do not have permission to view this post."
@@ -287,11 +283,17 @@ class RepliesController < WritableController
   def require_create_permission
     return unless current_user.read_only?
     flash[:error] = "You do not have permission to create replies."
-    redirect_to continuities_path and return
+    redirect_to continuities_path
   end
 
   def require_edit_permission
     return if @reply.editable_by?(current_user)
+    flash[:error] = "You do not have permission to modify this reply."
+    redirect_to post_path(@reply.post)
+  end
+
+  def require_delete_permission
+    return if @reply.deletable_by?(current_user)
     flash[:error] = "You do not have permission to modify this reply."
     redirect_to post_path(@reply.post)
   end

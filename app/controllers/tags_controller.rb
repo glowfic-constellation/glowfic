@@ -6,7 +6,8 @@ class TagsController < ApplicationController
   before_action :login_required, except: [:index, :show]
   before_action :readonly_forbidden, except: [:index, :show]
   before_action :find_model, except: :index
-  before_action :require_permission, except: [:index, :show, :destroy]
+  before_action :require_edit_permission, only: [:edit, :update]
+  before_action :require_delete_permission, only: :destroy
 
   def index
     @tags = TagSearcher.new.search(tag_name: params[:name], tag_type: params[:view], page: page)
@@ -65,11 +66,6 @@ class TagsController < ApplicationController
   end
 
   def destroy
-    unless @tag.deletable_by?(current_user)
-      flash[:error] = "You do not have permission to modify this tag."
-      redirect_to tag_path(@tag) and return
-    end
-
     begin
       @tag.destroy!
     rescue ActiveRecord::RecordNotDestroyed => e
@@ -93,8 +89,14 @@ class TagsController < ApplicationController
     redirect_to tags_path
   end
 
-  def require_permission
+  def require_edit_permission
     return if @tag.editable_by?(current_user)
+    flash[:error] = "You do not have permission to modify this tag."
+    redirect_to tag_path(@tag)
+  end
+
+  def require_delete_permission
+    return if @tag.deletable_by?(current_user)
     flash[:error] = "You do not have permission to modify this tag."
     redirect_to tag_path(@tag)
   end
