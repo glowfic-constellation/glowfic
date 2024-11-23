@@ -628,7 +628,6 @@ DEPENDENCIES
   rack-mini-profiler
   rack-pratchett
   rack-timeout (>= 0.6.0)
-  rackup (!= 1.0.1)
   rails (~> 7.1.5)
   rails-controller-testing
   rake (~> 13.2)
