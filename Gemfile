@@ -11,7 +11,7 @@ gem 'apipie-rails'
 # - that the method set_audit_user has not changed, since we duplicate it in
 #   ApplicationRecord for use in callbacks to send audit user ids to background jobs.
 #   (currently https://github.com/collectiveidea/audited/blob/v5.5.0/lib/audited/audit.rb#L187)
-gem 'audited', '~> 5.5.0'
+gem 'audited', '~> 5.8.0'
 
 gem 'aws-actionmailer-ses', '~> 1'
 gem 'aws-sdk-rails', '~> 5'

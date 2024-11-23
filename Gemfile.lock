@@ -85,9 +85,9 @@ GEM
       actionpack (>= 5.0)
       activesupport (>= 5.0)
     ast (2.4.2)
-    audited (5.5.0)
-      activerecord (>= 5.0, < 7.2)
-      request_store (~> 1.2)
+    audited (5.8.0)
+      activerecord (>= 5.2, < 8.2)
+      activesupport (>= 5.2, < 8.2)
     autoprefixer-rails (10.4.16.0)
       execjs (~> 2)
     aws-actionmailer-ses (1.0.0)
@@ -551,7 +551,7 @@ PLATFORMS
 DEPENDENCIES
   api-pagination
   apipie-rails
-  audited (~> 5.5.0)
+  audited (~> 5.8.0)
   aws-actionmailer-ses (~> 1)
   aws-sdk-rails (~> 5)
   aws-sdk-s3 (~> 1)
