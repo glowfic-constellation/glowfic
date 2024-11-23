@@ -83,7 +83,6 @@ group :development, :test do
   gem 'rake', '~> 13.2'
   gem 'rspec-rails'
   gem 'seed_dump', '~> 3.2'
-  gem 'thin'
 end
 
 group :test do
