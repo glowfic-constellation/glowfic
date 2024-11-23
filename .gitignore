@@ -36,3 +36,6 @@ backstop/reports/*
 # Ignore DB backups
 /db/backups/*
 /db/storage
+
+# Ignore Rails credentials key
+/config/master.key
