@@ -13,6 +13,7 @@ gem 'apipie-rails'
 #   (currently https://github.com/collectiveidea/audited/blob/v5.5.0/lib/audited/audit.rb#L187)
 gem 'audited', '~> 5.5.0'
 
+gem 'aws-actionmailer-ses', '~> 1'
 gem 'aws-sdk-rails', '~> 5'
 gem 'aws-sdk-s3', '~> 1'
 gem 'aws-sdk-ses', '~> 1'
