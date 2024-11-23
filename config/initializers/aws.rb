@@ -34,5 +34,3 @@ if ENV.key?('MINIO_ENDPOINT')
 end
 
 S3_BUCKET = Aws::S3::Resource.new(**s3_config).bucket(bucket_name)
-
-Aws::Rails.add_action_mailer_delivery_method(:ses)
