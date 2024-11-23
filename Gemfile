@@ -10,7 +10,11 @@ gem 'apipie-rails'
 # - for migrations with `rails generate audited:upgrade`
 # - that the method set_audit_user has not changed, since we duplicate it in
 #   ApplicationRecord for use in callbacks to send audit user ids to background jobs.
-#   (currently https://github.com/collectiveidea/audited/blob/v5.5.0/lib/audited/audit.rb#L187)
+#   (currently https://github.com/collectiveidea/audited/blob/v5.8.0/lib/audited/audit.rb#L187)
+# - the request store functionality hasn't changed: we use RequestStore instead of
+#   ActiveSupport::CurrentAttributes to avoid issues with values being reset in tests when
+#   executing jobs inline (currently overwriting
+#   https://github.com/collectiveidea/audited/blob/v5.8.0/lib/audited.rb#L33)
 gem 'audited', '~> 5.8.0'
 
 gem 'aws-actionmailer-ses', '~> 1'
@@ -39,6 +43,7 @@ gem 'rack-pratchett'
 gem 'rails', '~> 7.1.5'
 gem "redcarpet", "~> 3.6"
 gem 'redis', '~> 5.3'
+gem 'request_store', '~> 1.7'
 gem 'resque'
 gem 'resque_mailer'
 gem 'sanitize'

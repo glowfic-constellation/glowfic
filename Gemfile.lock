@@ -595,6 +595,7 @@ DEPENDENCIES
   rake (~> 13.2)
   redcarpet (~> 3.6)
   redis (~> 5.3)
+  request_store (~> 1.7)
   resque
   resque-heroku-signals
   resque_mailer
