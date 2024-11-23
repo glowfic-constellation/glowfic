@@ -41,7 +41,7 @@ Rails.application.config.action_controller.allow_deprecated_parameters_hash_equa
 #
 # If you don't currently have data encrypted with Active Record encryption, you can disable this setting to
 # configure the default behavior starting 7.1+:
-# Rails.application.config.active_record.encryption.support_sha1_for_non_deterministic_encryption = false
+Rails.application.config.active_record.encryption.support_sha1_for_non_deterministic_encryption = false
 
 # No longer run after_commit callbacks on the first of multiple Active Record
 # instances to save changes to the same database row within a transaction.
@@ -109,7 +109,7 @@ Rails.application.config.active_record.query_log_tags_format = :sqlcommenter
 # that have not yet been upgraded must be able to read messages from upgraded
 # servers, first deploy without changing the serializer, then set the serializer
 # in a subsequent deploy.
-# Rails.application.config.active_support.message_serializer = :json_allow_marshal
+Rails.application.config.active_support.message_serializer = :json_allow_marshal
 
 # Enable a performance optimization that serializes message data and metadata
 # together. This changes the message format, so messages serialized this way
@@ -120,7 +120,7 @@ Rails.application.config.active_record.query_log_tags_format = :sqlcommenter
 # not yet been upgraded must be able to read messages from upgraded servers,
 # leave this optimization off on the first deploy, then enable it on a
 # subsequent deploy.
-# Rails.application.config.active_support.use_message_serializer_for_metadata = true
+Rails.application.config.active_support.use_message_serializer_for_metadata = true
 
 # Set the maximum size for Rails log files.
 #
@@ -161,7 +161,7 @@ Rails.application.config.active_record.before_committed_on_all_records = true
 # not yet been upgraded must be able to read caches from upgraded servers,
 # leave this optimization off on the first deploy, then enable it on a
 # subsequent deploy.
-# Rails.application.config.active_record.marshalling_format_version = 7.1
+Rails.application.config.active_record.marshalling_format_version = 7.1
 
 # Run `after_commit` and `after_*_commit` callbacks in the order they are defined in a model.
 # This matches the behaviour of all other callbacks.
