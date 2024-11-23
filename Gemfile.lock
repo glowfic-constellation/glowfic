@@ -305,7 +305,7 @@ GEM
     memory_profiler (1.1.0)
     mercenary (0.4.0)
     mini_mime (1.1.5)
-    minitest (5.25.1)
+    minitest (5.25.2)
     mono_logger (1.1.2)
     multi_json (1.15.0)
     multi_xml (0.7.1)
@@ -551,7 +551,7 @@ GEM
     tilt (2.4.0)
     timecop (0.9.10)
     timeout (0.4.2)
-    tinymce-rails (6.8.4)
+    tinymce-rails (7.5.1)
       railties (>= 3.1.1)
     traceroute (0.8.1)
       rails (>= 3.0.0)
@@ -652,7 +652,7 @@ DEPENDENCIES
   terser
   test-unit (~> 3.6)
   timecop
-  tinymce-rails (~> 6.8)
+  tinymce-rails (~> 7.5)
   traceroute
   webmock
   will_paginate
