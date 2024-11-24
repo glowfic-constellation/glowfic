@@ -22,7 +22,8 @@ module Orderable
     def reorder_others(is_after)
       return unless destroyed? || order_change?(is_after)
 
-      if has_attribute?(:board_id) # all indexes are ordered
+      # Posts and BoardSections are ordered conditional on their board; all indexes are ordered
+      if has_attribute?(:board_id)
         board_checking_id = is_after ? board_id_before_last_save : board_id_was
         board_checking = Board.find_by_id(board_checking_id) || board
         return unless board_checking.ordered?
