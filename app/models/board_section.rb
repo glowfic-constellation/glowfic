@@ -15,6 +15,9 @@ class BoardSection < ApplicationRecord
   private
 
   def clear_section_ids
+    # if the parent board is already being destroyed, we'll handle this in board#move_posts_to_sandbox
+    # this avoids intermediate Post callbacks triggered by the section_id change that have no board present
+    return if destroyed_by_association&.active_record == Board
     UpdateModelJob.perform_later(Post.to_s, { section_id: id }, { section_id: nil }, audited_user_id)
   end
 
