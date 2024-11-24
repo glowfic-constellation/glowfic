@@ -5,7 +5,7 @@
 
 # Puma starts a configurable number of processes (workers) and each process
 # serves each request in a thread from an internal thread pool.
-# The number of processes defaults to WEB_CONCURRENCY, or 0 if not set.
+# See "workers" below.
 #
 # The ideal number of threads per worker depends both on how much time the
 # application spends waiting for IO operations and on how much you wish to
@@ -30,6 +30,10 @@ port ENV.fetch("PORT", 3000), ENV.fetch("BIND_HOST", nil)
 
 # Specifies the `environment` that Puma will run in.
 environment ENV.fetch("RAILS_ENV", "development")
+
+# Specifies the number of `workers` to boot in clustered mode.
+# We default to 2 to guarantee our fork hooks run.
+workers ENV.fetch("WEB_CONCURRENCY", 2)
 
 # Report statsd metrics for Heroku monitoring.
 require 'barnes'
