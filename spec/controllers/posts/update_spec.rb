@@ -182,7 +182,8 @@ RSpec.describe PostsController, 'PUT update' do
     end
 
     it "handles unexpected failure" do
-      user_post.update_columns(board_id: 0) # rubocop:disable Rails/SkipsModelValidations
+      # associate with section from a different board (invalid)
+      user_post.update_columns(section_id: create(:board_section).id) # rubocop:disable Rails/SkipsModelValidations
       put :update, params: { id: user_post.id, status: 'abandoned' }
       expect(response).to redirect_to(post_url(user_post))
       expect(flash[:error][:message]).to eq('Status could not be updated because of the following problems:')
@@ -307,7 +308,8 @@ RSpec.describe PostsController, 'PUT update' do
 
       it "handles unexpected failure" do
         login_as(post.user)
-        post.update_columns(board_id: 0) # rubocop:disable Rails/SkipsModelValidations
+        # associate with section from a different board (invalid)
+        post.update_columns(section_id: create(:board_section).id) # rubocop:disable Rails/SkipsModelValidations
         expect(post.reload).not_to be_valid
         put :update, params: { id: post.id, authors_locked: 'true' }
         expect(response).to redirect_to(post_url(post))
@@ -354,7 +356,8 @@ RSpec.describe PostsController, 'PUT update' do
 
       it "handles unexpected failure" do
         login_as(post.user)
-        post.update_columns(board_id: 0) # rubocop:disable Rails/SkipsModelValidations
+        # associate with section from a different board (invalid)
+        post.update_columns(section_id: create(:board_section).id) # rubocop:disable Rails/SkipsModelValidations
         put :update, params: { id: post.id, authors_locked: 'false' }
         expect(response).to redirect_to(post_url(post))
         expect(flash[:error][:message]).to eq('Post could not be updated because of the following problems:')
