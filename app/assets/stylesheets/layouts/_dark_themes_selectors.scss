@@ -129,12 +129,9 @@ textarea#post_private_note {
   &:focus, &:hover { background-color: $bg_color_input; }
 }
 
-#content .tox-tbtn--enabled {
-  &, &:focus, &:hover { background-color: $bg_color_input; }
-}
-
 #content .tox .tox-tbtn {
   box-sizing: content-box;
+  background: transparent;
 
   svg {
     fill: $font_color_input;
@@ -146,6 +143,10 @@ textarea#post_private_note {
   }
 
   &:active, &:hover, &:focus { background-color: $bg_color_input; }
+
+  &.tox-tbtn--enabled {
+    &, &:focus, &:hover { background-color: $bg_color_input; }
+  }
 
   &.tox-tbtn--disabled {
     svg {
@@ -159,6 +160,10 @@ textarea#post_private_note {
     }
     &:hover { background-color: transparent; }
   }
+}
+
+#content .tox .tox-tbtn--disabled, #content .tox .tox-tbtn--disabled:hover, #content .tox .tox-tbtn:disabled, #content .tox .tox-tbtn:disabled:hover {
+  background: transparent;
 }
 
 #content .tox-tinymce { border-color: $border_color_input; }
