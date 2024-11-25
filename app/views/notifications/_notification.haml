@@ -3,7 +3,7 @@
   - row_klass = klass
   - row_klass += ' bold' if notification.unread?
   %td.padding-left-5{class: row_klass}= # just padding
-  %td{class: row_klass, colspan: 4}= subject_for_type(notification.notification_type)
+  %td{class: row_klass, colspan: 4}= subject_for_type(notification.notification_type, notification.favorite.favorite_type)
   %td{class: row_klass}= pretty_time(notification.created_at)
   %td.post-check-box{class: klass}= check_box_tag :'marked_ids[]', notification.id, false, class: 'checkbox', id: nil
 - if @posts.key?(notification.post_id)
