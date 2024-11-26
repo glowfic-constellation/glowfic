@@ -30,6 +30,20 @@ RSpec.describe "Editing a template" do
     end
   end
 
+  scenario "Editing an invalid template" do
+    login(user, 'known')
+    visit edit_template_path(template)
+    expect(page).to have_no_selector('.flash.error')
+
+    within('.form-table') do
+      fill_in 'Template Name', with: ''
+      click_button 'Save'
+    end
+
+    expect(page).to have_selector('.flash.error', text: "Template could not be updated because of the following problems:\nName can't be blank")
+    expect(page).to have_selector('.editor-title', text: 'Edit Template')
+  end
+
   scenario "Editing a template with description and characters" do
     create(:character, user: user, template: template, name: 'Stable Character')
     create(:character, user: user, template: template, name: 'Removed Character')
