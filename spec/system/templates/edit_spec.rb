@@ -1,6 +1,6 @@
 RSpec.describe "Editing a template" do
   let(:user) { create(:user, password: 'known') }
-  let(:template) { create(:template, user: user, name: 'Example Template')}
+  let(:template) { create(:template, user: user, name: 'Example Template') }
 
   scenario "Logged out user tries to edit a template" do
     visit template_path(template)
@@ -31,9 +31,9 @@ RSpec.describe "Editing a template" do
   end
 
   scenario "Editing a template with description and characters" do
-    char1 = create(:character, user: user, template: template, name: 'Stable Character')
-    char2 = create(:character, user: user, template: template, name: 'Removed Character')
-    char3 = create(:character, user: user, name: 'Added Character')
+    create(:character, user: user, template: template, name: 'Stable Character')
+    create(:character, user: user, template: template, name: 'Removed Character')
+    create(:character, user: user, name: 'Added Character')
     create(:character, user: user, name: 'Unrelated Character')
     template.update!(description: 'This is a sample template with two characters.')
     login(user, 'known')
@@ -58,8 +58,8 @@ RSpec.describe "Editing a template" do
     within('.icons-box') do
       expect(page).to have_text('Stable Character')
       expect(page).to have_text('Added Character')
-      expect(page).not_to have_text('Removed Character')
-      expect(page).not_to have_text('Unrelated Character')
+      expect(page).to have_no_text('Removed Character')
+      expect(page).to have_no_text('Unrelated Character')
     end
 
     expect(page).to have_selector('.single-description', text: 'This is still a sample template.')
