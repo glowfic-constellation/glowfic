@@ -1,7 +1,7 @@
 RSpec.describe "Viewing an icon" do
   let(:user) { create(:user, username: 'Jane Doe', password: 'known') }
   let(:icon) { create(:icon, user: user, keyword: 'iconic') }
-  let(:gallery) { create(:gallery, user: user, name: 'Example Gallery')}
+  let(:gallery) { create(:gallery, user: user, name: 'Example Gallery') }
 
   scenario "Viewing a galleryless icon" do
     visit icon_path(icon)
@@ -15,10 +15,10 @@ RSpec.describe "Viewing an icon" do
       expect(page).to have_link('Galleries')
       expect(page).to have_link('Posts')
       expect(page).to have_link('Replies')
-      expect(page).not_to have_link('Edit Icon')
-      expect(page).not_to have_link('Make Avatar')
-      expect(page).not_to have_link('Replace Icon')
-      expect(page).not_to have_link('Delete Icon')
+      expect(page).to have_no_link('Edit Icon')
+      expect(page).to have_no_link('Make Avatar')
+      expect(page).to have_no_link('Replace Icon')
+      expect(page).to have_no_link('Delete Icon')
     end
 
     within('.icon-right-content-box') do
@@ -96,10 +96,10 @@ RSpec.describe "Viewing an icon" do
       expect(page).to have_link('Galleries')
       expect(page).to have_link('Posts')
       expect(page).to have_link('Replies')
-      expect(page).not_to have_link('Edit Icon')
-      expect(page).not_to have_link('Make Avatar')
-      expect(page).not_to have_link('Replace Icon')
-      expect(page).not_to have_link('Delete Icon')
+      expect(page).to have_no_link('Edit Icon')
+      expect(page).to have_no_link('Make Avatar')
+      expect(page).to have_no_link('Replace Icon')
+      expect(page).to have_no_link('Delete Icon')
     end
 
     within('.icon-right-content-box') do
@@ -146,10 +146,10 @@ RSpec.describe "Viewing an icon" do
       expect(page).to have_link('Galleries')
       expect(page).to have_link('Posts')
       expect(page).to have_link('Replies')
-      expect(page).not_to have_link('Edit Icon')
-      expect(page).not_to have_link('Make Avatar')
-      expect(page).not_to have_link('Replace Icon')
-      expect(page).not_to have_link('Delete Icon')
+      expect(page).to have_no_link('Edit Icon')
+      expect(page).to have_no_link('Make Avatar')
+      expect(page).to have_no_link('Replace Icon')
+      expect(page).to have_no_link('Delete Icon')
     end
 
     within('.icon-right-content-box') do
