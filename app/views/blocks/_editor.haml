@@ -21,7 +21,7 @@
       %br
       = f.select :hide_them, options_from_collection_for_select(@options.to_a, :second, :first, @block.hide_them), { class: 'text chosen-select' }
   %tr
-    %th.sub= f.label :hide_you, 'Hide yourself'
+    %th.sub= f.label :hide_me, 'Hide yourself'
     %td{class: klass}
       Prevent them from seeing your:
       %br
