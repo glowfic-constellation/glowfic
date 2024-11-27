@@ -1,7 +1,7 @@
 %tbody
   - klass = cycle('even', 'odd')
   %tr
-    %th.sub= f.label :user
+    %th.sub= f.label :blocked_user_id, 'User'
     %td{class: klass}
       - if local_assigns[:blocked_user]
         = blocked_user.username
