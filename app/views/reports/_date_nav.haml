@@ -1,3 +1,5 @@
+-# locals: ()
+
 - if @day < Time.zone.today
   = link_to url_for(day: @day + 1.day, sort: params[:sort], new_today: params[:new_today]), class: 'view-button-link' do
     - style = 'font-style: italic;' if @day + 1.day >= Time.zone.today

@@ -1,7 +1,8 @@
+-# locals: ( group:, page_view:, colspan:, characters: nil, no_header: false, skip_grouped_templates: false )
+
 - partial_type = (page_view == 'list') ? 'characters/list_section' : 'characters/icon_view'
-- skip_grouped_templates = false unless defined?(:skip_grouped_templates)
-- characters = group.characters unless local_assigns[:characters]
-- unless local_assigns[:no_header]
+- characters ||= group.characters
+- unless no_header
   %tr
     %th.sub{colspan: colspan}
       = group ? "Group: #{group.name}" : 'Ungrouped Characters'

@@ -1,6 +1,9 @@
+-# locals: ( gallery:, icons: nil, character_gallery: nil, is_owner: false, skip_forms: false, hide_minmax: false, klass: '' )
+-# icons and skip_forms are passed to views
+
 - attrs = {}
 - gallery_klass = []
-- if local_assigns[:character_gallery]
+- unless character_gallery.nil?
   - gallery_klass << 'section-ordered'
   - attrs[:data] = { id: character_gallery.id, order: character_gallery.section_order }
 - gallery_klass << "gallery-title-#{gallery.id}" if gallery
@@ -8,7 +11,7 @@
 - colspan = (page_view == 'list') ? 5 : 1
 %tbody{class: gallery_klass, **attrs}
   %tr.gallery-header
-    %th.gallery-table-title{class: (klass if defined? klass), colspan: colspan}
+    %th.gallery-table-title{class: klass, colspan: colspan}
       - link = gallery ? gallery_path(gallery) : user_gallery_path(id: 0, user_id: @user.id)
       = link_to gallery ? gallery.name : 'Galleryless icons', link, class: 'gallery-title'
       - if is_owner && !skip_forms
@@ -21,7 +24,7 @@
               Edit Gallery
           = link_to gallery_path(gallery), method: :delete, data: { confirm: 'Are you sure you want to delete this gallery? (This will not delete the icons.)' }, class: 'gallery-delete' do
             .link-box.action-delete x Delete Gallery
-      - if local_assigns[:hide_minmax]
+      - if hide_minmax
         = link_to url_for(view: 'icons'), class: 'view-button-link' do
           .view-button{class: (:selected unless page_view == 'list')}
             = image_tag "icons/grid.png", class: 'icon-view', alt: ''
@@ -33,7 +36,7 @@
       - else
         .gallery-box.float-right.gallery-minmax{data: { id: gallery.id }}
           = link_to '-', '#'
-      - if local_assigns[:character_gallery] && (is_owner || current_user.try(:admin?))
+      - if !character_gallery.nil? && (is_owner || current_user.try(:admin?))
         .float-right
           = link_to '#', class: "section-up disabled-arrow" do
             = image_tag "icons/arrow_up.png", title: 'Move Up', alt: 'Move Up'
