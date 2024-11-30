@@ -42,9 +42,9 @@
                 All Characters
   %tbody
     - if page_view == 'list'
-      = render 'characters/list_section', characters: @template.characters, ignore_retired_filter: @template.retired
+      = render 'characters/list_section', characters: @template.characters, show_retired: @template.retired || show_retired
     - else
-      = render 'characters/icon_view', characters: @template.characters, ignore_retired_filter: @template.retired
+      = render 'characters/icon_view', characters: @template.characters, show_retired: @template.retired || show_retired
 - if @posts.present?
   %br
   - content_for(:posts_title) { 'Posts with Template Instances' }
