@@ -22,19 +22,22 @@ RSpec.describe IconHelper do
     end
 
     it "returns the correct image_tag" do
-      html = image_tag url, { alt: keyword, title: keyword, class: IconHelper::ICON }
-      expect(helper.icon_mem_tag(url, keyword)).to eq(html)
+      expect(helper.icon_mem_tag(url, keyword)).to eq_structured_html([
+        { tag: "img", path: "/html/body/img", attrs: { src: url, alt: keyword, title: keyword, class: IconHelper::ICON } },
+      ])
     end
 
     it "takes a parameter for pointers" do
-      html = image_tag url, { alt: keyword, title: keyword, class: IconHelper::ICON + ' pointer' }
-      expect(helper.icon_mem_tag(url, keyword, pointer: true)).to eq(html)
+      expect(helper.icon_mem_tag(url, keyword, pointer: true)).to eq_structured_html([
+        { tag: "img", path: "/html/body/img", attrs: { src: url, alt: keyword, title: keyword, class: IconHelper::ICON + ' pointer' } },
+      ])
     end
 
     it "takes a parameter for a class" do
       klass = 'vmid preview_icon'
-      html = image_tag url, { alt: keyword, title: keyword, class: IconHelper::ICON + ' ' + klass }
-      expect(helper.icon_mem_tag(url, keyword, class: klass)).to eq(html)
+      expect(helper.icon_mem_tag(url, keyword, class: klass)).to eq_structured_html([
+        { tag: "img", path: "/html/body/img", attrs: { src: url, alt: keyword, title: keyword, class: IconHelper::ICON + ' ' + klass } },
+      ])
     end
   end
 
