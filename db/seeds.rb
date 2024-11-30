@@ -34,6 +34,11 @@ User.create!(
   username: 'Reader', password: 'reader', email: "dummy7@example.com", role_id: Permissible::READONLY,
 )
 
+User.create!(
+  username: 'red', password: 'red', email: "dummy8@example.com", role_id: Permissible::MOD,
+  layout: 'starrydark', ignore_unread_daily_report: true, created_at: "2024-11-30 15:34:00",
+)
+
 User.update_all(tos_version: 20181109) # rubocop:disable Rails/SkipsModelValidations
 
 puts "Creating avatars..."
