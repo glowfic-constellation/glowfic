@@ -46,3 +46,32 @@ def stub_fixture(url, filename)
   file = Rails.root.join('spec', 'support', 'fixtures', filename + '.html')
   stub_request(:get, url).to_return(status: 200, body: File.new(file))
 end
+
+def structured_html(html)
+  # given <img src="foo.jpg">, returns [{ tag: "img", path: "/html/body/img", attrs: { src: "foo.jpg" } }]
+  # useful for ensuring exact structure of HTML returned, without depending on formatting or ordering-specific details.
+  # handles both element nodes and text nodes.
+  elements = []
+  Capybara.string(html).find('body').native.traverse do |n|
+    next if n.node_name == "body"
+    elements << n
+  end
+  elements.map do |n|
+    if n.element?
+      { tag: n.node_name, path: n.path, attrs: n.attributes.transform_keys(&:to_sym).transform_values(&:value) }
+    else
+      { tag: n.node_name, path: n.path, content: n.content }
+    end
+  end
+end
+
+RSpec::Matchers.define :eq_structured_html do |expected|
+  match do |actual|
+    @actual = structured_html(actual).sort_by(&:to_s)
+    @expected = expected.sort_by(&:to_s)
+    values_match?(@expected, @actual)
+  end
+
+  diffable
+  attr_reader :actual, :expected
+end
