@@ -9,8 +9,8 @@ class Template < ApplicationRecord
 
   scope :ordered, -> { order(name: :asc, created_at: :asc, id: :asc) }
 
-  CHAR_PLUCK = Arel.sql("id, concat_ws(' | ', name, nickname, screenname)")
-  NPC_PLUCK = Arel.sql("id, concat_ws(' | ', name, nickname)")
+  CHAR_PLUCK = Arel.sql("characters.id as id, concat_ws(' | ', characters.name, nickname, screenname)")
+  NPC_PLUCK = Arel.sql("characters.id as id, concat_ws(' | ', characters.name, nickname)")
 
   def plucked_characters
     characters.non_npcs.not_retired.pluck(CHAR_PLUCK)
