@@ -19,7 +19,7 @@ module IconHelper
       klass += ' ' + supplied_class
     end
 
-    tag("img", { src: url, alt: keyword, title: keyword, class: klass }.merge(**args))
+    tag.img({ src: url, alt: keyword, title: keyword, class: klass }.merge(**args))
   end
 
   def no_icon_tag(**args)
@@ -28,7 +28,7 @@ module IconHelper
 
   def quick_switch_tag(image_url, short_text, hover_name, char_id)
     return tag.div short_text, class: CHAR_ICON_FAKE, title: hover_name, data: { character_id: char_id } if image_url.nil?
-    tag("img", { src: image_url, class: CHAR_ICON, alt: hover_name, title: hover_name, data: { character_id: char_id } })
+    tag.img({ src: image_url, class: CHAR_ICON, alt: hover_name, title: hover_name, data: { character_id: char_id } })
   end
 
   def user_icon_tag(user)
