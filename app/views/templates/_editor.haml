@@ -5,6 +5,11 @@
   %tr
     %th.sub.vtop= f.label :description
     %td.odd= f.text_area :description
+  %tr
+    %th.sub= f.label :retired, 'Retired?'
+    %td{class: cycle('even', 'odd')}
+      = f.check_box :retired, class: 'vmid'
+      = f.label :retired, 'Do not display member characters in character selector', class: 'no-margin'
   - if @selectable_characters.present?
     %tr
       %th.sub.vtop= f.label :characters_ids, 'Characters'
