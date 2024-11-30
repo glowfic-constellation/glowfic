@@ -11,7 +11,7 @@ module IconHelper
     icon_mem_tag(icon.url, icon.keyword, **args)
   end
 
-  def icon_mem_tag(url, keyword, **args)
+  def icon_mem_tag(url, keyword, lookup_asset: false, **args)
     return '' if url.nil?
     klass = ICON
     klass += ' pointer' if args.delete(:pointer)
@@ -19,11 +19,17 @@ module IconHelper
       klass += ' ' + supplied_class
     end
 
-    tag.img(src: url, alt: keyword, title: keyword, class: klass, **args)
+    args = { alt: keyword, title: keyword, class: klass }.merge(args)
+
+    if lookup_asset
+      image_tag url, **args
+    else
+      tag.img(src: url, **args)
+    end
   end
 
   def no_icon_tag(**args)
-    icon_mem_tag(NO_ICON_URL, NO_ICON, **args)
+    icon_mem_tag(NO_ICON_URL, NO_ICON, lookup_asset: true, **args)
   end
 
   def quick_switch_tag(image_url, short_text, hover_name, char_id)
