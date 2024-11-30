@@ -68,7 +68,11 @@ end
 RSpec::Matchers.define :eq_structured_html do |expected|
   match do |actual|
     @actual = structured_html(actual).sort_by(&:to_s)
-    @expected = expected.sort_by(&:to_s)
+    @expected = if expected.is_a?(String)
+      structured_html(expected)
+    else
+      expected
+    end.sort_by(&:to_s)
     values_match?(@expected, @actual)
   end
 
