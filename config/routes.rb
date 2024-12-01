@@ -86,6 +86,8 @@ Rails.application.routes.draw do
       get :delete_history
       get :stats
       post :warnings
+      get :split
+      post :do_split
     end
     collection do
       post :mark
