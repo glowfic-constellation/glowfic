@@ -96,6 +96,16 @@
             %div
               = image_tag "icons/lock.png".freeze, alt: ''
               Lock Authors
+        - if params[:split_ui] == 'true'
+          = link_to post_path(@post, split_ui: 'false'.freeze, page: page, per_page: per_page) do
+            %div
+              = image_tag "icons/cut_closed.png".freeze, alt: ''
+              Disable Split UI
+        - else
+          = link_to post_path(@post, split_ui: 'true'.freeze, page: page, per_page: per_page) do
+            %div
+              = image_tag "icons/cut.png".freeze, alt: ''
+              Split Post
         - author = @post.author_for(current_user)
         - if author&.can_owe?
           = link_to mark_posts_path(marked_ids: [@post.id], commit: "Remove from Replies Owed"), method: :post do
