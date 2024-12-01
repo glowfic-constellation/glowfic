@@ -171,8 +171,6 @@ Rails.application.routes.draw do
 
     resources :posts, only: [] do
       collection do
-        get :split
-        post :do_split
         get :regenerate_flat
         post :do_regenerate
       end
