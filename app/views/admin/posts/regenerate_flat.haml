@@ -12,10 +12,10 @@
         %th.sub= f.label :before, 'Last Regenerated Before'
         %td{class: cycle('even', 'odd')}= f.datetime_field :before, value: params[:before] || Time.zone.now
       %tr
-        %td.sub Force Regenerate?
+        %th.sub Force Regenerate?
         %td.padding-5{class: cycle('even', 'odd')}
-          = f.check_box :force, checked: params[:force], class: 'vmid no-margin', style: 'margin-bottom: 3px;'
-          = f.label :force, "Include Flatposts Regenerated Since Post Last Tagged"
+          = f.check_box :force, checked: params[:force], class: 'vmid'
+          = f.label :force, "Include Flatposts Regenerated Since Post Last Tagged", class: 'vmid'
     %tfoot
       %tr
         %th.form-table-ender{colspan: 2}

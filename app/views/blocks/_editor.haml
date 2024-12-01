@@ -14,8 +14,8 @@
   %tr
     %th.sub= f.label :block_interactions, 'Interactions'
     %td{class: klass}
-      = f.check_box :block_interactions
-      = f.label :block_interactions, "Prevent them from interacting with you?"
+      = f.check_box :block_interactions, class: 'vmid'
+      = f.label :block_interactions, "Prevent them from interacting with you?", class: 'vmid'
   %tr
     %th.sub= f.label :hide_them
     %td{class: klass}
