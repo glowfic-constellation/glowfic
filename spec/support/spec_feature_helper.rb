@@ -12,8 +12,8 @@ module SpecSystemHelper
     user
   end
 
-  def row_for(title)
-    find('tr') { |x| x.has_selector?('th', text: title) }
+  def row_for(title, **args)
+    find('tr') { |x| x.has_selector?('th', text: title, **args) }
   end
 
   def table_titled(title)
