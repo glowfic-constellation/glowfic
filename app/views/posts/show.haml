@@ -4,9 +4,11 @@
 
 - if params[:split_ui] == 'true' && @post.metadata_editable_by?(current_user)
   - content_for :flashes do
-    .flash.error
+    .flash.error.line-height-1-8
       = image_tag "icons/cut_red.png".freeze, class: 'vmid', alt: ''
-      You are in post split mode. Please click the scissors icon on the reply you wish to make the start of the new post.
+      You are in Split Post mode. Please click the scissors icon on the reply you wish to make the start of the new post.
+      = link_to post_path(@post, split_ui: 'false'.freeze, page: page, per_page: per_page) do
+        .link-box.action-dismiss.float-right Exit Split Post mode
 
 - if @warnings.present?
   - content_for :flashes do
