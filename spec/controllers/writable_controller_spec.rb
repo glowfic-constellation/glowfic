@@ -224,7 +224,7 @@ RSpec.describe WritableController do
       expect(templates.first.plucked_characters).to eq(info)
     end
 
-    it "excludes retired templateless characters" do
+    it "excludes retired templated characters" do
       user = create(:user)
       template = create(:template, user: user)
       char1 = create(:character, template: template, user: user, name: 'AAAA')
