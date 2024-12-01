@@ -2,6 +2,12 @@
 
 %span.time-loaded= pretty_time(DateTime.now.in_time_zone)
 
+- if params[:split_ui] == 'true' && @post.metadata_editable_by?(current_user)
+  - content_for :flashes do
+    .flash.error
+      = image_tag "icons/cut_red.png".freeze, class: 'vmid', alt: ''
+      You are in post split mode. Please click the scissors icon on the reply you wish to make the start of the new post.
+
 - if @warnings.present?
   - content_for :flashes do
     .flash.error
