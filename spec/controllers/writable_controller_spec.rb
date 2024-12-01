@@ -224,12 +224,15 @@ RSpec.describe WritableController do
       expect(templates.first.plucked_characters).to eq(info)
     end
 
-    it "excludes retired templated characters" do
+    it "excludes retired characters" do
       user = create(:user)
       template = create(:template, user: user)
       char1 = create(:character, template: template, user: user, name: 'AAAA')
       create_list(:character, 2, template: template, user: user, retired: true)
       char2 = create(:character, template: template, user: user, name: 'DDDD', screenname: "screen_name", nickname: "Nickname")
+      create(:character, user: user, retired: true)
+      retired_template = create(:template, user: user, retired: true)
+      create(:character, template: retired_template, user: user)
       login_as(user)
       controller.send(:build_template_groups)
       templates = assigns(:templates)
