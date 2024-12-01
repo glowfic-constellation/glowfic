@@ -1,12 +1,15 @@
-- characters = name.characters.non_npcs.ordered unless local_assigns[:characters]
-- characters = characters.not_retired unless local_assigns.fetch(:show_retired) { show_retired }
+-# locals: ( name: nil, characters: nil, show_template: false, show_user: false, hide_buttons: false, show_new_character_button: false, show_retired: show_retired() )
+-# show_template, show_user, and hide_buttons are to match list_section
+
+- characters ||= name.characters.non_npcs.ordered
+- characters = characters.not_retired unless show_retired
 
 - if @template.nil? && name.present?
   %tr
     %td.subber.padding-10{colspan: 6}
       - if name.is_a? String
         %b= name
-        - if local_assigns[:show_new_character_button]
+        - if show_new_character_button
           = link_to new_character_path do
             .link-box.action-new{style: 'font-size: 14px'} + New Character
       - else

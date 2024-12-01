@@ -158,11 +158,11 @@
   - post_open = !@post.authors_locked?
   - draft_exists = !@reply.content.nil?
   - if (post_open && draft_exists) || @post.author_for(current_user)&.can_reply?
-    = render 'replies/write', reply: @reply, url: replies_path, method: :post
+    = render 'replies/write', reply: @reply
   - elsif post_open
     .post-expander.post-editor-expander
       .info + Join Thread
       .hidden
-        = render 'replies/write', reply: @reply, url: replies_path, method: :post
+        = render 'replies/write', reply: @reply
 
 .centered.margin-10= link_to 'Back to Top', '#'

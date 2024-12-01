@@ -1,14 +1,16 @@
+-# locals: ( f:, blocked_user: nil )
+
 %tbody
   - klass = cycle('even', 'odd')
   %tr
     %th.sub= f.label :blocked_user_id, 'User'
     %td{class: klass}
-      - if local_assigns[:blocked_user]
-        = blocked_user.username
-      - else
+      - if blocked_user.nil?
         = f.select :blocked_user_id, options_from_collection_for_select(@users,
           :id, :username, params.fetch(:block, {})[:blocked_user_id]),
           { class: 'text chosen-select', prompt: '— Choose User —' }
+      - else
+        = blocked_user.username
   %tr
     %th.sub= f.label :block_interactions, 'Interactions'
     %td{class: klass}

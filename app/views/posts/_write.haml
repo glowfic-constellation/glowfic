@@ -1,3 +1,5 @@
+-# locals: ( post: )
+
 = form_for post, html: { id: 'post_form' } do |f|
   - content_for :form do
     - unless post.id.present? && !post.editable_by?(current_user)
