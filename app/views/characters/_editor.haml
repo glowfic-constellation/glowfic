@@ -22,7 +22,7 @@
       - if @character.user == current_user
         %br
         = check_box_tag :new_template, '1', params[:new_template].present?
-        = label_tag :new_template, 'Create New Template'
+        = label_tag :new_template, 'Create New Template', class: 'vmid'
   - if @character.user == current_user
     %tr#create_template{class: ('hidden' unless params[:new_template])}
       = f.fields_for :template do |ff|
@@ -53,12 +53,12 @@
     %th.sub= f.label :npc, 'NPC?'
     %td{class: cycle('even', 'odd')}
       = f.check_box :npc, class: 'vmid'
-      = f.label :npc, 'Remove from character page and show in separate dropdown when writing', class: 'no-margin'
+      = f.label :npc, 'Remove from character page and show in separate dropdown when writing', class: 'vmid'
   %tr
     %th.sub= f.label :retired, 'Retired?'
     %td{class: cycle('even', 'odd')}
       = f.check_box :retired, class: 'vmid'
-      = f.label :retired, 'Do not display in character selector', class: 'no-margin'
+      = f.label :retired, 'Do not display in character selector', class: 'vmid'
   - if current_user.id != @character.user_id
     %tr
       %th.sub.vtop= f.label :audit_comment, 'Moderator Note'

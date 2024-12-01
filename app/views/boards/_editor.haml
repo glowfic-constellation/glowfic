@@ -19,7 +19,7 @@
     %th.sub= f.label :authors_locked, 'Locked?'
     %td.even
       = f.check_box :authors_locked, class: 'vmid', checked: @board.authors_locked
-      = f.label :authors_locked, 'Only allow authors to create new posts in this continuity', class: 'no-margin'
+      = f.label :authors_locked, 'Only allow authors to create new posts in this continuity', class: 'vmid'
   %tr
     %th.sub.vtop Description
     %td.odd= f.text_area :description

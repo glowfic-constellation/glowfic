@@ -14,10 +14,10 @@
         %th.sub Notifications
         %td{class: cycle('even', 'odd')}
           = f.check_box :email_notifications, class: 'width-15 vmid'
-          = f.label :email_notifications, "Email about new tags"
+          = f.label :email_notifications, "Email about new tags", class: 'vmid'
           %br
           = f.check_box :favorite_notifications, class: 'width-15 vmid'
-          = f.label :favorite_notifications, 'Notify when a favorited author makes a new post'
+          = f.label :favorite_notifications, 'Notify when a favorited author makes a new post', class: 'vmid'
       - unless current_user.avatar.present?
         %tr
           %th.sub Avatar
@@ -33,7 +33,7 @@
         %th.sub Split icon picker
         %td{class: cycle('even', 'odd')}
           = f.check_box :icon_picker_grouping, class: 'width-15 vmid'
-          = f.label :icon_picker_grouping, "Group the icon picker by gallery"
+          = f.label :icon_picker_grouping, "Group the icon picker by gallery", class: 'vmid'
       %tr
         %th.sub Default view
         %td{class: cycle('even', 'odd')}
@@ -42,7 +42,7 @@
           = f.select(:default_character_split, options_for_select({ 'Group characters page by template': 'template', 'Do not group characters page': 'none' }, current_user.default_character_split))
           %br
           = f.check_box :default_hide_retired_characters, class: 'width-15 vmid'
-          = f.label :default_hide_retired_characters, "Hide retired characters"
+          = f.label :default_hide_retired_characters, "Hide retired characters", class: 'vmid'
       %tr
         %th.sub= f.label :default_editor
         - editor_modes = { 'Rich Text': 'rtf', HTML: 'html', Markdown: 'md' }
@@ -65,33 +65,33 @@
         %th.sub Unread
         %td{class: cycle('even', 'odd')}
           = f.check_box :unread_opened, class: 'width-15 vmid'
-          = f.label :unread_opened, "Display opened threads only"
+          = f.label :unread_opened, "Display opened threads only", class: 'vmid'
           %br
           = f.check_box :visible_unread, class: 'width-15 vmid'
-          = f.label :visible_unread, "Outline when jumping to unread"
+          = f.label :visible_unread, "Outline when jumping to unread", class: 'vmid'
           %br
           = f.check_box :hide_from_all, class: 'width-15 vmid'
-          = f.label :hide_from_all, "Hide hidden posts from recently updated and other post lists"
+          = f.label :hide_from_all, "Hide hidden posts from recently updated and other post lists", class: 'vmid'
       %tr
         %th.sub Daily Report
         %td{class: cycle('even', 'odd')}
           = f.check_box :ignore_unread_daily_report, class: 'width-15 vmid'
-          = f.label :ignore_unread_daily_report, "Hide unread notice"
+          = f.label :ignore_unread_daily_report, "Hide unread notice", class: 'vmid'
       %tr
         %th.sub Warnings
         %td{class: cycle('even', 'odd')}
           = f.check_box :hide_warnings, class: 'width-15 vmid'
-          = f.label :hide_warnings, "Hide content warnings"
+          = f.label :hide_warnings, "Hide content warnings", class: 'vmid'
       %tr
         %th.sub Replies Owed
         %td{class: cycle('even', 'odd')}
           = f.check_box :hide_hiatused_tags_owed, class: 'width-15 vmid'
-          = f.label :hide_hiatused_tags_owed, "Hide hiatused threads"
+          = f.label :hide_hiatused_tags_owed, "Hide hiatused threads", class: 'vmid'
       %tr
         %th.sub Character Quick Switcher
         %td{class: cycle('even', 'odd')}
           = f.check_box :show_user_in_switcher, class: 'width-15 vmid'
-          = f.label :show_user_in_switcher, "Show user character"
+          = f.label :show_user_in_switcher, "Show user character", class: 'vmid'
     %tfoot
       %tr
         %th.form-table-ender{colspan: 2}= submit_tag "Save", class: 'button'
