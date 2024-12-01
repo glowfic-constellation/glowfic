@@ -1,0 +1,13 @@
+= render 'breadcrumbs', subtitle: 'Split Post', post: @post
+
+Splitting
+= link_to @reply.post.subject, @reply.post
+at reply id #
+= params[:reply_id]
+\. New Post:
+
+.content-header= params[:subject]
+- @reply.id = nil
+= render 'replies/single', reply: @reply, show_edit: false
+
+= render 'split'
