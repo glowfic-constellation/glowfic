@@ -31,19 +31,20 @@
           .view-button{class: (:selected if page_view == 'list')}
             = image_tag "icons/list.png", class: 'list-view', alt: ''
             List
-        - if show_retired
-          = link_to character_menu_link(retired: false), class: 'view-button-link' do
-            .view-button
-              Hide Retired
-        - else
-          = link_to character_menu_link(retired: true), class: 'view-button-link' do
-            .view-button
-              All Characters
+        - unless @template.retired # If the template is retired, it always shows all of its characters
+          - if show_retired
+            = link_to character_menu_link(retired: false), class: 'view-button-link' do
+              .view-button
+                Hide Retired
+          - else
+            = link_to character_menu_link(retired: true), class: 'view-button-link' do
+              .view-button
+                All Characters
   %tbody
     - if page_view == 'list'
-      = render 'characters/list_section', characters: @template.characters
+      = render 'characters/list_section', characters: @template.characters, show_retired: @template.retired || show_retired
     - else
-      = render 'characters/icon_view', characters: @template.characters
+      = render 'characters/icon_view', characters: @template.characters, show_retired: @template.retired || show_retired
 - if @posts.present?
   %br
   - content_for(:posts_title) { 'Posts with Template Instances' }

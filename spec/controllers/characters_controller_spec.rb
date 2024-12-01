@@ -122,12 +122,19 @@ RSpec.describe CharactersController do
       end
 
       context "retired" do
-        before(:each) { create(:character, user: user, retired: true, name: 'RetiredCharacter') }
+        before(:each) do
+          create(:character, user: user, retired: true, name: 'RetiredCharacter')
+
+          retired_template = create(:template, user: character.user, retired: true, name: 'RetiredTemplate')
+          create(:character, user: character.user, name: 'CharacterInRetiredTemplate', template: retired_template)
+        end
 
         it "skips retired characters when specified" do
           get :index, params: { user_id: user.id, retired: 'false' }
           expect(response.body).to include('ExistingCharacter')
           expect(response.body).not_to include('RetiredCharacter')
+          expect(response.body).not_to include('RetiredTemplate')
+          expect(response.body).not_to include('CharacterInRetiredTemplate')
         end
 
         it "skips retired characters when specified as a default setting" do
@@ -136,6 +143,8 @@ RSpec.describe CharactersController do
           get :index, params: { user_id: user.id }
           expect(response.body).to include('ExistingCharacter')
           expect(response.body).not_to include('RetiredCharacter')
+          expect(response.body).not_to include('RetiredTemplate')
+          expect(response.body).not_to include('CharacterInRetiredTemplate')
         end
 
         it "still shows retired characters when default setting is overridden" do
@@ -144,6 +153,8 @@ RSpec.describe CharactersController do
           get :index, params: { user_id: user.id, retired: 'true' }
           expect(response.body).to include('ExistingCharacter')
           expect(response.body).to include('RetiredCharacter')
+          expect(response.body).to include('RetiredTemplate')
+          expect(response.body).to include('CharacterInRetiredTemplate')
         end
       end
     end

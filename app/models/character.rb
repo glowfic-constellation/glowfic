@@ -39,6 +39,10 @@ class Character < ApplicationRecord
   scope :with_name, ->(charname) { where("concat_ws(' | ', name, nickname, screenname) ILIKE ?", "%#{charname}%") }
   scope :npcs, -> { where(npc: true) }
   scope :non_npcs, -> { where(npc: false) }
+  scope :not_retired, -> do
+    base = where(retired: false).left_outer_joins(:template)
+    base.where(template_id: nil).or(base.where(template: { retired: false }))
+  end
 
   accepts_nested_attributes_for :template, reject_if: :all_blank
 

@@ -14,7 +14,7 @@ class WritableController < ApplicationController
       user.characters.non_npcs.where(template_id: nil, retired: false).ordered.pluck(Template::CHAR_PLUCK),
     )
     @templates = templates + [templateless]
-    all_npcs = faked_npcs.new('All NPCs', nil, user.characters.where(retired: false).npcs.ordered.pluck(Template::NPC_PLUCK))
+    all_npcs = faked_npcs.new('All NPCs', nil, user.characters.npcs.not_retired.ordered.pluck(Template::NPC_PLUCK))
     @npcs = [all_npcs]
 
     if @post

@@ -50,13 +50,14 @@ RSpec.describe TemplatesController do
     it "works" do
       char = create(:character)
       login_as(char.user)
-      post :create, params: { template: { name: 'testtest', description: 'test desc', character_ids: [char.id] } }
+      post :create, params: { template: { name: 'testtest', description: 'test desc', character_ids: [char.id], retired: true } }
       created = Template.last
       expect(response).to redirect_to(template_url(created))
       expect(flash[:success]).to eq("Template created.")
       expect(created.name).to eq('testtest')
       expect(created.description).to eq('test desc')
       expect(created.characters).to match_array([char])
+      expect(created.retired).to eq(true)
     end
   end
 
@@ -207,6 +208,7 @@ RSpec.describe TemplatesController do
           name: new_name,
           description: 'new desc',
           character_ids: [char.id],
+          retired: true,
         },
       }
       expect(response).to redirect_to(template_url(template))
@@ -216,6 +218,7 @@ RSpec.describe TemplatesController do
       expect(template.name).to eq(new_name)
       expect(template.description).to eq('new desc')
       expect(template.characters).to match_array([char])
+      expect(template.retired).to eq(true)
     end
   end
 
