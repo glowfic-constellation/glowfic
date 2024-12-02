@@ -6,6 +6,7 @@ class PostsController < WritableController
   before_action :readonly_forbidden, only: [:owed]
   before_action :find_model, only: [:show, :history, :delete_history, :stats, :warnings, :edit, :update, :destroy, :split, :do_split, :preview_split]
   before_action :require_edit_permission, only: [:edit, :delete_history, :split, :do_split, :preview_split]
+  before_action :require_locked_authorship, only: [:split, :do_split, :preview_split]
   before_action :require_import_permission, only: [:new, :create]
   before_action :require_create_permission, only: [:new, :create]
   before_action :editor_setup, only: [:new, :edit]
@@ -488,6 +489,12 @@ class PostsController < WritableController
     return if current_user.has_permission?(:import_posts)
     flash[:error] = "You do not have access to this feature."
     redirect_to new_post_path
+  end
+
+  def require_locked_authorship
+    return if @post.authors_locked
+    flash[:error] = "Post must be locked to current authors to be split."
+    redirect_to @post
   end
 
   def permitted_params(include_associations=true)
