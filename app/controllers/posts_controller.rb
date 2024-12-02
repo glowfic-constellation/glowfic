@@ -5,7 +5,7 @@ class PostsController < WritableController
   before_action :login_required, except: [:index, :show, :history, :warnings, :search, :stats]
   before_action :readonly_forbidden, only: [:owed]
   before_action :find_model, only: [:show, :history, :delete_history, :stats, :warnings, :edit, :update, :destroy, :split, :do_split, :preview_split]
-  before_action :require_edit_permission, only: [:edit, :delete_history, :split, :do_split]
+  before_action :require_edit_permission, only: [:edit, :delete_history, :split, :do_split, :preview_split]
   before_action :require_import_permission, only: [:new, :create]
   before_action :require_create_permission, only: [:new, :create]
   before_action :editor_setup, only: [:new, :edit]
