@@ -1,5 +1,7 @@
+-# locals: ( section:, section_counter: nil )
+
 - colspan = 7
-- in_collection = local_assigns[:section_counter].present?
+- in_collection = !section_counter.nil?
 - if in_collection
   %tr
     %td.continuity-spacer{colspan: colspan}

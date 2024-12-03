@@ -1,10 +1,12 @@
+-# locals: ( paginated:, no_per: false )
+
 .paginator.centered.sub
   .paginator-meta
     .left-align
       Total:
       %span.reply-count=paginated.total_entries
     .right-align
-      - if paginated.klass == Reply && !local_assigns[:no_per]
+      - if paginated.klass == Reply && !no_per
         Posts Per Page:
         = select_tag :per_page, per_page_options, class: 'per-page', id: nil
     .narrow-clear

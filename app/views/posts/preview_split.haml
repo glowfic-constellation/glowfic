@@ -8,6 +8,6 @@ at reply id #
 
 .content-header= params[:subject]
 - @reply.id = nil
-= render 'replies/single', reply: @reply, show_edit: false
+= render 'replies/single', reply: @reply, hide_footer: true
 
 = render 'split'

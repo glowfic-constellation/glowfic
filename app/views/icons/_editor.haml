@@ -1,3 +1,5 @@
+-# locals: ( f:, gif: )
+
 .icons-box
   = icon_tag f.object, id: "icon-#{f.object.id}"
   = f.hidden_field :id
@@ -30,12 +32,12 @@
     - if gif.present?
       %tr.gallery-icon-remove
         %td{class: cycle('even', 'odd'), colspan: 2}
-          = gif.check_box :_destroy
-          = gif.label :_destroy, 'Remove from Gallery'
+          = gif.check_box :_destroy, class: 'vmid'
+          = gif.label :_destroy, 'Remove from Gallery', class: 'vmid'
       %tr.gallery-icon-destroy
         %td{class: cycle('even', 'odd'), colspan: 2}
-          = f.check_box :_destroy
-          = f.label :_destroy, 'Delete Icon'
+          = f.check_box :_destroy, class: 'vmid'
+          = f.label :_destroy, 'Delete Icon', class: 'vmid'
   %tfoot
     - if gif.nil?
       %tr.submit-row

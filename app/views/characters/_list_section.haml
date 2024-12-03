@@ -1,14 +1,16 @@
+-# locals: ( name: nil, characters: nil, show_template: false, show_user: false, hide_buttons: false, show_new_character_button: false, show_retired: show_retired() )
+
 - col_count = 7
-- col_count += 1 if local_assigns[:show_template]
-- characters = name.characters.non_npcs.ordered unless local_assigns[:characters]
-- characters = characters.not_retired unless local_assigns.fetch(:show_retired) { show_retired }
+- col_count += 1 if show_template
+- characters ||= name.characters.non_npcs.ordered
+- characters = characters.not_retired unless show_retired
 
 - if @template.nil? && name.present?
   %tr
     %td.subber.character-list-template{colspan: col_count}
       - if name.is_a? String
         %b= name
-        - if local_assigns[:show_new_character_button]
+        - if show_new_character_button
           = link_to new_character_path do
             .link-box.action-new{style: 'font-size: 14px'} + New Character
       - else
@@ -38,7 +40,7 @@
     - klass = cycle('even', 'odd')
     %td.padding-5{class: klass}
       %b Name
-    - if local_assigns[:show_template]
+    - if show_template
       %td.padding-5{class: klass}
         %b Template
     %td.padding-5{class: klass}
@@ -50,14 +52,14 @@
     %td.padding-5{class: klass}
       %b Facecast
     %td.padding-5{class: klass}
-      - if local_assigns[:show_user]
+      - if show_user
         %b User
       - else
         %b Setting
     %td.padding-5{class: klass}
-  - pluck = characters_list(characters.ordered, local_assigns[:show_template])
-  - params = { show_template: local_assigns[:show_template], show_user: local_assigns[:show_user], hide_buttons: local_assigns[:hide_buttons] }
-  - params[:settings] = settings_info(characters) unless local_assigns[:show_user]
+  - pluck = characters_list(characters.ordered, show_template)
+  - params = { show_template: show_template, show_user: show_user, hide_buttons: hide_buttons }
+  - params[:settings] = show_user ? {} : settings_info(characters)
   = render partial: 'characters/list_item', collection: pluck, as: :character, locals: params
   - if characters.methods.include?(:total_pages) && characters.total_pages > 1
     %tfoot

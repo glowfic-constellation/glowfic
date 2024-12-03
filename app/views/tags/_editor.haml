@@ -1,3 +1,5 @@
+-# locals: ( f: )
+
 %tbody
   %tr
     %th.sub= f.label :name
@@ -17,7 +19,7 @@
     %th.sub= f.label :owned, 'Owned?'
     %td{class: cycle('even', 'odd')}
       = f.check_box :owned, class: 'vmid width-15'
-      = f.label :owned, 'Tag belongs to owner'
+      = f.label :owned, 'Tag belongs to owner', class: 'vmid'
   - if f.object.is_a?(Setting)
     %tr
       %th.sub= f.label :parent_settings

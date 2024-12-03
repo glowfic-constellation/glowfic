@@ -1,3 +1,5 @@
+-# locals: ()
+
 = form_tag icon_gallery_path(@gallery), method: :post, id: 'add-gallery-icons' do
   = hidden_field_tag :image_ids
   .content-header
@@ -13,8 +15,8 @@
       %th.sub Galleryless Icons
     %tr
       %td.even.padding-5#icons-0
-        = check_box_tag :select_all, 0, false, class: 'select-all'
-        Select all icons
+        = check_box_tag :select_all, 0, false, class: 'select-all vmid'
+        %span.vmid Select all icons
         %br
         - @unassigned.each do |icon|
           .gallery-icon
@@ -32,8 +34,8 @@
           .float-right.gallery-box{id: "minmax-#{gallery.id}"} +
       %tr
         %td.padding-5.hidden{class: cycle('even', 'odd'), id: "icons-#{gallery.id}"}
-          = check_box_tag :select_all, gallery.id, false, class: 'select-all', id: nil
-          Select all icons
+          = check_box_tag :select_all, gallery.id, false, class: 'select-all vmid', id: nil
+          %span.vmid Select all icons
           %br
     %tr
       %td.form-table-ender.padding-5

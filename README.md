@@ -171,5 +171,5 @@ bin-docker/backstop approve $LAYOUT
 
 ### Attribution
 
-We make use of the [famfamfam silk](http://www.famfamfam.com/lab/icons/silk/) pack of icons, which is licensed under a Creative Commons Attribution license, including some icons that have been modified from the originals.
+We make use of the [famfamfam silk](https://github.com/legacy-icons/famfamfam-silk) pack of icons, which is licensed under a Creative Commons Attribution license, including some icons that have been modified from the originals.
 These can be found in various locations, including in the dropdown menu in posts.
