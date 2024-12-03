@@ -82,6 +82,15 @@ RSpec.describe PostsController do
       expect(flash[:error]).to eq("Subject must not be blank.")
     end
 
+    it "requires reply to be in post" do
+      login_as(user)
+      other_post_reply = create(:reply, post: create(:post, user: user), user: user)
+      put :update, params: { id: user_post.id, authors_locked: 'true' }
+      post :do_split, params: { id: user_post.id, reply_id: other_post_reply.id, subject: "" }
+      expect(response).to redirect_to(post_url(user_post))
+      expect(flash[:error]).to eq("Reply given by id is not present in this post.")
+    end
+
     describe "preview" do
       it "loads for author" do
         login_as(user)
