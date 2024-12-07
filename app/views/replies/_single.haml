@@ -1,4 +1,4 @@
--# locals: ( reply:, hide_footer: false )
+-# locals: ( reply:, hide_footer: false, split_ui: false )
 
 - if reply.is_a?(Post)
   - write = 'post-post'.freeze
@@ -32,13 +32,12 @@
         .post-author= user_mem_link(reply.user_id, reply.username, reply.user_deleted?)
     - if reply.id.present?
       .post-edit-box
-        - can_be_split = reply.is_a?(Reply) && @post.metadata_editable_by?(current_user) # Logic for splitting a thread at a reply
-        - if params[:split_ui] == 'true' && can_be_split
-          -# Show the Split button when Split UI is enabled, the reply is a Reply, and the current user is an author of the thread
-          = link_to split_post_path(@post, reply_id: reply.id) do
-            = image_tag "icons/cut_red.png".freeze, title: 'Split Post Here'.freeze, alt: 'Split Post Here'.freeze
-        - elsif params[:split_ui] == 'true' && reply.is_a?(Post)
-          -# Don't show any buttons on a post when the Split UI is enabled
+        - if split_ui
+          - if reply.is_a?(Reply)
+            -# Show the Split button when Split UI is enabled, the reply is a Reply, and the current user is an author of the thread
+            -# But don't show any buttons on a post when the Split UI is enabled
+            = link_to split_post_path(@post, reply_id: reply.id) do
+              = image_tag "icons/cut_red.png".freeze, title: 'Split Post Here'.freeze, alt: 'Split Post Here'.freeze
         - else
           = link_to post_or_reply_link(reply), rel: 'alternate'.freeze do
             = image_tag "icons/link.png".freeze, title: 'Permalink'.freeze, alt: 'Permalink'.freeze
