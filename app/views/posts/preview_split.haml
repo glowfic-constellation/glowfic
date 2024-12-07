@@ -1,9 +1,4 @@
-- content_for :breadcrumbs do
-  = link_to "Admin Tools", admin_path
-  &raquo;
-  = link_to "Post Split", split_posts_path
-  &raquo;
-  Preview
+= render 'breadcrumbs', subtitle: 'Split Post', post: @post
 
 Splitting
 = link_to @reply.post.subject, @reply.post

@@ -2,6 +2,15 @@
 
 %span.time-loaded= pretty_time(DateTime.now.in_time_zone)
 
+- split_ui = params[:split_ui] == 'true' && @post.metadata_editable_by?(current_user)
+- if split_ui
+  - content_for :flashes do
+    .flash.error.line-height-1-8
+      = image_tag "icons/cut_red.png".freeze, class: 'vmid', alt: ''
+      You are in Split Post mode. Please click the scissors icon on the reply you wish to make the start of the new post.
+      = link_to post_path(@post, split_ui: 'false'.freeze, page: page, per_page: per_page) do
+        .link-box.action-dismiss.float-right Exit Split Post mode
+
 - if @warnings.present?
   - content_for :flashes do
     .flash.error
@@ -61,7 +70,7 @@
             = image_tag "icons/star_delete.png".freeze, class: 'vmid'.freeze, style: 'margin-bottom: 3px;'.freeze, alt: ''
             Unfavorite
       - else
-        = link_to favorites_path(post_id: @post.id, page: page, per_page: per_page), method: :post do
+        = link_to favorites_path(post_id: @post.id), method: :post do
           %div
             = image_tag "icons/star_add.png".freeze, class: 'vmid'.freeze, style: 'margin-bottom: 3px;'.freeze, alt: ''
             Favorite
@@ -96,6 +105,16 @@
             %div
               = image_tag "icons/lock.png".freeze, alt: ''
               Lock Authors
+        - if split_ui
+          = link_to post_path(@post, split_ui: 'false'.freeze, page: page, per_page: per_page) do
+            %div
+              = image_tag "icons/cut_closed.png".freeze, alt: ''
+              Disable Split UI
+        - else
+          = link_to post_path(@post, split_ui: 'true'.freeze, page: page, per_page: per_page) do
+            %div
+              = image_tag "icons/cut.png".freeze, alt: ''
+              Split Post
         - author = @post.author_for(current_user)
         - if author&.can_owe?
           = link_to mark_posts_path(marked_ids: [@post.id], commit: "Remove from Replies Owed"), method: :post do
@@ -127,15 +146,15 @@
       = link_to post_path(@prev_post), class: 'view-button-link' do
         .view-button.float-none &laquo; Previous Post
 - if page.to_i == 1
-  = render 'replies/single', reply: @post
+  = render 'replies/single', reply: @post, split_ui: split_ui
 - else
   .post-expander
     .info + Show First Post
     .hidden
-      = render 'replies/single', reply: @post
+      = render 'replies/single', reply: @post, split_ui: split_ui
 - if @replies.present?
   = render 'posts/paginator', paginated: @replies
-= render partial: 'replies/single', collection: @replies, as: :reply
+= render partial: 'replies/single', collection: @replies, as: :reply, locals: { split_ui: split_ui }
 - if @post.complete? && (@replies.empty? || (@replies.last.id == @post.last_reply_id))
   .post-ender Here Ends This Thread
   - if @prev_post || @next_post
@@ -154,7 +173,7 @@
   = render 'posts/paginator', paginated: @replies
 - if logged_in? && @unread.nil?
   <a id="unread" class="noheight"> </a>
-- if @post.taggable_by?(current_user)
+- if @post.taggable_by?(current_user) && !split_ui
   - post_open = !@post.authors_locked?
   - draft_exists = !@reply.content.nil?
   - if (post_open && draft_exists) || @post.author_for(current_user)&.can_reply?

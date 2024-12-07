@@ -4,6 +4,7 @@ class SplitPostJob < ApplicationJob
 
   REPLY_ATTRS = [:character_id, :icon_id, :character_alias_id, :user_id, :content, :created_at, :updated_at].map(&:to_s)
   POST_ATTRS = [:board_id, :section_id, :privacy, :status, :authors_locked].map(&:to_s)
+  POST_ASSOCS = [:setting_ids, :label_ids, :content_warning_ids].map(&:to_s) # Associations aren't attributes so they're handled separately
 
   def perform(reply_id, new_subject)
     raise RuntimeError, "Invalid subject" if new_subject.blank?
@@ -31,6 +32,9 @@ class SplitPostJob < ApplicationJob
     new_post.skip_edited = true
     new_post.is_import = true
     new_post.assign_attributes(old_post.attributes.slice(*POST_ATTRS))
+    POST_ASSOCS.each do |assoc|
+      new_post.send(assoc + "=", old_post.send(assoc))
+    end
     new_post.subject = subject
     new_post.edited_at = first_reply.updated_at
     new_post.save!

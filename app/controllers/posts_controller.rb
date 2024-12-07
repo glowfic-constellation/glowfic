@@ -4,8 +4,9 @@ class PostsController < WritableController
 
   before_action :login_required, except: [:index, :show, :history, :warnings, :search, :stats]
   before_action :readonly_forbidden, only: [:owed]
-  before_action :find_model, only: [:show, :history, :delete_history, :stats, :warnings, :edit, :update, :destroy]
-  before_action :require_edit_permission, only: [:edit, :delete_history]
+  before_action :find_model, only: [:show, :history, :delete_history, :stats, :warnings, :edit, :update, :destroy, :split, :do_split, :preview_split]
+  before_action :require_edit_permission, only: [:edit, :delete_history, :split, :do_split, :preview_split]
+  before_action :require_locked_authorship, only: [:split, :do_split, :preview_split]
   before_action :require_import_permission, only: [:new, :create]
   before_action :require_create_permission, only: [:new, :create]
   before_action :editor_setup, only: [:new, :edit]
@@ -321,6 +322,32 @@ class PostsController < WritableController
     redirect_to post_path(@post, params)
   end
 
+  def split
+    @page_title = 'Split Post'
+  end
+
+  def do_split
+    unless (@reply = Reply.find_by(id: params[:reply_id]))
+      flash[:error] = "Reply could not be found."
+      redirect_to post_path(@post) and return
+    end
+
+    unless @reply.post == @post
+      flash[:error] = "Reply given by id is not present in this post."
+      redirect_to post_path(@post) and return
+    end
+
+    if params[:subject].blank?
+      flash[:error] = "Subject must not be blank."
+      redirect_to split_post_path(@post, reply_id: params[:reply_id]) and return
+    end
+    preview_split and return if params[:button_preview].present?
+
+    SplitPostJob.perform_later(params[:reply_id], params[:subject])
+    flash[:success] = "Post will be split."
+    redirect_to post_path(@post)
+  end
+
   private
 
   def preview
@@ -343,6 +370,11 @@ class PostsController < WritableController
     editor_setup
     @page_title = 'Previewing: ' + @post.subject.to_s
     render :preview
+  end
+
+  def preview_split
+    @page_title = 'Preview Split Post'
+    render :preview_split
   end
 
   def mark_unread
@@ -457,6 +489,12 @@ class PostsController < WritableController
     return if current_user.has_permission?(:import_posts)
     flash[:error] = "You do not have access to this feature."
     redirect_to new_post_path
+  end
+
+  def require_locked_authorship
+    return if @post.authors_locked
+    flash[:error] = "Post must be locked to current authors to be split."
+    redirect_to @post
   end
 
   def permitted_params(include_associations=true)

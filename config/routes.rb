@@ -86,6 +86,8 @@ Rails.application.routes.draw do
       get :delete_history
       get :stats
       post :warnings
+      get :split
+      post :do_split
     end
     collection do
       post :mark
@@ -169,8 +171,6 @@ Rails.application.routes.draw do
 
     resources :posts, only: [] do
       collection do
-        get :split
-        post :do_split
         get :regenerate_flat
         post :do_regenerate
       end
