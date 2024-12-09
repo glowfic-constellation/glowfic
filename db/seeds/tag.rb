@@ -18,6 +18,13 @@ Setting.create!([
   { user_id: 3, name: "Eos", type: "Setting" },
 ])
 
+puts "Assigning tags to users..."
+UserTag.create!([
+  { user_id: 3, tag_id: 1 },
+  { user_id: 8, tag_id: 1 },
+  { user_id: 8, tag_id: 2 },
+])
+
 puts "Assigning tags to characters..."
 CharacterTag.create!([
   { character_id: 26, tag_id: 4 },
