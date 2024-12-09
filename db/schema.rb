@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.2].define(version: 2024_11_30_175900) do
+ActiveRecord::Schema[7.2].define(version: 2024_12_09_191600) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "citext"
   enable_extension "plpgsql"
@@ -437,6 +437,15 @@ ActiveRecord::Schema[7.2].define(version: 2024_11_30_175900) do
     t.text "description"
     t.boolean "retired", default: false
     t.index ["user_id"], name: "index_templates_on_user_id"
+  end
+
+  create_table "user_tags", force: :cascade do |t|
+    t.integer "user_id", null: false
+    t.integer "tag_id", null: false
+    t.datetime "created_at"
+    t.datetime "updated_at"
+    t.index ["tag_id"], name: "index_user_tags_on_tag_id"
+    t.index ["user_id"], name: "index_user_tags_on_user_id"
   end
 
   create_table "users", id: :serial, force: :cascade do |t|
