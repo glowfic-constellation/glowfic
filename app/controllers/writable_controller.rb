@@ -135,7 +135,7 @@ class WritableController < ApplicationController
     if display_warnings?
       @post_warnings = @post.content_warnings
       @author_warnings = @post.tagging_authors.includes(:user_tags).each_with_object({}) do |author, hash|
-        hash[author] = [author.user_tags] unless author.user_tags.empty?
+        hash[author] = author.user_tags unless author.user_tags.empty?
       end
     end
 
