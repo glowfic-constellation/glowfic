@@ -17,17 +17,25 @@ ActiveSupport::Notifications.subscribe("sql.active_record") do |*args|
   next if event.duration <= 1000
 
   # convert activerecord binds into more readable parameters
+  # filter out sensitive parameters
+  # structure of :binds is an array of ActiveModel::Attribute (allowing us to filter sensitive attribute names), or raw values
+  # structure of :type_casted_binds is an array of raw values (enums converted to ints, etc)
   filter_keys = ["salt_uuid", "crypted", "email"]
-  event.payload[:binds] = event.payload[:binds].map { |x| [x.name, x.value] }
-  filter_values = event.payload[:binds].select { |x| filter_keys.include? x.first.to_s }.map(&:last)
+  filter_values = event.payload[:binds].filter_map do |x|
+    x.value if x.is_a?(ActiveModel::Attribute) && filter_keys.include?(x.name.to_s)
+  end
 
   event.payload[:binds] = event.payload[:binds].map do |x|
-    [x.first, filter_values.include?(x.last) ? 'EXCLUDED' : x.last]
+    value = x.is_a?(ActiveModel::Attribute) ? x.value : x
+    filter_values.include?(value) ? 'EXCLUDED' : value
   end
-  event.payload[:type_casted_binds] = event.payload[:type_casted_binds].map do |x|
-    filter_values.include?(x) ? 'EXCLUDED' : x
+  event.payload[:type_casted_binds] = event.payload[:type_casted_binds].map do |value|
+    filter_values.include?(value) ? 'EXCLUDED' : value
   end
   Rails.logger.warn "[sql.active_record] SLOW: sql took longer than 1 second: #{event.payload}"
+rescue StandardError => e
+  Rails.logger.error "[sql.active_record] SLOW: error in logging: #{e}"
+  ExceptionNotifier.notify_exception(e, data: { location: "slow query subscriber", args: args })
 end
 
 ActiveSupport::Notifications.subscribe("instantiation.active_record") do |*args|
