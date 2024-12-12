@@ -68,7 +68,7 @@
               = image_tag "icons/user_delete.png", class: 'vmid', alt: ''
               Block User
 
-- if !@user.user_tags.empty?
+- unless @user.user_tags.empty?
   - content_for :flashes do
     .flash.error
       %details
