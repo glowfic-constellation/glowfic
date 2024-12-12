@@ -154,7 +154,7 @@ GEM
       activerecord (>= 5.a)
       database_cleaner-core (~> 2.0.0)
     database_cleaner-core (2.0.1)
-    date (3.4.0)
+    date (3.4.1)
     diff-lcs (1.5.1)
     docile (1.4.0)
     dotenv (3.1.4)
@@ -230,7 +230,7 @@ GEM
     i18n (1.14.6)
       concurrent-ruby (~> 1.0)
     io-console (0.8.0)
-    irb (1.14.1)
+    irb (1.14.2)
       rdoc (>= 4.0.0)
       reline (>= 0.4.2)
     jmespath (1.6.2)
@@ -511,7 +511,7 @@ GEM
     tilt (2.4.0)
     timecop (0.9.10)
     timeout (0.4.2)
-    tinymce-rails (7.5.1)
+    tinymce-rails (7.6.0)
       railties (>= 3.1.1)
     traceroute (0.8.1)
       rails (>= 3.0.0)
@@ -616,7 +616,7 @@ DEPENDENCIES
   terser
   test-unit (~> 3.6)
   timecop
-  tinymce-rails (~> 7.5)
+  tinymce-rails (~> 7.6)
   traceroute
   webmock
   will_paginate
