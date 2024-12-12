@@ -34,10 +34,8 @@
         %details
           %summary
             = image_tag "icons/exclamation.png".freeze, class: 'vmid'.freeze, alt: ''
-            - if @post_warnings.present?
-              This post's authors also have general content warnings that might apply to the current post.
-            - else
-              This post's authors have general content warnings that might apply to the current post.
+            - also = @post_warnings.present? ? "also " : ""
+            This post's authors #{also}have general content warnings that might apply to the current post.
           %ul
             - @author_warnings.each do |author, warnings|
               %li
