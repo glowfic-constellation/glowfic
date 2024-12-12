@@ -83,7 +83,7 @@ class Tag < ApplicationRecord
   def merge_with(other_tag)
     transaction do
       # rubocop:disable Rails/SkipsModelValidations
-      UserTag.where(tag_id: other_tag.id).where(user_id: post_tags.select(:user_id).distinct.pluck(:user_id)).delete_all
+      UserTag.where(tag_id: other_tag.id).where(user_id: user_tags.select(:user_id).distinct.pluck(:user_id)).delete_all
       UserTag.where(tag_id: other_tag.id).update_all(tag_id: self.id)
       PostTag.where(tag_id: other_tag.id).where(post_id: post_tags.select(:post_id).distinct.pluck(:post_id)).delete_all
       PostTag.where(tag_id: other_tag.id).update_all(tag_id: self.id)
