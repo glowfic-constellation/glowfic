@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 class UsersController < ApplicationController
   include DateSelectable
+  include Taggable
 
   before_action :signup_prep, only: :new
   before_action :login_required, except: [:index, :show, :new, :create, :search]
@@ -77,6 +78,7 @@ class UsersController < ApplicationController
     params[:user][:per_page] = -1 if params[:user].try(:[], :per_page) == 'all'
 
     begin
+      current_user.content_warnings = process_tags(ContentWarning, obj_param: :user, id_param: :content_warning_ids)
       current_user.update!(user_params)
     rescue ActiveRecord::RecordInvalid => e
       render_errors(current_user, action: 'saved', now: true, class_name: 'Changes', err: e)
