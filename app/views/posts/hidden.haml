@@ -7,7 +7,10 @@
           = link_to unread_posts_path, class: 'view-button-link' do
             .view-button Unread &raquo;
       %tr
-        %th.subber{colspan: 7} Continuities
+        %th.subber{colspan: 6} Continuities
+        %th.subber.post-check-box.no-vertical-padding.padding-left-5
+          - if @hidden_boardviews.present?
+            = check_box_tag :check_all, 'unhide_boards[]', false, class: 'check-all'
     %tbody
       - @hidden_boardviews.each do |view|
         %tr
@@ -15,12 +18,15 @@
           %td.padding-10{class: klass}
           %td.padding-10{class: klass, colspan: 5}
             = link_to view.board.name, continuity_path(view.board)
-          %td{class: klass}= check_box_tag :"unhide_boards[]", view.board_id, params[:unhide_boards].try(:include?, view.board_id.to_s), class: 'no-margin'
+          %td{class: klass}= check_box_tag :"unhide_boards[]", view.board_id, params[:unhide_boards].try(:include?, view.board_id.to_s), class: 'checkbox no-margin'
       - if @hidden_boardviews.empty?
         %tr
           %td.padding-10.centered{class: cycle('even', 'odd'), colspan: 7} — No continuities hidden —
       %tr
-        %th.subber{colspan: 7} Posts
+        %th.subber{colspan: 6} Posts
+        %th.subber.post-check-box.no-vertical-padding.padding-left-5
+          - if @hidden_posts.present?
+            = check_box_tag :check_all, 'unhide_posts[]', false, class: 'check-all'
       = render partial: 'posts/list_item', collection: @hidden_posts, as: :post, locals: { check_box_name: 'unhide_posts[]' }
       - if @hidden_posts.empty?
         %td.padding-10.centered{class: cycle('even', 'odd'), colspan: 7} — No posts hidden —
