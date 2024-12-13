@@ -34,6 +34,12 @@
           = link_to tag_path(@tag, view: 'characters') do
             = image_tag "icons/group.png", class: 'vmid', alt: ''
             Characters
+    - if @tag.is_a?(ContentWarning)
+      %tr
+        %td.centered{class: cycle('even', 'odd')}
+          = link_to tag_path(@tag, view: 'users') do
+            = image_tag "icons/group.png", class: 'vmid', alt: ''
+            Users
     - if @tag.is_a?(Setting) && @tag.child_settings.present?
       %tr
         %td.centered{class: cycle('even', 'odd')}
