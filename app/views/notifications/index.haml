@@ -6,7 +6,9 @@
         %th.sub
         %th.sub{colspan: 4} Notification
         %th.sub Received
-        %th.sub
+        %th.sub.post-check-box.no-vertical-padding.padding-left-5
+          - if @notifications.present?
+            = check_box_tag :check_all, nil, false, class: 'check-all', id: 'check-all'
     %tbody
       = render partial: "notification", collection: @notifications
       - unless @notifications.present?
