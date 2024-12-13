@@ -8,7 +8,7 @@
             .view-button Unread &raquo;
       %tr
         %th.subber{colspan: 6} Continuities
-        %th.subber.post-check-box.no-vertical-padding.padding-left-5
+        %th.subber.check-all-box
           - if @hidden_boardviews.present?
             = check_box_tag :check_all, 'unhide_boards[]', false, class: 'check-all'
     %tbody
@@ -24,7 +24,7 @@
           %td.padding-10.centered{class: cycle('even', 'odd'), colspan: 7} — No continuities hidden —
       %tr
         %th.subber{colspan: 6} Posts
-        %th.subber.post-check-box.no-vertical-padding.padding-left-5
+        %th.subber.check-all-box
           - if @hidden_posts.present?
             = check_box_tag :check_all, 'unhide_posts[]', false, class: 'check-all'
       = render partial: 'posts/list_item', collection: @hidden_posts, as: :post, locals: { check_box_name: 'unhide_posts[]' }

@@ -6,7 +6,7 @@
         %th.sub
         %th.sub{colspan: 4} Notification
         %th.sub Received
-        %th.sub.post-check-box.no-vertical-padding.padding-left-5
+        %th.sub.check-all-box
           - if @notifications.present?
             = check_box_tag :check_all, "marked_ids[]", false, class: 'check-all', id: 'check-all'
     %tbody

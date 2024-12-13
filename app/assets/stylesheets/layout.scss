@@ -256,6 +256,19 @@ td, .table-list li { font-size: $font_size_small; }
   .link-box { font-size: $font_size_smallish; }
 }
 
+.check-all-box {
+  /* The .sub or .subber that has the "check all" checkbox */
+  width: 30px;
+  padding: 0px 10px 0px 5px;
+
+  /* Keeps unread table from padding excessively for the checkboxes */
+  input.checkbox {
+    height: 13px;
+    margin: 0px;
+    vertical-align: middle;
+  }
+}
+
 /* Form Tables */
 .form-table {
   width: 400px;

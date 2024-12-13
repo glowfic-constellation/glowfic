@@ -28,7 +28,7 @@
         %th.sub Unread
       %th.sub Last Updated
       - if check_box_name
-        %th.sub.post-check-box.no-vertical-padding.padding-left-5
+        %th.sub.check-all-box
           = check_box_tag :check_all, check_box_name, false, class: 'check-all', id: 'check-all'
   %tbody
     = render partial: 'posts/list_item', collection: posts, as: :post, locals: post_args
