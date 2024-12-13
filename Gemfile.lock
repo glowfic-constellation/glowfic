@@ -154,7 +154,7 @@ GEM
       activerecord (>= 5.a)
       database_cleaner-core (~> 2.0.0)
     database_cleaner-core (2.0.1)
-    date (3.4.0)
+    date (3.4.1)
     diff-lcs (1.5.1)
     docile (1.4.0)
     dotenv (3.1.4)
@@ -230,7 +230,7 @@ GEM
     i18n (1.14.6)
       concurrent-ruby (~> 1.0)
     io-console (0.8.0)
-    irb (1.14.1)
+    irb (1.14.2)
       rdoc (>= 4.0.0)
       reline (>= 0.4.2)
     jmespath (1.6.2)
@@ -415,7 +415,7 @@ GEM
       rspec-mocks (~> 3.13)
       rspec-support (~> 3.13)
     rspec-support (3.13.1)
-    rubocop (1.69.1)
+    rubocop (1.69.2)
       json (~> 2.3)
       language_server-protocol (>= 3.17.0)
       parallel (~> 1.10)
@@ -439,7 +439,7 @@ GEM
       rack (>= 1.1)
       rubocop (>= 1.52.0, < 2.0)
       rubocop-ast (>= 1.31.1, < 2.0)
-    rubocop-rspec (3.2.0)
+    rubocop-rspec (3.3.0)
       rubocop (~> 1.61)
     rubocop-rspec_rails (2.30.0)
       rubocop (~> 1.61)
@@ -511,7 +511,7 @@ GEM
     tilt (2.4.0)
     timecop (0.9.10)
     timeout (0.4.2)
-    tinymce-rails (7.5.1)
+    tinymce-rails (7.6.0)
       railties (>= 3.1.1)
     traceroute (0.8.1)
       rails (>= 3.0.0)
@@ -598,12 +598,12 @@ DEPENDENCIES
   resque_mailer
   resque_spec
   rspec-rails
-  rubocop (~> 1.69.1)
+  rubocop (~> 1.69.2)
   rubocop-capybara (~> 2.21.0)
   rubocop-factory_bot (~> 2.26.0)
   rubocop-performance (~> 1.23.0)
   rubocop-rails (~> 2.27.0)
-  rubocop-rspec (~> 3.2.0)
+  rubocop-rspec (~> 3.3.0)
   rubocop-rspec_rails (~> 2.30.0)
   sanitize
   scout_apm
@@ -616,7 +616,7 @@ DEPENDENCIES
   terser
   test-unit (~> 3.6)
   timecop
-  tinymce-rails (~> 7.5)
+  tinymce-rails (~> 7.6)
   traceroute
   webmock
   will_paginate
