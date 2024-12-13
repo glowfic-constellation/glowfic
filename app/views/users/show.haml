@@ -77,7 +77,7 @@
           This author has set some general content warnings which might apply to their posts even when not otherwise warned.
         %ul
           - @user.user_tags.each do |warning|
-            %li= link_to warning.tag.name, tag_path(warning)
+            %li= link_to warning.tag.name, tag_path(warning.tag)
 
 - content_for :posts_title do
   #{@user.username}'s Recent Posts

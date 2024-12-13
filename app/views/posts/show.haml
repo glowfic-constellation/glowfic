@@ -43,7 +43,7 @@
                   = link_to author.username, user_path(author)
                   %ul
                     - warnings.each do |warning|
-                      %li= link_to warning.tag.name, tag_path(warning)
+                      %li= link_to warning.tag.name, tag_path(warning.tag)
       .clear
 
 .content-header
