@@ -1,5 +1,5 @@
 = form_tag mark_messages_path, method: :post do
-  %table
+  %table.checkbox-set
     %thead
       = render @view
       - if @messages.present?
@@ -8,7 +8,7 @@
           %th.sub Subject
           %th.sub= @view == 'inbox' ? 'Sender' : 'Recipient'
           %th.sub Sent
-          %th.sub#select-all-cell= check_box_tag :select_all, false
+          %th.sub#select-all-cell= check_box_tag :select_all, false, class: 'check-all'
     %tbody
       - if @messages.empty?
         %tr
@@ -29,7 +29,7 @@
               - else
                 = user_link(message.recipient)
             %td{class: klass}= pretty_time(message.last_in_thread.created_at)
-            %td{class: klass}= check_box_tag :"marked_ids[]", message.id, false, class: 'select-all-box', id: nil
+            %td{class: klass}= check_box_tag :"marked_ids[]", message.id, false, class: 'checkbox', id: nil
         %tr
           %td.right-align.padding-5{colspan: 5, class: cycle('even', 'odd')}
             - if @view == 'inbox'

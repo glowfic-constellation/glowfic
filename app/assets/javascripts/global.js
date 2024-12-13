@@ -13,10 +13,6 @@ $(document).ready(function() {
     return false;
   });
 
-  $("#select_all").click(function() {
-    $(".select-all-box").prop('checked', this.checked);
-  });
-
   $('.checkbox-set').each(function() {
     // For multiple sets of checkboxes on the same page
     const $set = $(this);
