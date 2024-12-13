@@ -13,22 +13,14 @@ $(document).ready(function() {
     return false;
   });
 
-  $('.checkbox-set').each(function() {
-    // For multiple sets of checkboxes on the same page
-    const $set = $(this);
-    const $checkAll = $set.find('.check-all');
-    const $childCheckboxes = $set.find('.checkbox');
+  $('.check-all').on('change', function() {
+    // The check-all's checkbox value will contain the name of the checkboxes which are meant to be checked
+    $(`.checkbox[name="${this.value}"]`).prop('checked', this.checked);
+  });
 
-    // When the "Check All" checkbox is toggled
-    $checkAll.on('change', function() {
-      $childCheckboxes.prop('checked', this.checked);
-    });
-
-    // When any child checkbox is toggled
-    $childCheckboxes.on('change', function() {
-      const allChecked = $childCheckboxes.length === $childCheckboxes.filter(':checked').length;
-      $checkAll.prop('checked', allChecked);
-    });
+  $('.checkbox').on('change', function() {
+    const allChecked = $(`.checkbox[name="${this.name}"]`).filter(':checked').length === $(`.checkbox[name="${this.name}"]`).length;
+    $(`.check-all[value="${this.name}"]`).prop('checked', allChecked);
   });
 
   // Set localStorage if login status has changed

@@ -1,5 +1,5 @@
 = form_tag mark_messages_path, method: :post do
-  %table.checkbox-set
+  %table
     %thead
       = render @view
       - if @messages.present?
@@ -8,7 +8,7 @@
           %th.sub Subject
           %th.sub= @view == 'inbox' ? 'Sender' : 'Recipient'
           %th.sub Sent
-          %th.sub#select-all-cell= check_box_tag :select_all, false, class: 'check-all'
+          %th.sub#select-all-cell= check_box_tag :select_all, "marked_ids[]", class: 'check-all'
     %tbody
       - if @messages.empty?
         %tr

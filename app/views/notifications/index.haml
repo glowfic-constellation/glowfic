@@ -1,6 +1,6 @@
 .content-header Notifications
 = form_tag mark_notifications_path, method: :post do
-  %table.checkbox-set
+  %table
     %thead
       %tr
         %th.sub
@@ -8,7 +8,7 @@
         %th.sub Received
         %th.sub.post-check-box.no-vertical-padding.padding-left-5
           - if @notifications.present?
-            = check_box_tag :check_all, nil, false, class: 'check-all', id: 'check-all'
+            = check_box_tag :check_all, "marked_ids[]", false, class: 'check-all', id: 'check-all'
     %tbody
       = render partial: "notification", collection: @notifications
       - unless @notifications.present?
