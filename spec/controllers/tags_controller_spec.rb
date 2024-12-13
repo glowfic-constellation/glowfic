@@ -189,6 +189,14 @@ RSpec.describe TagsController do
         expect(assigns(:posts)).to match_array([post])
       end
 
+      it "succeeds with valid user tag" do
+        tag = create(:content_warning)
+        user = create(:user, content_warnings: [tag])
+        get :show, params: { id: tag.id, view: 'users' }
+        expect(response.status).to eq(200)
+        expect(assigns(:users)).to match_array([user])
+      end
+
       it 'succeeds for canons with settings' do
         tag = create(:setting)
         tag.child_settings << create(:setting)
