@@ -5,11 +5,8 @@ RSpec.describe Tag do
       bad_tag = create(:label)
 
       # TODO handle properly with nested attributes
-      create(:post, label_ids: [good_tag.id], setting_ids: [], content_warning_ids: [])
-      create(:post, label_ids: [good_tag.id], setting_ids: [], content_warning_ids: [])
-      create(:post, label_ids: [good_tag.id], setting_ids: [], content_warning_ids: [])
-      create(:post, label_ids: [bad_tag.id], setting_ids: [], content_warning_ids: [])
-      create(:post, label_ids: [bad_tag.id], setting_ids: [], content_warning_ids: [])
+      create_list(:post, 3, label_ids: [good_tag.id], setting_ids: [], content_warning_ids: [])
+      create_list(:post, 2, label_ids: [bad_tag.id], setting_ids: [], content_warning_ids: [])
 
       expect(good_tag.posts.count).to eq(3)
       expect(bad_tag.posts.count).to eq(2)
@@ -25,16 +22,8 @@ RSpec.describe Tag do
       good_tag = create(:content_warning)
       bad_tag = create(:content_warning)
 
-      user1 = create(:user)
-      user1.update!(content_warning_ids: [good_tag.id])
-      user2 = create(:user)
-      user2.update!(content_warning_ids: [good_tag.id])
-      user3 = create(:user)
-      user3.update!(content_warning_ids: [good_tag.id])
-      user4 = create(:user)
-      user4.update!(content_warning_ids: [bad_tag.id])
-      user5 = create(:user)
-      user5.update!(content_warning_ids: [bad_tag.id])
+      create_list(:user, 3, content_warning_ids: [good_tag.id])
+      create_list(:user, 2, content_warning_ids: [bad_tag.id])
 
       expect(good_tag.users.count).to eq(3)
       expect(bad_tag.users.count).to eq(2)
