@@ -19,7 +19,8 @@ $(document).ready(function() {
   });
 
   $('.checkbox').on('change', function() {
-    const allChecked = $(`.checkbox[name="${this.name}"]`).filter(':checked').length === $(`.checkbox[name="${this.name}"]`).length;
+    const checkboxes = $(`.checkbox[name="${this.name}"]`)
+    const allChecked = checkboxes.filter(':checked').length === checkboxes.length;
     $(`.check-all[value="${this.name}"]`).prop('checked', allChecked);
   });
 
