@@ -103,7 +103,7 @@ If it has changed, you can rebuild the glowfic image with:
 
 Now, update the gems used for the project:
 
-*   `bin-docker/bundle install --gemfile /code/Gemfile`
+*   `bin-docker/bundle`
 
 And finally, run any database migrations that might have been added in the meantime:
 
