@@ -13,8 +13,15 @@ $(document).ready(function() {
     return false;
   });
 
-  $("#select_all").click(function() {
-    $(".select-all-box").prop('checked', this.checked);
+  $('.check-all').on('change', function() {
+    // The check-all's checkbox value will contain the name of the checkboxes which are meant to be checked
+    $(`.check-all-item[name="${this.dataset.checkBoxName}"]`).prop('checked', this.checked);
+  });
+
+  $('.check-all-item').on('change', function() {
+    const checkboxes = $(`.check-all-item[name="${this.name}"]`);
+    const allChecked = checkboxes.filter(':checked').length === checkboxes.length;
+    $(`.check-all[data-check-box-name="${this.name}"]`).prop('checked', allChecked);
   });
 
   // Set localStorage if login status has changed

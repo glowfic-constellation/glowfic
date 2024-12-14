@@ -60,7 +60,7 @@
     by
     = user_mem_link(post.last_user_id, post.last_user_name, post.last_user_deleted?)
   - if check_box_name
-    %td.post-check-box{class: klass}= check_box_tag check_box_name, post.id, false, class: 'checkbox', id: nil
+    %td.post-check-box{class: klass}= check_box_tag check_box_name, post.id, false, class: 'checkbox check-all-item', id: nil
   - if check_box_padding
     %td{class: klass}
   - unless index.nil?

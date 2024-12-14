@@ -10,6 +10,8 @@ class NotificationsController < ApplicationController
 
     post_ids = @notifications.map(&:post_id).compact_blank
     @posts = posts_from_relation(Post.where(id: post_ids), with_pagination: false).index_by(&:id)
+
+    use_javascript('global')
   end
 
   def mark
