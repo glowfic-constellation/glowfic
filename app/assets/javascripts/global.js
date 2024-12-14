@@ -19,7 +19,7 @@ $(document).ready(function() {
   });
 
   $('.check-all-item').on('change', function() {
-    const checkboxes = $(`.check-all-item[name="${this.name}"]`)
+    const checkboxes = $(`.check-all-item[name="${this.name}"]`);
     const allChecked = checkboxes.filter(':checked').length === checkboxes.length;
     $(`.check-all[data-check-box-name="${this.name}"]`).prop('checked', allChecked);
   });
