@@ -34,6 +34,8 @@ class TagsController < ApplicationController
     elsif @view == 'galleries'
       @galleries = @tag.galleries.with_icon_count.ordered_by_name
       use_javascript('galleries/expander')
+    elsif @view == 'users'
+      @users = @tag.users.ordered.paginate(page: page)
     elsif @view != 'settings'
       @view = 'info'
     end

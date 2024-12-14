@@ -1,6 +1,8 @@
 # frozen_string_literal: true
 class Tag < ApplicationRecord
   belongs_to :user, optional: false
+  has_many :user_tags, dependent: :destroy, inverse_of: :tag
+  has_many :users, through: :user_tags, dependent: :destroy
   has_many :post_tags, dependent: :destroy, inverse_of: :tag
   has_many :posts, through: :post_tags, dependent: :destroy
   has_many :character_tags, dependent: :destroy, inverse_of: :tag
@@ -18,6 +20,8 @@ class Tag < ApplicationRecord
   scope :ordered_by_name, -> { order(name: :asc) }
 
   scope :ordered_by_id, -> { order(id: :asc) }
+
+  scope :ordered_by_user_tag, -> { order('user_tags.id ASC') }
 
   scope :ordered_by_char_tag, -> { order('character_tags.id ASC') }
 
@@ -61,6 +65,11 @@ class Tag < ApplicationRecord
     "_#{name}"
   end
 
+  def user_count
+    return read_attribute(:user_count) if has_attribute?(:user_count)
+    users.count
+  end
+
   def post_count
     return read_attribute(:post_count) if has_attribute?(:post_count)
     posts.count
@@ -74,6 +83,8 @@ class Tag < ApplicationRecord
   def merge_with(other_tag)
     transaction do
       # rubocop:disable Rails/SkipsModelValidations
+      UserTag.where(tag_id: other_tag.id).where(user_id: user_tags.select(:user_id).distinct.pluck(:user_id)).delete_all
+      UserTag.where(tag_id: other_tag.id).update_all(tag_id: self.id)
       PostTag.where(tag_id: other_tag.id).where(post_id: post_tags.select(:post_id).distinct.pluck(:post_id)).delete_all
       PostTag.where(tag_id: other_tag.id).update_all(tag_id: self.id)
       CharacterTag.where(tag_id: other_tag.id).where(character_id: character_tags.select(:character_id).distinct.pluck(:character_id)).delete_all

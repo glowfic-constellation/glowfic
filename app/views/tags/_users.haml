@@ -1,0 +1,11 @@
+-# locals: ()
+
+%table.tag-right-content-box
+  %thead
+    %tr
+      %th.table-title{colspan: 3} Users With Content Warning: #{@tag.name}
+    %tr
+      %th.sub Name
+      %th.width-70.sub.centered Moiety
+      %th.sub Date Joined
+  = render 'users/list', users: @users

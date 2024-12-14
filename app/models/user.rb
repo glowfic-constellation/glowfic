@@ -31,6 +31,9 @@ class User < ApplicationRecord
   belongs_to :avatar, class_name: 'Icon', inverse_of: :user, optional: true
   belongs_to :active_character, class_name: 'Character', inverse_of: :user, optional: true
 
+  has_many :user_tags, inverse_of: :user, dependent: :destroy
+  has_many :content_warnings, -> { ordered_by_user_tag }, through: :user_tags, source: :content_warning, dependent: :destroy
+
   validates :crypted, presence: true
   validates :email,
     presence: { on: :create },
