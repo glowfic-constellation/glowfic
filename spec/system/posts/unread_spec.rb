@@ -37,13 +37,13 @@ RSpec.describe "Unread posts" do
     login
     visit unread_posts_path
     expect(page).to have_no_selector('.check-all')
-    expect(page).to have_no_selector('.checkbox[name="marked_ids[]"]')
+    expect(page).to have_no_selector('.check-all-item[name="marked_ids[]"]')
 
     create_list(:post, 2)
     visit unread_posts_path
-    check_all_boxes = find('.check-all[value="marked_ids[]"]')
+    check_all_boxes = find('.check-all[data-check-box-name="marked_ids[]"]')
     expect(check_all_boxes).to be_present
-    notification_checkboxes = all('.checkbox[name="marked_ids[]"]')
+    notification_checkboxes = all('.check-all-item[name="marked_ids[]"]')
     expect(notification_checkboxes.length).to be(2)
 
     check_all_boxes.click

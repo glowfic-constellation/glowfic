@@ -66,13 +66,13 @@ RSpec.describe "Message threads" do
     user = login
     visit messages_path(view: 'inbox')
     expect(page).to have_no_selector('.check-all')
-    expect(page).to have_no_selector('.checkbox[name="marked_ids[]"]')
+    expect(page).to have_no_selector('.check-all-item[name="marked_ids[]"]')
 
     create_list(:message, 2, recipient: user)
     visit messages_path(view: 'inbox')
-    check_all_boxes = find('.check-all[value="marked_ids[]"]')
+    check_all_boxes = find('.check-all[data-check-box-name="marked_ids[]"]')
     expect(check_all_boxes).to be_present
-    message_checkboxes = all('.checkbox[name="marked_ids[]"]')
+    message_checkboxes = all('.check-all-item[name="marked_ids[]"]')
     expect(message_checkboxes.length).to be(2)
 
     check_all_boxes.click
