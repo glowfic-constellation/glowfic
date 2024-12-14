@@ -8,7 +8,7 @@
           %th.sub Subject
           %th.sub= @view == 'inbox' ? 'Sender' : 'Recipient'
           %th.sub Sent
-          %th.sub#select-all-cell= check_box_tag :select_all, "marked_ids[]", class: 'check-all'
+          %th.sub#select-all-cell= check_box_tag :select_all, nil, class: 'check-all', data: { check_box_name: "marked_ids[]" }
     %tbody
       - if @messages.empty?
         %tr

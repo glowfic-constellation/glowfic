@@ -30,7 +30,7 @@
       - if check_box_name
         %th.sub.check-all-box
           - unless posts.empty?
-            = check_box_tag :check_all, check_box_name, false, class: 'check-all', id: 'check-all'
+            = check_box_tag :check_all, nil, false, class: 'check-all', data: { check_box_name: check_box_name }
   %tbody
     = render partial: 'posts/list_item', collection: posts, as: :post, locals: post_args
     - if posts.empty?

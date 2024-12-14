@@ -10,7 +10,7 @@
         %th.subber{colspan: 6} Continuities
         %th.subber.check-all-box
           - if @hidden_boardviews.present?
-            = check_box_tag :check_all, 'unhide_boards[]', false, class: 'check-all'
+            = check_box_tag :check_all, nil, false, class: 'check-all', data: { check_box_name: 'unhide_boards[]' }
     %tbody
       - @hidden_boardviews.each do |view|
         %tr
@@ -26,7 +26,7 @@
         %th.subber{colspan: 6} Posts
         %th.subber.check-all-box
           - if @hidden_posts.present?
-            = check_box_tag :check_all, 'unhide_posts[]', false, class: 'check-all'
+            = check_box_tag :check_all, nil, false, class: 'check-all', data: { check_box_name: 'unhide_posts[]' }
       = render partial: 'posts/list_item', collection: @hidden_posts, as: :post, locals: { check_box_name: 'unhide_posts[]' }
       - if @hidden_posts.empty?
         %td.padding-10.centered{class: cycle('even', 'odd'), colspan: 7} — No posts hidden —

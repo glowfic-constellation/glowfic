@@ -8,7 +8,7 @@
         %th.sub Received
         %th.sub.check-all-box
           - if @notifications.present?
-            = check_box_tag :check_all, "marked_ids[]", false, class: 'check-all', id: 'check-all'
+            = check_box_tag :check_all, nil, false, class: 'check-all', data: { check_box_name: "marked_ids[]" }
     %tbody
       = render partial: "notification", collection: @notifications
       - unless @notifications.present?

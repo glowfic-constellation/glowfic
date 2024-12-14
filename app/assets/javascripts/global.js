@@ -15,13 +15,13 @@ $(document).ready(function() {
 
   $('.check-all').on('change', function() {
     // The check-all's checkbox value will contain the name of the checkboxes which are meant to be checked
-    $(`.checkbox[name="${this.value}"]`).prop('checked', this.checked);
+    $(`.checkbox[name="${this.dataset.checkBoxName}"]`).prop('checked', this.checked);
   });
 
   $('.checkbox').on('change', function() {
     const checkboxes = $(`.checkbox[name="${this.name}"]`)
     const allChecked = checkboxes.filter(':checked').length === checkboxes.length;
-    $(`.check-all[value="${this.name}"]`).prop('checked', allChecked);
+    $(`.check-all[data-check-box-name="${this.name}"]`).prop('checked', allChecked);
   });
 
   // Set localStorage if login status has changed
