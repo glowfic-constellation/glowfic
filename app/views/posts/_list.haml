@@ -28,7 +28,9 @@
         %th.sub Unread
       %th.sub Last Updated
       - if check_box_name
-        %th.sub
+        %th.sub.check-all-box
+          - unless posts.empty?
+            = check_box_tag :check_all, nil, false, class: 'check-all', data: { check_box_name: check_box_name }
   %tbody
     = render partial: 'posts/list_item', collection: posts, as: :post, locals: post_args
     - if posts.empty?

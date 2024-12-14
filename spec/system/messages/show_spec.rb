@@ -61,4 +61,33 @@ RSpec.describe "Message threads" do
     expect(table_rows[0]).to have_text('first')
     expect(table_rows[1]).to have_text('second')
   end
+
+  scenario "check-all checkbox works", :js do
+    user = login
+    visit messages_path(view: 'inbox')
+    expect(page).to have_no_selector('.check-all')
+    expect(page).to have_no_selector('.check-all-item[name="marked_ids[]"]')
+
+    create_list(:message, 2, recipient: user)
+    visit messages_path(view: 'inbox')
+    check_all_boxes = find('.check-all[data-check-box-name="marked_ids[]"]')
+    expect(check_all_boxes).to be_present
+    message_checkboxes = all('.check-all-item[name="marked_ids[]"]')
+    expect(message_checkboxes.length).to be(2)
+
+    check_all_boxes.click
+    expect(message_checkboxes).to all(be_checked)
+
+    check_all_boxes.click
+    expect(message_checkboxes).not_to include(be_checked)
+
+    message_checkboxes[0].click
+    expect(check_all_boxes).not_to be_checked
+    message_checkboxes[1].click
+    expect(check_all_boxes).to be_checked
+    message_checkboxes[0].click
+    expect(check_all_boxes).not_to be_checked
+    check_all_boxes.click
+    expect(message_checkboxes[0]).to be_checked
+  end
 end
