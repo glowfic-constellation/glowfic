@@ -15,11 +15,11 @@ $(document).ready(function() {
 
   $('.check-all').on('change', function() {
     // The check-all's checkbox value will contain the name of the checkboxes which are meant to be checked
-    $(`.checkbox[name="${this.dataset.checkBoxName}"]`).prop('checked', this.checked);
+    $(`.check-all-item[name="${this.dataset.checkBoxName}"]`).prop('checked', this.checked);
   });
 
-  $('.checkbox').on('change', function() {
-    const checkboxes = $(`.checkbox[name="${this.name}"]`)
+  $('.check-all-item').on('change', function() {
+    const checkboxes = $(`.check-all-item[name="${this.name}"]`)
     const allChecked = checkboxes.filter(':checked').length === checkboxes.length;
     $(`.check-all[data-check-box-name="${this.name}"]`).prop('checked', allChecked);
   });
