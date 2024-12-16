@@ -84,7 +84,7 @@ a:hover { color: $font_color_link_hover; }
 }
 
 /* - content */
-.even, .post-post, .post-reply:nth-child(even), #post-editor {
+.even, .post-post, .post-reply:nth-child(even), .profile, #post-editor {
   background-color: $bg_color_even;
 
   blockquote {
