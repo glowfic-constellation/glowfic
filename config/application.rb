@@ -83,6 +83,6 @@ module Glowfic
 
     # Setting enables YJIT as of Ruby 3.3, to bring sizeable performance improvements. We are
     # deploying to a memory constrained environment so we set this to `false`.
-    Rails.application.config.yjit = false
+    config.yjit = false
   end
 end
