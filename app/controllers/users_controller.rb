@@ -73,7 +73,9 @@ class UsersController < ApplicationController
   end
 
   def profile_edit
-    use_javascript('users/edit')
+    use_javascript('users/profile_edit')
+    gon.editor_class = 'layout_' + current_user.layout if current_user.layout
+    gon.tinymce_css_path = helpers.stylesheet_path('tinymce')
     @page_tile = 'Edit Author Profile'
   end
 

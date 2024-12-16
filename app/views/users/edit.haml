@@ -48,17 +48,6 @@
         - editor_modes = { 'Rich Text': 'rtf', HTML: 'html', Markdown: 'md' }
         %td{class: cycle('even', 'odd')}= f.select(:default_editor, options_for_select(editor_modes, current_user.default_editor))
       %tr
-        %th.sub= f.label :moiety, 'Moiety hex'
-        %td{class: cycle('even', 'odd')}
-          \#
-          = f.text_field :moiety, placeholder: "Hex code", class: 'text', style: 'width: 80px;', maxlength: 6
-      %tr
-        %th.sub= f.label :moiety_name
-        %td{class: cycle('even', 'odd')}= f.text_field :moiety_name, placeholder: "Moiety", class: 'text'
-      %tr
-        %th.sub= f.label :content_warning_ids, "Author warnings"
-        %td{class: cycle('even', 'odd')}= tag_select(current_user, f, :content_warnings)
-      %tr
         %th.sub= f.label :layout
         %td{class: cycle('even', 'odd')}= f.select :layout, layout_options(current_user.layout)
       %tr

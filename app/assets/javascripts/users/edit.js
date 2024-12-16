@@ -21,8 +21,6 @@ $(document).ready(function() {
     minimumResultsForSearch: 20,
   });
 
-  createTagSelect("ContentWarning", "content_warning", "user");
-
   createSelect2('#user_layout', {
     width: '150px',
     minimumResultsForSearch: 20,

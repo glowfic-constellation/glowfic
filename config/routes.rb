@@ -25,7 +25,6 @@ Rails.application.routes.draw do
       put :upgrade
       get :output
       get :profile_edit
-      post :profile_update
     end
   end
   resources :password_resets, only: [:new, :create, :show, :update]
