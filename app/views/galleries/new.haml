@@ -1,3 +1,10 @@
+- content_for :breadcrumbs do
+  = link_to "You", user_path(current_user)
+  &raquo;
+  = link_to "Your Galleries", user_galleries_path(current_user)
+  &raquo;
+  %b Create New
+
 = form_for @gallery, url: galleries_path, method: :post do |f|
   - icons_present = current_user.galleryless_icons.present?
   %table.form-table{style: (icons_present ? 'width: 100%;' : nil)}
