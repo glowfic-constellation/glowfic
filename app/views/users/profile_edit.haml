@@ -6,10 +6,6 @@
 = render 'infobox', user: current_user
 
 .content-header.user-right-content-box Edit profile
--# %table.user-right-content-box
--#   %thead
--#     %tr
--#       %th.editor-title{colspan: 2} Edit Profile
 #post-editor{ style: 'margin-left: 200px;' }
   = form_for current_user, html: { id: 'post_form' } do |f|
     %table
