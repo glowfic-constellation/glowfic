@@ -81,7 +81,7 @@ function toggleEditor() {
   if (this.id === 'rtf') {
     $("#html").removeClass('selected');
     $("#md").removeClass('selected');
-    $("#editor_mode").val('rtf');
+    $("#profile_editor_mode").val('rtf');
     $(this).addClass('selected');
     if (tinyMCEInit) {
       tinyMCE.execCommand('mceAddEditor', true, { id: 'user_profile', options: tinyMCEConfig('#user_profile') });
@@ -91,13 +91,13 @@ function toggleEditor() {
   } else if (this.id === 'md') {
     $("#html").removeClass('selected');
     $("#rtf").removeClass('selected');
-    $("#editor_mode").val('md');
+    $("#profile_editor_mode").val('md');
     $(this).addClass('selected');
     tinyMCE.execCommand('mceRemoveEditor', false, 'user_profile');
   } else if (this.id === 'html') {
     $("#rtf").removeClass('selected');
     $("#md").removeClass('selected');
-    $("#editor_mode").val('html');
+    $("#profile_editor_mode").val('html');
     $(this).addClass('selected');
     tinyMCE.execCommand('mceRemoveEditor', false, 'user_profile');
   }
