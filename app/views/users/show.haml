@@ -79,7 +79,7 @@
         %th.table-title
           Author Profile
           - if is_current_user
-            = link_to edit_profile_user_path(@user) do
+            = link_to profile_edit_user_path(@user) do
               = image_tag "icons/pencil.png".freeze, title: 'Edit'.freeze, alt: 'Edit'.freeze
     %tbody
       %tr
