@@ -11,6 +11,11 @@
         %th.sub= f.label :email
         %td{class: cycle('even', 'odd')}= f.text_field :email, placeholder: "Email address", class: 'text'
       %tr
+        %th.sub Author profile
+        %td{class: cycle('even', 'odd')}
+          %button{ type: 'button', onclick: "window.location.href='#{profile_edit_user_path(current_user)}'" }
+            Edit Profile
+      %tr
         %th.sub Notifications
         %td{class: cycle('even', 'odd')}
           = f.check_box :email_notifications, class: 'width-15 vmid'
