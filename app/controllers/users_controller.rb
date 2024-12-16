@@ -95,7 +95,11 @@ class UsersController < ApplicationController
       render :edit
     else
       flash[:success] = "Changes saved."
-      redirect_to edit_user_path(current_user)
+      if params[:button_submit_profile]
+        redirect_to user_path(current_user)
+      else
+        redirect_to edit_user_path(current_user)
+      end
     end
   end
 

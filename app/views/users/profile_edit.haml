@@ -39,4 +39,4 @@
           %th.sub= f.label :content_warning_ids, "Author warnings"
           %td{class: cycle('even', 'odd')}= tag_select(current_user, f, :content_warnings)
     %br
-    = submit_tag 'Save', class: 'button', id: 'submit_button', data: { disable_with: 'Saving...' }
+    = submit_tag 'Save', class: 'button', id: 'submit_button', name: 'button_submit_profile', data: { disable_with: 'Saving...' }
