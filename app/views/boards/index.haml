@@ -8,6 +8,7 @@
       = user_link(@user)
       &raquo;
       %b #{@user.username}'s Continuities
+  = render 'users/warnings', user: @user
 
 %span.time-loaded= pretty_time(DateTime.now.in_time_zone)
 
