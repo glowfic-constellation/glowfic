@@ -132,8 +132,8 @@ RSpec.describe "Viewing a character" do
     expect_basic_character_page(char) do |view|
       expect(page).to have_selector('.breadcrumbs', text: 'Test char » ' + view)
       within('.breadcrumbs') do
-        expect(page).to have_no_link(href: user_path(user))
-        expect(page).to have_link("Characters", href: user_characters_path(user))
+        expect(page).to have_link("You", href: user_path(user))
+        expect(page).to have_link("Your Characters", href: user_characters_path(user))
       end
 
       expect(page).to have_link('Edit Character')
