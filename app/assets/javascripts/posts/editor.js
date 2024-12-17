@@ -111,7 +111,7 @@ function setupWritableEditor() {
   $("#icon_dropdown").change(function() { setIconFromId($(this).val()); });
   $("#icon_dropdown").keyup(function() { setIconFromId($(this).val()); });
 
-  $('#rtf, #html, #md').click(function() { toggleEditor(this, 'editor_mode', ['post_content', 'reply_content']) });
+  $('#rtf, #html, #md').click(function() { toggleEditor(this, 'editor_mode', ['post_content', 'reply_content']); });
   setupEditorHelpBox();
 
   $("#swap-character").click(function() {
