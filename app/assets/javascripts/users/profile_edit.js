@@ -3,8 +3,6 @@
 createTagSelect("ContentWarning", "content_warning", "user");
 
 let tinyMCEInit = false;
-let shownIcons = [];
-let iconSelectBox;
 
 function tinyMCEConfig(selector) {
   const height = ($(selector).height() || 150) + 15;
