@@ -61,15 +61,15 @@ function setupEditorHelpBox() {
   });
 }
 
-function toggleEditor(button, editor_mode_selector_id, mce_editor_ids) {
+function toggleEditor(button, editorModeSelectorID, mceEditorIDs) {
   if (button.id === 'rtf') {
     $("#html").removeClass('selected');
     $("#md").removeClass('selected');
-    $("#" + editor_mode_selector_id).val('rtf');
+    $("#" + editorModeSelectorID).val('rtf');
     $(button).addClass('selected');
     if (tinyMCEInit) {
-      for (const mce_editor_id of mce_editor_ids) {
-        tinyMCE.execCommand('mceAddEditor', true, { id: mce_editor_id, options: tinyMCEConfig('#' + mce_editor_id) });
+      for (const mceEditorID of mceEditorIDs) {
+        tinyMCE.execCommand('mceAddEditor', true, { id: mceEditorID, options: tinyMCEConfig('#' + mceEditorID) });
       }
     } else {
       setupTinyMCE();
@@ -77,18 +77,18 @@ function toggleEditor(button, editor_mode_selector_id, mce_editor_ids) {
   } else if (button.id === 'md') {
     $("#html").removeClass('selected');
     $("#rtf").removeClass('selected');
-    $("#" + editor_mode_selector_id).val('md');
+    $("#" + editorModeSelectorID).val('md');
     $(button).addClass('selected');
-    for (const mce_editor_id of mce_editor_ids) {
-      tinyMCE.execCommand('mceRemoveEditor', false, mce_editor_id);
+    for (const mceEditorID of mceEditorIDs) {
+      tinyMCE.execCommand('mceRemoveEditor', false, mceEditorID);
     }
   } else if (button.id === 'html') {
     $("#rtf").removeClass('selected');
     $("#md").removeClass('selected');
-    $("#" + editor_mode_selector_id).val('html');
+    $("#" + editorModeSelectorID).val('html');
     $(button).addClass('selected');
-    for (const mce_editor_id of mce_editor_ids) {
-      tinyMCE.execCommand('mceRemoveEditor', false, mce_editor_id);
+    for (const mceEditorID of mceEditorIDs) {
+      tinyMCE.execCommand('mceRemoveEditor', false, mceEditorID);
     }
   }
 }
