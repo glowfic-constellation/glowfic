@@ -1,4 +1,5 @@
-/* global gon, tinyMCE, createTagSelect */
+/* global gon, tinyMCE */
+/* exported setupEditorHelpBox, toggleEditor, setupTinyMCE */
 
 let tinyMCEInit = false;
 
