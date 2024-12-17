@@ -1,6 +1,6 @@
 //= require posts/edit_notes
 //= require writable
-/* global gon, resizeScreenname, createTagSelect, createSelect2, tinyMCEConfig, setupEditorHelpBox, toggleEditor, setupTinyMCE */
+/* global gon, resizeScreenname, createTagSelect, createSelect2, setupEditorHelpBox, toggleEditor, setupTinyMCE */
 
 let shownIcons = [];
 let iconSelectBox;

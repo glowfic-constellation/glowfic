@@ -1,5 +1,5 @@
 //= require writable
-/* global gon, createTagSelect, tinyMCEConfig, setupEditorHelpBox, toggleEditor, setupTinyMCE */
+/* global createTagSelect, setupEditorHelpBox, toggleEditor, setupTinyMCE */
 
 createTagSelect("ContentWarning", "content_warning", "user");
 
