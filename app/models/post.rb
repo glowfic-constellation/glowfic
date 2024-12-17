@@ -14,7 +14,7 @@ class Post < ApplicationRecord
   belongs_to :last_user, class_name: 'User', inverse_of: false, optional: false
   belongs_to :last_reply, class_name: 'Reply', inverse_of: false, optional: true
   has_one :flat_post, dependent: :destroy
-  has_many :replies, inverse_of: :post, dependent: :delete_all
+  has_many :replies, -> { where('reply_order > 0') }, inverse_of: :post, dependent: :delete_all
   has_many :reply_drafts, dependent: :destroy
 
   has_many :post_viewers, inverse_of: :post, dependent: :destroy
@@ -34,7 +34,9 @@ class Post < ApplicationRecord
 
   has_many :notifications, inverse_of: :post, dependent: :destroy
 
-  attr_accessor :is_import
+  has_one :written, -> { where(reply_order: 0) }, class_name: 'Reply', inverse_of: :post, dependent: :destroy
+
+  attr_accessor :is_import, :skip_written # TODO: delete skip_written after the migration is done
   attr_writer :skip_edited
 
   validates :subject, presence: true, length: { maximum: 255 }
@@ -43,12 +45,16 @@ class Post < ApplicationRecord
 
   before_validation :set_last_user, on: :create
   before_create :build_initial_flat_post, :set_timestamps
+  after_create :create_written
   before_update :set_timestamps
+  after_update :update_written
   after_commit :notify_followers, on: :create
   after_commit :invalidate_caches, on: :update
 
   NON_EDITED_ATTRS = %w(id created_at updated_at edited_at tagged_at last_user_id last_reply_id section_order)
   NON_TAGGED_ATTRS = %w(icon_id character_alias_id character_id)
+  WRITTEN_ATTRS = %w(content icon_id character_alias_id character_id)
+
   audited except: NON_EDITED_ATTRS, update_with_comment_only: false
   has_associated_audits
 
@@ -85,7 +91,7 @@ class Post < ApplicationRecord
   # rubocop:enable Style/TrailingCommaInArguments
 
   scope :with_reply_count, -> {
-    select('(SELECT COUNT(*) FROM replies WHERE replies.post_id = posts.id) AS reply_count')
+    select('(SELECT COUNT(*) FROM replies WHERE replies.post_id = posts.id AND replies.reply_order > 0) AS reply_count')
   }
 
   scope :visible_to, ->(user) {
@@ -242,7 +248,6 @@ class Post < ApplicationRecord
   def word_count_for(user)
     sum = 0
     sum = word_count if user_id == user.id
-    return sum unless replies.where(user_id: user.id).exists?
 
     contents = replies.where(user_id: user.id).pluck(:content)
     full_sanitizer = Rails::Html::FullSanitizer.new
@@ -350,5 +355,36 @@ class Post < ApplicationRecord
   def invalidate_caches
     return unless saved_change_to_authors_locked?
     Post::Author.clear_cache_for(authors)
+  end
+
+  def create_written
+    return if skip_written
+    self.written = Reply.create!(
+      post: self,
+      reply_order: 0,
+      user: user,
+      content: content,
+      icon: icon,
+      character: character,
+      character_alias: character_alias,
+      created_at: created_at,
+      updated_at: edited_at,
+      skip_regenerate: true,
+      skip_post_update: true,
+      is_import: true,
+    )
+  end
+
+  def update_written
+    return unless written.present?
+    return if self.slice(WRITTEN_ATTRS) == written.slice(WRITTEN_ATTRS)
+    written.update!(
+      content: content,
+      icon: icon,
+      character: character,
+      character_alias: character_alias,
+      updated_at: edited_at,
+      skip_post_update: true,
+    )
   end
 end
