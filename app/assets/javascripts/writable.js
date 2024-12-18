@@ -62,11 +62,24 @@ function setupEditorHelpBox() {
 }
 
 function toggleEditor(button, editorModeSelectorID, mceEditorIDs) {
-  if (button.id === 'rtf') {
-    $("#html").removeClass('selected');
-    $("#md").removeClass('selected');
-    $("#" + editorModeSelectorID).val('rtf');
-    $(button).addClass('selected');
+  /* Toggle the editor mode depending on which editor button was clicked. */
+  const clickedEditorMode = button.id;
+
+  // Unselect all editor modes that were not the one clicked
+  for (const editorMode of ['html', 'md', 'rtf']) {
+    if (editorMode === clickedEditorMode) {
+      continue;
+    }
+
+    $("#" + editorMode).removeClass('selected');
+  }
+
+  // Select the clicked editor mode and update the hidden form field with the appropriate value
+  $(button).addClass('selected');
+  $("#" + editorModeSelectorID).val(clickedEditorMode);
+
+  // Enable or disable the tinyMCE editor depending on the editor mode selected
+  if (clickedEditorMode === 'rtf') {
     if (tinyMCEInit) {
       for (const mceEditorID of mceEditorIDs) {
         tinyMCE.execCommand('mceAddEditor', true, { id: mceEditorID, options: tinyMCEConfig('#' + mceEditorID) });
@@ -74,19 +87,7 @@ function toggleEditor(button, editorModeSelectorID, mceEditorIDs) {
     } else {
       setupTinyMCE();
     }
-  } else if (button.id === 'md') {
-    $("#html").removeClass('selected');
-    $("#rtf").removeClass('selected');
-    $("#" + editorModeSelectorID).val('md');
-    $(button).addClass('selected');
-    for (const mceEditorID of mceEditorIDs) {
-      tinyMCE.execCommand('mceRemoveEditor', false, mceEditorID);
-    }
-  } else if (button.id === 'html') {
-    $("#rtf").removeClass('selected');
-    $("#md").removeClass('selected');
-    $("#" + editorModeSelectorID).val('html');
-    $(button).addClass('selected');
+  } else {
     for (const mceEditorID of mceEditorIDs) {
       tinyMCE.execCommand('mceRemoveEditor', false, mceEditorID);
     }
