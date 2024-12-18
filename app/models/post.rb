@@ -127,6 +127,11 @@ class Post < ApplicationRecord
     (post_viewers.pluck(:user_id) + [user_id]).include?(user.id)
   end
 
+  def has_replies_bookmarked_by?(user)
+    return false unless user
+    bookmarking_users.where(id: user.id).exists?
+  end
+
   def build_new_reply_for(user, reply_params={})
     draft = ReplyDraft.draft_reply_for(self, user)
     return draft if draft.present?
