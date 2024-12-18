@@ -22,6 +22,10 @@ class Post < ApplicationRecord
   has_many :favorites, as: :favorite, inverse_of: :favorite, dependent: :destroy
   has_many :views, class_name: 'Post::View', dependent: :destroy
 
+  has_many :user_bookmarks, inverse_of: :post, class_name: 'User::Bookmark', dependent: :destroy
+  has_many :bookmarking_users, -> { ordered }, through: :user_bookmarks, source: :user, dependent: :destroy
+  has_many :bookmarked_replies, -> { ordered }, through: :user_bookmarks, source: :reply, dependent: :destroy
+
   has_many :post_tags, inverse_of: :post, dependent: :destroy
   has_many :labels, -> { ordered_by_post_tag }, through: :post_tags, source: :label, dependent: :destroy
   has_many :settings, -> { ordered_by_post_tag }, through: :post_tags, source: :setting, dependent: :destroy
