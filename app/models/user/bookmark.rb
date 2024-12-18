@@ -6,4 +6,6 @@ class User::Bookmark < ApplicationRecord
 
   validates :type, uniqueness: { scope: [:user, :reply] }
   validates :type, inclusion: { in: ['reply_bookmark'] }, allow_nil: false
+
+  self.inheritance_column = nil
 end
