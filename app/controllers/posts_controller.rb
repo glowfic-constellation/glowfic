@@ -205,6 +205,7 @@ class PostsController < WritableController
   def update
     mark_unread and return if params[:unread].present?
     mark_hidden and return if params[:hidden].present?
+    toggle_bookmark and return if params[:toggle_bookmark].present?
 
     require_edit_permission
     return if performed?
@@ -401,6 +402,34 @@ class PostsController < WritableController
       flash[:success] = "Post has been unhidden"
     end
     redirect_to @post
+  end
+
+  def toggle_bookmark
+    redirect_params = {}
+    redirect_params[:page] = page unless page.to_s == '1'
+    redirect_params[:per_page] = per_page unless per_page.to_s == (current_user.try(:per_page) || 25).to_s
+
+    unless params[:at_id].present?
+      flash[:error] = "Reply not found."
+      return redirect_to post_path(@post, redirect_params)
+    end
+
+    reply = Reply.find(params[:at_id])
+    unless reply && reply.post == @post
+      flash[:error] = "Reply not found in post."
+      return redirect_to post_path(@post, redirect_params)
+    end
+
+    bookmark = @post.user_bookmarks.where(reply_id: reply.id, user_id: current_user.id, post_id: @post.id, type: 'reply_bookmark').first_or_initialize
+    if bookmark.new_record?
+      bookmark.save!
+      flash[:success] = "Bookmark added."
+    else
+      bookmark.destroy!
+      flash[:success] = "Bookmark removed."
+    end
+
+    redirect_to reply_path(reply, anchor: "reply-#{reply.id}")
   end
 
   def change_status
