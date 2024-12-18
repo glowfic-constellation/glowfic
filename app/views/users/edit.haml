@@ -91,6 +91,11 @@
           = f.check_box :hide_hiatused_tags_owed, class: 'width-15 vmid'
           = f.label :hide_hiatused_tags_owed, "Hide hiatused threads", class: 'vmid'
       %tr
+        %th.sub Bookmarks
+        %td{class: cycle('even', 'odd')}
+          = f.check_box :public_bookmarks, class: 'width-15 vmid'
+          = f.label :public_bookmarks, "Make bookmarks public", class: 'vmid'
+      %tr
         %th.sub Character Quick Switcher
         %td{class: cycle('even', 'odd')}
           = f.check_box :show_user_in_switcher, class: 'width-15 vmid'
