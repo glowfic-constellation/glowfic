@@ -1,3 +1,9 @@
+- content_for :breadcrumbs do
+  = link_to "You", user_path(current_user)
+  &raquo;
+  = link_to "Your Galleries", user_galleries_path(current_user)
+  &raquo;
+
 - if @gallery && params[:type] == 'existing'
   = render 'add_existing'
 - else

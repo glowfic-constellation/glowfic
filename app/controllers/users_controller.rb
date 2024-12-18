@@ -6,7 +6,7 @@ class UsersController < ApplicationController
   before_action :signup_prep, only: :new
   before_action :login_required, except: [:index, :show, :new, :create, :search]
   before_action :logout_required, only: [:new, :create]
-  before_action :require_own_user, only: [:edit, :update, :password, :upgrade]
+  before_action :require_own_user, only: [:edit, :update, :password, :upgrade, :profile_edit]
   before_action :require_readonly_user, only: :upgrade
 
   def index
@@ -72,6 +72,13 @@ class UsersController < ApplicationController
     @page_title = 'Edit Account'
   end
 
+  def profile_edit
+    use_javascript('users/profile_edit')
+    gon.editor_class = 'layout_' + current_user.layout if current_user.layout
+    gon.tinymce_css_path = helpers.stylesheet_path('tinymce')
+    @page_title = 'Edit Author Profile'
+  end
+
   def update
     store_tos and return if params[:tos_check]
 
@@ -88,7 +95,11 @@ class UsersController < ApplicationController
       render :edit
     else
       flash[:success] = "Changes saved."
-      redirect_to edit_user_path(current_user)
+      if params[:button_submit_profile]
+        redirect_to user_path(current_user)
+      else
+        redirect_to edit_user_path(current_user)
+      end
     end
   end
 
@@ -224,6 +235,8 @@ class UsersController < ApplicationController
       :default_editor,
       :moiety,
       :moiety_name,
+      :profile,
+      :profile_editor_mode,
       :layout,
       :time_display,
       :unread_opened,

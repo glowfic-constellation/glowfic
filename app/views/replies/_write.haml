@@ -61,6 +61,6 @@
           %p What would you like to do with your unsaved changes?
     - else
       %br
-    = render 'posts/editor_help'
+    = render 'posts/editor_help', editor_location: 'reply'
 
 = render 'posts/editor', item: reply

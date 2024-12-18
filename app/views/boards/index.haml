@@ -1,8 +1,14 @@
-- if @user.present? && @user.id != current_user.try(:id)
+- if @user.present?
   - content_for :breadcrumbs do
-    = user_link(@user)
-    &raquo;
-    %b #{@user.username}'s Continuities
+    - if @user.id == current_user.try(:id)
+      = link_to "You", user_path(current_user)
+      &raquo;
+      %b Your Continuities
+    - else
+      = user_link(@user)
+      &raquo;
+      %b #{@user.username}'s Continuities
+  = render 'users/warnings', user: @user
 
 %span.time-loaded= pretty_time(DateTime.now.in_time_zone)
 

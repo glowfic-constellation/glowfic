@@ -1,5 +1,9 @@
 - content_for :breadcrumbs do
-  - if @user.id != current_user.try(:id)
+  - if @user.id == current_user.try(:id)
+    = link_to "You", user_path(current_user)
+    &raquo;
+    %b Your Galleries
+  - else
     = user_link(@user)
     &raquo;
     %b #{@user.username}'s Galleries

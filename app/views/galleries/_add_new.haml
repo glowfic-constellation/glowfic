@@ -1,5 +1,8 @@
 -# locals: ()
 
+- content_for :breadcrumbs do
+  %b Add New
+
 = form_tag icon_gallery_path(id: @gallery&.id || 0),
   method: :post,
   class: 'icon-upload',

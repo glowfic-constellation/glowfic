@@ -1,0 +1,71 @@
+-# locals: ( user: )
+
+%table.left-info-box.user-info-box
+  %thead
+    %tr
+      %th.info-box-header
+        .username= user.username
+        - if user.moiety
+          .user-moiety
+            = color_block(user)
+            = user.moiety_name
+  %tbody
+    - if user.avatar
+      %tr
+        %td.icons-box#user-avatar
+          = link_to icon_path(user.avatar) do
+            = icon_tag user.avatar
+  %tbody
+    - if logged_in? && user.id != current_user.id
+      %tr
+        %td.centered{class: cycle('even', 'odd')}
+          = link_to new_message_path(recipient_id: user.id) do
+            = image_tag "icons/email.png", class: 'vmid', alt: ''
+            Send Message
+    %tr
+      %td.centered{class: cycle('even', 'odd')}
+        = link_to user_characters_path(user), class: 'user-characters' do
+          = image_tag "icons/group.png", class: 'vmid', alt: ''
+          Characters
+    %tr
+      %td.centered{class: cycle('even', 'odd')}
+        = link_to user_galleries_path(user), class: 'user-galleries' do
+          = image_tag "icons/photos.png", class: 'vmid', alt: ''
+          Galleries
+    -# TODO tags
+    %tr
+      %td.centered{class: cycle('even', 'odd')}
+        = link_to user_boards_path(user) do
+          = image_tag "icons/table.png", class: 'vmid', alt: ''
+          Continuities
+    %tr
+      %td.centered{class: cycle('even', 'odd')}
+        = link_to search_posts_path(author_id: [user.id], commit: 'Search'), rel: 'nofollow' do
+          = image_tag "icons/book_open.png", class: 'vmid', alt: ''
+          All Posts
+    %tr
+      %td.centered{class: cycle('even', 'odd')}
+        = link_to search_posts_path(author_id: [user.id], commit: 'Search', completed: true), rel: 'nofollow' do
+          = image_tag "icons/book.png", class: 'vmid', alt: ''
+          Completed Posts
+    - if logged_in? && user.id != current_user.id
+      %tr
+        %td.centered{class: cycle('even', 'odd')}
+          - if (fav = Favorite.between(current_user, user))
+            = link_to favorite_path(fav), method: :delete do
+              = image_tag "icons/star_delete.png", class: 'vmid', alt: ''
+              Unfavorite
+          - else
+            = link_to favorites_path(user_id: user.id), method: :post do
+              = image_tag "icons/star_add.png", class: 'vmid', alt: ''
+              Favorite
+      %tr
+        %td.centered{class: cycle('even', 'odd')}
+          - if (block = Block.find_by(blocking_user: current_user, blocked_user: user))
+            = link_to edit_block_path(block) do
+              = image_tag "icons/user_delete.png", class: 'vmid', alt: ''
+              Manage Block
+          - else
+            = link_to new_block_path(block: { blocked_user_id: user.id }) do
+              = image_tag "icons/user_delete.png", class: 'vmid', alt: ''
+              Block User

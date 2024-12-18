@@ -47,6 +47,7 @@ class User < ApplicationRecord
     confirmation: { if: :validate_password? }
   validates :moiety, format: { with: /\A([0-9A-F]{3}){0,2}\z/i }, length: { maximum: 255 }
   validates :moiety_name, length: { maximum: 255 }
+  validates :profile_editor_mode, inclusion: { in: ['html', 'rtf', 'md'] }, allow_nil: true
   validates :password, :password_confirmation, presence: { if: :validate_password? }
   validate :username_not_reserved
 
