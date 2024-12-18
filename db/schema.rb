@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.2].define(version: 2024_12_09_191600) do
+ActiveRecord::Schema[7.2].define(version: 2024_12_17_192800) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "citext"
   enable_extension "plpgsql"
@@ -439,6 +439,21 @@ ActiveRecord::Schema[7.2].define(version: 2024_12_09_191600) do
     t.index ["user_id"], name: "index_templates_on_user_id"
   end
 
+  create_table "user_bookmarks", force: :cascade do |t|
+    t.integer "user_id", null: false
+    t.integer "reply_id", null: false
+    t.integer "post_id", null: false
+    t.string "name"
+    t.string "type", default: "reply_bookmark", null: false
+    t.datetime "created_at"
+    t.datetime "updated_at"
+    t.index ["post_id", "user_id"], name: "index_user_bookmarks_on_post_id_and_user_id"
+    t.index ["post_id"], name: "index_user_bookmarks_on_post_id"
+    t.index ["reply_id"], name: "index_user_bookmarks_on_reply_id"
+    t.index ["user_id", "reply_id", "type"], name: "index_user_bookmarks_on_user_id_and_reply_id_and_type", unique: true
+    t.index ["user_id"], name: "index_user_bookmarks_on_user_id"
+  end
+
   create_table "user_tags", force: :cascade do |t|
     t.integer "user_id", null: false
     t.integer "tag_id", null: false
@@ -480,6 +495,7 @@ ActiveRecord::Schema[7.2].define(version: 2024_12_09_191600) do
     t.boolean "deleted", default: false
     t.boolean "default_hide_retired_characters", default: false
     t.boolean "hide_from_all", default: false
+    t.boolean "public_bookmarks", default: false
     t.index ["email"], name: "index_users_on_email", unique: true
     t.index ["username"], name: "index_users_on_username", unique: true
   end
