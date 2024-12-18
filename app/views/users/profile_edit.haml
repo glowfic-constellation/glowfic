@@ -22,7 +22,7 @@
             = f.hidden_field :profile_editor_mode, id: 'profile_editor_mode'
             #post-form-wrapper.no-margin-left
               = f.text_area :profile, class: 'tinymce'
-            = render 'posts/editor_help'
+            = render 'posts/editor_help', editor_location: 'profile'
         %tr
           %th.sub.vtop Moiety hex
           %td{class: cycle('even', 'odd')}
