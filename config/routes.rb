@@ -103,7 +103,10 @@ Rails.application.routes.draw do
       get :history
       post :restore
     end
-    collection { get :search }
+    collection do
+      get :search
+      get :search_bookmarked
+    end
   end
   resources :tags, except: [:new, :create]
 

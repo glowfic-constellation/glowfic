@@ -37,6 +37,24 @@ $(document).ready(function() {
     allowClear: true,
   });
 
+  createSelect2('#user_id', {
+    ajax: {
+      url: '/api/v1/users',
+      processResults: processTotal('username'),
+    },
+    placeholder: '— Choose User —',
+    allowClear: false,
+  });
+
+  createSelect2('#post_id', {
+    ajax: {
+      url: '/api/v1/posts',
+      processResults: processTotal('subject'),
+    },
+    placeholder: '— Choose Post —',
+    allowClear: true,
+  });
+
   createSelect2('#board_id', {
     ajax: {
       url: '/api/v1/boards',
