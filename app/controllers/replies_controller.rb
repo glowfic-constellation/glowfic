@@ -99,6 +99,7 @@ class RepliesController < WritableController
   def search_bookmarked
     @page_title = 'Search Bookmarks'
     use_javascript('posts/search')
+    use_javascript('bookmarks/rename')
     return unless params[:commit].present?
 
     @user = User.find_by_id(params[:user_id])
@@ -116,7 +117,7 @@ class RepliesController < WritableController
       .order('posts.subject, posts.id, replies.created_at')
       .joins(:user)
       .left_outer_joins(:character)
-      .select('replies.*, user_bookmarks.name as bookmark_name, characters.name, ' \
+      .select('replies.*, user_bookmarks.name as bookmark_name, user_bookmarks.id as bookmark_id, characters.name, ' \
               'characters.screenname, users.username, users.deleted as user_deleted')
       .paginate(page: page)
 
