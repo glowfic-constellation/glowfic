@@ -47,7 +47,7 @@ class BookmarksController < ApplicationController
       return redirect_to posts_path
     end
 
-    @reply = Reply.find(params[:at_id])
+    @reply = Reply.find_by_id(params[:at_id])
     unless @reply
       flash[:error] = "Reply not found."
       return redirect_to posts_path
