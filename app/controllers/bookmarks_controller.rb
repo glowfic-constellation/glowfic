@@ -41,7 +41,7 @@ class BookmarksController < ApplicationController
       .select('icons.keyword, icons.url')
   end
 
-  def new
+  def create
     unless params[:at_id].present?
       flash[:error] = "Reply not selected."
       return redirect_to posts_path

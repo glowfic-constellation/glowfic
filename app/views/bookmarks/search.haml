@@ -84,7 +84,7 @@
                         = link_to bookmark_path(bookmark), method: :delete do
                           = image_tag "icons/bookmark_delete.png".freeze, title: 'Remove Bookmark'.freeze, alt: 'Remove Bookmark'.freeze
                       - else
-                        = link_to new_bookmark_path params: { at_id: reply.id, bookmark_name: reply.bookmark_name } do
+                        = link_to bookmarks_path(at_id: reply.id, bookmark_name: reply.bookmark_name), method: :post do
                           = image_tag "icons/bookmark.png".freeze, title: 'Copy Bookmark'.freeze, alt: 'Copy Bookmark'.freeze
                     .post-content
                       - if params[:subj_content].present?

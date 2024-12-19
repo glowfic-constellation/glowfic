@@ -105,7 +105,7 @@ Rails.application.routes.draw do
     end
     collection { get :search }
   end
-  resources :bookmarks, only: [:new, :destroy] do
+  resources :bookmarks, only: [:create, :destroy] do
     collection { get :search }
   end
   resources :tags, except: [:new, :create]
