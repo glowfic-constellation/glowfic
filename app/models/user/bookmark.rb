@@ -8,4 +8,12 @@ class User::Bookmark < ApplicationRecord
   validates :type, inclusion: { in: ['reply_bookmark'] }, allow_nil: false
 
   self.inheritance_column = nil
+
+  def visible_to?(other_user)
+    return false unless other_user
+    return false unless post.visible_to?(other_user)
+    return false unless reply
+    return true if other_user.id == user.id
+    user.public_bookmarks
+  end
 end
