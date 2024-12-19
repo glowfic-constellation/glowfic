@@ -48,10 +48,11 @@
             = link_to path_for(reply, '%s'), method: :delete, data: { confirm: "Are you sure you wish to delete this #{reply.class.to_s.downcase}?" } do
               = image_tag "icons/cross.png".freeze, title: 'Delete'.freeze, alt: 'Delete'.freeze
           - if reply.is_a?(Reply) && logged_in?
-            = link_to post_path(@post, toggle_bookmark: true, at_id: reply.id), method: :put do
-              - if reply.bookmarked_by?(current_user)
+            - if (bookmark = reply.bookmark(current_user))
+              = link_to path_for(bookmark, 'bookmark'), method: :delete do
                 = image_tag "icons/bookmark_delete.png".freeze, title: 'Remove Bookmark'.freeze, alt: 'Remove Bookmark'.freeze
-              - else
+            - else
+              = link_to new_bookmark_path params: { at_id: reply.id } do
                 = image_tag "icons/bookmark.png".freeze, title: 'Add Bookmark'.freeze, alt: 'Add Bookmark'.freeze
             = link_to post_path(@post, unread: true, at_id: reply.id), method: :put do
               = image_tag "icons/eye.png".freeze, title: 'Mark Unread Here'.freeze, alt: 'Mark Unread Here'.freeze

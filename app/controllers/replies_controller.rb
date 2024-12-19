@@ -2,7 +2,7 @@
 require 'will_paginate/array'
 
 class RepliesController < WritableController
-  before_action :login_required, except: [:search, :search_bookmarked, :show, :history]
+  before_action :login_required, except: [:search, :show, :history]
   before_action :find_model, only: [:show, :history, :edit, :update, :destroy]
   before_action :editor_setup, only: [:edit]
   before_action :require_create_permission, only: [:create]
@@ -94,42 +94,6 @@ class RepliesController < WritableController
     @search_results = @search_results
       .select('icons.keyword, icons.url')
       .left_outer_joins(:icon)
-  end
-
-  def search_bookmarked
-    @page_title = 'Search Bookmarks'
-    use_javascript('posts/search')
-    use_javascript('bookmarks/rename')
-    return unless params[:commit].present?
-
-    @user = User.find_by_id(params[:user_id])
-    return unless @user && (@user.id == current_user.try(:id) || @user.public_bookmarks)
-
-    bookmarks = User::Bookmark.where(user_id: params[:user_id])
-    if params[:post_id].present?
-      @posts = Post.where(id: params[:post_id])
-      bookmarks = bookmarks.where(post_id: params[:post_id])
-    end
-
-    @search_results = Reply.joins(:user_bookmarks).where(id: bookmarks.pluck(:reply_id))
-      .visible_to(current_user)
-      .includes(:post)
-      .order('posts.subject, posts.id, replies.created_at')
-      .joins(:user)
-      .left_outer_joins(:character)
-      .select('replies.*, user_bookmarks.name as bookmark_name, user_bookmarks.id as bookmark_id, characters.name, ' \
-              'characters.screenname, users.username, users.deleted as user_deleted')
-      .paginate(page: page)
-
-    @search_results = @search_results.where.not(post_id: current_user.hidden_posts) if logged_in? && !params[:show_blocked]
-
-    @audits = []
-
-    return if params[:condensed]
-
-    @search_results = @search_results
-      .left_outer_joins(:icon)
-      .select('icons.keyword, icons.url')
   end
 
   def create
