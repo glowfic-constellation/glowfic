@@ -14,16 +14,16 @@ class BookmarksController < ApplicationController
     @user = User.find_by_id(params[:user_id])
     return unless @user && (@user.id == current_user.try(:id) || @user.public_bookmarks)
 
-    bookmarks = User::Bookmark.where(user_id: params[:user_id])
+    @search_results = @user.bookmarked_replies
     if params[:post_id].present?
       @posts = Post.where(id: params[:post_id])
-      bookmarks = bookmarks.where(post_id: params[:post_id])
+      @search_results = @search_results.where(post_id: params[:post_id])
     end
 
-    @search_results = Reply.joins(:user_bookmarks).where(id: bookmarks.pluck(:reply_id))
+    @search_results = @search_results
       .visible_to(current_user)
-      .includes(:post)
-      .order('posts.subject, posts.id, replies.created_at')
+      .joins(:post)
+      .order('posts.subject, replies.created_at, posts.id')
       .joins(:user)
       .left_outer_joins(:character)
       .select('replies.*, user_bookmarks.name as bookmark_name, user_bookmarks.id as bookmark_id, characters.name, ' \
