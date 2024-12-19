@@ -429,7 +429,12 @@ class PostsController < WritableController
       flash[:success] = "Bookmark removed."
     end
 
-    redirect_to reply_path(reply, anchor: "reply-#{reply.id}")
+    if params[:from_search].present?
+      redirect_to search_bookmarked_replies_path(user_id: params[:user_id], post_id: params[:post_id], condensed: params[:condensed],
+        commit: 'Search',)
+    else
+      redirect_to reply_path(reply, anchor: "reply-#{reply.id}")
+    end
   end
 
   def change_status
