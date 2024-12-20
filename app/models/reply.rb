@@ -13,8 +13,8 @@ class Reply < ApplicationRecord
   validate :author_can_write_in_post, on: :create
   audited associated_with: :post, except: :reply_order, update_with_comment_only: false
 
-  has_many :user_bookmarks, inverse_of: :reply, class_name: 'User::Bookmark', dependent: :destroy
-  has_many :bookmarking_users, -> { ordered }, through: :user_bookmarks, source: :user, dependent: :destroy
+  has_many :bookmarks, inverse_of: :reply, dependent: :destroy
+  has_many :bookmarking_users, -> { ordered }, through: :bookmarks, source: :user, dependent: :destroy
 
   after_create :notify_other_authors, :destroy_draft, :update_active_char, :set_last_reply, :update_post, :update_post_authors
   after_update :update_post
@@ -51,7 +51,7 @@ class Reply < ApplicationRecord
 
   def bookmark(user)
     return false unless user
-    if (bookmark = user_bookmarks.where(user_id: user.id)).exists?
+    if (bookmark = bookmarks.where(user_id: user.id)).exists?
       return bookmark.first
     end
     false

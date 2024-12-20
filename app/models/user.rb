@@ -34,9 +34,9 @@ class User < ApplicationRecord
   has_many :user_tags, inverse_of: :user, dependent: :destroy
   has_many :content_warnings, -> { ordered_by_user_tag }, through: :user_tags, source: :content_warning, dependent: :destroy
 
-  has_many :user_bookmarks, inverse_of: :user, class_name: 'User::Bookmark', dependent: :destroy
-  has_many :bookmarked_replies, through: :user_bookmarks, source: :reply, dependent: :destroy
-  has_many :bookmarked_posts, -> { ordered }, through: :user_bookmarks, source: :post, dependent: :destroy
+  has_many :bookmarks, inverse_of: :user, dependent: :destroy
+  has_many :bookmarked_replies, through: :bookmarks, source: :reply, dependent: :destroy
+  has_many :bookmarked_posts, -> { ordered }, through: :bookmarks, source: :post, dependent: :destroy
 
   validates :crypted, presence: true
   validates :email,

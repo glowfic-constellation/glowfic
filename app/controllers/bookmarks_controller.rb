@@ -26,7 +26,7 @@ class BookmarksController < ApplicationController
       .order('posts.subject, replies.created_at, posts.id')
       .joins(:user)
       .left_outer_joins(:character)
-      .select('replies.*, user_bookmarks.name as bookmark_name, user_bookmarks.id as bookmark_id, characters.name, ' \
+      .select('replies.*, bookmarks.name as bookmark_name, bookmarks.id as bookmark_id, characters.name, ' \
               'characters.screenname, users.username, users.deleted as user_deleted')
       .paginate(page: page)
 
@@ -53,7 +53,7 @@ class BookmarksController < ApplicationController
       return redirect_to posts_path
     end
 
-    bookmark = User::Bookmark.where(reply_id: @reply.id, user_id: current_user.id, post_id: @reply.post.id,
+    bookmark = Bookmark.where(reply_id: @reply.id, user_id: current_user.id, post_id: @reply.post.id,
       type: 'reply_bookmark',).first_or_initialize
     if bookmark.new_record?
       if params[:bookmark_name].present?
@@ -90,7 +90,7 @@ class BookmarksController < ApplicationController
   private
 
   def find_model
-    @bookmark = User::Bookmark.find_by_id(params[:id])
+    @bookmark = Bookmark.find_by_id(params[:id])
     return if @bookmark&.visible_to?(current_user)
 
     flash[:error] = "Bookmark could not be found."

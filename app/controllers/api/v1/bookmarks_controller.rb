@@ -32,7 +32,7 @@ class Api::V1::BookmarksController < Api::ApiController
   private
 
   def find_bookmark
-    return unless (@bookmark = find_object(User::Bookmark))
+    return unless (@bookmark = find_object(Bookmark))
     access_denied unless @bookmark.visible_to?(current_user)
   end
 end
