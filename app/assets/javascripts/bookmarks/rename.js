@@ -1,5 +1,4 @@
 let originalValues = {};
-let submittedButton = '';
 
 $(document).ready(function() {
   const textFields = $(`.bookmark-name-text-field`);
@@ -16,7 +15,7 @@ $(document).ready(function() {
     for (const editor of editors) {
       // Hide all editors other than the one clicked
       const editorId = editor.dataset.bookmarkId;
-      if (editorId == bookmarkId) {
+      if (editorId === bookmarkId) {
         continue;
       }
 
@@ -31,7 +30,7 @@ $(document).ready(function() {
   });
 
   $(".save-bookmark-name").click(function() {
-    $(".loading").show(); // TODO
+    $(".loading").show();
 
     const bookmarkId = this.dataset.bookmarkId;
     const newName = $(`.bookmark-name-text-field[data-bookmark-id="${bookmarkId}"]`).val();
@@ -53,7 +52,7 @@ $(document).ready(function() {
         $(`.saveerror[data-bookmark-id="${bookmarkId}"]`).show();
       }
     });
-    
+
     return false;
   });
 
@@ -68,7 +67,7 @@ $(document).ready(function() {
 
 function nameFromData(name, encodedName) {
   if (name) {
-    let div = document.createElement('div');
+    const div = document.createElement('div');
     div.innerHTML = decodeURI(encodedName);
     return $("<b>").html(div.innerText);
   }
