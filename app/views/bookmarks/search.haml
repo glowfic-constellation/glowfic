@@ -100,7 +100,7 @@
                           = surround ' | Updated '.freeze, ' | '.freeze do
                             %span.post-updated=pretty_time(reply.last_updated)
                           = link_to 'See History'.freeze, path_for(reply, 'history_%s'), class: 'post-history'.freeze
-        - elsif @user && !@user.public_bookmarks
+        - elsif @user && @user.id != current_user.try(:id) && !@user.public_bookmarks
           %table
             %tbody
               %tr
