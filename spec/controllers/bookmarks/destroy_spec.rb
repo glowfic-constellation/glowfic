@@ -1,0 +1,41 @@
+RSpec.describe BookmarksController, 'DELETE destroy' do
+  let(:user) { create(:user, public_bookmarks: true) }
+  let(:reply) { create(:reply) }
+  let(:bookmark) { create(:bookmark, user: user, reply: reply, post: reply.post) }
+
+  it "requires login" do
+    delete :destroy, params: { id: -1 }
+    expect(response).to redirect_to(root_url)
+    expect(flash[:error]).to eq("You must be logged in to view that page.")
+  end
+
+  it "requires valid bookmark" do
+    login
+    delete :destroy, params: { id: -1 }
+    expect(response).to redirect_to(posts_path)
+    expect(flash[:error]).to eq("Bookmark could not be found.")
+  end
+
+  it "requires visible reply" do
+    reply.post.update!(privacy: :access_list, viewers: [reply.user])
+    login
+    delete :destroy, params: { id: bookmark.id }
+    expect(response).to redirect_to(posts_path)
+    expect(flash[:error]).to eq("Bookmark could not be found.")
+  end
+
+  it "requires bookmark ownership" do
+    login
+    delete :destroy, params: { id: bookmark.id }
+    expect(response).to redirect_to(reply_url(reply, anchor: "reply-#{reply.id}"))
+    expect(flash[:error]).to eq("You do not have permission to remove this bookmark.")
+  end
+
+  it "succeeds for bookmark owner" do
+    login_as(user)
+    delete :destroy, params: { id: bookmark.id }
+    expect(response).to redirect_to(reply_url(reply, anchor: "reply-#{reply.id}"))
+    expect(flash[:success]).to eq("Bookmark removed.")
+    expect(Bookmark.find_by_id(bookmark.id)).to be_nil
+  end
+end
