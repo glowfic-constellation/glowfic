@@ -1,4 +1,4 @@
-let originalValues = {};
+const originalValues = {};
 
 $(document).ready(function() {
   const textFields = $(`.bookmark-name-text-field`);
