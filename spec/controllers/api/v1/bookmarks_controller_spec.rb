@@ -69,7 +69,7 @@ RSpec.describe Api::V1::BookmarksController do
       patch :update, params: { id: bookmark.id, name: "New name" }
 
       expect(response).to have_http_status(200)
-      expect(response.parsed_body['name']).to eq("<p>New name</p>")
+      expect(response.parsed_body['name']).to eq("New name")
       bookmark.reload
       expect(bookmark.name).to eq('New name')
     end
@@ -82,7 +82,7 @@ RSpec.describe Api::V1::BookmarksController do
       patch :update, params: { id: bookmark.id, name: "" }
 
       expect(response).to have_http_status(200)
-      expect(response.parsed_body['name']).to eq("<p></p>")
+      expect(response.parsed_body['name']).to eq("")
       bookmark.reload
       expect(bookmark.name).to eq('')
     end
