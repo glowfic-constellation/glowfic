@@ -33,12 +33,6 @@ class BookmarksController < ApplicationController
     @search_results = @search_results.where.not(post_id: current_user.hidden_posts) if logged_in? && !params[:show_blocked]
 
     @audits = []
-
-    return if params[:condensed]
-
-    @search_results = @search_results
-      .left_outer_joins(:icon)
-      .select('icons.keyword, icons.url')
   end
 
   def create
