@@ -70,12 +70,12 @@ class BookmarksController < ApplicationController
   end
 
   def destroy
+    @reply = @bookmark.reply
     unless @bookmark.user.id == current_user.try(:id)
       flash[:error] = "You do not have permission to remove this bookmark."
       redirect_back fallback_location: reply_path(@reply, anchor: "reply-#{@reply.id}") and return
     end
 
-    @reply = @bookmark.reply
     begin
       @bookmark.destroy!
     rescue ActiveRecord::RecordNotDestroyed => e
