@@ -42,7 +42,7 @@ $(document).ready(function() {
       success: function(data) {
         originalValues[bookmarkId] = newName;
         $(".loading").hide();
-        $(`.bookmark-name[data-bookmark-id="${bookmarkId}"] span`).first().html(nameFromData(newName, data.name));
+        $(`.bookmark-name[data-bookmark-id="${bookmarkId}"] span`).first().html(nameFromData(data.name));
         $(`.bookmark-name-editor[data-bookmark-id="${bookmarkId}"]`).hide();
         $(`.bookmark-name[data-bookmark-id="${bookmarkId}"]`).show();
         $(`.saveconf[data-bookmark-id="${bookmarkId}"]`).show().delay(2000).fadeOut();
@@ -65,11 +65,9 @@ $(document).ready(function() {
   });
 });
 
-function nameFromData(name, encodedName) {
+function nameFromData(name) {
   if (name) {
-    const div = document.createElement('div');
-    div.innerHTML = decodeURI(encodedName);
-    return $("<b>").html(div.innerText);
+    return $("<b>").text(name);
   }
   return $("<em>").html("(Unnamed)");
 }

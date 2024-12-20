@@ -46,7 +46,11 @@ class Api::V1::PostsController < Api::ApiController
       return
     end
 
-    render json: { private_note: helpers.sanitize_written_content(params[:private_note]) }
+    if author.private_note.present?
+      render json: { private_note: helpers.sanitize_written_content(author.private_note) }
+    else
+      render json: { private_note: "" }
+    end
   end
 
   api :POST, '/posts/reorder', 'Update the order of posts. This is an unstable feature, and may be moved or renamed; it should not be trusted.'

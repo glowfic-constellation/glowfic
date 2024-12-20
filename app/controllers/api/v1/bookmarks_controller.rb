@@ -26,7 +26,7 @@ class Api::V1::BookmarksController < Api::ApiController
       return
     end
 
-    render json: { name: helpers.sanitize_written_content(params[:name]) }
+    render json: { name: @bookmark.name }
   end
 
   private
