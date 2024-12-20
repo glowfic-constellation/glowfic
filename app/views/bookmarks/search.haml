@@ -80,7 +80,7 @@
                         = image_tag "icons/link.png".freeze, title: 'Permalink'.freeze, alt: 'Permalink'.freeze
                       - if user_is_owner
                         = image_tag "icons/bookmark_pencil.png".freeze, title: 'Rename Bookmark', alt: 'Rename Bookmark', class: 'rename-bookmark pointer', data: { bookmark_id: reply.bookmark_id }
-                      - if (bookmark = reply.bookmark(current_user))
+                      - if (bookmark = reply.bookmark_by(current_user))
                         = link_to bookmark_path(bookmark), method: :delete do
                           = image_tag "icons/bookmark_delete.png".freeze, title: 'Remove Bookmark'.freeze, alt: 'Remove Bookmark'.freeze
                       - else

@@ -49,12 +49,9 @@ class Reply < ApplicationRecord
     self.reply_order = val
   end
 
-  def bookmark(user)
-    return false unless user
-    if (bookmark = bookmarks.where(user_id: user.id)).exists?
-      return bookmark.first
-    end
-    false
+  def bookmark_by(user)
+    return unless user
+    bookmarks.find_by(user_id: user.id)
   end
 
   private
