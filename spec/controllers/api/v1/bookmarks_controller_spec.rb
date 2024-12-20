@@ -44,28 +44,21 @@ RSpec.describe Api::V1::BookmarksController do
       expect(response.parsed_body['errors'][0]['message']).to eq("You do not have permission to perform this action.")
     end
 
-    # TODO
-    # it "handles failed saves" do
-    #   user = api_login
-    #   reply = create(:reply)
-    #   bookmark = create(:bookmark, reply: reply, post: reply.post, user: user)
-    #   allow(Bookmark).to receive(:update).and_return(false)
-    #   # expect(bookmark).to receive(:update)
+    it "handles failed saves" do
+      user = api_login
+      reply = create(:reply)
+      bookmark = create(:bookmark, reply: reply, post: reply.post, user: user)
 
-    #   # post = create(:post, user: user)
-    #   # author = post.author_for(user)
+      allow(Bookmark).to receive(:find_by).and_call_original
+      allow(Bookmark).to receive(:find_by).with({ id: bookmark.id.to_s }).and_return(bookmark)
+      allow(bookmark).to receive(:update).and_return(false)
+      expect(bookmark).to receive(:update)
 
-    #   # allow(Post).to receive(:find_by).and_call_original
-    #   # allow(Post).to receive(:find_by).with({ id: post.id.to_s }).and_return(post)
-    #   # allow(post).to receive(:author_for).with(user).and_return(author)
-    #   # allow(author).to receive(:update).and_return(false)
-    #   # expect(author).to receive(:update)
+      patch :update, params: { id: bookmark.id, name: 'New name' }
 
-    #   patch :update, params: { id: bookmark.id, name: 'New name' }
-
-    #   expect(response).to have_http_status(422)
-    #   expect(response.parsed_body['errors'][0]['message']).to eq('Post could not be updated.')
-    # end
+      expect(response).to have_http_status(422)
+      expect(response.parsed_body['errors'][0]['message']).to eq('Bookmark could not be updated.')
+    end
 
     it "succeeds with valid bookmark", :show_in_doc do
       user = api_login
