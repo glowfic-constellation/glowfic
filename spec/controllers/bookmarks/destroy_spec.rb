@@ -38,4 +38,19 @@ RSpec.describe BookmarksController, 'DELETE destroy' do
     expect(flash[:success]).to eq("Bookmark removed.")
     expect(Bookmark.find_by_id(bookmark.id)).to be_nil
   end
+
+  it "handles destroy failure" do
+    login_as(user)
+
+    allow(Bookmark).to receive(:find_by).and_call_original
+    allow(Bookmark).to receive(:find_by).with({ id: bookmark.id.to_s }).and_return(bookmark)
+    allow(bookmark).to receive(:destroy!).and_raise(ActiveRecord::RecordNotDestroyed, 'fake error')
+    expect(bookmark).to receive(:destroy!)
+
+    delete :destroy, params: { id: bookmark.id }
+
+    expect(response).to redirect_to(reply_url(reply, anchor: "reply-#{reply.id}"))
+    expect(flash[:error]).to eq("Bookmark could not be deleted.")
+    expect(Bookmark.order(:id).last).to eq(bookmark)
+  end
 end
