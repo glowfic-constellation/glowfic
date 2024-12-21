@@ -8,7 +8,7 @@
   - write = ''.freeze
 .post-container{class: [write, (reply == @unread && current_user.try(:visible_unread?)) ? 'reply-highlighted' : '']}
   - if reply.is_a?(Reply) && reply.id.present?
-    <a id="reply-#{reply.id}" class="noheight"> </a>
+    %a.noheight{id: "reply-#{reply.id}"}= " "
   - if reply == @unread
     .unread-marker-container
       %a#unread.unread-marker First unread marker
