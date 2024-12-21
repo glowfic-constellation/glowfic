@@ -233,8 +233,8 @@ RSpec.describe Api::V1::BookmarksController do
 
       delete :destroy, params: { id: bookmark.id }
 
-      expect(response).to have_http_status(200)
-      expect(response.parsed_body).to eq({})
+      expect(response).to have_http_status(204)
+      expect(response.parsed_body).to eq("")
       expect(Bookmark.find_by_id(bookmark.id)).to be_nil
     end
   end

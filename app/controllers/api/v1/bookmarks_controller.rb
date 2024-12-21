@@ -72,7 +72,7 @@ class Api::V1::BookmarksController < Api::ApiController
       return
     end
 
-    render status: :no_content
+    head :no_content
   end
 
   private
