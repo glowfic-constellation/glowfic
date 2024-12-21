@@ -1,10 +1,35 @@
 # frozen_string_literal: true
 class Api::V1::BookmarksController < Api::ApiController
   before_action :login_required
-  before_action :find_bookmark
+  before_action :find_bookmark, except: :create
 
   resource_description do
-    description 'Updating a bookmark'
+    description 'Viewing and modifying bookmarks'
+  end
+
+  api :POST, '/bookmarks', 'Create a bookmark for the current user at a reply. If one already exists, update its name.'
+  header 'Authorization', 'Authorization token for a user in the format "Authorization" : "Bearer [token]"', required: true
+  param :reply_id, :number, required: true, desc: "Reply ID"
+  param :name, String, required: false, allow_blank: true, desc: "New bookmark's name"
+  error 403, "Reply is not visible to the user"
+  error 404, "Reply not found"
+  error 422, "Invalid parameters provided"
+  def create
+    return unless (reply = find_object(Reply, param: :reply_id))
+    unless reply.post.visible_to?(current_user)
+      access_denied
+      return
+    end
+
+    bookmark = Bookmark.where(user: current_user, reply: reply, post: reply.post, type: "reply_bookmark").first_or_initialize
+    bookmark.assign_attributes(name: params[:name])
+    unless bookmark.save
+      error = { message: 'Bookmark could not be created.' }
+      render json: { errors: [error] }, status: :unprocessable_entity
+      return
+    end
+
+    render json: bookmark.as_json
   end
 
   api :PATCH, '/bookmarks/:id', 'Update a single bookmark. Currently only supports renaming.'
