@@ -9,7 +9,7 @@ class Api::V1::BookmarksController < Api::ApiController
 
   api :PATCH, '/bookmarks/:id', 'Update a single bookmark. Currently only supports renaming.'
   header 'Authorization', 'Authorization token for a user in the format "Authorization" : "Bearer [token]"', required: true
-  param :id, :number, required: true, desc: "Boomark ID"
+  param :id, :number, required: true, desc: "Bookmark ID"
   param :name, String, required: true, allow_blank: true, desc: "Bookmark's new name"
   error 403, "Bookmark is not visible to the user"
   error 404, "Bookmark not found"
