@@ -46,7 +46,8 @@ class Api::V1::RepliesController < Api::ApiController
     if bookmark.present?
       render json: bookmark.as_json
     else
-      render json: {}
+      error = { message: "Bookmark could not be found." }
+      render json: { errors: [error] }, status: :not_found and return
     end
   end
 end

@@ -78,20 +78,25 @@ RSpec.describe Api::V1::RepliesController do
       expect(response.parsed_body['errors'][0]['message']).to eq("This user's bookmarks are private.")
     end
 
-    it "succeeds with public bookmarks", :show_in_doc do
+    it "fails if bookmark does not exist", :show_in_doc do
       get :bookmark, params: { id: create(:reply).id, user_id: create(:user, public_bookmarks: true).id }
+      expect(response).to have_http_status(404)
+      expect(response.parsed_body['errors'].size).to eq(1)
+      expect(response.parsed_body['errors'][0]['message']).to eq("Bookmark could not be found.")
+    end
+
+    it "succeeds with public bookmarks", :show_in_doc do
+      bookmark = create(:bookmark, user: create(:user, public_bookmarks: true))
+      get :bookmark, params: { id: bookmark.reply.id, user_id: bookmark.user.id }
       expect(response).to have_http_status(200)
+      expect(response.parsed_body['id']).to eq(bookmark.id)
+      expect(response.parsed_body['user_id']).to eq(bookmark.user.id)
+      expect(response.parsed_body['reply_id']).to eq(bookmark.reply_id)
+      expect(response.parsed_body['post_id']).to eq(bookmark.post_id)
     end
 
     it "succeeds with own bookmarks", :show_in_doc do
       user = api_login
-      get :bookmark, params: { id: create(:reply).id, user_id: user.id }
-      expect(response).to have_http_status(200)
-      expect(response.parsed_body).to eq({})
-    end
-
-    it "fetches user's bookmark", :show_in_doc do
-      user = create(:user, public_bookmarks: true)
       bookmark = create(:bookmark, user: user)
       get :bookmark, params: { id: bookmark.reply.id, user_id: user.id }
       expect(response).to have_http_status(200)
@@ -106,8 +111,9 @@ RSpec.describe Api::V1::RepliesController do
       user2 = create(:user, public_bookmarks: true)
       bookmark2 = create(:bookmark, user: user2)
       get :bookmark, params: { id: bookmark2.reply.id, user_id: user1.id }
-      expect(response).to have_http_status(200)
-      expect(response.parsed_body).to eq({})
+      expect(response).to have_http_status(404)
+      expect(response.parsed_body['errors'].size).to eq(1)
+      expect(response.parsed_body['errors'][0]['message']).to eq("Bookmark could not be found.")
     end
   end
 end
