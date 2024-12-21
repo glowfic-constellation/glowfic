@@ -9,7 +9,7 @@ $(document).ready(function() {
 
 function setupWritableEditor() {
   // Only initialize TinyMCE if it's required
-  if ($("#rtf").hasClass('selected') === true) {
+  if ($("#rtf").hasClass('selected')) {
     setupTinyMCE();
   }
 
