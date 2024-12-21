@@ -26,7 +26,7 @@ class Api::V1::BookmarksController < Api::ApiController
       return
     end
 
-    render json: { name: @bookmark.name }
+    render json: @bookmark.as_json
   end
 
   private
