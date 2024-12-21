@@ -54,6 +54,27 @@ class Api::V1::BookmarksController < Api::ApiController
     render json: @bookmark.as_json
   end
 
+  api :DELETE, '/bookmarks/:id', 'Removes a bookmark'
+  header 'Authorization', 'Authorization token for a user in the format "Authorization" : "Bearer [token]"', required: true
+  param :id, :number, required: true, desc: "Bookmark ID"
+  error 403, "Bookmark is not visible to the user"
+  error 404, "Bookmark not found"
+  error 422, "Invalid parameters provided"
+  def destroy
+    if @bookmark.user.id != current_user.try(:id)
+      access_denied
+      return
+    end
+
+    unless @bookmark.destroy
+      error = { message: 'Bookmark could not be removed.' }
+      render json: { errors: [error] }, status: :unprocessable_entity
+      return
+    end
+
+    render json: {}
+  end
+
   private
 
   def find_bookmark

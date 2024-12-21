@@ -177,4 +177,65 @@ RSpec.describe Api::V1::BookmarksController do
       expect(bookmark.name).to eq('')
     end
   end
+
+  describe "DELETE destroy" do
+    it "requires login", :show_in_doc do
+      delete :destroy, params: { id: 0 }
+      expect(response).to have_http_status(401)
+      expect(response.parsed_body['errors'][0]['message']).to eq("You must be logged in to view that page.")
+    end
+
+    it "requires valid bookmark", :show_in_doc do
+      api_login
+      delete :destroy, params: { id: 0 }
+      expect(response).to have_http_status(404)
+      expect(response.parsed_body['errors'].size).to eq(1)
+      expect(response.parsed_body['errors'][0]['message']).to eq("Bookmark could not be found.")
+    end
+
+    it "requires visible bookmark", :show_in_doc do
+      api_login
+      reply = create(:reply)
+      bookmark = create(:bookmark, reply: reply, post: reply.post)
+      reply.post.update!(privacy: :private)
+      delete :destroy, params: { id: bookmark.id }
+      expect(response).to have_http_status(403)
+      expect(response.parsed_body['errors'][0]['message']).to eq("You do not have permission to perform this action.")
+    end
+
+    it "requires ownership of bookmark", :show_in_doc do
+      api_login
+      reply = create(:reply)
+      bookmark = create(:bookmark, user: create(:user, public_bookmarks: true), reply: reply, post: reply.post)
+      delete :destroy, params: { id: bookmark.id }
+      expect(response).to have_http_status(403)
+      expect(response.parsed_body['errors'][0]['message']).to eq("You do not have permission to perform this action.")
+    end
+
+    it "handles failed destroys" do
+      user = api_login
+      bookmark = create(:bookmark, user: user)
+
+      allow(Bookmark).to receive(:find_by).and_call_original
+      allow(Bookmark).to receive(:find_by).with({ id: bookmark.id.to_s }).and_return(bookmark)
+      allow(bookmark).to receive(:destroy).and_return(false)
+      expect(bookmark).to receive(:destroy)
+
+      delete :destroy, params: { id: bookmark.id }
+
+      expect(response).to have_http_status(422)
+      expect(response.parsed_body['errors'][0]['message']).to eq('Bookmark could not be removed.')
+    end
+
+    it "succeeds with valid bookmark", :show_in_doc do
+      user = api_login
+      bookmark = create(:bookmark, user: user)
+
+      delete :destroy, params: { id: bookmark.id }
+
+      expect(response).to have_http_status(200)
+      expect(response.parsed_body).to eq({})
+      expect(Bookmark.find_by_id(bookmark.id)).to be_nil
+    end
+  end
 end

@@ -147,7 +147,7 @@ Rails.application.routes.draw do
         resources :replies, only: :index
         collection { post :reorder }
       end
-      resources :bookmarks, only: [:create, :update]
+      resources :bookmarks, only: [:create, :update, :destroy]
       resources :tags, only: [:index, :show]
       resources :templates, only: :index
       resources :users, only: :index do
