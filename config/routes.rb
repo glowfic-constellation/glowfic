@@ -140,6 +140,9 @@ Rails.application.routes.draw do
       resources :index_sections, only: [] do
         collection { post :reorder }
       end
+      resources :replies, only: [] do
+        member { get :bookmark }
+      end
       resources :posts, only: [:index, :show, :update] do
         resources :replies, only: :index
         collection { post :reorder }

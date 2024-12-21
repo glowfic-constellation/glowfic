@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 class Api::V1::RepliesController < Api::ApiController
   resource_description do
-    description 'Viewing replies to a post'
+    description 'Viewing replies'
   end
 
   api :GET, '/posts/:id/replies', 'Load all the replies for a given post as JSON resources'
@@ -22,5 +22,31 @@ class Api::V1::RepliesController < Api::ApiController
       .left_outer_joins(:character_alias)
       .ordered
     paginate json: replies, per_page: per_page
+  end
+
+  api :GET, '/replies/:id/bookmark', "Load a user's bookmark attached to a reply if it exists and is visible"
+  param :id, :number, required: true, desc: "Reply ID"
+  param :user_id, :number, required: true, desc: "User ID"
+  error 403, "Reply's post or user's bookmarks are not visible"
+  error 404, "Reply or user not found"
+  error 422, "Invalid parameters provided"
+  def bookmark
+    return unless (reply = find_object(Reply))
+    return unless (user = find_object(User, param: :user_id))
+    access_denied and return unless reply.post.visible_to?(current_user)
+
+    if !user.public_bookmarks && user.id != current_user.try(:id)
+      error = { message: "This user's bookmarks are private." }
+      render json: { errors: [error] }, status: :forbidden
+      return
+    end
+
+    bookmark = reply.bookmarks.find_by(user_id: user.id, type: "reply_bookmark")
+
+    if bookmark.present?
+      render json: bookmark.as_json
+    else
+      render json: {}
+    end
   end
 end
