@@ -241,7 +241,7 @@ class CharactersController < ApplicationController
 
   def search
     @page_title = 'Search Characters'
-    use_javascript('posts/search')
+    use_javascript('search')
     @users = []
     @templates = []
     return unless params[:commit].present?

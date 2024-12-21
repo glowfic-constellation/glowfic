@@ -266,7 +266,7 @@ class PostsController < WritableController
 
   def search
     @page_title = 'Search Posts'
-    use_javascript('posts/search')
+    use_javascript('search')
 
     # don't start blank if the parameters are set
     @setting = Setting.where(id: params[:setting_id]) if params[:setting_id].present?

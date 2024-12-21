@@ -7,7 +7,7 @@ class BookmarksController < ApplicationController
 
   def search
     @page_title = 'Search Bookmarks'
-    use_javascript('posts/search')
+    use_javascript('search')
     use_javascript('bookmarks/rename')
     return unless params[:commit].present?
 
