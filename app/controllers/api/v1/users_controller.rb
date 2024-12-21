@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 class Api::V1::UsersController < Api::ApiController
+  before_action :find_user, except: :index
+
   resource_description do
     description 'Viewing and searching users'
   end
@@ -29,11 +31,36 @@ class Api::V1::UsersController < Api::ApiController
   param :page, :number, required: false, desc: 'Page in results (25 per page)'
   error 404, "User not found"
   def posts
-    return unless (user = find_object(User))
-
-    post_ids = Post::Author.where(user: user).pluck(:post_id)
+    post_ids = Post::Author.where(user: @user).pluck(:post_id)
     queryset = Post.privacy_public.where(id: post_ids).with_reply_count.select('posts.*')
     posts = paginate queryset.includes(:board, :joined_authors, :section), per_page: 25
     render json: { results: posts }
+  end
+
+  api :GET, '/users/:id/bookmarks', "Load all of a user's bookmarks, optionally limited to a single post"
+  param :id, :number, required: true, desc: "User ID"
+  param :post_id, :number, required: false, desc: "Post ID"
+  param :page, :number, required: false, desc: 'Page in results (25 per page)'
+  error 403, "Bookmarks are not visible to the user"
+  error 404, "User not found"
+  error 422, "Invalid parameters provided"
+  def bookmarks
+    if !@user.public_bookmarks && @user.id != current_user.try(:id)
+      error = { message: "This user's bookmarks are private." }
+      render json: { errors: [error] }, status: :forbidden
+      return
+    end
+
+    bookmarks = @user.bookmarks.visible_to(current_user)
+    bookmarks = bookmarks.where(post_id: params[:post_id]) if params[:post_id].present?
+
+    bookmarks = paginate bookmarks, per_page: 25
+    render json: { bookmarks: bookmarks }
+  end
+
+  private
+
+  def find_user
+    @user = find_object(User)
   end
 end

@@ -148,7 +148,10 @@ Rails.application.routes.draw do
       resources :tags, only: [:index, :show]
       resources :templates, only: :index
       resources :users, only: :index do
-        member { get :posts }
+        member do
+          get :posts
+          get :bookmarks
+        end
       end
 
       post '/login' => 'sessions#create', as: :login
