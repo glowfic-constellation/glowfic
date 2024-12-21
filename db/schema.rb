@@ -495,6 +495,8 @@ ActiveRecord::Schema[7.2].define(version: 2024_12_20_001400) do
     t.boolean "deleted", default: false
     t.boolean "default_hide_retired_characters", default: false
     t.boolean "hide_from_all", default: false
+    t.string "profile"
+    t.string "profile_editor_mode", default: "html"
     t.boolean "public_bookmarks", default: false
     t.index ["email"], name: "index_users_on_email", unique: true
     t.index ["username"], name: "index_users_on_username", unique: true

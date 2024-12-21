@@ -57,6 +57,8 @@ button, .button {
 
 /* Display Helpers */
 .no-margin { margin: 0; }
+.no-margin-left { margin-left: 0 !important; }
+.margin-left-200 { margin-left: 200px; }
 .noheight { font-size: 0; }
 .margin-10 { margin: 10px; }
 .margin-top-7 { margin-top: 7px; }
@@ -120,9 +122,9 @@ a.disabled-arrow {
 }
 
 /* Displaying forum threads */
-.even, .odd, .post-post, .post-reply, #post-editor { padding: 5px; }
+.even, .odd, .post-post, .post-reply, .profile, #post-editor { padding: 5px; }
 
-.even, .post-post, .post-reply:nth-child(even), #post-editor { background-color: $bg_color_even; }
+.even, .post-post, .post-reply:nth-child(even), .profile, #post-editor { background-color: $bg_color_even; }
 
 .odd, .post-reply:nth-child(odd), .post-post + #post-editor, .post-post + a + #post-editor { background-color: $bg_color_odd; }
 

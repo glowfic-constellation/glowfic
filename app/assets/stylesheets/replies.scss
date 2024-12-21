@@ -252,12 +252,12 @@ div.post-subheader { width: 100%; }
   margin-bottom: 5px;
 }
 
-#post_content, #reply_content {
+#post_content, #reply_content, #user_profile {
   width: 100%;
   display: block;
 }
 
-#reply_content {
+#reply_content, #user_profile {
   height: 130px;
   box-sizing: content-box;
 }
