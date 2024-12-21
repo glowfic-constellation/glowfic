@@ -50,21 +50,27 @@ RSpec.describe BookmarksController, 'GET search' do
     it "doesn't find private bookmarks" do
       bookmarks = create_list(:bookmark, 2)
       get :search, params: { commit: true, user_id: bookmarks[0].user_id }
-      expect(assigns(:search_results)).to be_nil
+      search_results = assigns(:search_results)
+      expect(search_results).not_to be_nil
+      expect(search_results.length).to eq(0)
     end
 
     it "finds public bookmarks" do
       bookmarks = create_list(:bookmark, 2)
       bookmarks[0].user.update!(public_bookmarks: true)
       get :search, params: { commit: true, user_id: bookmarks[0].user_id }
-      expect(assigns(:search_results)).not_to be_nil
+      search_results = assigns(:search_results)
+      expect(search_results).not_to be_nil
+      expect(search_results.length).to eq(1)
     end
 
     it "finds own bookmarks" do
       bookmarks = create_list(:bookmark, 2)
       login_as(bookmarks[0].user)
       get :search, params: { commit: true, user_id: bookmarks[0].user_id }
-      expect(assigns(:search_results)).not_to be_nil
+      search_results = assigns(:search_results)
+      expect(search_results).not_to be_nil
+      expect(search_results.length).to eq(1)
     end
 
     it "filters user" do
