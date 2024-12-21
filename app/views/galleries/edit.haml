@@ -1,5 +1,7 @@
 - content_for :breadcrumbs do
-  = link_to "Galleries", user_galleries_path(current_user)
+  = link_to "You", user_path(current_user)
+  &raquo;
+  = link_to "Your Galleries", user_galleries_path(current_user)
   &raquo;
   = link_to @gallery.name, @gallery
   &raquo;

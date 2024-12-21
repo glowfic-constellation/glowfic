@@ -1,5 +1,8 @@
 -# locals: ()
 
+- content_for :breadcrumbs do
+  %b Add Existing
+
 = form_tag icon_gallery_path(@gallery), method: :post, id: 'add-gallery-icons' do
   = hidden_field_tag :image_ids
   .content-header

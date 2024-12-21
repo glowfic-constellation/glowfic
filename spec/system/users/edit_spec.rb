@@ -1,4 +1,4 @@
-RSpec.describe "Editing user" do
+RSpec.describe "Editing account settings" do
   let(:user) { create(:user, username: 'John Doe', password: 'known', email: 'dummy@example.com') }
 
   scenario "Logged-out user tries to edit a user" do
@@ -27,22 +27,5 @@ RSpec.describe "Editing user" do
     #   fill_in 'Username', with: 'Jane Doe'
     #   fill_in "Email address", with: "dummy2@example.com"
     # end
-
-    expect(page).to have_no_selector('.select2-selection__choice')
-    page.find('.select2-search__field').click
-    page.find('.select2-search__field').set("warning 1")
-    page.find('li', exact_text: 'warning 1').click
-    expect(page).to have_selector('.select2-selection__choice', exact_text: '×warning 1')
-    within("#edit_user_#{user.id}") do
-      click_button 'Save'
-    end
-
-    expect(page).to have_selector('.select2-selection__choice', exact_text: '×warning 1')
-
-    page.find("[title='warning 1'] .select2-selection__choice__remove").click
-    within("#edit_user_#{user.id}") do
-      click_button 'Save'
-    end
-    expect(page).to have_no_selector('.select2-selection__choice')
   end
 end
