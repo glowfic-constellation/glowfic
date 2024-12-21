@@ -155,9 +155,8 @@ FactoryBot.define do
   factory :bookmark do
     user
     reply
-    post
+    post { reply.post }
     type { "reply_bookmark" }
-    :name
   end
 
   factory :character do
