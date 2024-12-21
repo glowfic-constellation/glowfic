@@ -112,11 +112,11 @@ RSpec.describe "Searching bookmarks" do
     expect(page).to have_no_selector(".paginator")
     clear_posts_selection
 
-    # Searching for a private user's bookmarks does not show results
+    # Searching for a private user's bookmarks should show zero results
     perform_search user: private_user
-    expect(page).to have_no_text("results")
-    expect(page).to have_no_selector(".paginator")
-    expect(page).to have_text("This user's bookmarks are private.")
+    expect(page).to have_no_selector(".bookmark-name")
+    expect(page).to have_text("0 results")
+    within(".paginator") { expect(page).to have_text("Total: 0") }
 
     # Searching for a public user's bookmarks does show results
     perform_search user: public_user

@@ -12,7 +12,12 @@ class BookmarksController < ApplicationController
     return unless params[:commit].present?
 
     @user = User.find_by_id(params[:user_id])
-    return unless @user && (@user.id == current_user.try(:id) || @user.public_bookmarks)
+    return unless @user
+    unless @user.id == current_user.try(:id) || @user.public_bookmarks
+      # Return empty list when a user's bookmarks are private
+      @search_results = Reply.none.paginate(page: 1)
+      return
+    end
 
     @search_results = @user.bookmarked_replies
     if params[:post_id].present?

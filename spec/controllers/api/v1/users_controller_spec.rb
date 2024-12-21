@@ -135,24 +135,25 @@ RSpec.describe Api::V1::UsersController do
       expect(response.parsed_body['errors'][0]['message']).to eq("User could not be found.")
     end
 
-    it "fails with private bookmarks", :show_in_doc do
+    it "returns empty with private bookmarks", :show_in_doc do
       user = create(:user)
       get :bookmarks, params: { id: user.id }
-      expect(response).to have_http_status(403)
-      expect(response.parsed_body['errors'].size).to eq(1)
-      expect(response.parsed_body['errors'][0]['message']).to eq("This user's bookmarks are private.")
+      expect(response).to have_http_status(200)
+      expect(response.parsed_body['bookmarks'].size).to eq(0)
     end
 
     it "succeeds with public bookmarks", :show_in_doc do
       user = create(:user, public_bookmarks: true)
       get :bookmarks, params: { id: user.id }
       expect(response).to have_http_status(200)
+      expect(response.parsed_body['bookmarks'].size).to eq(0)
     end
 
     it "succeeds with own bookmarks", :show_in_doc do
       user = api_login
       get :bookmarks, params: { id: user.id }
       expect(response).to have_http_status(200)
+      expect(response.parsed_body['bookmarks'].size).to eq(0)
     end
 
     it "filters non-visible bookmarks", :show_in_doc do

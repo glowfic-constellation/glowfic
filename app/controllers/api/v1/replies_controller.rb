@@ -34,20 +34,21 @@ class Api::V1::RepliesController < Api::ApiController
     return unless (reply = find_object(Reply))
     return unless (user = find_object(User, param: :user_id))
     access_denied and return unless reply.post.visible_to?(current_user)
-
-    if !user.public_bookmarks && user.id != current_user.try(:id)
-      error = { message: "This user's bookmarks are private." }
-      render json: { errors: [error] }, status: :forbidden
-      return
-    end
+    bookmark_not_found and return unless user.public_bookmarks || user.id == current_user.try(:id)
 
     bookmark = reply.bookmarks.find_by(user_id: user.id, type: "reply_bookmark")
 
     if bookmark.present?
       render json: bookmark.as_json
     else
-      error = { message: "Bookmark could not be found." }
-      render json: { errors: [error] }, status: :not_found and return
+      bookmark_not_found
     end
+  end
+
+  private
+
+  def bookmark_not_found
+    error = { message: "Bookmark could not be found." }
+    render json: { errors: [error] }, status: :not_found
   end
 end

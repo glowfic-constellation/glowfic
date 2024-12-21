@@ -73,9 +73,9 @@ RSpec.describe Api::V1::RepliesController do
 
     it "fails with private bookmarks", :show_in_doc do
       get :bookmark, params: { id: create(:reply).id, user_id: create(:user).id }
-      expect(response).to have_http_status(403)
+      expect(response).to have_http_status(404)
       expect(response.parsed_body['errors'].size).to eq(1)
-      expect(response.parsed_body['errors'][0]['message']).to eq("This user's bookmarks are private.")
+      expect(response.parsed_body['errors'][0]['message']).to eq("Bookmark could not be found.")
     end
 
     it "fails if bookmark does not exist", :show_in_doc do
