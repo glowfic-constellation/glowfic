@@ -144,7 +144,7 @@ RSpec.describe Api::V1::PostsController do
       patch :update, params: { id: post.id, private_note: '' }
 
       expect(response).to have_http_status(200)
-      expect(response.parsed_body['private_note']).to eq("<p></p>")
+      expect(response.parsed_body['private_note']).to eq("")
       expect(post.author_for(user).private_note).to eq('')
     end
   end

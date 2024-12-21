@@ -152,6 +152,13 @@ FactoryBot.define do
     end
   end
 
+  factory :bookmark do
+    user
+    reply
+    post { reply.post }
+    type { "reply_bookmark" }
+  end
+
   factory :character do
     transient do
       with_default_icon { false }

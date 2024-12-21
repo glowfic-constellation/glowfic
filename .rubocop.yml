@@ -639,6 +639,7 @@ RSpec/DescribeMethod:
   Exclude:
     - 'spec/controllers/posts/*'
     - 'spec/controllers/replies/*'
+    - 'spec/controllers/bookmarks/*'
 
 RSpec/EmptyOutput:
   Enabled: false # we don't use the output matcher
@@ -690,6 +691,7 @@ RSpec/SpecFilePathFormat:
   Exclude:
     - 'spec/controllers/posts/*'
     - 'spec/controllers/replies/*'
+    - 'spec/controllers/bookmarks/*'
 
 RSpec/StubbedMock:
   Exclude:

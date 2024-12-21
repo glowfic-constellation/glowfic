@@ -126,4 +126,76 @@ RSpec.describe Api::V1::UsersController do
       expect(response.parsed_body['results'].size).to eq(2)
     end
   end
+
+  describe 'GET bookmarks' do
+    it 'requires a valid user', :show_in_doc do
+      get :bookmarks, params: { id: 0 }
+      expect(response).to have_http_status(404)
+      expect(response.parsed_body['errors'].size).to eq(1)
+      expect(response.parsed_body['errors'][0]['message']).to eq("User could not be found.")
+    end
+
+    it "fails with private bookmarks", :show_in_doc do
+      user = create(:user)
+      get :bookmarks, params: { id: user.id }
+      expect(response).to have_http_status(403)
+      expect(response.parsed_body['errors'].size).to eq(1)
+      expect(response.parsed_body['errors'][0]['message']).to eq("This user's bookmarks are private.")
+    end
+
+    it "succeeds with public bookmarks", :show_in_doc do
+      user = create(:user, public_bookmarks: true)
+      get :bookmarks, params: { id: user.id }
+      expect(response).to have_http_status(200)
+    end
+
+    it "succeeds with own bookmarks", :show_in_doc do
+      user = api_login
+      get :bookmarks, params: { id: user.id }
+      expect(response).to have_http_status(200)
+    end
+
+    it "filters non-visible bookmarks", :show_in_doc do
+      user = create(:user, public_bookmarks: true)
+      bookmarks = create_list(:bookmark, 2, user: user)
+      bookmarks[0].post.update!(privacy: :private)
+      get :bookmarks, params: { id: user.id }
+      expect(response).to have_http_status(200)
+      expect(response.parsed_body['bookmarks'].size).to eq(1)
+      expect(response.parsed_body['bookmarks'][0]['id']).to eq(bookmarks[1].id)
+    end
+
+    it "filters post", :show_in_doc do
+      user = create(:user, public_bookmarks: true)
+      bookmarks = create_list(:bookmark, 3, user: user)
+      get :bookmarks, params: { id: user.id, post_id: bookmarks[2].post_id }
+      expect(response).to have_http_status(200)
+      expect(response.parsed_body['bookmarks'].size).to eq(1)
+      expect(response.parsed_body['bookmarks'][0]['id']).to eq(bookmarks[2].id)
+    end
+
+    it "returns only the user's bookmarks", :show_in_doc do
+      user = create(:user, public_bookmarks: true)
+      bookmark = create(:bookmark, user: user)
+      create(:bookmark, user: create(:user, public_bookmarks: true))
+      get :bookmarks, params: { id: user.id }
+      expect(response).to have_http_status(200)
+      expect(response.parsed_body['bookmarks'].size).to eq(1)
+      expect(response.parsed_body['bookmarks'][0]['id']).to eq(bookmark.id)
+    end
+
+    it 'paginates results' do
+      user = create(:user, public_bookmarks: true)
+      create_list(:bookmark, 26, user: user)
+      get :bookmarks, params: { id: user.id }
+      expect(response.parsed_body['bookmarks'].size).to eq(25)
+    end
+
+    it 'paginates results on additional pages' do
+      user = create(:user, public_bookmarks: true)
+      create_list(:bookmark, 27, user: user)
+      get :bookmarks, params: { id: user.id, page: 2 }
+      expect(response.parsed_body['bookmarks'].size).to eq(2)
+    end
+  end
 end

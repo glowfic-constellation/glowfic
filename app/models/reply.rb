@@ -13,6 +13,9 @@ class Reply < ApplicationRecord
   validate :author_can_write_in_post, on: :create
   audited associated_with: :post, except: :reply_order, update_with_comment_only: false
 
+  has_many :bookmarks, inverse_of: :reply, dependent: :destroy
+  has_many :bookmarking_users, -> { ordered }, through: :bookmarks, source: :user, dependent: :destroy
+
   after_create :notify_other_authors, :destroy_draft, :update_active_char, :set_last_reply, :update_post, :update_post_authors
   after_update :update_post
   after_destroy :set_previous_reply_to_last, :remove_post_author, :update_flat_post
@@ -44,6 +47,11 @@ class Reply < ApplicationRecord
 
   def order=(val)
     self.reply_order = val
+  end
+
+  def bookmark_by(user)
+    return unless user
+    bookmarks.find_by(user_id: user.id)
   end
 
   private

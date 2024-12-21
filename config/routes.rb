@@ -105,6 +105,9 @@ Rails.application.routes.draw do
     end
     collection { get :search }
   end
+  resources :bookmarks, only: [:create, :destroy] do
+    collection { get :search }
+  end
   resources :tags, except: [:new, :create]
 
   # Indexes
@@ -137,14 +140,21 @@ Rails.application.routes.draw do
       resources :index_sections, only: [] do
         collection { post :reorder }
       end
+      resources :replies, only: [] do
+        member { get :bookmark }
+      end
       resources :posts, only: [:index, :show, :update] do
         resources :replies, only: :index
         collection { post :reorder }
       end
+      resources :bookmarks, only: [:create, :update, :destroy]
       resources :tags, only: [:index, :show]
       resources :templates, only: :index
       resources :users, only: :index do
-        member { get :posts }
+        member do
+          get :posts
+          get :bookmarks
+        end
       end
 
       post '/login' => 'sessions#create', as: :login

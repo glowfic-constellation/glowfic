@@ -74,4 +74,48 @@ RSpec.describe "Viewing posts" do
       expect(page).to have_no_selector('.error')
     end
   end
+
+  context "Interacting with bookmarks" do
+    let!(:user) { create(:user, password: 'known') }
+    let!(:post) { create(:post) }
+    let!(:reply) { create(:reply, post: post) }
+    let!(:bookmark) { create(:bookmark, reply: reply, post: post, user: user) }
+
+    scenario "when logged out" do
+      visit post_path(post)
+      within('#post-menu-box') { expect(page).to have_no_text("Bookmarks") }
+      expect(page).to have_no_link("Add Bookmark")
+    end
+
+    context "when logged in", :js do
+      scenario "as user with bookmarks" do
+        login(user, 'known')
+
+        visit post_path(post)
+        find_by_id("post-menu").click
+        within('#post-menu-box') { click_link("View Bookmarks") }
+        expect(page).to have_current_path(search_bookmarks_path(commit: "Search", post_id: [post.id], user_id: user.id))
+        expect(page).to have_selector("#user_id option[selected='selected'][value='#{user.id}']")
+        expect(page).to have_selector("#post_id option[selected='selected'][value='#{post.id}']")
+
+        visit post_path(post)
+        click_link("Remove Bookmark", href: "/bookmarks/#{bookmark.id}")
+        expect(page).to have_current_path(post_path(post))
+        expect(page).to have_link("Add Bookmark", href: "/bookmarks?at_id=#{reply.id}")
+      end
+
+      scenario "as user without bookmarks" do
+        login
+
+        visit post_path(post)
+        find_by_id("post-menu").click
+        within('#post-menu-box') { expect(page).to have_no_text("View Bookmarks") }
+
+        visit post_path(post)
+        click_link("Add Bookmark", href: "/bookmarks?at_id=#{reply.id}")
+        expect(page).to have_current_path(post_path(post))
+        within(".post-container:has(#reply-#{reply.id})") { expect(page).to have_link("Remove Bookmark") }
+      end
+    end
+  end
 end
