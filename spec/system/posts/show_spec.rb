@@ -35,47 +35,42 @@ RSpec.describe "Viewing posts" do
     let(:author_warning) { create(:content_warning, name: 'nsfw') }
     let(:author) { create(:user, content_warnings: [author_warning]) }
     let(:post_warning) { create(:content_warning, name: 'violence') }
-    let(:post) { create(:post, user: author, content_warnings: [post_warning]) }
+    let(:post_with_warnings) { create(:post, user: author, content_warnings: [post_warning]) }
 
-    context "when user has content warnings turned on" do
-      scenario "shows post warnings" do
-        post = create(:post, content_warnings: [post_warning])
-        visit post_path(post)
-        within('.error') do
-          expect(page).to have_text('This post has the following content warnings')
-          expect(page).to have_text('violence')
-        end
+    scenario "when user has content warnings turned on" do
+      visit post_path(create(:post))
+      expect(page).to have_no_selector('.error')
+
+      visit post_path(create(:post, content_warnings: [post_warning]))
+      within('.error') do
+        expect(page).to have_text('This post has the following content warnings')
+        expect(page).to have_text('violence')
       end
 
-      scenario "shows author warnings" do
-        post = create(:post, user: author)
-        visit post_path(post)
-        within('.error') do
-          expect(page).to have_text("This post's authors have general content warnings that might apply to the current post")
-          expect(page).to have_text('nsfw')
-        end
+      visit post_path(create(:post, user: author))
+      within('.error') do
+        expect(page).to have_text("This post's authors have general content warnings that might apply to the current post")
+        expect(page).to have_text('nsfw')
       end
 
-      scenario "shows post and author warnings" do
-        visit post_path(post)
-        within('.error') do
-          expect(page).to have_text('This post has the following content warnings')
-          expect(page).to have_text('violence')
-          expect(page).to have_text("This post's authors also have general content warnings that might apply to the current post")
-          expect(page).to have_text('nsfw')
-        end
+      visit post_path(post_with_warnings)
+      within('.error') do
+        expect(page).to have_text('This post has the following content warnings')
+        expect(page).to have_text('violence')
+        expect(page).to have_text("This post's authors also have general content warnings that might apply to the current post")
+        expect(page).to have_text('nsfw')
       end
     end
 
     scenario "when user has content warnings turned off" do
       user = login
       user.update!(hide_warnings: true)
-      visit post_path(post)
+      visit post_path(post_with_warnings)
       expect(page).to have_no_selector('.error')
     end
 
     scenario "when user ignores warnings" do
-      visit post_path(post, ignore_warnings: true)
+      visit post_path(post_with_warnings, ignore_warnings: true)
       expect(page).to have_no_selector('.error')
     end
   end

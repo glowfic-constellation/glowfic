@@ -31,7 +31,7 @@
 
         - if @author_warnings.present?
           - if @post_warnings.present?
-            <br>
+            %br
           %details
             %summary
               = image_tag "icons/exclamation.png".freeze, class: 'vmid'.freeze, alt: ''
@@ -197,7 +197,7 @@
 - if @replies.present?
   = render 'posts/paginator', paginated: @replies
 - if logged_in? && @unread.nil?
-  <a id="unread" class="noheight"> </a>
+  %a.noheight{id: "unread"}= " "
 - if @post.taggable_by?(current_user) && !split_ui
   - post_open = !@post.authors_locked?
   - draft_exists = !@reply.content.nil?
