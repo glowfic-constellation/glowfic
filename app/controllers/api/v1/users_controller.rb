@@ -54,7 +54,7 @@ class Api::V1::UsersController < Api::ApiController
     bookmarks = @user.bookmarks.visible_to(current_user)
     bookmarks = bookmarks.where(post_id: params[:post_id]) if params[:post_id].present?
 
-    bookmarks = paginate bookmarks, per_page: 25
+    bookmarks = paginate bookmarks.order(:id), per_page: 25
     render json: { bookmarks: bookmarks }
   end
 
