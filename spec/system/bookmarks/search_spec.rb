@@ -118,6 +118,14 @@ RSpec.describe "Searching bookmarks" do
     expect(page).to have_text("0 results")
     within(".paginator") { expect(page).to have_text("Total: 0") }
 
+    # Searching for a private user's public bookmarks shows results
+    private_bookmarks.first.update!(public: true)
+    private_bookmarks.last.update!(public: true)
+    perform_search user: private_user
+    validate_bookmarks_found [private_bookmarks.first, private_bookmarks.last], [private_bookmarks.first.post, private_bookmarks.last.post]
+    private_bookmarks.first.update!(public: false)
+    private_bookmarks.last.update!(public: false)
+
     # Searching for a public user's bookmarks does show results
     perform_search user: public_user
     validate_bookmarks_found public_bookmarks, posts
@@ -177,13 +185,28 @@ RSpec.describe "Searching bookmarks" do
     click_button "Save"
     expect(find(".saveconf[data-bookmark-id='#{first_bookmark.id}']")).to be_visible
     expect(first_bookmark_name_text_field).not_to be_visible
+    refresh
     expect(find(".bookmark-name[data-bookmark-id='#{first_bookmark.id}']")).to have_text(new_bookmark_name)
 
-    # Discarding changes to the name works
+    # Can toggle bookmark publicness
+    first_bookmark_edit_button.click
+    first_bookmark_public_checkbox = find(".bookmark-public-checkbox[data-bookmark-id='#{first_bookmark.id}']")
+    first_bookmark_public_checkbox.click
+    click_button "Save"
+    expect(find(".saveconf[data-bookmark-id='#{first_bookmark.id}']")).to be_visible
+    refresh
+    first_bookmark_edit_button.click
+    expect(first_bookmark_public_checkbox).to be_checked
+    first_bookmark_public_checkbox.click
+    click_button "Save"
+
+    # Discarding changes works
     first_bookmark_edit_button.click
     first_bookmark_name_text_field.set(new_bookmark_name + "different")
+    first_bookmark_public_checkbox.click
     accept_alert { click_button "Discard Changes" }
     expect(first_bookmark_name_text_field.value).to eq(new_bookmark_name)
+    expect(first_bookmark_public_checkbox).not_to be_checked
     first_bookmark_edit_button.click
 
     # Can clear bookmark name
@@ -201,7 +224,7 @@ RSpec.describe "Searching bookmarks" do
     # Can copy another user's bookmark
     perform_search user: public_user
     new_bookmark = public_bookmarks.detect { |bookmark| bookmark.name.present? && !bookmark.reply.bookmark_by(private_user) }
-    click_link(href: bookmarks_path(at_id: new_bookmark.reply.id, bookmark_name: new_bookmark.name.presence))
+    click_link(href: bookmarks_path(at_id: new_bookmark.reply.id, name: new_bookmark.name.presence))
     perform_search user: private_user
     expect(page).to have_link(new_bookmark.reply.user.username, href: user_path(new_bookmark.reply.user))
     expect(page).to have_link(href: reply_path(new_bookmark.reply, anchor: "reply-#{new_bookmark.reply.id}"), count: 1)

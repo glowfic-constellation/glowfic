@@ -37,11 +37,22 @@ RSpec.describe BookmarksController, 'POST create' do
 
   it "succeeds with name" do
     login
-    post :create, params: { at_id: reply.id, bookmark_name: "new bookmark" }
+    post :create, params: { at_id: reply.id, name: "new bookmark" }
     expect(response).to redirect_to(reply_url(reply, anchor: "reply-#{reply.id}"))
     expect(flash[:success]).to eq('Bookmark added.')
     bookmark = Bookmark.order(:id).last
     expect(bookmark.name).to eq("new bookmark")
+    expect(bookmark.public).to be false
+  end
+
+  it "succeeds with public" do
+    login
+    post :create, params: { at_id: reply.id, public: true }
+    expect(response).to redirect_to(reply_url(reply, anchor: "reply-#{reply.id}"))
+    expect(flash[:success]).to eq('Bookmark added.')
+    bookmark = Bookmark.order(:id).last
+    expect(bookmark.name).to be_nil
+    expect(bookmark.public).to be true
   end
 
   it "fails if already exists" do

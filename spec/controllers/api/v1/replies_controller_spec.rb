@@ -71,13 +71,6 @@ RSpec.describe Api::V1::RepliesController do
       expect(response.parsed_body['errors'][0]['message']).to eq("You do not have permission to perform this action.")
     end
 
-    it "fails with private bookmarks", :show_in_doc do
-      get :bookmark, params: { id: create(:reply).id, user_id: create(:user).id }
-      expect(response).to have_http_status(404)
-      expect(response.parsed_body['errors'].size).to eq(1)
-      expect(response.parsed_body['errors'][0]['message']).to eq("Bookmark could not be found.")
-    end
-
     it "fails if bookmark does not exist", :show_in_doc do
       get :bookmark, params: { id: create(:reply).id, user_id: create(:user, public_bookmarks: true).id }
       expect(response).to have_http_status(404)
@@ -85,7 +78,25 @@ RSpec.describe Api::V1::RepliesController do
       expect(response.parsed_body['errors'][0]['message']).to eq("Bookmark could not be found.")
     end
 
-    it "succeeds with public bookmarks", :show_in_doc do
+    it "fails if bookmark is private", :show_in_doc do
+      bookmark = create(:bookmark, user: create(:user))
+      get :bookmark, params: { id: bookmark.reply.id, user_id: bookmark.user.id }
+      expect(response).to have_http_status(404)
+      expect(response.parsed_body['errors'].size).to eq(1)
+      expect(response.parsed_body['errors'][0]['message']).to eq("Bookmark could not be found.")
+    end
+
+    it "succeeds if bookmark is public", :show_in_doc do
+      bookmark = create(:bookmark, user: create(:user), public: true)
+      get :bookmark, params: { id: bookmark.reply.id, user_id: bookmark.user.id }
+      expect(response).to have_http_status(200)
+      expect(response.parsed_body['id']).to eq(bookmark.id)
+      expect(response.parsed_body['user_id']).to eq(bookmark.user.id)
+      expect(response.parsed_body['reply_id']).to eq(bookmark.reply_id)
+      expect(response.parsed_body['post_id']).to eq(bookmark.post_id)
+    end
+
+    it "succeeds if user bookmarks are public", :show_in_doc do
       bookmark = create(:bookmark, user: create(:user, public_bookmarks: true))
       get :bookmark, params: { id: bookmark.reply.id, user_id: bookmark.user.id }
       expect(response).to have_http_status(200)

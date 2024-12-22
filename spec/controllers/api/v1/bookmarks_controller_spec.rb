@@ -114,16 +114,6 @@ RSpec.describe Api::V1::BookmarksController do
       expect(response.parsed_body['errors'][0]['message']).to eq("You do not have permission to perform this action.")
     end
 
-    it "requires name param", :show_in_doc do
-      api_login
-      reply = create(:reply)
-      bookmark = create(:bookmark, reply: reply, post: reply.post)
-      bookmark.user.update!(public_bookmarks: true)
-      patch :update, params: { id: bookmark.id }
-      expect(response).to have_http_status(422)
-      expect(response.parsed_body['errors'][0]['message']).to eq("Missing parameter name")
-    end
-
     it "requires ownership of bookmark", :show_in_doc do
       api_login
       reply = create(:reply)
@@ -150,18 +140,21 @@ RSpec.describe Api::V1::BookmarksController do
       expect(response.parsed_body['errors'][0]['message']).to eq('Bookmark could not be updated.')
     end
 
-    it "succeeds with valid bookmark", :show_in_doc do
+    it "succeeds with only name", :show_in_doc do
       user = api_login
       reply = create(:reply)
       bookmark = create(:bookmark, reply: reply, post: reply.post, user: user)
       expect(bookmark.name).to be_nil
+      expect(bookmark.public).to be false
 
       patch :update, params: { id: bookmark.id, name: "New name" }
 
       expect(response).to have_http_status(200)
       expect(response.parsed_body['name']).to eq("New name")
+      expect(response.parsed_body['public']).to be false
       bookmark.reload
       expect(bookmark.name).to eq('New name')
+      expect(bookmark.public).to be false
     end
 
     it "accepts blank name", :show_in_doc do
@@ -175,6 +168,40 @@ RSpec.describe Api::V1::BookmarksController do
       expect(response.parsed_body['name']).to eq("")
       bookmark.reload
       expect(bookmark.name).to eq('')
+    end
+
+    it "succeeds with only public", :show_in_doc do
+      user = api_login
+      reply = create(:reply)
+      bookmark = create(:bookmark, reply: reply, post: reply.post, user: user, name: "Old name")
+      expect(bookmark.name).to eq("Old name")
+      expect(bookmark.public).to be false
+
+      patch :update, params: { id: bookmark.id, public: true }
+
+      expect(response).to have_http_status(200)
+      expect(response.parsed_body['name']).to eq("Old name")
+      expect(response.parsed_body['public']).to be true
+      bookmark.reload
+      expect(bookmark.name).to eq('Old name')
+      expect(bookmark.public).to be true
+    end
+
+    it "succeeds with both parameters", :show_in_doc do
+      user = api_login
+      reply = create(:reply)
+      bookmark = create(:bookmark, reply: reply, post: reply.post, user: user, name: "Old name")
+      expect(bookmark.name).to eq("Old name")
+      expect(bookmark.public).to be false
+
+      patch :update, params: { id: bookmark.id, name: "New name", public: true }
+
+      expect(response).to have_http_status(200)
+      expect(response.parsed_body['name']).to eq("New name")
+      expect(response.parsed_body['public']).to be true
+      bookmark.reload
+      expect(bookmark.name).to eq('New name')
+      expect(bookmark.public).to be true
     end
   end
 
