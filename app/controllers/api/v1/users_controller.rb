@@ -41,12 +41,9 @@ class Api::V1::UsersController < Api::ApiController
   param :id, :number, required: true, desc: "User ID"
   param :post_id, :number, required: false, desc: "Post ID"
   param :page, :number, required: false, desc: 'Page in results (25 per page)'
-  error 403, "Bookmarks are not visible to the user"
   error 404, "User not found"
   error 422, "Invalid parameters provided"
   def bookmarks
-    render json: { bookmarks: [] } and return unless @user.public_bookmarks || @user.id == current_user.try(:id)
-
     bookmarks = @user.bookmarks.visible_to(current_user)
     bookmarks = bookmarks.where(post_id: params[:post_id]) if params[:post_id].present?
 
