@@ -134,7 +134,7 @@ RSpec.describe Api::V1::BookmarksController do
       expect(response.parsed_body['errors'][0]['message']).to eq("Bookmark could not be found.")
     end
 
-    it "requires visible bookmark", :show_in_doc do
+    it "requires visible post", :show_in_doc do
       api_login
       bookmark = create(:bookmark)
       bookmark.post.update!(privacy: :private)
