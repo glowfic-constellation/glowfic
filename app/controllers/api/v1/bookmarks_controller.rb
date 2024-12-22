@@ -68,7 +68,7 @@ class Api::V1::BookmarksController < Api::ApiController
 
   def bookmark_ownership_required
     return unless (@bookmark = find_object(Bookmark))
-    access_denied unless @bookmark.visible_to?(current_user)
+    access_denied and return unless @bookmark.visible_to?(current_user)
     access_denied unless @bookmark.user.id == current_user.try(:id)
   end
 end
