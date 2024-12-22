@@ -11,20 +11,20 @@ class BookmarksController < ApplicationController
     use_javascript('bookmarks/rename')
     return unless params[:commit].present?
     return unless (@user = User.find_by_id(params[:user_id]))
-    unless @user.id == current_user.try(:id) || @user.public_bookmarks
+
+    @search_results = @user.bookmarked_replies.bookmark_visible_to(@user, current_user)
+    if @search_results.empty?
       # Return empty list when a user's bookmarks are private
-      @search_results = Reply.none.paginate(page: 1)
+      @search_results = @search_results.paginate(page: 1)
       return
     end
 
-    @search_results = @user.bookmarked_replies
     if params[:post_id].present?
       @posts = Post.where(id: params[:post_id])
       @search_results = @search_results.where(post_id: params[:post_id])
     end
 
     @search_results = @search_results
-      .visible_to(current_user)
       .joins(:post)
       .order('posts.subject, replies.created_at, posts.id')
       .joins(:user)

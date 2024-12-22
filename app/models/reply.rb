@@ -30,6 +30,7 @@ class Reply < ApplicationRecord
   )
 
   scope :visible_to, ->(user) { where(post_id: Post.visible_to(user).select(:id)) }
+  scope :bookmark_visible_to, ->(bookmark_owner, viewing_user) { where(bookmarks: bookmark_owner.bookmarks.visible_to(viewing_user)) }
 
   def post_page(per=25)
     per_page = per > 0 ? per : post.replies.count
