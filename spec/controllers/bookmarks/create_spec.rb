@@ -35,7 +35,7 @@ RSpec.describe BookmarksController, 'POST create' do
     expect(bookmark.name).to be_nil
   end
 
-  it "succeeds with name" do
+  it "succeeds with name param" do
     login
     post :create, params: { at_id: reply.id, name: "new bookmark" }
     expect(response).to redirect_to(reply_url(reply, anchor: "reply-#{reply.id}"))
@@ -45,7 +45,7 @@ RSpec.describe BookmarksController, 'POST create' do
     expect(bookmark.public).to be false
   end
 
-  it "succeeds with public" do
+  it "succeeds with public param" do
     login
     post :create, params: { at_id: reply.id, public: true }
     expect(response).to redirect_to(reply_url(reply, anchor: "reply-#{reply.id}"))
