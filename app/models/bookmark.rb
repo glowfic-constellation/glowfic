@@ -14,10 +14,9 @@ class Bookmark < ApplicationRecord
   scope :visible_to, ->(user) { _visible_user(user)._visible_post(user) }
 
   def visible_to?(other_user)
-    return false unless other_user
     return false unless post.visible_to?(other_user)
     return false unless reply
-    return true if other_user.id == user.id
+    return true if other_user.try(:id) == user.id
     user.public_bookmarks
   end
 end
