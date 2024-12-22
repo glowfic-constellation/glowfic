@@ -211,3 +211,22 @@ Post.auditing_enabled = false
 Reply.auditing_enabled = false
 Character.auditing_enabled = false
 Block.auditing_enabled = false
+
+# fix coverage for view specs being overwritten by specs without render_views
+# https://github.com/rspec/rspec-rails/blob/v7.1.0/lib/rspec/rails/view_rendering.rb#L52
+module RSpec::Rails::ViewRendering # rubocop:disable Style/ClassAndModuleChildren
+  class EmptyTemplateResolver
+    def self.nullify_template_rendering(templates)
+      templates.map do |template|
+        ::ActionView::Template.new(
+          "",
+          template.identifier + ".no_render", # overwrite path of fake template to avoid collisions
+          EmptyTemplateHandler,
+          virtual_path: template.virtual_path,
+          format: template_format(template),
+          locals: [],
+        )
+      end
+    end
+  end
+end
