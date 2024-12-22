@@ -1,10 +1,10 @@
-const originalValues = {};
+const originalNameTextboxes = {};
 const originalPublicCheckboxes = {};
 
 $(document).ready(function() {
   const textFields = $(`.bookmark-name-text-field`);
   for (const textField of textFields) {
-    originalValues[textField.dataset.bookmarkId] = $(textField).val();
+    originalNameTextboxes[textField.dataset.bookmarkId] = $(textField).val();
   }
   const checkBoxes = $(`.bookmark-public-checkbox`);
   for (const checkBox of checkBoxes) {
@@ -46,7 +46,7 @@ $(document).ready(function() {
       type: 'PATCH',
       data: {'name': newName, 'public': newPublic},
       success: function(data) {
-        originalValues[bookmarkId] = newName;
+        originalNameTextboxes[bookmarkId] = newName;
         originalPublicCheckboxes[bookmarkId] = newPublic;
         $(".loading").hide();
         $(`.bookmark-name[data-bookmark-id="${bookmarkId}"] span`).first().html(nameFromData(data.name));
@@ -66,7 +66,7 @@ $(document).ready(function() {
   $(".discard-bookmark-changes").click(function() {
     const bookmarkId = this.dataset.bookmarkId;
     if (confirm('Are you sure you wish to discard your changes?')) {
-      $(`.bookmark-name-text-field[data-bookmark-id="${bookmarkId}"]`).val(originalValues[bookmarkId]);
+      $(`.bookmark-name-text-field[data-bookmark-id="${bookmarkId}"]`).val(originalNameTextboxes[bookmarkId]);
       $(`.bookmark-public-checkbox[data-bookmark-id="${bookmarkId}"]`).prop("checked", originalPublicCheckboxes[bookmarkId]);
     }
     return false;
