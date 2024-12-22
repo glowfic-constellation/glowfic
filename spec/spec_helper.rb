@@ -154,6 +154,7 @@ RSpec.configure do |config|
   config.before(:each, :js, type: :system) do
     driven_by :selenium, using: :headless_chrome do |options|
       options.add_argument('--no-sandbox')
+      options.add_argument('--disable-dev-shm-usage')
       options.add_argument("--user-data-dir=#{ENV['CHROMEDRIVER_CONFIG']}") if ENV['CHROMEDRIVER_CONFIG']
       options.add_argument('--window-size=1366,768')
     end
