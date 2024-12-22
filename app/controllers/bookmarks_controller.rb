@@ -29,7 +29,7 @@ class BookmarksController < ApplicationController
       .order('posts.subject, replies.created_at, posts.id')
       .joins(:user)
       .left_outer_joins(:character)
-      .select('replies.*, bookmarks.name as bookmark_name, bookmarks.id as bookmark_id, characters.name, ' \
+      .select('replies.*, bookmarks.id as bookmark_id, bookmarks.name as bookmark_name, bookmarks.public as bookmark_public, characters.name, ' \
               'characters.screenname, users.username, users.deleted as user_deleted')
       .paginate(page: page)
 

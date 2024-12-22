@@ -32,10 +32,11 @@ class Api::V1::BookmarksController < Api::ApiController
     render json: bookmark.as_json
   end
 
-  api :PATCH, '/bookmarks/:id', 'Update a single bookmark. Currently only supports renaming.'
+  api :PATCH, '/bookmarks/:id', 'Update a single bookmark.'
   header 'Authorization', 'Authorization token for a user in the format "Authorization" : "Bearer [token]"', required: true
   param :id, :number, required: true, desc: "Bookmark ID"
-  param :name, String, required: true, allow_blank: true, desc: "Bookmark's new name"
+  param :name, String, required: false, allow_blank: true, desc: "Bookmark's new name"
+  param :public, :boolean, required: false, allow_blank: true, desc: "Bookmark's new public status"
   error 403, "Bookmark is not visible to the user"
   error 404, "Bookmark not found"
   error 422, "Invalid parameters provided"
@@ -45,7 +46,7 @@ class Api::V1::BookmarksController < Api::ApiController
       return
     end
 
-    unless @bookmark.update(name: params[:name])
+    unless @bookmark.update(params.permit(:name, :public))
       error = { message: 'Bookmark could not be updated.' }
       render json: { errors: [error] }, status: :unprocessable_entity
       return

@@ -151,27 +151,27 @@ RSpec.describe "Searching bookmarks" do
     # Can toggle bookmark name editor
     first_bookmark = private_bookmarks.first
     first_bookmark_name_text_field = find(".bookmark-name-text-field[data-bookmark-id='#{first_bookmark.id}']", visible: false)
-    first_bookmark_edit_name_button = find(".rename-bookmark[data-bookmark-id='#{first_bookmark.id}']")
+    first_bookmark_edit_button = find(".edit-bookmark[data-bookmark-id='#{first_bookmark.id}']")
     expect(first_bookmark_name_text_field).not_to be_visible
-    first_bookmark_edit_name_button.click
+    first_bookmark_edit_button.click
     expect(first_bookmark_name_text_field).to be_visible
-    first_bookmark_edit_name_button.click
+    first_bookmark_edit_button.click
     expect(first_bookmark_name_text_field).not_to be_visible
 
     # Toggling one bookmark untoggles another
     last_bookmark = private_bookmarks.last
     last_bookmark_name_text_field = find(".bookmark-name-text-field[data-bookmark-id='#{last_bookmark.id}']", visible: false)
-    last_bookmark_edit_name_button = find(".rename-bookmark[data-bookmark-id='#{last_bookmark.id}']")
+    last_bookmark_edit_button = find(".edit-bookmark[data-bookmark-id='#{last_bookmark.id}']")
     expect(last_bookmark_name_text_field).not_to be_visible
-    last_bookmark_edit_name_button.click
+    last_bookmark_edit_button.click
     expect(last_bookmark_name_text_field).to be_visible
-    first_bookmark_edit_name_button.click
+    first_bookmark_edit_button.click
     expect(first_bookmark_name_text_field).to be_visible
     expect(last_bookmark_name_text_field).not_to be_visible
-    first_bookmark_edit_name_button.click
+    first_bookmark_edit_button.click
 
     # Can rename bookmark
-    first_bookmark_edit_name_button.click
+    first_bookmark_edit_button.click
     new_bookmark_name = "New Bookmark Name #{first_bookmark.id}"
     first_bookmark_name_text_field.set(new_bookmark_name)
     click_button "Save"
@@ -180,14 +180,14 @@ RSpec.describe "Searching bookmarks" do
     expect(find(".bookmark-name[data-bookmark-id='#{first_bookmark.id}']")).to have_text(new_bookmark_name)
 
     # Discarding changes to the name works
-    first_bookmark_edit_name_button.click
+    first_bookmark_edit_button.click
     first_bookmark_name_text_field.set(new_bookmark_name + "different")
     accept_alert { click_button "Discard Changes" }
     expect(first_bookmark_name_text_field.value).to eq(new_bookmark_name)
-    first_bookmark_edit_name_button.click
+    first_bookmark_edit_button.click
 
     # Can clear bookmark name
-    first_bookmark_edit_name_button.click
+    first_bookmark_edit_button.click
     first_bookmark_name_text_field.set("")
     click_button "Save"
     expect(find(".bookmark-name[data-bookmark-id='#{first_bookmark.id}']")).to have_text("(Unnamed)")
