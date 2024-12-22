@@ -130,7 +130,7 @@ class BoardsController < ApplicationController
   def search
     @page_title = 'Search Continuities'
     @user = User.active.full.where(id: params[:author_id]).ordered if params[:author_id].present?
-    use_javascript('boards/search')
+    use_javascript('search')
     return unless params[:commit].present?
 
     searcher = Board::Searcher.new
