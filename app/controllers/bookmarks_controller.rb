@@ -53,7 +53,7 @@ class BookmarksController < ApplicationController
     bookmark = Bookmark.where(reply_id: @reply.id, user_id: current_user.id, post_id: @reply.post.id,
       type: 'reply_bookmark',).first_or_initialize
     if bookmark.new_record?
-      bookmark.update!(params.permit(:name))
+      bookmark.update!(params.permit(:name, :public))
       flash[:success] = "Bookmark added."
     else
       flash[:error] = "Bookmark already exists."
