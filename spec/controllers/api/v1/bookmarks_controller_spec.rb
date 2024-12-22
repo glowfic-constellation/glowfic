@@ -140,6 +140,16 @@ RSpec.describe Api::V1::BookmarksController do
       expect(response.parsed_body['errors'][0]['message']).to eq('Bookmark could not be updated.')
     end
 
+    it "Public bookmark doesn't override private post", :show_in_doc do
+      user = api_login
+      bookmark = create(:bookmark, user: user, public: true)
+      bookmark.post.update!(privacy: :private)
+
+      patch :update, params: { id: bookmark.id, name: "New name" }
+      expect(response).to have_http_status(403)
+      expect(response.parsed_body['errors'][0]['message']).to eq("You do not have permission to perform this action.")
+    end
+
     it "succeeds with only name", :show_in_doc do
       user = api_login
       reply = create(:reply)

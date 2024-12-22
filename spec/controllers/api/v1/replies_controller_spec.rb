@@ -96,6 +96,15 @@ RSpec.describe Api::V1::RepliesController do
       expect(response.parsed_body['post_id']).to eq(bookmark.post_id)
     end
 
+    it "Public bookmark doesn't override private post", :show_in_doc do
+      bookmark = create(:bookmark, user: create(:user), public: true)
+      bookmark.post.update!(privacy: :private)
+      get :bookmark, params: { id: bookmark.reply.id, user_id: bookmark.user.id }
+      expect(response).to have_http_status(403)
+      expect(response.parsed_body['errors'].size).to eq(1)
+      expect(response.parsed_body['errors'][0]['message']).to eq("You do not have permission to perform this action.")
+    end
+
     it "succeeds if user bookmarks are public", :show_in_doc do
       bookmark = create(:bookmark, user: create(:user, public_bookmarks: true))
       get :bookmark, params: { id: bookmark.reply.id, user_id: bookmark.user.id }
