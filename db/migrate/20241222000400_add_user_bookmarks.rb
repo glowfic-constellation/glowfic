@@ -6,6 +6,7 @@ class AddUserBookmarks < ActiveRecord::Migration[7.2]
       t.integer :post_id, null: false
       t.string :name, null: true
       t.string :type, null: false, default: "reply_bookmark"
+      t.boolean :public, null: false, default: false
       t.timestamps null: true
     end
     add_index :bookmarks, :user_id

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.2].define(version: 2024_12_20_001400) do
+ActiveRecord::Schema[7.2].define(version: 2024_12_22_000400) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "citext"
   enable_extension "plpgsql"
@@ -94,6 +94,7 @@ ActiveRecord::Schema[7.2].define(version: 2024_12_20_001400) do
     t.integer "post_id", null: false
     t.string "name"
     t.string "type", default: "reply_bookmark", null: false
+    t.boolean "public", default: false, null: false
     t.datetime "created_at"
     t.datetime "updated_at"
     t.index ["post_id", "user_id"], name: "index_bookmarks_on_post_id_and_user_id"
