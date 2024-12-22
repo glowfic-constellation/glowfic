@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.2].define(version: 2024_12_16_154204) do
+ActiveRecord::Schema[7.2].define(version: 2024_12_22_000400) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "citext"
   enable_extension "plpgsql"
@@ -86,6 +86,22 @@ ActiveRecord::Schema[7.2].define(version: 2024_12_16_154204) do
     t.text "description"
     t.boolean "pinned", default: false
     t.boolean "authors_locked", default: true
+  end
+
+  create_table "bookmarks", force: :cascade do |t|
+    t.integer "user_id", null: false
+    t.integer "reply_id", null: false
+    t.integer "post_id", null: false
+    t.string "name"
+    t.string "type", default: "reply_bookmark", null: false
+    t.boolean "public", default: false, null: false
+    t.datetime "created_at"
+    t.datetime "updated_at"
+    t.index ["post_id", "user_id"], name: "index_bookmarks_on_post_id_and_user_id"
+    t.index ["post_id"], name: "index_bookmarks_on_post_id"
+    t.index ["reply_id"], name: "index_bookmarks_on_reply_id"
+    t.index ["user_id", "reply_id", "type"], name: "index_bookmarks_on_user_id_and_reply_id_and_type", unique: true
+    t.index ["user_id"], name: "index_bookmarks_on_user_id"
   end
 
   create_table "character_aliases", id: :serial, force: :cascade do |t|
@@ -482,6 +498,7 @@ ActiveRecord::Schema[7.2].define(version: 2024_12_16_154204) do
     t.boolean "hide_from_all", default: false
     t.string "profile"
     t.string "profile_editor_mode", default: "html"
+    t.boolean "public_bookmarks", default: false
     t.index ["email"], name: "index_users_on_email", unique: true
     t.index ["username"], name: "index_users_on_username", unique: true
   end

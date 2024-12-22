@@ -47,5 +47,12 @@ RSpec.describe "Viewing users" do
     end
   end
 
+  scenario "has working Bookmarks link" do
+    visit user_path(user)
+    within(".user-info-box") { click_link("Bookmarks") }
+    expect(page).to have_current_path(search_bookmarks_path(commit: "Search", user_id: user.id))
+    expect(page).to have_selector("#user_id option[selected='selected'][value='#{user.id}']")
+  end
+
   # TODO shows recent posts?
 end

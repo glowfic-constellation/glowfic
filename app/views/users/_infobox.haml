@@ -48,6 +48,11 @@
         = link_to search_posts_path(author_id: [user.id], commit: 'Search', completed: true), rel: 'nofollow' do
           = image_tag "icons/book.png", class: 'vmid', alt: ''
           Completed Posts
+    %tr
+      %td.centered{class: cycle('even', 'odd')}
+        = link_to search_bookmarks_path(user_id: user.id, commit: 'Search'), rel: 'nofollow' do
+          = image_tag "icons/bookmark.png".freeze, alt: ''
+          Bookmarks
     - if logged_in? && user.id != current_user.id
       %tr
         %td.centered{class: cycle('even', 'odd')}

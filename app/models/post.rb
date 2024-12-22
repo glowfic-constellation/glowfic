@@ -22,6 +22,10 @@ class Post < ApplicationRecord
   has_many :favorites, as: :favorite, inverse_of: :favorite, dependent: :destroy
   has_many :views, class_name: 'Post::View', dependent: :destroy
 
+  has_many :bookmarks, inverse_of: :post, dependent: :destroy
+  has_many :bookmarking_users, -> { ordered }, through: :bookmarks, source: :user, dependent: :destroy
+  has_many :bookmarked_replies, -> { ordered }, through: :bookmarks, source: :reply, dependent: :destroy
+
   has_many :post_tags, inverse_of: :post, dependent: :destroy
   has_many :labels, -> { ordered_by_post_tag }, through: :post_tags, source: :label, dependent: :destroy
   has_many :settings, -> { ordered_by_post_tag }, through: :post_tags, source: :setting, dependent: :destroy
@@ -121,6 +125,11 @@ class Post < ApplicationRecord
     return true if privacy_full_accounts? && !user.read_only?
     return user.id == user_id if privacy_private?
     (post_viewers.pluck(:user_id) + [user_id]).include?(user.id)
+  end
+
+  def has_replies_bookmarked_by?(user)
+    return false unless user
+    bookmarking_users.where(id: user.id).exists?
   end
 
   def build_new_reply_for(user, reply_params={})
