@@ -7,10 +7,11 @@ class Api::V1::BookmarksController < Api::ApiController
     description 'Viewing and modifying bookmarks'
   end
 
-  api :POST, '/bookmarks', 'Create a bookmark for the current user at a reply. If one already exists, update its name.'
+  api :POST, '/bookmarks', 'Create a bookmark for the current user at a reply. If one already exists, update it.'
   header 'Authorization', 'Authorization token for a user in the format "Authorization" : "Bearer [token]"', required: true
   param :reply_id, :number, required: true, desc: "Reply ID"
   param :name, String, required: false, allow_blank: true, desc: "New bookmark's name"
+  param :public, :boolean, required: false, allow_blank: true, desc: "New bookmark's public status"
   error 403, "Reply is not visible to the user"
   error 404, "Reply not found"
   error 422, "Invalid parameters provided"
@@ -22,8 +23,7 @@ class Api::V1::BookmarksController < Api::ApiController
     end
 
     bookmark = Bookmark.where(user: current_user, reply: reply, post: reply.post, type: "reply_bookmark").first_or_initialize
-    bookmark.assign_attributes(name: params[:name])
-    unless bookmark.save
+    unless bookmark.update(params.permit(:name, :public))
       error = { message: 'Bookmark could not be created.' }
       render json: { errors: [error] }, status: :unprocessable_entity
       return

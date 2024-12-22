@@ -43,6 +43,7 @@ RSpec.describe Api::V1::BookmarksController do
       expect(bookmark.user).to eq(user)
       expect(bookmark.type).to eq("reply_bookmark")
       expect(bookmark.name).to be_nil
+      expect(bookmark.public).to be false
     end
 
     it "succeeds with name param", :show_in_doc do
@@ -54,7 +55,37 @@ RSpec.describe Api::V1::BookmarksController do
 
       bookmark = Bookmark.find_by_id(response.parsed_body['id'])
       expect(bookmark.reply).to eq(reply)
+      expect(bookmark.post).to eq(reply.post)
       expect(bookmark.name).to eq("New Bookmark")
+      expect(bookmark.public).to be false
+    end
+
+    it "succeeds with public param", :show_in_doc do
+      api_login
+      reply = create(:reply)
+
+      post :create, params: { reply_id: reply.id, public: true }
+      expect(response).to have_http_status(200)
+
+      bookmark = Bookmark.find_by_id(response.parsed_body['id'])
+      expect(bookmark.reply).to eq(reply)
+      expect(bookmark.post).to eq(reply.post)
+      expect(bookmark.name).to be_nil
+      expect(bookmark.public).to be true
+    end
+
+    it "succeeds with both params", :show_in_doc do
+      api_login
+      reply = create(:reply)
+
+      post :create, params: { reply_id: reply.id, name: "New Bookmark", public: true }
+      expect(response).to have_http_status(200)
+
+      bookmark = Bookmark.find_by_id(response.parsed_body['id'])
+      expect(bookmark.reply).to eq(reply)
+      expect(bookmark.post).to eq(reply.post)
+      expect(bookmark.name).to eq("New Bookmark")
+      expect(bookmark.public).to be true
     end
 
     it "updates existing bookmark", :show_in_doc do
