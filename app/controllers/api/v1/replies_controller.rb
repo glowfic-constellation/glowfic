@@ -36,7 +36,7 @@ class Api::V1::RepliesController < Api::ApiController
     access_denied and return unless reply.post.visible_to?(current_user)
 
     bookmark = reply.bookmarks.find_by(user_id: user.id, type: "reply_bookmark")
-    bookmark_not_found and return unless bookmark.visible_to?(current_user)
+    bookmark_not_found and return unless bookmark&.visible_to?(current_user)
 
     if bookmark.present?
       render json: bookmark.as_json
