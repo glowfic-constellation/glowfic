@@ -54,18 +54,19 @@
                         Saved
                     - if user_is_owner
                       .bookmark-editor.hidden{ data: { bookmark_id: reply.bookmark_id } }
-                        = text_field_tag nil, reply.bookmark_name, placeholder: "Bookmark Name", class: "bookmark-name-text-field vmid", data: { bookmark_id: reply.bookmark_id }
-                        &nbsp;&nbsp;&nbsp;
-                        = check_box_tag "public_#{reply.bookmark_id}", true, reply.bookmark_public, class: "bookmark-public-checkbox vmid", data: { bookmark_id: reply.bookmark_id }
-                        = label_tag "public_#{reply.bookmark_id}", 'Public', class: "vmid"
-                        &nbsp;&nbsp;&nbsp;&nbsp;
-                        = submit_tag 'Save', class: 'save-bookmark button vmid', data: { bookmark_id: reply.bookmark_id }
-                        = submit_tag 'Discard Changes', class: 'discard-bookmark-changes button vmid', data: { bookmark_id: reply.bookmark_id }
-                        .loading.float-right.margin-top-7.hidden
-                          = image_tag 'icons/loading.gif', title: 'Loading...', class: 'vmid', alt: 'Loading...'
-                        .saveerror.float-right.margin-top-7.hidden{ data: { bookmark_id: reply.bookmark_id } }
-                          = image_tag "icons/exclamation.png", title: 'Error', class: 'vmid', alt: ''
-                          Error, please try again
+                        %span.bookmark-editor-fields
+                          = text_field_tag nil, reply.bookmark_name, placeholder: "Bookmark Name", class: "bookmark-name-text-field vmid", data: { bookmark_id: reply.bookmark_id }
+                          &nbsp;&nbsp;&nbsp;
+                          = check_box_tag "public_#{reply.bookmark_id}", true, reply.bookmark_public, class: "bookmark-public-checkbox vmid", data: { bookmark_id: reply.bookmark_id }
+                          = label_tag "public_#{reply.bookmark_id}", 'Public', class: "vmid"
+                        %span.bookmark-editor-buttons
+                          = submit_tag 'Save', class: 'save-bookmark button vmid', data: { bookmark_id: reply.bookmark_id }
+                          = submit_tag 'Discard Changes', class: 'discard-bookmark-changes button vmid', data: { bookmark_id: reply.bookmark_id }
+                          .loading.float-right.margin-top-7.hidden
+                            = image_tag 'icons/loading.gif', title: 'Loading...', class: 'vmid', alt: 'Loading...'
+                          .saveerror.float-right.margin-top-7.hidden{ data: { bookmark_id: reply.bookmark_id } }
+                            = image_tag "icons/exclamation.png", title: 'Error', class: 'vmid', alt: ''
+                            Error, please try again
                 %tr
                   %td.vtop{ class: cycle('even'.freeze, 'odd'.freeze) }
                     .post-info-box
