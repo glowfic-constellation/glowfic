@@ -27,16 +27,16 @@ class Api::V1::RepliesController < Api::ApiController
   api :GET, '/replies/:id/bookmark', "Load a user's bookmark attached to a reply if it exists and is visible"
   param :id, :number, required: true, desc: "Reply ID"
   param :user_id, :number, required: true, desc: "User ID"
-  error 403, "Reply's post or user's bookmarks are not visible"
+  error 403, "Reply's post is not visible to the user"
   error 404, "Reply or user not found"
   error 422, "Invalid parameters provided"
   def bookmark
     return unless (reply = find_object(Reply))
     return unless (user = find_object(User, param: :user_id))
     access_denied and return unless reply.post.visible_to?(current_user)
-    bookmark_not_found and return unless user.public_bookmarks || user.id == current_user.try(:id)
 
     bookmark = reply.bookmarks.find_by(user_id: user.id, type: "reply_bookmark")
+    bookmark_not_found and return unless bookmark.visible_to?(current_user)
 
     if bookmark.present?
       render json: bookmark.as_json
