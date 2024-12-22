@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 class Api::V1::BookmarksController < Api::ApiController
   before_action :login_required
-  before_action :find_bookmark, except: :create
+  before_action :bookmark_ownership_required, except: :create
 
   resource_description do
     description 'Viewing and modifying bookmarks'
@@ -17,10 +17,7 @@ class Api::V1::BookmarksController < Api::ApiController
   error 422, "Invalid parameters provided"
   def create
     return unless (reply = find_object(Reply, param: :reply_id))
-    unless reply.post.visible_to?(current_user)
-      access_denied
-      return
-    end
+    access_denied and return unless reply.post.visible_to?(current_user)
 
     bookmark = Bookmark.where(user: current_user, reply: reply, type: "reply_bookmark").first_or_initialize
     params[:post_id] = reply.post_id
@@ -42,11 +39,6 @@ class Api::V1::BookmarksController < Api::ApiController
   error 404, "Bookmark not found"
   error 422, "Invalid parameters provided"
   def update
-    if @bookmark.user.id != current_user.try(:id)
-      access_denied
-      return
-    end
-
     unless @bookmark.update(params.permit(:name, :public))
       error = { message: 'Bookmark could not be updated.' }
       render json: { errors: [error] }, status: :unprocessable_entity
@@ -63,11 +55,6 @@ class Api::V1::BookmarksController < Api::ApiController
   error 404, "Bookmark not found"
   error 422, "Invalid parameters provided"
   def destroy
-    if @bookmark.user.id != current_user.try(:id)
-      access_denied
-      return
-    end
-
     unless @bookmark.destroy
       error = { message: 'Bookmark could not be removed.' }
       render json: { errors: [error] }, status: :unprocessable_entity
@@ -79,8 +66,9 @@ class Api::V1::BookmarksController < Api::ApiController
 
   private
 
-  def find_bookmark
+  def bookmark_ownership_required
     return unless (@bookmark = find_object(Bookmark))
     access_denied unless @bookmark.visible_to?(current_user)
+    access_denied unless @bookmark.user.id == current_user.try(:id)
   end
 end

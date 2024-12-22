@@ -28,7 +28,7 @@ RSpec.describe BookmarksController, 'DELETE destroy' do
     login
     delete :destroy, params: { id: bookmark.id }
     expect(response).to redirect_to(reply_url(reply, anchor: "reply-#{reply.id}"))
-    expect(flash[:error]).to eq("You do not have permission to remove this bookmark.")
+    expect(flash[:error]).to eq("You do not have permission to perform this action.")
   end
 
   it "succeeds for bookmark owner" do

@@ -2,8 +2,8 @@
 require 'will_paginate/array'
 
 class BookmarksController < ApplicationController
-  before_action :login_required, except: [:search]
-  before_action :find_model, only: [:destroy]
+  before_action :login_required, except: :search
+  before_action :bookmark_ownership_required, only: :destroy
 
   def search
     @page_title = 'Search Bookmarks'
@@ -63,12 +63,6 @@ class BookmarksController < ApplicationController
   end
 
   def destroy
-    @reply = @bookmark.reply
-    unless @bookmark.user.id == current_user.try(:id)
-      flash[:error] = "You do not have permission to remove this bookmark."
-      redirect_back fallback_location: reply_path(@reply, anchor: "reply-#{@reply.id}") and return
-    end
-
     begin
       @bookmark.destroy!
     rescue ActiveRecord::RecordNotDestroyed => e
@@ -82,11 +76,17 @@ class BookmarksController < ApplicationController
 
   private
 
-  def find_model
+  def bookmark_ownership_required
     @bookmark = Bookmark.find_by_id(params[:id])
-    return if @bookmark&.visible_to?(current_user)
+    unless @bookmark&.visible_to?(current_user)
+      flash[:error] = "Bookmark could not be found."
+      redirect_to posts_path and return
+    end
 
-    flash[:error] = "Bookmark could not be found."
-    redirect_to posts_path and return
+    @reply = @bookmark.reply
+    return if @bookmark.user.id == current_user.try(:id)
+
+    flash[:error] = "You do not have permission to perform this action."
+    redirect_back fallback_location: reply_path(@reply, anchor: "reply-#{@reply.id}")
   end
 end
