@@ -1,7 +1,7 @@
 RSpec.describe BookmarksController, 'DELETE destroy' do
   let(:user) { create(:user, public_bookmarks: true) }
   let(:reply) { create(:reply) }
-  let(:bookmark) { create(:bookmark, user: user, reply: reply, post: reply.post) }
+  let(:bookmark) { create(:bookmark, user: user, reply: reply) }
 
   it "requires login" do
     delete :destroy, params: { id: -1 }

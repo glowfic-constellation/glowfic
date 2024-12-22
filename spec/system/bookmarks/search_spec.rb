@@ -14,19 +14,19 @@ RSpec.describe "Searching bookmarks" do
   end
   let!(:private_bookmarks) do
     [
-      create(:bookmark, user: private_user, reply: replies[1], post: replies[1].post),
-      create(:bookmark, user: private_user, reply: replies[3], post: replies[3].post),
-      create(:bookmark, user: private_user, reply: replies[4], post: replies[4].post, name: "Bookmark Name 1"),
-      create(:bookmark, user: private_user, reply: replies[6], post: replies[6].post, name: "Bookmark Name 2"),
+      create(:bookmark, user: private_user, reply: replies[1]),
+      create(:bookmark, user: private_user, reply: replies[3]),
+      create(:bookmark, user: private_user, reply: replies[4], name: "Bookmark Name 1"),
+      create(:bookmark, user: private_user, reply: replies[6], name: "Bookmark Name 2"),
     ]
   end
   let!(:public_bookmarks) do
     [
-      create(:bookmark, user: public_user, reply: replies[2], post: replies[2].post, name: "Bookmark Name 3"),
-      create(:bookmark, user: public_user, reply: replies[4], post: replies[5].post),
-      create(:bookmark, user: public_user, reply: replies[5], post: replies[5].post),
-      create(:bookmark, user: public_user, reply: replies[7], post: replies[7].post),
-      create(:bookmark, user: public_user, reply: replies[8], post: replies[8].post),
+      create(:bookmark, user: public_user, reply: replies[2], name: "Bookmark Name 3"),
+      create(:bookmark, user: public_user, reply: replies[4]),
+      create(:bookmark, user: public_user, reply: replies[5]),
+      create(:bookmark, user: public_user, reply: replies[7]),
+      create(:bookmark, user: public_user, reply: replies[8]),
     ]
   end
 
