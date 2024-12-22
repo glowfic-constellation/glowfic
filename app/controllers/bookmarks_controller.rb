@@ -10,9 +10,7 @@ class BookmarksController < ApplicationController
     use_javascript('posts/search')
     use_javascript('bookmarks/rename')
     return unless params[:commit].present?
-
-    @user = User.find_by_id(params[:user_id])
-    return unless @user
+    return unless (@user = User.find_by_id(params[:user_id]))
     unless @user.id == current_user.try(:id) || @user.public_bookmarks
       # Return empty list when a user's bookmarks are private
       @search_results = Reply.none.paginate(page: 1)
