@@ -17,6 +17,19 @@
 # Don't calculate coverage when running single tests or recording API examples
 unless ENV.fetch('SKIP_COVERAGE', false) || ENV.fetch('APIPIE_RECORD', false) || RSpec.configuration.files_to_run.count <= 1
   require 'simplecov'
+
+  # skip warning for HAML compiled file length when close enough (within 2 lines difference)
+  # tends to be due to small compilation differences; hopefully a future HAML version improves it
+  # https://github.com/simplecov-ruby/simplecov/blob/v0.22.0/lib/simplecov/source_file.rb#L251
+  module SimpleCov # rubocop:disable Style/ClassAndModuleChildren
+    class SourceFile
+      def coverage_exceeding_source_warn
+        return if filename.end_with?('.haml') && coverage_data['lines'].size <= src.size + 2
+        warn "Warning: coverage data provided by Coverage [#{coverage_data['lines'].size}] exceeds number of lines in #{filename} [#{src.size}]"
+      end
+    end
+  end
+
   SimpleCov.start 'rails' do
     add_group("Controllers") { |src| src.filename.include?('app/controllers') and src.filename.exclude?('app/controllers/api') }
     add_group "Presenters", "app/presenters"
