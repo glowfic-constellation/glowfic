@@ -38,11 +38,7 @@ class Api::V1::RepliesController < Api::ApiController
     bookmark = reply.bookmarks.find_by(user_id: user.id, type: "reply_bookmark")
     bookmark_not_found and return unless bookmark&.visible_to?(current_user)
 
-    if bookmark.present?
-      render json: bookmark.as_json
-    else
-      bookmark_not_found
-    end
+    render json: bookmark.as_json
   end
 
   private
