@@ -6,10 +6,6 @@ Flatware.configure do |conf|
   end
 
   conf.after_fork do |test_env_number|
-    require 'simplecov'
-    # allow SimpleCov to combine parallel results
-    SimpleCov.at_fork.call(test_env_number)
-
     # re-establish ActiveRecord connection
     config = ActiveRecord::Base.connection_db_config.configuration_hash
     ActiveRecord::Base.establish_connection(
