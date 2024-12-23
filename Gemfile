@@ -24,7 +24,7 @@ gem 'aws-sdk-ses', '~> 1'
 gem 'barnes' # heroku ruby-specific metrics
 gem 'bootstrap', '~> 5.3' # pin until major version is handled
 gem 'dartsass-sprockets'
-gem 'exception_notification'
+gem 'exception_notification', git: 'https://github.com/Throne3d/exception_notification.git', ref: 'b2131cf'
 gem 'get_process_mem'
 gem 'gon', '~> 6.4'
 gem 'haml-rails'
@@ -40,7 +40,7 @@ gem 'nokogiri'
 gem 'pg', '~> 1.5'
 gem 'pg_search'
 gem 'rack-pratchett'
-gem 'rails', '~> 7.2.2'
+gem 'rails', '~> 8.0.1'
 gem "redcarpet", "~> 3.6"
 gem 'redis', '~> 5.3'
 gem 'request_store', '~> 1.7'
