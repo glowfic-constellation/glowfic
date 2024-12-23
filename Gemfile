@@ -84,6 +84,7 @@ group :development, :test do
   gem 'byebug'
   gem 'database_cleaner'
   gem 'dotenv'
+  gem 'flatware-rspec', require: false
   gem 'html-proofer', '< 4'
   gem 'rake', '~> 13.2'
   gem 'rspec-rails'

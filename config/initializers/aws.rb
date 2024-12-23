@@ -28,8 +28,12 @@ if ENV.key?('MINIO_ENDPOINT')
       }],
     }.to_json
 
-    client.create_bucket(bucket: bucket_name)
-    client.put_bucket_policy(bucket: bucket_name, policy: public_read_policy)
+    begin
+      client.create_bucket(bucket: bucket_name)
+      client.put_bucket_policy(bucket: bucket_name, policy: public_read_policy)
+    rescue Aws::S3::Errors::BucketAlreadyOwnedByYou
+      Rails.logger.warn "bucket already exists, likely created by another process"
+    end
   end
 end
 
