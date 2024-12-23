@@ -84,5 +84,9 @@ module Glowfic
     # Setting enables YJIT as of Ruby 3.3, to bring sizeable performance improvements. We are
     # deploying to a memory constrained environment so we set this to `false`.
     config.yjit = false
+
+    # reduce memory use of strings in ActionView Templates
+    # https://guides.rubyonrails.org/configuring.html#config-action-view-frozen-string-literal
+    config.action_view.frozen_string_literal = true
   end
 end
