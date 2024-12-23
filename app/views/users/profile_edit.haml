@@ -11,7 +11,7 @@
     %table
       %tbody
         %tr
-          %th.sub.width-15.vtop Description
+          %th.sub.width-15.vtop= f.label :profile, "Description"
           %td{class: cycle('even', 'odd')}
             %button.view-button#rtf{type: 'button', class: ('selected' if current_user.profile_editor_mode == 'rtf')} Rich Text
             %button.view-button#md{type: 'button', class: ('selected' if current_user.profile_editor_mode == 'md')} Markdown
@@ -24,12 +24,12 @@
               = f.text_area :profile, class: 'tinymce'
             = render 'posts/editor_help', editor_location: 'profile'
         %tr
-          %th.sub.vtop Moiety hex
+          %th.sub.vtop= f.label :moiety, "Moiety hex"
           %td{class: cycle('even', 'odd')}
             \#
             = f.text_field :moiety, placeholder: "Hex code", class: 'text', style: 'width: 80px;', maxlength: 6
         %tr
-          %th.sub.vtop Moiety name
+          %th.sub.vtop= f.label :moiety_name, "Moiety name"
           %td{class: cycle('even', 'odd')}= f.text_field :moiety_name, placeholder: "Moiety", class: 'text'
         %tr
           %th.sub= f.label :content_warning_ids, "Author warnings"
