@@ -24,7 +24,7 @@ gem 'aws-sdk-ses', '~> 1'
 gem 'barnes' # heroku ruby-specific metrics
 gem 'bootstrap', '~> 5.3' # pin until major version is handled
 gem 'dartsass-sprockets'
-gem 'exception_notification', git: 'https://github.com/smartinez87/exception_notification.git', ref: '60e1588'
+gem 'exception_notification', git: 'https://github.com/Throne3d/exception_notification.git', ref: 'b2131cf'
 gem 'get_process_mem'
 gem 'gon', '~> 6.4'
 gem 'haml-rails'
