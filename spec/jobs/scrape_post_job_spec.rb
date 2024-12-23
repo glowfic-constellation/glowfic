@@ -1,4 +1,5 @@
 require Rails.root.join("app", "services", "post_scraper.rb")
+require Rails.root.join("app", "services", "reply_scraper.rb")
 
 RSpec.describe ScrapePostJob do
   include ActiveJob::TestHelper
