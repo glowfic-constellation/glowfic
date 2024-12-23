@@ -20,8 +20,7 @@ class Api::V1::BookmarksController < Api::ApiController
     access_denied and return unless reply.post.visible_to?(current_user)
 
     bookmark = Bookmark.where(user: current_user, reply: reply, type: "reply_bookmark").first_or_initialize
-    params[:post_id] = reply.post_id
-    unless bookmark.update(params.permit(:name, :public, :post_id))
+    unless bookmark.update(params.permit(:name, :public).merge(post_id: reply.post_id))
       error = { message: 'Bookmark could not be created.' }
       render json: { errors: [error] }, status: :unprocessable_entity
       return
