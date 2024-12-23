@@ -16,19 +16,24 @@ RSpec.describe "Editing user profile" do
 
   scenario "User edits themself", :js do
     login(user, 'known')
+
+    # Page exists
     visit profile_edit_user_path(user)
     expect(page).to have_no_selector('.error')
     expect(page).to have_selector('.content-header', exact_text: 'Edit profile')
 
+    # Profile description field exists and can be filled
     expect(page).to have_field('user_profile', with: '')
     fill_in 'user_profile', with: 'User Description'
     page.find_by_id("rtf").click
 
+    # Moiety fields exist and can be filled
     expect(page).to have_field('user_moiety_name', with: '')
     expect(page).to have_field('user_moiety', with: '')
     fill_in 'user_moiety_name', with: 'Red'
     fill_in 'user_moiety', with: 'FF0000'
 
+    # Content warnings exist and can be filled
     expect(page).to have_no_selector('.select2-selection__choice')
     page.find('.select2-search__field').click
     page.find('.select2-search__field').set("warning 1")
@@ -36,6 +41,8 @@ RSpec.describe "Editing user profile" do
     expect(page).to have_selector('.select2-selection__choice', exact_text: '×warning 1')
 
     click_button 'Save'
+
+    # Everything has the correct values
     within('.error') do
       expect(page).to have_text("This author has set some general content warnings which might apply to their posts even when not otherwise warned")
       page.find('summary').click
@@ -47,7 +54,24 @@ RSpec.describe "Editing user profile" do
     expect(moiety).to be_present
     expect(moiety[:style]).to eq('cursor: default; color: rgb(255, 0, 0);')
 
+    # Warning Select2 is showing the correct values
     visit profile_edit_user_path(user)
     expect(page).to have_selector('.select2-selection__choice', exact_text: '×warning 1')
+
+    # Editing the user settings does not erase any of the profile fields
+    visit edit_user_path(user)
+    fill_in 'user_username', with: "Updated Username"
+    within("#edit_user_#{user.id}") { click_button 'Save' }
+    expect(find_by_id('user_username').value).to eq("Updated Username")
+    visit user_path(user)
+    within('.error') do
+      page.find('summary').click
+      expect(page).to have_text('warning 1')
+    end
+    expect(page).to have_text("Red")
+    expect(page).to have_text("User Description")
+    moiety = page.find('.user-moiety span')
+    expect(moiety).to be_present
+    expect(moiety[:style]).to eq('cursor: default; color: rgb(255, 0, 0);')
   end
 end
