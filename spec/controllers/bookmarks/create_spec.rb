@@ -35,18 +35,29 @@ RSpec.describe BookmarksController, 'POST create' do
     expect(bookmark.name).to be_nil
   end
 
-  it "succeeds with name" do
+  it "succeeds with name param" do
     login
-    post :create, params: { at_id: reply.id, bookmark_name: "new bookmark" }
+    post :create, params: { at_id: reply.id, name: "new bookmark" }
     expect(response).to redirect_to(reply_url(reply, anchor: "reply-#{reply.id}"))
     expect(flash[:success]).to eq('Bookmark added.')
     bookmark = Bookmark.order(:id).last
     expect(bookmark.name).to eq("new bookmark")
+    expect(bookmark.public).to be false
+  end
+
+  it "succeeds with public param" do
+    login
+    post :create, params: { at_id: reply.id, public: true }
+    expect(response).to redirect_to(reply_url(reply, anchor: "reply-#{reply.id}"))
+    expect(flash[:success]).to eq('Bookmark added.')
+    bookmark = Bookmark.order(:id).last
+    expect(bookmark.name).to be_nil
+    expect(bookmark.public).to be true
   end
 
   it "fails if already exists" do
     login_as(user)
-    existing_bookmark = create(:bookmark, user: user, reply: reply, post: reply.post, type: "reply_bookmark")
+    existing_bookmark = create(:bookmark, user: user, reply: reply)
     post :create, params: { at_id: reply.id }
     expect(response).to redirect_to(reply_url(reply, anchor: "reply-#{reply.id}"))
     expect(flash[:error]).to eq("Bookmark already exists.")
@@ -55,7 +66,7 @@ RSpec.describe BookmarksController, 'POST create' do
   end
 
   it "allows multiple users to bookmark the same reply" do
-    existing_bookmark = create(:bookmark, user: user, reply: reply, post: reply.post, type: "reply_bookmark")
+    existing_bookmark = create(:bookmark, user: user, reply: reply)
     login
     post :create, params: { at_id: reply.id }
     expect(response).to redirect_to(reply_url(reply, anchor: "reply-#{reply.id}"))

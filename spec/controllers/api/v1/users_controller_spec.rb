@@ -142,23 +142,44 @@ RSpec.describe Api::V1::UsersController do
       expect(response.parsed_body['bookmarks'].size).to eq(0)
     end
 
-    it "succeeds with public bookmarks", :show_in_doc do
-      user = create(:user, public_bookmarks: true)
+    it "succeeds if bookmark is public", :show_in_doc do
+      user = create(:user)
+      create(:bookmark, user: user, public: true)
       get :bookmarks, params: { id: user.id }
       expect(response).to have_http_status(200)
-      expect(response.parsed_body['bookmarks'].size).to eq(0)
+      expect(response.parsed_body['bookmarks'].size).to eq(1)
+    end
+
+    it "succeeds if user bookmarks are public", :show_in_doc do
+      user = create(:user, public_bookmarks: true)
+      create(:bookmark, user: user)
+      get :bookmarks, params: { id: user.id }
+      expect(response).to have_http_status(200)
+      expect(response.parsed_body['bookmarks'].size).to eq(1)
     end
 
     it "succeeds with own bookmarks", :show_in_doc do
       user = api_login
+      create(:bookmark, user: user)
       get :bookmarks, params: { id: user.id }
       expect(response).to have_http_status(200)
-      expect(response.parsed_body['bookmarks'].size).to eq(0)
+      expect(response.parsed_body['bookmarks'].size).to eq(1)
     end
 
-    it "filters non-visible bookmarks", :show_in_doc do
-      user = create(:user, public_bookmarks: true)
-      bookmarks = create_list(:bookmark, 2, user: user)
+    it "filters non-public bookmarks", :show_in_doc do
+      user = create(:user)
+      bookmarks = create_list(:bookmark, 3, user: user)
+      bookmarks[0].post.update!(privacy: :private)
+      bookmarks[1].update!(public: true)
+      get :bookmarks, params: { id: user.id }
+      expect(response).to have_http_status(200)
+      expect(response.parsed_body['bookmarks'].size).to eq(1)
+      expect(response.parsed_body['bookmarks'][0]['id']).to eq(bookmarks[1].id)
+    end
+
+    it "Public bookmark doesn't override private post", :show_in_doc do
+      user = create(:user)
+      bookmarks = create_list(:bookmark, 2, user: user, public: true)
       bookmarks[0].post.update!(privacy: :private)
       get :bookmarks, params: { id: user.id }
       expect(response).to have_http_status(200)

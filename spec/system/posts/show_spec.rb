@@ -79,7 +79,7 @@ RSpec.describe "Viewing posts" do
     let!(:user) { create(:user, password: 'known') }
     let!(:post) { create(:post) }
     let!(:reply) { create(:reply, post: post) }
-    let!(:bookmark) { create(:bookmark, reply: reply, post: post, user: user) }
+    let!(:bookmark) { create(:bookmark, reply: reply, user: user) }
 
     scenario "when logged out" do
       visit post_path(post)

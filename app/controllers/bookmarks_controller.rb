@@ -2,8 +2,8 @@
 require 'will_paginate/array'
 
 class BookmarksController < ApplicationController
-  before_action :login_required, except: [:search]
-  before_action :find_model, only: [:destroy]
+  before_action :login_required, except: :search
+  before_action :bookmark_ownership_required, only: :destroy
 
   def search
     @page_title = 'Search Bookmarks'
@@ -11,25 +11,25 @@ class BookmarksController < ApplicationController
     use_javascript('bookmarks/rename')
     return unless params[:commit].present?
     return unless (@user = User.find_by_id(params[:user_id]))
-    unless @user.id == current_user.try(:id) || @user.public_bookmarks
+
+    @search_results = @user.bookmarked_replies.bookmark_visible_to(@user, current_user)
+    if @search_results.empty?
       # Return empty list when a user's bookmarks are private
-      @search_results = Reply.none.paginate(page: 1)
+      @search_results = @search_results.paginate(page: 1)
       return
     end
 
-    @search_results = @user.bookmarked_replies
     if params[:post_id].present?
       @posts = Post.where(id: params[:post_id])
       @search_results = @search_results.where(post_id: params[:post_id])
     end
 
     @search_results = @search_results
-      .visible_to(current_user)
       .joins(:post)
       .order('posts.subject, replies.created_at, posts.id')
       .joins(:user)
       .left_outer_joins(:character)
-      .select('replies.*, bookmarks.name as bookmark_name, bookmarks.id as bookmark_id, characters.name, ' \
+      .select('replies.*, bookmarks.id as bookmark_id, bookmarks.name as bookmark_name, bookmarks.public as bookmark_public, characters.name, ' \
               'characters.screenname, users.username, users.deleted as user_deleted')
       .paginate(page: page)
 
@@ -50,14 +50,9 @@ class BookmarksController < ApplicationController
       return redirect_to posts_path
     end
 
-    bookmark = Bookmark.where(reply_id: @reply.id, user_id: current_user.id, post_id: @reply.post.id,
-      type: 'reply_bookmark',).first_or_initialize
+    bookmark = Bookmark.where(reply_id: @reply.id, user_id: current_user.id, type: 'reply_bookmark').first_or_initialize
     if bookmark.new_record?
-      if params[:bookmark_name].present?
-        bookmark.update!(name: params[:bookmark_name])
-      else
-        bookmark.save!
-      end
+      bookmark.update!(params.permit(:name, :public).merge(post_id: @reply.post_id))
       flash[:success] = "Bookmark added."
     else
       flash[:error] = "Bookmark already exists."
@@ -67,12 +62,6 @@ class BookmarksController < ApplicationController
   end
 
   def destroy
-    @reply = @bookmark.reply
-    unless @bookmark.user.id == current_user.try(:id)
-      flash[:error] = "You do not have permission to remove this bookmark."
-      redirect_back fallback_location: reply_path(@reply, anchor: "reply-#{@reply.id}") and return
-    end
-
     begin
       @bookmark.destroy!
     rescue ActiveRecord::RecordNotDestroyed => e
@@ -86,11 +75,17 @@ class BookmarksController < ApplicationController
 
   private
 
-  def find_model
+  def bookmark_ownership_required
     @bookmark = Bookmark.find_by_id(params[:id])
-    return if @bookmark&.visible_to?(current_user)
+    unless @bookmark&.visible_to?(current_user)
+      flash[:error] = "Bookmark could not be found."
+      redirect_to posts_path and return
+    end
 
-    flash[:error] = "Bookmark could not be found."
-    redirect_to posts_path and return
+    @reply = @bookmark.reply
+    return if @bookmark.user.id == current_user.try(:id)
+
+    flash[:error] = "You do not have permission to perform this action."
+    redirect_back fallback_location: reply_path(@reply, anchor: "reply-#{@reply.id}")
   end
 end

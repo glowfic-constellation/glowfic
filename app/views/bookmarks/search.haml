@@ -53,15 +53,20 @@
                         = image_tag "icons/accept.png", title: 'Saved', class: 'vmid', alt: ''
                         Saved
                     - if user_is_owner
-                      .bookmark-name-editor.hidden{ data: { bookmark_id: reply.bookmark_id } }
-                        = text_field_tag nil, reply.bookmark_name, class: "bookmark-name-text-field", data: { bookmark_id: reply.bookmark_id }
-                        = submit_tag 'Save', class: 'save-bookmark-name button', data: { bookmark_id: reply.bookmark_id }
-                        = submit_tag 'Discard Changes', class: 'discard-bookmark-name button', data: { bookmark_id: reply.bookmark_id }
-                        .loading.float-right.margin-top-7.hidden
-                          = image_tag 'icons/loading.gif', title: 'Loading...', class: 'vmid', alt: 'Loading...'
-                        .saveerror.float-right.margin-top-7.hidden{ data: { bookmark_id: reply.bookmark_id } }
-                          = image_tag "icons/exclamation.png", title: 'Error', class: 'vmid', alt: ''
-                          Error, please try again
+                      .bookmark-editor.hidden{ data: { bookmark_id: reply.bookmark_id } }
+                        %span.bookmark-editor-fields
+                          = text_field_tag nil, reply.bookmark_name, placeholder: "Bookmark Name", class: "bookmark-name-text-field vmid", data: { bookmark_id: reply.bookmark_id }
+                          &nbsp;&nbsp;&nbsp;
+                          = check_box_tag "public_#{reply.bookmark_id}", true, reply.bookmark_public, class: "bookmark-public-checkbox vmid", data: { bookmark_id: reply.bookmark_id }
+                          = label_tag "public_#{reply.bookmark_id}", 'Public', class: "vmid"
+                        %span.bookmark-editor-buttons
+                          = submit_tag 'Save', class: 'save-bookmark button vmid', data: { bookmark_id: reply.bookmark_id }
+                          = submit_tag 'Discard Changes', class: 'discard-bookmark-changes button vmid', data: { bookmark_id: reply.bookmark_id }
+                          .loading.float-right.margin-top-7.hidden
+                            = image_tag 'icons/loading.gif', title: 'Loading...', class: 'vmid', alt: 'Loading...'
+                          .saveerror.float-right.margin-top-7.hidden{ data: { bookmark_id: reply.bookmark_id } }
+                            = image_tag "icons/exclamation.png", title: 'Error', class: 'vmid', alt: ''
+                            Error, please try again
                 %tr
                   %td.vtop{ class: cycle('even'.freeze, 'odd'.freeze) }
                     .post-info-box
@@ -79,12 +84,12 @@
                       = link_to reply_path(reply, anchor: "reply-#{reply.id}") do
                         = image_tag "icons/link.png".freeze, title: 'Permalink'.freeze, alt: 'Permalink'.freeze
                       - if user_is_owner
-                        = image_tag "icons/bookmark_pencil.png".freeze, title: 'Rename Bookmark', alt: 'Rename Bookmark', class: 'rename-bookmark pointer', data: { bookmark_id: reply.bookmark_id }
+                        = image_tag "icons/bookmark_pencil.png".freeze, title: 'Rename Bookmark', alt: 'Rename Bookmark', class: 'edit-bookmark pointer', data: { bookmark_id: reply.bookmark_id }
                       - if (bookmark = reply.bookmark_by(current_user))
                         = link_to bookmark_path(bookmark), method: :delete do
                           = image_tag "icons/bookmark_delete.png".freeze, title: 'Remove Bookmark'.freeze, alt: 'Remove Bookmark'.freeze
                       - else
-                        = link_to bookmarks_path(at_id: reply.id, bookmark_name: reply.bookmark_name), method: :post do
+                        = link_to bookmarks_path(at_id: reply.id, name: reply.bookmark_name), method: :post do
                           = image_tag "icons/bookmark.png".freeze, title: 'Copy Bookmark'.freeze, alt: 'Copy Bookmark'.freeze
                     .post-content
                       = sanitize_written_content(reply.content, reply.editor_mode)

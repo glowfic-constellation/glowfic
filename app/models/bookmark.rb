@@ -11,13 +11,13 @@ class Bookmark < ApplicationRecord
 
   scope :_visible_user, ->(user) { where(user_id: user&.id).joins(:user).or(where(user: { public_bookmarks: true })) }
   scope :_visible_post, ->(user) { where(post_id: Post.visible_to(user).select(:id)) }
-  scope :visible_to, ->(user) { _visible_user(user)._visible_post(user) }
+  scope :visible_to, ->(user) { _visible_user(user).or(where(public: true))._visible_post(user) }
 
   def visible_to?(other_user)
-    return false unless other_user
     return false unless post.visible_to?(other_user)
     return false unless reply
-    return true if other_user.id == user.id
+    return true if public
+    return true if other_user.try(:id) == user.id
     user.public_bookmarks
   end
 end
