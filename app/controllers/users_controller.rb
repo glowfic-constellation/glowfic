@@ -250,6 +250,8 @@ class UsersController < ApplicationController
       :ignore_unread_daily_report,
       :favorite_notifications,
       :show_user_in_switcher,
+      :default_hide_edit_delete_buttons,
+      :default_hide_add_bookmark_button,
     )
   end
 

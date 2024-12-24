@@ -100,6 +100,15 @@
         %td{class: cycle('even', 'odd')}
           = f.check_box :show_user_in_switcher, class: 'width-15 vmid'
           = f.label :show_user_in_switcher, "Show user character", class: 'vmid'
+      %tr
+        %th.sub Reply defaults
+        %td{class: cycle('even', 'odd')}
+          - unless current_user.read_only?
+            = f.check_box :default_hide_edit_delete_buttons, class: 'width-15 vmid'
+            = f.label :default_hide_edit_delete_buttons, 'Hide "Edit" and "Delete" buttons', class: 'vmid'
+            %br
+          = f.check_box :default_hide_add_bookmark_button, class: 'width-15 vmid'
+          = f.label :default_hide_add_bookmark_button, 'Hide "Add Bookmark" button', class: 'vmid'
     %tfoot
       %tr
         %th.form-table-ender{colspan: 4}= submit_tag "Save", class: 'button'
