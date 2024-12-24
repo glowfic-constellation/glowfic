@@ -122,6 +122,10 @@
   position: relative;
 }
 
+@media (max-width: 600px) {
+  #holder { display: inline-block; }
+}
+
 #content, #tos {
   padding: 20px;
   font-size: $font_size_main;
