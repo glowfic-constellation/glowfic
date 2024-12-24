@@ -2,8 +2,10 @@
   %table.form-table
     %thead
       %tr
-        %th.editor-title{colspan: 2} Account Settings
+        %th.editor-title{colspan: 4} Settings
     %tbody
+      %tr
+        %th.subber{colspan: 4} Account
       %tr
         %th.sub= f.label :username
         %td{class: cycle('even', 'odd')}= f.text_field :username, placeholder: "Username", class: 'text', disabled: current_user.salt_uuid.nil?
@@ -16,6 +18,18 @@
           %button{ type: 'button', onclick: "window.location.href='#{profile_edit_user_path(current_user)}'" }
             Edit Profile
       %tr
+        %th.sub Bookmarks
+        %td{class: cycle('even', 'odd')}
+          = f.check_box :public_bookmarks, class: 'width-15 vmid'
+          = f.label :public_bookmarks, "Make all bookmarks public", class: 'vmid'
+      - unless current_user.avatar.present?
+        %tr
+          %th.sub Avatar
+          %td{class: cycle('even', 'odd')}
+            .details Please set your avatar directly from the desired icon's page.
+      %tr
+        %th.subber{colspan: 4} Site
+      %tr
         %th.sub Notifications
         %td{class: cycle('even', 'odd')}
           = f.check_box :email_notifications, class: 'width-15 vmid'
@@ -23,22 +37,15 @@
           %br
           = f.check_box :favorite_notifications, class: 'width-15 vmid'
           = f.label :favorite_notifications, 'Notify when a favorited author makes a new post', class: 'vmid'
-      - unless current_user.avatar.present?
-        %tr
-          %th.sub Avatar
-          %td{class: cycle('even', 'odd')}
-            .details Please set your avatar directly from the desired icon's page.
-      %tr
-        %th.sub= f.label :per_page, 'Paging'
-        %td{class: cycle('even', 'odd')}= f.select(:per_page, per_page_options(current_user.per_page))
       %tr
         %th.sub= f.label :timezone, 'Time zone'
         %td{class: cycle('even', 'odd')}= f.select(:timezone, timezone_options(current_user.timezone))
       %tr
-        %th.sub Split icon picker
-        %td{class: cycle('even', 'odd')}
-          = f.check_box :icon_picker_grouping, class: 'width-15 vmid'
-          = f.label :icon_picker_grouping, "Group the icon picker by gallery", class: 'vmid'
+        %th.sub= f.label :time_display
+        %td{class: cycle('even', 'odd')}= f.select :time_display, time_display_options(current_user.time_display)
+      %tr
+        %th.sub= f.label :layout
+        %td{class: cycle('even', 'odd')}= f.select :layout, layout_options(current_user.layout)
       %tr
         %th.sub Default view
         %td{class: cycle('even', 'odd')}
@@ -48,16 +55,6 @@
           %br
           = f.check_box :default_hide_retired_characters, class: 'width-15 vmid'
           = f.label :default_hide_retired_characters, "Hide retired characters", class: 'vmid'
-      %tr
-        %th.sub= f.label :default_editor
-        - editor_modes = { 'Rich Text': 'rtf', HTML: 'html', Markdown: 'md' }
-        %td{class: cycle('even', 'odd')}= f.select(:default_editor, options_for_select(editor_modes, current_user.default_editor))
-      %tr
-        %th.sub= f.label :layout
-        %td{class: cycle('even', 'odd')}= f.select :layout, layout_options(current_user.layout)
-      %tr
-        %th.sub= f.label :time_display
-        %td{class: cycle('even', 'odd')}= f.select :time_display, time_display_options(current_user.time_display)
       %tr
         %th.sub Unread
         %td{class: cycle('even', 'odd')}
@@ -70,25 +67,34 @@
           = f.check_box :hide_from_all, class: 'width-15 vmid'
           = f.label :hide_from_all, "Hide hidden posts from recently updated and other post lists", class: 'vmid'
       %tr
+        %th.sub Replies Owed
+        %td{class: cycle('even', 'odd')}
+          = f.check_box :hide_hiatused_tags_owed, class: 'width-15 vmid'
+          = f.label :hide_hiatused_tags_owed, "Hide hiatused threads", class: 'vmid'
+      %tr
         %th.sub Daily Report
         %td{class: cycle('even', 'odd')}
           = f.check_box :ignore_unread_daily_report, class: 'width-15 vmid'
           = f.label :ignore_unread_daily_report, "Hide unread notice", class: 'vmid'
+      %tr
+        %th.subber{colspan: 4} Posts
+      %tr
+        %th.sub= f.label :per_page, 'Paging'
+        %td{class: cycle('even', 'odd')}= f.select(:per_page, per_page_options(current_user.per_page))
       %tr
         %th.sub Warnings
         %td{class: cycle('even', 'odd')}
           = f.check_box :hide_warnings, class: 'width-15 vmid'
           = f.label :hide_warnings, "Hide content warnings", class: 'vmid'
       %tr
-        %th.sub Replies Owed
-        %td{class: cycle('even', 'odd')}
-          = f.check_box :hide_hiatused_tags_owed, class: 'width-15 vmid'
-          = f.label :hide_hiatused_tags_owed, "Hide hiatused threads", class: 'vmid'
+        %th.sub= f.label :default_editor
+        - editor_modes = { 'Rich Text': 'rtf', HTML: 'html', Markdown: 'md' }
+        %td{class: cycle('even', 'odd')}= f.select(:default_editor, options_for_select(editor_modes, current_user.default_editor))
       %tr
-        %th.sub Bookmarks
+        %th.sub Split icon picker
         %td{class: cycle('even', 'odd')}
-          = f.check_box :public_bookmarks, class: 'width-15 vmid'
-          = f.label :public_bookmarks, "Make all bookmarks public", class: 'vmid'
+          = f.check_box :icon_picker_grouping, class: 'width-15 vmid'
+          = f.label :icon_picker_grouping, "Group the icon picker by gallery", class: 'vmid'
       %tr
         %th.sub Character Quick Switcher
         %td{class: cycle('even', 'odd')}
@@ -96,7 +102,7 @@
           = f.label :show_user_in_switcher, "Show user character", class: 'vmid'
     %tfoot
       %tr
-        %th.form-table-ender{colspan: 2}= submit_tag "Save", class: 'button'
+        %th.form-table-ender{colspan: 4}= submit_tag "Save", class: 'button'
 
 %br
 = form_for current_user, url: password_user_path(current_user), method: :put, html: { id: 'change_password_form' } do |f|
