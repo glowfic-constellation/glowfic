@@ -120,6 +120,10 @@
 #holder {
   min-height: 100%;
   position: relative;
+
+  #content {
+    width: 100%;
+  }
 }
 
 @media (max-width: 600px) {
