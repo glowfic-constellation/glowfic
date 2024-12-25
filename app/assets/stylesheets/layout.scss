@@ -134,6 +134,9 @@
 
 .profile-table-cell { max-width: 0; }
 .profile-table-cell .padding-10 { overflow-x: scroll; }
+@media (max-width: 600px) {
+  .recent-posts { width: 100% !important; }
+}
 
 #content, #tos {
   padding: 20px;
