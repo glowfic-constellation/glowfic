@@ -144,7 +144,7 @@ class PostsController < WritableController
     @post.settings = process_tags(Setting, obj_param: :post, id_param: :setting_ids)
     @post.content_warnings = process_tags(ContentWarning, obj_param: :post, id_param: :content_warning_ids)
     @post.labels = process_tags(Label, obj_param: :post, id_param: :label_ids)
-    process_npc(@post, permitted_character_params)
+    process_npc(@post.written, permitted_character_params)
 
     begin
       @post.save!
@@ -247,7 +247,7 @@ class PostsController < WritableController
         @post.settings = settings
         @post.content_warnings = warnings
         @post.labels = labels
-        process_npc(@post, permitted_character_params)
+        process_npc(@post.written, permitted_character_params)
         @post.save!
         @post.author_for(current_user).update!(private_note: @post.private_note) if is_author
         @post.written.save!
@@ -371,7 +371,7 @@ class PostsController < WritableController
   def preview
     @post.board ||= Board.find_by_id(3)
 
-    process_npc(@post, permitted_character_params)
+    process_npc(@post.written, permitted_character_params)
 
     @author_ids = params.fetch(:post, {}).fetch(:unjoined_author_ids, [])
     @viewer_ids = params.fetch(:post, {}).fetch(:viewer_ids, [])
@@ -521,7 +521,6 @@ class PostsController < WritableController
       :authors_locked,
       :audit_comment,
       :private_note,
-      :editor_mode,
     ]
 
     # prevents us from setting (and saving) associations on preview()
@@ -542,6 +541,7 @@ class PostsController < WritableController
       :icon_id,
       :character_alias_id,
       :audit_comment,
+      :editor_mode,
     )
   end
 

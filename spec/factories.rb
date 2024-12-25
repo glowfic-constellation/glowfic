@@ -80,11 +80,11 @@ FactoryBot.define do
       # character_alias { nil }
       # icon { nil }
       # content { "test content" }
+      # editor_mode { 'rtf' }
     end
     user
     board
     description { "" }
-    editor_mode { 'rtf' }
     sequence :subject, ordered_numbers do |n|
       "test subject #{n}"
     end
@@ -99,6 +99,7 @@ FactoryBot.define do
       post.written.character = post.character
       post.written.character_alias = post.character_alias
       post.written.icon = post.icon
+      post.written.editor_mode = post.editor_mode
 
       post.written.character = create(:character, user: post.user) if evaluator.with_character
       post.written.icon = create(:icon, user: post.user) if evaluator.with_icon

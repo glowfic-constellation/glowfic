@@ -471,8 +471,10 @@ RSpec.describe PostsController, 'POST create' do
             setting_ids: setting_ids,
           },
           reply: {
+            content: 'foo',
             character_id: nil,
             icon_id: icon.id,
+            editor_mode: 'rtf',
           },
           character: {
             name: 'NPC',

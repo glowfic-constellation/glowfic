@@ -162,8 +162,12 @@ RSpec.describe PostsController, 'GET show' do
       Reply.auditing_enabled = true
       Post.auditing_enabled = true
 
-      replies = Audited.audit_class.as_user(post.user) do
-        create_list(:reply, 6, post: post, user: post.user)
+      post = Audited.audit_class.as_user(user) do
+        create(:post, user: user)
+      end
+
+      replies = Audited.audit_class.as_user(user) do
+        create_list(:reply, 6, post: post, user: user)
       end
 
       Audited.audit_class.as_user(post.user) do
@@ -216,7 +220,7 @@ RSpec.describe PostsController, 'GET show' do
       end
 
       it "works" do
-        post.mark_read(user, at_time: post.replies.ordered[2].created_at)
+        post.mark_read(user, at_time: post.replies.ordered[3].created_at)
         expect(post.first_unread_for(user)).to eq(second_last_reply)
         login_as(user)
         get :show, params: { id: post.id, at_id: 'unread', per_page: 1 }

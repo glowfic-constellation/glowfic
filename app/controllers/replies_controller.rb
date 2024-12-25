@@ -121,7 +121,7 @@ class RepliesController < WritableController
 
     @reply = Reply.new(permitted_params)
     @reply.user = current_user
-    process_npc(reply, permitted_character_params)
+    process_npc(@reply, permitted_character_params)
 
     if @reply.post.present?
       last_seen_reply_order = @reply.post.last_seen_reply_for(current_user).try(:reply_order)
@@ -161,11 +161,11 @@ class RepliesController < WritableController
     begin
       @reply.save!
     rescue ActiveRecord::RecordInvalid => e
-      render_errors(reply, action: 'created', now: true, err: e)
+      render_errors(@reply, action: 'created', now: true, err: e)
       redirect_to @reply.post ? post_path(@reply.post) : posts_path
     else
       flash[:success] = "Reply posted."
-      redirect_to reply_path(reply, anchor: "reply-#{reply.id}")
+      redirect_to reply_path(@reply, anchor: "reply-#{@reply.id}")
     end
   end
 

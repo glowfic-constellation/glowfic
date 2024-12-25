@@ -164,7 +164,7 @@ class UsersController < ApplicationController
     @replies = Reply.where(user: current_user)
       .where('created_at between ? AND ?', daystart, dayend)
       .order(post_id: :asc).ordered
-      .pluck(:content, :editor_mode)
+      .pluck(:content)
 
     @total = @replies.sum { |x| x.split.size }
   end

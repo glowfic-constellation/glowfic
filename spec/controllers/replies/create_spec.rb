@@ -68,7 +68,7 @@ RSpec.describe RepliesController, 'POST create' do
       templates = assigns(:templates)
       expect(templates.length).to eq(3)
       used = templates.first
-      expect(used.name).to eq("Thread characters")
+      expect(used.name).to eq("Post characters")
       expect(used.plucked_characters).to eq([[char1.id, char1.name]])
       expect(templates[1]).to eq(char2.template)
       templateless = templates.last
@@ -121,12 +121,12 @@ RSpec.describe RepliesController, 'POST create' do
       }.to change { Character.count }.by(1)
       expect(response).to render_template(:preview)
 
-      expect(assigns(:written)).to be_a_new_record
-      expect(assigns(:written).character).not_to be_a_new_record
-      expect(assigns(:written).character.name).to eq('NPC')
-      expect(assigns(:written).character).to be_npc
-      expect(assigns(:written).character.default_icon_id).to eq(icon.id)
-      expect(assigns(:written).character.nickname).to eq(reply_post.subject)
+      expect(assigns(:reply)).to be_a_new_record
+      expect(assigns(:reply).character).not_to be_a_new_record
+      expect(assigns(:reply).character.name).to eq('NPC')
+      expect(assigns(:reply).character).to be_npc
+      expect(assigns(:reply).character.default_icon_id).to eq(icon.id)
+      expect(assigns(:reply).character.nickname).to eq(reply_post.subject)
     end
   end
 

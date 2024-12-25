@@ -182,7 +182,7 @@ RSpec.describe RepliesController, 'PUT update' do
       templates = assigns(:templates)
       expect(templates.length).to eq(3)
       used = templates.first
-      expect(used.name).to eq("Thread characters")
+      expect(used.name).to eq("Post characters")
       expect(used.plucked_characters).to eq([[char.id, char.name]])
       expect(templates[1]).to eq(char2.template)
       templateless = templates.last
@@ -205,7 +205,7 @@ RSpec.describe RepliesController, 'PUT update' do
           character: { name: 'NPC', npc: true },
         }
       }.not_to change { Character.count }
-      written = assigns(:written)
+      written = assigns(:reply)
       expect(written.character.name).to eq('NPC')
       expect(written.character.nickname).to eq(reply.post.subject)
 
