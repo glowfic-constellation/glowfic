@@ -23,7 +23,7 @@ a:visited { color: $font_color_link_visited; }
 .form-table-ender { background-color: $bg_color_ender; }
 
 /* - content */
-#content .odd, #content .even, .post-post, .post-reply, .profile, #post-editor {
+#content .odd, .odd-row td, #content .even, .even-row td, .post-post, .post-reply, .profile, #post-editor {
   // stylelint-disable declaration-no-important
   background-color: $bg_color_even !important;
   border-top: solid 1px $bg_color_content_border;

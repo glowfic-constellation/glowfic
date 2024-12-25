@@ -82,12 +82,12 @@ a:visited { color: $font_color_link_visited; }
 }
 
 /* - content */
-.even, .post-post, .post-reply:nth-child(even), .profile, #post-editor {
+.even, .even-row td, .post-post, .post-reply:nth-child(even), .profile, #post-editor {
   background-color: $bg_color_even;
   blockquote { background-color: calculate-transparent-color($bg_color_even, $bg_color_odd, $opacity_blockquote); }
 }
 
-.odd, .post-reply:nth-child(odd), .post-post + #post-editor, .post-post + a + #post-editor {
+.odd, .odd-row td, .post-reply:nth-child(odd), .post-post + #post-editor, .post-post + a + #post-editor {
   background-color: $bg_color_odd;
   blockquote { background-color: calculate-transparent-color($bg_color_odd, $bg_color_even, $opacity_blockquote); }
 }

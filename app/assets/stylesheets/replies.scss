@@ -144,11 +144,11 @@ div.post-subheader { width: 100%; }
 /* Written content */
 /* - Blockquotes */
 /* -- Color on even/odd background */
-.even, .post-post, .post-reply:nth-child(even) {
+.even, .even-row td, .post-post, .post-reply:nth-child(even) {
   blockquote { background-color: calculate-transparent-color($bg_color_even, $bg_color_odd, $opacity_blockquote); }
 }
 
-.odd, .post-reply:nth-child(odd) {
+.odd, .odd-row td, .post-reply:nth-child(odd) {
   blockquote { background-color: calculate-transparent-color($bg_color_odd, $bg_color_even, $opacity_blockquote); }
 }
 

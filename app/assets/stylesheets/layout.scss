@@ -412,8 +412,8 @@ td, .table-list li { font-size: $font_size_small; }
   border-radius: 5px;
 }
 
-.even .tag-item { background-color: $bg_color_tag_item_even; }
-.odd .tag-item { background-color: $bg_color_tag_item_odd; }
+.even .tag-item, .even-row td .tag-item { background-color: $bg_color_tag_item_even; }
+.odd .tag-item, .odd-row td .tag-item { background-color: $bg_color_tag_item_odd; }
 tr.gallery-tags .tag-item { color: $font_color_tag_item_gallery; }
 
 /* The new object layout with the floating left info box and the right content area */

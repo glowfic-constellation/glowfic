@@ -122,11 +122,11 @@ a.disabled-arrow {
 }
 
 /* Displaying forum threads */
-.even, .odd, .post-post, .post-reply, .profile, #post-editor { padding: 5px; }
+.even, .even-row td, .odd, .odd-row td, .post-post, .post-reply, .profile, #post-editor { padding: 5px; }
 
-.even, .post-post, .post-reply:nth-child(even), .profile, #post-editor { background-color: $bg_color_even; }
+.even, .even-row td, .post-post, .post-reply:nth-child(even), .profile, #post-editor { background-color: $bg_color_even; }
 
-.odd, .post-reply:nth-child(odd), .post-post + #post-editor, .post-post + a + #post-editor { background-color: $bg_color_odd; }
+.odd, .odd-row td, .post-reply:nth-child(odd), .post-post + #post-editor, .post-post + a + #post-editor { background-color: $bg_color_odd; }
 
 /* UI Links */
 .link-box {

@@ -62,7 +62,7 @@ $bg_color_linkbox_subber: #5C5778;
 
 .flash.success, .flash.error { color: $font_color_flash; }
 
-body, .even, .odd, .post-post, .post-reply, .profile, #post-editor { color: $font_color_page; }
+body, .even, .even-row td, .odd, .odd-row td, .post-post, .post-reply, .profile, #post-editor { color: $font_color_page; }
 
 // posts
 #post-menu-box { color: $font_color_post_menu; }
@@ -77,8 +77,8 @@ body, .even, .odd, .post-post, .post-reply, .profile, #post-editor { color: $fon
 #character-icon-selector, .time-loaded { color: $font_color_page; }
 
 // tag items
-.even .tag-item { background-color: $bg_color_tag_item_even; }
-.odd .tag-item { background-color: $bg_color_tag_item_odd; }
+.even .tag-item, .even-row td .tag-item { background-color: $bg_color_tag_item_even; }
+.odd .tag-item, .odd-row td .tag-item { background-color: $bg_color_tag_item_odd; }
 .tag-item { color: $font_color_tag_item; }
 
 // Hovering help box on post editor
