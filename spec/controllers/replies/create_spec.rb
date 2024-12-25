@@ -68,7 +68,7 @@ RSpec.describe RepliesController, 'POST create' do
       templates = assigns(:templates)
       expect(templates.length).to eq(3)
       used = templates.first
-      expect(used.name).to eq("Thread characters")
+      expect(used.name).to eq("Post characters")
       expect(used.plucked_characters).to eq([[char1.id, char1.name]])
       expect(templates[1]).to eq(char2.template)
       templateless = templates.last

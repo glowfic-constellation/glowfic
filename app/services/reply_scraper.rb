@@ -61,11 +61,10 @@ class ReplyScraper < Object
     @reply.written.content = @reply.content
     @reply.written.character = @reply.character
     @reply.written.icon = @reply.icon
-    @reply.written.created_at = @reply.written.updated_at = created_at
+    @reply.written.created_at = @reply.written.updated_at = @reply.created_at
     @reply.last_user_id = @reply.user_id
     @reply.edited_at = @reply.created_at
     @reply.last_user_id = @reply.user_id
-    @reply.edited_at = @reply.created_at
   end
 
   def set_from_username(username)

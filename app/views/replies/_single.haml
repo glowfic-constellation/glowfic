@@ -41,21 +41,20 @@
         - else
           = link_to post_or_reply_link(reply), rel: 'alternate'.freeze do
             = image_tag "icons/link.png".freeze, title: 'Permalink'.freeze, alt: 'Permalink'.freeze
-<<<<<<< HEAD
           - if !current_user.try(:default_hide_edit_delete_buttons) || params[:show_all_reply_buttons] == "true"
             - if reply.order == 0
               - if reply.post.metadata_editable_by?(current_user)
-                = link_to path_for(reply.post, 'edit_%s') do
+                = link_to edit_post_path(reply.post) do
                   = image_tag "icons/pencil.png".freeze, title: 'Edit'.freeze, alt: 'Edit'.freeze
               - if reply.post.deletable_by?(current_user)
-                = link_to path_for(reply.post, '%s'), method: :delete, data: { confirm: "Are you sure you wish to delete this post?" } do
+                = link_to post_path(reply.post), method: :delete, data: { confirm: "Are you sure you wish to delete this post?" } do
                   = image_tag "icons/cross.png".freeze, title: 'Delete'.freeze, alt: 'Delete'.freeze
             - else
               - if reply.editable_by?(current_user)
-                = link_to path_for(reply, 'edit_%s') do
+                = link_to edit_reply_path(reply) do
                   = image_tag "icons/pencil.png".freeze, title: 'Edit'.freeze, alt: 'Edit'.freeze
               - if reply.deletable_by?(current_user)
-                = link_to path_for(reply, '%s'), method: :delete, data: { confirm: "Are you sure you wish to delete this reply?" } do
+                = link_to reply_path(reply), method: :delete, data: { confirm: "Are you sure you wish to delete this reply?" } do
                   = image_tag "icons/cross.png".freeze, title: 'Delete'.freeze, alt: 'Delete'.freeze
             - if logged_in?
               - if !current_user.try(:default_hide_add_bookmark_button) || params[:show_all_reply_buttons] == "true"

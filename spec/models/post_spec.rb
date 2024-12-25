@@ -1060,7 +1060,7 @@ RSpec.describe Post do
           created_at: post.created_at,
           tagged_at: post.tagged_at,
           status: :active,
-          num_replies: 0,
+          num_replies: 1,
         }
       end
 
@@ -1070,26 +1070,6 @@ RSpec.describe Post do
 
       it "works with min" do
         expect(post.as_json(min: true)).to match_hash({ id: post.id, subject: post.subject })
-      end
-
-      it "works with include content" do
-        json[:content] = post.content
-        expect(post.as_json(include: [:content])).to match_hash(json)
-      end
-
-      it "works with include character" do
-        json[:character] = nil
-        expect(post.as_json(include: [:character])).to match_hash(json)
-      end
-
-      it "works with include icon" do
-        json[:icon] = nil
-        expect(post.as_json(include: [:icon])).to match_hash(json)
-      end
-
-      it "works with all" do
-        json.merge!({ content: post.content, character: nil, icon: nil })
-        expect(post.as_json(include: [:content, :character, :icon])).to match_hash(json)
       end
     end
 
@@ -1125,23 +1105,7 @@ RSpec.describe Post do
           created_at: post.created_at,
           tagged_at: post.tagged_at,
           status: :active,
-          num_replies: 3,
-        }
-      end
-
-      let(:char_json) do
-        {
-          id: character.id,
-          name: character.name,
-          screenname: character.screenname,
-        }
-      end
-
-      let(:icon_json) do
-        {
-          id: post.icon_id,
-          url: post.icon.url,
-          keyword: post.icon.keyword,
+          num_replies: 4,
         }
       end
 
@@ -1157,26 +1121,6 @@ RSpec.describe Post do
 
       it "works with min" do
         expect(post.as_json(min: true)).to match_hash({ id: post.id, subject: post.subject })
-      end
-
-      it "works with include content" do
-        json[:content] = post.content
-        expect(post.as_json(include: [:content])).to match_hash(json)
-      end
-
-      it "works with include character" do
-        json[:character] = char_json
-        expect(post.as_json(include: [:character])).to match_hash(json)
-      end
-
-      it "works with include icon" do
-        json[:icon] = icon_json
-        expect(post.as_json(include: [:icon])).to match_hash(json)
-      end
-
-      it "works with all" do
-        json.merge!({ content: post.content, character: char_json, icon: icon_json })
-        expect(post.as_json(include: [:content, :character, :icon])).to match_hash(json)
       end
     end
   end

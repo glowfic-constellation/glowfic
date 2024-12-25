@@ -2,10 +2,10 @@
 
 = form_for post, html: { id: 'post_form' } do |f|
   - content_for :form do
-    - unless post.id.present? && !post.editable_by?(current_user)
-      %button.view-button#rtf{type: 'button', class: ('selected' if @post.editor_mode == 'rtf')} Rich Text
-      %button.view-button#md{type: 'button', class: ('selected' if @post.editor_mode == 'md')} Markdown
-      %button.view-button#html{type: 'button', class: ('selected' if @post.editor_mode == 'html')} HTML
+    - unless post.id.present? && !post.written.editable_by?(current_user)
+      %button.view-button#rtf{type: 'button', class: ('selected' if @post.written.editor_mode == 'rtf')} Rich Text
+      %button.view-button#md{type: 'button', class: ('selected' if @post.written.editor_mode == 'md')} Markdown
+      %button.view-button#html{type: 'button', class: ('selected' if @post.written.editor_mode == 'html')} HTML
       %button.view-button#editor-help{type: 'button', title: 'Help'} ?
     = f.label :subject, 'Subject:'
     = f.text_field :subject, placeholder: 'Subject'
@@ -87,7 +87,7 @@
       = f.text_area :private_note, value: params[:post].try(:[], :private_note) || post.author_for(current_user)&.private_note
 
   .subber Content
-  - if post.id.present? && !post.editable_by?(current_user)
+  - if post.id.present? && !post.written.editable_by?(current_user)
     #post-editor.padding-10= yield :form
     .subber.centered= yield :buttons
   - else

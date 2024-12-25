@@ -40,9 +40,9 @@ class Icon < ApplicationRecord
 
   def self.times_used(icons, user)
     replies = Reply.visible_to(user).where(icon_id: icons.map(&:id))
-    @times_used = replies.select(:icon_id).group(:icon_id).count
+    times_used = replies.select(:icon_id).group(:icon_id).count
     post_ids = replies.select(:icon_id, :post_id).distinct.pluck(:icon_id, :post_id)
-    @posts_used = post_ids.uniq.group_by(&:first).transform_values(&:size)
+    posts_used = post_ids.uniq.group_by(&:first).transform_values(&:size)
     [times_used, posts_used]
   end
 

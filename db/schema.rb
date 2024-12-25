@@ -366,6 +366,7 @@ ActiveRecord::Schema[8.0].define(version: 2026_07_08_000000) do
     t.datetime "tagged_at", precision: nil
     t.boolean "authors_locked", default: false
     t.integer "character_alias_id"
+    t.string "editor_mode"
     t.index "to_tsvector('english'::regconfig, COALESCE((subject)::text, ''::text))", name: "idx_fts_post_subject", using: :gin
     t.index "to_tsvector('english'::regconfig, COALESCE(content, ''::text))", name: "idx_fts_post_content", using: :gin
     t.index ["board_id"], name: "index_posts_on_board_id"

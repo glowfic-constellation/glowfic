@@ -888,9 +888,11 @@ RSpec.describe PostsController, 'PUT update' do
           id: post.id,
           post: {
             board_id: board.id,
+            setting_ids: [setting.id],
+          },
+          reply: {
             character_id: nil,
             icon_id: icon.id,
-            setting_ids: [setting.id],
           },
           character: {
             name: 'NPC',
@@ -903,6 +905,8 @@ RSpec.describe PostsController, 'PUT update' do
 
       post = assigns(:post).reload
       expect(post.written.character_id).not_to eq(templateless_character.id)
+      expect(post.written.character_id).not_to be_nil
+
       expect(post.written.icon_id).to eq(icon.id)
 
       character = post.written.character.reload
