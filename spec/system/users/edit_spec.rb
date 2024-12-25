@@ -18,7 +18,19 @@ RSpec.describe "Editing account settings" do
     login(user, 'known')
     visit edit_user_path(user)
     expect(page).to have_no_selector('.error')
-    expect(page).to have_selector('.editor-title', exact_text: 'Account Settings')
+    expect(page).to have_selector('.editor-title', exact_text: 'Settings')
+
+    hide_edit_delete_buttons = find_by_id("user_default_hide_edit_delete_buttons")
+    hide_add_bookmark_button = find_by_id('user_default_hide_add_bookmark_button')
+    hide_edit_delete_buttons.click
+    within("#edit_user_#{user.id}") { click_button 'Save' }
+    expect(hide_edit_delete_buttons).to be_checked
+    expect(hide_add_bookmark_button).not_to be_checked
+    hide_add_bookmark_button.click
+    hide_edit_delete_buttons.click
+    within("#edit_user_#{user.id}") { click_button 'Save' }
+    expect(hide_edit_delete_buttons).not_to be_checked
+    expect(hide_add_bookmark_button).to be_checked
 
     # TODO all fields
     # within("#edit_user_#{user.id}") do
