@@ -21,81 +21,83 @@
   - else
     %b Stats
 
-%table.left-info-box.icon-info-box
-  %tr
-    %th.info-box-header.icon-keyword= @icon.keyword
-  %tr
-    %td.icons-box.centered.icon-icon= icon_tag @icon
-  - if @icon.credit
-    %tr
-      %td.icon-credit
-        .details= sanitize_simple_link_text(@icon.credit)
-  %tr
-    %td.centered{class: cycle('even', 'odd')}
-      = link_to icon_path(@icon, view: 'stats') do
-        = image_tag "icons/chart_bar.png", alt: ''
-        Stats
-  %tr
-    %td.centered{class: cycle('even', 'odd')}
-      = link_to icon_path(@icon, view: 'galleries') do
-        = image_tag "icons/photos.png", alt: ''
-        &nbsp;Galleries
-  %tr
-    %td.centered{class: cycle('even', 'odd')}
-      = link_to icon_path(@icon, view: 'posts') do
-        = image_tag "icons/book_open.png", alt: ''
-        Posts
-  %tr
-    %td.centered{class: cycle('even', 'odd')}
-      = link_to search_replies_path(commit: true, icon_id: @icon.id, sort: :created_new) do
-        = image_tag "icons/table_multiple.png", alt: ''
-        Replies
-  - if @icon.user_id == current_user.try(:id)
-    %tr
-      %td.centered{class: cycle('even', 'odd')}
-        = link_to edit_icon_path(@icon) do
-          = image_tag "icons/pencil.png", alt: ''
-          Edit Icon
-    %tr
-      %td.centered{class: cycle('even', 'odd')}
-        = link_to avatar_icon_path(@icon), method: :post do
-          = image_tag "icons/status_online.png", alt: ''
-          Make Avatar
-    %tr
-      %td.centered{class: cycle('even', 'odd')}
-        = link_to replace_icon_path(@icon) do
-          = image_tag "icons/swap.png", style: 'width: 16px;', alt: ''
-          Replace Icon
-    %tr
-      %td.centered{class: cycle('even', 'odd')}
-        = link_to @icon, method: :delete, data: { confirm: 'Are you sure you want to delete this icon?' } do
-          = image_tag "icons/cross.png", alt: ''
-          Delete Icon
 
-- if params[:view] == 'galleries'
-  %table.icon-right-content-box
-    %thead
+%div
+  %table.left-info-box.icon-info-box
+    %tr
+      %th.info-box-header.icon-keyword= @icon.keyword
+    %tr
+      %td.icons-box.centered.icon-icon= icon_tag @icon
+    - if @icon.credit
       %tr
-        %th.table-title Galleries
-    - if @galleries.present?
-      = render partial: 'galleries/single', collection: @galleries, as: :gallery, locals: { klass: 'subber', skip_forms: true, is_owner: @icon.user == current_user }
-    - else
+        %td.icon-credit
+          .details= sanitize_simple_link_text(@icon.credit)
+    %tr
+      %td.centered{class: cycle('even', 'odd')}
+        = link_to icon_path(@icon, view: 'stats') do
+          = image_tag "icons/chart_bar.png", alt: ''
+          Stats
+    %tr
+      %td.centered{class: cycle('even', 'odd')}
+        = link_to icon_path(@icon, view: 'galleries') do
+          = image_tag "icons/photos.png", alt: ''
+          &nbsp;Galleries
+    %tr
+      %td.centered{class: cycle('even', 'odd')}
+        = link_to icon_path(@icon, view: 'posts') do
+          = image_tag "icons/book_open.png", alt: ''
+          Posts
+    %tr
+      %td.centered{class: cycle('even', 'odd')}
+        = link_to search_replies_path(commit: true, icon_id: @icon.id, sort: :created_new) do
+          = image_tag "icons/table_multiple.png", alt: ''
+          Replies
+    - if @icon.user_id == current_user.try(:id)
+      %tr
+        %td.centered{class: cycle('even', 'odd')}
+          = link_to edit_icon_path(@icon) do
+            = image_tag "icons/pencil.png", alt: ''
+            Edit Icon
+      %tr
+        %td.centered{class: cycle('even', 'odd')}
+          = link_to avatar_icon_path(@icon), method: :post do
+            = image_tag "icons/status_online.png", alt: ''
+            Make Avatar
+      %tr
+        %td.centered{class: cycle('even', 'odd')}
+          = link_to replace_icon_path(@icon) do
+            = image_tag "icons/swap.png", style: 'width: 16px;', alt: ''
+            Replace Icon
+      %tr
+        %td.centered{class: cycle('even', 'odd')}
+          = link_to @icon, method: :delete, data: { confirm: 'Are you sure you want to delete this icon?' } do
+            = image_tag "icons/cross.png", alt: ''
+            Delete Icon
+
+  - if params[:view] == 'galleries'
+    %table.icon-right-content-box
+      %thead
+        %tr
+          %th.table-title Galleries
+      - if @galleries.present?
+        = render partial: 'galleries/single', collection: @galleries, as: :gallery, locals: { klass: 'subber', skip_forms: true, is_owner: @icon.user == current_user }
+      - else
+        %tbody
+          %tr
+            %td.even.centered — No galleries yet —
+  - elsif params[:view] == 'posts'
+    - content_for :posts_title do
+      Posts Containing Icon
+    = render 'posts/list', posts: @posts, table_class: 'icon-right-content-box'
+  - else
+    %table.icon-right-content-box
+      %thead
+        %tr
+          %th.table-title{colspan: 2} Stats
       %tbody
         %tr
-          %td.even.centered — No galleries yet —
-- elsif params[:view] == 'posts'
-  - content_for :posts_title do
-    Posts Containing Icon
-  = render 'posts/list', posts: @posts, table_class: 'icon-right-content-box'
-- else
-  %table.icon-right-content-box
-    %thead
-      %tr
-        %th.table-title{colspan: 2} Stats
-    %tbody
-      %tr
-        %th.sub.width-150 Times Used
-        %td.even= @times_used.to_s
-      %tr
-        %th.sub.width-150 Posts In
-        %td.even= @posts_used
+          %th.sub.width-150 Times Used
+          %td.even= @times_used.to_s
+        %tr
+          %th.sub.width-150 Posts In
+          %td.even= @posts_used
