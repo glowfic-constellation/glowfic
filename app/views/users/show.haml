@@ -1,6 +1,6 @@
 = render 'warnings', user: @user
 
-%span
+%div
   = render 'infobox', user: @user
 
   - is_current_user = @user.id == current_user.try(:id)
