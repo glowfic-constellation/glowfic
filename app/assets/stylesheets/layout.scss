@@ -132,6 +132,9 @@
   }
 }
 
+.profile-table-cell { max-width: 0; }
+.profile-table-cell .padding-10 { overflow-x: scroll; }
+
 #content, #tos {
   padding: 20px;
   font-size: $font_size_main;
