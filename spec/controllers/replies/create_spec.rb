@@ -43,13 +43,13 @@ RSpec.describe RepliesController, 'POST create' do
       expect(response).to render_template(:preview)
       expect(assigns(:javascripts)).to include('posts/editor')
       expect(assigns(:page_title)).to eq(reply_post.subject)
-      expect(assigns(:written)).to be_a_new_record
-      expect(assigns(:written).post).to eq(reply_post)
-      expect(assigns(:written).user).to eq(reply_post.user)
-      expect(assigns(:written).content).to eq('example')
-      expect(assigns(:written).character).to eq(char1)
-      expect(assigns(:written).icon).to eq(icon)
-      expect(assigns(:written).character_alias).to eq(calias)
+      expect(assigns(:reply)).to be_a_new_record
+      expect(assigns(:reply).post).to eq(reply_post)
+      expect(assigns(:reply).user).to eq(reply_post.user)
+      expect(assigns(:reply).content).to eq('example')
+      expect(assigns(:reply).character).to eq(char1)
+      expect(assigns(:reply).icon).to eq(icon)
+      expect(assigns(:reply).character_alias).to eq(calias)
       expect(assigns(:post)).to eq(reply_post)
       expect(ReplyDraft.count).to eq(1)
       draft = ReplyDraft.last
@@ -66,9 +66,11 @@ RSpec.describe RepliesController, 'POST create' do
       expect(controller.gon.editor_user[:username]).to eq(user.username)
       # templates
       templates = assigns(:templates)
-      expect(templates.length).to eq(2)
-      template = templates.first
-      expect(template).to eq(char2.template)
+      expect(templates.length).to eq(3)
+      used = templates.first
+      expect(used.name).to eq("Post characters")
+      expect(used.plucked_characters).to eq([[char1.id, char1.name]])
+      expect(templates[1]).to eq(char2.template)
       templateless = templates.last
       expect(templateless.name).to eq('Templateless')
       expect(templateless.plucked_characters).to eq([[char1.id, char1.name]])
@@ -119,12 +121,12 @@ RSpec.describe RepliesController, 'POST create' do
       }.to change { Character.count }.by(1)
       expect(response).to render_template(:preview)
 
-      expect(assigns(:written)).to be_a_new_record
-      expect(assigns(:written).character).not_to be_a_new_record
-      expect(assigns(:written).character.name).to eq('NPC')
-      expect(assigns(:written).character).to be_npc
-      expect(assigns(:written).character.default_icon_id).to eq(icon.id)
-      expect(assigns(:written).character.nickname).to eq(reply_post.subject)
+      expect(assigns(:reply)).to be_a_new_record
+      expect(assigns(:reply).character).not_to be_a_new_record
+      expect(assigns(:reply).character.name).to eq('NPC')
+      expect(assigns(:reply).character).to be_npc
+      expect(assigns(:reply).character.default_icon_id).to eq(icon.id)
+      expect(assigns(:reply).character.nickname).to eq(reply_post.subject)
     end
   end
 
@@ -595,7 +597,7 @@ RSpec.describe RepliesController, 'POST create' do
 
     reply = reply_post.replies.ordered.last
     expect(reply.content).to eq(searchable)
-    expect(reply.reply_order).to eq(0)
+    expect(reply.reply_order).to eq(1)
   end
 
   it "sets reply_order correctly with an existing reply" do
@@ -615,7 +617,7 @@ RSpec.describe RepliesController, 'POST create' do
 
     reply = reply_post.replies.ordered.last
     expect(reply.content).to eq(searchable)
-    expect(reply.reply_order).to eq(1)
+    expect(reply.reply_order).to eq(2)
   end
 
   it "sets reply_order correctly with multiple existing replies" do
@@ -636,6 +638,6 @@ RSpec.describe RepliesController, 'POST create' do
 
     reply = reply_post.replies.ordered.last
     expect(reply.content).to eq(searchable)
-    expect(reply.reply_order).to eq(2)
+    expect(reply.reply_order).to eq(3)
   end
 end

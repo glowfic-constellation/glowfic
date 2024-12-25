@@ -10,7 +10,8 @@
 
     - audits.each do |audit|
       - cur = audited.revision(audit.version)
-      - cur.id = nil # hides the permalink buttons
+      - content = cur.is_a?(Post) ? cur.written : cur
+      - content.id = nil # hides the permalink buttons
       - reset_cycle
       %tr.bg.spacer{style: 'height:20px;'}
       %tr
@@ -70,4 +71,4 @@
               .content-header= cur.subject
               - if cur.description.present?
                 .post-subheader= sanitize_simple_link_text(cur.description)
-            = render 'replies/single', reply: cur, hide_footer: true
+            = render 'replies/single', reply: content, hide_footer: true

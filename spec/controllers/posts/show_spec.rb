@@ -120,33 +120,6 @@ RSpec.describe PostsController, 'GET show' do
     end
   end
 
-  it "calculates audits" do
-    Reply.auditing_enabled = true
-    Post.auditing_enabled = true
-
-    replies = Audited.audit_class.as_user(post.user) do
-      create_list(:reply, 6, post: post, user: post.user)
-    end
-
-    Audited.audit_class.as_user(post.user) do
-      replies[1].touch # rubocop:disable Rails/SkipsModelValidations
-      replies[3].update!(character: create(:character, user: post.user))
-      replies[2].update!(content: 'new content')
-      1.upto(5) { |i| replies[4].update!(content: 'message' + i.to_s) }
-    end
-    Audited.audit_class.as_user(create(:mod_user)) do
-      replies[5].update!(content: 'new content')
-    end
-
-    counts = replies.map(&:id).zip([1, 1, 2, 2, 6, 2]).to_h
-    counts[:post] = 1
-
-    get :show, params: { id: post.id }
-    expect(assigns(:audits)).to eq(counts)
-    Reply.auditing_enabled = false
-    Post.auditing_enabled = false
-  end
-
   context "with render_views" do
     let!(:post) { create(:post, with_icon: true, with_character: true) }
     let!(:reply) { create(:reply, post: post, with_icon: true, with_character: true) }
@@ -184,6 +157,37 @@ RSpec.describe PostsController, 'GET show' do
       get :show, params: { id: post.id }
       expect(response.status).to eq(200)
     end
+
+    it "calculates audits" do
+      Reply.auditing_enabled = true
+      Post.auditing_enabled = true
+
+      post = Audited.audit_class.as_user(user) do
+        create(:post, user: user)
+      end
+
+      replies = Audited.audit_class.as_user(user) do
+        create_list(:reply, 6, post: post, user: user)
+      end
+
+      Audited.audit_class.as_user(post.user) do
+        replies[1].touch # rubocop:disable Rails/SkipsModelValidations
+        replies[3].update!(character: create(:character, user: post.user))
+        replies[2].update!(content: 'new content')
+        1.upto(5) { |i| replies[4].update!(content: 'message' + i.to_s) }
+      end
+      Audited.audit_class.as_user(create(:mod_user)) do
+        replies[5].update!(content: 'new content')
+      end
+
+      counts = replies.map(&:id).zip([1, 1, 2, 2, 6, 2]).to_h
+      counts[:post] = 1
+
+      get :show, params: { id: post.id }
+      expect(assigns(:audits)).to eq(counts)
+      Reply.auditing_enabled = false
+      Post.auditing_enabled = false
+    end
   end
 
   context "with at_id" do
@@ -216,7 +220,7 @@ RSpec.describe PostsController, 'GET show' do
       end
 
       it "works" do
-        post.mark_read(user, at_time: post.replies.ordered[2].created_at)
+        post.mark_read(user, at_time: post.replies.ordered[3].created_at)
         expect(post.first_unread_for(user)).to eq(second_last_reply)
         login_as(user)
         get :show, params: { id: post.id, at_id: 'unread', per_page: 1 }
@@ -255,6 +259,19 @@ RSpec.describe PostsController, 'GET show' do
         expect(assigns(:replies).current_page.to_i).to eq(2)
         expect(assigns(:replies).per_page).to eq(1)
       end
+    end
+
+    it "works for unread" do
+      third_reply = post.replies.ordered[3]
+      second_last_reply = post.replies.ordered[-2]
+      user = create(:user)
+      post.mark_read(user, at_time: third_reply.created_at)
+      expect(post.first_unread_for(user)).to eq(second_last_reply)
+      login_as(user)
+      get :show, params: { id: post.id, at_id: 'unread', per_page: 1 }
+      expect(assigns(:replies)).to eq([second_last_reply])
+      expect(assigns(:unread)).to eq(second_last_reply)
+      expect(assigns(:paginate_params)['at_id']).to eq(second_last_reply.id)
     end
   end
 

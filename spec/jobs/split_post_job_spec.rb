@@ -33,9 +33,9 @@ RSpec.describe SplitPostJob do
 
       post = Post.last
       expect(post.subject).to eq(title)
-      expect(post.replies.count).to eq(0)
+      expect(post.replies.count).to eq(1)
       expect(post.content).to eq(reply.content)
-      expect(Reply.find_by(id: reply.id)).not_to be_present
+      expect(reply.reload).to eq(post.written)
     end
   end
 
@@ -50,17 +50,17 @@ RSpec.describe SplitPostJob do
     100.times { |i| create(:reply, post: post, user: i.even? ? user : coauthor) }
     create(:reply, post: post, user: new_user)
 
-    previous = post.replies.find_by(reply_order: 49)
-    reply = post.replies.find_by(reply_order: 50)
-    next_reply = post.replies.find_by(reply_order: 51)
+    previous = post.replies.find_by(reply_order: 50)
+    reply = post.replies.find_by(reply_order: 51)
+    next_reply = post.replies.find_by(reply_order: 52)
     last = post.replies.last
 
     expect {
       SplitPostJob.perform_now(reply.id, title)
-    }.to change { Post.count }.by(1).and change { Reply.count }.by(-1)
+    }.to change { Post.count }.by(1).and not_change { Reply.count }
 
     post.reload
-    expect(post.replies.count).to eq(50)
+    expect(post.replies.count).to eq(51)
     expect(post.replies.ordered.last).to eq(previous)
     expect(post.last_reply_id).to eq(previous.id)
     expect(post.last_user_id).to eq(previous.user_id)
@@ -69,15 +69,16 @@ RSpec.describe SplitPostJob do
 
     new_post = Post.last
     expect(new_post.subject).to eq(title)
-    expect(new_post.replies.count).to eq(51)
+    expect(new_post.replies.count).to eq(52)
     expect(new_post.content).to eq(reply.content)
     expect(new_post.user_id).to eq(reply.user.id)
     expect(new_post.authors).to match_array([user, coauthor, new_user])
     expect(new_post.last_reply_id).to eq(last.id)
     expect(new_post.last_user_id).to eq(last.user_id)
     expect(new_post.tagged_at).to eq(last.created_at)
-    expect(new_post.replies.ordered.first).to eq(next_reply)
-    expect(Reply.find_by(id: reply.id)).not_to be_present
+    expect(new_post.replies.ordered.first).to eq(reply)
+    expect(new_post.replies.ordered.second).to eq(next_reply)
+    expect(reply.reload).to eq(new_post.written)
   end
 
   it "copies original post's properties" do
@@ -93,7 +94,7 @@ RSpec.describe SplitPostJob do
 
     expect {
       SplitPostJob.perform_now(reply.id, title)
-    }.to change { Post.count }.by(1).and change { Reply.count }.by(-1)
+    }.to change { Post.count }.by(1).and not_change { Reply.count }
 
     new_post = Post.last
     expect(new_post.board).to eq(board)
@@ -113,13 +114,13 @@ RSpec.describe SplitPostJob do
     other_post = create(:post, num_replies: 10)
 
     expect {
-      SplitPostJob.perform_now(post.replies.find_by(reply_order: 5).id, title)
-    }.to change { Post.count }.by(1).and change { Reply.count }.by(-1)
+      SplitPostJob.perform_now(post.replies.find_by(reply_order: 6).id, title)
+    }.to change { Post.count }.by(1).and not_change { Reply.count }
 
     new_post = Post.last
 
-    expect(post.replies.count).to eq(5)
-    expect(new_post.replies.count).to eq(4)
-    expect(other_post.replies.count).to eq(10)
+    expect(post.replies.count).to eq(6)
+    expect(new_post.replies.count).to eq(5)
+    expect(other_post.replies.count).to eq(11)
   end
 end

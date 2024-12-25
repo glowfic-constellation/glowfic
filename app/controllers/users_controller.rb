@@ -161,19 +161,12 @@ class UsersController < ApplicationController
     daystart = @day.beginning_of_day
     dayend = @day.end_of_day
 
-    @posts, @replies = [Post, Reply].map do |klass|
-      klass.where(user: current_user).where('created_at between ? AND ?', daystart, dayend)
-    end
-    @posts = @posts.ordered_by_id.pluck(:content, :editor_mode)
-    @replies = @replies.order(post_id: :asc).ordered.pluck(:content, :editor_mode)
+    @replies = Reply.where(user: current_user)
+      .where('created_at between ? AND ?', daystart, dayend)
+      .order(post_id: :asc).ordered
+      .pluck(:content)
 
-    @total = (@posts + @replies).map { |x, _| x }
-    if @total.empty?
-      @total = 0
-    else
-      @total[0] = @total[0].split.size
-      @total = @total.inject { |r, e| r + e.split.size }.to_i
-    end
+    @total = @replies.sum { |x| x.split.size }
   end
 
   private
