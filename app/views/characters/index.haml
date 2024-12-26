@@ -63,6 +63,8 @@
     = submit_tag "Search", class: 'button'
 
 - content_for :split_view do
+  - colspan = 1 if page_view == 'icon'
+  - colspan ||= (character_split == 'none') ? 8 : 7
   - partial_type = (page_view == 'list') ? 'characters/list_section' : 'characters/icon_view'
   - if @group
     = render 'group', group: @group, page_view: page_view, colspan: colspan
