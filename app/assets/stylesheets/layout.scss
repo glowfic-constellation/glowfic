@@ -137,7 +137,7 @@
 }
 
 .profile-table-cell { max-width: 0; }
-.profile-table-cell .padding-10 { overflow-x: scroll; }
+.profile-table-cell .padding-10 { overflow-x: auto; }
 @media (max-width: 600px) {
   .recent-posts { width: 100% !important; }
 }
