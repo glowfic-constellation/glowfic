@@ -78,7 +78,7 @@ RSpec.describe "Listing characters" do
         else
           'Ungrouped Characters'
         end
-        expect(page).to have_selector('tr', text: text)
+        expect(page).to have_selector('.sub', text: text)
       end
 
       group_data[:templates].each do |data|
@@ -87,7 +87,7 @@ RSpec.describe "Listing characters" do
         else
           'No Template'
         end
-        expect(page).to have_selector('tr', text: text)
+        expect(page).to have_selector('.subber', text: text)
       end
     end
 
