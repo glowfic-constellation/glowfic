@@ -1,17 +1,17 @@
 -# locals: ( gallery:, tag: nil )
 
-%tr{id: "gallery-#{gallery.id}"}
+%div{id: "gallery-#{gallery.id}"}
   - klass = cycle('even', 'odd')
-  %td.gallery-name{class: klass}
+  .gallery-name{class: klass}
     = link_to gallery.name, gallery_path(gallery)
     .tag-box
       - gallery.gallery_groups_data.each do |group|
         - next if group == @tag
         = link_to tag_path(group.id), class: 'tag-item-link' do
-          %span.tag-item.semiplusopaque
+          %span.tag-item
             = group.name
-  %td.width-150.centered.gallery-icon-count{class: klass}= gallery.icon_count
-  %td.width-70.gallery-buttons{class: klass}
+  .gallery-icon-count{class: klass}= gallery.icon_count
+  .gallery-buttons{class: klass}
     - if gallery.user_id == current_user.try(:id)
       = link_to add_gallery_path(gallery), title: "Add Icons", class: 'gallery-add' do
         = image_tag "icons/add.png", alt: 'Add Icons'
@@ -19,21 +19,20 @@
         = image_tag "icons/pencil.png", alt: 'Edit'
       = link_to gallery_path(gallery), title: "Delete Gallery", method: :delete, data: { confirm: "Are you sure you want to delete #{gallery.name}?" }, class: 'gallery-delete' do
         = image_tag "icons/cross.png", alt: 'Delete'
-  %td.centered.width-70{class: klass}
-    .gallery-box.vmid{id: "minmax-#{gallery.id}", style: 'display: inline-block;', data: { id: gallery.id }}
-      .view-button{style: 'padding: 5px 7px;'}
-        = image_tag "icons/bullet_arrow_down.png", class: 'vmid down-arrow', alt: 'Show'
-        = image_tag "icons/bullet_arrow_up.png", class: 'vmid hidden up-arrow', alt: 'Hide'
-%tr
-  %td.padding-5.hidden{class: klass, id: "icons-#{gallery.id}", colspan: 4}
-    = form_tag delete_multiple_icons_path, method: :delete do
-      .gallery{style: 'padding: 0px;'}
-      - if gallery.user_id == current_user.try(:id)
-        .clear.centered.icons-remove
-          = hidden_field_tag :gallery_id, gallery.id, id: nil
-          - if tag.nil?
-            = hidden_field_tag :return_to, 'index', id: nil
-          - else
-            = hidden_field_tag :return_tag, tag.id, id: nil
-          = submit_tag "- Remove selected icons from gallery", name: 'gallery_delete'
-          = submit_tag "x Delete selected icons permanently", data: { confirm: "Are you sure? These icons will be gone from the site!" }
+  .gallery-expand{class: klass}
+    .gallery-box{id: "minmax-#{gallery.id}", data: { id: gallery.id }}
+      .view-button
+        = image_tag "icons/bullet_arrow_down.png", class: 'down-arrow', alt: 'Show'
+        = image_tag "icons/bullet_arrow_up.png", class: 'hidden up-arrow', alt: 'Hide'
+.delete-form{class: klass, id: "icons-#{gallery.id}", colspan: 4}
+  = form_tag delete_multiple_icons_path, method: :delete do
+    .gallery
+    - if gallery.user_id == current_user.try(:id)
+      .icons-remove
+        = hidden_field_tag :gallery_id, gallery.id, id: nil
+        - if tag.nil?
+          = hidden_field_tag :return_to, 'index', id: nil
+        - else
+          = hidden_field_tag :return_tag, tag.id, id: nil
+        = submit_tag "- Remove selected icons from gallery", name: 'gallery_delete'
+        = submit_tag "x Delete selected icons permanently", data: { confirm: "Are you sure? These icons will be gone from the site!" }

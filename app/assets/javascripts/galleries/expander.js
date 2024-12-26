@@ -9,12 +9,6 @@ $(document).ready(function() {
     displayGallery($(this));
   });
 
-  $(".tag-item").hover(function mouseIn() {
-    $(this).removeClass('semiplusopaque');
-  }, function mouseOut() {
-    $(this).addClass('semiplusopaque');
-  });
-
   // add ellipsis box for many (> 5) tags
   $(".tag-box").each(function() {
     const tagBox = $(this);
@@ -24,16 +18,8 @@ $(document).ready(function() {
     const hiddenTags = tagBoxItems.slice(4);
     hiddenTags.hide();
 
-    const ellipsisBox = $("<span>").attr({class: 'tag-item semiopaque pointer', title: 'Click to show more tags…'}).append("...");
-    const recollapseBox = $("<span>").attr({class: 'tag-item semiopaque pointer', title: 'Click to hide extra tags…'}).append("←").hide();
-
-    ellipsisBox.add(recollapseBox).hover(function mouseIn() {
-      $(this).removeClass('semiplusopaque');
-    }, function mouseOut() {
-      $(this).addClass('semiplusopaque');
-    });
-
-    tagBox.append(ellipsisBox).append(' ').append(recollapseBox); // inline-block cares about spaces for formatting
+    const ellipsisBox = $("<span>").attr({class: 'tag-item ellipsis-box', title: 'Click to show more tags…'}).append("...");
+    const recollapseBox = $("<span>").attr({class: 'tag-item ellipsis-box', title: 'Click to hide extra tags…'}).append("←").hide();
 
     ellipsisBox.click(function() {
       hiddenTags.show();
