@@ -6,6 +6,10 @@ RSpec.describe UserMailer do
     ActionMailer::Base.deliveries.clear
   end
 
+  def html_text(html_part)
+    Nokogiri::HTML5.parse(html_part.body.to_s).at("body").text.gsub(/[\s\n]+/, " ").strip
+  end
+
   describe "#post_has_new_reply" do
     it "sends email" do
       reply = create(:reply, with_icon: true)
@@ -21,6 +25,7 @@ RSpec.describe UserMailer do
 
       expect(mail.html_part.content_type).to eq('text/html; charset=UTF-8')
       expect(mail.html_part.body.to_s).to start_with("<!DOCTYPE html>\n<html>\n<head>\n<title>#{subject}</title>")
+      expect(html_text(mail.html_part)).to eq("New reply in #{reply.post.subject} #{reply.user.username} #{reply.content}")
 
       mail.deliver!
       expect(ActionMailer::Base.deliveries.count).to eq(1)
@@ -54,6 +59,10 @@ RSpec.describe UserMailer do
 
       expect(mail.html_part.content_type).to eq('text/html; charset=UTF-8')
       expect(mail.html_part.body.to_s).to start_with("<!DOCTYPE html>\n<html>\n<head>\n<title>#{subject}</title>")
+      text = html_text(mail.html_part)
+      expect(text).to start_with("Password Reset Your account's password has been reset. " \
+                                 "Choose New Password » Or copy and paste this link into your browser: ")
+      expect(text).to include("https://localhost:3000/password_resets/")
 
       mail.deliver!
       expect(ActionMailer::Base.deliveries.count).to eq(1)
@@ -75,6 +84,9 @@ RSpec.describe UserMailer do
 
       expect(mail.html_part.content_type).to eq('text/html; charset=UTF-8')
       expect(mail.html_part.body.to_s).to start_with("<!DOCTYPE html>\n<html>\n<head>\n<title>#{subject}</title>")
+      expect(html_text(mail.html_part)).to eq(
+        "#{message.unempty_subject} From: #{message.sender_name} To: #{message.recipient.username} #{message.message}",
+      )
 
       mail.deliver!
       expect(ActionMailer::Base.deliveries.count).to eq(1)
@@ -97,6 +109,9 @@ RSpec.describe UserMailer do
 
       expect(mail.html_part.content_type).to eq('text/html; charset=UTF-8')
       expect(mail.html_part.body.to_s).to start_with("<!DOCTYPE html>\n<html>\n<head>\n<title>#{subject}</title>")
+      expect(html_text(mail.html_part)).to eq(
+        "An Author You Favorited Has Written A New Post #{post.subject}",
+      )
       mail.deliver!
       expect(ActionMailer::Base.deliveries.count).to eq(1)
     end
@@ -115,6 +130,7 @@ RSpec.describe UserMailer do
 
       expect(mail.html_part.content_type).to eq('text/html; charset=UTF-8')
       expect(mail.html_part.body.to_s).to start_with("<!DOCTYPE html>\n<html>\n<head>\n<title>#{subject}</title>")
+      expect(html_text(mail.html_part)).to eq("Post Import Failed #{notification.error_msg}")
 
       mail.deliver!
       expect(ActionMailer::Base.deliveries.count).to eq(1)

@@ -1,27 +1,29 @@
 = render 'warnings', user: @user
-= render 'infobox', user: @user
 
-- is_current_user = @user.id == current_user.try(:id)
-- has_profile = @user.profile.present?
-- if has_profile || is_current_user
-  %table.user-right-content-box
-    %thead
-      %tr
-        %th.table-title
-          Author Profile
-          - if is_current_user
-            = link_to profile_edit_user_path(@user) do
-              = image_tag "icons/pencil.png".freeze, title: 'Edit'.freeze, alt: 'Edit'.freeze
-    %tbody
-      %tr
-        %td
-          .auto.profile.written-content
-            .padding-10
-              - if has_profile
-                = sanitize_written_content(@user.profile.to_s, @user.profile_editor_mode)
-              - else
-                %em (Your profile is empty.)
+%div
+  = render 'infobox', user: @user
 
-- content_for :posts_title do
-  #{@user.username}'s Recent Posts
-= render 'posts/list', posts: @posts, table_class: 'user-right-content-box'
+  - is_current_user = @user.id == current_user.try(:id)
+  - has_profile = @user.profile.present?
+  - if has_profile || is_current_user
+    %table.user-right-content-box
+      %thead
+        %tr
+          %th.table-title
+            Author Profile
+            - if is_current_user
+              = link_to profile_edit_user_path(@user) do
+                = image_tag "icons/pencil.png".freeze, title: 'Edit'.freeze, alt: 'Edit'.freeze
+      %tbody
+        %tr
+          %td.profile-table-cell
+            .auto.profile.written-content
+              .padding-10
+                - if has_profile
+                  .post-content= sanitize_written_content(@user.profile.to_s, @user.profile_editor_mode)
+                - else
+                  %em (Your profile is empty.)
+
+  - content_for :posts_title do
+    #{@user.username}'s Recent Posts
+  = render 'posts/list', posts: @posts, table_class: 'user-right-content-box recent-posts'
