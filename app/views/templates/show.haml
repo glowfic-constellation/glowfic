@@ -40,7 +40,7 @@
           All Characters
 
 - if page_view == 'list'
-  %table
+  %table{class: "template-#{@template.id}"}
     %thead
       %tr
         %th.table-title{colspan: 6}
@@ -49,10 +49,11 @@
     %tbody
       = render 'characters/list_section', characters: @template.characters, show_retired: @template.retired || show_retired
 - else
-  .content-header
-    Template: #{@template.name}
-    = content_for :buttons
-  = render 'characters/icon_view', characters: @template.characters, show_retired: @template.retired || show_retired
+  %div{class: "template-#{@template.id}"}
+    .content-header
+      Template: #{@template.name}
+      = content_for :buttons
+    = render 'characters/icon_view', characters: @template.characters, show_retired: @template.retired || show_retired
 - if @posts.present?
   %br
   - content_for(:posts_title) { 'Posts with Template Instances' }
