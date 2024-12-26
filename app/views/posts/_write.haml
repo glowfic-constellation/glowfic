@@ -29,7 +29,7 @@
         = fields_for :character, post.character do |cf|
           = cf.hidden_field :name, id: 'character_name'
           = cf.hidden_field :npc, id: 'character_npc'
-      = render 'posts/editor_help', editor_location: 'post'
+      = render 'writable/editor_help', editor_location: 'post'
   - content_for :buttons do
     - if post.id.present? && !post.editable_by?(current_user)
       = submit_tag 'Save', class: 'button', id: 'submit_button', data: { disable_with: 'Saving...' }
@@ -90,4 +90,4 @@
     #post-editor.padding-10= yield :form
     .subber.centered= yield :buttons
   - else
-    = render 'editor', item: post
+    = render 'writable/editor', item: post
