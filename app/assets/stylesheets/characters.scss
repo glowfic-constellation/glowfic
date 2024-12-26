@@ -53,4 +53,14 @@
 }
 
 // character list view
-.character-list-template { padding: 10px; }
+
+// shared between list and icon view
+.character-search {
+  input#name { margin: 0px 5px; }
+  padding: 10px;
+}
+
+.character-icon-template, .character-list-template {
+  padding: 10px;
+  .link-box { font-size: $font_size_small; }
+}

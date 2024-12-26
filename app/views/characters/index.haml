@@ -55,7 +55,7 @@
 - content_for :character_search do
   = form_tag search_characters_path, method: :get do
     = label_tag :name, 'Search by name:'
-    = text_field_tag :name, params[:name], style: 'margin: 0px 5px;', id: :name
+    = text_field_tag :name, params[:name], id: :name
     = hidden_field_tag :author_id, @user.id
     = hidden_field_tag :search_name, true
     = hidden_field_tag :search_screenname, true
@@ -108,11 +108,11 @@
       %th.table-title{colspan: colspan}
         = content_for :content_header
     %tr
-      %th.subber.padding-10{colspan: colspan}
+      %th.subber.character-search{colspan: colspan}
         = content_for :character_search
     - if character_split == 'template'
       %tr
-        %th.odd{style: 'padding: 3px', colspan: colspan}= # spacer between two .subbers
+        %th.odd.spacer-wide
       = content_for :split_view
       - if !@group && !@user.character_groups.exists? && !@user.characters.exists?
         %tr
@@ -122,10 +122,10 @@
 - else
   .content-header
     = content_for :content_header
-  .subber.padding-10
+  .subber.character-search
     = content_for :character_search
   - if character_split == 'template'
-    .odd{style: 'padding: 3px'}= # spacer between two .subbers
+    .odd.spacer-wide
     = content_for :split_view
   - else
     = content_for :unsplit_view
