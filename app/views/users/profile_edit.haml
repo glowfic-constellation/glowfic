@@ -3,36 +3,37 @@
   &raquo;
   %b Edit Profile
 
-= render 'infobox', user: current_user
+%div
+  = render 'infobox', user: current_user
 
-.content-header.user-right-content-box Edit profile
-#post-editor.margin-left-200
-  = form_for current_user, html: { id: 'post_form' } do |f|
-    %table
-      %tbody
-        %tr
-          %th.sub.width-15.vtop= f.label :profile, "Description"
-          %td{class: cycle('even', 'odd')}
-            %button.view-button#rtf{type: 'button', class: ('selected' if current_user.profile_editor_mode == 'rtf')} Rich Text
-            %button.view-button#md{type: 'button', class: ('selected' if current_user.profile_editor_mode == 'md')} Markdown
-            %button.view-button#html{type: 'button', class: ('selected' if current_user.profile_editor_mode == 'html')} HTML
-            %button.view-button#editor-help{type: 'button', title: 'Help'} ?
-            %br
-            %br
-            = f.hidden_field :profile_editor_mode, id: 'profile_editor_mode'
-            #post-form-wrapper.no-margin-left
-              = f.text_area :profile, class: 'tinymce'
-            = render 'posts/editor_help', editor_location: 'profile'
-        %tr
-          %th.sub.vtop= f.label :moiety, "Moiety hex"
-          %td{class: cycle('even', 'odd')}
-            \#
-            = f.text_field :moiety, placeholder: "Hex code", class: 'text', style: 'width: 80px;', maxlength: 6
-        %tr
-          %th.sub.vtop= f.label :moiety_name, "Moiety name"
-          %td{class: cycle('even', 'odd')}= f.text_field :moiety_name, placeholder: "Moiety", class: 'text'
-        %tr
-          %th.sub= f.label :content_warning_ids, "Author warnings"
-          %td{class: cycle('even', 'odd')}= tag_select(current_user, f, :content_warnings)
-    %br
-    = submit_tag 'Save', class: 'button', id: 'submit_button', name: 'button_submit_profile', data: { disable_with: 'Saving...' }
+  .content-header.user-right-content-box Edit profile
+  #post-editor.margin-left-200
+    = form_for current_user, html: { id: 'post_form' } do |f|
+      %table
+        %tbody
+          %tr
+            %th.sub.width-15.vtop= f.label :profile, "Description"
+            %td{class: cycle('even', 'odd')}
+              %button.view-button#rtf{type: 'button', class: ('selected' if current_user.profile_editor_mode == 'rtf')} Rich Text
+              %button.view-button#md{type: 'button', class: ('selected' if current_user.profile_editor_mode == 'md')} Markdown
+              %button.view-button#html{type: 'button', class: ('selected' if current_user.profile_editor_mode == 'html')} HTML
+              %button.view-button#editor-help{type: 'button', title: 'Help'} ?
+              %br
+              %br
+              = f.hidden_field :profile_editor_mode, id: 'profile_editor_mode'
+              #post-form-wrapper.no-margin-left
+                = f.text_area :profile, class: 'tinymce'
+              = render 'posts/editor_help', editor_location: 'profile'
+          %tr
+            %th.sub.vtop= f.label :moiety, "Moiety hex"
+            %td{class: cycle('even', 'odd')}
+              \#
+              = f.text_field :moiety, placeholder: "Hex code", class: 'text', style: 'width: 80px;', maxlength: 6
+          %tr
+            %th.sub.vtop= f.label :moiety_name, "Moiety name"
+            %td{class: cycle('even', 'odd')}= f.text_field :moiety_name, placeholder: "Moiety", class: 'text'
+          %tr
+            %th.sub= f.label :content_warning_ids, "Author warnings"
+            %td{class: cycle('even', 'odd')}= tag_select(current_user, f, :content_warnings)
+      %br
+      = submit_tag 'Save', class: 'button', id: 'submit_button', name: 'button_submit_profile', data: { disable_with: 'Saving...' }

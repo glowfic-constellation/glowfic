@@ -120,6 +120,10 @@
 #holder {
   min-height: 100%;
   position: relative;
+
+  #content {
+    width: 100%;
+  }
 }
 
 @media (max-width: 600px) {
@@ -130,6 +134,12 @@
       display: inline-grid;
     }
   }
+}
+
+.profile-table-cell { max-width: 0; }
+.profile-table-cell .padding-10 { overflow-x: scroll; }
+@media (max-width: 600px) {
+  .recent-posts { width: 100% !important; }
 }
 
 #content, #tos {
