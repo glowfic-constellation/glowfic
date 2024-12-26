@@ -16,9 +16,8 @@
     = render partial_type, name: template, characters: template.characters.ordered
   - if characters.non_npcs.where(template_id: nil).exists?
     = render partial_type, name: 'No Template', characters: characters.non_npcs.where(template_id: nil).ordered, show_new_character_button: @user.id == current_user&.id
+- elsif page_view == 'list'
+  %tr
+    %td.centered.padding-5{class: cycle('even', 'odd'), colspan: colspan} — No characters yet —
 - else
-  - if page_view == 'list'
-    %tr
-      %td.centered.padding-5{class: cycle('even', 'odd'), colspan: colspan} — No characters yet —
-  - else
-    .centered.padding-5{class: cycle('even', 'odd')} — No characters yet —
+  .centered.padding-5{class: cycle('even', 'odd')} — No characters yet —
