@@ -15,7 +15,7 @@
 .gallery { padding: 10px; }
 .gallery .icon { margin: 5px; }
 
-.gallery form {
+.gallery form, .character-icon-list {
   display: flex;
   flex-wrap: wrap;
   align-items: flex-start;
