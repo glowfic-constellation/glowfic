@@ -254,3 +254,48 @@
 .character-right-content-box#reorder-galleries-table, .icon-right-content-box.galleries {
   display: inline-block;
 }
+
+.tag-boxes { display: flex }
+
+.galleries-holder {
+  display: grid;
+  grid-template-columns: [name] auto [number] 170px [manage] 80px [expand] 75px;
+  grid-auto-flow: row;
+  font-size: $font_size_small;
+
+  & > div {
+    display: grid;
+    grid-column: 1 / -1;
+    grid-template-columns: subgrid;
+    justify-content: center;
+  }
+
+  .gallery-name, .gallery-icon-count, .gallery-expand, .gallery-buttons, .gallery-expand .gallery-box, .gallery-expand .viewbutton, .delete-confirm .icons-remove {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .gallery-name {
+    grid-column: name;
+    justify-content: left;
+    .tag-item { opacity: 0.6; }
+    .tag-item:hover { opacity: 1; }
+    .tag-item.ellipsis-box { cursor: pointer; }
+  }
+
+  .gallery-icon-count { grid-column: number; }
+  .gallery-buttons { grid-column: manage; }
+
+  .gallery-expand {
+    .view-button { padding: 5px 7px; }
+    grid-column: expand;
+  }
+
+  .delete-form {
+    .gallery { padding: 0px; }
+    .icons-remove { clear: both; }
+    padding: 5px 10px;
+    display: none;
+  }
+}
