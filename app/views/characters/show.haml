@@ -85,25 +85,21 @@
 
   - if params[:view] == 'galleries'
     - galleries = @character.galleries.select('galleries.*').with_gallery_groups.ordered
-    %table.character-right-content-box#reorder-galleries-table
-      %thead
-        %tr
-          %th.table-title
-            Galleries
-            .loading.float-right.hidden= loading_tag
-            .saveerror.float-right.hidden
-              = image_tag "icons/exclamation.png", title: 'Error', class: 'vmid', alt: '!'
-              Error, please refresh
-            .saveconf.float-right.hidden
-              = image_tag "icons/accept.png", title: 'Saved', class: 'vmid', alt: ''
-              Saved
+    .character-right-content-box#reorder-galleries-table
+      .content-header
+        Galleries
+        .loading.float-right.hidden= loading_tag
+        .saveerror.float-right.hidden
+          = image_tag "icons/exclamation.png", title: 'Error', class: 'vmid', alt: '!'
+          Error, please refresh
+        .saveconf.float-right.hidden
+          = image_tag "icons/accept.png", title: 'Saved', class: 'vmid', alt: ''
+          Saved
       - galleries.each do |gallery|
         = render 'galleries/single', gallery: gallery, klass: 'subber', skip_forms: true, character_gallery: gallery.character_gallery_for(@character), is_owner: @character.user == current_user
       - unless galleries.present?
-        %tbody
-          %tr
-            %td.icon-box
-              .centered.padding-5 — No galleries yet —
+        .icon-box
+          .centered.padding-5 — No galleries yet —
   - elsif params[:view] == 'posts'
     - content_for(:posts_title) { 'Recent Threads' }
     = render 'posts/list', posts: @posts, table_class: 'character-right-content-box'
