@@ -2,6 +2,7 @@
 class UserMailer < ApplicationMailer
   helper WritableHelper
   helper IconHelper
+  helper NotificationHelper
   include NotificationHelper
 
   def post_has_new_reply(user_id, reply_id)
