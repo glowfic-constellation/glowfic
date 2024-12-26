@@ -229,11 +229,6 @@ table { width: 100%; }
   width: 150px;
 }
 
-.gallery-table-title {
-  @extend .table-title;
-  &, &.subber { padding: 10px; }
-}
-
 .content-header {
   width: 100%;
   overflow: hidden;
@@ -248,6 +243,11 @@ table { width: 100%; }
   }
 
   & > div { overflow: hidden; }
+}
+
+.gallery-table-title {
+  @extend .content-header;
+  &, &.subber { padding: 10px; }
 }
 
 td, .table-list li { font-size: $font_size_small; }
@@ -517,7 +517,7 @@ td, .table-list li { font-size: $font_size_small; }
 
 .even .tag-item { background-color: $bg_color_tag_item_even; }
 .odd .tag-item { background-color: $bg_color_tag_item_odd; }
-tr.gallery-tags .tag-item { color: $font_color_tag_item_gallery; }
+.gallery-tags .tag-item { color: $font_color_tag_item_gallery; }
 
 /* The new object layout with the floating left info box and the right content area */
 .left-info-box {

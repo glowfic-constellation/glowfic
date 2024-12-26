@@ -15,6 +15,13 @@
 .gallery { padding: 10px; }
 .gallery .icon { margin: 5px; }
 
+.gallery form {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  gap: 0px 4px;
+}
+
 .gallery-icon, .character-icon-item {
   display: inline-block;
   margin-bottom: 10px;
@@ -25,6 +32,7 @@
   line-height: 14px;
   word-wrap: break-word;
   vertical-align: top;
+  font-size: $font_size_small;
 }
 
 %shared-editor {
@@ -241,4 +249,8 @@
       }
     }
   }
+}
+
+.character-right-content-box#reorder-galleries-table, .icon-right-content-box.galleries {
+  display: inline-block;
 }

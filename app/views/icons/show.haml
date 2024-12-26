@@ -75,16 +75,12 @@
             Delete Icon
 
   - if params[:view] == 'galleries'
-    %table.icon-right-content-box
-      %thead
-        %tr
-          %th.table-title Galleries
+    .icon-right-content-box.galleries
+      .content-header Galleries
       - if @galleries.present?
         = render partial: 'galleries/single', collection: @galleries, as: :gallery, locals: { klass: 'subber', skip_forms: true, is_owner: @icon.user == current_user }
       - else
-        %tbody
-          %tr
-            %td.even.centered — No galleries yet —
+        .even.centered — No galleries yet —
   - elsif params[:view] == 'posts'
     - content_for :posts_title do
       Posts Containing Icon
