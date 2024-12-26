@@ -62,7 +62,7 @@ RSpec.describe "Viewing a template" do
     expect(page).to have_no_text('Unrelated template')
 
     # check characters
-    within table_titled('Template: sample template') do
+    within find('div') { |x| x.has_selector?('.content-header', text: 'Template: sample template') } do
       characters.each do |character|
         character_icon = find('.character-icon-item', text: character.name)
         within(character_icon) do
