@@ -87,6 +87,11 @@ button, .button {
   }
 }
 
+.spacer-wide {
+  @extend .spacer;
+  height: 6px;
+}
+
 .spacer-alt {
   @extend .spacer;
   background-color: $bg_color_spacer_alt;
