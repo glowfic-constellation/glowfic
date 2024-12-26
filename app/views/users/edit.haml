@@ -2,10 +2,10 @@
   %table.form-table
     %thead
       %tr
-        %th.editor-title{colspan: 4} Settings
+        %th.editor-title{colspan: 2} Settings
     %tbody
       %tr
-        %th.subber{colspan: 4} Account
+        %th.subber{colspan: 2} Account
       %tr
         %th.sub= f.label :username
         %td{class: cycle('even', 'odd')}= f.text_field :username, placeholder: "Username", class: 'text', disabled: current_user.salt_uuid.nil?
@@ -28,7 +28,7 @@
           %td{class: cycle('even', 'odd')}
             .details Please set your avatar directly from the desired icon's page.
       %tr
-        %th.subber{colspan: 4} Site
+        %th.subber{colspan: 2} Site
       %tr
         %th.sub Notifications
         %td{class: cycle('even', 'odd')}
@@ -77,7 +77,7 @@
           = f.check_box :ignore_unread_daily_report, class: 'width-15 vmid'
           = f.label :ignore_unread_daily_report, "Hide unread notice", class: 'vmid'
       %tr
-        %th.subber{colspan: 4} Posts
+        %th.subber{colspan: 2} Posts
       %tr
         %th.sub= f.label :per_page, 'Paging'
         %td{class: cycle('even', 'odd')}= f.select(:per_page, per_page_options(current_user.per_page))
@@ -111,7 +111,7 @@
           = f.label :default_hide_add_bookmark_button, 'Hide "Add Bookmark" button', class: 'vmid'
     %tfoot
       %tr
-        %th.form-table-ender{colspan: 4}= submit_tag "Save", class: 'button'
+        %th.form-table-ender{colspan: 2}= submit_tag "Save", class: 'button'
 
 %br
 = form_for current_user, url: password_user_path(current_user), method: :put, html: { id: 'change_password_form' } do |f|
