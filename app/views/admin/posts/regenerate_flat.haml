@@ -7,10 +7,10 @@
   .form-table
     .editor-title Regenerate Flatposts
     %div
-      %th.sub= f.label :before, 'Last Regenerated Before'
+      .sub= f.label :before, 'Last Regenerated Before'
       %div{class: cycle('even', 'odd')}= f.datetime_field :before, value: params[:before] || Time.zone.now
     %div
-      %th.sub Force Regenerate?
+      .sub Force Regenerate?
       .checkbox-field.padding-5{class: cycle('even', 'odd')}
         = f.check_box :force, checked: params[:force], class: 'vmid'
         = f.label :force, "Include Flatposts Regenerated Since Post Last Tagged", class: 'vmid'

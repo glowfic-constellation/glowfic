@@ -11,10 +11,7 @@ RSpec.describe "Edit a block" do
 
     within('.form-table') do
       expect(page).to have_selector('.editor-title', text: 'Edit Block')
-
-      within(row_for('User', exact_text: true)) do
-        expect(page).to have_text('Person You Want To Block')
-      end
+      expect(page).to have_select('User', selected: 'Person You Want To Block')
 
       uncheck 'Interactions'
       select 'Nothing', from: 'Hide them'
@@ -34,10 +31,7 @@ RSpec.describe "Edit a block" do
 
     within('.form-table') do
       expect(page).to have_selector('.editor-title', text: 'Edit Block')
-
-      within(row_for('User', exact_text: true)) do
-        expect(page).to have_text('Person You Want To Block')
-      end
+      expect(page).to have_select('User', selected: 'Person You Want To Block')
 
       uncheck 'Interactions'
       select 'Everything', from: 'Hide yourself'
