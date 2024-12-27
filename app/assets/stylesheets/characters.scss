@@ -61,3 +61,11 @@
 }
 
 .form-table #template-choice .checkbox-field { display: grid; }
+
+.form-table .alias-row {
+  display: grid;
+  grid-template-columns: auto auto;
+  justify-items: start;
+  justify-content: normal;
+  a[data-method='delete'] { justify-self: flex-end }
+}

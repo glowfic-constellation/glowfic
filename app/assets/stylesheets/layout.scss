@@ -309,8 +309,10 @@ td, .table-list li { font-size: $font_size_small; }
     grid-template-columns: subgrid;
     justify-content: center;
     grid-auto-flow: column;
+    button[disabled], input[disabled] { background-color: $bg_color_input_disabled; }
 
     &.checkbox-field, .checkbox-field {
+      justify-content: left;
       grid-template-columns: 20px auto;
       column-gap: 4px;
     }
@@ -318,6 +320,7 @@ td, .table-list li { font-size: $font_size_small; }
     input {
       margin: 0;
       width: 100%;
+      &[type='submit'] { width: auto }
 
       &[type='checkbox'] {
         margin: 0 1px;
@@ -326,19 +329,16 @@ td, .table-list li { font-size: $font_size_small; }
       }
     }
 
+    &.sub, & > .sub {
+      padding: 10px;
+      text-align: center;
+      &.vtop { align-items: start; }
+    }
+
     & > div {
       padding: 5px;
       display: grid;
       align-items: center;
-
-      button[disabled], input[disabled] { background-color: $bg_color_input_disabled; }
-
-      &.sub {
-        padding: 10px;
-        justify-content: center;
-        text-align: center;
-        &.vtop { align-items: flex-start; }
-      }
     }
   }
 

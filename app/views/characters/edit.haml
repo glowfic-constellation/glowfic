@@ -24,13 +24,12 @@
           = link_to new_character_alias_path(@character) do
             .link-box.action-new + New Alias
       - @aliases.each do |calias|
-        .padding-5{class: cycle('even', 'odd')}
+        .padding-5.alias-row{class: cycle('even', 'odd')}
           = calias.name
           - if @character.user_id == current_user.id
-            .float-right
-              = link_to character_alias_path(@character, calias), method: :delete, confirm: 'Are you sure you want to delete this alias?' do
-                = image_tag "icons/cross.png", alt: 'Delete'
+            = link_to character_alias_path(@character, calias), method: :delete, confirm: 'Are you sure you want to delete this alias?' do
+              = image_tag "icons/cross.png", alt: 'Delete'
       - if @aliases.empty?
-        .centered.padding-10{ class: cycle('even', 'odd'), colspan: 6 } — No aliases yet —
+        .centered.alias-row.padding-10{ class: cycle('even', 'odd'), colspan: 6 } — No aliases yet —
 
   = render 'icon_selector'
