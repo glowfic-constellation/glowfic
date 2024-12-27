@@ -54,3 +54,10 @@
 
 // character list view
 .character-list-template { padding: 10px; }
+
+.edit_character, .new_character {
+  display: flex;
+  gap: 4px;
+}
+
+.form-table #template-choice .checkbox-field { display: grid; }

@@ -1,33 +1,30 @@
 -# locals: ( f:, blocked_user: nil )
 
-%tbody
-  - klass = cycle('even', 'odd')
-  %tr
-    %th.sub= f.label :blocked_user_id, 'User'
-    %td{class: klass}
-      - if blocked_user.nil?
-        = f.select :blocked_user_id, options_from_collection_for_select(@users,
-          :id, :username, params.fetch(:block, {})[:blocked_user_id]),
-          { class: 'chosen-select', prompt: '— Choose User —' }
-      - else
-        = blocked_user.username
-  %tr
-    %th.sub= f.label :block_interactions, 'Interactions'
-    %td{class: klass}
-      = f.check_box :block_interactions, class: 'vmid'
-      = f.label :block_interactions, "Prevent them from interacting with you?", class: 'vmid'
-  %tr
-    %th.sub= f.label :hide_them
-    %td{class: klass}
-      Prevent you from seeing their:
-      %br
-      = f.select :hide_them, options_from_collection_for_select(@options.to_a, :second, :first, @block.hide_them), { class: 'chosen-select' }
-  %tr
-    %th.sub= f.label :hide_me, 'Hide yourself'
-    %td{class: klass}
-      Prevent them from seeing your:
-      %br
-      = f.select :hide_me, options_from_collection_for_select(@options.to_a, :second, :first, @block.hide_me), { class: 'chosen-select' }
-%tfoot
-  %tr
-    %th.form-table-ender{colspan: 2}= submit_tag "Save", class: 'button'
+- klass = cycle('even', 'odd')
+%div
+  .sub= f.label :blocked_user_id, 'User'
+  %div{class: klass}
+    - if blocked_user.nil?
+      = f.select :blocked_user_id, options_from_collection_for_select(@users,
+        :id, :username, params.fetch(:block, {})[:blocked_user_id]),
+        { class: 'chosen-select', prompt: '— Choose User —' }
+    - else
+      = blocked_user.username
+%div
+  .sub= f.label :block_interactions, 'Interactions'
+  .checkbox-field{class: klass}
+    = f.check_box :block_interactions, class: 'vmid'
+    = f.label :block_interactions, "Prevent them from interacting with you?", class: 'vmid'
+%div
+  .sub= f.label :hide_them
+  %div{class: klass}
+    Prevent you from seeing their:
+    %br
+    = f.select :hide_them, options_from_collection_for_select(@options.to_a, :second, :first, @block.hide_them), { class: 'chosen-select' }
+%div
+  .sub= f.label :hide_me, 'Hide yourself'
+  %div{class: klass}
+    Prevent them from seeing your:
+    %br
+    = f.select :hide_me, options_from_collection_for_select(@options.to_a, :second, :first, @block.hide_me), { class: 'chosen-select' }
+.form-table-ender= submit_tag "Save", class: 'button'

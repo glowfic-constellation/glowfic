@@ -11,14 +11,9 @@
   %b New Alias
 
 = form_for @alias, url: character_aliases_path(@character), method: :post do |f|
-  %table.form-table
-    %thead
-      %tr
-        %th.editor-title{colspan: 2}= "New Alias"
-    %tbody
-      %tr
-        %th.sub= f.label :name
-        %td.even= f.text_field :name, placeholder: "Alias"
-    %tfoot
-      %tr
-        %th.form-table-ender{colspan: 2}= submit_tag "Save", class: 'button'
+  .form-table
+    .editor-title= "New Alias"
+    %div
+      .sub= f.label :name
+      .even= f.text_field :name, placeholder: "Alias"
+    .form-table-ender= submit_tag "Save", class: 'button'
