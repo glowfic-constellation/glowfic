@@ -11,10 +11,7 @@ RSpec.describe "Create new block" do
 
     within('.form-table') do
       expect(page).to have_selector('.editor-title', text: 'Block User')
-
-      within(row_for('User', exact_text: true)) do
-        expect(page).to have_text('Person You Want To Block')
-      end
+      expect(page).to have_select('User', selected: 'Person You Want To Block')
 
       uncheck 'Interactions'
       click_button 'Save'
@@ -35,10 +32,7 @@ RSpec.describe "Create new block" do
 
     within('.form-table') do
       expect(page).to have_selector('.editor-title', text: 'Block User')
-
-      within(row_for('User', exact_text: true)) do
-        expect(page).to have_text('Person You Want To Block')
-      end
+      expect(page).to have_select('User', selected: 'Person You Want To Block')
 
       click_button 'Save'
     end
@@ -63,10 +57,7 @@ RSpec.describe "Create new block" do
 
     within('.form-table') do
       expect(page).to have_selector('.editor-title', text: 'Block User')
-
-      within('tbody') do
-        select 'Person You Want To Block', from: 'User'
-      end
+      select 'Person You Want To Block', from: 'User'
 
       click_button 'Save'
     end

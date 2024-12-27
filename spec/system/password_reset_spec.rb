@@ -3,7 +3,7 @@ RSpec.describe "Resetting password" do
     # request reset
     user = create(:user)
     visit new_password_reset_path
-    expect(page).to have_selector("th.editor-title", exact_text: "Request Password Reset")
+    expect(page).to have_selector(".editor-title", exact_text: "Request Password Reset")
     within(".form-table") do
       fill_in "Username", with: user.username
       fill_in "Email address", with: user.email
