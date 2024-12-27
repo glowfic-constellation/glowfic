@@ -16,6 +16,9 @@ Rails.application.configure do
   config.assets.js_compressor = :terser
   # config.assets.css_compressor = :sass
 
+  # Do not fall back to assets pipeline if a precompiled asset is missed.
+  config.assets.compile = false
+
   # Turn on fragment caching in view templates.
   config.action_controller.perform_caching = true
 
