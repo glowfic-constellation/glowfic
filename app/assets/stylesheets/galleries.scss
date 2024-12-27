@@ -61,13 +61,19 @@
   .icon-edit-table { width: unset; }
 }
 
-.gallery-editor {
-  grid-template-columns: 295px auto;
-  #gallery_name { height: 23px; }
-  .subber { grid-template-columns: auto; }
-}
+.gallery-editor #gallery_name { height: 23px; }
 
-.gallery-edit-form { width: 100%; }
+.gallery-edit-form {
+  width: 100%;
+  grid-template-columns: 295px auto;
+  .subber { grid-template-columns: auto; }
+  .gallery-icons {
+    display: flex;
+    flex-direction: row;
+    gap: 4px;
+    align-items: flex-start;
+  }
+}
 
 .gallery-icons-edit {
   display: flex;
