@@ -296,14 +296,24 @@ td, .table-list li { font-size: $font_size_small; }
 
 /* Form Tables */
 .form-table {
-  width: 400px;
+  width: 420px;
   margin: 0;
   border-spacing: 0;
+  display: grid;
+  grid-template-columns: auto auto;
+  font-size: $font_size_small;
 
-  th { text-align: center; }
+  & > div {
+    display: grid;
+    grid-column: 1 / -1;
+    grid-template-columns: subgrid;
+    justify-content: center;
+    grid-auto-flow: column;
 
-  td {
-    padding: 5px;
+    &.checkbox-field, .checkbox-field {
+      grid-template-columns: 20px auto;
+      column-gap: 4px;
+    }
 
     input {
       margin: 0;
@@ -313,12 +323,22 @@ td, .table-list li { font-size: $font_size_small; }
         margin: 0 1px;
         height: 18px;
         width: 18px;
-        vertical-align: middle;
       }
     }
 
-    button[disabled], input[disabled] {
-      background-color: $bg_color_input_disabled;
+    & > div {
+      padding: 5px;
+      display: grid;
+      align-items: center;
+
+      button[disabled], input[disabled] { background-color: $bg_color_input_disabled; }
+
+      &.sub {
+        padding: 10px;
+        justify-content: center;
+        text-align: center;
+        &.vtop { align-items: flex-start; }
+      }
     }
   }
 
@@ -327,6 +347,7 @@ td, .table-list li { font-size: $font_size_small; }
     width: 100%;
   }
 
+  .table-title, .editor-title, .form-table-ender, .colspan { display: block; }
   .select2-container input { margin-top: 5px; }
 }
 

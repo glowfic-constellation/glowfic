@@ -40,6 +40,8 @@
   }
 }
 
+.icon-edit-title { width: 400px; }
+
 .icon-editor {
   @extend %shared-editor;
   width: 400px;
@@ -125,9 +127,22 @@
 }
 
 /* The preview icon boxes on replace icon and replace character */
+.replace-form {
+  grid-template-columns: auto auto;
+
+  .replace-icon {
+    justify-items: center;
+    align-items: start;
+  }
+
+  .replace-posts {
+    justify-content: start;
+    align-items: center;
+  }
+}
+
 .replace-icon {
   @extend .icons-box;
-  width: 150px;
   text-align: center;
 }
 

@@ -1,28 +1,25 @@
 -# locals: ( f: )
 
-%tbody
-  %tr
-    %th.sub= f.label :name
-    %td.even= f.text_field :name, placeholder: "Continuity Name"
-  %tr
-    %th.sub Creator
-    %td.odd= @board.creator.username
-  %tr
-    %th.sub= f.label :coauthor_ids, 'Coauthors'
-    %td.even
-      = f.collection_select(:coauthor_ids, @coauthors, :id, :username, { selected: @board.coauthors.pluck(:user_id) }, { multiple: true })
-  %tr
-    %th.sub= f.label :cameo_ids, 'Cameos'
-    %td.odd
-      = f.collection_select(:cameo_ids, @cameos, :id, :username, { selected: @board.cameos.pluck(:user_id) }, { multiple: true })
-  %tr
-    %th.sub= f.label :authors_locked, 'Locked?'
-    %td.even
-      = f.check_box :authors_locked, class: 'vmid', checked: @board.authors_locked
-      = f.label :authors_locked, 'Only allow authors to create new posts in this continuity', class: 'vmid'
-  %tr
-    %th.sub.vtop Description
-    %td.odd= f.text_area :description
-%tfoot
-  %tr
-    %th.form-table-ender{colspan: 2}= submit_tag "Save", class: 'button'
+%div
+  .sub= f.label :name
+  .even= f.text_field :name, placeholder: "Continuity Name"
+%div
+  .sub Creator
+  .odd= @board.creator.username
+%div
+  .sub= f.label :coauthor_ids, 'Coauthors'
+  .even
+    = f.collection_select(:coauthor_ids, @coauthors, :id, :username, { selected: @board.coauthors.pluck(:user_id) }, { multiple: true })
+%div
+  .sub= f.label :cameo_ids, 'Cameos'
+  .odd
+    = f.collection_select(:cameo_ids, @cameos, :id, :username, { selected: @board.cameos.pluck(:user_id) }, { multiple: true })
+%div
+  .sub= f.label :authors_locked, 'Locked?'
+  .even.checkbox-field
+    = f.check_box :authors_locked, class: 'vmid', checked: @board.authors_locked
+    = f.label :authors_locked, 'Only allow authors to create new posts in this continuity', class: 'vmid'
+%div
+  .sub.vtop Description
+  .odd= f.text_area :description
+.form-table-ender= submit_tag "Save", class: 'button'

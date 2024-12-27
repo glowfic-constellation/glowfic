@@ -6,8 +6,6 @@
   %b New Template
 
 = form_for @template, url: templates_path, method: :post do |f|
-  %table.form-table
-    %thead
-      %tr
-        %th.editor-title{colspan: 2} New Template
+  .form-table
+    .editor-title New Template
     = render 'editor', f: f

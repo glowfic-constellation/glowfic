@@ -1,19 +1,14 @@
 -# locals: ()
 
 = form_with url: do_split_post_path, method: :post do |f|
-  %table.form-table
-    %thead
-      %tr
-        %th.editor-title{colspan: 2} Split Post
-    %tbody
-      %tr
-        %th.sub= f.label :reply_id, "Reply Id"
-        %td{class: cycle('even', 'odd')}= f.text_field :reply_id, value: params[:reply_id], placeholder: 'Id of reply for new top post'
-      %tr
-        %th.sub= f.label :subject
-        %td{class: cycle('even', 'odd')}= f.text_field :subject, value: params[:subject], placeholder: "New Subject"
-    %tfoot
-      %tr
-        %th.form-table-ender{colspan: 2}
-          = submit_tag 'Split', class: 'button', id: 'submit_button', data: { disable_with: 'Splitting...' }
-          = submit_tag "Preview", class: 'button', id: 'preview_button', name: 'button_preview', data: { disable_with: 'Previewing...' }
+  .form-table
+    .editor-title Split Post
+    %div
+      .sub= f.label :reply_id, "Reply Id"
+      %div{class: cycle('even', 'odd')}= f.text_field :reply_id, value: params[:reply_id], placeholder: 'Id of reply for new top post'
+    %div
+      .sub= f.label :subject
+      %div{class: cycle('even', 'odd')}= f.text_field :subject, value: params[:subject], placeholder: "New Subject"
+    .form-table-ender
+      = submit_tag 'Split', class: 'button', id: 'submit_button', data: { disable_with: 'Splitting...' }
+      = submit_tag "Preview", class: 'button', id: 'preview_button', name: 'button_preview', data: { disable_with: 'Previewing...' }
