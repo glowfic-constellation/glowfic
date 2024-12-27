@@ -1,7 +1,7 @@
 inherit_from: .rubocop_todo.yml
 
 AllCops:
-  TargetRubyVersion: 3.3
+  TargetRubyVersion: 3.4
   TargetRailsVersion: 8.0
   # used so rubocop doesn't edit old migrations, doesn't need to be perfectly up to date
   MigratedSchemaVersion: 20241224202900
