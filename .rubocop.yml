@@ -2,7 +2,9 @@ inherit_from: .rubocop_todo.yml
 
 AllCops:
   TargetRubyVersion: 3.3
-  TargetRailsVersion: 7.1
+  TargetRailsVersion: 8.0
+  # used so rubocop doesn't edit old migrations, doesn't need to be perfectly up to date
+  MigratedSchemaVersion: 20241222000400
   DisabledByDefault: false
   Exclude:
     - 'config/initializers/audited.rb'

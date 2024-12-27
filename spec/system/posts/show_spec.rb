@@ -1,4 +1,6 @@
 RSpec.describe "Viewing posts" do
+  include ActiveJob::TestHelper
+
   scenario "with a user layout set" do
     user = login
     post = create(:post, user: user)
@@ -117,6 +119,75 @@ RSpec.describe "Viewing posts" do
         within(".post-container:has(#reply-#{reply.id})") { expect(page).to have_link("Remove Bookmark") }
       end
     end
+  end
+
+  scenario "Splitting a post" do
+    user = create(:user, password: 'known')
+    post = create(:post, user: user)
+    create_list(:reply, 5, post: post)
+
+    visit post_path(post)
+    within('#post-menu-box') { expect(page).to have_no_link("Split Post") }
+    expect(page).to have_no_link("Split Post Here")
+
+    login(user, 'known')
+    visit post_path(post)
+    expect(page).to have_no_link("Split Post Here")
+    within('#post-menu-box') { click_link("Split Post") }
+    expect(page).to have_link("Split Post Here", count: 5)
+
+    within('#post-menu-box') { click_link("Disable Split UI") }
+    expect(page).to have_no_link("Split Post Here")
+    within('#post-menu-box') { click_link("Split Post") }
+
+    within('.error') do
+      expect(page).to have_text('You are in Split Post mode. Please click the scissors icon on the reply you wish to make the start of the new post.')
+      exit_split_post_mode_button = find(".link-box.action-dismiss.float-right")
+      expect(exit_split_post_mode_button.text).to eq("Exit Split Post mode")
+      exit_split_post_mode_button.find(:xpath, "..").click # xpath gets parent
+    end
+    expect(page).to have_no_link("Split Post Here")
+    within('#post-menu-box') { click_link("Split Post") }
+
+    reply = post.replies[2]
+    click_link("Split Post Here", href: "/posts/#{post.id}/split?reply_id=#{reply.id}")
+    within('.error') { expect(page).to have_text("Post must be locked to current authors to be split.") }
+    visit edit_post_path(post)
+    find_by_id("post_authors_locked").click
+    click_button "Save"
+
+    within('#post-menu-box') { click_link("Split Post") }
+    click_link("Split Post Here", href: "/posts/#{post.id}/split?reply_id=#{reply.id}")
+    expect(find_by_id("reply_id").value).to eq(reply.id.to_s)
+
+    click_button "Preview"
+    within('.error') { expect(page).to have_text("Subject must not be blank.") }
+    click_button "Split"
+    within('.error') { expect(page).to have_text("Subject must not be blank.") }
+    fill_in "Reply Id", with: ""
+    click_button "Split"
+    within('.error') { expect(page).to have_text("Reply could not be found.") }
+
+    within('#post-menu-box') { click_link("Split Post") }
+    click_link("Split Post Here", href: "/posts/#{post.id}/split?reply_id=#{reply.id}")
+    fill_in "Subject", with: "new post subject"
+    click_button "Preview"
+    expect(page).to have_text("Splitting #{post.subject} at reply id # #{reply.id}")
+    within(".content-header") { expect(page).to have_text("new post subject") }
+    within(".post-container.post-reply") { expect(page).to have_text(reply.content) }
+
+    perform_enqueued_jobs do
+      click_button "Split"
+      within('.success') { expect(page).to have_text("Post will be split.") }
+    end
+
+    visit post_path(post)
+    expect(page).to have_no_text(reply.content)
+
+    click_link("Unread")
+    click_link("new post subject")
+    within('.post-container.post-post') { expect(page).to have_text(reply.content) }
+    expect(page).to have_selector(".post-content", count: 3)
   end
 
   scenario "Hidden reply buttons" do
