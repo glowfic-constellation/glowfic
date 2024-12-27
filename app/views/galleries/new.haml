@@ -7,13 +7,13 @@
 
 = form_for @gallery, url: galleries_path, method: :post do |f|
   - icons_present = current_user.galleryless_icons.present?
-  .form-table{style: (icons_present ? 'width: 100%;' : nil)}
+  .form-table{class: (icons_present ? 'gallery-edit-form' : nil)}
     .editor-title New Gallery
     = render 'editor', f: f, gallery: @gallery
     - if icons_present
       %div
         .sub.vtop Icons
-        %div{class: cycle('even', 'odd')}
+        .gallery-icons{class: cycle('even', 'odd')}
           - current_user.galleryless_icons.each do |icon|
             = label_tag "gallery_icon_ids_#{icon.id}" do
               .gallery-icon
