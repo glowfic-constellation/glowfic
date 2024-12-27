@@ -189,4 +189,48 @@ RSpec.describe "Viewing posts" do
     within('.post-container.post-post') { expect(page).to have_text(reply.content) }
     expect(page).to have_selector(".post-content", count: 3)
   end
+
+  scenario "Hidden reply buttons" do
+    user = login
+    post = create(:post, user: user)
+    create_list(:reply, 3, post: post)
+    create_list(:reply, 2, post: post, user: user)
+
+    visit post_path(post)
+    expect(page).to have_link("Add Bookmark", count: 5)
+    expect(page).to have_link("Edit", count: 3)
+
+    user.update!(default_hide_edit_delete_buttons: true)
+    visit post_path(post)
+    expect(page).to have_link("Add Bookmark", count: 5)
+    expect(page).to have_no_link("Edit")
+    within('#post-menu-box') { click_link "Show Hidden Reply Buttons" }
+    expect(page).to have_link("Add Bookmark", count: 5)
+    expect(page).to have_link("Edit", count: 3)
+    within('#post-menu-box') { click_link "Hide Reply Buttons" }
+    expect(page).to have_link("Add Bookmark", count: 5)
+    expect(page).to have_no_link("Edit")
+
+    user.update!(default_hide_add_bookmark_button: true)
+    visit post_path(post)
+    expect(page).to have_no_link("Add Bookmark")
+    expect(page).to have_no_link("Edit")
+    within('#post-menu-box') { click_link "Show Hidden Reply Buttons" }
+    expect(page).to have_link("Add Bookmark", count: 5)
+    expect(page).to have_link("Edit", count: 3)
+    within('#post-menu-box') { click_link "Hide Reply Buttons" }
+    expect(page).to have_no_link("Add Bookmark")
+    expect(page).to have_no_link("Edit")
+
+    user.update!(default_hide_edit_delete_buttons: false)
+    visit post_path(post)
+    expect(page).to have_no_link("Add Bookmark")
+    expect(page).to have_link("Edit", count: 3)
+    within('#post-menu-box') { click_link "Show Hidden Reply Buttons" }
+    expect(page).to have_link("Add Bookmark", count: 5)
+    expect(page).to have_link("Edit", count: 3)
+    within('#post-menu-box') { click_link "Hide Reply Buttons" }
+    expect(page).to have_no_link("Add Bookmark")
+    expect(page).to have_link("Edit", count: 3)
+  end
 end

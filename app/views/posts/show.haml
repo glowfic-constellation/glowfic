@@ -75,6 +75,17 @@
         = image_tag "icons/magnifier.png".freeze, alt: ''
         Search Post
     - if logged_in?
+      - if current_user.default_hide_edit_delete_buttons || current_user.default_hide_add_bookmark_button
+        - if params[:show_all_reply_buttons] == "true"
+          = link_to post_path(@post, show_all_reply_buttons: 'false'.freeze, page: page, per_page: per_page) do
+            %div
+              = image_tag "icons/link_delete.png".freeze, alt: ''
+              Hide Reply Buttons
+        - else
+          = link_to post_path(@post, show_all_reply_buttons: 'true'.freeze, page: page, per_page: per_page) do
+            %div
+              = image_tag "icons/link_go.png".freeze, alt: ''
+              Show Hidden Reply Buttons
       = link_to post_path(@post, unread: true), method: :put do
         %div
           = image_tag "icons/eye.png".freeze, class: 'vmid'.freeze, style: 'margin-bottom: 3px;'.freeze, alt: ''
