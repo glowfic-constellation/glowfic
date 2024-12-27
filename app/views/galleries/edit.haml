@@ -12,7 +12,7 @@
   .form-table.gallery-edit-form.gallery-editor
     .editor-title Edit Gallery
     = render 'editor', f: f, gallery: @gallery
-    .subber.colspan Edit Icons
+    .subber Edit Icons
   .gallery-icons-edit
     = f.fields_for :galleries_icons, @gallery.galleries_icons.joins(:icon).order(Arel.sql('LOWER(keyword)')) do |gif|
       .gallery-icon-editor
