@@ -95,7 +95,8 @@ button, .button {
 .centered { text-align: center !important; }
 .left-align { text-align: left; }
 .right-align { text-align: right; }
-.hidden { display: none !important; }
+.hidden { display: none; }
+.grid-hidden { display: none !important; }
 .float-left { float: left; }
 .float-right { float: right; }
 .float-none { float: none !important; }
