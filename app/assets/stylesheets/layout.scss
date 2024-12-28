@@ -484,7 +484,6 @@ tr.gallery-tags .tag-item { color: $font_color_tag_item_gallery; }
   .sub { width: 90px; }
   .user-alert { margin: 7px 0 2px 0; }
   .msg { vertical-align: middle; }
-  #terms td { padding: 15px; }
 }
 
 .continuity-spacer { height: 20px; }
@@ -649,4 +648,15 @@ The copy box can't be invisible/hidden or copy fails but opacity works
 
 .no-close .ui-dialog-titlebar-close {
   display: none;
+}
+
+#tos { display: none; }
+
+#tos_form .form-table {
+  grid-template-columns: none;
+  .editor-title { place-items: center; }
+  #terms div {
+    display: inline;
+    padding: 15px;
+  }
 }
