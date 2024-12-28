@@ -296,7 +296,7 @@ td, .table-list li { font-size: $font_size_small; }
 
 /* Form Tables */
 .form-table {
-  width: 420px;
+  width: 400px;
   margin: 0;
   border-spacing: 0;
   display: grid;
@@ -320,7 +320,7 @@ td, .table-list li { font-size: $font_size_small; }
     input {
       margin: 0;
       width: 100%;
-      &[type='submit'] { width: auto }
+      &[type='submit'], &[type='radio'] { width: unset; }
 
       &[type='checkbox'] {
         margin: 0 1px;
