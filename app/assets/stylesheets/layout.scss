@@ -347,8 +347,12 @@ td, .table-list li { font-size: $font_size_small; }
     width: 100%;
   }
 
-  .table-title, .editor-title, .form-table-ender, .colspan { display: block; }
+  .table-title, .editor-title, .form-table-ender { display: block; }
   .select2-container input { margin-top: 5px; }
+
+  &.section-editor { grid-template-columns: 131px auto; }
+  &.alias-editor { grid-template-columns: 94px auto; }
+  &.password-reset { grid-template-columns: 126px auto; }
 }
 
 .form-table-ender {

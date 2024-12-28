@@ -11,7 +11,7 @@
   %b New Alias
 
 = form_for @alias, url: character_aliases_path(@character), method: :post do |f|
-  .form-table
+  .form-table.alias-editor
     .editor-title= "New Alias"
     %div
       .sub= f.label :name
