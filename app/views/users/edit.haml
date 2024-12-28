@@ -1,8 +1,7 @@
 = form_for current_user do |f|
-  .form-table
+  .form-table.user-editor
     .editor-title Settings
-    %div
-      .subber.colspan Account
+    .subber Account
     %div
       .sub= f.label :username
       %div{class: cycle('even', 'odd')}= f.text_field :username, placeholder: "Username", disabled: current_user.salt_uuid.nil?
@@ -16,24 +15,22 @@
             %button{type: 'button'} Edit Profile
     %div
       .sub Bookmarks
-      %div{class: cycle('even', 'odd')}
-        = f.check_box :public_bookmarks, class: 'width-15 vmid'
-        = f.label :public_bookmarks, "Make all bookmarks public", class: 'vmid'
+      .checkbox-field{class: cycle('even', 'odd')}
+        = f.check_box :public_bookmarks
+        = f.label :public_bookmarks, "Make all bookmarks public"
     - unless current_user.avatar.present?
       %div
         .sub Avatar
-        %div{class: cycle('even', 'odd')}
+        .checkbox-field{class: cycle('even', 'odd')}
           .details Please set your avatar directly from the desired icon's page.
-    %div
-      .subber.colspan Site
+    .subber Site
     %div
       .sub Notifications
-      %div{class: cycle('even', 'odd')}
-        = f.check_box :email_notifications, class: 'width-15 vmid'
-        = f.label :email_notifications, "Email about new tags", class: 'vmid'
-        %br
-        = f.check_box :favorite_notifications, class: 'width-15 vmid'
-        = f.label :favorite_notifications, 'Notify when a favorited author makes a new post', class: 'vmid'
+      .checkbox-fields{class: cycle('even', 'odd')}
+        = f.check_box :email_notifications
+        = f.label :email_notifications, "Email about new tags"
+        = f.check_box :favorite_notifications
+        = f.label :favorite_notifications, 'Notify when a favorited author makes a new post'
     %div
       .sub= f.label :timezone, 'Time zone'
       %div{class: cycle('even', 'odd')}= f.select(:timezone, timezone_options(current_user.timezone))
@@ -47,65 +44,60 @@
       .sub Default view
       %div{class: cycle('even', 'odd')}
         = f.select(:default_view, options_for_select({ Icon: 'icon', List: 'list' }, current_user.default_view))
-        %br
         = f.select(:default_character_split, options_for_select({ 'Group characters page by template': 'template', 'Do not group characters page': 'none' }, current_user.default_character_split))
-        %br
-        = f.check_box :default_hide_retired_characters, class: 'width-15 vmid'
-        = f.label :default_hide_retired_characters, "Hide retired characters", class: 'vmid'
+        .checkbox-field
+          = f.check_box :default_hide_retired_characters
+          = f.label :default_hide_retired_characters, "Hide retired characters"
     %div
       .sub Unread
-      %div{class: cycle('even', 'odd')}
-        = f.check_box :unread_opened, class: 'width-15 vmid'
-        = f.label :unread_opened, "Display opened threads only", class: 'vmid'
-        %br
-        = f.check_box :visible_unread, class: 'width-15 vmid'
-        = f.label :visible_unread, "Outline when jumping to unread", class: 'vmid'
-        %br
-        = f.check_box :hide_from_all, class: 'width-15 vmid'
-        = f.label :hide_from_all, "Hide hidden posts from recently updated and other post lists", class: 'vmid'
+      .checkbox-fields{class: cycle('even', 'odd')}
+        = f.check_box :unread_opened
+        = f.label :unread_opened, "Display opened threads only"
+        = f.check_box :visible_unread
+        = f.label :visible_unread, "Outline when jumping to unread"
+        = f.check_box :hide_from_all
+        = f.label :hide_from_all, "Hide hidden posts from recently updated and other post lists"
     %div
       .sub Replies Owed
-      %div{class: cycle('even', 'odd')}
-        = f.check_box :hide_hiatused_tags_owed, class: 'width-15 vmid'
-        = f.label :hide_hiatused_tags_owed, "Hide hiatused threads", class: 'vmid'
+      .checkbox-field{class: cycle('even', 'odd')}
+        = f.check_box :hide_hiatused_tags_owed
+        = f.label :hide_hiatused_tags_owed, "Hide hiatused threads"
     %div
       .sub Daily Report
-      %div{class: cycle('even', 'odd')}
-        = f.check_box :ignore_unread_daily_report, class: 'width-15 vmid'
-        = f.label :ignore_unread_daily_report, "Hide unread notice", class: 'vmid'
-    %div
-      .subber.colspan Posts
+      .checkbox-field{class: cycle('even', 'odd')}
+        = f.check_box :ignore_unread_daily_report
+        = f.label :ignore_unread_daily_report, "Hide unread notice"
+    .subber Posts
     %div
       .sub= f.label :per_page, 'Paging'
       %div{class: cycle('even', 'odd')}= f.select(:per_page, per_page_options(current_user.per_page))
     %div
       .sub Warnings
-      %div{class: cycle('even', 'odd')}
-        = f.check_box :hide_warnings, class: 'width-15 vmid'
-        = f.label :hide_warnings, "Hide content warnings", class: 'vmid'
+      .checkbox-field{class: cycle('even', 'odd')}
+        = f.check_box :hide_warnings
+        = f.label :hide_warnings, "Hide content warnings"
     %div
       .sub= f.label :default_editor
       - editor_modes = { 'Rich Text': 'rtf', HTML: 'html', Markdown: 'md' }
       %div{class: cycle('even', 'odd')}= f.select(:default_editor, options_for_select(editor_modes, current_user.default_editor))
     %div
       .sub Split icon picker
-      %div{class: cycle('even', 'odd')}
-        = f.check_box :icon_picker_grouping, class: 'width-15 vmid'
-        = f.label :icon_picker_grouping, "Group the icon picker by gallery", class: 'vmid'
+      .checkbox-field{class: cycle('even', 'odd')}
+        = f.check_box :icon_picker_grouping
+        = f.label :icon_picker_grouping, "Group the icon picker by gallery"
     %div
       .sub Character Quick Switcher
-      %div{class: cycle('even', 'odd')}
-        = f.check_box :show_user_in_switcher, class: 'width-15 vmid'
-        = f.label :show_user_in_switcher, "Show user character", class: 'vmid'
+      .checkbox-field{class: cycle('even', 'odd')}
+        = f.check_box :show_user_in_switcher
+        = f.label :show_user_in_switcher, "Show user character"
     %div
       .sub Reply defaults
-      %div{class: cycle('even', 'odd')}
+      .checkbox-fields{class: cycle('even', 'odd')}
         - unless current_user.read_only?
-          = f.check_box :default_hide_edit_delete_buttons, class: 'width-15 vmid'
-          = f.label :default_hide_edit_delete_buttons, 'Hide "Edit" and "Delete" buttons', class: 'vmid'
-          %br
-        = f.check_box :default_hide_add_bookmark_button, class: 'width-15 vmid'
-        = f.label :default_hide_add_bookmark_button, 'Hide "Add Bookmark" button', class: 'vmid'
+          = f.check_box :default_hide_edit_delete_buttons
+          = f.label :default_hide_edit_delete_buttons, 'Hide "Edit" and "Delete" buttons'
+        = f.check_box :default_hide_add_bookmark_button
+        = f.label :default_hide_add_bookmark_button, 'Hide "Add Bookmark" button'
     .form-table-ender= submit_tag "Save", class: 'button'
 
 %br
