@@ -175,3 +175,5 @@ span.badge {
   text-shadow: 0 0 2px $shadow_color_badge, 0 0 2px $shadow_color_badge;
   margin: 2px;
 }
+
+.narrow-select > select { width: 95px; }

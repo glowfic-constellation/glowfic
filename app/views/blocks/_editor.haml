@@ -13,18 +13,16 @@
 %div
   .sub= f.label :block_interactions, 'Interactions'
   .checkbox-field{class: klass}
-    = f.check_box :block_interactions, class: 'vmid'
-    = f.label :block_interactions, "Prevent them from interacting with you?", class: 'vmid'
+    = f.check_box :block_interactions
+    = f.label :block_interactions, "Prevent them from interacting with you?"
 %div
   .sub= f.label :hide_them
-  %div{class: klass}
+  .narrow-select{class: klass}
     Prevent you from seeing their:
-    %br
     = f.select :hide_them, options_from_collection_for_select(@options.to_a, :second, :first, @block.hide_them), { class: 'chosen-select' }
 %div
   .sub= f.label :hide_me, 'Hide yourself'
-  %div{class: klass}
+  .narrow-select{class: klass}
     Prevent them from seeing your:
-    %br
     = f.select :hide_me, options_from_collection_for_select(@options.to_a, :second, :first, @block.hide_me), { class: 'chosen-select' }
 .form-table-ender= submit_tag "Save", class: 'button'
