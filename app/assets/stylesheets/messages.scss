@@ -79,3 +79,17 @@ th#select-all-cell {
   width: 15px;
   text-align: center;
 }
+
+#message_form .form-table {
+  width: 100%;
+  grid-template-columns: 170px auto;
+  .editor-title, .sub {
+    display: grid;
+    grid-template-columns: none;
+    justify-content: start;
+  }
+  input[type='text'] {
+    margin: 5px 0;
+    width: 195px;
+  }
+}
