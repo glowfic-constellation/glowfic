@@ -311,11 +311,15 @@ td, .table-list li { font-size: $font_size_small; }
     grid-auto-flow: column;
     button[disabled], input[disabled] { background-color: $bg_color_input_disabled; }
 
-    &.checkbox-field, .checkbox-field {
-      justify-content: left;
+    &.subber { grid-template-columns: none; }
+
+    &.checkbox-field, .checkbox-field, &.checkbox-fields, .checkbox-fields {
+      justify-content: start;
       grid-template-columns: 20px auto;
       column-gap: 4px;
     }
+
+    &.checkbox-fields, .checkbox-fields { align-items: start; }
 
     input {
       margin: 0;
@@ -339,6 +343,7 @@ td, .table-list li { font-size: $font_size_small; }
       padding: 5px;
       display: grid;
       align-items: center;
+      &:not(.sub) { justify-items: start; }
     }
   }
 
@@ -347,12 +352,20 @@ td, .table-list li { font-size: $font_size_small; }
     width: 100%;
   }
 
-  .table-title, .editor-title, .form-table-ender { display: block; }
+  .table-title, .editor-title, .form-table-ender, .colspan { grid-template-columns: none; }
   .select2-container input { margin-top: 5px; }
 
   &.section-editor { grid-template-columns: 131px auto; }
   &.alias-editor { grid-template-columns: 94px auto; }
   &.password-reset { grid-template-columns: 126px auto; }
+  &.user-editor {
+    .checkbox-field, .checkbox-fields { grid-template-columns: 17px auto; }
+    input[type='checkbox'] {
+      width: 15px;
+      height: 15px;
+    }
+  }
+  &#change-password { grid-template-columns: 110px auto; }
 }
 
 .form-table-ender {
@@ -664,3 +677,4 @@ The copy box can't be invisible/hidden or copy fails but opacity works
     padding: 15px;
   }
 }
+
