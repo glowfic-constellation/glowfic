@@ -12,7 +12,7 @@ class Authentication < Object
     user = User.find_by(username: username)
     return false unless valid_user?(user)
 
-    if user.password_resets.active.unused.exists?
+    if user.reset_password_token.present?
       @error = "The password for this account has been reset. Please check your email."
       return false
     end

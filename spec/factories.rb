@@ -201,16 +201,6 @@ FactoryBot.define do
     end
   end
 
-  factory :password_reset do
-    user
-    factory :expired_password_reset do
-      created_at { 3.days.ago }
-    end
-    factory :used_password_reset do
-      used { true }
-    end
-  end
-
   factory :tag do
     sequence :name, ordered_numbers do |n|
       "Tag#{n}"

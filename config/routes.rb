@@ -28,7 +28,6 @@ Rails.application.routes.draw do
       get :profile_edit
     end
   end
-  resources :password_resets, only: [:new, :create, :show, :update]
 
   # Messages and notifications
   resources :messages, except: [:edit, :update, :destroy] do

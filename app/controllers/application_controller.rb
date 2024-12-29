@@ -80,7 +80,7 @@ class ApplicationController < ActionController::Base
     return true if Rails.env.test? && params[:force_tos].nil?
     return true unless standard_request?
     return true if params[:tos_check].present?
-    return true if ['about', 'sessions', 'password_resets'].include?(params[:controller])
+    return true if ['about', 'sessions'].include?(params[:controller])
     return true if params[:controller] == 'users' && params[:action] == 'new'
 
     tos_version = logged_in? ? current_user.tos_version : cookies[:accepted_tos]
