@@ -1,5 +1,11 @@
 # frozen_string_literal: true
 class User < ApplicationRecord
+  # Include default devise modules. Others available are:
+  # :timeoutable and :omniauthable
+  devise :database_authenticatable, :registerable,
+    :recoverable, :rememberable, :validatable,
+    :confirmable, :lockable, :trackable,
+    :argon2, argon2_options: { profile: Rails.env.test? ? :unsafe_cheapest : :rfc_9106_low_memory }
   include Blockable
   include Presentable
   include Permissible
@@ -9,9 +15,6 @@ class User < ApplicationRecord
   MIN_PASSWORD_LEN = 6
   CURRENT_TOS_VERSION = 20181109
   RESERVED_NAMES = ['(deleted user)', 'Glowfic Constellation']
-
-  attr_accessor :password, :password_confirmation
-  attr_writer :validate_password
 
   has_many :icons
   has_many :characters
@@ -39,7 +42,6 @@ class User < ApplicationRecord
   has_many :bookmarked_replies, through: :bookmarks, source: :reply, dependent: :destroy
   has_many :bookmarked_posts, -> { ordered }, through: :bookmarks, source: :post, dependent: :destroy
 
-  validates :crypted, presence: true
   validates :email,
     presence: { on: :create },
     uniqueness: { allow_blank: true }
@@ -47,18 +49,12 @@ class User < ApplicationRecord
     presence: true,
     uniqueness: true,
     length: { in: MIN_USERNAME_LEN..MAX_USERNAME_LEN, allow_blank: true }
-  validates :password,
-    length: { minimum: MIN_PASSWORD_LEN, if: :validate_password? },
-    confirmation: { if: :validate_password? }
   validates :moiety, format: { with: /\A([0-9A-F]{3}){0,2}\z/i }, length: { maximum: 255 }
   validates :moiety_name, length: { maximum: 255 }
   validates :profile_editor_mode, inclusion: { in: ['html', 'rtf', 'md'] }, allow_nil: true
-  validates :password, :password_confirmation, presence: { if: :validate_password? }
   validate :username_not_reserved
 
-  before_validation :encrypt_password, :strip_spaces
   after_update :update_flat_posts
-  after_save :clear_password
 
   scope :ordered, -> { order(username: :asc) }
   scope :active, -> { where(deleted: false) }
@@ -66,10 +62,7 @@ class User < ApplicationRecord
 
   nilify_blanks
 
-  def authenticate(password)
-    return crypted == crypted_password(password) if salt_uuid.present?
-    crypted == old_crypted_password(password)
-  end
+  # TODO: Removed authenticate
 
   def gon_attributes
     {
@@ -128,14 +121,32 @@ class User < ApplicationRecord
 
   private
 
-  def strip_spaces
-    self.username = self.username.strip if self.username.present?
+  # override devise to migrate passwords from legacy format
+  # https://github.com/heartcombo/devise/wiki/How-To:-Migration-legacy-database
+  def valid_password?(password)
+    # 2024+ password format
+    return super unless self.legacy_password_hash.present?
+
+    valid = if salt_uuid.present? # 2016-2024 password format
+      legacy_password_hash == crypted_password(password)
+    else # pre-2016 password format
+      legacy_password_hash == old_crypted_password(password)
+    end
+
+    if valid # migrate to new password format (devise, 2024+)
+      self.password = password
+      self.legacy_password_hash = nil
+      self.salt_uuid = nil
+      self.save!
+    end
+
+    valid
   end
 
-  def encrypt_password
-    return unless password.present?
-    self.salt_uuid ||= SecureRandom.uuid
-    self.crypted = crypted_password(password)
+  def reset_password(*args)
+    self.legacy_password_hash = nil
+    self.salt_uuid = nil
+    super
   end
 
   def crypted_password(unencrypted)
@@ -152,15 +163,6 @@ class User < ApplicationRecord
 
   def old_salt
     "1d0e9f00dc7#{username.to_s.downcase}dda7264ec524b051e434f4dda9ecfef8891004efe56fbff6a0"
-  end
-
-  def clear_password
-    self.password = nil
-    self.password_confirmation = nil
-  end
-
-  def validate_password?
-    !!@validate_password
   end
 
   def username_not_reserved
