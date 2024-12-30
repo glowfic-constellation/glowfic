@@ -5,6 +5,23 @@ class AddDeviseToUsers < ActiveRecord::Migration[8.0]
     rename_column :users, :crypted, :legacy_password_hash
     change_column_null :users, :legacy_password_hash, true
 
+    # when migrating down, fill in old "crypted" hashes for any users that were already migrated
+    # we use a securerandom password (not exposed); users will have to reset passwords in this eventuality
+    # as we don't have access to their underlying password, and we're removing devise support by rolling this back
+    reversible do |direction|
+      direction.up { }
+      direction.down do
+        User.reset_column_information
+        puts "Migrating users back to legacy password format (random password will be set)"
+        User.where(legacy_password_hash: nil).find_each do |user|
+          puts "- User #{user.id}/#{user.username}"
+          user.salt_uuid ||= SecureRandom.uuid
+          crypted = user.send(:crypted_password, SecureRandom.alphanumeric(32))
+          user.update_columns(legacy_password_hash: crypted, salt_uuid: user.salt_uuid) # intentionally skip callbacks
+        end
+      end
+    end
+
     change_table :users do |t|
       ## Database authenticatable
       # t.string :email,              null: false, default: ""
