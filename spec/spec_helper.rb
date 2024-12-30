@@ -88,6 +88,7 @@ RSpec.configure do |config|
   end
 
   config.include FactoryBot::Syntax::Methods
+  config.include Devise::Test::ControllerHelpers, type: :controller
   config.include SpecTestHelper, type: :controller
   config.include ApiTestHelper, type: :controller
   config.include SpecRequestHelper, type: :request

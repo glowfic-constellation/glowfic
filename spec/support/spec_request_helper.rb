@@ -10,11 +10,11 @@ module SpecRequestHelper
   # returns the user it logs in as, navigates to root_path
   def login(user=nil, password=known_test_password)
     user ||= create(:user, password: password)
-    post login_path, params: { username: user.username, password: password }
+    post user_session_path, params: { user: { username: user.username, password: password } }
 
     aggregate_failures do
-      expect(flash[:error]).to be_nil
-      expect(flash[:success]).to include("You are now logged in")
+      expect(flash[:alert]).to be_nil
+      expect(flash[:notice]).to include("Signed in successfully")
     end
 
     user

@@ -36,6 +36,7 @@ FactoryBot.define do
     sequence :email do |n|
       "fake#{n}@faker.com"
     end
+    confirmed_at { Time.zone.now }
     tos_version { User::CURRENT_TOS_VERSION }
 
     factory :admin_user do
