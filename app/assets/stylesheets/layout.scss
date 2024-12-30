@@ -183,8 +183,8 @@
   margin-top: 5px;
 }
 
-.flash.error { background-color: $bg_color_flash_error; }
-.flash.success { background-color: $bg_color_flash_success; }
+.flash.error, .flash.alert { background-color: $bg_color_flash_error; }
+.flash.success, .flash.notice { background-color: $bg_color_flash_success; }
 .flash.breadcrumbs { background-color: $bg_color_flash_breadcrumbs; }
 
 /* Top-right timestamp on certain timestamped pages */
