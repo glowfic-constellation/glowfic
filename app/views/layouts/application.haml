@@ -103,8 +103,8 @@
                   = text_field_tag :username, params[:username], placeholder: "Username"
                   = password_field_tag :password, params[:password], placeholder: "Password"
                 #header-remember
-                  = check_box_tag :remember_me
-                  = label_tag :remember_me, "Remember Me"
+                  = check_box_tag :remember_me, class: 'vmid'
+                  = label_tag :remember_me, "Remember Me", class: 'vmid'
                 #header-buttons
                   = submit_tag "Log in", class: 'button'
                 #header-buttons-links
