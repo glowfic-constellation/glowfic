@@ -1,4 +1,5 @@
 module SpecSystemHelper
+  # TODO: replace with config.include Devise::Test::IntegrationHelpers, type: :feature
   # constant as a method to allow it to be .included by RSpec
   def known_test_password
     'knownpass'

@@ -159,6 +159,8 @@ RSpec.configure do |config|
       Audited.audit_class.as_user(user) { board.destroy! }
     end
     user.destroy!
+    # ensure the routes are loaded
+    Rails.application.routes_reloader.execute_unless_loaded
   end
 
   config.before(:each, type: :system) do
