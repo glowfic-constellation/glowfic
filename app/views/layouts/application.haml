@@ -68,9 +68,9 @@
           #logo
             - unless logged_in?
               #header-links
-                = link_to "Login", login_path
+                = link_to "Login", new_user_session_path
                 %span &nbsp;|&nbsp;
-                = link_to "Sign up", new_user_path
+                = link_to "Sign up", new_user_registration_path
             = link_to root_path do
               = image_tag "layouts/logo.png", alt: 'Glowfic Constellation home'
           #nav-top
@@ -97,8 +97,8 @@
                   %li= link_to "Post", new_post_path
               = link_to logout_path, method: :delete, id: :"header-logout", data: { confirm: 'Press OK to confirm logout' } do
                 = button_tag "Log out", class: 'button'
-            - elsif !current_page?(login_path)
-              = form_with scope: :user, url: session_path(:user), id: 'header-form' do |f|
+            - elsif !current_page?(new_user_session_path)
+              = form_with scope: :user, url: user_session_path, id: 'header-form' do |f|
                 #header-forms
                   = f.text_field :username, placeholder: "Username", id: 'header-username', autocomplete: 'username'
                   = f.password_field :password, placeholder: "Password", id: 'header-password', autocomplete: 'current-password'
@@ -108,9 +108,9 @@
                 #header-buttons
                   = f.submit "Log in", class: 'button'
                 #header-buttons-links
-                  = link_to "Sign up", new_user_path
+                  = link_to "Sign up", new_user_registration_path
                   &nbsp;|&nbsp;
-                  = link_to "Forgot Password?", new_password_path(:user)
+                  = link_to "Forgot Password?", new_user_password_path
         #nav-bottom
           %ul
             %li= link_to 'Continuities', continuities_path

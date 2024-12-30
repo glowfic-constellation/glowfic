@@ -9,9 +9,6 @@ Rails.application.routes.draw do
   root to: 'sessions#index'
 
   # Accounts
-  get '/login' => 'sessions#new', as: :login
-  post '/login' => 'sessions#create'
-  delete '/logout' => 'sessions#destroy', as: :logout
   patch '/confirm_tos' => 'sessions#confirm_tos', as: :confirm_tos
   get '/users/:id/templates' => redirect('/users/%{id}/characters')
   resources :users, except: :destroy do
