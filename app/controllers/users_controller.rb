@@ -3,56 +3,13 @@ class UsersController < ApplicationController
   include DateSelectable
   include Taggable
 
-  before_action :signup_prep, only: :new
-  before_action :login_required, except: [:index, :show, :new, :create, :search]
-  before_action :logout_required, only: [:new, :create]
+  before_action :login_required, except: [:index, :show, :search]
   before_action :require_own_user, only: [:edit, :update, :password, :upgrade, :profile_edit]
   before_action :require_readonly_user, only: :upgrade
 
   def index
     @page_title = 'Users'
     @users = User.active.ordered.paginate(page: page)
-  end
-
-  def new
-    @user = User.new
-  end
-
-  def create
-    @user = User.new(user_params)
-    @user.validate_password = true
-
-    unless params[:tos].present?
-      signup_prep
-      flash.now[:error] = "You must accept the Terms and Conditions to use the Constellation."
-      render :new and return
-    end
-    @user.tos_version = User::CURRENT_TOS_VERSION
-
-    if params[:addition].to_i != 14
-      signup_prep
-      flash.now[:error] = "Please check your math and try again."
-      render :new and return
-    end
-
-    @user.role_id = Permissible::READONLY if params[:secret] != ENV["ACCOUNT_SECRET"]
-
-    begin
-      @user.save!
-    rescue ActiveRecord::RecordInvalid => e
-      signup_prep
-      flash.now[:error] = {
-        message: "There was a problem completing your sign up.",
-        array: @user.errors.full_messages,
-      }
-      log_error(e) unless @user.errors.present?
-      render :new
-    else
-      flash[:success] = "User created! You have been logged in."
-      session[:user_id] = @user.id
-      @current_user = @user
-      redirect_to root_url
-    end
   end
 
   def show

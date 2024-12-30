@@ -11,7 +11,7 @@ Rails.application.routes.draw do
   # Accounts
   patch '/confirm_tos' => 'sessions#confirm_tos', as: :confirm_tos
   get '/users/:id/templates' => redirect('/users/%{id}/characters')
-  resources :users, except: :destroy do
+  resources :users, except: [:new, :create, :destroy] do
     resources :characters, only: :index
     resources :galleries, only: [:index, :show]
     resources :boards, only: :index
