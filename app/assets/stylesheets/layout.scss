@@ -80,6 +80,7 @@
 }
 
 #header-forms, #header-remember, #header-buttons, #header-buttons-links { display: inline; }
+#header-buttons-links { vertical-align: middle; }
 #header-buttons-links, #header-remember { white-space: nowrap; }
 #header-buttons-links a { font-weight: bold; }
 
