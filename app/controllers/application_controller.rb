@@ -9,6 +9,7 @@ class ApplicationController < ActionController::Base
 
   before_action :check_tos
   before_action :check_permanent_user
+  before_action :set_user_token
   before_action :show_password_warning
   before_action :require_glowfic_domain
   before_action :set_login_gon
@@ -183,7 +184,7 @@ class ApplicationController < ActionController::Base
 
   def show_password_warning
     return unless logged_in?
-    return unless current_user.salt_uuid.nil?
+    return unless current_user.salt_uuid.nil? && current_user.encrypted_password.nil?
     logout
     flash.now[:error] = "Because Marri accidentally made passwords a bit too secure, you must log back in to continue using the site."
   end
@@ -195,7 +196,7 @@ class ApplicationController < ActionController::Base
 
   def set_login_gon
     gon.logged_in = logged_in?
-    gon.api_token = session[:api_token]["value"] if logged_in?
+    gon.api_token = set_user_token["value"] if logged_in?
   end
 
   def set_timezone(&)

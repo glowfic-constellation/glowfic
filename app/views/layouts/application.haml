@@ -95,7 +95,7 @@
                 %li= link_to 'Favorites', favorites_path
                 - unless current_user.read_only?
                   %li= link_to "Post", new_post_path
-              = link_to logout_path, method: :delete, id: :"header-logout", data: { confirm: 'Press OK to confirm logout' } do
+              = link_to destroy_user_session_path, method: :delete, id: :"header-logout", data: { confirm: 'Press OK to confirm logout' } do
                 = button_tag "Log out", class: 'button'
             - elsif !current_page?(new_user_session_path)
               = form_with scope: :user, url: user_session_path, id: 'header-form' do |f|
