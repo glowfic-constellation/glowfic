@@ -61,8 +61,6 @@ class User < ApplicationRecord
 
   nilify_blanks
 
-  # TODO: Removed authenticate
-
   def gon_attributes
     {
       username: username,
