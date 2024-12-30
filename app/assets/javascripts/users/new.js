@@ -1,4 +1,5 @@
 /* global gon */
+let duplicateUsername = false;
 $(document).ready(function() {
   $("#user_username").blur(function() {
     $("#signup-username .user-alert").hide();
@@ -38,30 +39,34 @@ $(document).ready(function() {
 });
 
 function validateUsername() {
-  const username = $("#user_username").val();
+  const usernameBox = $("#user_username");
+  const username = usernameBox.val();
   if (username === '') {
     addAlertAfter('username', 'Please choose a username.');
     return false;
-  } else if (username.length < gon.min || username.length > gon.max) {
-    addAlertAfter('username', "Your username must be between "+gon.min+" and "+gon.max+" characters long.");
+  } else if (!usernameBox.get(0).checkValidity()) {
+    addAlertAfter('username', "Your username must be between "+usernameBox.attr('minlength')+" and "+usernameBox.attr('maxlength')+" characters long.");
     return false;
   }
 
-  // eslint-disable-next-line consistent-return
+  // check for duplicate username in background.
+  // FIXME: this is currently racy (we can't return from validateUsername in the AJAX call)
+  // so we currently return the last saved value of duplicateUsername, and update for the next call.
+  // if the username doesn't change rapidly before the submit, this should be good enough.
   $.authenticatedGet('/api/v1/users', {'q': username, 'match': 'exact'}, function(resp, status, xhr) {
     const total = xhr.getResponseHeader('Total');
-    if (total > 0) {
+    duplicateUsername = total > 0;
+    if (duplicateUsername) {
       addAlertAfter('username', 'That username has already been taken.');
-      return false; // TODO: actually return false from validateUsername
     }
   });
 
-  return true;
+  return !duplicateUsername;
 }
 
 function validateEmail() {
-  const email = $("#user_email").val();
-  if (email === '') {
+  const email = $("#user_email");
+  if (!email.get(0).checkValidity()) {
     addAlertAfter('email', 'Please enter an email address.');
     return false;
   }
@@ -77,13 +82,17 @@ function validateConfirmation() {
 }
 
 function validatePasswordField(primaryField, secondaryField, verb) {
-  const primary = $("#user_"+primaryField).val();
+  const primaryBox = $("#user_"+primaryField);
+  const primary = primaryBox.val();
   const secondary = $("#user_"+secondaryField).val();
   let success = true;
 
+  const addAfterId = primaryField.replace("_", "-");
   if (primary === '') {
-    const addAfterId = primaryField.replace("_", "-");
     addAlertAfter(addAfterId, 'Please '+verb+' your password.');
+    success = false;
+  } else if (!primaryBox.get(0).checkValidity()) {
+    addAlertAfter(addAfterId, "Your password must be at least "+primaryBox.attr('minlength')+" characters long.");
     success = false;
   }
 

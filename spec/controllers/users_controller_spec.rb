@@ -36,8 +36,6 @@ RSpec.describe UsersController do
       get :new
       expect(response).to have_http_status(200)
       expect(assigns(:page_title)).to eq('Sign Up')
-      expect(controller.gon.min).to eq(User::MIN_USERNAME_LEN)
-      expect(controller.gon.max).to eq(User::MAX_USERNAME_LEN)
     end
 
     it "complains when logged in" do
@@ -62,8 +60,6 @@ RSpec.describe UsersController do
       expect(flash[:error]).to eq("You must accept the Terms and Conditions to use the Constellation.")
       expect(assigns(:user)).not_to be_valid
       expect(assigns(:page_title)).to eq('Sign Up')
-      expect(controller.gon.min).to eq(User::MIN_USERNAME_LEN)
-      expect(controller.gon.max).to eq(User::MAX_USERNAME_LEN)
     end
 
     it "requires stupid captcha" do
@@ -81,8 +77,6 @@ RSpec.describe UsersController do
       expect(flash[:error][:message]).to eq("There was a problem completing your sign up.")
       expect(assigns(:user)).not_to be_valid
       expect(assigns(:page_title)).to eq('Sign Up')
-      expect(controller.gon.min).to eq(User::MIN_USERNAME_LEN)
-      expect(controller.gon.max).to eq(User::MAX_USERNAME_LEN)
     end
 
     it "rejects short passwords" do
