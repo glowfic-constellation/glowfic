@@ -52,5 +52,13 @@ class AddDeviseToUsers < ActiveRecord::Migration[8.0]
       t.index ["auth_token"], name: "index_password_resets_on_auth_token", unique: true
       t.index ["user_id", "created_at"], name: "index_password_resets_on_user_id_and_created_at"
     end
+
+    reversible do |direction|
+      direction.up do
+        User.reset_column_information
+        User.where.not(email: nil).update_all(confirmed_at: Time.now)
+      end
+      direction.down { }
+    end
   end
 end
