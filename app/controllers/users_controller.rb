@@ -148,11 +148,6 @@ class UsersController < ApplicationController
     redirect_to edit_user_path(current_user)
   end
 
-  def signup_prep
-    use_javascript('users/new')
-    @page_title = 'Sign Up'
-  end
-
   def og_data
     board_ids = BoardAuthor.where(user_id: @user.id, cameo: false).select(:board_id).distinct.pluck(:board_id)
     boards = Board.where(id: board_ids).ordered.pluck(:name)

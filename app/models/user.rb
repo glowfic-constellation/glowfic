@@ -12,7 +12,7 @@ class User < ApplicationRecord
 
   MIN_USERNAME_LEN = 3
   MAX_USERNAME_LEN = 80
-  MIN_PASSWORD_LEN = 6
+  MIN_PASSWORD_LEN = 6 # must match config/initializers/devise.rb
   CURRENT_TOS_VERSION = 20181109
   RESERVED_NAMES = ['(deleted user)', 'Glowfic Constellation']
 
