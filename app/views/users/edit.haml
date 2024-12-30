@@ -8,7 +8,12 @@
         %th.subber{colspan: 2} Account
       %tr
         %th.sub= f.label :username
-        %td{class: cycle('even', 'odd')}= f.text_field :username, placeholder: "Username", disabled: current_user.salt_uuid.nil?
+        %td{class: cycle('even', 'odd')}
+          - disabled = current_user.salt_uuid.nil? && current_user.encrypted_password.nil?
+          = f.text_field :username, placeholder: "Username", disabled: disabled
+          - if disabled
+            %br
+            %span.details Please reset your password first to allow changing your username.
       %tr
         %th.sub= f.label :email
         %td{class: cycle('even', 'odd')}= f.text_field :email, placeholder: "Email address"
