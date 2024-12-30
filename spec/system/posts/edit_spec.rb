@@ -16,10 +16,10 @@ RSpec.describe "Editing posts" do
   end
 
   scenario "User edits a post" do
-    user = create(:user, password: 'known')
+    user = create(:user, password: known_test_password)
     post = create(:post, user: user, subject: 'test subject', content: 'test content', editor_mode: 'html')
 
-    login(user, 'known')
+    login(user, known_test_password)
 
     visit post_path(post)
     expect(page).to have_selector('.post-container', count: 1)
@@ -49,10 +49,10 @@ RSpec.describe "Editing posts" do
   end
 
   scenario "User edits a post with preview" do
-    user = create(:user, password: 'known')
+    user = create(:user, password: known_test_password)
     post = create(:post, user: user, subject: 'test subject', editor_mode: 'html')
 
-    login(user, 'known')
+    login(user, known_test_password)
 
     visit post_path(post)
     expect(page).to have_selector('.post-container', count: 1)
@@ -113,7 +113,7 @@ RSpec.describe "Editing posts" do
     user = create(:user)
     post = create(:post, user: user, subject: 'test subject', content: 'test content', editor_mode: 'html')
 
-    login(create(:mod_user, password: 'known'), 'known')
+    login(create(:mod_user, password: known_test_password), known_test_password)
 
     visit post_path(post)
     expect(page).to have_selector('.post-container', count: 1)
@@ -152,7 +152,7 @@ RSpec.describe "Editing posts" do
     user = create(:user)
     post = create(:post, user: user, subject: 'test subject', editor_mode: 'html')
 
-    login(create(:mod_user, password: 'known'), 'known')
+    login(create(:mod_user, password: known_test_password), known_test_password)
 
     visit post_path(post)
     expect(page).to have_selector('.post-container', count: 1)
@@ -201,7 +201,7 @@ RSpec.describe "Editing posts" do
     board = create(:board, creator: user, writers: [other_user], name: 'test board')
     post = create(:post, user: user, board: board, subject: 'test subject')
 
-    login(create(:mod_user, password: 'known'), 'known')
+    login(create(:mod_user, password: known_test_password), known_test_password)
 
     visit post_path(post)
     expect(page).to have_selector('.post-container', count: 1)

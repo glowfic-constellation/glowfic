@@ -1,6 +1,6 @@
 RSpec.describe "Show a list of galleries" do
   def setup_sample_data
-    user = create(:user, username: 'Test user', password: 'known')
+    user = create(:user, username: 'Test user', password: known_test_password)
     create(:icon, user: user) # galleryless icon
     create(:gallery, user: user, name: 'Empty gallery')
 
@@ -90,7 +90,7 @@ RSpec.describe "Show a list of galleries" do
 
   scenario "View own list of galleries" do
     user = setup_sample_data
-    login(user, 'known')
+    login(user, known_test_password)
     visit user_galleries_path(user_id: user.id)
 
     expect(page).to have_selector('th', text: "Your Galleries")

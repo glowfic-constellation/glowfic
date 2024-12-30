@@ -107,7 +107,7 @@ RSpec.describe "Viewing a character" do
     user = create(:user, username: 'Example user')
     char = create_basic_character(user)
 
-    login(create(:mod_user, password: 'known'), 'known')
+    login(create(:mod_user, password: known_test_password), known_test_password)
 
     expect_basic_character_page(char) do |view|
       expect(page).to have_selector('.breadcrumbs', text: 'Test char » ' + view)
@@ -124,10 +124,10 @@ RSpec.describe "Viewing a character" do
   end
 
   scenario "View your own basic character" do
-    user = create(:user, username: 'Example user', password: 'known')
+    user = create(:user, username: 'Example user', password: known_test_password)
     char = create_basic_character(user)
 
-    login(user, 'known')
+    login(user, known_test_password)
 
     expect_basic_character_page(char) do |view|
       expect(page).to have_selector('.breadcrumbs', text: 'Test char » ' + view)
@@ -144,7 +144,7 @@ RSpec.describe "Viewing a character" do
   end
 
   scenario "View a galleryless character" do
-    user = create(:user, username: 'Example user', password: 'known')
+    user = create(:user, username: 'Example user', password: known_test_password)
     char = create(:character, user: user, name: 'Test char')
 
     login
@@ -179,7 +179,7 @@ RSpec.describe "Viewing a character" do
   end
 
   scenario "View a complex character" do
-    user = create(:user, username: 'Example user', password: 'known')
+    user = create(:user, username: 'Example user', password: known_test_password)
     icon2_1 = create(:icon, user: user, keyword: 'Test B')
     icon2_2 = create(:icon, user: user, keyword: 'Test A')
     icon2_3 = create(:icon, user: user, keyword: 'Test C')
@@ -303,14 +303,14 @@ RSpec.describe "Viewing a character" do
   end
 
   scenario "Viewing many character galleries", :js do
-    user = create(:user, username: 'Example user', password: 'known')
+    user = create(:user, username: 'Example user', password: known_test_password)
     icons = Array.new(4) { |i| create(:icon, user: user, keyword: "Default#{i}", url: "https://example.com/image#{i}.png") }
     galleries = Array.new(4) { |i| create(:gallery, user: user, icons: [icons[i]], name: "Gallery #{i}") }
     group = create(:gallery_group, name: 'Group A')
     galleries[2].update!(gallery_groups: [group])
     char = create(:character, user: user, galleries: galleries, default_icon: icons.first, name: 'Test char')
 
-    login(user, 'known')
+    login(user, known_test_password)
 
     visit character_path(char)
 

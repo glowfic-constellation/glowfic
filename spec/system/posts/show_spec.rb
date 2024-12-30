@@ -78,7 +78,7 @@ RSpec.describe "Viewing posts" do
   end
 
   context "Interacting with bookmarks" do
-    let!(:user) { create(:user, password: 'known') }
+    let!(:user) { create(:user, password: known_test_password) }
     let!(:post) { create(:post) }
     let!(:reply) { create(:reply, post: post) }
     let!(:bookmark) { create(:bookmark, reply: reply, user: user) }
@@ -91,7 +91,7 @@ RSpec.describe "Viewing posts" do
 
     context "when logged in", :js do
       scenario "as user with bookmarks" do
-        login(user, 'known')
+        login(user, known_test_password)
 
         visit post_path(post)
         find_by_id("post-menu").click
@@ -122,7 +122,7 @@ RSpec.describe "Viewing posts" do
   end
 
   scenario "Splitting a post" do
-    user = create(:user, password: 'known')
+    user = create(:user, password: known_test_password)
     post = create(:post, user: user)
     create_list(:reply, 5, post: post)
 
@@ -130,7 +130,7 @@ RSpec.describe "Viewing posts" do
     within('#post-menu-box') { expect(page).to have_no_link("Split Post") }
     expect(page).to have_no_link("Split Post Here")
 
-    login(user, 'known')
+    login(user, known_test_password)
     visit post_path(post)
     expect(page).to have_no_link("Split Post Here")
     within('#post-menu-box') { click_link("Split Post") }

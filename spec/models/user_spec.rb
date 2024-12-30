@@ -10,9 +10,9 @@ RSpec.describe User do
     end
 
     it "should set and support salt_uuid" do
-      user = create(:user, password: 'test')
+      user = create(:user, password: 'testpass')
       expect(user.salt_uuid).not_to be_nil
-      expect(user.authenticate('test')).to eq(true)
+      expect(user.authenticate('testpass')).to eq(true)
     end
   end
 

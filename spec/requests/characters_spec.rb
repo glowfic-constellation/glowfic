@@ -99,7 +99,7 @@ RSpec.describe "Character" do
 
   describe "facecasts" do
     it "shows facecasts for several characters" do
-      main_user = create(:user, username: 'John Doe', password: 'known')
+      main_user = create(:user, username: 'John Doe', password: known_test_password)
       other_user = create(:user, username: 'Jane Doe')
       login(main_user)
 

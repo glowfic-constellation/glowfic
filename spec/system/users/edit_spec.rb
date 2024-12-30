@@ -1,5 +1,5 @@
 RSpec.describe "Editing account settings" do
-  let(:user) { create(:user, username: 'John Doe', password: 'known', email: 'dummy@example.com') }
+  let(:user) { create(:user, username: 'John Doe', password: known_test_password, email: 'dummy@example.com') }
 
   scenario "Logged-out user tries to edit a user" do
     visit edit_user_path(user)
@@ -15,7 +15,7 @@ RSpec.describe "Editing account settings" do
   end
 
   scenario "User edits themself", :js do
-    login(user, 'known')
+    login(user, known_test_password)
     visit edit_user_path(user)
     expect(page).to have_no_selector('.error')
     expect(page).to have_selector('.editor-title', exact_text: 'Settings')
