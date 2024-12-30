@@ -118,8 +118,6 @@ class User < ApplicationRecord
     blocked_or_hidden_posts('hidden', posts_blocked, full_blocked)
   end
 
-  private
-
   # override devise to migrate passwords from legacy format
   # https://github.com/heartcombo/devise/wiki/How-To:-Migration-legacy-database
   def valid_password?(password)
@@ -147,6 +145,8 @@ class User < ApplicationRecord
     self.salt_uuid = nil
     super
   end
+
+  private
 
   def crypted_password(unencrypted)
     crypted = "Adding #{salt_uuid} to #{unencrypted}"
