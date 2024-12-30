@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2024_12_24_202900) do
+ActiveRecord::Schema[8.0].define(version: 2024_12_29_165332) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "citext"
   enable_extension "pg_catalog.plpgsql"
@@ -293,16 +293,6 @@ ActiveRecord::Schema[8.0].define(version: 2024_12_24_202900) do
     t.index ["user_id"], name: "index_notifications_on_user_id"
   end
 
-  create_table "password_resets", id: :serial, force: :cascade do |t|
-    t.integer "user_id", null: false
-    t.string "auth_token", null: false
-    t.boolean "used", default: false
-    t.datetime "created_at", precision: nil
-    t.datetime "updated_at", precision: nil
-    t.index ["auth_token"], name: "index_password_resets_on_auth_token", unique: true
-    t.index ["user_id", "created_at"], name: "index_password_resets_on_user_id_and_created_at"
-  end
-
   create_table "post_authors", id: :serial, force: :cascade do |t|
     t.integer "user_id", null: false
     t.integer "post_id", null: false
@@ -466,7 +456,7 @@ ActiveRecord::Schema[8.0].define(version: 2024_12_24_202900) do
 
   create_table "users", id: :serial, force: :cascade do |t|
     t.citext "username", null: false
-    t.string "crypted", null: false
+    t.string "legacy_password_hash"
     t.integer "avatar_id"
     t.integer "active_character_id"
     t.integer "per_page", default: 25
@@ -501,7 +491,26 @@ ActiveRecord::Schema[8.0].define(version: 2024_12_24_202900) do
     t.boolean "public_bookmarks", default: false
     t.boolean "default_hide_edit_delete_buttons", default: false
     t.boolean "default_hide_add_bookmark_button", default: false
+    t.string "encrypted_password", default: "", null: false
+    t.string "reset_password_token"
+    t.datetime "reset_password_sent_at"
+    t.datetime "remember_created_at"
+    t.integer "sign_in_count", default: 0, null: false
+    t.datetime "current_sign_in_at"
+    t.datetime "last_sign_in_at"
+    t.string "current_sign_in_ip"
+    t.string "last_sign_in_ip"
+    t.string "confirmation_token"
+    t.datetime "confirmed_at"
+    t.datetime "confirmation_sent_at"
+    t.citext "unconfirmed_email"
+    t.integer "failed_attempts", default: 0, null: false
+    t.string "unlock_token"
+    t.datetime "locked_at"
+    t.index ["confirmation_token"], name: "index_users_on_confirmation_token", unique: true
     t.index ["email"], name: "index_users_on_email", unique: true
+    t.index ["reset_password_token"], name: "index_users_on_reset_password_token", unique: true
+    t.index ["unlock_token"], name: "index_users_on_unlock_token", unique: true
     t.index ["username"], name: "index_users_on_username", unique: true
   end
 end

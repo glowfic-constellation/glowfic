@@ -3,6 +3,8 @@
 class AddDeviseToUsers < ActiveRecord::Migration[8.0]
   def change
     rename_column :users, :crypted, :legacy_password_hash
+    change_column_null :users, :legacy_password_hash, true
+
     change_table :users do |t|
       ## Database authenticatable
       # t.string :email,              null: false, default: ""
@@ -40,7 +42,8 @@ class AddDeviseToUsers < ActiveRecord::Migration[8.0]
     add_index :users, :confirmation_token,   unique: true
     add_index :users, :unlock_token,         unique: true
 
-    drop_table :password_resets do |t| # copied schema before deletion
+    # in Rails 8.0.1, needs options to be passed to be reversible (avoids ArgumentError in create_table)
+    drop_table :password_resets, id: :serial do |t| # copied schema before deletion
       t.integer "user_id", null: false
       t.string "auth_token", null: false
       t.boolean "used", default: false
