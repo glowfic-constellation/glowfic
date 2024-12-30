@@ -1,5 +1,5 @@
 RSpec.describe "Searching bookmarks" do
-  let!(:private_user) { create(:user, password: 'known') }
+  let!(:private_user) { create(:user, password: known_test_password) }
   let!(:public_user) { create(:user, public_bookmarks: true) }
   let!(:posts) { create_list(:post, 3) }
   let!(:replies) do
@@ -131,7 +131,7 @@ RSpec.describe "Searching bookmarks" do
     validate_bookmarks_found public_bookmarks, posts
 
     # Searching for own bookmarks does show results
-    login(private_user, 'known')
+    login(private_user, known_test_password)
     visit search_bookmarks_path
     perform_search user: private_user, logged_in_user: private_user
     validate_bookmarks_found private_bookmarks, posts
@@ -152,7 +152,7 @@ RSpec.describe "Searching bookmarks" do
   end
 
   scenario "allows managing own bookmarks", :js do
-    login(private_user, 'known')
+    login(private_user, known_test_password)
     visit search_bookmarks_path
     perform_search user: private_user
 

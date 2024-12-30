@@ -1,5 +1,5 @@
 RSpec.describe "Viewing users" do
-  let(:user) { create(:user, password: 'known') }
+  let(:user) { create(:user, password: known_test_password) }
 
   scenario "Interacting with author warnings" do
     visit user_path(user)
@@ -15,7 +15,7 @@ RSpec.describe "Viewing users" do
 
   context "without profile description" do
     scenario "shows own empty profile" do
-      login(user, 'known')
+      login(user, known_test_password)
       visit user_path(user)
       expect(page).to have_text("Author Profile")
       expect(page).to have_text("(Your profile is empty.)")
@@ -32,7 +32,7 @@ RSpec.describe "Viewing users" do
   context "with profile description" do
     scenario "shows own profile" do
       user.update!(profile: "User Description")
-      login(user, 'known')
+      login(user, known_test_password)
       visit user_path(user)
       expect(page).to have_text("User Description")
       expect(page).to have_link(href: profile_edit_user_path(user))

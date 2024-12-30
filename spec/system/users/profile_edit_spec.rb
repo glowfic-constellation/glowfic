@@ -1,5 +1,5 @@
 RSpec.describe "Editing user profile" do
-  let(:user) { create(:user, username: 'John Doe', password: 'known', email: 'dummy@example.com') }
+  let(:user) { create(:user, username: 'John Doe', password: known_test_password, email: 'dummy@example.com') }
 
   scenario "Logged-out user tries to edit a user" do
     visit profile_edit_user_path(user)
@@ -15,7 +15,7 @@ RSpec.describe "Editing user profile" do
   end
 
   scenario "User edits themself", :js do
-    login(user, 'known')
+    login(user, known_test_password)
 
     # Page exists
     visit profile_edit_user_path(user)

@@ -1,5 +1,5 @@
 RSpec.describe "Viewing an icon" do
-  let(:user) { create(:user, username: 'Jane Doe', password: 'known') }
+  let(:user) { create(:user, username: 'Jane Doe', password: known_test_password) }
   let(:icon) { create(:icon, user: user, keyword: 'iconic') }
   let(:gallery) { create(:gallery, user: user, name: 'Example Gallery') }
 
@@ -51,7 +51,7 @@ RSpec.describe "Viewing an icon" do
   end
 
   scenario "Viewing own icon" do
-    login(user, 'known')
+    login(user, known_test_password)
     visit icon_path(icon)
 
     expect(page).to have_selector('.breadcrumbs', text: 'Galleries » (0 Galleries) » iconic » Stats')

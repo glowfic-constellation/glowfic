@@ -2,7 +2,7 @@ RSpec.describe "Blocks" do
   describe "creation" do
     it "creates a new block and shows on the index list" do
       other_user = create(:user, username: "Evil User")
-      self_user = create(:user, password: "known")
+      self_user = create(:user, password: known_test_password)
       login(self_user)
 
       get "/blocks"
