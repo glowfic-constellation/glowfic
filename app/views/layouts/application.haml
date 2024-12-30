@@ -104,7 +104,7 @@
                   = f.password_field :password, placeholder: "Password", id: 'header-password', autocomplete: 'current-password'
                 #header-remember
                   = f.check_box :remember_me, class: 'vmid', id: 'header-rememberme'
-                  = f.label 'header-rememberme', "Remember Me", class: 'vmid'
+                  = label_tag 'header-rememberme', "Remember Me", class: 'vmid'
                 #header-buttons
                   = f.submit "Log in", class: 'button'
                 #header-buttons-links
