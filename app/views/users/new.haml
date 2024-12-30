@@ -36,6 +36,7 @@
         %th.sub.vtop= f.label :secret, "Secret (optional)"
         %td.even
           = text_field_tag :secret, params[:secret], placeholder: "Secret"
+          %span.details (If you don't know what this is, please leave it blank!)
       %tr#signup-captcha
         %th.sub.vtop Captcha
         %td.odd
