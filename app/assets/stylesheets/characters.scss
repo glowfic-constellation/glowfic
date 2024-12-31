@@ -68,5 +68,12 @@
   grid-template-columns: auto auto;
   justify-items: start;
   justify-content: normal;
+  padding: 5px 10px;
   a[data-method='delete'] { justify-self: flex-end }
+
+  &.centered {
+    grid-template-rows: none;
+    justify-content: center;
+    padding: 10px;
+  }
 }
