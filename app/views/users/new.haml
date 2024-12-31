@@ -26,9 +26,9 @@
             = image_tag 'icons/exclamation.png', alt: '!', title: '', class: 'vmid'
             %span.msg
       %tr#signup-password-confirmation
-        %th.sub.vtop= f.label :password_confirmation, 'Confirm', autocomplete: "new-password", minlength: User::MIN_PASSWORD_LEN, required: true
+        %th.sub.vtop= f.label :password_confirmation, 'Confirm'
         %td.odd
-          = f.password_field :password_confirmation, placeholder: "Confirm Password"
+          = f.password_field :password_confirmation, placeholder: "Confirm Password", autocomplete: "new-password", minlength: User::MIN_PASSWORD_LEN, required: true
           .user-alert.hidden
             = image_tag 'icons/exclamation.png', alt: '!', title: '', class: 'vmid'
             %span.msg
