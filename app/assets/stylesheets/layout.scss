@@ -314,6 +314,7 @@ td, .table-list li { font-size: $font_size_small; }
     &.subber { grid-template-columns: none; }
 
     &.checkbox-field, .checkbox-field, &.checkbox-fields, .checkbox-fields {
+      display: grid;
       justify-content: start;
       grid-template-columns: 20px auto;
       column-gap: 4px;
@@ -366,6 +367,20 @@ td, .table-list li { font-size: $font_size_small; }
     }
   }
   &#change-password { grid-template-columns: 110px auto; }
+  &#signup {
+    grid-template-columns: 94px auto;
+    .user-alert {
+      margin: 7px 0 2px 0;
+      display: grid;
+      grid-template-columns: 16px auto;
+      gap: 4px;
+      justify-content: center;
+    }
+    #signup-secret > div:not(.sub), #signup-terms > div:not(.sub) {
+      grid-template-columns: auto;
+    }
+    #signup-terms #tos { display: block; }
+  }
 }
 
 .form-table-ender {
@@ -495,12 +510,6 @@ tr.gallery-tags .tag-item { color: $font_color_tag_item_gallery; }
   margin-top: 0;
   margin-bottom: 0;
   padding-left: 15px;
-}
-
-#signup {
-  .sub { width: 90px; }
-  .user-alert { margin: 7px 0 2px 0; }
-  .msg { vertical-align: middle; }
 }
 
 .continuity-spacer { height: 20px; }
