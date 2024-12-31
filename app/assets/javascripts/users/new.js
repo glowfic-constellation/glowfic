@@ -1,6 +1,12 @@
 /* global gon */
 let duplicateUsername = false;
 $(document).ready(function() {
+  $("#signup-username .user-alert").hide();
+  $("#signup-email .user-alert").hide();
+  $("#signup-password .user-alert").hide();
+  $("#signup-password-confirmation .user-alert").hide();
+  $("#signup-terms .user-alert").hide();
+
   $("#user_username").blur(function() {
     $("#signup-username .user-alert").hide();
     validateUsername();

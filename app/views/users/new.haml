@@ -5,29 +5,29 @@
       .sub.vtop= f.label :username
       .even
         = f.text_field :username, placeholder: "Username", autofocus: true, autocomplete: "username", minlength: User::MIN_USERNAME_LEN, maxlength: User::MAX_USERNAME_LEN, required: true
-        .user-alert.grid-hidden
-          = image_tag 'icons/exclamation.png', alt: '!', title: '', class: 'vmid'
+        .user-alert
+          = image_tag 'icons/exclamation.png', alt: '!', title: ''
           %span.msg
     #signup-email
       .sub.vtop= f.label :email
       .odd
         = f.text_field :email, placeholder: "Email address", autocomplete: "email", type: "email", required: true
-        .user-alert.grid-hidden
-          = image_tag 'icons/exclamation.png', alt: '!', title: '', class: 'vmid'
+        .user-alert
+          = image_tag 'icons/exclamation.png', alt: '!', title: ''
           %span.msg
     #signup-password
       .sub.vtop= f.label :password
       .even
         = f.password_field :password, placeholder: "Password", autocomplete: "new-password", minlength: User::MIN_PASSWORD_LEN, required: true
-        .user-alert.grid-hidden
-          = image_tag 'icons/exclamation.png', alt: '!', title: '', class: 'vmid'
+        .user-alert
+          = image_tag 'icons/exclamation.png', alt: '!', title: ''
           %span.msg
     #signup-password-confirmation
       .sub.vtop= f.label :password_confirmation, 'Confirm'
       .odd
         = f.password_field :password_confirmation, placeholder: "Confirm Password", autocomplete: "new-password", minlength: User::MIN_PASSWORD_LEN, required: true
-        .user-alert.grid-hidden
-          = image_tag 'icons/exclamation.png', alt: '!', title: '', class: 'vmid'
+        .user-alert
+          = image_tag 'icons/exclamation.png', alt: '!', title: ''
           %span.msg
     #signup-secret
       .sub.vtop= f.label :secret, "Secret (optional)"
@@ -41,13 +41,14 @@
     #signup-terms
       .sub.vtop Terms
       .odd
-        = check_box_tag :tos, true, params[:tos].present?
-        = label_tag :tos, class: 'vmid' do
-          I have read and agree to the
-          = link_to 'Terms of Service', tos_path
-          and the
-          = link_to 'Privacy Policy', privacy_path
-        .user-alert.grid-hidden
-          = image_tag 'icons/exclamation.png', alt: '!', title: '', class: 'vmid'
+        .checkbox-field
+          = check_box_tag :tos, true, params[:tos].present?
+          = label_tag :tos do
+            I have read and agree to the
+            = link_to 'Terms of Service', tos_path
+            and the
+            = link_to 'Privacy Policy', privacy_path
+        .user-alert
+          = image_tag 'icons/exclamation.png', alt: '!', title: ''
           %span.msg
     .form-table-ender= submit_tag "Sign Up", class: 'button'
