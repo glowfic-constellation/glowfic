@@ -381,6 +381,7 @@ td, .table-list li { font-size: $font_size_small; }
     }
     #signup-terms #tos { display: block; }
   }
+  &#contribute { grid-template-columns: none; }
 }
 
 .form-table-ender {
