@@ -310,23 +310,7 @@ td, .table-list li { font-size: $font_size_small; }
     justify-content: center;
     grid-auto-flow: column;
     button[disabled], input[disabled] { background-color: $bg_color_input_disabled; }
-
-    &.subber { grid-template-columns: none; }
-
-    &.checkbox-field, .checkbox-field, &.checkbox-fields, .checkbox-fields {
-      display: grid;
-      justify-content: start;
-      grid-template-columns: 20px auto;
-      column-gap: 4px;
-    }
-
-    &.checkbox-fields, .checkbox-fields { align-items: start; }
-
-    &.radio-fields, .radio-fields {
-      display: grid;
-      grid-template-columns: 14px auto;
-      column-gap: 4px;
-    }
+    .select2-container input { margin-top: 5px; }
 
     input {
       margin: 0;
@@ -354,27 +338,53 @@ td, .table-list li { font-size: $font_size_small; }
     }
   }
 
+  .checkbox-field, .checkbox-fields {
+    display: grid;
+    justify-content: start;
+    grid-template-columns: 20px auto;
+    column-gap: 4px;
+  }
+
+  .checkbox-fields { align-items: start; }
+
+  .radio-fields {
+    display: grid;
+    grid-template-columns: 14px auto;
+    column-gap: 4px;
+  }
+
   textarea {
     height: 10em;
     width: 100%;
   }
 
-  .table-title, .editor-title, .form-table-ender, .colspan { grid-template-columns: none; }
-  .select2-container input { margin-top: 5px; }
+  &#contribute { grid-template-columns: none; }
+  .subber, .table-title, .editor-title, .form-table-ender { grid-template-columns: none; }
+  .colspan { grid-template-columns: none; }
 
-  &.section-editor { grid-template-columns: 131px auto; }
-  &.alias-editor { grid-template-columns: 94px auto; }
-  &.password-reset { grid-template-columns: 126px auto; }
+  &#section-editor { grid-template-columns: 131px auto; }
+  &#alias-editor { grid-template-columns: 94px auto; }
+  &#password-reset { grid-template-columns: 126px auto; }
+  &#change-password { grid-template-columns: 110px auto; }
+  &#index-editor, &#index-section-editor { grid-template-columns: 131px auto; }
+  &#index-post-editor { grid-template-columns: 148px auto; }
+  &#post-splitter { grid-template-columns: 111px auto; }
+
+  &#tag-editor .checkbox-field { grid-template-columns: 17px auto; }
+
   &.user-editor {
     .checkbox-field, .checkbox-fields { grid-template-columns: 17px auto; }
+
     input[type='checkbox'] {
       width: 15px;
       height: 15px;
     }
   }
-  &#change-password { grid-template-columns: 110px auto; }
+
   &#signup {
     grid-template-columns: 94px auto;
+    #signup-terms #tos { display: block; } // overriding the other #tos being hidden
+
     .user-alert {
       margin: 7px 0 2px 0;
       display: grid;
@@ -382,16 +392,11 @@ td, .table-list li { font-size: $font_size_small; }
       gap: 4px;
       justify-content: center;
     }
+
     #signup-secret > div:not(.sub), #signup-terms > div:not(.sub) {
       grid-template-columns: auto;
     }
-    #signup-terms #tos { display: block; }
   }
-  &#contribute { grid-template-columns: none; }
-  &#tag-editor .checkbox-field { grid-template-columns: 17px auto; }
-  &#index-editor, &#index-section-editor { grid-template-columns: 131px auto; }
-  &#index-post-editor { grid-template-columns: 148px auto; }
-  &#post-splitter { grid-template-columns: 111px auto; }
 
   &#mark-continuities {
     margin-bottom: 10px;
