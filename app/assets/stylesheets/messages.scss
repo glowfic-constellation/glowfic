@@ -41,7 +41,7 @@
   z-index: 1;
   padding: 10px;
 
-  .text {
+  .message-menu-text {
     width: 55%;
     text-align: right;
     margin-bottom: 5px;
@@ -62,7 +62,7 @@
 @media (max-width: 600px) {
   .message-menu { overflow: overlay; } /* to get it to redraw the boundaries */
 
-  .message-menu .text {
+  .message-menu .message-menu-text {
     text-align: left;
     margin: 0 10px;
     width: auto;
