@@ -41,12 +41,12 @@ a:hover { color: $font_color_link_hover; }
   color: $font_color_flash_breadcrumbs;
 }
 
-.flash.success {
+.flash.success, .flash.notice {
   background-color: $bg_color_flash_success;
   color: $font_color_flash_success;
 }
 
-.flash.error { background-color: $bg_color_flash_error; }
+.flash.error, .flash.alert { background-color: $bg_color_flash_error; }
 
 .search-box {
   background-color: $bg_color_search_box;
