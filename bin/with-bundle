@@ -5,4 +5,4 @@ if ! bundle check > /dev/null; then
   BUNDLE_FROZEN=true bundle install || { echo "Gemfile doesn't match Gemfile.lock, exiting - please run bundle install to force an update."; exit 1; }
 fi
 
-bundle exec "$@"
+exec bundle exec "$@"
