@@ -12,7 +12,7 @@
 
 = form_for @character, url: @character, method: :put do |f|
   .character-form
-    .form-table
+    .form-table#character-editor
       .editor-title= @character.name
       = render 'editor', f: f
 

@@ -31,11 +31,11 @@ $(document).ready(function() {
     $("#character_template_attributes_id").val('');
 
     if ($("#new_template").is(":checked")) {
-      $("#create_template").show();
+      $("#create_template").removeClass('hidden');
       oldTemplate = $("#character_template_id").val();
       $("#character_template_id").attr("disabled", true).val('').trigger("change.select2");
     } else {
-      $("#create_template").hide();
+      $("#create_template").addClass('hidden');
       $("#character_template_id").attr("disabled", false).val(oldTemplate).trigger("change.select2");
     }
   });

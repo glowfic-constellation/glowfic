@@ -75,3 +75,8 @@
     padding: 10px;
   }
 }
+
+#character-editor #create_template {
+  display: grid;
+  &.hidden { display: none; }
+}
