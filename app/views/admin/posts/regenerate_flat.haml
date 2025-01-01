@@ -12,7 +12,7 @@
     %div
       .sub Force Regenerate?
       .checkbox-field.padding-5{class: cycle('even', 'odd')}
-        = f.check_box :force, checked: params[:force], class: 'vmid'
-        = f.label :force, "Include Flatposts Regenerated Since Post Last Tagged", class: 'vmid'
+        = f.check_box :force, checked: params[:force]
+        = f.label :force, "Include Flatposts Regenerated Since Post Last Tagged"
     .form-table-ender
       = f.submit 'Regenerate', class: 'button', id: 'submit_button', data: { disable_with: 'Regenerating...' }

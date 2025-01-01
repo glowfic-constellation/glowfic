@@ -9,13 +9,13 @@
 %div
   .sub= f.label :retired, 'Retired?'
   .even.checkbox-field
-    = f.check_box :retired, class: 'vmid'
+    = f.check_box :retired
     = f.label :retired, 'Do not display member characters in character selector', class: 'vmid'
 - if @selectable_characters.present?
   %div
     .sub.vtop= f.label :characters_ids, 'Characters'
     .odd.checkbox-fields
       = collection_check_boxes :template, :character_ids, @selectable_characters, :id, :name, selected: @character_ids do |box|
-        = box.check_box class: 'vmid'
-        = box.label class: 'vmid'
+        = box.check_box
+        = box.label
 .form-table-ender= submit_tag "Save", class: 'button'
