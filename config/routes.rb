@@ -4,6 +4,7 @@ require 'resque/server'
 Rails.application.routes.draw do
   devise_for :users, skip: :unlock, controllers: {
     registrations: 'user/registrations',
+    sessions: 'user/sessions',
   }
   # For details on the DSL available within this file, see https://guides.rubyonrails.org/routing.html
   apipie
