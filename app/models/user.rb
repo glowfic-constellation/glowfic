@@ -128,12 +128,8 @@ class User < ApplicationRecord
       legacy_password_hash == old_crypted_password(password)
     end
 
-    if valid # migrate to new password format (devise, 2024+)
-      self.password = password
-      self.legacy_password_hash = nil
-      self.salt_uuid = nil
-      self.save!
-    end
+    # migrate to new password format (devise, 2025+)
+    self.update!(password: password, legacy_password_hash: nil, salt_uuid: nil) if valid
 
     valid
   end
