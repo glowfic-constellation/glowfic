@@ -38,7 +38,7 @@
       .icon-row{data: { index: i }}
         - empty_gif = 'data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw=='
         .preview-icon-cell{class: klass}= icon_mem_tag purl || empty_gif, pkey || '', class: 'preview-icon'
-        .url-cell{class: klass}
+        .url-cell.input-cell{class: klass}
           %span.conf{class: ('hidden' unless s3_key.present?)}
             = image_tag "icons/accept.png", class: 'vmid', alt: ''
             Uploaded
@@ -46,8 +46,8 @@
           = text_field_tag "icons[][url]", url, placeholder: "URL", class: ('hidden' if s3_key.present?), id: "icons_#{i}_url"
           = hidden_field_tag "icons[][s3_key]", s3_key, id: "icons_#{i}_s3_key"
           = hidden_field_tag "icons[][filename]", @icons[i].try(:[], :filename), id: "icons_#{i}_filename"
-        .keyword-cell{class: klass}= text_field_tag "icons[][keyword]", keyword, placeholder: "Keyword", id: "icons_#{i}_keyword"
-        .credit-cell{class: klass}= text_field_tag "icons[][credit]", @icons[i].try(:[], :credit), placeholder: "Credit", id: "icons_#{i}_credit"
+        .keyword-cell.input-cell{class: klass}= text_field_tag "icons[][keyword]", keyword, placeholder: "Keyword", id: "icons_#{i}_keyword"
+        .credit-cell.input-cell{class: klass}= text_field_tag "icons[][credit]", @icons[i].try(:[], :credit), placeholder: "Credit", id: "icons_#{i}_credit"
         .icon-buttons{class: klass}
           %a{href: '#'}= image_tag "icons/add.png", class: "icon-row-add", alt: 'Add Row'
           %a{href: '#'}= image_tag "icons/minus.png", class: "icon-row-rem", alt: 'Delete Row'
