@@ -55,8 +55,9 @@
           .user-alert.hidden
             = image_tag 'icons/exclamation.png', alt: '!', title: '', class: 'vmid'
             %span.msg
-    %tr
-      %th.form-table-ender{colspan: 2}
-        = submit_tag "Sign Up", class: 'button'
-        %br
-        = render "devise/shared/links"
+    %tfoot
+      %tr
+        %th.form-table-ender{colspan: 2}
+          = submit_tag "Sign Up", class: 'button'
+          %br
+          = render "devise/shared/links"
