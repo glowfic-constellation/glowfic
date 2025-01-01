@@ -58,7 +58,12 @@ class BookmarksController < ApplicationController
       flash[:error] = "Bookmark already exists."
     end
 
-    redirect_back fallback_location: reply_path(@reply, anchor: "reply-#{@reply.id}")
+    path_to_reply = reply_path(@reply, anchor: "reply-#{@reply.id}")
+    if params[:origin] == "post"
+      redirect_to path_to_reply
+    else
+      redirect_back fallback_location: path_to_reply
+    end
   end
 
   def destroy

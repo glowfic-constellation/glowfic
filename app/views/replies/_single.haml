@@ -54,7 +54,7 @@
                 = link_to bookmark_path(bookmark), method: :delete do
                   = image_tag "icons/bookmark_delete.png".freeze, title: 'Remove Bookmark'.freeze, alt: 'Remove Bookmark'.freeze
               - else
-                = link_to bookmarks_path(at_id: reply.id), method: :post do
+                = link_to bookmarks_path(at_id: reply.id, origin: "post"), method: :post do
                   = image_tag "icons/bookmark.png".freeze, title: 'Add Bookmark'.freeze, alt: 'Add Bookmark'.freeze
             = link_to post_path(@post, unread: true, at_id: reply.id), method: :put do
               = image_tag "icons/eye.png".freeze, title: 'Mark Unread Here'.freeze, alt: 'Mark Unread Here'.freeze
