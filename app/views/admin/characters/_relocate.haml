@@ -10,10 +10,10 @@
         %th.sub= f.label :character_id, "Character Ids"
         - id_fill = @char_ids.nil? ? params[:character_id] : @char_ids.join(', ')
         - id_fill ||= ''
-        %td{class: cycle('even', 'odd')}= f.text_field :character_id, value: id_fill, placeholder: 'Comma-seperated list', class: 'text'
+        %td{class: cycle('even', 'odd')}= f.text_field :character_id, value: id_fill, placeholder: 'Comma-separated list'
       %tr
         %th.sub= f.label :user_id, 'New User Id'
-        %td{class: cycle('even', 'odd')}= f.text_field :user_id, value: params[:user_id], placeholder: "New User", class: 'text'
+        %td{class: cycle('even', 'odd')}= f.text_field :user_id, value: params[:user_id], placeholder: "New User"
       %tr
         %th.sub With Templates
         %td.padding-5{class: cycle('even', 'odd')}

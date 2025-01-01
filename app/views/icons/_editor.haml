@@ -14,7 +14,7 @@
           = image_tag "icons/accept.png", class: 'vmid', alt: ''
           Uploaded to site
         .icon_url_field{class: ('hidden' if f.object.uploaded?)}
-          = f.text_field :url, placeholder: "URL", class: 'text'
+          = f.text_field :url, placeholder: "URL"
         = f.hidden_field :s3_key
     %tr.gallery-icon-upload
       - klass = cycle('even', 'odd')
@@ -24,11 +24,11 @@
     %tr.gallery-icon-keyword
       - klass = cycle('even', 'odd')
       %td.centered{class: klass}= f.label :keyword
-      %td{class: klass}= f.text_field :keyword, placeholder: "Keyword", class: 'text'
+      %td{class: klass}= f.text_field :keyword, placeholder: "Keyword"
     %tr.gallery-icon-credit
       - klass = cycle('even', 'odd')
       %td.centered{class: klass}= f.label :credit
-      %td{class: klass}= f.text_field :credit, placeholder: "Credit", class: 'text'
+      %td{class: klass}= f.text_field :credit, placeholder: "Credit"
     - if gif.present?
       %tr.gallery-icon-remove
         %td{class: cycle('even', 'odd'), colspan: 2}
