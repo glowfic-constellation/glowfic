@@ -192,8 +192,6 @@ class UsersController < ApplicationController
 
   def signup_prep
     use_javascript('users/new')
-    gon.max = User::MAX_USERNAME_LEN
-    gon.min = User::MIN_USERNAME_LEN
     @page_title = 'Sign Up'
   end
 

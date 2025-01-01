@@ -6,6 +6,7 @@ class User < ApplicationRecord
 
   MIN_USERNAME_LEN = 3
   MAX_USERNAME_LEN = 80
+  MIN_PASSWORD_LEN = 6
   CURRENT_TOS_VERSION = 20181109
   RESERVED_NAMES = ['(deleted user)', 'Glowfic Constellation']
 
@@ -47,7 +48,7 @@ class User < ApplicationRecord
     uniqueness: true,
     length: { in: MIN_USERNAME_LEN..MAX_USERNAME_LEN, allow_blank: true }
   validates :password,
-    length: { minimum: 6, if: :validate_password? },
+    length: { minimum: MIN_PASSWORD_LEN, if: :validate_password? },
     confirmation: { if: :validate_password? }
   validates :moiety, format: { with: /\A([0-9A-F]{3}){0,2}\z/i }, length: { maximum: 255 }
   validates :moiety_name, length: { maximum: 255 }

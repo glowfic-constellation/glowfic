@@ -1,5 +1,5 @@
 RSpec.describe "Editing a template" do
-  let(:user) { create(:user, password: 'known') }
+  let(:user) { create(:user, password: known_test_password) }
   let(:template) { create(:template, user: user, name: 'Example Template') }
 
   scenario "Logged out user tries to edit a template" do
@@ -13,7 +13,7 @@ RSpec.describe "Editing a template" do
   end
 
   scenario "Editing a simple template" do
-    login(user, 'known')
+    login(user, known_test_password)
     visit edit_template_path(template)
     expect(page).to have_no_selector('.flash.error')
 
@@ -31,7 +31,7 @@ RSpec.describe "Editing a template" do
   end
 
   scenario "Editing an invalid template" do
-    login(user, 'known')
+    login(user, known_test_password)
     visit edit_template_path(template)
     expect(page).to have_no_selector('.flash.error')
 
@@ -50,7 +50,7 @@ RSpec.describe "Editing a template" do
     create(:character, user: user, name: 'Added Character')
     create(:character, user: user, name: 'Unrelated Character')
     template.update!(description: 'This is a sample template with two characters.')
-    login(user, 'known')
+    login(user, known_test_password)
 
     visit edit_template_path(template)
     expect(page).to have_no_selector('.flash.error')

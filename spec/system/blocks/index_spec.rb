@@ -1,13 +1,13 @@
 RSpec.describe "View blocks list" do
   scenario 'Viewing a blocks list' do
-    user = create(:user, username: 'Jane Doe', password: 'known')
+    user = create(:user, username: 'Jane Doe', password: known_test_password)
     blocked1 = create(:user, username: 'Alice')
     blocked2 = create(:user, username: 'Bob')
     blocked3 = create(:user, username: 'Carol')
     create(:block, blocking_user: user, blocked_user: blocked1, block_interactions: true, hide_them: :posts)
     create(:block, blocking_user: user, blocked_user: blocked2, block_interactions: false, hide_me: :posts)
     create(:block, blocking_user: user, blocked_user: blocked3, block_interactions: true, hide_them: :posts, hide_me: :all)
-    login(user, 'known')
+    login(user, known_test_password)
     visit blocks_path
 
     warn_text = "Warning: full blocking is not yet implemented, and will function the same as simply blocking posts. Additionally, any threads not locked to their authors will not be covered by post blocking." # rubocop:disable Layout/LineLength

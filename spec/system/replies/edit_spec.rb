@@ -18,10 +18,10 @@ RSpec.describe "Creating replies" do
   end
 
   scenario "User edits a reply" do
-    user = create(:user, password: 'known')
+    user = create(:user, password: known_test_password)
     reply = create(:reply, user: user, content: 'example text')
 
-    login(user, 'known')
+    login(user, known_test_password)
 
     visit reply_path(reply)
     expect(page).to have_selector('.post-container', count: 2)
@@ -46,10 +46,10 @@ RSpec.describe "Creating replies" do
   end
 
   scenario "User edits a reply with preview" do
-    user = create(:user, password: 'known')
+    user = create(:user, password: known_test_password)
     reply = create(:reply, user: user, content: 'example text')
 
-    login(user, 'known')
+    login(user, known_test_password)
 
     visit reply_path(reply)
     expect(page).to have_selector('.post-container', count: 2)
@@ -104,10 +104,10 @@ RSpec.describe "Creating replies" do
   end
 
   scenario "Moderator edits a reply" do
-    user = create(:user, password: 'known')
+    user = create(:user, password: known_test_password)
     reply = create(:reply, user: user, content: 'example text')
 
-    login(create(:mod_user, password: 'known'), 'known')
+    login(create(:mod_user, password: known_test_password), known_test_password)
 
     visit reply_path(reply)
     expect(page).to have_selector('.post-container', count: 2)
@@ -134,10 +134,10 @@ RSpec.describe "Creating replies" do
   end
 
   scenario "Moderator edits a reply with preview" do
-    user = create(:user, password: 'known')
+    user = create(:user, password: known_test_password)
     reply = create(:reply, user: user, content: 'example text')
 
-    login(create(:mod_user, password: 'known'), 'known')
+    login(create(:mod_user, password: known_test_password), known_test_password)
 
     visit reply_path(reply)
     expect(page).to have_selector('.post-container', count: 2)

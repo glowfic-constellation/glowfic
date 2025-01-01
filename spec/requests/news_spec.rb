@@ -1,7 +1,7 @@
 RSpec.describe "News" do
   describe "management" do
     it "creates a new news post and edits it successfully" do
-      user = create(:admin_user, password: "known")
+      user = create(:admin_user, password: known_test_password)
       login(user)
 
       get "/news"

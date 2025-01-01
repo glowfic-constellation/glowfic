@@ -1,5 +1,5 @@
 RSpec.describe 'Admin panel' do
-  let(:admin) { create(:admin_user, password: 'known') }
+  let(:admin) { create(:admin_user, password: known_test_password) }
 
   before(:each) do
     login(admin)

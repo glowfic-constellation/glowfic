@@ -19,7 +19,7 @@ RSpec.describe "Post" do
 
   describe "audit history" do
     it "shows audit history" do
-      user = create(:user, username: "John Doe", password: "known")
+      user = create(:user, username: "John Doe", password: known_test_password)
       login(user)
       target = create(:post, user: user, subject: "Shown post")
       reply = create(:reply, user: user, post: target, content: "Test content")

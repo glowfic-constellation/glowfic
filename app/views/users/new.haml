@@ -7,28 +7,28 @@
       %tr#signup-username
         %th.sub.vtop= f.label :username
         %td.even
-          = f.text_field :username, placeholder: "Username"
+          = f.text_field :username, placeholder: "Username", autofocus: true, autocomplete: "username", minlength: User::MIN_USERNAME_LEN, maxlength: User::MAX_USERNAME_LEN, required: true
           .user-alert.hidden
             = image_tag 'icons/exclamation.png', alt: '!', title: '', class: 'vmid'
             %span.msg
       %tr#signup-email
         %th.sub.vtop= f.label :email
         %td.odd
-          = f.text_field :email, placeholder: "Email address"
+          = f.text_field :email, placeholder: "Email address", autocomplete: "email", type: "email", required: true
           .user-alert.hidden
             = image_tag 'icons/exclamation.png', alt: '!', title: '', class: 'vmid'
             %span.msg
       %tr#signup-password
         %th.sub.vtop= f.label :password
         %td.even
-          = f.password_field :password, placeholder: "Password"
+          = f.password_field :password, placeholder: "Password", autocomplete: "new-password", minlength: User::MIN_PASSWORD_LEN, required: true
           .user-alert.hidden
             = image_tag 'icons/exclamation.png', alt: '!', title: '', class: 'vmid'
             %span.msg
       %tr#signup-password-confirmation
         %th.sub.vtop= f.label :password_confirmation, 'Confirm'
         %td.odd
-          = f.password_field :password_confirmation, placeholder: "Confirm Password"
+          = f.password_field :password_confirmation, placeholder: "Confirm Password", autocomplete: "new-password", minlength: User::MIN_PASSWORD_LEN, required: true
           .user-alert.hidden
             = image_tag 'icons/exclamation.png', alt: '!', title: '', class: 'vmid'
             %span.msg
@@ -36,6 +36,7 @@
         %th.sub.vtop= f.label :secret, "Secret (optional)"
         %td.even
           = text_field_tag :secret, params[:secret], placeholder: "Secret"
+          %span.details (If you don't know what this is, please leave it blank!)
       %tr#signup-captcha
         %th.sub.vtop Captcha
         %td.odd
