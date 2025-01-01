@@ -389,7 +389,8 @@ td, .table-list li { font-size: $font_size_small; }
   }
   &#contribute { grid-template-columns: none; }
   &#tag-editor .checkbox-field { grid-template-columns: 17px auto; }
-  &#index-editor { grid-template-columns: 131px auto; }
+  &#index-editor, &#index-section-editor { grid-template-columns: 131px auto; }
+  &#index-post-editor { grid-template-columns: 148px auto; }
 }
 
 .form-table-ender {
