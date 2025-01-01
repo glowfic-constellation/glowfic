@@ -5,7 +5,7 @@ class Bookmark < ApplicationRecord
   belongs_to :post, inverse_of: :bookmarks, optional: false
 
   validates :type, uniqueness: { scope: [:user, :reply] }
-  validates :type, inclusion: { in: ['reply_bookmark'] }, allow_nil: false
+  validates :type, inclusion: { in: ['reply_bookmark', 'toc_item'] }, allow_nil: false
 
   self.inheritance_column = nil
 
