@@ -28,10 +28,10 @@
             %th.sub.vtop= f.label :moiety, "Moiety hex"
             %td{class: cycle('even', 'odd')}
               \#
-              = f.text_field :moiety, placeholder: "Hex code", class: 'text', style: 'width: 80px;', maxlength: 6
+              = f.text_field :moiety, placeholder: "Hex code", style: 'width: 80px;', maxlength: 6
           %tr
             %th.sub.vtop= f.label :moiety_name, "Moiety name"
-            %td{class: cycle('even', 'odd')}= f.text_field :moiety_name, placeholder: "Moiety", class: 'text'
+            %td{class: cycle('even', 'odd')}= f.text_field :moiety_name, placeholder: "Moiety"
           %tr
             %th.sub= f.label :content_warning_ids, "Author warnings"
             %td{class: cycle('even', 'odd')}= tag_select(current_user, f, :content_warnings)

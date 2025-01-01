@@ -3,7 +3,7 @@
 %tbody
   %tr
     %th.sub= f.label :name
-    %td.even= f.text_field :name, placeholder: "Index Name", class: 'text'
+    %td.even= f.text_field :name, placeholder: "Index Name"
   %tr
     %th.sub Owner
     %td.odd= @index.user.deleted? ? '(deleted user)' : @index.user.username

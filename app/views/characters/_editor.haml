@@ -3,13 +3,13 @@
 %tbody
   %tr
     %th.sub= f.label :name
-    %td{class: cycle('even', 'odd')}= f.text_field :name, placeholder: "Character Name", class: 'text'
+    %td{class: cycle('even', 'odd')}= f.text_field :name, placeholder: "Character Name"
   %tr
     %th.sub= f.label :nickname
-    %td{class: cycle('even', 'odd')}= f.text_field :nickname, placeholder: "Template Nickname", class: 'text'
+    %td{class: cycle('even', 'odd')}= f.text_field :nickname, placeholder: "Template Nickname"
   %tr
     %th.sub= f.label :screenname
-    %td{class: cycle('even', 'odd')}= f.text_field :screenname, placeholder: "Screen Name", class: 'text'
+    %td{class: cycle('even', 'odd')}= f.text_field :screenname, placeholder: "Screen Name"
   %tr
     %th.sub= f.label :setting_ids, 'Setting'
     %td{class: cycle('even', 'odd')}= tag_select(@character, f, :settings)
@@ -18,7 +18,7 @@
     %th.sub.vtop= f.label :template_id
     %td{class: klass}
       = f.collection_select :template_id, @templates, :id, :name, { include_blank: '— Choose Template —' },
-        { class: 'text chosen-select', disabled: params[:new_template].present? }
+        { class: 'chosen-select', disabled: params[:new_template].present? }
       - if @character.user == current_user
         %br
         = check_box_tag :new_template, '1', params[:new_template].present?
@@ -29,10 +29,10 @@
         %th.sub= ff.label :name, '↳ Name'
         %td{class: klass}
           = ff.hidden_field :id
-          = ff.text_field :name, placeholder: "Template Name", class: 'text'
+          = ff.text_field :name, placeholder: "Template Name"
   %tr
     %th.sub= f.label :cluster
-    %td{class: cycle('even', 'odd')}= f.text_field :cluster, placeholder: "Template Cluster Name", class: 'text'
+    %td{class: cycle('even', 'odd')}= f.text_field :cluster, placeholder: "Template Cluster Name"
   - if @character.user.galleries.present?
     %tr
       %th.sub= f.label :ungrouped_gallery_ids, 'Galleries'
@@ -45,10 +45,10 @@
       %td{class: cycle('even', 'odd')}= tag_select(@character, f, :gallery_groups)
   %tr
     %th.sub= f.label :pb, 'Facecast'
-    %td{class: cycle('even', 'odd')}= f.text_field :pb, placeholder: "Facecast", class: 'text'
+    %td{class: cycle('even', 'odd')}= f.text_field :pb, placeholder: "Facecast"
   %tr
     %th.sub.vtop= f.label :description
-    %td{class: cycle('even', 'odd')}= f.text_area :description, placeholder: 'Description', class: 'text', cols: 35
+    %td{class: cycle('even', 'odd')}= f.text_area :description, placeholder: 'Description', cols: 35
   %tr
     %th.sub= f.label :npc, 'NPC?'
     %td{class: cycle('even', 'odd')}
@@ -62,7 +62,7 @@
   - if current_user.id != @character.user_id
     %tr
       %th.sub.vtop= f.label :audit_comment, 'Moderator Note'
-      %td{class: cycle('even', 'odd')}= f.text_area :audit_comment, placeholder: 'Explain reason for moderation here', class: 'text', cols: 35
+      %td{class: cycle('even', 'odd')}= f.text_area :audit_comment, placeholder: 'Explain reason for moderation here', cols: 35
 %tfoot
   %tr
     %th.form-table-ender{colspan: 2}= submit_tag "Save", class: 'button'

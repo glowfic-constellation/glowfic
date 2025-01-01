@@ -8,10 +8,10 @@
         %th.subber{colspan: 2} Account
       %tr
         %th.sub= f.label :username
-        %td{class: cycle('even', 'odd')}= f.text_field :username, placeholder: "Username", class: 'text', disabled: current_user.salt_uuid.nil?
+        %td{class: cycle('even', 'odd')}= f.text_field :username, placeholder: "Username", disabled: current_user.salt_uuid.nil?
       %tr
         %th.sub= f.label :email
-        %td{class: cycle('even', 'odd')}= f.text_field :email, placeholder: "Email address", class: 'text'
+        %td{class: cycle('even', 'odd')}= f.text_field :email, placeholder: "Email address"
       %tr
         %th.sub Author profile
         %td{class: cycle('even', 'odd')}
@@ -122,13 +122,13 @@
     %tbody
       %tr
         %th.sub= label_tag :old_password, 'Old'
-        %td{class: cycle('even', 'odd')}= password_field_tag :old_password, params[:old_password], placeholder: "Old Password", class: 'text', autocomplete: 'current-password'
+        %td{class: cycle('even', 'odd')}= password_field_tag :old_password, params[:old_password], placeholder: "Old Password", autocomplete: 'current-password'
       %tr
         %th.sub= label_tag :password, 'New'
-        %td{class: cycle('even', 'odd')}= f.password_field :password, placeholder: "New Password", class: 'text', value: (params[:user] || {})[:password], autocomplete: 'new-password'
+        %td{class: cycle('even', 'odd')}= f.password_field :password, placeholder: "New Password", value: (params[:user] || {})[:password], autocomplete: 'new-password'
       %tr
         %th.sub= label_tag :password_confirmation, 'Confirm'
-        %td{class: cycle('even', 'odd')}= f.password_field :password_confirmation, placeholder: "Confirm Password", class: 'text', value: (params[:user] || {})[:password_confirmation], autocomplete: 'new-password'
+        %td{class: cycle('even', 'odd')}= f.password_field :password_confirmation, placeholder: "Confirm Password", value: (params[:user] || {})[:password_confirmation], autocomplete: 'new-password'
     %tfoot
       %tr
         %th.form-table-ender{colspan: 2}= submit_tag "Save", class: 'button'
