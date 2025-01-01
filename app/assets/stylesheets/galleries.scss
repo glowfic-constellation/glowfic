@@ -192,3 +192,49 @@
   td, th { padding: 5px 10px; }
   .form-table-ender { font-weight: normal; }
 }
+
+.form-table#add-existing {
+  width: 100%;
+  div { grid-template-columns: none; }
+  .sub, .icons { justify-content: initial; }
+  .sub {
+    grid-template-columns: auto 20px;
+    grid-auto-rows: 20px;
+    text-align: left;
+    align-items: center;
+    .gallery-name { padding: 0; }
+  }
+  .form-table-ender:not(:first-child) { padding: 5px 10px; }
+
+  .icons {
+    grid-auto-flow: row;
+    padding: 5px;
+    &.hidden { display: none; }
+
+    .checkbox-field {
+      grid-template-columns: 14px auto;
+      padding: 0px;
+      align-items: start;
+
+      input[type='checkbox'] {
+        width: 14px;
+        height: 14px;
+      }
+    }
+
+    .gallery-icons {
+      padding: 0px;
+      grid-auto-flow: column;
+      grid-auto-columns: 130px;
+      gap: 4px;
+
+      .gallery-icon {
+        display: grid;
+        grid-auto-flow: row;
+        grid-template-rows: 110px 30px;
+        justify-items: center;
+        gap: 4px;
+      }
+    }
+  }
+}
