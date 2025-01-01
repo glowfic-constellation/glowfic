@@ -18,6 +18,12 @@
         %th.sub= f.label :email
         %td{class: cycle('even', 'odd')}= f.text_field :email, placeholder: "Email address"
       %tr
+        %th.sub Password
+        %td{class: cycle('even', 'odd')}
+          = link_to edit_user_registration_path do
+            %button{type: 'button'} Change Password
+      -# TODO: Disable my account #{button_to "Cancel my account", registration_path(resource_name), data: { confirm: "Are you sure?", turbo_confirm: "Are you sure?" }, method: :delete}
+      %tr
         %th.sub Author profile
         %td{class: cycle('even', 'odd')}
           = link_to profile_edit_user_path(current_user) do
