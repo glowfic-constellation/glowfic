@@ -392,6 +392,16 @@ td, .table-list li { font-size: $font_size_small; }
   &#index-editor, &#index-section-editor { grid-template-columns: 131px auto; }
   &#index-post-editor { grid-template-columns: 148px auto; }
   &#post-splitter { grid-template-columns: 111px auto; }
+
+  &#mark-continuities {
+    margin-bottom: 10px;
+    float: left;
+
+    & > .even, & > .odd {
+      grid-template-columns: 390px;
+      text-align: center;
+    }
+  }
 }
 
 .form-table-ender {
