@@ -322,6 +322,12 @@ td, .table-list li { font-size: $font_size_small; }
 
     &.checkbox-fields, .checkbox-fields { align-items: start; }
 
+    &.radio-fields, .radio-fields {
+      display: grid;
+      grid-template-columns: 14px auto;
+      column-gap: 4px;
+    }
+
     input {
       margin: 0;
       width: 100%;
@@ -383,6 +389,7 @@ td, .table-list li { font-size: $font_size_small; }
   }
   &#contribute { grid-template-columns: none; }
   &#tag-editor .checkbox-field { grid-template-columns: 17px auto; }
+  &#index-editor { grid-template-columns: 131px auto; }
 }
 
 .form-table-ender {
