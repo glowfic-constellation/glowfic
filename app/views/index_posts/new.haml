@@ -7,7 +7,7 @@
 
 
 = form_for @index_post, url: index_posts_path, method: :post do |f|
-  .form-table
+  .form-table#index-post-editor
     .editor-title Add Post to Index
     %div
       .sub= f.label :index_id, 'Index'
