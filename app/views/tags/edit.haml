@@ -9,6 +9,6 @@
 
 = form_for @tag.becomes(Tag) do |f|
   - f.object = @tag.becomes(@tag.class) # handles the STI with Tag/Setting/ContentWarning properly
-  .form-table
+  .form-table#tag-editor
     .editor-title Edit #{@tag.type.titlecase}
     = render 'editor', f: f
