@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 class User::RegistrationsController < Devise::RegistrationsController
+  # adding custom setup for the built-in Devise signup page
   before_action :signup_prep, only: [:new, :create] # rubocop:disable Rails/LexicallyScopedActionFilter
   before_action :configure_sign_up_params, only: [:create]
 
