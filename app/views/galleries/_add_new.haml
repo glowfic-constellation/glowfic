@@ -40,7 +40,7 @@
         .preview-icon-cell{class: klass}= icon_mem_tag purl || empty_gif, pkey || '', class: 'preview-icon'
         .url-cell.input-cell{class: klass}
           %span.conf{class: ('hidden' unless s3_key.present?)}
-            = image_tag "icons/accept.png", class: 'vmid', alt: ''
+            = image_tag "icons/accept.png", alt: ''
             Uploaded
             %span.filename= @icons[i].try(:[], :filename)
           = text_field_tag "icons[][url]", url, placeholder: "URL", class: ('hidden' if s3_key.present?), id: "icons_#{i}_url"

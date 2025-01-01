@@ -17,8 +17,8 @@
 %div
   .sub= f.label :authors_locked, 'Locked?'
   .even.checkbox-field
-    = f.check_box :authors_locked, class: 'vmid', checked: @board.authors_locked
-    = f.label :authors_locked, 'Only allow authors to create new posts in this continuity', class: 'vmid'
+    = f.check_box :authors_locked, checked: @board.authors_locked
+    = f.label :authors_locked, 'Only allow authors to create new posts in this continuity'
 %div
   .sub.vtop Description
   .odd= f.text_area :description
