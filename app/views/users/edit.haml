@@ -15,8 +15,8 @@
       %tr
         %th.sub Author profile
         %td{class: cycle('even', 'odd')}
-          %button{ type: 'button', onclick: "window.location.href='#{profile_edit_user_path(current_user)}'" }
-            Edit Profile
+          = link_to profile_edit_user_path(current_user) do
+            %button{type: 'button'} Edit Profile
       %tr
         %th.sub Bookmarks
         %td{class: cycle('even', 'odd')}
