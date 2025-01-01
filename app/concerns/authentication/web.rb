@@ -10,11 +10,13 @@ module Authentication::Web
       return if logged_in?
       return unless cookies.signed[:user_id].present?
 
+      # if the old cookie's corresponding user isn't found, log them out
       unless (user = User.find_by(id: cookies.signed[:user_id]))
         logout
         return
       end
 
+      # transition the old authentication to the new Devise session
       sign_in(:user, user)
     end
 
