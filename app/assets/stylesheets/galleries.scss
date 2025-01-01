@@ -105,15 +105,48 @@
 }
 
 /* The table in galleries/add to add multiple icons at once */
-#icon-table {
+.form-table#icon-table {
   margin: 0;
   width: 100%;
+  grid-template-columns: 20px auto auto auto 45px;
+
+  .preview-icon-cell { padding: 0; }
+  .url-cell, .keyword-cell, .credit-cell { padding: 5px; }
+  .url-cell .conf {
+    display: grid;
+    grid-template-columns: 16px auto;
+    column-gap: 4px;
+  }
 
   .icon-buttons {
-    width: 45px;
+    grid-template-columns: none;
+    grid-auto-flow: column;
     padding: 0 5px 0 0;
+    justify-items: end;
+    align-items: center;
 
-    img { vertical-align: middle; }
+    a {
+      display: grid;
+      place-items: center;
+    }
+  }
+}
+
+#icon-upload {
+  display: grid;
+  grid-template-columns: 200px auto;
+  width: 100%;
+
+  .subber {
+    display: grid;
+    place-items: center;
+  }
+
+  & > div:not(.subber) {
+    display: grid;
+    align-items: center;
+    justify-items: start;
+    column-gap: 5px;
   }
 }
 
