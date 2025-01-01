@@ -14,6 +14,7 @@ const emptyGif = "data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEA
 
 $(document).ready(function() {
   fixButtons();
+  $('.conf').hide();
   $(".icon-row td:has(input)").each(function() {
     $(this).keydown(processDirectionalKey);
   });
@@ -69,8 +70,8 @@ function fixButtons() {
   $(".icon-row-rem").first().hide();
   bindAdd();
   bindRem();
-  $("#icon-table tr.icon-row:odd td").removeClass('even').addClass("odd");
-  $("#icon-table tr.icon-row:even td").removeClass('odd').addClass("even");
+  $("#icon-table .icon-row:odd div").removeClass('even').addClass("odd");
+  $("#icon-table .icon-row:even div").removeClass('odd').addClass("even");
 }
 
 function bindAdd() {
