@@ -372,7 +372,7 @@ td, .table-list li { font-size: $font_size_small; }
 
   &#tag-editor .checkbox-field { grid-template-columns: 17px auto; }
 
-  &.user-editor {
+  &#user-editor {
     .checkbox-field, .checkbox-fields { grid-template-columns: 17px auto; }
 
     input[type='checkbox'] {
