@@ -391,6 +391,7 @@ td, .table-list li { font-size: $font_size_small; }
   &#tag-editor .checkbox-field { grid-template-columns: 17px auto; }
   &#index-editor, &#index-section-editor { grid-template-columns: 131px auto; }
   &#index-post-editor { grid-template-columns: 148px auto; }
+  &#post-splitter { grid-template-columns: 111px auto; }
 }
 
 .form-table-ender {
@@ -400,6 +401,7 @@ td, .table-list li { font-size: $font_size_small; }
   font-size: $font_size_smallish;
   font-weight: bold;
   text-align: center;
+  column-gap: 4px;
   input { margin: 0; }
 }
 
