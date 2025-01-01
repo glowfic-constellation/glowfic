@@ -1,11 +1,12 @@
 # frozen_string_literal: true
 class Bookmark < ApplicationRecord
-  belongs_to :user, inverse_of: :bookmarks, optional: false
+  belongs_to :user, inverse_of: :bookmarks, optional: true
   belongs_to :reply, inverse_of: :bookmarks, optional: false
   belongs_to :post, inverse_of: :bookmarks, optional: false
 
   validates :type, uniqueness: { scope: [:user, :reply] }
   validates :type, inclusion: { in: ['reply_bookmark', 'toc_item'] }, allow_nil: false
+  validate :user_id_presence_based_on_type
 
   self.inheritance_column = nil
 
@@ -19,5 +20,15 @@ class Bookmark < ApplicationRecord
     return true if public
     return true if other_user.try(:id) == user.id
     user.public_bookmarks
+  end
+
+  private
+
+  def user_id_presence_based_on_type
+    if type == 'toc_item' && user_id.present?
+      errors.add(:user_id, "must be null if type is 'toc_item'")
+    elsif type == 'reply_bookmark' && user_id.blank?
+      errors.add(:user_id, "must be present if type is 'reply_bookmark'")
+    end
   end
 end

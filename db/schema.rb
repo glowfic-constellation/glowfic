@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2024_12_24_202900) do
+ActiveRecord::Schema[8.0].define(version: 2025_01_01_180800) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "citext"
   enable_extension "pg_catalog.plpgsql"
@@ -89,7 +89,7 @@ ActiveRecord::Schema[8.0].define(version: 2024_12_24_202900) do
   end
 
   create_table "bookmarks", force: :cascade do |t|
-    t.integer "user_id", null: false
+    t.integer "user_id"
     t.integer "reply_id", null: false
     t.integer "post_id", null: false
     t.string "name"
