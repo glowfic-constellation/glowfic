@@ -23,7 +23,7 @@
         = check_box_tag :new_template, '1', params[:new_template].present?
         = label_tag :new_template, 'Create New Template'
 - if @character.user == current_user
-  #create_template{class: ('grid-hidden' unless params[:new_template])}
+  #create_template{class: ('hidden' unless params[:new_template])}
     = f.fields_for :template do |ff|
       .sub= ff.label :name, '↳ Name'
       %div{class: klass}

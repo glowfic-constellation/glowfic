@@ -1,35 +1,29 @@
 /* global gon */
 let duplicateUsername = false;
 $(document).ready(function() {
-  $("#signup-username .user-alert").hide();
-  $("#signup-email .user-alert").hide();
-  $("#signup-password .user-alert").hide();
-  $("#signup-password-confirmation .user-alert").hide();
-  $("#signup-terms .user-alert").hide();
-
   $("#user_username").blur(function() {
-    $("#signup-username .user-alert").hide();
+    $("#signup-username .user-alert").addClass('hidden');
     validateUsername();
   });
 
   $("#user_email").blur(function() {
-    $("#signup-email .user-alert").hide();
+    $("#signup-email .user-alert").addClass('hidden');
     validateEmail();
   });
 
   $("#user_password").blur(function() {
-    $("#signup-password .user-alert").hide();
+    $("#signup-password .user-alert").addClass('hidden');
     validatePassword();
   });
 
   $("#user_password_confirmation").blur(function() {
-    $("#signup-password-confirmation .user-alert").hide();
+    $("#signup-password-confirmation .user-alert").addClass('hidden');
     validateConfirmation();
   });
 
   $("#new_user").submit(function() {
     // Clear existing alerts before validating
-    $(".user-alert").hide();
+    $(".user-alert").addClass('hidden');
 
     // Do not submit if any validation fails
     const usernameValid = validateUsername();
@@ -118,5 +112,5 @@ function validateTosAccepted() {
 
 function addAlertAfter(id, message) {
   $("#signup-" + id + " .user-alert span.msg").text(message);
-  $("#signup-" + id + " .user-alert").show();
+  $("#signup-" + id + " .user-alert").removeClass('hidden');
 }

@@ -14,7 +14,6 @@ const emptyGif = "data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEA
 
 $(document).ready(function() {
   fixButtons();
-  $('.conf').hide();
   $(".icon-row .input-cell").each(function() {
     $(this).keydown(processDirectionalKey);
   });
@@ -97,7 +96,7 @@ function addNewRow() {
   // handle the URL field specially
   // because uploads have special UI
   const urlField = inputs.first();
-  newRow.find('.conf').hide();
+  newRow.find('.conf').addClass('hidden');
   newRow.find('.conf .filename').text('');
   urlField.show();
   inputs.each(function() {
