@@ -3,7 +3,7 @@ require 'will_paginate/array'
 
 class RepliesController < WritableController
   before_action :login_required, except: [:search, :show, :history]
-  before_action :get_multi_replies_json, only: [:create]
+  before_action :get_multi_replies, only: [:create]
   before_action :find_model, only: [:show, :history, :edit, :update, :destroy]
   before_action :editor_setup, only: [:edit]
   before_action :require_create_permission, only: [:create]
@@ -268,10 +268,6 @@ class RepliesController < WritableController
 
   private
 
-  def get_multi_replies_json
-    @multi_replies_json = JSON.parse(params.fetch(:multi_replies_json, "[]"))
-  end
-
   def find_model
     @reply = Reply.find_by_id(params[:id])
 
@@ -301,8 +297,9 @@ class RepliesController < WritableController
     redirect_to post_path(@reply.post)
   end
 
-  def process_multi_replies_json(json)
-    json.map do |reply_json|
+  def get_multi_replies
+    @multi_replies_json = JSON.parse(params.fetch(:multi_replies_json, "[]"))
+    @multi_replies = @multi_replies_json.map do |reply_json|
       Reply.new(permitted_params(ActionController::Parameters.new({ reply: reply_json })))
         .tap { |r| r.user = current_user }
     end
@@ -335,17 +332,8 @@ class RepliesController < WritableController
       @audits = {}
     end
 
-    unless @multi_replies_json.empty?
-      # Showing multi replies to preview
-      @multi_replies = process_multi_replies_json(@multi_replies_json)
-    end
-
     if multi_reply_to_add
       # Adding a new reply to the multi replies
-      unless @multi_replies.present?
-        @multi_replies = []
-        @multi_replies_json = []
-      end
       multi_reply_to_add.user = current_user unless multi_reply_to_add.user
       @multi_replies << multi_reply_to_add
       @multi_replies_json << multi_reply_params
@@ -359,14 +347,13 @@ class RepliesController < WritableController
   end
 
   def post_replies(new_reply: nil)
-    multi_replies = process_multi_replies_json(@multi_replies_json)
-    multi_replies << new_reply if new_reply.present?
+    @multi_replies << new_reply if new_reply.present?
 
-    first_reply = multi_replies.first
+    first_reply = @multi_replies.first
     begin
-      Reply.transaction { multi_replies.each(&:save!) }
+      Reply.transaction { @multi_replies.each(&:save!) }
     rescue ActiveRecord::RecordInvalid => e
-      errored_reply = multi_replies.detect { |r| r.errors.present? } || first_reply
+      errored_reply = @multi_replies.detect { |r| r.errors.present? } || first_reply
       render_errors(errored_reply, action: 'created', now: true, err: e)
 
       redirect_to posts_path and return unless errored_reply.post
@@ -374,7 +361,7 @@ class RepliesController < WritableController
       return
     end
 
-    if multi_replies.length == 1
+    if @multi_replies.length == 1
       flash[:success] = "Reply posted."
     else
       flash[:success] = "Replies posted."
