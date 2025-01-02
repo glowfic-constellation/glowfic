@@ -43,7 +43,7 @@ function displayGallery(elem) {
 
   // Toggle display
   const galleryId = elem.data('id');
-  $("#icons-" + galleryId).toggle();
+  $("#icons-" + galleryId).toggleClass('hidden');
 
   // Nothing more necessary if collapsing or already loaded
   if (wasVisible) return;

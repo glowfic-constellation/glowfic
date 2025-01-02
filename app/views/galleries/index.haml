@@ -33,7 +33,7 @@
         .view-button
           = image_tag "icons/bullet_arrow_down.png", class: 'vmid down-arrow', alt: 'Show'
           = image_tag "icons/bullet_arrow_up.png", class: 'vmid hidden up-arrow', alt: 'Hide'
-  .delete-form.odd{id: "icons-0", colspan: 4}
+  .delete-form.hidden.odd{id: "icons-0"}
     = form_tag delete_multiple_icons_path, method: :delete do
       .gallery
       - if @user.id == current_user.try(:id)
