@@ -127,6 +127,7 @@
     display: grid;
     grid-template-columns: 16px auto;
     column-gap: 4px;
+    &.hidden { display: none; }
   }
 
   .icon-buttons {
