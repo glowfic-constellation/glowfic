@@ -313,6 +313,16 @@ class RepliesController < WritableController
     post_id = params[:reply][:post_id]
     ReplyDraft.draft_for(post_id, current_user.id).try(:destroy)
 
+    if reply.character&.new_record?
+      if reply.character.save
+        flash[:success] = "Your new NPC has been persisted!"
+        reply_params[:character_id] = reply.character.id
+        reply.character_id = reply.character.id
+      else
+        flash[:error] = "There was a problem persisting your new NPC."
+      end
+    end
+
     preview_replies(multi_reply_to_add: reply, multi_reply_params: reply_params)
   end
 
