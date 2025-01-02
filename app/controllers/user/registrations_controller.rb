@@ -2,15 +2,16 @@
 
 class User::RegistrationsController < Devise::RegistrationsController
   # adding custom setup for the built-in Devise signup page
-  before_action :signup_prep, only: [:new, :create] # rubocop:disable Rails/LexicallyScopedActionFilter
+  before_action :signup_prep, only: [:new, :create]
   before_action :configure_sign_up_params, only: [:create]
   # adding custom setup for the built-in Devise update page
   before_action :configure_account_update_params, only: [:update] # rubocop:disable Rails/LexicallyScopedActionFilter
 
   # GET /resource/sign_up
-  # def new
-  #   super
-  # end
+  def new
+    @page_title = 'Sign Up'
+    super
+  end
 
   # POST /resource
   def create
@@ -35,9 +36,10 @@ class User::RegistrationsController < Devise::RegistrationsController
   end
 
   # GET /resource/edit
-  # def edit
-  #   super
-  # end
+  def edit
+    @page_title = 'Edit Account'
+    super
+  end
 
   # PUT /resource
   # def update

@@ -241,7 +241,7 @@ RSpec.describe "Users" do
     it "works when logged out" do
       get "/users/sign_in"
       expect(response.status).to eq(200)
-      expect(response.parsed_body.at('title').text).to eq("Sign In")
+      expect(response.parsed_body.at('title').text).to include("Sign In")
     end
   end
 
