@@ -3,6 +3,7 @@ require 'will_paginate/array'
 
 class RepliesController < WritableController
   before_action :login_required, except: [:search, :show, :history]
+  before_action :get_multi_replies_json, only: [:create]
   before_action :find_model, only: [:show, :history, :edit, :update, :destroy]
   before_action :editor_setup, only: [:edit]
   before_action :require_create_permission, only: [:create]
@@ -97,7 +98,6 @@ class RepliesController < WritableController
   end
 
   def create
-    multi_replies_json = JSON.parse(params.fetch(:multi_replies_json, "[]"))
     if params[:button_draft]
       draft = make_draft
       redirect_to posts_path and return unless draft.post
@@ -116,9 +116,9 @@ class RepliesController < WritableController
       redirect_to post_path(post_id, page: :unread, anchor: :unread) and return
     elsif params[:button_preview]
       draft = make_draft
-      preview(ReplyDraft.reply_from_draft(draft), multi_replies_json, nil, nil) and return
+      preview_reply(ReplyDraft.reply_from_draft(draft)) and return
     elsif params[:button_submit_previewed_multi_reply]
-      post_replies(multi_replies_json) and return
+      post_replies and return
     elsif params[:button_discard_multi_reply]
       redirect_to post_path(params[:reply][:post_id], page: :unread, anchor: :unread) and return
     end
@@ -143,10 +143,10 @@ class RepliesController < WritableController
           flash.now[:error] = "This looks like a duplicate. Did you attempt to post this twice? Please resubmit if this was intentional."
           @allow_dupe = true
           if most_recent_unseen_reply.nil? || (most_recent_unseen_reply.id == last_by_user.id && @unseen_replies.count == 1)
-            preview(reply, multi_replies_json, nil, nil)
+            preview_reply(reply)
           else
             draft = make_draft(false)
-            preview(ReplyDraft.reply_from_draft(draft), multi_replies_json, nil, nil)
+            preview_reply(ReplyDraft.reply_from_draft(draft))
           end
           return
         end
@@ -158,7 +158,7 @@ class RepliesController < WritableController
         pluraled = num > 1 ? "have been #{num} new replies" : "has been 1 new reply"
         flash.now[:error] = "There #{pluraled} since you last viewed this post."
         draft = make_draft
-        preview(ReplyDraft.reply_from_draft(draft), multi_replies_json, nil, nil) and return
+        preview_reply(ReplyDraft.reply_from_draft(draft)) and return
       end
     end
 
@@ -167,11 +167,11 @@ class RepliesController < WritableController
       post_id = params[:reply][:post_id]
       draft = ReplyDraft.draft_for(post_id, current_user.id)
       draft&.destroy!
-      preview(nil, multi_replies_json, reply, permitted_params)
+      add_to_multi_reply(reply, permitted_params)
       return
     end
 
-    post_replies(multi_replies_json, new_reply: reply)
+    post_replies(new_reply: reply)
   end
 
   def show
@@ -271,6 +271,10 @@ class RepliesController < WritableController
 
   private
 
+  def get_multi_replies_json
+    @multi_replies_json = JSON.parse(params.fetch(:multi_replies_json, "[]"))
+  end
+
   def find_model
     @reply = Reply.find_by_id(params[:id])
 
@@ -307,7 +311,15 @@ class RepliesController < WritableController
     end
   end
 
-  def preview(reply_to_preview, multi_replies_json, multi_reply_to_add, multi_reply_params)
+  def preview_reply(reply)
+    preview_replies(reply_to_preview: reply)
+  end
+
+  def add_to_multi_reply(reply, reply_params)
+    preview_replies(multi_reply_to_add: reply, multi_reply_params: reply_params)
+  end
+
+  def preview_replies(reply_to_preview: nil, multi_reply_to_add: nil, multi_reply_params: nil)
     if reply_to_preview
       # Previewing a specific reply
       @post = reply_to_preview.post
@@ -323,10 +335,9 @@ class RepliesController < WritableController
       @audits = {}
     end
 
-    unless multi_replies_json.empty?
+    unless @multi_replies_json.empty?
       # Showing multi replies to preview
-      @multi_replies = process_multi_replies_json(multi_replies_json)
-      @multi_replies_json = multi_replies_json
+      @multi_replies = process_multi_replies_json(@multi_replies_json)
     end
 
     if multi_reply_to_add
@@ -347,8 +358,8 @@ class RepliesController < WritableController
     render :preview
   end
 
-  def post_replies(replies_json, new_reply: nil)
-    multi_replies = process_multi_replies_json(replies_json)
+  def post_replies(new_reply: nil)
+    multi_replies = process_multi_replies_json(@multi_replies_json)
     multi_replies << new_reply if new_reply.present?
 
     first_reply = multi_replies.first
