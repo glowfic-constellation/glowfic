@@ -33,7 +33,10 @@ RSpec.describe "Users" do
       aggregate_failures do
         expect(response).to have_http_status(200)
         expect(response).to render_template(:index)
-        expect(flash[:notice]).to eq("A message with a confirmation link has been sent to your email address. Please follow the link to activate your account.")
+        expect(flash[:notice]).to eq(
+          "A message with a confirmation link has been sent to your email address. " \
+          "Please follow the link to activate your account.",
+        )
       end
     end
 
