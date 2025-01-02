@@ -1,6 +1,24 @@
 RSpec.describe "Users" do
   include ActiveJob::TestHelper
 
+  def session_user_id
+    # https://github.com/heartcombo/devise/blob/v4.9.4/lib/devise/models/authenticatable.rb#L237
+    # structured as warden.user.user.key => [[record_id], salt]
+    session.fetch('warden.user.user.key', []).fetch(0, [])[0]
+  end
+
+  def cookie_user_id
+    # https://github.com/heartcombo/devise/blob/v4.9.4/lib/devise/models/rememberable.rb#L134
+    # structured as remember_user_token => [id, token, generated_at]
+    # cookies.signed isn't available here, so we have to decrypt the raw cookie
+    if (token = cookies['remember_user_token'])
+      jar = ActionDispatch::Request.new(Rails.application.env_config.deep_dup).cookie_jar
+      jar[:remember_user_token] = token
+      token = (jar.signed['remember_user_token'] || []).fetch(0, [])[0]
+    end
+    token
+  end
+
   describe "creation" do
     it "creates a new reader-mode user and sends confirmation email" do
       get "/users/sign_up"
@@ -10,6 +28,7 @@ RSpec.describe "Users" do
         expect(response.body).to include("Sign Up")
       end
 
+      ResqueSpec.reset!
       expect {
         post "/users", params: {
           user: {
@@ -34,8 +53,7 @@ RSpec.describe "Users" do
         expect(response).to have_http_status(200)
         expect(response).to render_template(:index)
         expect(flash[:notice]).to eq(
-          "A message with a confirmation link has been sent to your email address. " \
-          "Please follow the link to activate your account.",
+          "User created. A confirmation link has been emailed to you; use this to activate your account.",
         )
       end
     end
@@ -46,7 +64,7 @@ RSpec.describe "Users" do
       get "/users/sign_up"
       aggregate_failures do
         expect(response).to redirect_to(root_url)
-        expect(flash[:alert]).to eq("You are already signed in.")
+        expect(flash[:alert]).to eq("You are already logged in.")
       end
 
       expect {
@@ -64,7 +82,7 @@ RSpec.describe "Users" do
 
       aggregate_failures do
         expect(response).to redirect_to(root_url)
-        expect(flash[:alert]).to eq("You are already signed in.")
+        expect(flash[:alert]).to eq("You are already logged in.")
       end
     end
   end
@@ -76,7 +94,7 @@ RSpec.describe "Users" do
       get "/users/sign_in"
       aggregate_failures do
         expect(response).to redirect_to(root_url)
-        expect(flash[:alert]).to eq("You are already signed in.")
+        expect(flash[:alert]).to eq("You are already logged in.")
       end
 
       post "/users/sign_in", params: {
@@ -89,7 +107,7 @@ RSpec.describe "Users" do
 
       aggregate_failures do
         expect(response).to redirect_to(root_url)
-        expect(flash[:alert]).to eq("You are already signed in.")
+        expect(flash[:alert]).to eq("You are already logged in.")
       end
     end
 
@@ -105,11 +123,11 @@ RSpec.describe "Users" do
         },
       }
 
-      expect(flash[:alert]).to eq("Invalid Username or password.")
-      expect(controller.send(:logged_in?)).not_to eq(true)
+      expect(flash[:alert]).to eq("Invalid username or password.")
+      expect(controller.send(:user_signed_in?)).not_to eq(true)
     end
 
-    it "requires unsuspended user" do # TODO: actually implement this behaviour
+    it "requires unsuspended user" do
       user = create(:user, password: "knownknown", role_id: Permissible::SUSPENDED)
 
       post "/users/sign_in", params: {
@@ -121,94 +139,101 @@ RSpec.describe "Users" do
       }
 
       expect(flash[:alert]).to eq("You could not be logged in.")
-      expect(controller.send(:logged_in?)).not_to eq(true)
+
+      get "/"
+      expect(controller.send(:user_signed_in?)).not_to eq(true)
     end
 
-    it "disallows logins with old passwords when reset is pending" do
-      user = create(:user)
-      user.reset_password
+    it "still allows logins with old password when reset is pending" do
+      user = create(:user, password: 'knownpass')
+      user.send_reset_password_instructions
       expect(user.reset_password_token).to be_present
-      post :create, params: { username: user.username }
-      expect(flash[:error]).to eq("The password for this account has been reset. Please check your email.")
-      expect(controller.send(:logged_in?)).not_to eq(true)
+      post "/users/sign_in", params: { user: { username: user.username, password: 'knownpass' } }
+      expect(flash[:notice]).to include("You are now logged in")
+      expect(controller.send(:user_signed_in?)).to eq(true)
     end
 
     it "requires a valid password" do
       password = 'password'
       user = create(:user, password: password)
-      post :create, params: { username: user.username, password: password + "-not" }
-      expect(flash[:error]).to eq("You have entered an incorrect password.")
-      expect(controller.send(:logged_in?)).not_to eq(true)
+      post "/users/sign_in", params: { user: { username: user.username, password: password + "-not" } }
+      expect(flash[:alert]).to eq("Invalid username or password.")
+      expect(controller.send(:user_signed_in?)).not_to eq(true)
     end
 
     it "logs in successfully with salt_uuid" do
       password = 'password'
       user = create(:user, password: password)
-      expect(session[:user_id]).to be_nil
-      expect(controller.send(:logged_in?)).not_to eq(true)
+      get "/users/sign_in"
+      expect(session_user_id).to be_nil
+      expect(controller.send(:user_signed_in?)).not_to eq(true)
 
-      post :create, params: { username: user.username, password: password }
+      post "/users/sign_in", params: { user: { username: user.username, password: password } }
 
-      expect(session[:user_id]).to eq(user.id)
-      expect(controller.send(:logged_in?)).to eq(true)
-      expect(flash[:success]).to eq("You are now logged in as #{user.username}. Welcome back!")
-      expect(cookies.signed[:user_id]).to be_nil
+      expect(session_user_id).to eq(user.id)
+      expect(controller.send(:user_signed_in?)).to eq(true)
+      expect(flash[:notice]).to eq("You are now logged in. Welcome back!")
+      expect(cookie_user_id).to be_nil
     end
 
-    it "logs in successfully without salt_uuid and sets it" do
+    it "logs in successfully without salt_uuid and sets Devise password" do
       password = 'password'
       user = create(:user)
-      user.update_columns(salt_uuid: nil, crypted: user.send(:old_crypted_password, password)) # rubocop:disable Rails/SkipsModelValidations
+      user.update_columns(salt_uuid: nil, legacy_password_hash: user.send(:old_crypted_password, password), encrypted_password: "") # rubocop:disable Rails/SkipsModelValidations
       user.reload
       expect(user.salt_uuid).to be_nil
-      expect(session[:user_id]).to be_nil
-      expect(controller.send(:logged_in?)).not_to eq(true)
+      expect(user.encrypted_password).to be_empty
+      get "/users/sign_in"
+      expect(session_user_id).to be_nil
+      expect(controller.send(:user_signed_in?)).not_to eq(true)
 
-      post :create, params: { username: user.username, password: password }
+      post "/users/sign_in", params: { user: { username: user.username, password: password } }
 
-      expect(session[:user_id]).to eq(user.id)
-      expect(controller.send(:logged_in?)).to eq(true)
-      expect(flash[:success]).to eq("You are now logged in as #{user.username}. Welcome back!")
-      expect(cookies.signed[:user_id]).to be_nil
-      expect(user.reload.salt_uuid).not_to be_nil
-      expect(user.authenticate(password)).to eq(true)
+      expect(session_user_id).to eq(user.id)
+      expect(controller.send(:user_signed_in?)).to eq(true)
+      expect(flash[:notice]).to eq("You are now logged in. Welcome back!")
+      expect(cookie_user_id).to be_nil
+      expect(user.reload.encrypted_password).not_to be_nil
+      expect(user.reload.legacy_password_hash).to be_nil
+      expect(user.reload.salt_uuid).to be_nil
+      expect(user.valid_password?(password)).to eq(true)
     end
 
     it "creates permanent cookies when remember me is provided" do
       password = 'password'
       user = create(:user, password: password)
-      expect(cookies.signed[:user_id]).to be_nil
-      post :create, params: { username: user.username, password: password, remember_me: true }
-      expect(controller.send(:logged_in?)).to eq(true)
-      expect(cookies.signed[:user_id]).to eq(user.id)
+      expect(cookie_user_id).to be_nil
+      post "/users/sign_in", params: { user: { username: user.username, password: password, remember_me: true } }
+      expect(controller.send(:user_signed_in?)).to eq(true)
+      expect(cookie_user_id).to eq(user.id)
     end
 
     it "disallows logins from deleted users" do
       user = create(:user, deleted: true)
-      post :create, params: { username: user.username }
-      expect(flash[:error]).to eq("That username does not exist.")
-      expect(controller.send(:logged_in?)).not_to eq(true)
+      post "/users/sign_in", params: { user: { username: user.username } }
+      expect(flash[:alert]).to eq("Invalid username or password.")
+      expect(controller.send(:user_signed_in?)).not_to eq(true)
     end
 
     it "works when logged out" do
-      get :new
+      get "/users/sign_in"
       expect(response.status).to eq(200)
-      expect(assigns(:page_title)).to eq("Sign In")
+      expect(response.parsed_body.at('title').text).to eq("Sign In")
     end
   end
 
   describe "log out" do
     it "requires login" do
-      delete :destroy
+      delete "/users/sign_out"
       expect(response).to redirect_to(root_url)
-      expect(flash[:error]).to eq("You must be logged in to view that page.")
+      expect(flash[:notice]).to eq("You are already logged out.")
     end
 
     it "logs out" do
       login
-      delete :destroy
-      expect(controller.send(:logged_in?)).not_to eq(true)
-      expect(flash[:success]).to eq("You have been logged out.")
+      delete "/users/sign_out"
+      expect(controller.send(:user_signed_in?)).not_to eq(true)
+      expect(flash[:notice]).to eq("You have been logged out.")
       # TODO test session vars and cookies and redirect
     end
   end
