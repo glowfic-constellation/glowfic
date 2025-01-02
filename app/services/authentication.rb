@@ -17,7 +17,7 @@ class Authentication < Object
       return false
     end
 
-    unless user.authenticate(password)
+    unless user.valid_password?(password)
       @error = "You have entered an incorrect password."
       return false
     end
