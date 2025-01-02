@@ -140,7 +140,32 @@ class User < ApplicationRecord
     super
   end
 
+  # override devise to block inactive users from signing in
+  def active_for_authentication?
+    super && inactivity_status.nil?
+  end
+
+  def inactive_message
+    inactivity_status || super
+  end
+
   private
+
+  def inactivity_status
+    # should match a key in devise.failure (i18n)
+    if deleted?
+      :invalid
+    elsif suspended?
+      notify_admins_of_blocked_login
+      :locked
+    end
+  end
+
+  def notify_admins_of_blocked_login
+    raise NameError.new("Login attempt by suspended user #{id}")
+  rescue NameError => e
+    ExceptionNotifier.notify_exception(e)
+  end
 
   def crypted_password(unencrypted)
     crypted = "Adding #{salt_uuid} to #{unencrypted}"

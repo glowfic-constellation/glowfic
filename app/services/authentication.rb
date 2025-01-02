@@ -50,24 +50,17 @@ class Authentication < Object
   private
 
   def valid_user?(user)
-    if !user || user.deleted?
+    if !user || user.inactive_message == :invalid
       @error = "That username does not exist."
       return false
     end
 
-    if user.suspended?
+    unless user.active_for_authentication?
       @error = "You could not be logged in."
-      notify_admins_of_blocked_login(user)
       return false
     end
 
     true
-  end
-
-  def notify_admins_of_blocked_login(user)
-    raise NameError.new("Login attempt by suspended user #{user.id}")
-  rescue NameError => e
-    ExceptionNotifier.notify_exception(e)
   end
 
   def ensure_uuid_set(user, password)
