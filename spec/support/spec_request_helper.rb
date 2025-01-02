@@ -14,7 +14,7 @@ module SpecRequestHelper
 
     aggregate_failures do
       expect(flash[:alert]).to be_nil
-      expect(flash[:notice]).to include("Signed in successfully")
+      expect(flash[:notice]).to include("You are now logged in")
     end
 
     user
