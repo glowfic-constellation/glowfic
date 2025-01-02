@@ -314,8 +314,8 @@ class RepliesController < WritableController
 
   def add_to_multi_reply(reply, reply_params)
     post_id = params[:reply][:post_id]
-    draft = ReplyDraft.draft_for(post_id, current_user.id)
-    draft&.destroy!
+    ReplyDraft.draft_for(post_id, current_user.id).try(:destroy)
+
     preview_replies(multi_reply_to_add: reply, multi_reply_params: reply_params)
   end
 
