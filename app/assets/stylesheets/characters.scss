@@ -62,7 +62,6 @@
 }
 
 .form-table .alias-row {
-  display: grid;
   grid-template-columns: auto auto;
   justify-items: start;
   justify-content: normal;
@@ -76,7 +75,4 @@
   }
 }
 
-#character-editor #create_template {
-  display: grid;
-  &.hidden { display: none; }
-}
+#character-editor #create_template.hidden { display: none; }

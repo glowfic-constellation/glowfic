@@ -303,8 +303,9 @@ td, .table-list li { font-size: $font_size_small; }
   grid-template-columns: auto auto;
   font-size: $font_size_small;
 
+  div, span { display: inherit } // inherit grids through form table
+
   & > div {
-    display: grid;
     grid-column: 1 / -1;
     grid-template-columns: subgrid;
     justify-content: center;
@@ -332,14 +333,12 @@ td, .table-list li { font-size: $font_size_small; }
 
     & > div {
       padding: 5px;
-      display: grid;
       align-items: center;
       &:not(.sub) { justify-items: start; }
     }
   }
 
   .checkbox-field, .checkbox-fields {
-    display: grid;
     justify-content: start;
     grid-template-columns: 20px auto;
     column-gap: 4px;
@@ -348,7 +347,6 @@ td, .table-list li { font-size: $font_size_small; }
   .checkbox-fields { align-items: start; }
 
   .radio-fields {
-    display: grid;
     grid-template-columns: 14px auto;
     column-gap: 4px;
   }
@@ -387,7 +385,6 @@ td, .table-list li { font-size: $font_size_small; }
 
     .user-alert {
       margin: 7px 0 2px 0;
-      display: grid;
       grid-template-columns: 16px auto;
       gap: 4px;
       justify-content: center;

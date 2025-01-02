@@ -61,10 +61,8 @@
 }
 
 .icon-edit-table {
-  .icon_conf, .icon_url_field {
-    display: grid;
-    &.hidden { display: none; }
-  }
+  .icon_conf.hidden, .icon_url_field.hidden { display: none; }
+
   .icon_conf {
     grid-template-columns: 14px auto;
     justify-items: center;
@@ -124,7 +122,6 @@
   .preview-icon-cell { padding: 0; }
   .input-cell { padding: 5px; }
   .url-cell .conf {
-    display: grid;
     grid-template-columns: 16px auto;
     column-gap: 4px;
     &.hidden { display: none; }
@@ -148,14 +145,11 @@
   display: grid;
   grid-template-columns: 200px auto;
   width: 100%;
+  div { display: inhert; }
 
-  .subber {
-    display: grid;
-    place-items: center;
-  }
+  .subber { place-items: center; }
 
   & > div:not(.subber) {
-    display: grid;
     align-items: center;
     justify-items: start;
     column-gap: 5px;
@@ -241,7 +235,6 @@
       gap: 4px;
 
       .gallery-icon {
-        display: grid;
         grid-auto-flow: row;
         grid-template-rows: 110px 30px;
         justify-items: center;
