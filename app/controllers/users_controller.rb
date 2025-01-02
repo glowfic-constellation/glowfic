@@ -175,9 +175,6 @@ class UsersController < ApplicationController
   def user_params
     params.fetch(:user, {}).permit(
       :username,
-      :email,
-      :password,
-      :password_confirmation,
       :email_notifications,
       :per_page,
       :timezone,

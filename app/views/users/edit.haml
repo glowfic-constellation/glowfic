@@ -15,13 +15,15 @@
             %br
             %span.details Please reset your password first to allow changing your username.
       %tr
-        %th.sub= f.label :email
-        %td{class: cycle('even', 'odd')}= f.text_field :email, placeholder: "Email address"
-      %tr
-        %th.sub Password
+        %th.sub Email & password
         %td{class: cycle('even', 'odd')}
+          = current_user.email
+          - if current_user.respond_to?(:pending_reconfirmation?) && current_user.pending_reconfirmation?
+            %br
+            %span.details Currently waiting for email confirmation for: #{current_user.unconfirmed_email}
+          %br
           = link_to edit_user_registration_path do
-            %button{type: 'button'} Change Password
+            %button{type: 'button'} Change Email or Password
       -# TODO: Disable my account #{button_to "Cancel my account", registration_path(resource_name), data: { confirm: "Are you sure?", turbo_confirm: "Are you sure?" }, method: :delete}
       %tr
         %th.sub Author profile
@@ -124,25 +126,6 @@
       %tr
         %th.form-table-ender{colspan: 2}= submit_tag "Save", class: 'button'
 
-%br
-= form_for current_user, url: password_user_path(current_user), method: :put, html: { id: 'change_password_form' } do |f|
-  %table.form-table#change-password
-    %thead
-      %tr
-        %th.editor-title{colspan: 2} Change Password
-    %tbody
-      %tr
-        %th.sub= label_tag :old_password, 'Old'
-        %td{class: cycle('even', 'odd')}= password_field_tag :old_password, params[:old_password], placeholder: "Old Password", autocomplete: 'current-password'
-      %tr
-        %th.sub= label_tag :password, 'New'
-        %td{class: cycle('even', 'odd')}= f.password_field :password, placeholder: "New Password", value: (params[:user] || {})[:password], autocomplete: 'new-password'
-      %tr
-        %th.sub= label_tag :password_confirmation, 'Confirm'
-        %td{class: cycle('even', 'odd')}= f.password_field :password_confirmation, placeholder: "Confirm Password", value: (params[:user] || {})[:password_confirmation], autocomplete: 'new-password'
-    %tfoot
-      %tr
-        %th.form-table-ender{colspan: 2}= submit_tag "Save", class: 'button'
 - if current_user.read_only?
   %br
   = form_for current_user, url: upgrade_user_path(current_user), method: :put, html: { id: 'upgrade_account_form' } do
