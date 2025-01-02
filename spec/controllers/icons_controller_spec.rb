@@ -520,8 +520,7 @@ RSpec.describe IconsController do
       expect(user.avatar_id).to be_nil
       login_as(user)
 
-      allow(User).to receive(:find_by).and_call_original
-      allow(User).to receive(:find_by).with({ id: user.id }).and_return(user)
+      allow(controller).to receive(:current_user).and_return(user)
       allow(user).to receive(:update).and_return(false)
       expect(user).to receive(:update)
 
