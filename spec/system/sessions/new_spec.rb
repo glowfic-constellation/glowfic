@@ -2,7 +2,7 @@
 # The other flow is tested (implicitly) everywhere that uses the login method.
 RSpec.describe "Logging in" do
   scenario "Log in with invalid details" do
-    visit login_path
+    visit new_user_session_path
     expect(page).to have_no_selector('.flash')
     within('.form-table') do
       fill_in 'Username', with: 'Invalid user'
@@ -10,8 +10,8 @@ RSpec.describe "Logging in" do
       click_button 'Sign In'
     end
 
-    expect(page).to have_selector('.flash.error', text: 'That username does not exist.')
-    expect(page).to have_current_path(login_path)
+    expect(page).to have_selector('.flash.alert', text: 'Invalid username or password.')
+    expect(page).to have_current_path(new_user_session_path)
 
     username = 'Valid user'
     create(:user, username: username)
@@ -21,15 +21,15 @@ RSpec.describe "Logging in" do
       click_button 'Sign In'
     end
 
-    expect(page).to have_selector('.flash.error', text: 'You have entered an incorrect password.')
-    expect(page).to have_current_path(login_path)
+    expect(page).to have_selector('.flash.alert', text: 'Invalid username or password.')
+    expect(page).to have_current_path(new_user_session_path)
   end
 
   scenario "Log in with valid details" do
     username = 'Test user'
     password = 'my password1234@'
     create(:user, username: username, password: password)
-    visit login_path
+    visit new_user_session_path
     expect(page).to have_no_selector('.flash')
 
     expect(page).to have_selector('.form-table')
@@ -41,7 +41,7 @@ RSpec.describe "Logging in" do
 
     expect(page).to have_current_path(continuities_path)
     expect(page).to have_no_selector('.flash.error')
-    expect(page).to have_selector('.flash.success', text: 'You are now logged in as Test user. Welcome back!')
+    expect(page).to have_selector('.flash.notice', text: 'You are now logged in. Welcome back!')
     expect(page).to have_no_selector('#username')
     expect(page).to have_selector('#user-username', text: username)
 
@@ -55,9 +55,9 @@ RSpec.describe "Logging in" do
   scenario "Error while already logged in" do
     login
 
-    visit login_path
+    visit new_user_session_path
     expect(page).to have_current_path(continuities_path)
-    expect(page).to have_selector('.flash.error', text: 'You are already logged in.')
+    expect(page).to have_selector('.flash.alert', text: 'You are already logged in.')
     expect(page).to have_no_selector('#username')
   end
 end
