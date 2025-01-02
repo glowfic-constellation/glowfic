@@ -93,7 +93,7 @@ RSpec.describe "Users" do
 
       get "/users/sign_in"
       aggregate_failures do
-        expect(response).to redirect_to(root_url)
+        expect(response).to redirect_to(continuities_url)
         expect(flash[:alert]).to eq("You are already logged in.")
       end
 
@@ -106,7 +106,7 @@ RSpec.describe "Users" do
       }
 
       aggregate_failures do
-        expect(response).to redirect_to(root_url)
+        expect(response).to redirect_to(continuities_url)
         expect(flash[:alert]).to eq("You are already logged in.")
       end
     end
