@@ -26,7 +26,6 @@ Rails.application.routes.draw do
       get :search
     end
     member do
-      put :password
       put :upgrade
       get :output
       get :profile_edit

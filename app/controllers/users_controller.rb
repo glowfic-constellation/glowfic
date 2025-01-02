@@ -4,7 +4,7 @@ class UsersController < ApplicationController
   include Taggable
 
   before_action :login_required, except: [:index, :show, :search]
-  before_action :require_own_user, only: [:edit, :update, :password, :upgrade, :profile_edit]
+  before_action :require_own_user, only: [:edit, :update, :upgrade, :profile_edit]
   before_action :require_readonly_user, only: :upgrade
 
   def index
@@ -59,30 +59,6 @@ class UsersController < ApplicationController
       else
         redirect_to edit_user_path(current_user)
       end
-    end
-  end
-
-  def password
-    unless current_user.authenticate(params[:old_password])
-      flash.now[:error] = "Incorrect password entered."
-      @page_title = 'Edit Account'
-      render :edit and return
-    end
-
-    current_user.validate_password = true
-
-    begin
-      current_user.update!(user_params)
-    rescue ActiveRecord::RecordInvalid
-      flash.now[:error] = {
-        message: "There was a problem with your changes.",
-        array: current_user.errors.full_messages,
-      }
-      @page_title = 'Edit Account'
-      render :edit
-    else
-      flash[:success] = "Changes saved."
-      redirect_to edit_user_path(current_user)
     end
   end
 
