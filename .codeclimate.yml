@@ -1,8 +1,6 @@
 ---
 version: "2"
 plugins:
-  csslint:
-    enabled: true
   duplication:
     enabled: true
     config:
@@ -12,6 +10,9 @@ plugins:
   fixme:
     enabled: true
 checks:
+  method-complexity:
+    config:
+      threshold: 8
   return-statements:
     config:
       threshold: 5
@@ -21,3 +22,10 @@ exclude_patterns:
 - doc/
 - script/
 - spec/
+- .github/
+- .**
+- app/assets/images/
+- backstop/then/
+- bin/
+- bin-docker/
+- public/
