@@ -330,8 +330,8 @@ class RepliesController < WritableController
       # Adding a new reply to a multi reply
       @post = multi_reply_to_add.post
       empty_reply_hash = permitted_params.permit(:character_id, :icon_id, :character_alias_id)
-      @written = @post.build_new_reply_for(current_user, empty_reply_hash)
-      @written.editor_mode ||= params[:editor_mode] || current_user.default_editor
+      @empty_written = @post.build_new_reply_for(current_user, empty_reply_hash)
+      @empty_written.editor_mode ||= params[:editor_mode] || current_user.default_editor
       @audits = {}
     end
 
