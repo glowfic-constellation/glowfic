@@ -23,13 +23,13 @@ $(document).ready(function() {
 
     // Hide icons if they're already visible
     if ($("#icons-" + galleryId).is(':visible')) {
-      $("#icons-" + galleryId).hide();
+      $("#icons-" + galleryId).addClass('hidden');
       $("#minmax-" + galleryId).text("+");
       return;
     }
 
     // Show icons if they're hidden
-    $("#icons-" + galleryId).show();
+    $("#icons-" + galleryId).removeClass('hidden');
     $("#minmax-" + galleryId).text("-");
     if ($("#icons-" + galleryId + " .icon").length > 0) { return; }
 
