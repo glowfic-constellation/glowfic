@@ -50,9 +50,9 @@ en:
       signed_out: "You have been logged out."
       already_signed_out: "You are already logged out."
     unlocks:
-      send_instructions: "You will receive an email with instructions for how to unlock your account in a few minutes."
-      send_paranoid_instructions: "If your account exists, you will receive an email with instructions for how to unlock it in a few minutes."
-      unlocked: "Your account has been unlocked successfully. Please sign in to continue."
+      send_instructions: "An email with instructions for how to unlock your account has been sent."
+      send_paranoid_instructions: "An email with instructions for how to unlock your account has been sent."
+      unlocked: "Account  unlocked successfully. Sign in to continue."
   errors:
     messages:
       already_confirmed: "already confirmed, try signing in"
