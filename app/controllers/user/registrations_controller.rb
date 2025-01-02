@@ -44,9 +44,12 @@ class User::RegistrationsController < Devise::RegistrationsController
   # end
 
   # DELETE /resource
-  # def destroy
-  #   super
-  # end
+  def destroy
+    flash[:error] = "Please contact an admin to delete your account."
+    redirect_to root_path
+    # TODO: allow users to soft delete their own accounts
+    # https://github.com/heartcombo/devise/wiki/How-to:-Soft-delete-a-user-when-user-deletes-account
+  end
 
   # GET /resource/cancel
   # Forces the session data which is usually expired after sign
