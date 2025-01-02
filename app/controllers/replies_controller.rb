@@ -97,6 +97,7 @@ class RepliesController < WritableController
   end
 
   def create
+    multi_replies_json = JSON.parse(params.fetch(:multi_replies_json, "[]"))
     if params[:button_draft]
       draft = make_draft
       redirect_to posts_path and return unless draft.post
@@ -115,7 +116,11 @@ class RepliesController < WritableController
       redirect_to post_path(post_id, page: :unread, anchor: :unread) and return
     elsif params[:button_preview]
       draft = make_draft
-      preview(ReplyDraft.reply_from_draft(draft)) and return
+      preview(ReplyDraft.reply_from_draft(draft), multi_replies_json, nil, nil) and return
+    elsif params[:button_submit_previewed_multi_reply]
+      post_replies(multi_replies_json) and return
+    elsif params[:button_discard_multi_reply]
+      redirect_to post_path(params[:reply][:post_id], page: :unread, anchor: :unread) and return
     end
 
     reply = Reply.new(permitted_params)
@@ -138,10 +143,10 @@ class RepliesController < WritableController
           flash.now[:error] = "This looks like a duplicate. Did you attempt to post this twice? Please resubmit if this was intentional."
           @allow_dupe = true
           if most_recent_unseen_reply.nil? || (most_recent_unseen_reply.id == last_by_user.id && @unseen_replies.count == 1)
-            preview(reply)
+            preview(reply, multi_replies_json, nil, nil)
           else
             draft = make_draft(false)
-            preview(ReplyDraft.reply_from_draft(draft))
+            preview(ReplyDraft.reply_from_draft(draft), multi_replies_json, nil, nil)
           end
           return
         end
@@ -153,21 +158,20 @@ class RepliesController < WritableController
         pluraled = num > 1 ? "have been #{num} new replies" : "has been 1 new reply"
         flash.now[:error] = "There #{pluraled} since you last viewed this post."
         draft = make_draft
-        preview(ReplyDraft.reply_from_draft(draft)) and return
+        preview(ReplyDraft.reply_from_draft(draft), multi_replies_json, nil, nil) and return
       end
     end
 
-    begin
-      reply.save!
-    rescue ActiveRecord::RecordInvalid => e
-      render_errors(reply, action: 'created', now: true, err: e)
-
-      redirect_to posts_path and return unless reply.post
-      redirect_to post_path(reply.post)
-    else
-      flash[:success] = "Reply posted."
-      redirect_to reply_path(reply, anchor: "reply-#{reply.id}")
+    if params[:button_add_more]
+      # If they click "Add More", fetch the existing array of multi replies if present and add the current permitted_params to that list
+      post_id = params[:reply][:post_id]
+      draft = ReplyDraft.draft_for(post_id, current_user.id)
+      draft&.destroy!
+      preview(nil, multi_replies_json, reply, permitted_params)
+      return
     end
+
+    post_replies(multi_replies_json, new_reply: reply)
   end
 
   def show
@@ -186,7 +190,7 @@ class RepliesController < WritableController
   def update
     @reply.assign_attributes(permitted_params)
     process_npc(@reply, permitted_character_params)
-    preview(@reply) and return if params[:button_preview]
+    preview(@reply, [], nil, nil) and return if params[:button_preview]
 
     if current_user.id != @reply.user_id && @reply.audit_comment.blank?
       flash[:error] = "You must provide a reason for your moderator edit."
@@ -296,17 +300,75 @@ class RepliesController < WritableController
     redirect_to post_path(@reply.post)
   end
 
-  def preview(written)
-    @written = written
-    @post = @written.post
-    @written.user = current_user unless @written.user
-    @audits = @written.id.present? ? { @written.id => @written.audits.count } : {}
+  def process_multi_replies_json(json)
+    json.map do |reply_json|
+      Reply.new(permitted_params(ActionController::Parameters.new({ reply: reply_json })))
+        .tap { |r| r.user = current_user }
+    end
+  end
+
+  def preview(reply_to_preview, multi_replies_json, multi_reply_to_add, multi_reply_params)
+    if reply_to_preview
+      # Previewing a specific reply
+      @post = reply_to_preview.post
+      @written = reply_to_preview
+      @written.user = current_user unless @written.user
+      @audits = @written.id.present? ? { @written.id => @written.audits.count } : {}
+    else
+      # Adding a new reply to a multi reply
+      @post = multi_reply_to_add.post
+      empty_reply_hash = permitted_params.permit(:character_id, :icon_id, :character_alias_id)
+      @written = @post.build_new_reply_for(current_user, empty_reply_hash)
+      @written.editor_mode ||= params[:editor_mode] || current_user.default_editor
+      @audits = {}
+    end
+
+    unless multi_replies_json.empty?
+      # Showing multi replies to preview
+      @multi_replies = process_multi_replies_json(multi_replies_json)
+      @multi_replies_json = multi_replies_json
+    end
+
+    if multi_reply_to_add
+      # Adding a new reply to the multi replies
+      unless @multi_replies.present?
+        @multi_replies = []
+        @multi_replies_json = []
+      end
+      multi_reply_to_add.user = current_user unless multi_reply_to_add.user
+      @multi_replies << multi_reply_to_add
+      @multi_replies_json << multi_reply_params
+    end
 
     @page_title = @post.subject
 
     @reply = @written # So that editor_setup shows the correct characters
     editor_setup
     render :preview
+  end
+
+  def post_replies(replies_json, new_reply: nil)
+    multi_replies = process_multi_replies_json(replies_json)
+    multi_replies << new_reply if new_reply.present?
+
+    first_reply = multi_replies.first
+    begin
+      Reply.transaction { multi_replies.each(&:save!) }
+    rescue ActiveRecord::RecordInvalid => e
+      errored_reply = multi_replies.detect { |r| r.errors.present? } || first_reply
+      render_errors(errored_reply, action: 'created', now: true, err: e)
+
+      redirect_to posts_path and return unless errored_reply.post
+      redirect_to post_path(errored_reply.post)
+      return
+    end
+
+    if multi_replies.length == 1
+      flash[:success] = "Reply posted."
+    else
+      flash[:success] = "Replies posted."
+    end
+    redirect_to reply_path(first_reply, anchor: "reply-#{first_reply.id}")
   end
 
   def make_draft(show_message=true)
