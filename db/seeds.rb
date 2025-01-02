@@ -38,7 +38,7 @@ User.create!(
 )
 
 User.create!(
-  username: 'red', password: 'red', email: "dummy8@example.com", role_id: Permissible::MOD,
+  username: 'red', password: 'redpass', email: "dummy8@example.com", role_id: Permissible::MOD,
   layout: 'starrydark', ignore_unread_daily_report: true, created_at: "2024-11-30 15:34:00", confirmed_at: '2024-12-30 00:00:00',
 )
 
