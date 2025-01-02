@@ -56,19 +56,40 @@ RSpec.describe ApplicationController do
       expect(flash.now[:error]).not_to eq(warning)
     end
 
-    it "shows no warning for users with salt_uuid" do
-      user = create(:user)
+    it "shows no warning for users with salt_uuid passwords" do
+      user = create(:user, salt_uuid: SecureRandom.uuid, encrypted_password: '')
       login_as(user)
+      expect(user.encrypted_password).not_to be_present
       expect(user.salt_uuid).not_to be_nil
       get :index
+      aggregate_failures do
+        expect(controller.send(:logged_in?)).to be(true)
+        expect(response).to have_http_status(200)
+      end
+      expect(flash.now[:error]).not_to eq(warning)
+    end
+
+    it "shows no warning for users with Devise passwords" do
+      user = create(:user)
+      login_as(user)
+      expect(user.encrypted_password).to be_present
+      get :index
+      aggregate_failures do
+        expect(controller.send(:logged_in?)).to be(true)
+        expect(response).to have_http_status(200)
+      end
       expect(flash.now[:error]).not_to eq(warning)
     end
 
     it "shows warning if salt_uuid not set" do
       user = create(:user)
+      user.update_columns(salt_uuid: nil, encrypted_password: '') # rubocop:disable Rails/SkipsModelValidations
       login_as(user)
-      user.update_columns(salt_uuid: nil) # rubocop:disable Rails/SkipsModelValidations
       get :index
+      aggregate_failures do
+        expect(controller.send(:logged_in?)).to be(false)
+        expect(response).to have_http_status(200)
+      end
       expect(flash.now[:error]).to eq(warning)
     end
   end
@@ -466,7 +487,11 @@ RSpec.describe ApplicationController do
       user.role_id = Permissible::SUSPENDED
       user.save!
       get :index
-      expect(response.parsed_body['logged_in']).to eq(false)
+      aggregate_failures do
+        expect(response).to redirect_to('/users/sign_in')
+        expect(flash[:alert]).to eq("You could not be logged in.")
+        expect(controller.send(:logged_in?)).to be(false)
+      end
     end
 
     it "logs out deleted" do
@@ -475,7 +500,11 @@ RSpec.describe ApplicationController do
       user.deleted = true
       user.save!
       get :index
-      expect(response.parsed_body['logged_in']).to eq(false)
+      aggregate_failures do
+        expect(response).to redirect_to('/users/sign_in')
+        expect(flash[:alert]).to eq("Invalid username or password.")
+        expect(controller.send(:logged_in?)).to be(false)
+      end
     end
   end
 

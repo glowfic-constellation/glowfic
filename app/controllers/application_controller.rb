@@ -184,9 +184,10 @@ class ApplicationController < ActionController::Base
 
   def show_password_warning
     return unless logged_in?
-    return unless current_user.salt_uuid.nil? && current_user.encrypted_password.nil?
+    return unless current_user.salt_uuid.nil? && current_user.encrypted_password.blank?
     logout
     flash.now[:error] = "Because Marri accidentally made passwords a bit too secure, you must log back in to continue using the site."
+    # TODO: after Devise migration, show warning if encrypted_password blank too
   end
 
   def store_location
