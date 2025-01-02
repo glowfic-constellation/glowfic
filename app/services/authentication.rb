@@ -17,12 +17,11 @@ class Authentication < Object
       return false
     end
 
-    unless user.valid_password?(password)
+    unless user.valid_password?(password) # (migrates password format if necessary)
       @error = "You have entered an incorrect password."
       return false
     end
 
-    ensure_uuid_set(user, password)
     @user = user
   end
 
@@ -61,13 +60,5 @@ class Authentication < Object
     end
 
     true
-  end
-
-  def ensure_uuid_set(user, password)
-    return if user.salt_uuid.present?
-
-    user.salt_uuid = SecureRandom.uuid
-    user.crypted = user.send(:crypted_password, password)
-    user.save!
   end
 end
