@@ -9,10 +9,9 @@ class User::SessionsController < Devise::SessionsController
   # end
 
   # POST /resource/sign_in
-  def create
-    super
-    # TODO: check user isn't deleted/inactive before logging in
-  end
+  # def create
+  #   super
+  # end
 
   # DELETE /resource/sign_out
   # def destroy
