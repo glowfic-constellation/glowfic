@@ -30,7 +30,7 @@
         %br
         = f.text_area :audit_comment, placeholder: 'Explain reason for moderation here', class: 'mod'
         %br
-      - if multi_replies_json.nil?
+      - if multi_replies_json.blank?
         = submit_tag (reply.new_record? ? 'Post' : 'Save'), class: 'button', id: 'submit_button', data: { disable_with: 'Saving...' }
         = submit_tag "Preview", class: 'button', id: 'preview_button', name: 'button_preview', data: { disable_with: 'Previewing...' }
         - if reply.new_record?
@@ -38,12 +38,11 @@
         - if @draft.present?
           = submit_tag "Delete Draft", class: 'button', id: 'delete_draft_button', name: 'button_delete_draft', data: { disable_with: 'Deleting...', confirm: "Delete draft?" }
       - else
-        = submit_tag 'Post All', class: 'button', id: 'submit_button', data: { disable_with: 'Saving...' }
+        = submit_tag (multi_replies_json.first["id"].blank? ? 'Post All' : 'Save All'), class: 'button', id: 'submit_button', data: { disable_with: 'Saving...' }
         = submit_tag "Preview Current", class: 'button', id: 'preview_button', name: 'button_preview', data: { disable_with: 'Previewing...' }
-      - if reply.new_record?
-        = submit_tag "Add More Replies", class: 'button', id: 'add_more_button', name: 'button_add_more', data: { disable_with: 'Adding...' }
-        - unless multi_replies_json.nil?
-          = submit_tag "Discard Replies", class: 'button', id: 'discard_multi_reply_button', name: 'button_discard_multi_reply', data: { disable_with: 'Discarding...', confirm: "Discard all replies added?"}
+      = submit_tag "Add More Replies", class: 'button', id: 'add_more_button', name: 'button_add_more', data: { disable_with: 'Adding...' }
+      - if multi_replies_json.present?
+        = submit_tag "Discard Replies", class: 'button', id: 'discard_multi_reply_button', name: 'button_discard_multi_reply', data: { disable_with: 'Discarding...', confirm: "Discard all replies added?"}
     - if reply.post.author_for(current_user).present?
       %hr.clear
       .post-note-editor
