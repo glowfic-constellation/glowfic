@@ -3,8 +3,12 @@ require 'resque/server'
 
 Rails.application.routes.draw do
   devise_for :users, skip: :unlock, controllers: {
+    confirmations: 'user/confirmations',
+    # omniauth_callbacks: 'user/omniauth_callbacks',
+    passwords: 'user/passwords',
     registrations: 'user/registrations',
     sessions: 'user/sessions',
+    # unlocks: 'user/unlocks',
   }
   # For details on the DSL available within this file, see https://guides.rubyonrails.org/routing.html
   apipie
