@@ -164,9 +164,6 @@ class RepliesController < WritableController
 
     if params[:button_add_more]
       # If they click "Add More", fetch the existing array of multi replies if present and add the current permitted_params to that list
-      post_id = params[:reply][:post_id]
-      draft = ReplyDraft.draft_for(post_id, current_user.id)
-      draft&.destroy!
       add_to_multi_reply(reply, permitted_params)
       return
     end
@@ -316,6 +313,9 @@ class RepliesController < WritableController
   end
 
   def add_to_multi_reply(reply, reply_params)
+    post_id = params[:reply][:post_id]
+    draft = ReplyDraft.draft_for(post_id, current_user.id)
+    draft&.destroy!
     preview_replies(multi_reply_to_add: reply, multi_reply_params: reply_params)
   end
 
