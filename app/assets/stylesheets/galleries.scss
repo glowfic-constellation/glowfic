@@ -295,7 +295,7 @@
   .delete-form {
     .gallery { padding: 0px; }
     .icons-remove { clear: both; }
+    &.hidden { display: none; }
     padding: 5px 10px;
-    display: none;
   }
 }
