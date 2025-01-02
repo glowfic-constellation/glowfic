@@ -199,6 +199,29 @@ RSpec.describe "Users" do
       expect(user.valid_password?(password)).to eq(true)
     end
 
+    it "logs in successfully with non-Devise password and sets Devise password" do
+      password = 'password'
+      data = SecureRandom.uuid
+      user = create(:user, salt_uuid: data)
+      user.update_columns(salt_uuid: data, legacy_password_hash: user.send(:crypted_password, password), encrypted_password: "") # rubocop:disable Rails/SkipsModelValidations
+      user.reload
+      expect(user.encrypted_password).to be_empty
+      get "/users/sign_in"
+      expect(session_user_id).to be_nil
+      expect(controller.send(:user_signed_in?)).not_to eq(true)
+
+      post "/users/sign_in", params: { user: { username: user.username, password: password } }
+
+      expect(session_user_id).to eq(user.id)
+      expect(controller.send(:user_signed_in?)).to eq(true)
+      expect(flash[:notice]).to eq("You are now logged in. Welcome back!")
+      expect(cookie_user_id).to be_nil
+      expect(user.reload.encrypted_password).not_to be_nil
+      expect(user.reload.legacy_password_hash).to be_nil
+      expect(user.reload.salt_uuid).to be_nil
+      expect(user.valid_password?(password)).to eq(true)
+    end
+
     it "creates permanent cookies when remember me is provided" do
       password = 'password'
       user = create(:user, password: password)
