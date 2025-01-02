@@ -11,8 +11,8 @@
     %div
       .sub Author profile
       %div{class: cycle('even', 'odd')}
-          = link_to profile_edit_user_path(current_user) do
-            %button{type: 'button'} Edit Profile
+        = link_to profile_edit_user_path(current_user) do
+          %button{type: 'button'} Edit Profile
     %div
       .sub Bookmarks
       .checkbox-field{class: cycle('even', 'odd')}
