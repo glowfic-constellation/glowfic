@@ -5,6 +5,7 @@ class WritableController < ApplicationController
   def build_template_groups(user=nil)
     return unless logged_in?
     user ||= current_user
+    user = current_user unless user.id == current_user.id || current_user.has_permission?(:edit_posts)
 
     faked = Struct.new(:name, :id, :plucked_characters)
     faked_npcs = Struct.new(:name, :id, :plucked_npcs)
