@@ -42,6 +42,7 @@ jobs:
       RAILS_ENV: test
       MINIO_ENDPOINT: http://localhost:9000/
       MINIO_ENDPOINT_EXTERNAL: http://localhost:9000/
+      ACCOUNT_SECRET: test_secret
 
     steps:
       - uses: actions/checkout@v4

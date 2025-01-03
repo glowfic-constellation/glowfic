@@ -333,16 +333,14 @@ RSpec.describe UsersController do
     end
 
     it "requires valid secret" do
-      allow(ENV).to receive(:[]).with('ACCOUNT_SECRET').and_return('chocolate')
       user = create(:user, role_id: Permissible::READONLY)
       login_as(user)
-      put :upgrade, params: { id: user.id, secret: 'vanilla' }
+      put :upgrade, params: { id: user.id, secret: ENV.fetch("ACCOUNT_SECRET") + "different" }
       expect(response).to render_template(:edit)
       expect(flash[:error]).to eq("That is not the correct secret. Please ask someone in the community for help.")
     end
 
     it "handles update failures" do
-      allow(ENV).to receive(:[]).with('ACCOUNT_SECRET').and_return('chocolate')
       user = create(:user, role_id: Permissible::READONLY)
 
       allow(controller).to receive(:current_user).and_return(user)
@@ -350,16 +348,15 @@ RSpec.describe UsersController do
       expect(user).to receive(:update)
 
       login_as(user)
-      put :upgrade, params: { id: user.id, secret: 'chocolate' }
+      put :upgrade, params: { id: user.id, secret: ENV.fetch("ACCOUNT_SECRET") }
       expect(flash[:error]).to eq("There was a problem updating your account.")
       expect(response).to render_template(:edit)
     end
 
     it "works" do
-      allow(ENV).to receive(:[]).with('ACCOUNT_SECRET').and_return('chocolate')
       user = create(:user, role_id: Permissible::READONLY)
       login_as(user)
-      put :upgrade, params: { id: user.id, secret: 'chocolate' }
+      put :upgrade, params: { id: user.id, secret: ENV.fetch("ACCOUNT_SECRET") }
       expect(response).to redirect_to(edit_user_url(user))
       expect(flash[:success]).to eq("Changes saved successfully.")
       expect(user.reload).not_to be_read_only
