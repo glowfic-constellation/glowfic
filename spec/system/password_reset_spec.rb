@@ -1,4 +1,6 @@
 RSpec.describe "Resetting password" do
+  before(:each) { ResqueSpec.reset! }
+
   scenario "Resetting your password" do
     # request reset
     user = create(:user)
