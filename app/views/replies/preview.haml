@@ -12,9 +12,9 @@
 
 - if @multi_replies.present?
   .content-header Multi reply
-  - @multi_replies.each_with_index do |reply, index|
+  - @multi_replies.each do |reply|
     = render 'replies/single', reply: reply, hide_footer: true
-  = form_for @written || @empty_written, html: { id: 'post_form' } do |f|
+  = form_for @written || @empty_written, html: { id: 'post_form' } do
     = hidden_field_tag :multi_replies_json, @multi_replies_json.to_json
     = submit_tag 'Post Previewed', class: 'button', id: 'submit_previewed_multi_reply_button', name: 'button_submit_previewed_multi_reply', data: { disable_with: 'Saving...', confirm: 'The reply currently in the editor will not be posted. Continue?' }
     %br
