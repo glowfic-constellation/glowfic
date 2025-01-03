@@ -1,4 +1,4 @@
-RSpec.describe "Creating replies" do
+RSpec.describe "Editing replies" do
   def find_reply_on_page(reply)
     find('.post-reply') { |x| x.has_selector?('a', id: "reply-#{reply.id}") }
   end
@@ -87,6 +87,93 @@ RSpec.describe "Creating replies" do
     within(find_reply_on_page(reply)) do
       expect(page).to have_selector('.post-content', exact_text: 'third text')
     end
+  end
+
+  scenario "User edits a reply and uses the multi reply editor", :js do
+    user = login
+    user.update!(default_editor: 'html')
+    reply = create(:reply, user: user, content: 'example text', editor_mode: 'html')
+    create(:reply, user: user, post: reply.post, content: 'example text 2')
+
+    visit reply_path(reply)
+    expect(page).to have_selector('.post-container', count: 3)
+    within(find_reply_on_page(reply)) do
+      click_link 'Edit'
+    end
+
+    # add two extra replies
+    expect(page).to have_no_selector('.error')
+    expect(page).to have_selector('.content-header', exact_text: 'Edit reply')
+    expect(page).to have_no_selector('.post-container')
+    within('#post-editor') do
+      fill_in 'reply_content', with: 'other text 1'
+      click_button 'Add More Replies'
+    end
+
+    expect(page).to have_no_selector('.error')
+    expect(page).to have_selector('.content-header', exact_text: 'Editing reply and adding more')
+    expect(page).to have_selector('.post-container', count: 1)
+    within('#post-editor') do
+      fill_in 'reply_content', with: 'other text 2'
+      click_button 'Add More Replies'
+    end
+
+    expect(page).to have_no_selector('.error')
+    expect(page).to have_selector('.content-header', exact_text: 'Editing reply and adding more')
+    expect(page).to have_selector('.post-container', count: 2)
+    within('#post-editor') do
+      fill_in 'reply_content', with: 'other text 3'
+      click_button 'Save All'
+    end
+
+    # All replies should be there in the right order
+    expect(page).to have_no_selector('.error')
+    expect(page).to have_selector('.success', exact_text: 'Reply updated.')
+    expect(page).to have_selector('.post-container', count: 5)
+    all_containers = page.find_all(".post-container")
+    within(all_containers[1]) { expect(page).to have_selector('.post-content', exact_text: 'other text 1') }
+    within(all_containers[2]) { expect(page).to have_selector('.post-content', exact_text: 'other text 2') }
+    within(all_containers[3]) { expect(page).to have_selector('.post-content', exact_text: 'other text 3') }
+    within(all_containers[4]) { expect(page).to have_selector('.post-content', exact_text: 'example text 2') }
+
+    # Now test using the "Save Previewed" button
+    within(find_reply_on_page(reply)) do
+      click_link 'Edit'
+    end
+    within('#post-editor') do
+      fill_in 'reply_content', with: 'other text 4'
+      click_button 'Add More Replies'
+    end
+    within('#post-editor') do
+      fill_in 'reply_content', with: 'other text 5'
+      click_button 'Add More Replies'
+    end
+    within('#post-editor') do
+      fill_in 'reply_content', with: 'other text 6'
+    end
+    accept_alert { click_button "Save Previewed" }
+    expect(page).to have_selector('.post-container', count: 6)
+    all_containers = page.find_all(".post-container")
+    within(all_containers[1]) { expect(page).to have_selector('.post-content', exact_text: 'other text 4') }
+    within(all_containers[2]) { expect(page).to have_selector('.post-content', exact_text: 'other text 5') }
+    within(all_containers[3]) { expect(page).to have_selector('.post-content', exact_text: 'other text 2') }
+    within(all_containers[4]) { expect(page).to have_selector('.post-content', exact_text: 'other text 3') }
+    within(all_containers[5]) { expect(page).to have_selector('.post-content', exact_text: 'example text 2') }
+    expect(page).to have_no_text("other text 6")
+
+    # Now test discarding
+    within(find_reply_on_page(reply)) do
+      click_link 'Edit'
+    end
+    within('#post-editor') do
+      fill_in 'reply_content', with: 'text to discard 1'
+      click_button 'Add More Replies'
+    end
+    within('#post-editor') do
+      fill_in 'reply_content', with: 'text to discard 2'
+      accept_alert { click_button "Discard Replies" }
+    end
+    expect(page).to have_no_text("text to discard")
   end
 
   scenario "User tries to edit someone else's reply" do

@@ -3,6 +3,7 @@ require 'will_paginate/array'
 
 class RepliesController < WritableController
   before_action :login_required, except: [:search, :show, :history]
+  before_action :get_multi_replies, only: [:create, :update]
   before_action :find_model, only: [:show, :history, :edit, :update, :destroy]
   before_action :editor_setup, only: [:edit]
   before_action :require_create_permission, only: [:create]
@@ -116,7 +117,20 @@ class RepliesController < WritableController
       redirect_to post_path(post_id, page: :unread, anchor: :unread) and return
     elsif params[:button_preview]
       draft = make_draft
-      preview(ReplyDraft.reply_from_draft(draft)) and return
+      preview_reply(ReplyDraft.reply_from_draft(draft)) and return
+    elsif params[:button_submit_previewed_multi_reply]
+      post_replies
+      return
+    elsif params[:button_discard_multi_reply]
+      flash[:success] = "Replies discarded."
+      if @multi_replies_json.present? && (editing_reply_id = @multi_replies_json.first["id"]).present?
+        # Editing multi reply, going to redirect back to the reply I'm editing
+        redirect_to reply_path(editing_reply_id, anchor: "reply-#{editing_reply_id}")
+      else
+        # Posting a new multi reply, go back to unread
+        redirect_to post_path(params[:reply][:post_id], page: :unread, anchor: :unread)
+      end
+      return
     end
 
     reply = Reply.new(permitted_params)
@@ -139,10 +153,10 @@ class RepliesController < WritableController
           flash.now[:error] = "This looks like a duplicate. Did you attempt to post this twice? Please resubmit if this was intentional."
           @allow_dupe = true
           if most_recent_unseen_reply.nil? || (most_recent_unseen_reply.id == last_by_user.id && @unseen_replies.count == 1)
-            preview(reply)
+            preview_reply(reply)
           else
             draft = make_draft(false)
-            preview(ReplyDraft.reply_from_draft(draft))
+            preview_reply(ReplyDraft.reply_from_draft(draft))
           end
           return
         end
@@ -154,20 +168,15 @@ class RepliesController < WritableController
         pluraled = num > 1 ? "have been #{num} new replies" : "has been 1 new reply"
         flash.now[:error] = "There #{pluraled} since you last viewed this post."
         draft = make_draft
-        preview(ReplyDraft.reply_from_draft(draft)) and return
+        preview_reply(ReplyDraft.reply_from_draft(draft)) and return
       end
     end
 
-    begin
-      reply.save!
-    rescue ActiveRecord::RecordInvalid => e
-      render_errors(reply, action: 'created', now: true, err: e)
-
-      redirect_to posts_path and return unless reply.post
-      redirect_to post_path(reply.post)
+    if params[:button_add_more]
+      # If they click "Add More", fetch the existing array of multi replies if present and add the current permitted_params to that list
+      add_to_multi_reply(reply, permitted_params)
     else
-      flash[:success] = "Reply posted."
-      redirect_to reply_path(reply, anchor: "reply-#{reply.id}")
+      post_replies(new_reply: reply)
     end
   end
 
@@ -187,7 +196,12 @@ class RepliesController < WritableController
   def update
     @reply.assign_attributes(permitted_params)
     process_npc(@reply, permitted_character_params)
-    preview(@reply) and return if params[:button_preview]
+    if params[:button_preview]
+      preview_reply(@reply) and return
+    elsif params[:button_add_more]
+      # This will take us to reply create instead, but this reply's ID will be saved
+      add_to_multi_reply(@reply, permitted_params) and return
+    end
 
     if current_user.id != @reply.user_id && @reply.audit_comment.blank?
       flash[:error] = "You must provide a reason for your moderator edit."
@@ -195,18 +209,7 @@ class RepliesController < WritableController
       render :edit and return
     end
 
-    begin
-      @reply.save!
-    rescue ActiveRecord::RecordInvalid => e
-      render_errors(@reply, action: 'updated', now: true, err: e)
-
-      @audits = { @reply.id => @post.audits.count }
-      editor_setup
-      render :edit
-    else
-      flash[:success] = "Reply updated."
-      redirect_to reply_path(@reply, anchor: "reply-#{@reply.id}")
-    end
+    edit_reply
   end
 
   def destroy
@@ -297,17 +300,145 @@ class RepliesController < WritableController
     redirect_to post_path(@reply.post)
   end
 
-  def preview(written)
-    @written = written
-    @post = @written.post
+  def get_multi_replies
+    @multi_replies_json = JSON.parse(params.fetch(:multi_replies_json, "[]"))
+    @multi_replies = @multi_replies_json.map do |reply_json|
+      Reply.new(permitted_params(ActionController::Parameters.new({ reply: reply_json })))
+        .tap { |r| r.user = current_user }
+    end
+  end
+
+  def preview_reply(reply)
+    # Previewing a specific reply
+    @post = reply.post
+    @written = reply
     @written.user = current_user unless @written.user
     @audits = @written.id.present? ? { @written.id => @written.audits.count } : {}
+    @reply = @written # So that editor_setup shows the correct characters
+    preview_replies
+  end
 
+  def add_to_multi_reply(reply, reply_params)
+    # Adding a new reply to a multi reply
+    post_id = params[:reply][:post_id]
+    ReplyDraft.draft_for(post_id, current_user.id).try(:destroy)
+
+    # Save NPC
+    if reply.character&.new_record?
+      if reply.character.save
+        flash[:success] = "Your new NPC has been persisted!"
+        params[:reply][:character_id] = reply.character.id
+        reply_params[:character_id] = reply.character.id
+        reply.character_id = reply.character.id
+      else
+        flash[:error] = "There was a problem persisting your new NPC."
+      end
+    end
+
+    # Set up editor
+    @post = reply.post
+    empty_reply_hash = permitted_params.permit(:character_id, :icon_id, :character_alias_id)
+    @empty_written = @post.build_new_reply_for(current_user, empty_reply_hash)
+    @empty_written.editor_mode ||= params[:editor_mode] || current_user.default_editor
+    @reply = @empty_written # So that editor_setup shows the correct characters
+    @audits = {}
+
+    # Add reply to list of multi replies
+    reply.user = current_user unless reply.user
+    @multi_replies << reply
+    reply_params[:id] = reply.id if reply.id.present?
+    @multi_replies_json << reply_params
+
+    preview_replies
+  end
+
+  def preview_replies
     @page_title = @post.subject
 
-    @reply = @written # So that editor_setup shows the correct characters
     editor_setup
     render :preview
+  end
+
+  def post_replies(new_reply: nil)
+    @multi_replies << new_reply if new_reply.present?
+
+    if @multi_replies_json.present? && (@reply = Reply.find_by_id(@multi_replies_json.first["id"]))
+      # The first reply of the multi replies has an ID, that means I'm editing rather than posting a new one
+      original_reply_params = permitted_params(ActionController::Parameters.new({ reply: @reply.attributes }))
+      @reply.assign_attributes(permitted_params(ActionController::Parameters.new({ reply: @multi_replies_json.shift })))
+      @multi_replies.shift
+      edit_reply(original_reply_params: original_reply_params) and return
+    end
+
+    first_reply = @multi_replies.first
+    begin
+      Reply.transaction { @multi_replies.each(&:save!) }
+    rescue ActiveRecord::RecordInvalid => e
+      errored_reply = @multi_replies.detect { |r| r.errors.present? } || first_reply
+      render_errors(errored_reply, action: 'created', now: true, err: e)
+
+      redirect_to posts_path and return unless errored_reply.post
+      redirect_to post_path(errored_reply.post) and return
+    end
+
+    if @multi_replies.length == 1
+      flash[:success] = "Reply posted."
+    else
+      flash[:success] = "Replies posted."
+    end
+    redirect_to reply_path(first_reply, anchor: "reply-#{first_reply.id}")
+  end
+
+  def edit_reply(original_reply_params: nil)
+    begin
+      Reply.transaction do
+        edit_multi_replies(original_reply_params) if @multi_replies.present?
+
+        @reply.save!
+      end
+    rescue ActiveRecord::RecordInvalid => e
+      if @multi_replies.blank?
+        render_errors(@reply, action: 'updated', now: true, err: e)
+      else
+        errored_reply = @multi_replies.detect { |r| r.errors.present? } || @reply
+        render_errors(errored_reply, action: 'updated', now: true, err: e)
+      end
+
+      @audits = { @reply.id => @post.audits.count }
+      editor_setup
+      render :edit
+    else
+      flash[:success] = "Reply updated."
+      redirect_to reply_path(@reply, anchor: "reply-#{@reply.id}")
+    end
+  end
+
+  def edit_multi_replies(original_reply_params)
+    # Add new replies after the current one and before the next
+    if original_reply_params.blank?
+      original_reply_params = permitted_params(ActionController::Parameters.new({ reply: @reply.attributes }))
+      original_reply_params.content = ""
+    end
+
+    # Reorder the replies after this one
+    original_reply_order = @reply.order
+    num_new_replies = @multi_replies.length
+    following_replies = @reply.post.replies.where("reply_order > ?", original_reply_order)
+    following_replies.update_all(["reply_order = reply_order + ?", num_new_replies]) # rubocop:disable Rails/SkipsModelValidations
+
+    # Create the new replies
+    @multi_replies.each_with_index do |r, idx|
+      # Create a fake temporary reply with the contents of the original one to be in history
+      new_reply_params = permitted_params(ActionController::Parameters.new({ reply: r.attributes }))
+
+      r.assign_attributes(original_reply_params)
+      r.user = current_user
+      r.created_at = @reply.created_at
+      r.order = original_reply_order + idx + 1
+      r.save!
+
+      r.update!(new_reply_params)
+    end
   end
 
   def make_draft(show_message=true)
