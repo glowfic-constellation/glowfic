@@ -36,7 +36,7 @@ class User::RegistrationsController < Devise::RegistrationsController
     if params[:secret].present? && params[:secret] != ENV["ACCOUNT_SECRET"]
       clean_up_passwords resource
       set_minimum_password_length
-      flash.now[:error] = "That is not the correct secret. Please ask someone in the community for help or leave blank to create a user account."
+      flash.now[:error] = "That is not the correct secret. Please ask someone in the community for help or leave blank to create a reader account."
       render :new
       return
     end
