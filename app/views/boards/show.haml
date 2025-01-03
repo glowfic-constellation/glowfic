@@ -54,7 +54,9 @@
             %td.centered.padding-10.no-posts{ class: cycle('even', 'odd'), colspan: 6 } — No posts yet —
         %tr
           %td.continuity-spacer{colspan: 5}
-      = render partial: 'posts/list_item', collection: @posts, as: :post, locals: { hide_continuity: true }
+
+      - if @board_sections.methods.include?(:total_pages) && @board_sections.current_page == @board_sections.total_pages
+        = render partial: 'posts/list_item', collection: @posts, as: :post, locals: { hide_continuity: true }
 
     - if @board_sections.methods.include?(:total_pages) && @board_sections.total_pages > 1
       %tfoot
