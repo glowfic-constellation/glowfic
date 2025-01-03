@@ -118,7 +118,8 @@ class RepliesController < WritableController
       draft = make_draft
       preview_reply(ReplyDraft.reply_from_draft(draft)) and return
     elsif params[:button_submit_previewed_multi_reply]
-      post_replies and return
+      post_replies
+      return
     elsif params[:button_discard_multi_reply]
       flash[:success] = "Replies discarded."
       if @multi_replies_json.present? && (editing_reply_id = @multi_replies_json.first["id"]).present?
