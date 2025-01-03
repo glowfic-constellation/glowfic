@@ -25,7 +25,7 @@ RSpec.describe "Editing a template" do
     expect(page).to have_no_selector('.flash.error')
     expect(page).to have_selector('.flash.success', text: 'Template updated.')
 
-    within('.table-title') do
+    within('.content-header') do
       expect(page).to have_text('Template: Renamed Template')
     end
   end
