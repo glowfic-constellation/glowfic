@@ -1,4 +1,4 @@
-@import 'variables';
+@use 'variables' as *;
 
 /* - main page */
 body {
@@ -179,7 +179,7 @@ tr.gallery-tags .tag-item {
   color: $font_color_reply_content;
 }
 
-@import 'dark_themes_selectors';
+@use 'dark_themes_selectors';
 
 /* TODO: do this for starrydark */
 .ui-state-default, .ui-widget-content .ui-state-default, .ui-widget-header .ui-state-default, .ui-button, html .ui-button.ui-state-disabled:hover, html .ui-button.ui-state-disabled:active {

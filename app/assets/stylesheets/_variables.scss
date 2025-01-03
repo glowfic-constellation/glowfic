@@ -1,6 +1,6 @@
 @use "sass:color";
 @use 'sass:math';
-@import 'palette';
+@use 'palette' as *;
 
 // Variables
 // global font sizes

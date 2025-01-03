@@ -1,4 +1,4 @@
-@import 'variables';
+@use 'variables' as *;
 
 /* - header */
 #logo { background-color: $bg_color_header_top; }
