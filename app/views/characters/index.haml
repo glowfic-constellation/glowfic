@@ -31,11 +31,11 @@
           .link-box.action-new + New Template
       - else
         = @user.username + "'s #{obj_name}"
-      = link_to character_menu_link(view: 'icons'), class: 'view-button-link' do
+      = link_to character_menu_link(view: 'icons'), rel: 'nofollow', class: 'view-button-link' do
         .view-button{class: (:selected unless page_view == 'list')}
           = image_tag "icons/grid.png", class: 'icon-view', alt: ''
           Icons
-      = link_to character_menu_link(view: 'list'), class: 'view-button-link' do
+      = link_to character_menu_link(view: 'list'), rel: 'nofollow', class: 'view-button-link' do
         .view-button{class: (:selected if page_view == 'list')}
           = image_tag "icons/list.png", class: 'list-view', alt: ''
           List
