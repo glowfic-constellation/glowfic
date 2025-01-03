@@ -317,12 +317,13 @@
     .gallery {
       padding: 0;
       grid-template-columns: repeat(auto-fit, 130px);
-      grid-auto-rows: 150px;
+      grid-auto-rows: 155px;
 
-      .gallery-icon {
+      .gallery-icon a {
+        display: grid;
         grid-template-rows: 110px 30px;
         justify-items: center;
-        gap: 4px;
+        gap: 3px;
       }
     }
 

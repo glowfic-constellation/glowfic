@@ -59,7 +59,7 @@ function displayGallery(elem) {
       const iconDiv = $("<div>").attr({class: 'gallery-icon'});
       const iconLink = $("<a>").attr({href: "/icons/" + icon.id});
       const iconImg = $("<img>").attr({src: icon.url, alt: icon.keyword, title: icon.keyword, 'class': 'icon'});
-      iconLink.append(iconImg).append("<br>").append($("<span>").attr({class: 'icon-keyword'}).text(icon.keyword));
+      iconLink.append(iconImg).append($("<span>").attr({class: 'icon-keyword'}).text(icon.keyword));
       iconDiv.append(iconLink);
 
       // Add control buttons for the owner
