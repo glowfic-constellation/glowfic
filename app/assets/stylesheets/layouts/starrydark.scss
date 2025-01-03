@@ -60,7 +60,7 @@ $bg_color_linkbox_subber: #5C5778;
 
 @import 'starry_default_selectors';
 
-.flash.success, .flash.error { color: $font_color_flash; }
+.flash.success, .flash.notice, .flash.error, .flash.alert { color: $font_color_flash; }
 
 body, .even, .odd, .post-post, .post-reply, .profile, #post-editor { color: $font_color_page; }
 

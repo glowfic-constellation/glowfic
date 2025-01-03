@@ -88,6 +88,7 @@ RSpec.configure do |config|
   end
 
   config.include FactoryBot::Syntax::Methods
+  config.include Devise::Test::ControllerHelpers, type: :controller
   config.include SpecTestHelper, type: :controller
   config.include ApiTestHelper, type: :controller
   config.include SpecRequestHelper, type: :request
@@ -158,6 +159,8 @@ RSpec.configure do |config|
       Audited.audit_class.as_user(user) { board.destroy! }
     end
     user.destroy!
+    # ensure the routes are loaded
+    Rails.application.routes_reloader.execute_unless_loaded
   end
 
   config.before(:each, type: :system) do

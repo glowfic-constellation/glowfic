@@ -1,0 +1,6 @@
+%p Hello #{@resource.username}.
+- if @resource.try(:unconfirmed_email?)
+  %p Your email is being changed to #{@resource.unconfirmed_email}.
+- else
+  %p Your email has been changed to #{@resource.email}.
+%p If you didn't request this, please look at resetting your password and get in touch with us!

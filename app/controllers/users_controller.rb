@@ -3,56 +3,13 @@ class UsersController < ApplicationController
   include DateSelectable
   include Taggable
 
-  before_action :signup_prep, only: :new
-  before_action :login_required, except: [:index, :show, :new, :create, :search]
-  before_action :logout_required, only: [:new, :create]
-  before_action :require_own_user, only: [:edit, :update, :password, :upgrade, :profile_edit]
+  before_action :login_required, except: [:index, :show, :search]
+  before_action :require_own_user, only: [:edit, :update, :upgrade, :profile_edit]
   before_action :require_readonly_user, only: :upgrade
 
   def index
     @page_title = 'Users'
     @users = User.active.ordered.paginate(page: page)
-  end
-
-  def new
-    @user = User.new
-  end
-
-  def create
-    @user = User.new(user_params)
-    @user.validate_password = true
-
-    unless params[:tos].present?
-      signup_prep
-      flash.now[:error] = "You must accept the Terms and Conditions to use the Constellation."
-      render :new and return
-    end
-    @user.tos_version = User::CURRENT_TOS_VERSION
-
-    if params[:addition].to_i != 14
-      signup_prep
-      flash.now[:error] = "Please check your math and try again."
-      render :new and return
-    end
-
-    @user.role_id = Permissible::READONLY if params[:secret] != ENV["ACCOUNT_SECRET"]
-
-    begin
-      @user.save!
-    rescue ActiveRecord::RecordInvalid => e
-      signup_prep
-      flash.now[:error] = {
-        message: "There was a problem completing your sign up.",
-        array: @user.errors.full_messages,
-      }
-      log_error(e) unless @user.errors.present?
-      render :new
-    else
-      flash[:success] = "User created! You have been logged in."
-      session[:user_id] = @user.id
-      @current_user = @user
-      redirect_to root_url
-    end
   end
 
   def show
@@ -102,30 +59,6 @@ class UsersController < ApplicationController
       else
         redirect_to edit_user_path(current_user)
       end
-    end
-  end
-
-  def password
-    unless current_user.authenticate(params[:old_password])
-      flash.now[:error] = "Incorrect password entered."
-      @page_title = 'Edit Account'
-      render :edit and return
-    end
-
-    current_user.validate_password = true
-
-    begin
-      current_user.update!(user_params)
-    rescue ActiveRecord::RecordInvalid
-      flash.now[:error] = {
-        message: "There was a problem with your changes.",
-        array: current_user.errors.full_messages,
-      }
-      @page_title = 'Edit Account'
-      render :edit
-    else
-      flash[:success] = "Changes saved."
-      redirect_to edit_user_path(current_user)
     end
   end
 
@@ -191,11 +124,6 @@ class UsersController < ApplicationController
     redirect_to edit_user_path(current_user)
   end
 
-  def signup_prep
-    use_javascript('users/new')
-    @page_title = 'Sign Up'
-  end
-
   def og_data
     board_ids = BoardAuthor.where(user_id: @user.id, cameo: false).select(:board_id).distinct.pluck(:board_id)
     boards = Board.where(id: board_ids).ordered.pluck(:name)
@@ -223,9 +151,6 @@ class UsersController < ApplicationController
   def user_params
     params.fetch(:user, {}).permit(
       :username,
-      :email,
-      :password,
-      :password_confirmation,
       :email_notifications,
       :per_page,
       :timezone,

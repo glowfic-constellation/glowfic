@@ -40,4 +40,75 @@ RSpec.describe "Editing account settings" do
     #   fill_in "Email address", with: "dummy2@example.com"
     # end
   end
+
+  scenario "User edits their email and password" do
+    ResqueSpec.reset!
+
+    login(user, known_test_password)
+    new_password = known_test_password + "new"
+    old_email = user.email
+    new_email = "different" + user.email
+
+    visit edit_user_path(user)
+    expect(page).to have_no_selector('.error')
+    expect(page).to have_selector('.editor-title', exact_text: 'Settings')
+    expect(page).to have_text(old_email)
+
+    click_link "Change Email or Password"
+    expect(page).to have_selector(".editor-title", exact_text: "Change Email or Password")
+    click_button "Save"
+    expect(page).to have_selector(".flash.error", text: "Current password can't be blank")
+
+    fill_in "Old", with: new_password
+    click_button "Save"
+    expect(page).to have_selector(".flash.error", text: "Current password is invalid")
+
+    fill_in "Old", with: known_test_password
+    click_button "Save"
+    expect(page).to have_selector(".flash.notice", text: "Account updated.")
+    expect(DeviseMailer).to have_queue_size_of(0)
+
+    visit edit_user_path(user)
+    click_link "Change Email or Password"
+    fill_in "Old", with: known_test_password
+    fill_in "New", with: known_test_password
+    fill_in "Confirm", with: known_test_password
+    click_button "Save"
+    expect(page).to have_selector(".flash.notice", text: "Account updated.")
+    expect(DeviseMailer).to have_queue_size_of(1)
+    expect(ResqueSpec.queue_for(DeviseMailer).last[:args][0]).to eq(:password_change)
+    ResqueSpec.reset!
+
+    visit edit_user_path(user)
+    click_link "Change Email or Password"
+    fill_in "Old", with: known_test_password
+    fill_in "New", with: new_password
+    fill_in "Confirm", with: new_password
+    click_button "Save"
+    expect(page).to have_selector(".flash.notice", text: "Account updated.")
+    expect(DeviseMailer).to have_queue_size_of(1)
+    expect(ResqueSpec.queue_for(DeviseMailer).last[:args][0]).to eq(:password_change)
+    ResqueSpec.reset!
+
+    visit edit_user_path(user)
+    click_link "Change Email or Password"
+    fill_in "Old", with: known_test_password
+    click_button "Save"
+    expect(page).to have_selector(".flash.error", text: "Current password is invalid")
+
+    visit edit_user_path(user)
+    click_link "Change Email or Password"
+    fill_in "Old", with: new_password
+    fill_in "Email", with: new_email
+    click_button "Save"
+    expect(page).to have_selector(".flash.notice",
+      text: "Account updated. A confirmation link has been emailed to you; use this to confirm your new email.",)
+    token = ResqueSpec.queue_for(DeviseMailer).last[:args][1][1]
+    visit user_confirmation_path(confirmation_token: token)
+    expect(page).to have_current_path(root_path)
+    expect(page).to have_selector('.flash.notice', text: "Email address confirmed.")
+
+    visit edit_user_path(user)
+    expect(page).to have_text(new_email)
+  end
 end

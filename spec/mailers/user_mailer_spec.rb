@@ -45,30 +45,6 @@ RSpec.describe UserMailer do
     end
   end
 
-  describe "#password_reset_link" do
-    it "sends email" do
-      mail = UserMailer.password_reset_link(create(:password_reset, user: user).id)
-      subject = 'Password Reset Link'
-
-      expect(mail.subject).to eq(subject)
-      expect(mail.to).to eq([user.email])
-      expect(mail.content_type).to start_with('multipart/alternative')
-
-      expect(mail.text_part.content_type).to eq('text/plain; charset=UTF-8')
-      expect(mail.text_part.body.to_s).to start_with("Your account's password has been reset. Follow this link to choose a new password:")
-
-      expect(mail.html_part.content_type).to eq('text/html; charset=UTF-8')
-      expect(mail.html_part.body.to_s).to start_with("<!DOCTYPE html>\n<html>\n<head>\n<title>#{subject}</title>")
-      text = html_text(mail.html_part)
-      expect(text).to start_with("Password Reset Your account's password has been reset. " \
-                                 "Choose New Password » Or copy and paste this link into your browser: ")
-      expect(text).to include("https://localhost:3000/password_resets/")
-
-      mail.deliver!
-      expect(ActionMailer::Base.deliveries.count).to eq(1)
-    end
-  end
-
   describe "#new_message" do
     it "sends email" do
       message = create(:message, recipient: user)

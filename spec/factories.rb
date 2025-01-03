@@ -36,6 +36,7 @@ FactoryBot.define do
     sequence :email do |n|
       "fake#{n}@faker.com"
     end
+    confirmed_at { Time.zone.now }
     tos_version { User::CURRENT_TOS_VERSION }
 
     factory :admin_user do
@@ -198,16 +199,6 @@ FactoryBot.define do
     user
     sequence :name, ordered_numbers do |n|
       "test character group #{n}"
-    end
-  end
-
-  factory :password_reset do
-    user
-    factory :expired_password_reset do
-      created_at { 3.days.ago }
-    end
-    factory :used_password_reset do
-      used { true }
     end
   end
 

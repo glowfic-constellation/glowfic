@@ -12,17 +12,16 @@ class Authentication < Object
     user = User.find_by(username: username)
     return false unless valid_user?(user)
 
-    if user.password_resets.active.unused.exists?
+    if user.reset_password_token.present?
       @error = "The password for this account has been reset. Please check your email."
       return false
     end
 
-    unless user.authenticate(password)
+    unless user.valid_password?(password) # (migrates password format if necessary)
       @error = "You have entered an incorrect password."
       return false
     end
 
-    ensure_uuid_set(user, password)
     @user = user
   end
 
@@ -50,31 +49,16 @@ class Authentication < Object
   private
 
   def valid_user?(user)
-    if !user || user.deleted?
+    if !user || user.inactive_message == :invalid
       @error = "That username does not exist."
       return false
     end
 
-    if user.suspended?
+    unless user.active_for_authentication?
       @error = "You could not be logged in."
-      notify_admins_of_blocked_login(user)
       return false
     end
 
     true
-  end
-
-  def notify_admins_of_blocked_login(user)
-    raise NameError.new("Login attempt by suspended user #{user.id}")
-  rescue NameError => e
-    ExceptionNotifier.notify_exception(e)
-  end
-
-  def ensure_uuid_set(user, password)
-    return if user.salt_uuid.present?
-
-    user.salt_uuid = SecureRandom.uuid
-    user.crypted = user.send(:crypted_password, password)
-    user.save!
   end
 end
