@@ -263,39 +263,73 @@
   grid-auto-flow: row;
   font-size: $font_size_small;
 
+  div { display: grid }
+
   & > div {
-    display: grid;
     grid-column: 1 / -1;
     grid-template-columns: subgrid;
     justify-content: center;
+    & > div { grid-auto-flow: column; }
   }
 
-  .gallery-name, .gallery-icon-count, .gallery-expand, .gallery-buttons, .gallery-expand .gallery-box, .gallery-expand .viewbutton, .delete-confirm .icons-remove {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-  }
+  .gallery-icon-count, .gallery-buttons { place-items: center; }
 
   .gallery-name {
     grid-column: name;
-    justify-content: left;
+    display: flex;
+    align-items: center;
+    column-gap: 4px;
+    div { display: inherit; }
     .tag-item { opacity: 0.6; }
     .tag-item:hover { opacity: 1; }
     .tag-item.ellipsis-box { cursor: pointer; }
   }
 
   .gallery-icon-count { grid-column: number; }
-  .gallery-buttons { grid-column: manage; }
+
+  .gallery-buttons {
+    grid-column: manage;
+    grid-template-columns: 16px 16px 16px;
+    column-gap: 4px;
+    justify-content: center;
+  }
 
   .gallery-expand {
-    .view-button { padding: 5px 7px; }
     grid-column: expand;
+    &, div { place-items: center; }
+
+    .gallery-box {
+      height: 30px;
+      width: 30px;
+
+      .view-button {
+        padding: 5px 7px;
+        margin: 0;
+      }
+    }
   }
 
   .delete-form {
-    .gallery { padding: 0px; }
-    .icons-remove { clear: both; }
+    padding: 5px;
+    grid-template-columns: 1fr;
     &.hidden { display: none; }
-    padding: 5px 10px;
+
+    .gallery {
+      padding: 0;
+      grid-template-columns: repeat(auto-fit, 130px);
+      grid-auto-rows: 150px;
+
+      .gallery-icon {
+        grid-template-rows: 110px 30px;
+        justify-items: center;
+        gap: 4px;
+      }
+    }
+
+    .icons-remove {
+      display: flex;
+      clear: both;
+      justify-content: center;
+    }
   }
 }
