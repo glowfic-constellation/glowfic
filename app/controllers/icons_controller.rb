@@ -58,6 +58,7 @@ class IconsController < UploadingController
     end
     @galleries = @icon.galleries.ordered_by_name
     @meta_og = og_data
+    response.headers['X-Robots-Tag'] = 'noindex' if params[:view]
   end
 
   def edit

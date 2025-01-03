@@ -133,6 +133,7 @@ class BoardsController < ApplicationController
     use_javascript('search')
     return unless params[:commit].present?
 
+    response.headers['X-Robots-Tag'] = 'noindex'
     searcher = Board::Searcher.new
     @search_results = searcher.search(params)
     @search_results = boards_from_relation(@search_results).paginate(page: page)

@@ -12,6 +12,7 @@ class BookmarksController < ApplicationController
     return unless params[:commit].present?
     return unless (@user = User.find_by_id(params[:user_id]))
 
+    response.headers['X-Robots-Tag'] = 'noindex'
     @search_results = @user.bookmarked_replies.bookmark_visible_to(@user, current_user)
     if @search_results.empty?
       # Return empty list when a user's bookmarks are private

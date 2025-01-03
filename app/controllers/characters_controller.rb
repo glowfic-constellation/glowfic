@@ -27,6 +27,7 @@ class CharactersController < ApplicationController
       redirect_to users_path and return
     end
 
+    response.headers['X-Robots-Tag'] = 'noindex' if params[:view]
     @page_title = if @user.id == current_user.try(:id)
       "Your Characters"
     else
@@ -66,6 +67,7 @@ class CharactersController < ApplicationController
     @posts = posts_from_relation(@character.recent_posts) if params[:view] == 'posts'
     @meta_og = og_data
     use_javascript('characters/show') if @character.user_id == current_user.try(:id)
+    response.headers['X-Robots-Tag'] = 'noindex' if params[:view]
   end
 
   def edit
@@ -246,6 +248,7 @@ class CharactersController < ApplicationController
     @templates = []
     return unless params[:commit].present?
 
+    response.headers['X-Robots-Tag'] = 'noindex'
     @search_results = Character.unscoped
 
     if params[:author_id].present?

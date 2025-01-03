@@ -34,6 +34,7 @@ class RepliesController < WritableController
 
     return unless params[:commit].present?
 
+    response.headers['X-Robots-Tag'] = 'noindex'
     @search_results = Reply.unscoped
     @search_results = @search_results.where(user_id: params[:author_id]) if params[:author_id].present?
     @search_results = @search_results.where(character_id: params[:character_id]) if params[:character_id].present?

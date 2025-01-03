@@ -25,6 +25,7 @@ class TagsController < ApplicationController
     @page_title = @tag.name.to_s
     @view = params[:view]
     @meta_og = og_data
+    response.headers['X-Robots-Tag'] = 'noindex' if @view
 
     if @view == 'posts'
       @posts = posts_from_relation(@tag.posts.ordered)
