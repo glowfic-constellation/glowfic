@@ -260,4 +260,19 @@ RSpec.describe "Users" do
       # TODO test session vars and cookies and redirect
     end
   end
+
+  it "can't destroy themselves" do
+    user = create(:user)
+    post "/users/sign_in", params: { user: { username: user.username, password: user.password } }
+    get "/"
+
+    expect {
+      delete "/users"
+    }.not_to change { User.count }
+    aggregate_failures do
+      expect(response).to have_http_status(302)
+      expect(response).to redirect_to(root_path)
+      expect(flash[:error]).to eq("Please contact an admin to delete your account.")
+    end
+  end
 end
