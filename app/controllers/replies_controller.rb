@@ -120,6 +120,7 @@ class RepliesController < WritableController
     elsif params[:button_submit_previewed_multi_reply]
       post_replies and return
     elsif params[:button_discard_multi_reply]
+      flash[:success] = "Replies discarded."
       if @multi_replies_json.present? && (editing_reply_id = @multi_replies_json.first["id"]).present?
         # Editing multi reply, going to redirect back to the reply I'm editing
         redirect_to reply_path(editing_reply_id, anchor: "reply-#{editing_reply_id}") and return
