@@ -35,7 +35,7 @@
             = image_tag 'icons/exclamation.png', alt: '!', title: '', class: 'vmid'
             %span.msg
       %tr#signup-secret
-        %th.sub.vtop= f.label :secret, "Secret (optional)"
+        %th.sub.vtop= label_tag :secret, "Secret (optional)"
         %td.even
           = text_field_tag :secret, params[:secret], placeholder: "Secret"
           %span.details (If you don't know what this is, please leave it blank!)
