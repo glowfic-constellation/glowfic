@@ -304,6 +304,7 @@ class RepliesController < WritableController
 
     @page_title = @post.subject
 
+    @reply = @written # So that editor_setup shows the correct characters
     editor_setup
     render :preview
   end
