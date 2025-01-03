@@ -334,12 +334,14 @@ class RepliesController < WritableController
       @written = reply_to_preview
       @written.user = current_user unless @written.user
       @audits = @written.id.present? ? { @written.id => @written.audits.count } : {}
+      @reply = @written # So that editor_setup shows the correct characters
     else
       # Adding a new reply to a multi reply
       @post = multi_reply_to_add.post
       empty_reply_hash = permitted_params.permit(:character_id, :icon_id, :character_alias_id)
       @empty_written = @post.build_new_reply_for(current_user, empty_reply_hash)
       @empty_written.editor_mode ||= params[:editor_mode] || current_user.default_editor
+      @reply = @empty_written # So that editor_setup shows the correct characters
       @audits = {}
     end
 
@@ -354,7 +356,6 @@ class RepliesController < WritableController
 
     @page_title = @post.subject
 
-    @reply = @written # So that editor_setup shows the correct characters
     editor_setup
     render :preview
   end
