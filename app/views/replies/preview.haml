@@ -12,7 +12,10 @@
 
 - if @multi_replies.present?
   - multi_reply_new = @multi_replies_json.first["id"].blank?
-  .content-header Multi reply
+  - if multi_reply_new
+    .content-header Adding multiple replies
+  - else
+    .content-header Editing reply and adding more
   - @multi_replies.each do |reply|
     = render 'replies/single', reply: reply, hide_footer: true
   = form_for @written || @empty_written, html: { id: 'post_form' } do

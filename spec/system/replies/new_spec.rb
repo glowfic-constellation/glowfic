@@ -276,7 +276,7 @@ RSpec.describe "Creating replies" do
     end
 
     expect(page).to have_no_selector('.error')
-    expect(page).to have_selector('.content-header', exact_text: 'Multi reply')
+    expect(page).to have_selector('.content-header', exact_text: 'Adding multiple replies')
     expect(page).to have_selector('.post-container', count: 1)
     expect(page).to have_selector('#post-editor')
     within('#post-editor') do
@@ -295,7 +295,7 @@ RSpec.describe "Creating replies" do
 
     expect(page).to have_no_selector('.error')
     within(".success") { expect(page).to have_text("Your new NPC has been persisted!") }
-    expect(page).to have_selector('.content-header', exact_text: 'Multi reply')
+    expect(page).to have_selector('.content-header', exact_text: 'Adding multiple replies')
     expect(page).to have_selector('.post-container', count: 2)
     expect(page).to have_selector('#post-editor')
     within('#post-editor') do
@@ -306,7 +306,7 @@ RSpec.describe "Creating replies" do
     click_button "Preview Current"
 
     expect(page).to have_no_selector('.error')
-    expect(page).to have_selector('.content-header', exact_text: 'Multi reply')
+    expect(page).to have_selector('.content-header', exact_text: 'Adding multiple replies')
     expect(page).to have_selector('.content-header', exact_text: 'Previewing')
     expect(page).to have_selector('.post-container', count: 3)
     expect(page).to have_selector('#post-editor')
@@ -327,7 +327,7 @@ RSpec.describe "Creating replies" do
     end
 
     expect(page).to have_no_selector('.error')
-    expect(page).to have_selector('.content-header', exact_text: 'Multi reply')
+    expect(page).to have_selector('.content-header', exact_text: 'Adding multiple replies')
     expect(page).to have_selector('.post-container', count: 1)
     expect(page).to have_selector('#post-editor')
     click_button "HTML"
@@ -335,7 +335,7 @@ RSpec.describe "Creating replies" do
     click_button "Add More Replies"
 
     expect(page).to have_no_selector('.error')
-    expect(page).to have_selector('.content-header', exact_text: 'Multi reply')
+    expect(page).to have_selector('.content-header', exact_text: 'Adding multiple replies')
     expect(page).to have_selector('.post-container', count: 2)
     expect(page).to have_selector('#post-editor')
     click_button "HTML"
@@ -357,7 +357,7 @@ RSpec.describe "Creating replies" do
     end
 
     expect(page).to have_no_selector('.error')
-    expect(page).to have_selector('.content-header', exact_text: 'Multi reply')
+    expect(page).to have_selector('.content-header', exact_text: 'Adding multiple replies')
     expect(page).to have_selector('.post-container', count: 1)
     expect(page).to have_selector('#post-editor')
     click_button "HTML"

@@ -111,7 +111,7 @@ RSpec.describe "Editing replies" do
     end
 
     expect(page).to have_no_selector('.error')
-    expect(page).to have_selector('.content-header', exact_text: 'Multi reply')
+    expect(page).to have_selector('.content-header', exact_text: 'Editing reply and adding more')
     expect(page).to have_selector('.post-container', count: 1)
     within('#post-editor') do
       fill_in 'reply_content', with: 'other text 2'
@@ -119,7 +119,7 @@ RSpec.describe "Editing replies" do
     end
 
     expect(page).to have_no_selector('.error')
-    expect(page).to have_selector('.content-header', exact_text: 'Multi reply')
+    expect(page).to have_selector('.content-header', exact_text: 'Editing reply and adding more')
     expect(page).to have_selector('.post-container', count: 2)
     within('#post-editor') do
       fill_in 'reply_content', with: 'other text 3'
