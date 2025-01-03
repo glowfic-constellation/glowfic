@@ -32,7 +32,7 @@ FactoryBot.define do
     sequence :username, ordered_numbers do |n|
       "JohnDoe#{n}"
     end
-    password { "password" }
+    password { 'knownpass' }
     sequence :email do |n|
       "fake#{n}@faker.com"
     end
