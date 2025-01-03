@@ -15,7 +15,7 @@ RSpec.describe RepliesController, 'POST create' do
   context "preview" do
     it "takes correct actions" do
       user = create(:user)
-      reply_post = create(:post, user: user)
+      reply_post = create(:post)
       create(:reply, post: reply_post) # reply
       reply_post.mark_read(user)
       login_as(user)
@@ -45,7 +45,7 @@ RSpec.describe RepliesController, 'POST create' do
       expect(assigns(:page_title)).to eq(reply_post.subject)
       expect(assigns(:written)).to be_a_new_record
       expect(assigns(:written).post).to eq(reply_post)
-      expect(assigns(:written).user).to eq(reply_post.user)
+      expect(assigns(:written).user).to eq(user)
       expect(assigns(:written).content).to eq('example')
       expect(assigns(:written).character).to eq(char1)
       expect(assigns(:written).icon).to eq(icon)
@@ -55,7 +55,7 @@ RSpec.describe RepliesController, 'POST create' do
       draft = ReplyDraft.last
 
       expect(draft.post).to eq(reply_post)
-      expect(draft.user).to eq(reply_post.user)
+      expect(draft.user).to eq(user)
       expect(draft.content).to eq('example')
       expect(draft.character).to eq(char1)
       expect(draft.icon).to eq(icon)
