@@ -40,7 +40,7 @@
           = text_field_tag :secret, params[:secret], placeholder: "Secret"
           %span.details (If you don't know what this is, please leave it blank!)
       %tr#signup-captcha
-        %th.sub.vtop Captcha
+        %th.sub.vtop= label_tag :addition, "Captcha"
         %td.odd
           = text_field_tag :addition, params[:addition], placeholder: "Please enter five times two plus four as a number (e.g. 3 not three)"
       %tr#signup-terms
