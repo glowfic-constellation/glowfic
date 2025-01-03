@@ -28,7 +28,7 @@ RSpec.describe "Show a list of galleries" do
   end
 
   def gallery_row_for(id)
-    find("gallery-#{id}")
+    find("#gallery-#{id}")
   end
 
   scenario "View a user's list of galleries while logged out" do
