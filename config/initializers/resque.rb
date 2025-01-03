@@ -15,6 +15,7 @@ Resque::Mailer.error_handler = lambda { |mailer, _message, error, action, args|
   Resque.enqueue(mailer, action, *args)
 }
 Resque::Mailer.excluded_environments = [] # I explicitly want this to run in tests; don't exclude them.
+Resque::Mailer.argument_serializer = Resque::Mailer::Serializers::ActiveRecordSerializer
 
 if Rails.env.production?
   Resque::Server.use(Rack::Auth::Basic) do |user, password|
