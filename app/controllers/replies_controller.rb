@@ -316,6 +316,7 @@ class RepliesController < WritableController
     if reply.character&.new_record?
       if reply.character.save
         flash[:success] = "Your new NPC has been persisted!"
+        params[:character_id] = reply.character.id
         reply_params[:character_id] = reply.character.id
         reply.character_id = reply.character.id
       else
