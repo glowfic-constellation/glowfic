@@ -11,14 +11,17 @@
   %br
 
 - if @multi_replies.present?
+  - multi_reply_new = @multi_replies_json.first["id"].blank?
   .content-header Multi reply
   - @multi_replies.each do |reply|
     = render 'replies/single', reply: reply, hide_footer: true
   = form_for @written || @empty_written, html: { id: 'post_form' } do
     = hidden_field_tag :multi_replies_json, @multi_replies_json.to_json
-    = submit_tag 'Post Previewed', class: 'button', id: 'submit_previewed_multi_reply_button', name: 'button_submit_previewed_multi_reply', data: { disable_with: 'Saving...', confirm: 'The reply currently in the editor will not be posted. Continue?' }
+    = submit_tag (multi_reply_new ? 'Post Previewed' : 'Save Previewed'), class: 'button', id: 'submit_previewed_multi_reply_button', name: 'button_submit_previewed_multi_reply', data: { disable_with: 'Saving...', confirm: 'The reply currently in the editor will not be posted. Continue?' }
     %br
     %br
+- else
+  - multi_reply_new = false
 
 - if @written.present?
   - if @multi_replies.present?
@@ -28,4 +31,4 @@
     - if @post.description.present?
       .post-subheader= sanitize_simple_link_text(@post.description)
   = render 'replies/single', reply: @written, hide_footer: true
-= render 'write', reply: @written || @empty_written, multi_replies_json: @multi_replies_json
+= render 'write', reply: @written || @empty_written, multi_replies_json: @multi_replies_json, multi_reply_new: multi_reply_new

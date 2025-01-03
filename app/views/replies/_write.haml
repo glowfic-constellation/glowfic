@@ -1,4 +1,4 @@
--# locals: ( reply:, multi_replies_json: nil )
+-# locals: ( reply:, multi_replies_json: nil, multi_reply_new: false )
 
 - content_for :form do
   = form_for reply, html: { id: 'post_form' } do |f|
@@ -38,7 +38,7 @@
         - if @draft.present?
           = submit_tag "Delete Draft", class: 'button', id: 'delete_draft_button', name: 'button_delete_draft', data: { disable_with: 'Deleting...', confirm: "Delete draft?" }
       - else
-        = submit_tag (multi_replies_json.first["id"].blank? ? 'Post All' : 'Save All'), class: 'button', id: 'submit_button', data: { disable_with: 'Saving...' }
+        = submit_tag (multi_reply_new ? 'Post All' : 'Save All'), class: 'button', id: 'submit_button', data: { disable_with: 'Saving...' }
         = submit_tag "Preview Current", class: 'button', id: 'preview_button', name: 'button_preview', data: { disable_with: 'Previewing...' }
       = submit_tag "Add More Replies", class: 'button', id: 'add_more_button', name: 'button_add_more', data: { disable_with: 'Adding...' }
       - if multi_replies_json.present?
