@@ -128,6 +128,7 @@ RSpec.describe "Editing replies" do
       click_button 'Save All'
     end
 
+    # All replies should be there in the right order
     expect(page).to have_no_selector('.error')
     expect(page).to have_selector('.success', exact_text: 'Reply updated.')
     expect(page).to have_selector('.post-container', count: 5)
@@ -136,6 +137,20 @@ RSpec.describe "Editing replies" do
     within(all_containers[2]) { expect(page).to have_selector('.post-content', exact_text: 'other text 2') }
     within(all_containers[3]) { expect(page).to have_selector('.post-content', exact_text: 'other text 3') }
     within(all_containers[4]) { expect(page).to have_selector('.post-content', exact_text: 'example text 2') }
+
+    # Now test discarding
+    within(find_reply_on_page(reply)) do
+      click_link 'Edit'
+    end
+    within('#post-editor') do
+      fill_in 'reply_content', with: 'text to discard 1'
+      click_button 'Add More Replies'
+    end
+    within('#post-editor') do
+      fill_in 'reply_content', with: 'text to discard 2'
+      accept_alert { click_button "Discard Replies" }
+    end
+    expect(page).to have_no_text("text to discard")
   end
 
   scenario "User tries to edit someone else's reply" do
