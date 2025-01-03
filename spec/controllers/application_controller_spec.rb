@@ -467,7 +467,7 @@ RSpec.describe ApplicationController do
     end
   end
 
-  describe "#check_forced_logout" do
+  describe "check invalid users" do
     controller do
       def index
         render json: { logged_in: current_user.present? }
