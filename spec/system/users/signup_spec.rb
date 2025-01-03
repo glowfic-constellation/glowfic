@@ -238,4 +238,52 @@ RSpec.describe "Signing up" do
     expect(page).to have_selector('.flash.notice', text: "You are now logged in. Welcome back!")
     within("#user-info") { expect(page).to have_text(new_user_name) }
   end
+
+  scenario "resends email confirmation" do
+    new_user_name = "new_user_name"
+    new_user_password = "long password"
+    new_user_email = "test@test.com"
+    visit root_path
+    within("#header-buttons-links") { click_link "Sign up" }
+
+    # Fill in all required fields
+    within(".form-table") do
+      fill_in "Username", with: new_user_name
+      fill_in "Email", with: new_user_email
+      fill_in "Password", with: new_user_password
+      fill_in "Confirm", with: new_user_password
+      fill_in "Captcha", with: "14"
+      check "Terms"
+      click_button "Sign Up"
+    end
+
+    expect(page).to have_selector('.flash.notice',
+      text: "User created. A confirmation link has been emailed to you; use this to activate your account.",)
+    expect(page).to have_current_path(root_path)
+    expect(DeviseMailer).to have_queue_size_of(1)
+
+    within("#header-buttons-links") { click_link "Sign up" }
+    click_link "Didn't get a confirmation email?"
+    fill_in "Email", with: "not an email"
+    click_button "Resend confirmation instructions"
+    expect(page).to have_selector(".flash.notice", text: "A confirmation link has been emailed to you.")
+    expect(DeviseMailer).to have_queue_size_of(1)
+
+    click_link "Didn't get a confirmation email?"
+    fill_in "Email", with: "wrong" + new_user_email
+    click_button "Resend confirmation instructions"
+    expect(page).to have_selector(".flash.notice", text: "A confirmation link has been emailed to you.")
+    expect(DeviseMailer).to have_queue_size_of(1)
+
+    click_link "Didn't get a confirmation email?"
+    fill_in "Email", with: new_user_email
+    click_button "Resend confirmation instructions"
+    expect(page).to have_selector(".flash.notice", text: "A confirmation link has been emailed to you.")
+    expect(DeviseMailer).to have_queue_size_of(2)
+
+    token = ResqueSpec.queue_for(DeviseMailer).last[:args][1][1]
+    visit user_confirmation_path(confirmation_token: token)
+    expect(page).to have_current_path(new_user_session_path)
+    expect(page).to have_selector('.flash.notice', text: "Email address confirmed.")
+  end
 end
