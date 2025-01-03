@@ -80,7 +80,7 @@ RSpec.describe "Reply" do
   end
 
   describe "create" do
-    let(:user) { create(:user, password: known_test_password) }
+    let(:user) { create(:user) }
     let(:coauthor) { create(:user) }
     let(:rpost) { create(:post, user: coauthor, unjoined_authors: [user]) }
     let(:body) { response.parsed_body }

@@ -89,7 +89,7 @@ RSpec.describe "News" do
     end
 
     it 'includes create post for mods' do
-      user = create(:mod_user, password: known_test_password)
+      user = create(:mod_user)
       login(user)
 
       get "/news"
@@ -104,7 +104,7 @@ RSpec.describe "News" do
     end
 
     it 'includes create post for admins' do
-      user = create(:admin_user, password: known_test_password)
+      user = create(:admin_user)
       login(user)
 
       get "/news"
