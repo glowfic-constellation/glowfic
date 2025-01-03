@@ -60,6 +60,8 @@ $bg_color_linkbox_subber: #5C5778;
 
 @use 'starry_default_selectors';
 
+@use 'dark_themes_selectors';
+
 .flash.success, .flash.error { color: $font_color_flash; }
 
 body, .even, .odd, .post-post, .post-reply, .profile, #post-editor { color: $font_color_page; }
@@ -101,5 +103,3 @@ $bg_color_select2_highlight: #5B586B;
 $bg_color_select2_selected: #3F3D4C;
 $bg_color_select2_search: $bg_color_select2_highlight;
 $opacity_mce_label: 0.8;
-
-@use 'dark_themes_selectors'
