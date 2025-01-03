@@ -16,6 +16,7 @@ class User::RegistrationsController < Devise::RegistrationsController
   # POST /resource
   def create
     build_resource(sign_up_params)
+
     unless resource.tos_version.present?
       clean_up_passwords resource
       set_minimum_password_length
@@ -28,6 +29,14 @@ class User::RegistrationsController < Devise::RegistrationsController
       clean_up_passwords resource
       set_minimum_password_length
       flash.now[:error] = "Please check your math and try again."
+      render :new
+      return
+    end
+
+    if params[:secret].present? && params[:secret] != ENV["ACCOUNT_SECRET"]
+      clean_up_passwords resource
+      set_minimum_password_length
+      flash.now[:error] = "That is not the correct secret. Please ask someone in the community for help or leave blank to create a user account."
       render :new
       return
     end
