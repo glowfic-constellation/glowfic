@@ -101,7 +101,7 @@ RSpec.describe "Editing replies" do
       click_link 'Edit'
     end
 
-    # first changes, then add more replies
+    # add two extra replies
     expect(page).to have_no_selector('.error')
     expect(page).to have_selector('.content-header', exact_text: 'Edit reply')
     expect(page).to have_no_selector('.post-container')
@@ -110,7 +110,6 @@ RSpec.describe "Editing replies" do
       click_button 'Add More Replies'
     end
 
-    # second reply to add
     expect(page).to have_no_selector('.error')
     expect(page).to have_selector('.content-header', exact_text: 'Multi reply')
     expect(page).to have_selector('.post-container', count: 1)
@@ -119,7 +118,6 @@ RSpec.describe "Editing replies" do
       click_button 'Add More Replies'
     end
 
-    # third reply to add
     expect(page).to have_no_selector('.error')
     expect(page).to have_selector('.content-header', exact_text: 'Multi reply')
     expect(page).to have_selector('.post-container', count: 2)
@@ -137,6 +135,31 @@ RSpec.describe "Editing replies" do
     within(all_containers[2]) { expect(page).to have_selector('.post-content', exact_text: 'other text 2') }
     within(all_containers[3]) { expect(page).to have_selector('.post-content', exact_text: 'other text 3') }
     within(all_containers[4]) { expect(page).to have_selector('.post-content', exact_text: 'example text 2') }
+
+    # Now test using the "Save Previewed" button
+    within(find_reply_on_page(reply)) do
+      click_link 'Edit'
+    end
+    within('#post-editor') do
+      fill_in 'reply_content', with: 'other text 4'
+      click_button 'Add More Replies'
+    end
+    within('#post-editor') do
+      fill_in 'reply_content', with: 'other text 5'
+      click_button 'Add More Replies'
+    end
+    within('#post-editor') do
+      fill_in 'reply_content', with: 'other text 6'
+    end
+    accept_alert { click_button "Save Previewed" }
+    expect(page).to have_selector('.post-container', count: 6)
+    all_containers = page.find_all(".post-container")
+    within(all_containers[1]) { expect(page).to have_selector('.post-content', exact_text: 'other text 4') }
+    within(all_containers[2]) { expect(page).to have_selector('.post-content', exact_text: 'other text 5') }
+    within(all_containers[3]) { expect(page).to have_selector('.post-content', exact_text: 'other text 2') }
+    within(all_containers[4]) { expect(page).to have_selector('.post-content', exact_text: 'other text 3') }
+    within(all_containers[5]) { expect(page).to have_selector('.post-content', exact_text: 'example text 2') }
+    expect(page).to have_no_text("other text 6")
 
     # Now test discarding
     within(find_reply_on_page(reply)) do
