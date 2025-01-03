@@ -424,7 +424,7 @@ class RepliesController < WritableController
     original_reply_order = @reply.order
     num_new_replies = @multi_replies.length
     following_replies = @reply.post.replies.where("reply_order > ?", original_reply_order)
-    following_replies.update_all("reply_order = reply_order + #{num_new_replies}") # rubocop:disable Rails/SkipsModelValidations
+    following_replies.update_all(["reply_order = reply_order + ?", num_new_replies]) # rubocop:disable Rails/SkipsModelValidations
 
     # Create the new replies
     @multi_replies.each_with_index do |r, idx|
