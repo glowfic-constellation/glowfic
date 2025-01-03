@@ -156,7 +156,11 @@ class PostsController < WritableController
   end
 
   def show
-    render :flat, layout: false and return if params[:view] == 'flat'
+    if params[:view] == 'flat'
+      response.headers['X-Robots-Tag'] = 'noindex'
+      render :flat, layout: false
+      return
+    end
     show_post
   end
 
@@ -281,6 +285,7 @@ class PostsController < WritableController
 
     return unless params[:commit].present?
 
+    response.headers['X-Robots-Tag'] = 'noindex'
     @search_results = Post.ordered
     @search_results = @search_results.where(board_id: params[:board_id]) if params[:board_id].present?
     @search_results = @search_results.where(id: Setting.find(params[:setting_id]).post_tags.pluck(:post_id)) if params[:setting_id].present?

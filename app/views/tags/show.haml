@@ -20,31 +20,31 @@
       - if @tag.is_a?(GalleryGroup)
         %tr
           %td.centered{class: cycle('even', 'odd')}
-            = link_to tag_path(@tag, view: 'galleries') do
+            = link_to tag_path(@tag, view: 'galleries'), rel: 'nofollow' do
               = image_tag "icons/photos.png", class: 'vmid', alt: ''
               Galleries
       - else
         %tr
           %td.centered{class: cycle('even', 'odd')}
-            = link_to tag_path(@tag, view: 'posts') do
+            = link_to tag_path(@tag, view: 'posts'), rel: 'nofollow' do
               = image_tag "icons/book_open.png", class: 'vmid', alt: ''
               Posts
       - if @tag.is_a?(Setting) || @tag.is_a?(GalleryGroup)
         %tr
           %td.centered{class: cycle('even', 'odd')}
-            = link_to tag_path(@tag, view: 'characters') do
+            = link_to tag_path(@tag, view: 'characters'), rel: 'nofollow' do
               = image_tag "icons/group.png", class: 'vmid', alt: ''
               Characters
       - if @tag.is_a?(ContentWarning)
         %tr
           %td.centered{class: cycle('even', 'odd')}
-            = link_to tag_path(@tag, view: 'users') do
+            = link_to tag_path(@tag, view: 'users'), rel: 'nofollow' do
               = image_tag "icons/group.png", class: 'vmid', alt: ''
               Users
       - if @tag.is_a?(Setting) && @tag.child_settings.present?
         %tr
           %td.centered{class: cycle('even', 'odd')}
-            = link_to tag_path(@tag, view: 'settings') do
+            = link_to tag_path(@tag, view: 'settings'), rel: 'nofollow' do
               = image_tag "icons/world.png", class: 'vmid', alt: ''
               Settings
       - if @tag.editable_by?(current_user)

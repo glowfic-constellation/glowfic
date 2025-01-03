@@ -149,6 +149,7 @@ class UsersController < ApplicationController
   def search
     @page_title = 'Search Users'
     return unless params[:commit].present?
+    response.headers['X-Robots-Tag'] = 'noindex'
     username = '%' + params[:username].to_s + '%'
     @search_results = User.active.where("username ILIKE ?", username).ordered.paginate(page: page)
   end
