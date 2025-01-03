@@ -16,20 +16,20 @@ $(document).ready(function() {
     if (tagBoxItems.length <= 5) return;
 
     const hiddenTags = tagBoxItems.slice(4);
-    hiddenTags.hide();
+    hiddenTags.addClass('hidden');
 
     const ellipsisBox = $("<span>").attr({class: 'tag-item ellipsis-box', title: 'Click to show more tags…'}).append("...");
     const recollapseBox = $("<span>").attr({class: 'tag-item ellipsis-box', title: 'Click to hide extra tags…'}).append("←").hide();
 
     ellipsisBox.click(function() {
-      hiddenTags.show();
-      ellipsisBox.hide();
-      recollapseBox.show();
+      hiddenTags.removeClass('hidden');
+      ellipsisBox.addClass('hidden');
+      recollapseBox.removeClass('hidden');
     });
     recollapseBox.click(function() {
-      hiddenTags.hide();
-      recollapseBox.hide();
-      ellipsisBox.show();
+      hiddenTags.addClass('hidden');
+      recollapseBox.addClass('hidden');
+      ellipsisBox.removeeClass('hidden');
     });
   });
 });
@@ -38,8 +38,8 @@ function displayGallery(elem) {
   // Update toggle +/-
   const toggleBox = elem.children('.view-button').first();
   const wasVisible = toggleBox.children('img.up-arrow').is(':visible');
-  toggleBox.children('img.down-arrow').first().toggle();
-  toggleBox.children('img.up-arrow').first().toggle();
+  toggleBox.children('img.down-arrow').first().toggleClass('hidden');
+  toggleBox.children('img.up-arrow').first().toggleClass('hidden');
 
   // Toggle display
   const galleryId = elem.data('id');

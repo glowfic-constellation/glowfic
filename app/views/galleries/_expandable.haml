@@ -24,7 +24,7 @@
       .view-button
         = image_tag "icons/bullet_arrow_down.png", class: 'down-arrow', alt: 'Show'
         = image_tag "icons/bullet_arrow_up.png", class: 'hidden up-arrow', alt: 'Hide'
-.delete-form.hidden{class: klass, id: "icons-#{gallery.id}", colspan: 4}
+.delete-form.hidden{class: klass, id: "icons-#{gallery.id}"}
   = form_tag delete_multiple_icons_path, method: :delete do
     .gallery
     - if gallery.user_id == current_user.try(:id)
