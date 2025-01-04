@@ -299,27 +299,63 @@ td, .table-list li { font-size: $font_size_small; }
   width: 400px;
   margin: 0;
   border-spacing: 0;
+  display: grid;
+  grid-template-columns: auto auto;
+  font-size: $font_size_small;
 
-  th { text-align: center; }
+  div, span { display: inherit } // inherit grids through form table
 
-  td {
-    padding: 5px;
+  & > div {
+    grid-column: 1 / -1;
+    grid-template-columns: subgrid;
+    justify-content: center;
+    grid-auto-flow: column;
+    button[disabled], input[disabled] { background-color: $bg_color_input_disabled; }
+
+    .select2-container {
+      display: inline-block;
+      input { margin-top: 5px; }
+    }
 
     input {
       margin: 0;
       width: 100%;
+      &[type='submit'], &[type='radio'] { width: unset; }
 
       &[type='checkbox'] {
         margin: 0 1px;
         height: 18px;
         width: 18px;
-        vertical-align: middle;
       }
     }
 
-    button[disabled], input[disabled] {
-      background-color: $bg_color_input_disabled;
+    &.sub, & > .sub {
+      padding: 10px;
+      text-align: center;
+      &.vtop { align-items: start; }
     }
+
+    & > div {
+      padding: 5px;
+      align-items: center;
+      &:not(.sub) { justify-items: start; }
+    }
+  }
+
+  .checkbox-field, .checkbox-fields {
+    justify-content: start;
+    grid-template-columns: 20px auto;
+    column-gap: 4px;
+  }
+
+  .checkbox-fields {
+    align-items: start;
+    & > input[type='checkbox'] { margin-top: 2px; }
+  }
+
+  .radio-fields {
+    grid-template-columns: 14px auto;
+    column-gap: 4px;
   }
 
   textarea {
@@ -327,7 +363,56 @@ td, .table-list li { font-size: $font_size_small; }
     width: 100%;
   }
 
-  .select2-container input { margin-top: 5px; }
+  &#contribute { grid-template-columns: none; }
+  .subber, .table-title, .editor-title, .form-table-ender { grid-template-columns: none; }
+  .colspan { grid-template-columns: none; }
+
+  &#section-editor { grid-template-columns: minmax(min-content, 131px) auto; }
+  &#alias-editor { grid-template-columns: minmax(min-content, 94px) auto; }
+  &#password-reset { grid-template-columns: minmax(min-content, 126px) auto; }
+  &#change-password { grid-template-columns: minmax(min-content, 110px) auto; }
+  &#index-editor, &#index-section-editor { grid-template-columns: minmax(min-content, 131px) auto; }
+  &#index-post-editor { grid-template-columns: minmax(min-content, 148px) auto; }
+  &#post-splitter { grid-template-columns: minmax(min-content, 111px) auto; }
+
+  &#tag-editor .checkbox-field { grid-template-columns: 17px auto; }
+
+  &#user-editor {
+    .checkbox-field, .checkbox-fields { grid-template-columns: 17px auto; }
+
+    input[type='checkbox'] {
+      width: 15px;
+      height: 15px;
+    }
+  }
+
+  &#signup {
+    grid-template-columns: minmax(min-content, 94px) auto;
+    #signup-terms #tos { display: block; } // overriding the other #tos being hidden
+
+    .user-alert {
+      margin: 7px 0 2px 0;
+      grid-template-columns: 16px auto;
+      gap: 4px;
+      justify-content: center;
+      align-items: center;
+      &.hidden { display: none; }
+    }
+
+    #signup-secret > div:not(.sub), #signup-terms > div:not(.sub) {
+      grid-template-columns: auto;
+    }
+  }
+
+  &#mark-continuities {
+    margin-bottom: 10px;
+    float: left;
+
+    & > .even, & > .odd {
+      grid-template-columns: 390px;
+      text-align: center;
+    }
+  }
 }
 
 .form-table-ender {
@@ -337,6 +422,7 @@ td, .table-list li { font-size: $font_size_small; }
   font-size: $font_size_smallish;
   font-weight: bold;
   text-align: center;
+  column-gap: 4px;
   input { margin: 0; }
 }
 
@@ -457,13 +543,6 @@ tr.gallery-tags .tag-item { color: $font_color_tag_item_gallery; }
   margin-top: 0;
   margin-bottom: 0;
   padding-left: 15px;
-}
-
-#signup {
-  .sub { width: 90px; }
-  .user-alert { margin: 7px 0 2px 0; }
-  .msg { vertical-align: middle; }
-  #terms td { padding: 15px; }
 }
 
 .continuity-spacer { height: 20px; }
@@ -621,11 +700,26 @@ The copy box can't be invisible/hidden or copy fails but opacity works
 
 #news-table {
   width: 100%;
+  grid-template-columns: minmax(min-content, 150px) auto;
 
-  th.sub { width: 150px; }
   textarea { height: 400px; }
 }
 
 .no-close .ui-dialog-titlebar-close {
   display: none;
+}
+
+#tos { display: none; }
+
+#tos_form .form-table {
+  grid-template-columns: none;
+  .editor-title { place-items: center; }
+  #terms div {
+    display: inline;
+    padding: 15px;
+  }
+}
+
+.edit_password_reset .form-table {
+  grid-template-columns: minmax(min-content, 108px) auto;
 }

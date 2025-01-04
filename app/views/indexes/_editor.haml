@@ -1,27 +1,23 @@
 -# locals: ( f: )
 
-%tbody
-  %tr
-    %th.sub= f.label :name
-    %td.even= f.text_field :name, placeholder: "Index Name"
-  %tr
-    %th.sub Owner
-    %td.odd= @index.user.deleted? ? '(deleted user)' : @index.user.username
-  %tr
-    %th.sub= f.label :privacy
-    %td.even
-      = f.select :privacy, options_from_collection_for_select(index_privacy_settings.to_a, :second, :first, @index.privacy)
-  %tr
-    %th.sub.vtop Editors
-    %td.odd
-      = f.radio_button :authors_locked, true, class: 'checkbox'
-      = f.label :authors_locked, 'Just me', value: true
-      %br
-      = f.radio_button :authors_locked, false, class: 'checkbox'
-      = f.label :authors_locked, 'Any Constellation user', value: false
-  %tr
-    %th.sub.vtop= f.label :description
-    %td.even= f.text_area :description
-%tfoot
-  %tr
-    %th.form-table-ender{colspan: 2}= submit_tag "Save", class: 'button'
+%div
+  .sub= f.label :name
+  .even= f.text_field :name, placeholder: "Index Name"
+%div
+  .sub Owner
+  .odd= @index.user.deleted? ? '(deleted user)' : @index.user.username
+%div
+  .sub= f.label :privacy
+  .even
+    = f.select :privacy, options_from_collection_for_select(index_privacy_settings.to_a, :second, :first, @index.privacy)
+%div
+  .sub.vtop Editors
+  .odd.radio-fields
+    = f.radio_button :authors_locked, true, class: 'checkbox'
+    = f.label :authors_locked, 'Just me', value: true
+    = f.radio_button :authors_locked, false, class: 'checkbox'
+    = f.label :authors_locked, 'Any Constellation user', value: false
+%div
+  .sub.vtop= f.label :description
+  .even= f.text_area :description
+.form-table-ender= submit_tag "Save", class: 'button'
