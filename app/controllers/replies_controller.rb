@@ -365,10 +365,11 @@ class RepliesController < WritableController
 
     if @multi_replies_params.present? && (@reply = Reply.find_by_id(@multi_replies_params.first["id"]))
       # The first reply of the multi replies has an ID, that means I'm editing rather than posting a new one
-      original_reply_params = permitted_params(ActionController::Parameters.new({ reply: @reply.attributes }))
+      @multi_replies_params << permitted_params if new_reply.present?
+      original_reply = @reply.dup
       @reply.assign_attributes(@multi_replies_params.shift)
       @multi_replies.shift
-      edit_reply(original_reply_params: original_reply_params) and return
+      edit_reply(original_reply: original_reply, multi_replies: @multi_replies) and return
     end
 
     first_reply = @multi_replies.first
@@ -390,18 +391,18 @@ class RepliesController < WritableController
     redirect_to reply_path(first_reply, anchor: "reply-#{first_reply.id}")
   end
 
-  def edit_reply(original_reply_params: nil)
+  def edit_reply(original_reply: nil, multi_replies: nil)
     begin
       Reply.transaction do
-        edit_multi_replies(original_reply_params) if @multi_replies.present?
+        edit_multi_replies(original_reply, multi_replies) if multi_replies.present?
 
         @reply.save!
       end
     rescue ActiveRecord::RecordInvalid => e
-      if @multi_replies.blank?
+      if multi_replies.blank?
         render_errors(@reply, action: 'updated', now: true, err: e)
       else
-        errored_reply = @multi_replies.detect { |r| r.errors.present? } || @reply
+        errored_reply = multi_replies.detect { |r| r.errors.present? } || @reply
         render_errors(errored_reply, action: 'updated', now: true, err: e)
       end
 
@@ -414,31 +415,22 @@ class RepliesController < WritableController
     end
   end
 
-  def edit_multi_replies(original_reply_params)
+  def edit_multi_replies(original_reply, multi_replies)
     # Add new replies after the current one and before the next
-    if original_reply_params.blank?
-      original_reply_params = permitted_params(ActionController::Parameters.new({ reply: @reply.attributes }))
-      original_reply_params.content = ""
-    end
 
     # Reorder the replies after this one
     original_reply_order = @reply.order
-    num_new_replies = @multi_replies.length
+    num_new_replies = @multi_replies_params.length
     following_replies = @reply.post.replies.where("reply_order > ?", original_reply_order)
     following_replies.update_all(["reply_order = reply_order + ?", num_new_replies]) # rubocop:disable Rails/SkipsModelValidations
 
     # Create the new replies
-    @multi_replies.each_with_index do |r, idx|
+    @multi_replies_params.each_with_index do |reply_params, idx|
       # Create a fake temporary reply with the contents of the original one to be in history
-      new_reply_params = permitted_params(ActionController::Parameters.new({ reply: r.attributes }))
-
-      r.assign_attributes(original_reply_params)
-      r.user = current_user
-      r.created_at = @reply.created_at
-      r.order = original_reply_order + idx + 1
-      r.save!
-
-      r.update!(new_reply_params)
+      multi_replies[idx] = new_reply = original_reply.dup
+      new_reply.order = original_reply_order + idx + 1
+      new_reply.save!
+      new_reply.update!(reply_params)
     end
   end
 
