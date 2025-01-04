@@ -340,7 +340,7 @@ class RepliesController < WritableController
     @post = reply.post
     empty_reply_hash = permitted_params.permit(:character_id, :icon_id, :character_alias_id)
     @empty_written = @post.build_new_reply_for(current_user, empty_reply_hash)
-    @empty_written.editor_mode ||= params[:editor_mode] || current_user.default_editor
+    @empty_written.editor_mode = reply.editor_mode
     @reply = @empty_written # So that editor_setup shows the correct characters
     @audits = {}
 
