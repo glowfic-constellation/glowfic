@@ -1,63 +1,58 @@
 = render "devise/shared/error_messages", resource: resource
 
 = form_for(resource, as: resource_name, url: registration_path(resource_name)) do |f|
-  %table#signup.form-table
-    %thead
-      %tr
-        %th.table-title{colspan: 2} Sign Up
-    %tbody
-      %tr#signup-username
-        %th.sub.vtop= f.label :username
-        %td.even
-          = f.text_field :username, autofocus: true, placeholder: "Username", autocomplete: "username", minlength: User::MIN_USERNAME_LEN, maxlength: User::MAX_USERNAME_LEN, required: true
-          .user-alert.hidden
-            = image_tag 'icons/exclamation.png', alt: '!', title: '', class: 'vmid'
-            %span.msg
-      %tr#signup-email
-        %th.sub.vtop= f.label :email
-        %td.odd
-          = f.text_field :email, placeholder: "Email address", autocomplete: "email", type: "email", required: true
-          .user-alert.hidden
-            = image_tag 'icons/exclamation.png', alt: '!', title: '', class: 'vmid'
-            %span.msg
-      %tr#signup-password
-        %th.sub.vtop= f.label :password
-        %td.even
-          = f.password_field :password, placeholder: "Password", autocomplete: "new-password", minlength: User::MIN_PASSWORD_LEN, required: true
-          .user-alert.hidden
-            = image_tag 'icons/exclamation.png', alt: '!', title: '', class: 'vmid'
-            %span.msg
-      %tr#signup-password-confirmation
-        %th.sub.vtop= f.label :password_confirmation, 'Confirm'
-        %td.odd
-          = f.password_field :password_confirmation, placeholder: "Confirm Password", autocomplete: "new-password", minlength: User::MIN_PASSWORD_LEN, required: true
-          .user-alert.hidden
-            = image_tag 'icons/exclamation.png', alt: '!', title: '', class: 'vmid'
-            %span.msg
-      %tr#signup-secret
-        %th.sub.vtop= label_tag :secret, "Secret (optional)"
-        %td.even
-          = text_field_tag :secret, params[:secret], placeholder: "Secret"
-          %span.details (If you don't know what this is, please leave it blank!)
-      %tr#signup-captcha
-        %th.sub.vtop= label_tag :addition, "Captcha"
-        %td.odd
-          = text_field_tag :addition, params[:addition], placeholder: "Please enter five times two plus four as a number (e.g. 3 not three)"
-      %tr#signup-terms
-        %th.sub.vtop Terms
-        %td.odd
+  .form-table#signup
+    .editor-title Sign Up
+    #signup-username
+      .sub.vtop= f.label :username
+      .even
+        = f.text_field :username, autofocus: true, placeholder: "Username", autocomplete: "username", minlength: User::MIN_USERNAME_LEN, maxlength: User::MAX_USERNAME_LEN, required: true
+        .user-alert.hidden
+          = image_tag 'icons/exclamation.png', alt: '!', title: ''
+          %span.msg
+    #signup-email
+      .sub.vtop= f.label :email
+      .odd
+        = f.text_field :email, placeholder: "Email address", autocomplete: "email", type: "email", required: true
+        .user-alert.hidden
+          = image_tag 'icons/exclamation.png', alt: '!', title: ''
+          %span.msg
+    #signup-password
+      .sub.vtop= f.label :password
+      .even
+        = f.password_field :password, placeholder: "Password", autocomplete: "new-password", minlength: User::MIN_PASSWORD_LEN, required: true
+        .user-alert.hidden
+          = image_tag 'icons/exclamation.png', alt: '!', title: ''
+          %span.msg
+    #signup-password-confirmation
+      .sub.vtop= f.label :password_confirmation, 'Confirm'
+      .odd
+        = f.password_field :password_confirmation, placeholder: "Confirm Password", autocomplete: "new-password", minlength: User::MIN_PASSWORD_LEN, required: true
+        .user-alert.hidden
+          = image_tag 'icons/exclamation.png', alt: '!', title: ''
+          %span.msg
+    #signup-secret
+      .sub.vtop= label_tag :secret, "Secret (optional)"
+      .even
+        = text_field_tag :secret, params[:secret], placeholder: "Secret"
+        %span.details (If you don't know what this is, please leave it blank!)
+    #signup-captcha
+      .sub.vtop= label_tag :addition, "Captcha"
+      .odd
+        = text_field_tag :addition, params[:addition], placeholder: "Please enter five times two plus four as a number (e.g. 3 not three)"
+    #signup-terms
+      .sub.vtop Terms
+      .odd
+        .checkbox-field
           = check_box_tag :tos, true, params[:tos].present?
-          = label_tag :tos, class: 'vmid' do
+          = label_tag :tos do
             I have read and agree to the
             = link_to 'Terms of Service', tos_path
             and the
             = link_to 'Privacy Policy', privacy_path
-          .user-alert.hidden
-            = image_tag 'icons/exclamation.png', alt: '!', title: '', class: 'vmid'
-            %span.msg
-    %tfoot
-      %tr
-        %th.form-table-ender{colspan: 2}
-          = submit_tag "Sign Up", class: 'button'
-          %br
-          = render "devise/shared/links"
+        .user-alert.hidden
+          = image_tag 'icons/exclamation.png', alt: '!', title: ''
+          %span.msg
+    .form-table-ender.vertical-grid
+      %div= submit_tag "Sign Up", class: 'button'
+      = render "devise/shared/links"

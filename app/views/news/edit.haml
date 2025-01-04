@@ -4,8 +4,6 @@
   %b Edit
 
 = form_for @news do |f|
-  %table.form-table#news-table
-    %thead
-      %tr
-        %th.editor-title{colspan: 2} Edit News Post
+  .form-table#news-table
+    .editor-title Edit News Post
     = render 'editor', f: f

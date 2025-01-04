@@ -1,16 +1,9 @@
-%table.form-table
-  %thead
-    %tr
-      %th.sub Contribute to the Constellation
-  %tbody
-    %tr
-      %td.even= link_to 'Make a Patreon pledge', 'https://patreon.com/user?u=4240260'
-    %tr
-      %td.odd= link_to 'Donate via Paypal', 'http://paypal.me/aschloss'
-    %tr
-      %td.even= link_to 'Submit a pull request', 'https://github.com/glowfic-constellation/glowfic'
-    %tr
-      - if logged_in?
-        %td.odd= link_to 'Write something!', new_post_path
-      - else
-        %td.odd= link_to 'Join us', new_user_session_path
+.form-table#contribute
+  .sub Contribute to the Constellation
+  .even= link_to 'Make a Patreon pledge', 'https://patreon.com/user?u=4240260'
+  .odd= link_to 'Donate via Paypal', 'http://paypal.me/aschloss'
+  .even= link_to 'Submit a pull request', 'https://github.com/glowfic-constellation/glowfic'
+  - if logged_in?
+    .odd= link_to 'Write something!', new_post_path
+  - else
+    .odd= link_to 'Join us', new_user_session_path

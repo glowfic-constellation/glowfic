@@ -6,8 +6,6 @@
   %b Create New
 
 = form_for @board, url: continuities_path, method: :post do |f|
-  %table.form-table
-    %thead
-      %tr
-        %th.editor-title{colspan: 2} Create Continuity
+  .form-table
+    .editor-title Create Continuity
     = render 'editor', f: f

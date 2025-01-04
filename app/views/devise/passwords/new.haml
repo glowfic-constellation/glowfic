@@ -1,17 +1,11 @@
 = render "devise/shared/error_messages", resource: resource
 
 = form_for(resource, as: resource_name, url: password_path(resource_name), html: { method: :post }) do |f|
-  %table.form-table
-    %thead
-      %tr
-        %th.table-title{colspan: 2} Forgot your password?
-    %tbody
-      %tr
-        %th.sub= f.label :email
-        %td.even= f.email_field :email, autofocus: true, autocomplete: "email"
-    %tfoot
-      %tr
-        %th.form-table-ender{colspan: 2}
-          = f.submit "Reset password"
-          %br
-          = render "devise/shared/links"
+  .form-table
+    .editor-title Forgot your password?
+    %div
+      .sub= f.label :email
+      .even= f.email_field :email, autofocus: true, autocomplete: "email"
+    .form-table-ender.vertical-grid
+      %div= f.submit "Reset password"
+      = render "devise/shared/links"

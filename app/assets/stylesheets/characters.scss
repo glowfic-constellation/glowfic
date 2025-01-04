@@ -14,6 +14,7 @@
 .character-form {
   display: inline-block;
   vertical-align: top;
+  width: 420px;
 }
 
 // template descriptions on templates#show
@@ -54,3 +55,31 @@
 
 // character list view
 .character-list-template { padding: 10px; }
+
+.edit_character, .new_character {
+  display: flex;
+  gap: 4px;
+}
+
+.form-table#alias-index {
+  .editor-title {
+    align-items: center;
+    gap: 4px;
+  }
+
+  .alias-row {
+    grid-template-columns: auto auto;
+    justify-items: start;
+    justify-content: normal;
+    padding: 5px 10px;
+    a[data-method='delete'] { justify-self: flex-end }
+
+    &.centered {
+      grid-template-rows: none;
+      justify-content: center;
+      padding: 10px;
+    }
+  }
+}
+
+#character-editor #create_template.hidden { display: none; }

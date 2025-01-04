@@ -7,10 +7,8 @@
 = form_for @character, url: characters_path, method: :post do |f|
   = f.hidden_field :default_icon_id
   .character-form
-    %table.form-table
-      %thead
-        %tr
-          %th.editor-title{colspan: 2} New Character
+    .form-table#character-editor
+      .editor-title New Character
       = render 'editor', f: f
 
   = render 'icon_selector'

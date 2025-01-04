@@ -5,8 +5,8 @@ RSpec.describe "Resetting password" do
     # request reset
     user = create(:user)
     visit new_user_password_path
-    expect(page).to have_selector("th.table-title", exact_text: "Forgot your password?")
-    within(".form-table") do
+    expect(page).to have_selector('.editor-title', exact_text: "Forgot your password?")
+    within('.form-table') do
       fill_in "Email", with: user.email
       click_button "Reset password"
     end
@@ -19,7 +19,7 @@ RSpec.describe "Resetting password" do
     # https://github.com/heartcombo/devise/blob/v4.9.4/lib/devise/models/recoverable.rb#L134
     token = ResqueSpec.queue_for(DeviseMailer).last[:args][1][1]
     visit edit_user_password_path(user, reset_password_token: token)
-    expect(page).to have_selector("th.table-title", exact_text: "Change your password")
+    expect(page).to have_selector('.editor-title', exact_text: "Change your password")
     fill_in "New Password", with: 'anewpass'
     fill_in "Confirm Password", with: 'anewpass'
     click_button "Change my password"
