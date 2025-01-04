@@ -605,6 +605,8 @@ tr.gallery-tags .tag-item { color: $font_color_tag_item_gallery; }
   font-size: $font_size_small;
   padding: 5px;
   display: inline-block;
+  grid-column: pages;
+  grid-row: 1;
 
   .current {
     font-weight: bold;
@@ -638,16 +640,19 @@ tr.gallery-tags .tag-item { color: $font_color_tag_item_gallery; }
   @extend .sub;
   color: $font_color_paginate;
   text-align: center;
+  display: grid;
+  grid-template-columns: [total] max-content [pages] auto [per] max-content;
+  grid-template-rows: auto;
 
-  .left-align {
-    float: left;
+  .total-entries {
+    grid-column: total;
     padding: 10px;
   }
 
-  .right-align {
+  .paginator-per-page {
     padding: 2px;
     padding-right: 10px;
-    float: right;
+    grid-column: per;
     a { color: $font_color_paginate; }
   }
 
@@ -670,16 +675,11 @@ tr.gallery-tags .tag-item { color: $font_color_tag_item_gallery; }
   .mobile-pagination { display: block; }
 }
 
-.mobile-paginator {
-  @include mobile-paginator;
-}
+.mobile-paginator { @include mobile-paginator; }
 
 @media (max-width: 400px) {
   .paginator-meta { display: none; }
-
-  .paginator {
-    @include mobile-paginator;
-  }
+  .paginator { @include mobile-paginator; }
 }
 
 .user-moiety { font-size: 80%; }
