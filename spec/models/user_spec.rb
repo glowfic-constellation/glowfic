@@ -337,4 +337,73 @@ RSpec.describe User do
       expect(user.as_json).to match_hash({ id: user.id, username: '(deleted user)' })
     end
   end
+
+  describe "#has_permission?" do
+    shared_examples 'all' do
+      it "returns false for regular users" do
+        user = create(:user)
+        expect(user.has_permission?(permission)).to eq(false)
+      end
+
+      it "returns false for suspended users" do
+        user = create(:user, role_id: :suspended)
+        expect(user.has_permission?(permission)).to eq(false)
+      end
+
+      it "returns true for admins" do
+        user = create(:admin_user)
+        expect(user.has_permission?(permission)).to eq(true)
+      end
+    end
+
+    shared_examples 'mod permissions' do
+      include_examples 'all'
+
+      it "returns true for mods" do
+        user = create(:mod_user)
+        expect(user.has_permission?(permission)).to eq(true)
+      end
+    end
+
+    shared_examples 'importers' do
+      it "returns false for importers" do
+        user = create(:importing_user)
+        expect(user.has_permission?(permission)).to eq(false)
+      end
+    end
+
+    (Permissible::MOD_PERMS - [:import_posts]).each do |permission|
+      context permission.to_s do
+        let(:permission) { permission }
+
+        include_examples 'mod permissions'
+        include_examples 'importers'
+      end
+    end
+
+    Permissible::PERMS[8..].each do |permission|
+      context permission.to_s do
+        let(:permission) { permission }
+
+        include_examples 'all'
+        include_examples 'importers'
+
+        it "returns false for mods" do
+          user = create(:mod_user)
+          expect(user.has_permission?(permission)).to eq(false)
+        end
+      end
+    end
+
+    context 'import_posts' do
+      let(:permission) { :import_posts }
+
+      include_examples 'mod permissions'
+
+      it "returns true for importers" do
+        user = create(:importing_user)
+        expect(user.has_permission?(:import_posts)).to eq(true)
+      end
+    end
+  end
 end
