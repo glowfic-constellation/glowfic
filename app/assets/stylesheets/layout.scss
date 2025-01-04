@@ -380,7 +380,7 @@ td, .table-list li { font-size: $font_size_small; }
   }
 
   &#signup {
-    grid-template-columns: 94px auto;
+    grid-template-columns: minmax(min-content, 94px) auto;
     #signup-terms #tos { display: block; } // overriding the other #tos being hidden
 
     .user-alert {
