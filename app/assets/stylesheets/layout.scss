@@ -388,6 +388,7 @@ td, .table-list li { font-size: $font_size_small; }
       grid-template-columns: 16px auto;
       gap: 4px;
       justify-content: center;
+      align-items: center;
       &.hidden { display: none; }
     }
 
