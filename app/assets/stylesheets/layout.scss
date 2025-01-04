@@ -311,7 +311,11 @@ td, .table-list li { font-size: $font_size_small; }
     justify-content: center;
     grid-auto-flow: column;
     button[disabled], input[disabled] { background-color: $bg_color_input_disabled; }
-    .select2-container input { margin-top: 5px; }
+
+    .select2-container {
+      display: inline-block;
+      input { margin-top: 5px; }
+    }
 
     input {
       margin: 0;
