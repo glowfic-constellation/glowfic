@@ -1,5 +1,5 @@
 = form_for current_user do |f|
-  .form-table#user-editor
+  .form-table.width-420#user-editor
     .editor-title Settings
     .subber Account
     %div
@@ -33,7 +33,7 @@
         = f.label :favorite_notifications, 'Notify when a favorited author makes a new post'
     %div
       .sub= f.label :timezone, 'Time zone'
-      %div{class: cycle('even', 'odd')}= f.select(:timezone, timezone_options(current_user.timezone))
+      %div{class: cycle('even', 'odd')}= f.select :timezone, timezone_options(current_user.timezone)
     %div
       .sub= f.label :time_display
       %div{class: cycle('even', 'odd')}= f.select :time_display, time_display_options(current_user.time_display)
@@ -102,7 +102,7 @@
 
 %br
 = form_for current_user, url: password_user_path(current_user), method: :put, html: { id: 'change_password_form' } do |f|
-  .form-table#change-password
+  .form-table.width-420#change-password
     .editor-title Change Password
     %div
       .sub= label_tag :old_password, 'Old'
