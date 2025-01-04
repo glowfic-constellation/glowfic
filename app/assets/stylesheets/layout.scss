@@ -692,7 +692,7 @@ The copy box can't be invisible/hidden or copy fails but opacity works
 
 #news-table {
   width: 100%;
-  grid-template-columns: 150px auto;
+  grid-template-columns: minmax(min-content, 150px) auto;
 
   textarea { height: 400px; }
 }
@@ -713,5 +713,5 @@ The copy box can't be invisible/hidden or copy fails but opacity works
 }
 
 .edit_password_reset .form-table {
-  grid-template-columns: 108px auto;
+  grid-template-columns: minmax(min-content, 108px) auto;
 }
