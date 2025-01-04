@@ -1,4 +1,4 @@
-= form_tag unhide_posts_path, method: :post do
+= form_with url: unhide_posts_path, method: :post do |f|
   %table
     %thead
       %tr
@@ -18,7 +18,7 @@
           %td.padding-10{class: klass}
           %td.padding-10{class: klass, colspan: 5}
             = link_to view.board.name, continuity_path(view.board)
-          %td{class: klass}= check_box_tag :"unhide_boards[]", view.board_id, params[:unhide_boards].try(:include?, view.board_id.to_s), class: 'checkbox check-all-item no-margin'
+          %td{class: klass}= f.check_box :"unhide_boards[]", value: view.board_id, checked: params[:unhide_boards].try(:include?, view.board_id.to_s), class: 'checkbox check-all-item no-margin'
       - if @hidden_boardviews.empty?
         %tr
           %td.padding-10.centered{class: cycle('even', 'odd'), colspan: 7} — No continuities hidden —
@@ -34,7 +34,7 @@
       %tfoot
         %tr
           %td.right-align.padding-5{class: cycle('even', 'odd'), colspan: 7}
-            = submit_tag "Show in Unread", class: 'button'
+            = f.submit "Show in Unread", class: 'button'
       - if @hidden_posts.methods.include?(:total_pages) && @hidden_posts.total_pages > 1
         %tr
           %td{colspan: 7}= render 'posts/paginator', paginated: @hidden_posts

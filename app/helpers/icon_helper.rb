@@ -66,4 +66,10 @@ module IconHelper
     return '' unless icons.present?
     select_tag :icon_dropdown, options_for_select(icons.map { |i| [i.keyword, i.id] }, selected_id), prompt: "No Icon"
   end
+
+  def s3_form_helper(direct_post, limit: nil)
+    data = { 'form-data' => direct_post.fields, url: direct_post.url, host: URI.parse(direct_post.url).host }
+    data['limit'] = limit if limit.present?
+    data
+  end
 end

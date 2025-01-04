@@ -1,4 +1,4 @@
-= form_tag mark_messages_path, method: :post do
+= form_with url: mark_messages_path, method: :post do |f|
   %table
     %thead
       = render @view
@@ -29,13 +29,13 @@
               - else
                 = user_link(message.recipient)
             %td{class: klass}= pretty_time(message.last_in_thread.created_at)
-            %td{class: klass}= check_box_tag :"marked_ids[]", message.id, false, class: 'checkbox check-all-item', id: nil
+            %td{class: klass}= f.check_box :"marked_ids[]", value: message.id, class: 'checkbox check-all-item', id: nil
         %tr
           %td.right-align.padding-5{colspan: 5, class: cycle('even', 'odd')}
             - if @view == 'inbox'
-              = submit_tag "Mark Read", class: 'button'
-              = submit_tag "Mark Unread", class: 'button'
-            = submit_tag "Delete", class: 'button', data: { confirm: "Are you sure you want to delete these messages?" }
+              = f.submit "Mark Read", class: 'button'
+              = f.submit "Mark Unread", class: 'button'
+            = f.submit "Delete", class: 'button', data: { confirm: "Are you sure you want to delete these messages?" }
     - if @messages.total_pages > 1
       %tfoot
         %tr

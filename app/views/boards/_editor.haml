@@ -9,17 +9,17 @@
 %div
   .sub= f.label :coauthor_ids, 'Coauthors'
   .even
-    = f.collection_select(:coauthor_ids, @coauthors, :id, :username, { selected: @board.coauthors.pluck(:user_id) }, { multiple: true })
+    = f.collection_select(:coauthor_ids, @coauthors, :id, :username, { selected: @board.coauthors.pluck(:user_id) }, multiple: true)
 %div
   .sub= f.label :cameo_ids, 'Cameos'
   .odd
-    = f.collection_select(:cameo_ids, @cameos, :id, :username, { selected: @board.cameos.pluck(:user_id) }, { multiple: true })
+    = f.collection_select(:cameo_ids, @cameos, :id, :username, { selected: @board.cameos.pluck(:user_id) }, multiple: true)
 %div
   .sub= f.label :authors_locked, 'Locked?'
   .even.checkbox-field
     = f.check_box :authors_locked, checked: @board.authors_locked
     = f.label :authors_locked, 'Only allow authors to create new posts in this continuity'
 %div
-  .sub.vtop Description
+  .sub.vtop= f.label :description
   .odd= f.text_area :description
-.form-table-ender= submit_tag "Save", class: 'button'
+.form-table-ender= f.submit "Save", class: 'button'

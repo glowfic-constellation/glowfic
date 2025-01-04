@@ -4,10 +4,10 @@
       %th.table-title{colspan: 3} Users
     %tr
       %th.subber.padding-10{colspan: 3}
-        = form_tag search_users_path, method: :get do
-          = label_tag :search_username, 'Search by username:'
-          = text_field_tag :username, params[:username], style: 'margin: 0px 5px;', id: :search_username
-          = submit_tag "Search", class: 'button'
+        = form_with url: search_users_path, method: :get do |f|
+          = f.label :search_username, 'Search by username:'
+          = f.text_field :username, value: params[:username], style: 'margin: 0px 5px;', id: :search_username
+          = f.submit "Search", class: 'button'
     %tr
       %th.sub Name
       %th.width-70.sub.centered Moiety

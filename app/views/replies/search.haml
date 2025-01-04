@@ -13,55 +13,55 @@
   %tbody
     %tr
       %td.search-box
-        = form_tag search_replies_path, method: :get do
+        = form_with url: search_replies_path, method: :get do |f|
           %table.search-form
             %tr
-              %td{style: 'width: 80px;'}= label_tag :board_id, 'Continuity'
+              %td{style: 'width: 80px;'}= f.label :board_id, 'Continuity'
               %td
                 - if @post
                   %b= @post.board.name
                 - else
-                  = select_tag :board_id, options_from_collection_for_select(@boards || [], :id, :name, params[:board_id]),
-                    { class: 'chosen-select', prompt: '— Choose Continuity —' }
+                  = f.select :board_id, options_from_collection_for_select(@boards || [], :id, :name, params[:board_id]),
+                    class: 'chosen-select', prompt: '— Choose Continuity —'
             %tr
-              %td= label_tag :author_id, 'Author'
-              %td= select_tag :author_id, options_from_collection_for_select(@users || [], :id, :username, params[:author_id]),
-                { class: 'chosen-select', prompt: '— Choose Author —' }
+              %td= f.label :author_id
+              %td= f.select :author_id, options_from_collection_for_select(@users || [], :id, :username, params[:author_id]),
+                class: 'chosen-select', prompt: '— Choose Author —'
             %tr
-              %td= label_tag :template_id, 'Template'
-              %td= select_tag :template_id, options_from_collection_for_select(@templates, :id, :name, params[:template_id]),
-                { class: 'chosen-select', prompt: '— Choose Template —' }
+              %td= f.label :template_id
+              %td= f.select :template_id, options_from_collection_for_select(@templates, :id, :name, params[:template_id]),
+                class: 'chosen-select', prompt: '— Choose Template —'
             %tr
-              %td= label_tag :character_id, 'Character'
-              %td= select_tag :character_id, options_from_collection_for_select(@characters || [], :id, :selector_name,
-                params[:character_id]), { prompt: '— Choose Character —' }
+              %td= f.label :character_id
+              %td= f.select :character_id, options_from_collection_for_select(@characters || [], :id, :selector_name, params[:character_id]),
+                prompt: '— Choose Character —'
             %tr
-              %td= label_tag :subj_content, 'Content'
-              %td= text_field_tag :subj_content, params[:subj_content], style: 'width: 100%; margin: 5px 0px;'
+              %td= f.label :subj_content, 'Content'
+              %td= f.text_field :subj_content, value: params[:subj_content], style: 'width: 100%; margin: 5px 0px;'
             %tr
-              %td= label_tag :sort, 'Sort'
-              %td= select_tag :sort, options_for_select([['Best match', 'rank'], ['Newest first', 'created_new'], ['Oldest first', 'created_old']],
-                  params[:sort]), { class: 'chosen-select' }
+              %td= f.label :sort
+              %td= f.select :sort, options_for_select([['Best match', 'rank'], ['Newest first', 'created_new'], ['Oldest first', 'created_old']],
+                  params[:sort]), class: 'chosen-select'
             - if @post.present?
               %tr
                 %td Post
                 %td
                   %b= @post.subject
-                  = hidden_field_tag :post_id, @post.id
+                  = f.hidden_field :post_id, value: @post.id
             - if @icon
               %tr
-                %td= label_tag :icon_id, 'Icon'
+                %td= f.label :icon_id
                 %td
                   = icon_tag @icon, class: 'preview-icon search-icon-preview'
-                  = hidden_field_tag :icon_id, @icon.id
+                  = f.hidden_field :icon_id, value: @icon.id
                   %span.search-icon-keyword= @icon.keyword
             %tr
-              %td= label_tag :condensed, 'Condensed'
+              %td= f.label :condensed
               %td
-                = check_box_tag :condensed, nil, (params[:commit].nil? || params[:condensed].present?), class: 'vmid'
-                = label_tag :condensed, 'Hide screennames and icons'
+                = f.check_box :condensed, checked: (params[:commit].nil? || params[:condensed]), class: 'vmid'
+                = f.label :condensed, 'Hide screennames and icons'
             %tr
-              %td.centered{colspan: 2}= submit_tag "Search", class: 'button'
+              %td.centered{colspan: 2}= f.submit "Search", class: 'button'
       %td.vtop
         - if @search_results.present?
           %table

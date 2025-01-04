@@ -20,7 +20,7 @@ class SessionsController < ApplicationController
         "value"   => auth.api_token,
         "expires" => Authentication::EXPIRY.from_now.to_i,
       }
-      cookies.permanent.signed[:user_id] = cookie_hash(user.id) if params[:remember_me].present?
+      cookies.permanent.signed[:user_id] = cookie_hash(user.id) if params[:remember_me] == '1'
       @current_user = user
       redirect_to continuities_path and return if session[:previous_url] == '/login'
     else

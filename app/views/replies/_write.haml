@@ -1,7 +1,7 @@
 -# locals: ( reply: )
 
 - content_for :form do
-  = form_for reply, html: { id: 'post_form' } do |f|
+  = form_with model: reply, html: { id: 'post_form' } do |f|
     %b Reply
     %button.view-button#rtf{type: 'button', class: ('selected' if reply.editor_mode == 'rtf')} Rich Text
     %button.view-button#md{type: 'button', class: ('selected' if reply.editor_mode == 'md')} Markdown
@@ -14,13 +14,13 @@
     = f.hidden_field :character_id
     = f.hidden_field :icon_id
     = f.hidden_field :character_alias_id
-    = f.hidden_field :editor_mode, id: 'editor_mode'
-    = fields_for :character, reply.character do |cf|
+    = f.hidden_field :editor_mode, value: params[:editor_mode] || current_user.default_editor, id: 'editor_mode'
+    = f.fields_for :character, reply.character do |cf|
       = cf.hidden_field :name
       = cf.hidden_field :npc
-    = hidden_field_tag :allow_dupe, @allow_dupe
+    = f.hidden_field :allow_dupe, value: @allow_dupe
     - if params[:per_page]
-      = hidden_field_tag :per_page, params[:per_page]
+      = f.hidden_field :per_page, value: params[:per_page]
     #post-form-wrapper
       = f.text_area :content, class: 'tinymce'
       - unless current_user.id == reply.user_id
@@ -28,12 +28,12 @@
         %br
         = f.text_area :audit_comment, placeholder: 'Explain reason for moderation here', class: 'mod'
         %br
-      = submit_tag (reply.new_record? ? 'Post' : 'Save'), class: 'button', id: 'submit_button', data: { disable_with: 'Saving...' }
-      = submit_tag "Preview", class: 'button', id: 'preview_button', name: 'button_preview', data: { disable_with: 'Previewing...' }
+      = f.submit (reply.new_record? ? 'Post' : 'Save'), class: 'button', id: 'submit_button', data: { disable_with: 'Saving...' }
+      = f.submit "Preview", class: 'button', id: 'preview_button', name: 'button_preview', data: { disable_with: 'Previewing...' }
       - if reply.new_record?
-        = submit_tag "Save Draft", class: 'button', id: 'draft_button', data: { disable_with: 'Drafting...' }, name: 'button_draft'
+        = f.submit "Save Draft", class: 'button', id: 'draft_button', data: { disable_with: 'Drafting...' }, name: 'button_draft'
       - if @draft.present?
-        = submit_tag "Delete Draft", class: 'button', id: 'delete_draft_button', data: { disable_with: 'Deleting...', confirm: "Delete draft?" }, name: 'button_delete_draft'
+        = f.submit "Delete Draft", class: 'button', id: 'delete_draft_button', data: { disable_with: 'Deleting...', confirm: "Delete draft?" }, name: 'button_delete_draft'
     - if reply.post.author_for(current_user).present?
       %hr.clear
       .post-note-editor
@@ -54,9 +54,9 @@
           - else
             %em (You haven't written a note yet!)
         .private-note-editor.hidden
-          = text_area_tag :private_note, params[:private_note] || reply.post.author_for(current_user).private_note, id: 'post_private_note'
-          = submit_tag 'Save', class: 'save-private-note button'
-          = submit_tag 'Discard Changes', class: 'discard-private-note button'
+          = f.text_area :private_note, value: params[:private_note] || reply.post.author_for(current_user).private_note, id: 'post_private_note'
+          = f.submit 'Save', class: 'save-private-note button'
+          = f.submit 'Discard Changes', class: 'discard-private-note button'
         #dialog-confirm{title: "Your author note has unsaved changes!"}
           %p What would you like to do with your unsaved changes?
     - else

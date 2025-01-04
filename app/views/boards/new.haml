@@ -5,7 +5,7 @@
   &raquo;
   %b Create New
 
-= form_for @board, url: continuities_path, method: :post do |f|
+= form_with model: @board, url: continuities_path, method: :post do |f|
   .form-table
     .editor-title Create Continuity
     = render 'editor', f: f

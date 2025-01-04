@@ -13,26 +13,27 @@
   %tbody
     %tr
       %td.search-box
-        = form_tag search_posts_path, method: :get do
+        = form_with url: search_posts_path, method: :get do |f|
           %table.search-form
             %tr
-              %td.width-70= label_tag :board_id, 'Continuity'
-              %td= select_tag :board_id, options_from_collection_for_select(@board || [], :id, :name, params[:board_id]),
-                { class: 'chosen-select', prompt: '— Choose Continuity —' }
+              %td.width-70= f.label :board_id, 'Continuity'
+              %td= f.select :board_id, options_from_collection_for_select(@board || [], :id, :name, params[:board_id]),
+                class: 'chosen-select', prompt: '— Choose Continuity —'
             %tr
-              %td= label_tag :author_id, 'Author'
-              %td= select_tag :author_id, options_from_collection_for_select(@user || [], :id, :username, params[:author_id]),
-                { class: 'chosen-select', prompt: '— Choose Author —', multiple: true }
+              %td= f.label :author_id
+              %td= f.select :author_id, options_from_collection_for_select(@user || [], :id, :username, params[:author_id]),
+                class: 'chosen-select', prompt: '— Choose Author —', multiple: true
             %tr
-              %td= label_tag :character_id, 'Character'
-              %td= select_tag :character_id, options_from_collection_for_select(@character || [], :id, :selector_name, params[:character_id]),
-                { prompt: '— Choose Character —' }
+              %td= f.label :character_id
+              %td= f.select :character_id, options_from_collection_for_select(@character || [], :id, :selector_name, params[:character_id]),
+                prompt: '— Choose Character —'
             %tr
-              %td= label_tag :setting_id, 'Setting'
-              %td= select_tag :setting_id, options_from_collection_for_select(@setting || [], :id, :name, params[:setting_id]), { prompt: '— Choose Setting —' }
+              %td= f.label :setting_id
+              %td= f.select :setting_id, options_from_collection_for_select(@setting || [], :id, :name, params[:setting_id]),
+                prompt: '— Choose Setting —'
             %tr
-              %td= label_tag :subject, 'Subject'
-              %td= text_field_tag :subject, params[:subject], style: 'width: 100%; margin: 5px 0px;'
+              %td= f.label :subject
+              %td= f.text_field :subject, value: params[:subject], style: 'width: 100%; margin: 5px 0px;'
             %tr
               %td Acronym
               %td.padding-5
@@ -41,10 +42,10 @@
             %tr
               %td Completed
               %td.padding-5
-                = check_box_tag :completed, true, params[:completed].present?, { class: 'vmid no-margin', style: 'margin-bottom: 3px;' }
-                = label_tag :completed, "Completed Only"
+                = f.check_box :completed, checked: params[:completed], class: 'vmid no-margin', style: 'margin-bottom: 3px;'
+                = f.label :completed, "Completed Only"
             %tr
-              %td.centered{colspan: 2}= submit_tag "Search", class: 'button'
+              %td.centered{colspan: 2}= f.submit "Search", class: 'button'
       %td.vtop#search_results
         - if @search_results.present?
           %table

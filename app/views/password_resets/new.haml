@@ -1,10 +1,10 @@
-= form_tag password_resets_path, method: :post do
+= form_with url: password_resets_path, method: :post do |f|
   .form-table#password-reset
     .editor-title Request Password Reset
     %div
-      .sub= label_tag :username
-      .even= text_field_tag :username, params[:username], placeholder: "Username", id: 'user_username', autocomplete: 'username'
+      .sub= f.label :username
+      .even= f.text_field :username, value: params[:username], placeholder: "Username", id: 'user_username', autocomplete: 'username'
     %div
-      .sub= label_tag :email
-      .odd= text_field_tag :email, params[:email], placeholder: "Email address", id: 'user_email', autocomplete: 'email'
-    .form-table-ender= submit_tag "Reset Password", class: 'button'
+      .sub= f.label :email
+      .odd= f.text_field :email, value: params[:email], placeholder: "Email address", id: 'user_email', autocomplete: 'email'
+    .form-table-ender= f.submit "Reset Password", class: 'button'

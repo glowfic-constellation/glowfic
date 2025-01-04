@@ -1,4 +1,4 @@
-= form_for current_user do |f|
+= form_with model: current_user do |f|
   .form-table#user-editor
     .editor-title Settings
     .subber Account
@@ -98,28 +98,29 @@
           = f.label :default_hide_edit_delete_buttons, 'Hide "Edit" and "Delete" buttons'
         = f.check_box :default_hide_add_bookmark_button
         = f.label :default_hide_add_bookmark_button, 'Hide "Add Bookmark" button'
-    .form-table-ender= submit_tag "Save", class: 'button'
+    .form-table-ender= f.submit "Save", class: 'button'
 
 %br
-= form_for current_user, url: password_user_path(current_user), method: :put, html: { id: 'change_password_form' } do |f|
+= form_with model: current_user, url: password_user_path(current_user), method: :put, html: { id: 'change_password_form' } do |f|
   .form-table#change-password
     .editor-title Change Password
     %div
-      .sub= label_tag :old_password, 'Old'
-      %div{class: cycle('even', 'odd')}= password_field_tag :old_password, params[:old_password], placeholder: "Old Password", autocomplete: 'current-password'
+      .sub= f.label :old_password
+      %div{class: cycle('even', 'odd')}= f.password_field :old_password, placeholder: "Old Password", autocomplete: 'current-password', value: params.fetch(:user, {})[:old_password]
     %div
-      .sub= label_tag :password, 'New'
-      %div{class: cycle('even', 'odd')}= f.password_field :password, placeholder: "New Password", value: (params[:user] || {})[:password], autocomplete: 'new-password'
+      .sub= f.label :password, 'New Password'
+      %div{class: cycle('even', 'odd')}= f.password_field :password, placeholder: "New Password", value: params.fetch(:user, {})[:password], autocomplete: 'new-password'
     %div
-      .sub= label_tag :password_confirmation, 'Confirm'
-      %div{class: cycle('even', 'odd')}= f.password_field :password_confirmation, placeholder: "Confirm Password", value: (params[:user] || {})[:password_confirmation], autocomplete: 'new-password'
-    .form-table-ender= submit_tag "Save", class: 'button'
+      .sub= f.label :password_confirmation, 'Confirm Password'
+      %div{class: cycle('even', 'odd')}= f.password_field :password_confirmation, placeholder: "Confirm Password", value: params.fetch(:user, {})[:password_confirmation], autocomplete: 'new-password'
+    .form-table-ender= f.submit "Save", class: 'button'
+
 - if current_user.read_only?
   %br
-  = form_for current_user, url: upgrade_user_path(current_user), method: :put, html: { id: 'upgrade_account_form' } do
+  = form_with model: current_user, url: upgrade_user_path(current_user), method: :put, html: { id: 'upgrade_account_form' } do |f|
     .form-table#upgrade-Account
       .editor-title Upgrade Account
       %div
-        .sub= label_tag :secret
-        .even= text_field_tag :secret, params[:secret], placeholder: "Secret word - ask around the community"
-      .form-table-ender= submit_tag "Save", class: 'button'
+        .sub= f.label :secret
+        .even= f.text_field :secret, value: params[:secret], placeholder: "Secret word - ask around the community"
+      .form-table-ender= f.submit "Save", class: 'button'

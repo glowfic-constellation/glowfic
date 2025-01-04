@@ -1,4 +1,4 @@
-= form_for @board_section, url: board_sections_path, method: :post do |f|
+= form_with model: @board_section, method: :post do |f|
   .form-table#section-editor
     .editor-title Create #{@board_section&.board&.name} Section
     = render 'editor', f: f

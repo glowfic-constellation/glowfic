@@ -13,39 +13,39 @@
   %tbody
     %tr
       %td.search-box
-        = form_tag search_characters_path, method: :get do
+        = form_with url: search_characters_path, method: :get do |f|
           %table.search-form
             %tr
-              %td= label_tag :author_id, 'Author'
-              %td= select_tag :author_id, options_from_collection_for_select(@users, :id, :username, params[:author_id]),
-                { class: 'chosen-select', prompt: '— Choose Author —' }
+              %td= f.label :author_id
+              %td= f.select :author_id, options_from_collection_for_select(@users, :id, :username, params[:author_id]),
+                class: 'chosen-select', prompt: '— Choose Author —'
             %tr
-              %td= label_tag :template_id, 'Template'
-              %td= select_tag :template_id, options_from_collection_for_select(@templates, :id, :name, params[:template_id]),
-                { class: 'chosen-select', prompt: '— Choose Template —' }
+              %td= f.label :template_id
+              %td= f.select :template_id, options_from_collection_for_select(@templates, :id, :name, params[:template_id]),
+                class: 'chosen-select', prompt: '— Choose Template —'
             %tr
-              %td= label_tag :name, 'Name'
-              %td= text_field_tag :name, params[:name], style: 'width: 100%; margin: 5px 0px;'
+              %td= f.label :name
+              %td= f.text_field :name, value: params[:name], style: 'width: 100%; margin: 5px 0px;'
             %tr
               %td
               %td
                 Searching for name in:
                 %br
-                = check_box_tag :search_name, true, params[:commit] ? params[:search_name] : true, { class: 'vmid no-margin', style: 'margin-bottom: 3px;' }
-                = label_tag :search_name, "Name"
+                = f.check_box :search_name, checked: params[:commit] ? params[:search_name] : true, class: 'vmid no-margin', style: 'margin-bottom: 3px;'
+                = f.label :search_name, "Name"
                 %br
-                = check_box_tag :search_screenname, true, params[:commit] ? params[:search_screenname] : true, { class: 'vmid no-margin', style: 'margin-bottom: 3px;' }
-                = label_tag :search_screenname, "Screenname"
+                = f.check_box :search_screenname, checked: params[:commit] ? params[:search_screenname] : true, class: 'vmid no-margin', style: 'margin-bottom: 3px;'
+                = f.label :search_screenname, "Screenname"
                 %br
-                = check_box_tag :search_nickname, true, params[:commit] ? params[:search_nickname] : true, { class: 'vmid no-margin', style: 'margin-bottom: 3px;' }
-                = label_tag :search_nickname, "Nickname"
+                = f.check_box :search_nickname, checked: params[:commit] ? params[:search_nickname] : true, class: 'vmid no-margin', style: 'margin-bottom: 3px;'
+                = f.label :search_nickname, "Nickname"
                 -# TODO
                   -# %br
                   -# = check_box_tag :search_aliases, true, params[:commit] ? params[:search_aliases] : true, { class: 'vmid no-margin', style: 'margin-bottom: 3px;' }
                   -# = label_tag :search_aliases, "Aliases"
             -# TODO: setting search, facecast search
             %tr
-              %td.centered{colspan: 2}= submit_tag "Search", class: 'button'
+              %td.centered{colspan: 2}= f.submit "Search", class: 'button'
       %td.vtop
         - if @search_results.present?
           %table
