@@ -1,3 +1,4 @@
+# frozen_string_literal: true
 class Tag::TemplateTag < ApplicationRecord
   self.table_name = 'template_tags'
 

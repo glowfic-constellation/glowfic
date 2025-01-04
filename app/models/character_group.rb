@@ -1,3 +1,4 @@
+# frozen_string_literal: true
 class CharacterGroup < Tag
   validates :name, uniqueness: { scope: [:type, :user] }
   validate :valid_characters, :valid_templates
