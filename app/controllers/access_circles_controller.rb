@@ -1,3 +1,4 @@
+# frozen_string_literal: true
 class AccessCirclesController < ApplicationController
   before_action :login_required
   before_action :find_model, only: [:show, :edit, :update, :destroy]
