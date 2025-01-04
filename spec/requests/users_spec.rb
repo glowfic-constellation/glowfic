@@ -7,16 +7,27 @@ RSpec.describe "Users" do
     session.fetch('warden.user.user.key', []).fetch(0, [])[0]
   end
 
+  let(:cookie_jar) { ActionDispatch::Request.new(Rails.application.env_config.deep_dup).cookie_jar }
+
+  def load_signed_cookie(key)
+    if (val = cookies[key])
+      cookie_jar[key] = val
+      cookie_jar.signed[key]
+    end
+  end
+
+  def set_signed_cookie(key, value)
+    cookie_jar.signed[key] = value
+    cookies[key] = cookie_jar[key]
+  end
+
   def cookie_user_id
     # https://github.com/heartcombo/devise/blob/v4.9.4/lib/devise/models/rememberable.rb#L134
     # structured as remember_user_token => [id, token, generated_at]
     # cookies.signed isn't available here, so we have to decrypt the raw cookie
-    if (token = cookies['remember_user_token'])
-      jar = ActionDispatch::Request.new(Rails.application.env_config.deep_dup).cookie_jar
-      jar[:remember_user_token] = token
-      token = (jar.signed['remember_user_token'] || []).fetch(0, [])[0]
+    if (cookie = load_signed_cookie(:remember_user_token))
+      cookie.fetch(0, [])[0]
     end
-    token
   end
 
   describe "creation" do
@@ -245,6 +256,24 @@ RSpec.describe "Users" do
     end
   end
 
+  describe "old authentication token" do
+    it "is migrated to Devise cookie when stored in cookie" do
+      user = create(:user, password: 'password')
+
+      set_signed_cookie(:user_id, user.id)
+      expect(cookie_user_id).to be_nil
+
+      get "/"
+      aggregate_failures do
+        expect(session_user_id).to eq(user.id) # warden session is set
+        expect(cookie_user_id).to eq(user.id) # warden remember-me is set
+        expect(session[:user_id]).to be_nil # old auth session is not set
+        expect(load_signed_cookie(:user_id)).to be_nil # old auth cookie is deleted
+        expect(controller.send(:user_signed_in?)).to eq(true) # controller recognizes user as logged in
+      end
+    end
+  end
+
   describe "log out" do
     it "requires login" do
       delete "/users/sign_out"
@@ -258,6 +287,28 @@ RSpec.describe "Users" do
       expect(controller.send(:user_signed_in?)).not_to eq(true)
       expect(flash[:notice]).to eq("You have been logged out.")
       # TODO test session vars and cookies and redirect
+    end
+
+    it "works after token migration" do
+      user = create(:user, password: 'password')
+
+      set_signed_cookie(:user_id, user.id)
+      expect(cookie_user_id).to be_nil
+
+      get "/"
+      aggregate_failures do
+        expect(session_user_id).to eq(user.id) # warden session is set
+        expect(cookie_user_id).to eq(user.id) # warden remember-me is set
+        expect(controller.send(:user_signed_in?)).to eq(true) # controller recognizes user as logged in
+      end
+
+      delete "/users/sign_out"
+      aggregate_failures do
+        expect(session_user_id).to be_nil # warden session is unset
+        expect(cookie_user_id).to be_nil # warden remember-me is unset
+        expect(load_signed_cookie(:user_id)).to be_nil # old auth cookie is not set
+        expect(controller.send(:user_signed_in?)).to eq(false) # controller recognizes user as logged in
+      end
     end
   end
 

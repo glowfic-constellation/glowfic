@@ -5,7 +5,9 @@ module Authentication::Web
   included do
     protected
 
-    def check_permanent_user
+    include Devise::Controllers::Rememberable
+
+    def migrate_old_authentication
       # transition users from old authentication to devise-based authentication
       return if logged_in?
       return unless cookies.signed[:user_id].present?
@@ -16,8 +18,10 @@ module Authentication::Web
         return
       end
 
-      # transition the old authentication to the new Devise session
+      # transition the old authentication to the new Devise session and cookie
       sign_in(:user, user)
+      remember_me(user)
+      cookies.delete(:user_id, cookie_options) # delete old-style authentication token
     end
 
     # alias devise methods for backwards compatibility
@@ -47,6 +51,12 @@ module Authentication::Web
         "value"   => Authentication.generate_api_token(current_user),
         "expires" => Authentication::EXPIRY.from_now.to_i,
       }
+    end
+
+    def cookie_options
+      return { domain: 'glowfic-staging.herokuapp.com' } if request.host.include?('staging')
+      return { domain: '.glowfic.com', tld_length: 2 } if Rails.env.production?
+      {}
     end
   end
 end
