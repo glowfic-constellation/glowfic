@@ -54,7 +54,6 @@
 }
 
 // character list view
-.character-list-template { padding: 10px; }
 
 .edit_character, .new_character {
   display: flex;
@@ -83,3 +82,14 @@
 }
 
 #character-editor #create_template.hidden { display: none; }
+
+// shared between list and icon view
+.character-search {
+  padding: 10px;
+  input#name { margin: 0px 5px; }
+}
+
+.character-icon-template, .character-list-template {
+  padding: 10px;
+  .link-box { font-size: $font_size_small; }
+}

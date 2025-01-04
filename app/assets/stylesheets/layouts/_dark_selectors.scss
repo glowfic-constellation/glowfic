@@ -159,7 +159,7 @@ table { border-color: #555555; } // TODO: what does this style
   color: $font_color_tag_item;
 }
 
-tr.gallery-tags .tag-item {
+.gallery-tags .tag-item {
   background-color: $bg_color_tag_item;
   color: $font_color_tag_item_gallery;
 }

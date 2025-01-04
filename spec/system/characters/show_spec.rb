@@ -161,7 +161,7 @@ RSpec.describe "Viewing a character" do
     end
 
     within('.character-right-content-box') do
-      expect(page).to have_selector('td', text: 'No galleries yet')
+      expect(page).to have_selector('.icon-box', text: 'No galleries yet')
     end
   end
 
@@ -384,26 +384,27 @@ RSpec.describe "Viewing a character" do
         page.find(".gallery-data-#{id}", visible: :all)
       end
 
-      def expect_tbody_order(order, galleries)
+      def expect_div_order(order, galleries)
         expect(current_titles).to eq(order.map { |x| "Gallery #{x}" })
-        # convert orders to gallery IDs to the relevant .gallery-title-n and .gallery-data-n tbodies
-        expected_tbody_order = order.map { |name| galleries[name].id }.map { |id| [gallery_title_for(id), gallery_data_for(id)] }.flatten
-        # then make sure the page tbodies are in this order
-        expect(page.all('tbody', visible: :all).to_a).to eq(expected_tbody_order)
+        # convert orders to gallery IDs to the relevant .gallery-title-n and .gallery-data-n divs
+        expected_div_order = order.map { |name| galleries[name].id }.map { |id| [gallery_title_for(id), gallery_data_for(id)] }.flatten
+        # then make sure the character-right-content-box children are in this order
+        finder = page.all(:xpath, './div', visible: :all, class: '!content-header')
+        expect(finder.to_a).to eq(expected_div_order)
       end
 
       # clicking the up button on the first gallery should do nothing
       within(current_headers.first) do
         click_link 'Move Up'
       end
-      expect_tbody_order([0, 1, 2, 3], galleries)
+      expect_div_order([0, 1, 2, 3], galleries)
 
       # move the first gallery down (testing boundaries)
       within(current_headers.first) do
         click_link 'Move Down'
       end
       expect(current_titles).to eq(["Gallery 1", "Gallery 0", "Gallery 2", "Gallery 3"])
-      expect_tbody_order([1, 0, 2, 3], galleries)
+      expect_div_order([1, 0, 2, 3], galleries)
 
       # make sure arrows got re-disabled correctly
       within(current_headers.first) do
@@ -420,14 +421,14 @@ RSpec.describe "Viewing a character" do
         click_link 'Move Down'
       end
       expect(current_titles).to eq(["Gallery 1", "Gallery 2", "Gallery 0", "Gallery 3"])
-      expect_tbody_order([1, 2, 0, 3], galleries)
+      expect_div_order([1, 2, 0, 3], galleries)
 
       # test moving up
       within(current_headers[1]) do
         click_link 'Move Up'
       end
       expect(current_titles).to eq(["Gallery 2", "Gallery 1", "Gallery 0", "Gallery 3"])
-      expect_tbody_order([2, 1, 0, 3], galleries)
+      expect_div_order([2, 1, 0, 3], galleries)
     end
 
     # reload page and ensure the ordering is correct (ensure it persisted)

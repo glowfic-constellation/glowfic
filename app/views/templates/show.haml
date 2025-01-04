@@ -11,42 +11,49 @@
   &raquo;
   %b= @template.name
 
-%table
-  %thead
-    %tr
-      %th.table-title{colspan: 6}
-        Template: #{@template.name}
-        - if @template.user_id == current_user.try(:id)
-          = link_to new_character_path(template_id: @template.id) do
-            .link-box.action-new + New Instance
-          = link_to edit_template_path(@template) do
-            .link-box.action-edit
-              = image_tag "icons/pencil.png"
-              Edit Template
-          = link_to @template, method: :delete, data: { confirm: 'Are you sure you want to delete this template?' } do
-            .link-box.action-delete x Delete Template
-        = link_to character_menu_link(view: 'icons'), rel: 'nofollow', class: 'view-button-link' do
-          .view-button{class: (:selected unless page_view == 'list')}
-            = image_tag "icons/grid.png", class: 'icon-view', alt: ''
-            Icons
-        = link_to character_menu_link(view: 'list'), rel: 'nofollow', class: 'view-button-link' do
-          .view-button{class: (:selected if page_view == 'list')}
-            = image_tag "icons/list.png", class: 'list-view', alt: ''
-            List
-        - unless @template.retired # If the template is retired, it always shows all of its characters
-          - if show_retired
-            = link_to character_menu_link(retired: false), class: 'view-button-link' do
-              .view-button
-                Hide Retired
-          - else
-            = link_to character_menu_link(retired: true), class: 'view-button-link' do
-              .view-button
-                All Characters
-  %tbody
-    - if page_view == 'list'
-      = render 'characters/list_section', characters: @template.characters, show_retired: @template.retired || show_retired
+- content_for :buttons do
+  - if @template.user_id == current_user.try(:id)
+    = link_to new_character_path(template_id: @template.id) do
+      .link-box.action-new + New Instance
+    = link_to edit_template_path(@template) do
+      .link-box.action-edit
+        = image_tag "icons/pencil.png"
+        Edit Template
+    = link_to @template, method: :delete, data: { confirm: 'Are you sure you want to delete this template?' } do
+      .link-box.action-delete x Delete Template
+  = link_to character_menu_link(view: 'icons'), rel: 'nofollow', class: 'view-button-link' do
+    .view-button{class: (:selected unless page_view == 'list')}
+      = image_tag "icons/grid.png", class: 'icon-view', alt: ''
+      Icons
+  = link_to character_menu_link(view: 'list'), rel: 'nofollow', class: 'view-button-link' do
+    .view-button{class: (:selected if page_view == 'list')}
+      = image_tag "icons/list.png", class: 'list-view', alt: ''
+      List
+  - unless @template.retired # If the template is retired, it always shows all of its characters
+    - if show_retired
+      = link_to character_menu_link(retired: false), class: 'view-button-link' do
+        .view-button
+          Hide Retired
     - else
-      = render 'characters/icon_view', characters: @template.characters, show_retired: @template.retired || show_retired
+      = link_to character_menu_link(retired: true), class: 'view-button-link' do
+        .view-button
+          All Characters
+
+- if page_view == 'list'
+  %table{class: "template-#{@template.id}"}
+    %thead
+      %tr
+        %th.table-title{colspan: 6}
+          Template: #{@template.name}
+          = content_for :buttons
+    %tbody
+      = render 'characters/list_section', characters: @template.characters, show_retired: @template.retired || show_retired
+- else
+  %div{class: "template-#{@template.id}"}
+    .content-header
+      Template: #{@template.name}
+      = content_for :buttons
+    = render 'characters/icon_view', characters: @template.characters, show_retired: @template.retired || show_retired
 - if @posts.present?
   %br
   - content_for(:posts_title) { 'Posts with Template Instances' }

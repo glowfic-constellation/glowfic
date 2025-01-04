@@ -9,12 +9,6 @@ $(document).ready(function() {
     displayGallery($(this));
   });
 
-  $(".tag-item").hover(function mouseIn() {
-    $(this).removeClass('semiplusopaque');
-  }, function mouseOut() {
-    $(this).addClass('semiplusopaque');
-  });
-
   // add ellipsis box for many (> 5) tags
   $(".tag-box").each(function() {
     const tagBox = $(this);
@@ -22,28 +16,20 @@ $(document).ready(function() {
     if (tagBoxItems.length <= 5) return;
 
     const hiddenTags = tagBoxItems.slice(4);
-    hiddenTags.hide();
+    hiddenTags.addClass('hidden');
 
-    const ellipsisBox = $("<span>").attr({class: 'tag-item semiopaque pointer', title: 'Click to show more tags…'}).append("...");
-    const recollapseBox = $("<span>").attr({class: 'tag-item semiopaque pointer', title: 'Click to hide extra tags…'}).append("←").hide();
-
-    ellipsisBox.add(recollapseBox).hover(function mouseIn() {
-      $(this).removeClass('semiplusopaque');
-    }, function mouseOut() {
-      $(this).addClass('semiplusopaque');
-    });
-
-    tagBox.append(ellipsisBox).append(' ').append(recollapseBox); // inline-block cares about spaces for formatting
+    const ellipsisBox = $("<span>").attr({class: 'tag-item ellipsis-box', title: 'Click to show more tags…'}).append("...");
+    const recollapseBox = $("<span>").attr({class: 'tag-item ellipsis-box', title: 'Click to hide extra tags…'}).append("←").hide();
 
     ellipsisBox.click(function() {
-      hiddenTags.show();
-      ellipsisBox.hide();
-      recollapseBox.show();
+      hiddenTags.removeClass('hidden');
+      ellipsisBox.addClass('hidden');
+      recollapseBox.removeClass('hidden');
     });
     recollapseBox.click(function() {
-      hiddenTags.hide();
-      recollapseBox.hide();
-      ellipsisBox.show();
+      hiddenTags.addClass('hidden');
+      recollapseBox.addClass('hidden');
+      ellipsisBox.removeeClass('hidden');
     });
   });
 });
@@ -52,12 +38,12 @@ function displayGallery(elem) {
   // Update toggle +/-
   const toggleBox = elem.children('.view-button').first();
   const wasVisible = toggleBox.children('img.up-arrow').is(':visible');
-  toggleBox.children('img.down-arrow').first().toggle();
-  toggleBox.children('img.up-arrow').first().toggle();
+  toggleBox.children('img.down-arrow').first().toggleClass('hidden');
+  toggleBox.children('img.up-arrow').first().toggleClass('hidden');
 
   // Toggle display
   const galleryId = elem.data('id');
-  $("#icons-" + galleryId).toggle();
+  $("#icons-" + galleryId).toggleClass('hidden');
 
   // Nothing more necessary if collapsing or already loaded
   if (wasVisible) return;
@@ -73,7 +59,7 @@ function displayGallery(elem) {
       const iconDiv = $("<div>").attr({class: 'gallery-icon'});
       const iconLink = $("<a>").attr({href: "/icons/" + icon.id});
       const iconImg = $("<img>").attr({src: icon.url, alt: icon.keyword, title: icon.keyword, 'class': 'icon'});
-      iconLink.append(iconImg).append("<br>").append($("<span>").attr({class: 'icon-keyword'}).text(icon.keyword));
+      iconLink.append(iconImg).append($("<span>").attr({class: 'icon-keyword'}).text(icon.keyword));
       iconDiv.append(iconLink);
 
       // Add control buttons for the owner

@@ -122,6 +122,40 @@ RSpec.describe TemplatesController do
       expect(meta_og[:title]).to eq('user » template')
       expect(meta_og[:description]).to eq("This is an example template.\n3 characters")
     end
+
+    context "with render_views" do
+      render_views
+
+      before(:each) do
+        create(:character, template: template, user: template.user, retired: true)
+        create_list(:character, 3, template: template, user: template.user)
+        login
+      end
+
+      context "with list view" do
+        it "renders" do
+          get :show, params: { id: template.id, view: 'list' }
+          expect(response.status).to eq(200)
+        end
+
+        it "renders with retired" do
+          get :show, params: { id: template.id, view: 'list', retired: 'true' }
+          expect(response.status).to eq(200)
+        end
+      end
+
+      context "with icon view" do
+        it "renders" do
+          get :show, params: { id: template.id, view: 'icon' }
+          expect(response.status).to eq(200)
+        end
+
+        it "renders with retired" do
+          get :show, params: { id: template.id, view: 'icon', retired: 'true' }
+          expect(response.status).to eq(200)
+        end
+      end
+    end
   end
 
   describe "GET edit" do
