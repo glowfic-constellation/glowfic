@@ -1,66 +1,51 @@
 = render 'search/breadcrumbs'
 
-%table.search-collapsible
-  %thead
-    %tr
-      %th.search-params-header
-        Search Posts
-        - if @search_results
-          = '- ' + @search_results.total_entries.to_s + ' results'
-      %th.search-results-header
-        - if @search_results
-          = render 'paginator', paginated: @search_results
-  %tbody
-    %tr
-      %td.search-box
-        = form_tag search_posts_path, method: :get do
-          %table.search-form
-            %tr
-              %td.width-70= label_tag :board_id, 'Continuity'
-              %td= select_tag :board_id, options_from_collection_for_select(@board || [], :id, :name, params[:board_id]),
-                { class: 'chosen-select', prompt: '— Choose Continuity —' }
-            %tr
-              %td= label_tag :author_id, 'Author'
-              %td= select_tag :author_id, options_from_collection_for_select(@user || [], :id, :username, params[:author_id]),
-                { class: 'chosen-select', prompt: '— Choose Author —', multiple: true }
-            %tr
-              %td= label_tag :character_id, 'Character'
-              %td= select_tag :character_id, options_from_collection_for_select(@character || [], :id, :selector_name, params[:character_id]),
-                { prompt: '— Choose Character —' }
-            %tr
-              %td= label_tag :setting_id, 'Setting'
-              %td= select_tag :setting_id, options_from_collection_for_select(@setting || [], :id, :name, params[:setting_id]), { prompt: '— Choose Setting —' }
-            %tr
-              %td= label_tag :subject, 'Subject'
-              %td= text_field_tag :subject, params[:subject], style: 'width: 100%; margin: 5px 0px;'
-            %tr
-              %td Acronym
-              %td.padding-5
-                = check_box_tag :abbrev, true, params[:abbrev].present?, { class: 'vmid no-margin', style: 'margin-bottom: 3px;' }
-                = label_tag :abbrev, 'Search for acronym'
-            %tr
-              %td Completed
-              %td.padding-5
-                = check_box_tag :completed, true, params[:completed].present?, { class: 'vmid no-margin', style: 'margin-bottom: 3px;' }
-                = label_tag :completed, "Completed Only"
-            %tr
-              %td.centered{colspan: 2}= submit_tag "Search", class: 'button'
-      %td.vtop#search_results
-        - if @search_results.present?
-          %table
-            %thead
-              %tr
-                %th.sub
-                %th.sub Thread
-                %th.sub Continuity
-                %th.sub Authors
-                %th.sub Replies
-                %th.sub Last Updated
-            %tbody
-              = render partial: 'posts/list_item', collection: @search_results, as: :post
-
+.search-collapsible
+  .search-params-header
+    Search Posts
+    - if @search_results
+      = '- ' + @search_results.total_entries.to_s + ' results'
+  .search-results-header
+    - if @search_results
+      = render 'paginator', paginated: @search_results
+  .search-box
+    = form_tag search_posts_path, method: :get do
+      .search-form
+        .label-cell.width-70= label_tag :board_id, 'Continuity'
+        .select-cell= select_tag :board_id, options_from_collection_for_select(@board || [], :id, :name, params[:board_id]),
+          { class: 'chosen-select', prompt: '— Choose Continuity —' }
+        .label-cell= label_tag :author_id, 'Author'
+        .select-cell= select_tag :author_id, options_from_collection_for_select(@user || [], :id, :username, params[:author_id]),
+          { class: 'chosen-select', prompt: '— Choose Author —', multiple: true }
+        .label-cell= label_tag :character_id, 'Character'
+        .select-cell= select_tag :character_id, options_from_collection_for_select(@character || [], :id, :selector_name, params[:character_id]),
+          { prompt: '— Choose Character —' }
+        .label-cell= label_tag :setting_id, 'Setting'
+        .select-cell= select_tag :setting_id, options_from_collection_for_select(@setting || [], :id, :name, params[:setting_id]), { prompt: '— Choose Setting —' }
+        .label-cell= label_tag :subject, 'Subject'
+        .select-cell= text_field_tag :subject, params[:subject], style: 'width: 100%; margin: 5px 0px;'
+        .label-cell Acronym
+        .select-cell.padding-5
+          = check_box_tag :abbrev, true, params[:abbrev].present?, { class: 'vmid no-margin', style: 'margin-bottom: 3px;' }
+          = label_tag :abbrev, 'Search for acronym'
+        .label-cell Completed
+        .select-cell.padding-5
+          = check_box_tag :completed, true, params[:completed].present?, { class: 'vmid no-margin', style: 'margin-bottom: 3px;' }
+          = label_tag :completed, "Completed Only"
+        .search-form-ender.centered= submit_tag "Search", class: 'button'
+  .vtop#search_results
+    - if @search_results.present?
+      %table
+        %thead
+          %tr
+            %th.sub
+            %th.sub Thread
+            %th.sub Continuity
+            %th.sub Authors
+            %th.sub Replies
+            %th.sub Last Updated
+        %tbody
+          = render partial: 'posts/list_item', collection: @search_results, as: :post
   - if @search_results && @search_results.total_pages > 1
-    %tfoot
-      %tr
-        %th.search-params-header.empty
-        %th.search-results-header= render 'paginator', paginated: @search_results
+    .search-params-header.empty
+    .search-results-header= render 'paginator', paginated: @search_results
