@@ -322,7 +322,7 @@ class RepliesController < WritableController
   def add_to_multi_reply(reply, reply_params)
     # Adding a new reply to a multi reply
     post_id = params[:reply][:post_id]
-    ReplyDraft.draft_for(post_id, current_user.id)&.destroy
+    ReplyDraft.draft_for(post_id, current_user.id)&.destroy!
 
     # Save NPC
     if reply.character&.new_record?
