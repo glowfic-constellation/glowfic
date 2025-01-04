@@ -344,7 +344,13 @@ td, .table-list li { font-size: $font_size_small; }
     column-gap: 4px;
   }
 
-  .checkbox-fields { align-items: start; }
+  .checkbox-fields {
+    align-items: start;
+
+    & > input[type='checkbox'] {
+      margin-top: 2px;
+    }
+  }
 
   .radio-fields {
     grid-template-columns: 14px auto;
