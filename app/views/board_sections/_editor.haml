@@ -1,17 +1,16 @@
 -# locals: ( f: )
 
-%tr
-  %th.sub= f.label :board_id, 'Continuity'
-  %td.odd
+%div
+  .sub= f.label :board_id, 'Continuity'
+  .odd
     - if @board_section.posts.present?
       = @board_section.board.name
     - else
       = f.select :board_id, options_from_collection_for_select(allowed_boards(@board_section, current_user), :id, :name, @board_section.board_id), {}, class: 'chosen-select'
-%tr
-  %th.sub= f.label :name
-  %td.even= f.text_field :name, placeholder: "Section Name"
-%tr
-  %th.sub.vtop= f.label :description
-  %td.odd= f.text_area :description
-%tr
-  %th.form-table-ender{colspan: 2}= submit_tag "Save", class: 'button'
+%div
+  .sub= f.label :name
+  .even= f.text_field :name, placeholder: "Section Name"
+%div
+  .sub.vtop= f.label :description
+  .odd= f.text_area :description
+.form-table-ender= submit_tag "Save", class: 'button'

@@ -7,24 +7,19 @@
 
 = form_for @gallery, url: galleries_path, method: :post do |f|
   - icons_present = current_user.galleryless_icons.present?
-  %table.form-table{style: (icons_present ? 'width: 100%;' : nil)}
-    %thead
-      %tr
-        %th.editor-title{colspan: 2}New Gallery
-    %tbody
-      = render 'editor', f: f, gallery: @gallery
-      - if icons_present
-        %tr
-          %th.vtop.sub Icons
-          %td{class: cycle('even', 'odd')}
-            - current_user.galleryless_icons.each do |icon|
-              = label_tag "gallery_icon_ids_#{icon.id}" do
-                .gallery-icon
-                  = icon_tag icon, id: icon.id, pointer: true
-                  %br>
-                  %span.icon-keyword= icon.keyword
-                  - box_selected = params[:gallery].try(:[], :icon_ids).try(:include?, icon.id.to_s)
-                  .select-button= check_box_tag "gallery[icon_ids][]", icon.id, box_selected, id: "gallery_icon_ids_#{icon.id}"
-    %tfoot
-      %tr
-        %th.form-table-ender{colspan: 2}= submit_tag "Create", class: 'button'
+  .form-table{class: (icons_present ? 'gallery-edit-form' : nil)}
+    .editor-title New Gallery
+    = render 'editor', f: f, gallery: @gallery
+    - if icons_present
+      %div
+        .sub.vtop Icons
+        .gallery-icons{class: cycle('even', 'odd')}
+          - current_user.galleryless_icons.each do |icon|
+            = label_tag "gallery_icon_ids_#{icon.id}" do
+              .gallery-icon
+                = icon_tag icon, id: icon.id, pointer: true
+                %br>
+                %span.icon-keyword= icon.keyword
+                - box_selected = params[:gallery].try(:[], :icon_ids).try(:include?, icon.id.to_s)
+                .select-button= check_box_tag "gallery[icon_ids][]", icon.id, box_selected, id: "gallery_icon_ids_#{icon.id}"
+    .form-table-ender= submit_tag "Create", class: 'button'

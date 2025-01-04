@@ -44,7 +44,6 @@ input, textarea, button {
 
 input[type='checkbox'] { height: 23px; }
 textarea { padding: 5px; }
-.form-table td input[type='radio'] { width: unset; }
 
 button, .button {
   background: $bg_color_button;
@@ -176,3 +175,5 @@ span.badge {
   text-shadow: 0 0 2px $shadow_color_badge, 0 0 2px $shadow_color_badge;
   margin: 2px;
 }
+
+.narrow-select > select { width: 95px; }

@@ -148,7 +148,7 @@
       - if content_for?(:flashes)
         = content_for :flashes
       - unless logged_in? || tos_skippable?
-        #tos.hidden= render 'about/accept_tos'
+        #tos= render 'about/accept_tos'
       #content
         = yield
         .clear &nbsp;

@@ -4,8 +4,6 @@
   %b New
 
 = form_for @block do |f|
-  %table.form-table
-    %thead
-      %tr
-        %th.editor-title{colspan: 2} Block User
+  .form-table
+    .editor-title Block User
     = render 'editor', f: f
