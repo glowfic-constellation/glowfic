@@ -635,7 +635,9 @@ tr.gallery-tags .tag-item { color: $font_color_tag_item_gallery; }
 }
 
 .paginator {
+  @extend .sub;
   color: $font_color_paginate;
+  text-align: center;
 
   .left-align {
     float: left;
