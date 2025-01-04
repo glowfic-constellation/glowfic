@@ -73,7 +73,7 @@
 
 .gallery-edit-form {
   width: 100%;
-  grid-template-columns: 295px auto;
+  grid-template-columns: minmax(min-content, 295px) auto;
   .subber { grid-template-columns: auto; }
   .gallery-icons {
     display: flex;
@@ -143,7 +143,7 @@
 
 #icon-upload {
   display: grid;
-  grid-template-columns: 200px auto;
+  grid-template-columns: minmax(min-content, 200px) auto;
   width: 100%;
   div { display: inherit; }
 
