@@ -360,13 +360,13 @@ td, .table-list li { font-size: $font_size_small; }
   .subber, .table-title, .editor-title, .form-table-ender { grid-template-columns: none; }
   .colspan { grid-template-columns: none; }
 
-  &#section-editor { grid-template-columns: 131px auto; }
-  &#alias-editor { grid-template-columns: 94px auto; }
-  &#password-reset { grid-template-columns: 126px auto; }
-  &#change-password { grid-template-columns: 110px auto; }
-  &#index-editor, &#index-section-editor { grid-template-columns: 131px auto; }
-  &#index-post-editor { grid-template-columns: 148px auto; }
-  &#post-splitter { grid-template-columns: 111px auto; }
+  &#section-editor { grid-template-columns: minmax(min-content, 131px) auto; }
+  &#alias-editor { grid-template-columns: minmax(min-content, 94px) auto; }
+  &#password-reset { grid-template-columns: minmax(min-content, 126px) auto; }
+  &#change-password { grid-template-columns: minmax(min-content, 110px) auto; }
+  &#index-editor, &#index-section-editor { grid-template-columns: minmax(min-content, 131px) auto; }
+  &#index-post-editor { grid-template-columns: minmax(min-content, 148px) auto; }
+  &#post-splitter { grid-template-columns: minmax(min-content, 111px) auto; }
 
   &#tag-editor .checkbox-field { grid-template-columns: 17px auto; }
 
