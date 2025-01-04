@@ -1,3 +1,4 @@
+# frozen_string_literal: true
 class Tag::UserTag < ApplicationRecord
   self.table_name = 'user_tags'
 
