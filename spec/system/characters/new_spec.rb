@@ -12,7 +12,7 @@ RSpec.describe "Creating a new character" do
     visit new_character_path
     expect(page).to have_no_selector('.flash.error')
     expect(page).to have_no_text("You must be logged in")
-    expect(page).to have_selector("th", text: "New Character")
+    expect(page).to have_selector(".editor-title", text: "New Character")
     expect(page).to have_no_selector("img.icon")
 
     # view new character form with icons

@@ -1,12 +1,10 @@
 = form_for @password_reset, url: password_reset_path(id: @password_reset.auth_token), method: :put do
-  %table.form-table
-    %tr
-      %th.editor-title{colspan: 2} Change Password
-    %tr
-      %th.sub= label_tag :password, 'New'
-      %td.odd= password_field_tag :password, params[:password], placeholder: "New Password"
-    %tr
-      %th.sub= label_tag :password_confirmation, 'Confirm'
-      %td.even= password_field_tag :password_confirmation, params[:password_confirmation], placeholder: "Confirm Password"
-    %tr
-      %th.form-table-ender{colspan: 2}= submit_tag "Save", class: 'button'
+  .form-table
+    .editor-title Change Password
+    %div
+      .sub= label_tag :password, 'New'
+      .odd= password_field_tag :password, params[:password], placeholder: "New Password"
+    %div
+      .sub= label_tag :password_confirmation, 'Confirm'
+      .even= password_field_tag :password_confirmation, params[:password_confirmation], placeholder: "Confirm Password"
+    .form-table-ender= submit_tag "Save", class: 'button'

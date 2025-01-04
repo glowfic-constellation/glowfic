@@ -11,10 +11,7 @@
   &raquo;
   %b Edit
 
-%table.form-table
-  %tr
-    %th.table-title
-      Edit Icon
+.editor-title.icon-edit-title Edit Icon
 
 - data = { 'form-data' => @s3_direct_post.fields, url: @s3_direct_post.url, host: URI.parse(@s3_direct_post.url).host, limit: 1 }
 = form_for @icon, method: :put, html: { class: 'icon-upload' }, data: data do |f|

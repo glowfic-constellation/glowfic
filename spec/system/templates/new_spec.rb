@@ -12,20 +12,20 @@ RSpec.describe "Creating a new template" do
     visit new_template_path
     expect(page).to have_no_selector('.flash.error')
     expect(page).to have_no_text("You must be logged in")
-    expect(page).to have_selector("th", text: "New Template")
-    expect(page).to have_no_selector("th", text: "Characters")
+    expect(page).to have_selector(".editor-title", text: "New Template")
+    expect(page).to have_no_selector(".sub", text: "Characters")
 
     # view new template form with no untemplated characters
     create(:template_character, user: user)
     visit new_template_path
     expect(page).to have_no_selector('.flash.error')
-    expect(page).to have_no_selector("th", text: "Characters")
+    expect(page).to have_no_selector(".sub", text: "Characters")
 
     # view new template form with untemplated characters
     create(:character, user: user)
     visit new_template_path
     expect(page).to have_no_selector('.flash.error')
-    expect(page).to have_selector("th", text: "Characters")
+    expect(page).to have_selector(".sub", text: "Characters")
 
     # create template with no data
     within('.form-table') do
@@ -64,10 +64,8 @@ RSpec.describe "Creating a new template" do
     within('.form-table') do
       expect(page).to have_field('Template Name')
       fill_in 'template_description', with: 'Example template description'
-      within(row_for('Characters')) do
-        check('Character1')
-        check('Character5')
-      end
+      check('Character1')
+      check('Character5')
       click_button 'Save'
     end
 
@@ -79,13 +77,11 @@ RSpec.describe "Creating a new template" do
     within('.form-table') do
       expect(page).to have_field('Template Name', with: '')
       expect(page).to have_field('template_description', with: 'Example template description')
-      within(row_for('Characters')) do
-        expect(page).to have_checked_field('Character1')
-        expect(page).to have_unchecked_field('Character2')
-        expect(page).to have_unchecked_field('Character3')
-        expect(page).to have_unchecked_field('Character4')
-        expect(page).to have_checked_field('Character5')
-      end
+      expect(page).to have_checked_field('Character1')
+      expect(page).to have_unchecked_field('Character2')
+      expect(page).to have_unchecked_field('Character3')
+      expect(page).to have_unchecked_field('Character4')
+      expect(page).to have_checked_field('Character5')
     end
 
     # save valid template with description and characters

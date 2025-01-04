@@ -1,148 +1,125 @@
 = form_for current_user do |f|
-  %table.form-table
-    %thead
-      %tr
-        %th.editor-title{colspan: 2} Settings
-    %tbody
-      %tr
-        %th.subber{colspan: 2} Account
-      %tr
-        %th.sub= f.label :username
-        %td{class: cycle('even', 'odd')}= f.text_field :username, placeholder: "Username", disabled: current_user.salt_uuid.nil?
-      %tr
-        %th.sub= f.label :email
-        %td{class: cycle('even', 'odd')}= f.text_field :email, placeholder: "Email address"
-      %tr
-        %th.sub Author profile
-        %td{class: cycle('even', 'odd')}
-          = link_to profile_edit_user_path(current_user) do
-            %button{type: 'button'} Edit Profile
-      %tr
-        %th.sub Bookmarks
-        %td{class: cycle('even', 'odd')}
-          = f.check_box :public_bookmarks, class: 'width-15 vmid'
-          = f.label :public_bookmarks, "Make all bookmarks public", class: 'vmid'
-      - unless current_user.avatar.present?
-        %tr
-          %th.sub Avatar
-          %td{class: cycle('even', 'odd')}
-            .details Please set your avatar directly from the desired icon's page.
-      %tr
-        %th.subber{colspan: 2} Site
-      %tr
-        %th.sub Notifications
-        %td{class: cycle('even', 'odd')}
-          = f.check_box :email_notifications, class: 'width-15 vmid'
-          = f.label :email_notifications, "Email about new tags", class: 'vmid'
-          %br
-          = f.check_box :favorite_notifications, class: 'width-15 vmid'
-          = f.label :favorite_notifications, 'Notify when a favorited author makes a new post', class: 'vmid'
-      %tr
-        %th.sub= f.label :timezone, 'Time zone'
-        %td{class: cycle('even', 'odd')}= f.select(:timezone, timezone_options(current_user.timezone))
-      %tr
-        %th.sub= f.label :time_display
-        %td{class: cycle('even', 'odd')}= f.select :time_display, time_display_options(current_user.time_display)
-      %tr
-        %th.sub= f.label :layout
-        %td{class: cycle('even', 'odd')}= f.select :layout, layout_options(current_user.layout)
-      %tr
-        %th.sub Default view
-        %td{class: cycle('even', 'odd')}
-          = f.select(:default_view, options_for_select({ Icon: 'icon', List: 'list' }, current_user.default_view))
-          %br
-          = f.select(:default_character_split, options_for_select({ 'Group characters page by template': 'template', 'Do not group characters page': 'none' }, current_user.default_character_split))
-          %br
-          = f.check_box :default_hide_retired_characters, class: 'width-15 vmid'
-          = f.label :default_hide_retired_characters, "Hide retired characters", class: 'vmid'
-      %tr
-        %th.sub Unread
-        %td{class: cycle('even', 'odd')}
-          = f.check_box :unread_opened, class: 'width-15 vmid'
-          = f.label :unread_opened, "Display opened threads only", class: 'vmid'
-          %br
-          = f.check_box :visible_unread, class: 'width-15 vmid'
-          = f.label :visible_unread, "Outline when jumping to unread", class: 'vmid'
-          %br
-          = f.check_box :hide_from_all, class: 'width-15 vmid'
-          = f.label :hide_from_all, "Hide hidden posts from recently updated and other post lists", class: 'vmid'
-      %tr
-        %th.sub Replies Owed
-        %td{class: cycle('even', 'odd')}
-          = f.check_box :hide_hiatused_tags_owed, class: 'width-15 vmid'
-          = f.label :hide_hiatused_tags_owed, "Hide hiatused threads", class: 'vmid'
-      %tr
-        %th.sub Daily Report
-        %td{class: cycle('even', 'odd')}
-          = f.check_box :ignore_unread_daily_report, class: 'width-15 vmid'
-          = f.label :ignore_unread_daily_report, "Hide unread notice", class: 'vmid'
-      %tr
-        %th.subber{colspan: 2} Posts
-      %tr
-        %th.sub= f.label :per_page, 'Paging'
-        %td{class: cycle('even', 'odd')}= f.select(:per_page, per_page_options(current_user.per_page))
-      %tr
-        %th.sub Warnings
-        %td{class: cycle('even', 'odd')}
-          = f.check_box :hide_warnings, class: 'width-15 vmid'
-          = f.label :hide_warnings, "Hide content warnings", class: 'vmid'
-      %tr
-        %th.sub= f.label :default_editor
-        - editor_modes = { 'Rich Text': 'rtf', HTML: 'html', Markdown: 'md' }
-        %td{class: cycle('even', 'odd')}= f.select(:default_editor, options_for_select(editor_modes, current_user.default_editor))
-      %tr
-        %th.sub Split icon picker
-        %td{class: cycle('even', 'odd')}
-          = f.check_box :icon_picker_grouping, class: 'width-15 vmid'
-          = f.label :icon_picker_grouping, "Group the icon picker by gallery", class: 'vmid'
-      %tr
-        %th.sub Character Quick Switcher
-        %td{class: cycle('even', 'odd')}
-          = f.check_box :show_user_in_switcher, class: 'width-15 vmid'
-          = f.label :show_user_in_switcher, "Show user character", class: 'vmid'
-      %tr
-        %th.sub Reply defaults
-        %td{class: cycle('even', 'odd')}
-          - unless current_user.read_only?
-            = f.check_box :default_hide_edit_delete_buttons, class: 'width-15 vmid'
-            = f.label :default_hide_edit_delete_buttons, 'Hide "Edit" and "Delete" buttons', class: 'vmid'
-            %br
-          = f.check_box :default_hide_add_bookmark_button, class: 'width-15 vmid'
-          = f.label :default_hide_add_bookmark_button, 'Hide "Add Bookmark" button', class: 'vmid'
-    %tfoot
-      %tr
-        %th.form-table-ender{colspan: 2}= submit_tag "Save", class: 'button'
+  .form-table#user-editor
+    .editor-title Settings
+    .subber Account
+    %div
+      .sub= f.label :username
+      %div{class: cycle('even', 'odd')}= f.text_field :username, placeholder: "Username", disabled: current_user.salt_uuid.nil?
+    %div
+      .sub= f.label :email
+      %div{class: cycle('even', 'odd')}= f.text_field :email, placeholder: "Email address"
+    %div
+      .sub Author profile
+      %div{class: cycle('even', 'odd')}
+        = link_to profile_edit_user_path(current_user) do
+          %button{type: 'button'} Edit Profile
+    %div
+      .sub Bookmarks
+      .checkbox-field{class: cycle('even', 'odd')}
+        = f.check_box :public_bookmarks
+        = f.label :public_bookmarks, "Make all bookmarks public"
+    - unless current_user.avatar.present?
+      %div
+        .sub Avatar
+        .checkbox-field{class: cycle('even', 'odd')}
+          .details Please set your avatar directly from the desired icon's page.
+    .subber Site
+    %div
+      .sub Notifications
+      .checkbox-fields{class: cycle('even', 'odd')}
+        = f.check_box :email_notifications
+        = f.label :email_notifications, "Email about new tags"
+        = f.check_box :favorite_notifications
+        = f.label :favorite_notifications, 'Notify when a favorited author makes a new post'
+    %div
+      .sub= f.label :timezone, 'Time zone'
+      %div{class: cycle('even', 'odd')}= f.select(:timezone, timezone_options(current_user.timezone))
+    %div
+      .sub= f.label :time_display
+      %div{class: cycle('even', 'odd')}= f.select :time_display, time_display_options(current_user.time_display)
+    %div
+      .sub= f.label :layout
+      %div{class: cycle('even', 'odd')}= f.select :layout, layout_options(current_user.layout)
+    %div
+      .sub Default view
+      %div{class: cycle('even', 'odd')}
+        = f.select(:default_view, options_for_select({ Icon: 'icon', List: 'list' }, current_user.default_view))
+        = f.select(:default_character_split, options_for_select({ 'Group characters page by template': 'template', 'Do not group characters page': 'none' }, current_user.default_character_split))
+        .checkbox-field
+          = f.check_box :default_hide_retired_characters
+          = f.label :default_hide_retired_characters, "Hide retired characters"
+    %div
+      .sub Unread
+      .checkbox-fields{class: cycle('even', 'odd')}
+        = f.check_box :unread_opened
+        = f.label :unread_opened, "Display opened threads only"
+        = f.check_box :visible_unread
+        = f.label :visible_unread, "Outline when jumping to unread"
+        = f.check_box :hide_from_all
+        = f.label :hide_from_all, "Hide hidden posts from recently updated and other post lists"
+    %div
+      .sub Replies Owed
+      .checkbox-field{class: cycle('even', 'odd')}
+        = f.check_box :hide_hiatused_tags_owed
+        = f.label :hide_hiatused_tags_owed, "Hide hiatused threads"
+    %div
+      .sub Daily Report
+      .checkbox-field{class: cycle('even', 'odd')}
+        = f.check_box :ignore_unread_daily_report
+        = f.label :ignore_unread_daily_report, "Hide unread notice"
+    .subber Posts
+    %div
+      .sub= f.label :per_page, 'Paging'
+      %div{class: cycle('even', 'odd')}= f.select(:per_page, per_page_options(current_user.per_page))
+    %div
+      .sub Warnings
+      .checkbox-field{class: cycle('even', 'odd')}
+        = f.check_box :hide_warnings
+        = f.label :hide_warnings, "Hide content warnings"
+    %div
+      .sub= f.label :default_editor
+      - editor_modes = { 'Rich Text': 'rtf', HTML: 'html', Markdown: 'md' }
+      %div{class: cycle('even', 'odd')}= f.select(:default_editor, options_for_select(editor_modes, current_user.default_editor))
+    %div
+      .sub Split icon picker
+      .checkbox-field{class: cycle('even', 'odd')}
+        = f.check_box :icon_picker_grouping
+        = f.label :icon_picker_grouping, "Group the icon picker by gallery"
+    %div
+      .sub Character Quick Switcher
+      .checkbox-field{class: cycle('even', 'odd')}
+        = f.check_box :show_user_in_switcher
+        = f.label :show_user_in_switcher, "Show user character"
+    %div
+      .sub Reply defaults
+      .checkbox-fields{class: cycle('even', 'odd')}
+        - unless current_user.read_only?
+          = f.check_box :default_hide_edit_delete_buttons
+          = f.label :default_hide_edit_delete_buttons, 'Hide "Edit" and "Delete" buttons'
+        = f.check_box :default_hide_add_bookmark_button
+        = f.label :default_hide_add_bookmark_button, 'Hide "Add Bookmark" button'
+    .form-table-ender= submit_tag "Save", class: 'button'
 
 %br
 = form_for current_user, url: password_user_path(current_user), method: :put, html: { id: 'change_password_form' } do |f|
-  %table.form-table#change-password
-    %thead
-      %tr
-        %th.editor-title{colspan: 2} Change Password
-    %tbody
-      %tr
-        %th.sub= label_tag :old_password, 'Old'
-        %td{class: cycle('even', 'odd')}= password_field_tag :old_password, params[:old_password], placeholder: "Old Password", autocomplete: 'current-password'
-      %tr
-        %th.sub= label_tag :password, 'New'
-        %td{class: cycle('even', 'odd')}= f.password_field :password, placeholder: "New Password", value: (params[:user] || {})[:password], autocomplete: 'new-password'
-      %tr
-        %th.sub= label_tag :password_confirmation, 'Confirm'
-        %td{class: cycle('even', 'odd')}= f.password_field :password_confirmation, placeholder: "Confirm Password", value: (params[:user] || {})[:password_confirmation], autocomplete: 'new-password'
-    %tfoot
-      %tr
-        %th.form-table-ender{colspan: 2}= submit_tag "Save", class: 'button'
+  .form-table#change-password
+    .editor-title Change Password
+    %div
+      .sub= label_tag :old_password, 'Old'
+      %div{class: cycle('even', 'odd')}= password_field_tag :old_password, params[:old_password], placeholder: "Old Password", autocomplete: 'current-password'
+    %div
+      .sub= label_tag :password, 'New'
+      %div{class: cycle('even', 'odd')}= f.password_field :password, placeholder: "New Password", value: (params[:user] || {})[:password], autocomplete: 'new-password'
+    %div
+      .sub= label_tag :password_confirmation, 'Confirm'
+      %div{class: cycle('even', 'odd')}= f.password_field :password_confirmation, placeholder: "Confirm Password", value: (params[:user] || {})[:password_confirmation], autocomplete: 'new-password'
+    .form-table-ender= submit_tag "Save", class: 'button'
 - if current_user.read_only?
   %br
   = form_for current_user, url: upgrade_user_path(current_user), method: :put, html: { id: 'upgrade_account_form' } do
-    %table.form-table#upgrade-Account
-      %thead
-        %tr
-          %th.editor-title{colspan: 2} Upgrade Account
-      %tbody
-        %tr
-          %th.sub= label_tag :secret
-          %td.even= text_field_tag :secret, params[:secret], placeholder: "Secret word - ask around the community"
-      %tfoot
-        %tr
-          %th.form-table-ender{colspan: 2}= submit_tag "Save", class: 'button'
+    .form-table#upgrade-Account
+      .editor-title Upgrade Account
+      %div
+        .sub= label_tag :secret
+        .even= text_field_tag :secret, params[:secret], placeholder: "Secret word - ask around the community"
+      .form-table-ender= submit_tag "Save", class: 'button'

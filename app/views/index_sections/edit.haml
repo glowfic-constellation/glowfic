@@ -6,8 +6,6 @@
   %b Edit
 
 = form_for @section, method: :put do |f|
-  %table.form-table
-    %thead
-      %tr
-        %th.editor-title{colspan: 2} Edit Index Section
+  .form-table#index-section-editor
+    .editor-title Edit Index Section
     = render 'editor', f: f

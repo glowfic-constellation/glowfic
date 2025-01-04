@@ -11,9 +11,8 @@
   %b Replace
 
 - content_for :disclaimer do
-  %tr
-    %td.odd.centered{colspan: 2}
-      .details *This does NOT replace icons*
+  .odd.centered.colspan
+    .details *This does NOT replace icons*
 
 - content_for :aliases do
   - if @character.aliases.exists?

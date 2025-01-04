@@ -1,17 +1,14 @@
 -# locals: ( f: )
 
-%tbody
-  %tr
-    %th.sub= f.label :name
-    %td.even= f.text_field :name, placeholder: "Section Name"
-  %tr
-    %th.sub Index
-    %td.odd
-      = @section.index.name
-      = f.hidden_field :index_id
-  %tr
-    %th.sub.vtop= f.label :description
-    %td.even= f.text_area :description
-%tfoot
-  %tr
-    %th.form-table-ender{colspan: 2}= submit_tag "Save", class: 'button'
+%div
+  .sub= f.label :name
+  .even= f.text_field :name, placeholder: "Section Name"
+%div
+  .sub Index
+  .odd
+    = @section.index.name
+    = f.hidden_field :index_id
+%div
+  .sub.vtop= f.label :description
+  .even= f.text_area :description
+.form-table-ender= submit_tag "Save", class: 'button'

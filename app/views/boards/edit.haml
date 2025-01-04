@@ -6,10 +6,8 @@
   %b Edit
 
 = form_for @board, url: continuity_path(@board), method: :put do |f|
-  %table.form-table
-    %thead
-      %tr
-        %th.editor-title{colspan: 2} Edit Continuity
+  .form-table
+    .editor-title Edit Continuity
     = render 'editor', f: f
 
 %br

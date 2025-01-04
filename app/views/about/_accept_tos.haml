@@ -1,21 +1,16 @@
 -# locals: ()
 
 - content_for :tos_form do
-  %table#signup.form-table
-    %thead
-      %tr
-        %th.table-title Accept our Terms of Service
-    %tbody
-      %tr#terms
-        %td.odd
-          Our Terms of Service have recently changed!
-          Please read and agree to the
-          = link_to 'Terms of Service', tos_path
-          and the
-          = link_to 'Privacy Policy', privacy_path
-    %tfoot
-      %tr
-        %th.form-table-ender{colspan: 2}= submit_tag "I agree to the terms of service", class: 'button', name: :tos_check, id: :tos_check
+  .form-table#signup
+    .editor-title Accept our Terms of Service
+    #terms
+      .odd
+        Our Terms of Service have recently changed!
+        Please read and agree to the
+        = link_to 'Terms of Service', tos_path
+        and the
+        = link_to 'Privacy Policy', privacy_path
+    .form-table-ender= submit_tag "I agree to the terms of service", class: 'button', name: :tos_check, id: :tos_check
 
 - if logged_in?
   = form_for current_user, url: current_user, method: :put, name: :tos_form do

@@ -24,18 +24,12 @@
 %br
 
 = form_tag mark_continuities_path, method: :post do
-  %table.float-left.form-table{style: 'margin-bottom: 10px;'}
-    %thead
-      %tr
-        %th.table-title Mark Entire Continuity
-    %tbody
-      %tr
-        %td.even.padding-5.centered
-          = select_tag :board_id,
-                       options_from_collection_for_select(Board.where(id: params[:board_id]), :id, :name, params[:board_id]),
-                       { class: 'chosen-select', prompt: '— Choose Continuity —' }
-    %tfoot
-      %tr
-        %th.form-table-ender
-          = submit_tag "Hide from Unread", class: 'button'
-          = submit_tag "Mark Read", class: 'button'
+  .form-table#mark-continuities
+    .editor-title Mark Entire Continuity
+    .even
+      = select_tag :board_id,
+                   options_from_collection_for_select(Board.where(id: params[:board_id]), :id, :name, params[:board_id]),
+                   { class: 'chosen-select', prompt: '— Choose Continuity —' }
+    .form-table-ender
+      = submit_tag "Hide from Unread", class: 'button'
+      = submit_tag "Mark Read", class: 'button'

@@ -12,7 +12,7 @@ RSpec.describe "Editing a character" do
     visit edit_character_path(character)
     expect(page).to have_no_selector('.flash.error')
     expect(page).to have_no_text("You must be logged in")
-    expect(page).to have_selector("th", text: character.name)
+    expect(page).to have_selector(".editor-title", text: character.name)
 
     within('.character-form') do
       fill_in 'Template Nickname', with: 'Example nickname'

@@ -6,13 +6,27 @@
   min-width: 300px;
 }
 
-#message_form textarea {
-  min-width: 200px;
-  height: 100px;
+#message_form .form-table {
   width: 100%;
-  min-height: 250px;
-}
+  grid-template-columns: 170px auto;
 
+  .editor-title, .sub {
+    grid-template-columns: none;
+    justify-content: start;
+  }
+
+  input[type='text'] {
+    margin: 5px 0;
+    width: 195px;
+  }
+
+  textarea {
+    min-width: 200px;
+    height: 100px;
+    width: 100%;
+    min-height: 250px;
+  }
+}
 .message-collapse {
   .message {
     margin-left: 10px;

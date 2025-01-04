@@ -23,23 +23,24 @@ $(document).ready(function() {
 
     // Hide icons if they're already visible
     if ($("#icons-" + galleryId).is(':visible')) {
-      $("#icons-" + galleryId).hide();
+      $("#icons-" + galleryId).addClass('hidden');
       $("#minmax-" + galleryId).text("+");
       return;
     }
 
     // Show icons if they're hidden
-    $("#icons-" + galleryId).show();
+    $("#icons-" + galleryId).removeClass('hidden');
     $("#minmax-" + galleryId).text("-");
     if ($("#icons-" + galleryId + " .icon").length > 0) { return; }
 
     // Load and bind icons if they have not already been loaded
     $.authenticatedGet("/api/v1/galleries/" + galleryId, {}, function(resp) {
+      $("#icons-" + galleryId).append($("<div>").attr({class: 'gallery-icons'}));
       $.each(resp.icons, function(index, icon) {
         const iconDiv = $("<div>").attr({class: 'gallery-icon'});
         const iconImg = $("<img>").attr({src: icon.url, alt: icon.keyword, title: icon.keyword, 'class': 'icon add-gallery-icon', 'data-id': icon.id});
-        iconDiv.append(iconImg).append("<br>").append($("<span>").attr({class: 'icon-keyword'}).text(icon.keyword));
-        $("#icons-" + galleryId).append(iconDiv);
+        iconDiv.append(iconImg).append($("<span>").attr({class: 'icon-keyword'}).text(icon.keyword));
+        $("#icons-" + galleryId + ' .gallery-icons').append(iconDiv);
       });
       bindGalleryIcons("#icons-" + galleryId + " .add-gallery-icon");
     });
