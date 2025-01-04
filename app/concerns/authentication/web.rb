@@ -5,6 +5,21 @@ module Authentication::Web
   included do
     protected
 
+    def check_permanent_user
+      # transition users from old authentication to devise-based authentication
+      return if logged_in?
+      return unless cookies.signed[:user_id].present?
+
+      # if the old cookie's corresponding user isn't found, log them out
+      unless (user = User.find_by(id: cookies.signed[:user_id]))
+        logout
+        return
+      end
+
+      # transition the old authentication to the new Devise session
+      sign_in(:user, user)
+    end
+
     # alias devise methods for backwards compatibility
     # (current_user set by devise)
     def logged_in?

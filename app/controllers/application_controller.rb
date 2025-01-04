@@ -8,6 +8,7 @@ class ApplicationController < ActionController::Base
   rescue_from ActionController::InvalidAuthenticityToken, with: :handle_invalid_token
 
   before_action :check_tos
+  before_action :check_permanent_user
   before_action :set_user_token
   before_action :show_password_warning
   before_action :require_glowfic_domain
