@@ -143,7 +143,7 @@
 
 #icon-upload {
   display: grid;
-  grid-template-columns: 200px auto;
+  grid-template-columns: minmax(min-content, 200px) auto;
   width: 100%;
   div { display: inherit; }
 
