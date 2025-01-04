@@ -15,6 +15,7 @@ module Authentication::Web
       # if the old cookie's corresponding user isn't found, log them out
       unless (user = User.find_by(id: cookies.signed[:user_id]))
         logout
+        cookies.delete(:user_id, cookie_options) # delete old-style authentication token
         return
       end
 

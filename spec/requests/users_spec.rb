@@ -272,6 +272,20 @@ RSpec.describe "Users" do
         expect(controller.send(:user_signed_in?)).to eq(true) # controller recognizes user as logged in
       end
     end
+
+    it "is just deleted if invalid" do
+      set_signed_cookie(:user_id, -1)
+      expect(cookie_user_id).to be_nil
+
+      get "/"
+      aggregate_failures do
+        expect(session_user_id).to be_nil # warden session is not set
+        expect(cookie_user_id).to be_nil # warden remember-me is not set
+        expect(session[:user_id]).to be_nil # old auth session is not set
+        expect(load_signed_cookie(:user_id)).to be_nil # old auth cookie is deleted
+        expect(controller.send(:user_signed_in?)).to eq(false) # controller recognizes user as logged out
+      end
+    end
   end
 
   describe "log out" do
