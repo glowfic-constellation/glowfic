@@ -1,4 +1,4 @@
--# locals: ( reply:, multi_replies_json: nil, multi_reply_new: false )
+-# locals: ( reply:, multi_replies_params: nil, multi_reply_new: false )
 
 - content_for :form do
   = form_for reply, html: { id: 'post_form' } do |f|
@@ -10,8 +10,8 @@
     %br
     = unread_warning.try(:html_safe)
     %br
-    - unless multi_replies_json.nil?
-      = hidden_field_tag :multi_replies_json, multi_replies_json.to_json
+    - unless multi_replies_params.nil?
+      = hidden_field_tag :multi_replies_json, multi_replies_params.to_json
     = f.hidden_field :post_id
     = f.hidden_field :character_id
     = f.hidden_field :icon_id
@@ -30,7 +30,7 @@
         %br
         = f.text_area :audit_comment, placeholder: 'Explain reason for moderation here', class: 'mod'
         %br
-      - if multi_replies_json.blank?
+      - if multi_replies_params.blank?
         = submit_tag (reply.new_record? ? 'Post' : 'Save'), class: 'button', id: 'submit_button', data: { disable_with: 'Saving...' }
         = submit_tag "Preview", class: 'button', id: 'preview_button', name: 'button_preview', data: { disable_with: 'Previewing...' }
         - if reply.new_record?
@@ -41,7 +41,7 @@
         = submit_tag (multi_reply_new ? 'Post All' : 'Save All'), class: 'button', id: 'submit_button', data: { disable_with: 'Saving...' }
         = submit_tag "Preview Current", class: 'button', id: 'preview_button', name: 'button_preview', data: { disable_with: 'Previewing...' }
       = submit_tag "Add More Replies", class: 'button', id: 'add_more_button', name: 'button_add_more', data: { disable_with: 'Adding...' }
-      - if multi_replies_json.present?
+      - if multi_replies_params.present?
         = submit_tag "Discard Replies", class: 'button', id: 'discard_multi_reply_button', name: 'button_discard_multi_reply', data: { disable_with: 'Discarding...', confirm: "Discard all replies added?" }
     - if reply.post.author_for(current_user).present?
       %hr.clear

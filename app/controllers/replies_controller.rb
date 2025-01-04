@@ -123,7 +123,7 @@ class RepliesController < WritableController
       return
     elsif params[:button_discard_multi_reply]
       flash[:success] = "Replies discarded."
-      if @multi_replies_json.present? && (editing_reply_id = @multi_replies_json.first["id"]).present?
+      if @multi_replies_params.present? && (editing_reply_id = @multi_replies_params.first["id"]).present?
         # Editing multi reply, going to redirect back to the reply I'm editing
         redirect_to reply_path(editing_reply_id, anchor: "reply-#{editing_reply_id}")
       else
@@ -301,10 +301,11 @@ class RepliesController < WritableController
   end
 
   def get_multi_replies
-    @multi_replies_json = JSON.parse(params.fetch(:multi_replies_json, "[]"))
-    @multi_replies = @multi_replies_json.map do |reply_json|
-      Reply.new(permitted_params(ActionController::Parameters.new({ reply: reply_json })))
-        .tap { |r| r.user = current_user }
+    @multi_replies_params = JSON.parse(params.fetch(:multi_replies_json, "[]")).map do |reply_json|
+      permitted_params(ActionController::Parameters.new({ reply: reply_json }), [:id])
+    end
+    @multi_replies = @multi_replies_params.map do |reply_params|
+      Reply.new(reply_params).tap { |r| r.user = current_user }
     end
   end
 
@@ -347,7 +348,7 @@ class RepliesController < WritableController
     reply.user = current_user unless reply.user
     @multi_replies << reply
     reply_params[:id] = reply.id if reply.id.present?
-    @multi_replies_json << reply_params
+    @multi_replies_params << reply_params
 
     preview_replies
   end
@@ -362,10 +363,10 @@ class RepliesController < WritableController
   def post_replies(new_reply: nil)
     @multi_replies << new_reply if new_reply.present?
 
-    if @multi_replies_json.present? && (@reply = Reply.find_by_id(@multi_replies_json.first["id"]))
+    if @multi_replies_params.present? && (@reply = Reply.find_by_id(@multi_replies_params.first["id"]))
       # The first reply of the multi replies has an ID, that means I'm editing rather than posting a new one
       original_reply_params = permitted_params(ActionController::Parameters.new({ reply: @reply.attributes }))
-      @reply.assign_attributes(permitted_params(ActionController::Parameters.new({ reply: @multi_replies_json.shift })))
+      @reply.assign_attributes(@multi_replies_params.shift)
       @multi_replies.shift
       edit_reply(original_reply_params: original_reply_params) and return
     end
