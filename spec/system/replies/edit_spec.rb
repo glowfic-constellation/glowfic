@@ -177,7 +177,73 @@ RSpec.describe "Editing replies" do
       expect(page).to have_no_text("text to discard")
     end
 
-    skip "and testing errors" # TODO:
+    scenario "handles NPC saving errors", :js do
+      user = login
+      user.update!(default_editor: 'html')
+
+      create(:character, user: user) # User has to have at least one character to be able to create an NPC
+      npc = create(:character, npc: true, user: user)
+      reply_stub = create(:reply, user: user, character: npc)
+      visit reply_path(reply_stub)
+
+      reply = create(:reply, user: user, content: 'example text', editor_mode: 'html')
+      create(:reply, user: user, post: reply.post, content: 'example text 2')
+      visit reply_path(reply)
+      within(find_reply_on_page(reply)) do
+        click_link 'Edit'
+      end
+      within('#post-editor') do
+        fill_in 'reply_content', with: 'other text 1'
+        click_button 'Add More Replies'
+      end
+      within('#post-editor') do
+        fill_in 'reply_content', with: 'other text 2'
+        page.find('img[title="Choose Character"]').click
+        click_button 'NPC'
+      end
+      page.find('.select2-selection__rendered', exact_text: 'Select NPC or type to create').click
+      new_npc_name = npc.name + "different"
+      page.find('.select2-container--open .select2-search__field').set(new_npc_name)
+      page.find('li', exact_text: "Create New: #{new_npc_name}").click
+
+      allow(reply_stub).to receive(:post).and_return(reply.post)
+      allow(Reply).to receive(:new).and_return(reply_stub)
+      allow(npc).to receive_messages(new_record?: true, save: false)
+      within('#post-editor') do
+        click_button 'Add More Replies'
+      end
+      expect(page).to have_selector('.flash.error', text: "There was a problem persisting your new NPC.")
+    end
+
+    scenario "handles reply saving errors", :js do
+      user = login
+      user.update!(default_editor: 'html')
+
+      reply_stub = create(:reply, user: user)
+      visit reply_path(reply_stub)
+
+      reply = create(:reply, user: user, content: 'example text', editor_mode: 'html')
+      create(:reply, user: user, post: reply.post, content: 'example text 2')
+      visit reply_path(reply)
+      within(find_reply_on_page(reply)) do
+        click_link 'Edit'
+      end
+      within('#post-editor') do
+        fill_in 'reply_content', with: 'other text 1'
+        click_button 'Add More Replies'
+      end
+      within('#post-editor') do
+        fill_in 'reply_content', with: 'other text 2'
+      end
+      allow(Reply).to receive_messages(find_by_id: reply, new: reply_stub)
+      allow(reply).to receive(:dup).and_return(reply_stub)
+      allow(reply_stub).to receive_messages(post: reply.post, dup: reply_stub)
+      allow(reply_stub).to receive(:save!).and_raise(ActiveRecord::RecordInvalid)
+      within('#post-editor') do
+        click_button 'Save All'
+      end
+      expect(page).to have_selector('.flash.error', text: "Reply could not be updated.")
+    end
   end
 
   scenario "User tries to edit someone else's reply" do
