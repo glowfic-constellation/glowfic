@@ -123,9 +123,9 @@ class RepliesController < WritableController
       return
     elsif params[:button_discard_multi_reply]
       flash[:success] = "Replies discarded."
-      if @multi_replies_params.present? && (editing_reply_id = @multi_replies_params.first["id"]).present?
+      if editing_multi_reply?
         # Editing multi reply, going to redirect back to the reply I'm editing
-        redirect_to reply_path(editing_reply_id, anchor: "reply-#{editing_reply_id}")
+        redirect_to reply_path(@reply, anchor: "reply-#{@reply.id}")
       else
         # Posting a new multi reply, go back to unread
         redirect_to post_path(params[:reply][:post_id], page: :unread, anchor: :unread)
@@ -363,7 +363,7 @@ class RepliesController < WritableController
   def post_replies(new_reply: nil)
     @multi_replies << new_reply if new_reply.present?
 
-    if @multi_replies_params.present? && (@reply = Reply.find_by_id(@multi_replies_params.first["id"]))
+    if editing_multi_reply?
       # The first reply of the multi replies has an ID, that means I'm editing rather than posting a new one
       @multi_replies_params << permitted_params if new_reply.present?
       original_reply = @reply.dup
@@ -389,6 +389,11 @@ class RepliesController < WritableController
       flash[:success] = "Replies posted."
     end
     redirect_to reply_path(first_reply, anchor: "reply-#{first_reply.id}")
+  end
+
+  def editing_multi_reply?
+    # If the list of params is present and the first item on the list has the ID stored, I am editing it
+    @multi_replies_params.present? && (@reply = Reply.find_by_id(@multi_replies_params.first["id"]))
   end
 
   def edit_reply(original_reply: nil, multi_replies: nil)
