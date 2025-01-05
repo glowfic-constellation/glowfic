@@ -289,7 +289,6 @@ RSpec.describe "Creating replies" do
     page.find('li', exact_text: "Create New: #{npc_name}").click
     expect(page).to have_selector('#name', exact_text: npc_name)
 
-    click_button "HTML"
     fill_in id: "reply_content", with: "test reply 2"
     click_button "Add More Replies"
 
@@ -301,7 +300,6 @@ RSpec.describe "Creating replies" do
     within('#post-editor') do
       expect(page).to have_selector('#name', exact_text: npc_name)
     end
-    click_button "HTML"
     fill_in id: "reply_content", with: "test reply 3"
     click_button "Preview Current"
 
@@ -309,20 +307,29 @@ RSpec.describe "Creating replies" do
     expect(page).to have_selector('.content-header', exact_text: 'Adding multiple replies')
     expect(page).to have_selector('.content-header', exact_text: 'Previewing')
     expect(page).to have_selector('.post-container', count: 3)
-    expect(page).to have_selector('#post-editor')
+    expect(page).to have_text("test reply 3", count: 2)
+    click_button "Add More Replies"
+
+    expect(page).to have_no_selector('.error')
+    expect(page).to have_selector('.content-header', exact_text: 'Adding multiple replies')
+    expect(page).to have_no_selector('.content-header', exact_text: 'Previewing')
+    expect(page).to have_selector('.post-container', count: 3)
+    expect(page).to have_text("test reply 3", count: 1)
+    fill_in id: "reply_content", with: "test reply 4"
     accept_alert { click_button "Post Previewed" }
 
     expect(page).to have_no_selector('.error')
     expect(page).to have_selector('.success', exact_text: 'Replies posted.')
-    expect(page).to have_selector('.post-container', count: 3)
+    expect(page).to have_selector('.post-container', count: 4)
     expect(page).to have_text("test reply 1")
     expect(page).to have_text("test reply 2")
-    expect(page).to have_no_text("test reply 3")
+    expect(page).to have_text("test reply 3")
+    expect(page).to have_no_text("test reply 4")
 
     # Use "Post All" button
     within('#post-editor') do
       click_button "HTML"
-      fill_in id: "reply_content", with: "test reply 4"
+      fill_in id: "reply_content", with: "test reply 5"
       click_button "Add More Replies"
     end
 
@@ -330,29 +337,28 @@ RSpec.describe "Creating replies" do
     expect(page).to have_selector('.content-header', exact_text: 'Adding multiple replies')
     expect(page).to have_selector('.post-container', count: 1)
     expect(page).to have_selector('#post-editor')
-    click_button "HTML"
-    fill_in id: "reply_content", with: "test reply 5"
+    fill_in id: "reply_content", with: "test reply 6"
     click_button "Add More Replies"
 
     expect(page).to have_no_selector('.error')
     expect(page).to have_selector('.content-header', exact_text: 'Adding multiple replies')
     expect(page).to have_selector('.post-container', count: 2)
     expect(page).to have_selector('#post-editor')
-    click_button "HTML"
-    fill_in id: "reply_content", with: "test reply 6"
+    fill_in id: "reply_content", with: "test reply 7"
     click_button "Post All"
 
     expect(page).to have_no_selector('.error')
     expect(page).to have_selector('.success', exact_text: 'Replies posted.')
-    expect(page).to have_selector('.post-container', count: 6)
-    expect(page).to have_text("test reply 4")
+    expect(page).to have_selector('.post-container', count: 7)
+    expect(page).to have_no_text("test reply 4")
     expect(page).to have_text("test reply 5")
     expect(page).to have_text("test reply 6")
+    expect(page).to have_text("test reply 7")
 
     # Discard replies
     within('#post-editor') do
       click_button "HTML"
-      fill_in id: "reply_content", with: "test reply 7"
+      fill_in id: "reply_content", with: "test reply 8"
       click_button "Add More Replies"
     end
 
@@ -360,16 +366,15 @@ RSpec.describe "Creating replies" do
     expect(page).to have_selector('.content-header', exact_text: 'Adding multiple replies')
     expect(page).to have_selector('.post-container', count: 1)
     expect(page).to have_selector('#post-editor')
-    click_button "HTML"
-    fill_in id: "reply_content", with: "test reply 8"
+    fill_in id: "reply_content", with: "test reply 9"
     click_button "Add More Replies"
     accept_alert { click_button "Discard Replies" }
 
     expect(page).to have_no_selector('.error')
     expect(page).to have_selector('.success', exact_text: "Replies discarded.")
-    expect(page).to have_selector('.post-container', count: 6)
-    expect(page).to have_no_text("test reply 7")
+    expect(page).to have_selector('.post-container', count: 7)
     expect(page).to have_no_text("test reply 8")
+    expect(page).to have_no_text("test reply 9")
   end
 
   scenario "User tries to reply to locked post" do
