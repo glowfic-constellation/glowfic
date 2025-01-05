@@ -66,14 +66,9 @@
                   -# %td.padding-5{class: klass}
                     -# %b Setting
             %tbody
-              - @search_results.each do |character|
-                - klass = cycle('even'.freeze, 'odd'.freeze)
-                %tr
-                  %td.padding-5{class: klass}= link_to character.name, character_path(character)
-                  %td.padding-5{class: klass, style: 'width:15%'}= character.nickname
-                  %td.padding-5{class: klass, style: 'width:15%'}= breakable_text(character.screenname)
-                  %td.padding-5{class: klass, style: 'width:25%'}= character.pb
-                  %td.padding-5{class: klass, style: 'width:15%'}= user_link(character.user)
+              - pluck = characters_list(@search_results, false)
+              - params = { show_template: false, show_user: true, hide_buttons: true }
+              = render partial: 'characters/list_item', collection: pluck, as: :character, locals: params
 
   - if @search_results && @search_results.total_pages > 1
     %tfoot
