@@ -409,7 +409,7 @@ class RepliesController < WritableController
         render_errors(errored_reply, action: 'updated', now: true, err: e)
       end
 
-      @audits = { @reply.id => @post.audits.count }
+      @audits = { @reply.id => @reply.post.audits.count }
       editor_setup
       render :edit
     else
