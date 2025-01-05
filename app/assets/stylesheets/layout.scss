@@ -603,20 +603,19 @@ tr.gallery-tags .tag-item { color: $font_color_tag_item_gallery; }
       align-items: center;
       grid-template-columns: 14px auto;
       column-gap: 4px;
-      padding: 5px 0px;
+      padding: 5px 0;
     }
 
     .checkbox-fields {
       padding: 0;
       align-items: start;
-      & > label { margin: 3px 0px; }
+      & > label { margin: 3px 0; }
       input[type='checkbox'] { margin-top: 3px; }
       .fields-header { grid-column: 1 / -1; }
     }
 
     input[type='checkbox'] {
-      margin: 0;
-      margin-bottom: 2px;
+      margin: 0 0 2px 0;
       width: 14px;
       height: 14px;
     }
@@ -629,9 +628,7 @@ tr.gallery-tags .tag-item { color: $font_color_tag_item_gallery; }
 }
 
 .search-box {
-  width: 320px;
   padding: 10px;
-  vertical-align: top;
   background-color: $bg_color_search_box;
   color: $font_color_search_box;
 }
