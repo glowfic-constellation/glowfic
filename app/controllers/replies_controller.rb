@@ -119,7 +119,11 @@ class RepliesController < WritableController
       draft = make_draft
       preview_reply(ReplyDraft.reply_from_draft(draft)) and return
     elsif params[:button_submit_previewed_multi_reply]
-      post_replies
+      if editing_multi_reply?
+        edit_reply(true)
+      else
+        post_replies
+      end
       return
     elsif params[:button_discard_multi_reply]
       flash[:success] = "Replies discarded."
@@ -175,6 +179,8 @@ class RepliesController < WritableController
     if params[:button_add_more]
       # If they click "Add More", fetch the existing array of multi replies if present and add the current permitted_params to that list
       add_to_multi_reply(reply, permitted_params)
+    elsif editing_multi_reply?
+      edit_reply(true, new_multi_reply: reply)
     else
       post_replies(new_reply: reply)
     end
@@ -209,7 +215,7 @@ class RepliesController < WritableController
       render :edit and return
     end
 
-    edit_reply
+    edit_reply(false)
   end
 
   def destroy
@@ -301,6 +307,7 @@ class RepliesController < WritableController
   end
 
   def get_multi_replies
+    # Get the multi replies stored in the page JSON
     @multi_replies_params = JSON.parse(params.fetch(:multi_replies_json, "[]")).map do |reply_json|
       permitted_params(ActionController::Parameters.new({ reply: reply_json }), [:id])
     end
@@ -363,15 +370,6 @@ class RepliesController < WritableController
   def post_replies(new_reply: nil)
     @multi_replies << new_reply if new_reply.present?
 
-    if editing_multi_reply?
-      # The first reply of the multi replies has an ID, that means I'm editing rather than posting a new one
-      @multi_replies_params << permitted_params if new_reply.present?
-      original_reply = @reply.dup
-      @reply.assign_attributes(@multi_replies_params.shift)
-      @multi_replies.shift
-      edit_reply(original_reply: original_reply, multi_replies: @multi_replies) and return
-    end
-
     first_reply = @multi_replies.first
     begin
       Reply.transaction { @multi_replies.each(&:save!) }
@@ -396,18 +394,18 @@ class RepliesController < WritableController
     @multi_replies_params.present? && (@reply = Reply.find_by_id(@multi_replies_params.first["id"]))
   end
 
-  def edit_reply(original_reply: nil, multi_replies: nil)
+  def edit_reply(editing_multi_reply, new_multi_reply: nil)
     begin
       Reply.transaction do
-        edit_multi_replies(original_reply, multi_replies) if multi_replies.present?
+        edit_multi_replies(new_multi_reply) if editing_multi_reply
 
         @reply.save!
       end
     rescue ActiveRecord::RecordInvalid => e
-      if multi_replies.blank?
+      if @multi_replies.blank?
         render_errors(@reply, action: 'updated', now: true, err: e)
       else
-        errored_reply = multi_replies.detect { |r| r.errors.present? } || @reply
+        errored_reply = @multi_replies.detect { |r| r.errors.present? } || @reply
         render_errors(errored_reply, action: 'updated', now: true, err: e)
       end
 
@@ -420,21 +418,36 @@ class RepliesController < WritableController
     end
   end
 
-  def edit_multi_replies(original_reply, multi_replies)
-    # Add new replies after the current one and before the next
+  def edit_multi_replies(new_multi_reply)
+    # Add new replies after the one being edited and before the next
+    if new_multi_reply.present?
+      # Including the reply in the text editor, not just the ones in the JSON
+      @multi_replies << new_multi_reply
+      @multi_replies_params << permitted_params
+    end
+    original_reply = @reply.dup
+
+    # Modify the original reply with the parameters of the first reply in the JSON
+    @reply.assign_attributes(@multi_replies_params.shift)
+    @multi_replies.shift
+
+    # Check whether there are any further replies beyond the very first one
+    num_new_replies = @multi_replies_params.length
+    return if num_new_replies == 0
 
     # Reorder the replies after this one
     original_reply_order = @reply.order
-    num_new_replies = @multi_replies_params.length
     following_replies = @reply.post.replies.where("reply_order > ?", original_reply_order)
     following_replies.update_all(["reply_order = reply_order + ?", num_new_replies]) # rubocop:disable Rails/SkipsModelValidations
 
     # Create the new replies
     @multi_replies_params.each_with_index do |reply_params, idx|
       # Create a fake temporary reply with the contents of the original one to be in history
-      multi_replies[idx] = new_reply = original_reply.dup
+      @multi_replies[idx] = new_reply = original_reply.dup
       new_reply.order = original_reply_order + idx + 1
       new_reply.save!
+
+      # Update the new reply added with the actual params that should be there
       new_reply.update!(reply_params)
     end
   end
