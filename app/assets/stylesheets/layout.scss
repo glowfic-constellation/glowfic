@@ -585,10 +585,46 @@ tr.gallery-tags .tag-item { color: $font_color_tag_item_gallery; }
     display: grid;
     grid-template-columns: [label] minmax(min-content, 70px) [select] auto;
     align-items: center;
+    .label { grid-column: label }
+    .select { grid-column: select }
 
-    .label-cell { grid-column: label }
-    .select-cell { grid-column: select }
-    .search-form-ender { grid-column: 1 / -1; }
+    &#replies-search, &#bookmarks-search, &#posts-search {
+      grid-template-columns: [label] minmax(min-content, 80px) [select] auto;
+    }
+
+    .search-form-ender {
+      grid-column: 1 / -1;
+      text-align: center;
+    }
+
+    .checkbox-field, .checkbox-fields {
+      display: grid;
+      justify-content: start;
+      align-items: center;
+      grid-template-columns: 14px auto;
+      column-gap: 4px;
+      padding: 5px 0px;
+    }
+
+    .checkbox-fields {
+      padding: 0;
+      align-items: start;
+      & > label { margin: 3px 0px; }
+      input[type='checkbox'] { margin-top: 3px; }
+      .fields-header { grid-column: 1 / -1; }
+    }
+
+    input[type='checkbox'] {
+      margin: 0;
+      margin-bottom: 2px;
+      width: 14px;
+      height: 14px;
+    }
+
+    input[type='text'] {
+      width: 100%;
+      margin: 5px 0px;
+    }
   }
 }
 

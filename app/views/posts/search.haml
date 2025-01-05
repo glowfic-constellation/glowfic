@@ -10,29 +10,26 @@
       = render 'paginator', paginated: @search_results
   .search-box
     = form_tag search_posts_path, method: :get do
-      .search-form
-        .label-cell.width-70= label_tag :board_id, 'Continuity'
-        .select-cell= select_tag :board_id, options_from_collection_for_select(@board || [], :id, :name, params[:board_id]),
-          { class: 'chosen-select', prompt: '— Choose Continuity —' }
-        .label-cell= label_tag :author_id, 'Author'
-        .select-cell= select_tag :author_id, options_from_collection_for_select(@user || [], :id, :username, params[:author_id]),
-          { class: 'chosen-select', prompt: '— Choose Author —', multiple: true }
-        .label-cell= label_tag :character_id, 'Character'
-        .select-cell= select_tag :character_id, options_from_collection_for_select(@character || [], :id, :selector_name, params[:character_id]),
-          { prompt: '— Choose Character —' }
-        .label-cell= label_tag :setting_id, 'Setting'
-        .select-cell= select_tag :setting_id, options_from_collection_for_select(@setting || [], :id, :name, params[:setting_id]), { prompt: '— Choose Setting —' }
-        .label-cell= label_tag :subject, 'Subject'
-        .select-cell= text_field_tag :subject, params[:subject], style: 'width: 100%; margin: 5px 0px;'
-        .label-cell Acronym
-        .select-cell.padding-5
-          = check_box_tag :abbrev, true, params[:abbrev].present?, { class: 'vmid no-margin', style: 'margin-bottom: 3px;' }
+      .search-form#posts-search
+        .label= label_tag :board_id, 'Continuity'
+        .select= select_tag :board_id, options_from_collection_for_select(@board || [], :id, :name, params[:board_id]), class: 'chosen-select', prompt: '— Choose Continuity —'
+        .label= label_tag :author_id, 'Author'
+        .select= select_tag :author_id, options_from_collection_for_select(@user || [], :id, :username, params[:author_id]), class: 'chosen-select', prompt: '— Choose Author —', multiple: true
+        .label= label_tag :character_id, 'Character'
+        .select= select_tag :character_id, options_from_collection_for_select(@character || [], :id, :selector_name, params[:character_id]), prompt: '— Choose Character —'
+        .label= label_tag :setting_id, 'Setting'
+        .select= select_tag :setting_id, options_from_collection_for_select(@setting || [], :id, :name, params[:setting_id]), prompt: '— Choose Setting —'
+        .label= label_tag :subject, 'Subject'
+        .select= text_field_tag :subject, params[:subject]
+        .label Acronym
+        .select.checkbox-field
+          = check_box_tag :abbrev, true, params[:abbrev].present?
           = label_tag :abbrev, 'Search for acronym'
-        .label-cell Completed
-        .select-cell.padding-5
-          = check_box_tag :completed, true, params[:completed].present?, { class: 'vmid no-margin', style: 'margin-bottom: 3px;' }
+        .label Completed
+        .select.checkbox-field
+          = check_box_tag :completed, true, params[:completed].present?
           = label_tag :completed, "Completed Only"
-        .search-form-ender.centered= submit_tag "Search", class: 'button'
+        .search-form-ender= submit_tag "Search", class: 'button'
   .vtop#search_results
     - if @search_results.present?
       %table
