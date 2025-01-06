@@ -28,8 +28,7 @@
                 %th.sub Name
                 %th.width-70.sub.centered Moiety
                 %th.sub Date Joined
-            %tbody
-              = render 'list', users: @search_results, skip_footer: true
+            = render 'list', users: @search_results, skip_footer: true
   - if @search_results && @search_results.total_pages > 1
     %tfoot
       %tr
