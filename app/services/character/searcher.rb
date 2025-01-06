@@ -70,7 +70,7 @@ class Character::Searcher < Generic::Searcher
     where_calc = []
     where_calc << "name ILIKE ?" if params[:search_name].present?
     where_calc << "screenname ILIKE ?" if params[:search_screenname].present?
-    where_calc << "template_name ILIKE ?" if params[:search_nickname].present?
+    where_calc << "nickname ILIKE ?" if params[:search_nickname].present?
     where_calc << 'id in (SELECT character_id from character_aliases WHERE name ILIKE ?)' if params[:search_aliases].present?
 
     @search_results = @search_results.where(where_calc.join(' OR '), *(["%#{params[:name]}%"] * where_calc.length))
