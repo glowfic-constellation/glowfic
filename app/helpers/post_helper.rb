@@ -99,7 +99,7 @@ module PostHelper
     !current_user.default_hide_edit_delete_buttons
   end
 
-  def show_edit_button
+  def show_edit_button(reply)
     if reply.is_a?(Post)
       reply.metadata_editable_by?(current_user)
     else

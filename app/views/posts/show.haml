@@ -182,7 +182,7 @@
       = link_to post_path(@prev_post), class: 'view-button-link' do
         .view-button.float-none &laquo; Previous Post
 - if page.to_i == 1
-  = render 'replies/single', reply: @post, split_ui: split_ui
+  = render 'replies/single', reply: @post, button_params: { split_ui: split_ui }
 - else
   .post-expander
     .info + Show First Post

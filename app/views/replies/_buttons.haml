@@ -1,4 +1,4 @@
--# locals: ( reply:, post:, split_ui: false )
+-# locals: ( reply:, post: reply.post, split_ui: false, hide_standard_buttons: false, show_bookmark_edit: false, show_metadata: false )
 
 - if split_ui
   - if reply.is_a?(Reply)
@@ -9,20 +9,25 @@
 - else
   = link_to post_or_reply_link(reply), rel: 'alternate'.freeze do
     = image_tag "icons/link.png".freeze, title: 'Permalink'.freeze, alt: 'Permalink'.freeze
-  - if show_update_buttons
-    - if show_edit_button
+  - if !hide_standard_buttons && show_update_buttons
+    - if show_edit_button(reply)
       = link_to path_for(reply, 'edit_%s') do
         = image_tag "icons/pencil.png".freeze, title: 'Edit'.freeze, alt: 'Edit'.freeze
     - if reply.deletable_by?(current_user)
       = link_to path_for(reply, '%s'), method: :delete, data: { confirm: "Are you sure you wish to delete this #{reply.class.to_s.downcase}?" } do
         = image_tag "icons/cross.png".freeze, title: 'Delete'.freeze, alt: 'Delete'.freeze
-  - if show_bookmark_button
+  - if !show_metadata && show_bookmark_button(reply)
     - if (bookmark = reply.bookmark_by(current_user))
+      - if show_bookmark_edit
+        = image_tag "icons/bookmark_pencil.png".freeze, title: 'Rename Bookmark', alt: 'Rename Bookmark', class: 'edit-bookmark pointer', data: { bookmark_id: bookmark.id }
       = link_to bookmark_path(bookmark), method: :delete do
         = image_tag "icons/bookmark_delete.png".freeze, title: 'Remove Bookmark'.freeze, alt: 'Remove Bookmark'.freeze
     - else
       = link_to bookmarks_path(at_id: reply.id), method: :post do
         = image_tag "icons/bookmark.png".freeze, title: 'Add Bookmark'.freeze, alt: 'Add Bookmark'.freeze
-  - if reply.is_a?(Reply) && logged_in?
+  - if show_metadata
+    = link_to stats_post_path(reply.post) do
+      = image_tag "icons/chart_bar.png".freeze, title: 'View Metadata'.freeze, alt: 'View Metadata'.freeze
+  - if !hide_standard_buttons && reply.is_a?(Reply) && logged_in?
     = link_to post_path(post, unread: true, at_id: reply.id), method: :put do
       = image_tag "icons/eye.png".freeze, title: 'Mark Unread Here'.freeze, alt: 'Mark Unread Here'.freeze

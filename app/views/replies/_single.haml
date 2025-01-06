@@ -1,4 +1,4 @@
--# locals: ( reply:, post: @post || reply.post, hide_footer: false, split_ui: false, condensed: false )
+-# locals: ( reply:, post: @post || reply.post, hide_footer: false, button_params: {}, condensed: false )
 
 - if reply.is_a?(Post)
   - write = 'post-post'.freeze
@@ -32,7 +32,7 @@
         .post-author= user_mem_link(reply.user_id, reply.username, reply.user_deleted?)
     - if reply.id.present?
       .post-edit-box
-        = render 'buttons', reply: reply, split_ui: split_ui
+        = render 'replies/buttons', button_params.merge!(reply: reply)
     .post-content
       - if params[:subj_content].present?
         = reply.pg_search_highlight.html_safe
