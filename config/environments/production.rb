@@ -100,7 +100,11 @@ Rails.application.configure do
 
   # use ExceptionNotification to email Marri stack traces
   Rails.application.config.middleware.use ExceptionNotification::Rack,
-    ignore_exceptions: ['Rack::Timeout::RequestTimeoutException','ActiveRecord::QueryCanceled','ActionDispatch::Http::MimeNegotiation::InvalidType'] + ExceptionNotifier.ignored_exceptions,
+    ignore_exceptions: [
+      'Rack::Timeout::RequestTimeoutException',
+      'ActiveRecord::QueryCanceled',
+      'ActionDispatch::Http::MimeNegotiation::InvalidType'
+      ] + ExceptionNotifier.ignored_exceptions,
     email: {
       email_prefix: "[Glowfic Constellation Error] ",
       sender_address: %{"Glowfic Constellation" <glowfic.constellation@gmail.com>},
