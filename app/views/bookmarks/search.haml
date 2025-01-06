@@ -68,7 +68,7 @@
                             = image_tag "icons/exclamation.png", title: 'Error', class: 'vmid', alt: ''
                             Error, please try again
                 %tr
-                  %td= render 'replies/single', reply: reply, condensed: params[:condensed], button_params: { hide_standard_buttons: true, show_bookmark_edit: user_is_owner }
+                  %td= render 'replies/single', reply: reply, condensed: params[:condensed], search_ui: true, button_params: { hide_standard_buttons: true, show_bookmark_edit: user_is_owner }
   - if @search_results && @search_results.total_pages > 1
     %tfoot
       %tr

@@ -64,7 +64,7 @@
               %td.centered{colspan: 2}= submit_tag "Search", class: 'button'
       %td.vtop
         - if @search_results.present?
-          = render partial: 'replies/single', collection: @search_results, as: :reply, locals: { condensed: params[:condensed], button_params: { hide_standard_buttons: true, show_metadata: true } }
+          = render partial: 'replies/single', collection: @search_results, as: :reply, locals: { condensed: params[:condensed], search_ui: true, show_post: true, button_params: { hide_standard_buttons: true, show_metadata: true } }
 
   - if @search_results && @search_results.total_pages > 1
     %tfoot

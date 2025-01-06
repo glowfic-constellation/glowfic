@@ -1,4 +1,4 @@
--# locals: ( reply:, post: @post || reply.post, hide_footer: false, button_params: {}, condensed: false )
+-# locals: ( reply:, post: @post || reply.post, hide_footer: false, button_params: {}, condensed: false, search_ui: false, show_post: false )
 
 - if reply.is_a?(Post)
   - write = 'post-post'.freeze
@@ -6,13 +6,13 @@
   - write = 'post-reply'.freeze
 - else
   - write = ''.freeze
-.post-container{class: [write, (reply == @unread && current_user.try(:visible_unread?)) ? 'reply-highlighted' : '']}
+.post-container{class: [write, (reply == @unread && current_user.try(:visible_unread?)) ? 'reply-highlighted'.freeze : ''.freeze]}
   - if reply.is_a?(Reply) && reply.id.present?
     %a.noheight{id: "reply-#{reply.id}"}= " "
   - if reply == @unread
     .unread-marker-container
       %a#unread.unread-marker First unread marker
-  .padding-10
+  %div{class: search_ui ? '' : 'padding-10', style: search_ui ? 'display: inline' : ''}
     .post-info-box
       - if reply.icon_id && reply.keyword && !condensed
         .post-icon
@@ -27,12 +27,14 @@
               [Deleted]
           - if reply.screenname && !condensed
             .post-screenname= breakable_text(reply.screenname)
-        - else
+        - elsif !search_ui
           .spacer-alt
         .post-author= user_mem_link(reply.user_id, reply.username, reply.user_deleted?)
     - if reply.id.present?
       .post-edit-box
         = render 'replies/buttons', button_params.merge!(reply: reply)
+      - if show_post
+        %b= link_to reply.post.subject, reply_path(reply, anchor: "reply-#{reply.id}"), title: strip_tags(reply.post.description)&.html_safe
     .post-content
       - if params[:subj_content].present?
         = reply.pg_search_highlight.html_safe
@@ -41,7 +43,7 @@
   .post-footer
     - unless hide_footer
       .right-align>
-        .padding-5>
+        %div{class: search_ui ? '' : 'padding-5'}>
           - if reply.created_at
             = precede 'Posted '.freeze do
               %span.post-posted=pretty_time(reply.created_at)
