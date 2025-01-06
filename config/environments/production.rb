@@ -103,8 +103,8 @@ Rails.application.configure do
     ignore_exceptions: [
       'Rack::Timeout::RequestTimeoutException',
       'ActiveRecord::QueryCanceled',
-      'ActionDispatch::Http::MimeNegotiation::InvalidType'
-      ] + ExceptionNotifier.ignored_exceptions,
+      'ActionDispatch::Http::MimeNegotiation::InvalidType',
+    ] + ExceptionNotifier.ignored_exceptions,
     email: {
       email_prefix: "[Glowfic Constellation Error] ",
       sender_address: %{"Glowfic Constellation" <glowfic.constellation@gmail.com>},
