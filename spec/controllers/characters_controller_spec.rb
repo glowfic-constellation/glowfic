@@ -1321,7 +1321,7 @@ RSpec.describe CharactersController do
       character = create(:template_character)
       get :search, params: { commit: true, author_id: 9999 }
       expect(response).to have_http_status(200)
-      expect(flash[:error]).to eq('The specified author could not be found.')
+      expect(flash[:error]).to eq('User could not be found.')
       expect(assigns(:users)).to be_empty
       expect(assigns(:search_results)).to match_array([character])
     end
@@ -1340,7 +1340,7 @@ RSpec.describe CharactersController do
       character = create(:template_character)
       get :search, params: { commit: true, template_id: 9999 }
       expect(response).to have_http_status(200)
-      expect(flash[:error]).to eq('The specified template could not be found.')
+      expect(flash[:error]).to eq('Template could not be found.')
       expect(assigns(:templates)).to be_empty
       expect(assigns(:search_results)).to match_array([character])
     end
@@ -1431,6 +1431,19 @@ RSpec.describe CharactersController do
         end
         get :search, params: { commit: true, author_id: user.id }
         expect(assigns(:search_results).length).to eq(25)
+      end
+
+      it 'handles failure' do
+        create(:character, name: 'a')
+        get :search, params: { commit: true, name: 'a', search_name: true, author_id: -1 }
+        expect(flash[:error]).to eq("User could not be found.")
+      end
+
+      it 'handles multiple failures' do
+        create(:character, name: 'a')
+        get :search, params: { commit: true, name: 'a', search_name: true, author_id: -1, template_id: -1 }
+        expect(flash[:error][:message]).to eq("Search could not be completed.")
+        expect(flash[:error][:array]).to match_array(["User could not be found.", "Template could not be found."])
       end
     end
   end
