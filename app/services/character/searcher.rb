@@ -10,7 +10,7 @@ class Character::Searcher < Generic::Searcher
 
   def search(params, page: 1)
     search_users(params[:author_id]) if params[:author_id].present?
-    search_templates(params[:template_id], params[:author_id]) if params[:template_id].present? || params[:author_id].present?
+    search_templates(params[:template_id]) if params[:template_id].present?
     search_settings(params[:setting_id]) if params[:setting_id].present?
     search_names(params) if params[:name].present?
     select_templates(params[:author_id]) if params[:author_id].present? && params[:template_id].blank?
