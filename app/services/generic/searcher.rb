@@ -1,3 +1,4 @@
+# frozen_string_literal: true
 class Generic::Searcher < Object
   extend ActiveModel::Translation
   extend ActiveModel::Validations
