@@ -1,3 +1,4 @@
+# frozen_string_literal: true
 class Character::Searcher < Generic::Searcher
   attr_reader :templates, :users
 
