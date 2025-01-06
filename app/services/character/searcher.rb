@@ -18,8 +18,9 @@ class Character::Searcher < Generic::Searcher
     end
 
     search_settings(params[:setting_id]) if params[:setting_id].present?
+    search_facecasts(params[:pb]) if params[:pb].present?
     search_names(params) if params[:name].present?
-    @search_results = @search_results.where('pb ILIKE ?', '%' + params[:pb].to_s + '%') if params[:pb].present?
+
     @search_results.ordered.paginate(page: page) unless errors.present?
     @search_results
   end
@@ -59,6 +60,10 @@ class Character::Searcher < Generic::Searcher
 
   def select_templates(user_id)
     @templates = Template.where(user_id: user_id).ordered.limit(25)
+  end
+
+  def search_facecasts(facecast)
+    @search_results = @search_results.where('pb ILIKE ?', '%' + facecast.to_s + '%')
   end
 
   def search_names(params)
