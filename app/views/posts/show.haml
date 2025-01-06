@@ -187,10 +187,10 @@
   .post-expander
     .info + Show First Post
     .hidden
-      = render 'replies/single', reply: @post, split_ui: split_ui
+      = render 'replies/single', reply: @post, button_params: { split_ui: split_ui }
 - if @replies.present?
   = render 'posts/paginator', paginated: @replies
-= render partial: 'replies/single', collection: @replies, as: :reply, locals: { split_ui: split_ui }
+= render partial: 'replies/single', collection: @replies, as: :reply, locals: { button_params: { split_ui: split_ui } }
 - if @post.complete? && (@replies.empty? || (@replies.last.id == @post.last_reply_id))
   .post-ender Here Ends This Thread
   - if @prev_post || @next_post
