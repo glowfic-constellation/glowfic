@@ -1,4 +1,4 @@
--# locals: ( reply:, post: reply.post, split_ui: false, hide_standard_buttons: false, show_bookmark_edit: false, show_metadata: false )
+-# locals: ( reply:, post: @post || reply.post, split_ui: false, hide_standard_buttons: false, show_bookmark_edit: false, show_metadata: false )
 
 - if split_ui
   - if reply.is_a?(Reply)
