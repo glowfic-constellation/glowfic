@@ -21,7 +21,9 @@ class Character::Searcher < Generic::Searcher
     search_facecasts(params[:pb]) if params[:pb].present?
     search_names(params) if params[:name].present?
 
-    @search_results.ordered.paginate(page: page) unless errors.present?
+    return if errors.present?
+
+    @search_results.ordered.paginate(page: page)
     @search_results
   end
 
