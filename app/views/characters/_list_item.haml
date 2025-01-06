@@ -1,4 +1,4 @@
--# locals: ( character:, settings:, show_template: false, show_user: false, hide_buttons: false )
+-# locals: ( character:, settings:, show_template: false, show_user: false, show_settings: true, hide_buttons: false )
 
 - char_id, char_name, nickname, screenname, pb, cluster, user_id, username, user_deleted = character
 - if show_template
@@ -15,7 +15,7 @@
   %td.padding-5{class: klass, style: 'width:15%'}= nickname
   %td.padding-5{class: klass, style: 'width:15%'}= breakable_text(screenname)
   %td.padding-5{class: klass, style: 'width:20%'}= pb
-  - if show_settings || !show_user
+  - if show_settings
     %td.padding-5{class: klass, style: 'width:15%'}
       - setting_links = settings.fetch(char_id, []).map { |setting| link_to(setting[1], tag_path(setting[0])) }
       = safe_join(setting_links, ', ')
