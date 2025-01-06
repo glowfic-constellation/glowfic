@@ -92,7 +92,8 @@ class ApplicationController < ActionController::Base
     posts = posts_relation_filter(relation, no_tests: no_tests, show_blocked: show_blocked)
     posts_count = posts.except(:select, :order, :group).count('DISTINCT posts.id')
     posts = posts_list_relation(posts, select: select, max: max)
-    posts = posts.paginate(page: page, total_entries: posts_count) if with_pagination
+    safe_page = page.to_i == 0 ? 1 : page.to_i # protects against 'last' and 'unread' on controllers that don't support it
+    posts = posts.paginate(page: safe_page, total_entries: posts_count) if with_pagination
     calculate_view_status(posts, with_unread: with_unread) if logged_in?
     posts
   end
