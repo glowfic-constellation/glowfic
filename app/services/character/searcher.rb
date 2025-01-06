@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 class Character::Searcher < Generic::Searcher
-  attr_reader :templates, :users
+  attr_reader :templates, :users, :settings
 
   def initialize(search=Character.unscoped, templates: [], users: [])
     @templates = templates
