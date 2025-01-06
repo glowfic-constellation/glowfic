@@ -1,9 +1,9 @@
 require "spec_helper"
 
 RSpec.describe Character::Searcher do
-  let (:name) { create(:character, name: 'a', screenname: 'b', template_name: 'c') }
-  let (:nickname) { create(:character, name: 'b', screenname: 'c', template_name: 'a') }
-  let (:screenname) { create(:character, name: 'c', screenname: 'a', template_name: 'b') }
+  let (:name) { create(:character, name: 'a', screenname: 'b', nickname: 'c') }
+  let (:nickname) { create(:character, name: 'b', screenname: 'c', nickname: 'a') }
+  let (:screenname) { create(:character, name: 'c', screenname: 'a', nickname: 'b') }
 
   before(:each) do
     name
