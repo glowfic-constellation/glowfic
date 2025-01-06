@@ -92,4 +92,25 @@ module PostHelper
     return false unless opened_ids
     opened_ids.include?(post.id)
   end
+
+  def show_update_buttons
+    return false unless logged_in?
+    return true if params[:show_all_reply_buttons].present?
+    !current_user.default_hide_edit_delete_buttons
+  end
+
+  def show_edit_button
+    if reply.is_a?(Post)
+      reply.metadata_editable_by?(current_user)
+    else
+      reply.editable_by?(current_user)
+    end
+  end
+
+  def show_bookmark_button(reply)
+    return false unless reply.is_a?(Reply)
+    return false unless logged_in?
+    return true if params[:show_all_reply_buttons].present?
+    !current_user.try(:default_hide_add_bookmark_button)
+  end
 end
