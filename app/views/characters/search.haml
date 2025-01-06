@@ -67,7 +67,7 @@
                     -# %b Setting
             %tbody
               - pluck = characters_list(@search_results, false)
-              - params = { show_template: false, show_user: true, hide_buttons: true }
+              - params = { settings: {}, show_template: false, show_user: true, hide_buttons: true }
               = render partial: 'characters/list_item', collection: pluck, as: :character, locals: params
 
   - if @search_results && @search_results.total_pages > 1
