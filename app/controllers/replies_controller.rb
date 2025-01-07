@@ -13,24 +13,24 @@ class RepliesController < WritableController
     @page_title = 'Search Replies'
     use_javascript('search')
 
-    @post = Post.find_by_id(params[:post_id]) if params[:post_id].present?
-    @icon = Icon.find_by_id(params[:icon_id]) if params[:icon_id].present?
-    if @post.try(:visible_to?, current_user)
+    @post = Post.find_by(id: params[:post_id]) if params[:post_id].present?
+    @icon = Icon.find_by(id: params[:icon_id]) if params[:icon_id].present?
+
+    if @post&.visible_to?(current_user)
       @users = @post.authors.active
       char_ids = @post.replies.select(:character_id).distinct.pluck(:character_id) + [@post.character_id]
       @characters = Character.where(id: char_ids).ordered
       @templates = Template.where(id: @characters.map(&:template_id).uniq.compact).ordered
       gon.post_id = @post.id
+    elsif @post
+      # post exists but not visible
+      flash.now[:error] = "You do not have permission to view this post."
+      return
     else
       @users = User.active.full.where(id: params[:author_id]) if params[:author_id].present?
       @characters = Character.where(id: params[:character_id]) if params[:character_id].present?
       @templates = Template.ordered.limit(25)
       @boards = Board.where(id: params[:board_id]) if params[:board_id].present?
-      if @post
-        # post exists but post not visible
-        flash.now[:error] = "You do not have permission to view this post."
-        return
-      end
     end
 
     return unless params[:commit].present?
