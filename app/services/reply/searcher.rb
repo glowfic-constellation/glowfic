@@ -1,12 +1,25 @@
 # frozen_string_literal: true
 class Reply::Searcher < Generic::Searcher
-  attr_reader :templates
+  attr_reader :users, :characters, :templates, :boards
 
-  def initialize(search=Reply.unscoped, current_user: nil, post: nil, templates: [])
-    @post = post
-    @templates = templates
+  def initialize(search=Reply.unscoped, current_user: nil, post: nil)
     @current_user = current_user
+    @post = post
     super(search)
+  end
+
+  def setup(params)
+    if @post&.visible_to?(@current_user)
+      @users = @post.authors.active
+      char_ids = @post.replies.select(:character_id).distinct.pluck(:character_id) + [@post.character_id]
+      @characters = Character.where(id: char_ids).ordered
+      @templates = Template.where(id: @characters.map(&:template_id).uniq.compact).ordered
+    elsif @post.nil?
+      @users = User.active.full.where(id: params[:author_id]) if params[:author_id].present?
+      @characters = Character.where(id: params[:character_id]) if params[:character_id].present?
+      @templates = Template.ordered.limit(25)
+      @boards = Board.where(id: params[:board_id]) if params[:board_id].present?
+    end
   end
 
   def search(params, page: 1)

@@ -16,28 +16,26 @@ class RepliesController < WritableController
     @post = Post.find_by(id: params[:post_id]) if params[:post_id].present?
     @icon = Icon.find_by(id: params[:icon_id]) if params[:icon_id].present?
 
+    searcher = Reply::Searcher.new(current_user: current_user, post: @post)
+    searcher.setup(params)
+
+    @users = searcher.users
+    @characters = searcher.characters
+    @templates = searcher.templates
+    @boards = searcher.boards
+
     if @post&.visible_to?(current_user)
-      @users = @post.authors.active
-      char_ids = @post.replies.select(:character_id).distinct.pluck(:character_id) + [@post.character_id]
-      @characters = Character.where(id: char_ids).ordered
-      @templates = Template.where(id: @characters.map(&:template_id).uniq.compact).ordered
       gon.post_id = @post.id
     elsif @post
       # post exists but not visible
       flash.now[:error] = "You do not have permission to view this post."
       return
-    else
-      @users = User.active.full.where(id: params[:author_id]) if params[:author_id].present?
-      @characters = Character.where(id: params[:character_id]) if params[:character_id].present?
-      @templates = Template.ordered.limit(25)
-      @boards = Board.where(id: params[:board_id]) if params[:board_id].present?
     end
 
     return unless params[:commit].present?
 
     response.headers['X-Robots-Tag'] = 'noindex'
 
-    searcher = Reply::Searcher.new(post: @post, templates: @templates, current_user: current_user)
     @search_results = searcher.search(params, page: page)
     @templates = searcher.templates
     @audits = []
