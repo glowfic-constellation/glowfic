@@ -37,8 +37,10 @@ class RepliesController < WritableController
 
     response.headers['X-Robots-Tag'] = 'noindex'
 
-    searcher = Reply::Searcher.new
-    searcher.search(params, page: page)
+    searcher = Reply::Searcher.new(post: @post, templates: @templates, current_user: current_user)
+    @search_results = searcher.search(params, page: page)
+    @templates = searcher.templates
+    @audits = []
   end
 
   def create
