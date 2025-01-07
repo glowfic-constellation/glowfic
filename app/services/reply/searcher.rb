@@ -14,6 +14,7 @@ class Reply::Searcher < Generic::Searcher
       char_ids = @post.replies.select(:character_id).distinct.pluck(:character_id) + [@post.character_id]
       @characters = Character.where(id: char_ids).ordered
       @templates = Template.where(id: @characters.map(&:template_id).uniq.compact).ordered
+      @boards = [@post.board]
     elsif @post.nil?
       @users = User.active.full.where(id: params[:author_id]) if params[:author_id].present?
       @characters = Character.where(id: params[:character_id]) if params[:character_id].present?
