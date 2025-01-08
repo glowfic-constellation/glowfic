@@ -43,11 +43,11 @@ class ApplicationController < ActionController::Base
   end
 
   VALID_PAGES = ['last', 'unread']
-  def page
+  def page(allow_special: false)
     return @page if @page
     return (@page = 1) unless params[:page]
     @page = params[:page]
-    return @page if VALID_PAGES.include?(@page)
+    return @page if allow_special && VALID_PAGES.include?(@page)
     @page = @page.to_i
     return @page if @page > 0
     flash.now[:error] = "Page not recognized, defaulting to page 1."
@@ -92,8 +92,7 @@ class ApplicationController < ActionController::Base
     posts = posts_relation_filter(relation, no_tests: no_tests, show_blocked: show_blocked)
     posts_count = posts.except(:select, :order, :group).count('DISTINCT posts.id')
     posts = posts_list_relation(posts, select: select, max: max)
-    safe_page = page.to_i == 0 ? 1 : page.to_i # protects against 'last' and 'unread' on controllers that don't support it
-    posts = posts.paginate(page: safe_page, total_entries: posts_count) if with_pagination
+    posts = posts.paginate(page: page, total_entries: posts_count) if with_pagination
     calculate_view_status(posts, with_unread: with_unread) if logged_in?
     posts
   end
