@@ -33,6 +33,13 @@ RSpec.describe GalleriesController do
         expect(assigns(:page_title)).to eq("#{user.username}'s Galleries")
       end
 
+      it "displays error on invalid pages" do
+        user = create(:user)
+        get :index, params: { user_id: user.id, page: "2'" }
+        expect(response).to have_http_status(200)
+        expect(flash[:error]).to eq("Page not recognized, defaulting to page 1.")
+      end
+
       it "displays error if user id invalid and logged out" do
         get :index, params: { user_id: -1 }
         expect(flash[:error]).to eq('User could not be found.')

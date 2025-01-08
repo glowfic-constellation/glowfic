@@ -66,7 +66,7 @@ class GalleriesController < UploadingController
       @meta_og = og_data
     end
     @icons = @gallery ? @gallery.icons : @user.galleryless_icons
-    @icons = @icons.paginate(per_page: 100, page: params[:page])
+    @icons = @icons.paginate(per_page: 100, page: page)
     @times_used, @posts_used = Icon.times_used(@icons, current_user) if page_view == 'list'
     response.headers['X-Robots-Tag'] = 'noindex' if params[:view]
     render :show, locals: { icons: @icons }
