@@ -19,7 +19,7 @@ class GalleriesController < UploadingController
       @user.username + "'s Galleries"
     end
     @galleries = @user.galleries.ordered_by_name
-    @galleries = @galleries.paginate(per_page: 100, page: params[:page])
+    @galleries = @galleries.paginate(per_page: 100, page: page)
     use_javascript('galleries/expander')
     gon.user_id = @user.id
   end

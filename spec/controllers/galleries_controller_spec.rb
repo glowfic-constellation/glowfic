@@ -174,6 +174,14 @@ RSpec.describe GalleriesController do
           expect(flash[:error]).to eq('User could not be found.')
         end
 
+        it "displays error on invalid pages" do
+          user = create(:user)
+          get :show, params: { id: '0', user_id: user.id, page: "2'" }
+          expect(response).to render_template('show')
+          expect(response).to have_http_status(200)
+          expect(flash[:error]).to eq("Page not recognized, defaulting to page 1.")
+        end
+
         it "requires specified user to be full user" do
           user = create(:reader_user)
           get :index, params: { user_id: user.id }
