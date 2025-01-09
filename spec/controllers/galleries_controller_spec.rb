@@ -37,7 +37,7 @@ RSpec.describe GalleriesController do
         user = create(:user)
         get :index, params: { user_id: user.id, page: "2'" }
         expect(response).to have_http_status(200)
-        expect(flash[:error]).to eq("Page not recognized, defaulting to page 1.")
+        expect(flash.now[:error]).to eq("Page not recognized, defaulting to page 1.")
       end
 
       it "displays error if user id invalid and logged out" do
@@ -186,7 +186,7 @@ RSpec.describe GalleriesController do
           get :show, params: { id: '0', user_id: user.id, page: "2'" }
           expect(response).to render_template('show')
           expect(response).to have_http_status(200)
-          expect(flash[:error]).to eq("Page not recognized, defaulting to page 1.")
+          expect(flash.now[:error]).to eq("Page not recognized, defaulting to page 1.")
         end
 
         it "requires specified user to be full user" do
