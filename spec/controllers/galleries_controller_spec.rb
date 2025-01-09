@@ -35,7 +35,7 @@ RSpec.describe GalleriesController do
 
       it "displays error on invalid pages" do
         user = create(:user)
-        get :index, params: { user_id: user.id, page: "2'" }
+        get :index, params: { user_id: user.id, page: "nvOpzp; AND 1=1" }
         expect(response).to have_http_status(200)
         expect(assigns(:page)).to eq(1)
       end
@@ -183,7 +183,7 @@ RSpec.describe GalleriesController do
 
         it "displays error on invalid pages" do
           user = create(:user)
-          get :show, params: { id: '0', user_id: user.id, page: "2'" }
+          get :show, params: { id: '0', user_id: user.id, page: "'" }
           expect(response).to render_template('show')
           expect(response).to have_http_status(200)
           expect(assigns(:page)).to eq(1)
