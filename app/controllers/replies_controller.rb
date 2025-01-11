@@ -381,11 +381,7 @@ class RepliesController < WritableController
       redirect_to post_path(errored_reply.post) and return
     end
 
-    if @multi_replies.length == 1
-      flash[:success] = "Reply posted."
-    else
-      flash[:success] = "Replies posted."
-    end
+    flash[:success] = "#{'Reply'.pluralize(@multi_replies.length)} posted."
     redirect_to reply_path(first_reply, anchor: "reply-#{first_reply.id}")
   end
 
