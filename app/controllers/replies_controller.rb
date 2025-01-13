@@ -319,10 +319,10 @@ class RepliesController < WritableController
   def preview_reply(reply)
     # Previewing a specific reply
     @post = reply.post
-    @written = reply
-    @written.user = current_user unless @written.user
-    @audits = @written.id.present? ? { @written.id => @written.audits.count } : {}
-    @reply = @written # So that editor_setup shows the correct characters
+    @reply = reply
+    @reply.user = current_user unless @reply.user
+    @audits = @reply.id.present? ? { @reply.id => @reply.audits.count } : {}
+    @adding_to_multi_reply = False
     preview_replies
   end
 
@@ -346,9 +346,9 @@ class RepliesController < WritableController
     # Set up editor
     @post = reply.post
     empty_reply_hash = permitted_params.permit(:character_id, :icon_id, :character_alias_id)
-    @empty_written = @post.build_new_reply_for(current_user, empty_reply_hash)
-    @empty_written.editor_mode = reply.editor_mode
-    @reply = @empty_written # So that editor_setup shows the correct characters
+    @reply = @post.build_new_reply_for(current_user, empty_reply_hash)
+    @reply.editor_mode = reply.editor_mode
+    @adding_to_multi_reply = True
     @audits = {}
 
     # Add reply to list of multi replies
