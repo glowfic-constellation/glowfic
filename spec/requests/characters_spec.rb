@@ -146,7 +146,7 @@ RSpec.describe "Character" do
 
   describe "index" do
     it "handles bad pages" do
-      user = create(:user)
+      user = create(:user, password: known_test_password)
       create(:character, user: user)
       create_list(:template, 51, user: user)
       login(user)
