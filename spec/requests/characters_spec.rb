@@ -143,4 +143,21 @@ RSpec.describe "Character" do
       end
     end
   end
+
+  describe "index" do
+    it "handles bad pages" do
+      user = create(:user)
+      create(:character, user: user)
+      create_list(:template, 51, user: user)
+      login(user)
+
+      get "/characters?page=nvOpzp; AND 1=1"
+
+      aggregate_failures do
+        expect(response).to have_http_status(200)
+        expect(response).to render_template(:index)
+        expect(response.body).to include("#{user.username}'s Characters")
+      end
+    end
+  end
 end
