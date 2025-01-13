@@ -235,7 +235,7 @@ RSpec.describe "Editing replies" do
       within('#post-editor') do
         fill_in 'reply_content', with: 'other text 2'
       end
-      allow(Reply).to receive_messages(find_by_id: reply, new: reply_stub)
+      allow(Reply).to receive_messages(find_by: reply, new: reply_stub)
       allow(reply).to receive(:dup).and_return(reply_stub)
       allow(reply_stub).to receive_messages(post: reply.post, dup: reply_stub)
       allow(reply_stub).to receive(:save!).and_raise(ActiveRecord::RecordInvalid)
