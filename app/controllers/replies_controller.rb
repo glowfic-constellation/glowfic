@@ -343,6 +343,12 @@ class RepliesController < WritableController
       end
     end
 
+    # Add reply to list of multi replies
+    reply.user = current_user unless reply.user
+    @multi_replies << reply
+    reply_params[:id] = reply.id if reply.id.present?
+    @multi_replies_params << reply_params
+
     # Set up editor
     @post = reply.post
     empty_reply_hash = permitted_params.permit(:character_id, :icon_id, :character_alias_id)
@@ -350,12 +356,6 @@ class RepliesController < WritableController
     @reply.editor_mode = reply.editor_mode
     @adding_to_multi_reply = True
     @audits = {}
-
-    # Add reply to list of multi replies
-    reply.user = current_user unless reply.user
-    @multi_replies << reply
-    reply_params[:id] = reply.id if reply.id.present?
-    @multi_replies_params << reply_params
 
     preview_replies
   end
