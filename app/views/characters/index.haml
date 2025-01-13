@@ -82,7 +82,7 @@
     - elsif @user.characters.exists?
       - templates = @user.templates.ordered
       - templates = templates.where(retired: false) unless show_retired
-      - templates = templates.paginate(per_page: 25, page: params[:page]) if templates.count > 50
+      - templates = templates.paginate(per_page: 25, page: page) if templates.count > 50
       = render partial: partial_type, collection: templates, as: :name
       - templateless = @user.characters.non_npcs.where(template_id: nil)
       - if templateless.exists? && (templates.methods.exclude?(:total_pages) || templates.total_pages == params[:page].to_i)
