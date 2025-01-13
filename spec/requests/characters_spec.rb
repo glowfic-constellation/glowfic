@@ -156,7 +156,7 @@ RSpec.describe "Character" do
       aggregate_failures do
         expect(response).to have_http_status(200)
         expect(response).to render_template(:index)
-        expect(response.body).to include("#{user.username}'s Characters")
+        expect(response.body).to include("Your Characters")
       end
     end
   end
