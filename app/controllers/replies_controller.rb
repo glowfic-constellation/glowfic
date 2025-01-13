@@ -322,7 +322,7 @@ class RepliesController < WritableController
     @reply = reply
     @reply.user = current_user unless @reply.user
     @audits = @reply.id.present? ? { @reply.id => @reply.audits.count } : {}
-    @adding_to_multi_reply = False
+    @adding_to_multi_reply = false
     preview_replies
   end
 
@@ -354,7 +354,7 @@ class RepliesController < WritableController
     empty_reply_hash = permitted_params.permit(:character_id, :icon_id, :character_alias_id)
     @reply = @post.build_new_reply_for(current_user, empty_reply_hash)
     @reply.editor_mode = reply.editor_mode
-    @adding_to_multi_reply = True
+    @adding_to_multi_reply = true
     @audits = {}
 
     preview_replies
