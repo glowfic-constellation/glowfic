@@ -13,89 +13,32 @@ class RepliesController < WritableController
     @page_title = 'Search Replies'
     use_javascript('search')
 
-    @post = Post.find_by_id(params[:post_id]) if params[:post_id].present?
-    @icon = Icon.find_by_id(params[:icon_id]) if params[:icon_id].present?
-    if @post.try(:visible_to?, current_user)
-      @users = @post.authors.active
-      char_ids = @post.replies.select(:character_id).distinct.pluck(:character_id) + [@post.character_id]
-      @characters = Character.where(id: char_ids).ordered
-      @templates = Template.where(id: @characters.map(&:template_id).uniq.compact).ordered
+    @post = Post.find_by(id: params[:post_id]) if params[:post_id].present?
+    @icon = Icon.find_by(id: params[:icon_id]) if params[:icon_id].present?
+
+    searcher = Reply::Searcher.new(current_user: current_user, post: @post)
+    searcher.setup(params)
+
+    @users = searcher.users
+    @characters = searcher.characters
+    @templates = searcher.templates
+    @boards = searcher.boards
+
+    if @post&.visible_to?(current_user)
       gon.post_id = @post.id
-    else
-      @users = User.active.full.where(id: params[:author_id]) if params[:author_id].present?
-      @characters = Character.where(id: params[:character_id]) if params[:character_id].present?
-      @templates = Template.ordered.limit(25)
-      @boards = Board.where(id: params[:board_id]) if params[:board_id].present?
-      if @post
-        # post exists but post not visible
-        flash.now[:error] = "You do not have permission to view this post."
-        return
-      end
+    elsif @post
+      # post exists but not visible
+      flash.now[:error] = "You do not have permission to view this post."
+      return
     end
 
     return unless params[:commit].present?
 
     response.headers['X-Robots-Tag'] = 'noindex'
-    @search_results = Reply.unscoped
-    @search_results = @search_results.where(user_id: params[:author_id]) if params[:author_id].present?
-    @search_results = @search_results.where(character_id: params[:character_id]) if params[:character_id].present?
-    @search_results = @search_results.where(icon_id: params[:icon_id]) if params[:icon_id].present?
 
-    if params[:subj_content].present?
-      @search_results = @search_results.search(params[:subj_content]).with_pg_search_highlight
-      exact_phrases = params[:subj_content].scan(/"([^"]*)"/)
-      if exact_phrases.present?
-        exact_phrases.each do |phrase|
-          phrase = phrase.first.strip
-          next if phrase.blank?
-          @search_results = @search_results.where("replies.content ILIKE ?", "%#{phrase}%")
-        end
-      end
-    end
-
-    append_rank = params[:subj_content].present? ? ', rank DESC' : ''
-    if params[:sort] == 'created_new'
-      @search_results = @search_results.except(:order).order('replies.created_at DESC' + append_rank)
-    elsif params[:sort] == 'created_old'
-      @search_results = @search_results.except(:order).order('replies.created_at ASC' + append_rank)
-    elsif params[:subj_content].blank?
-      @search_results = @search_results.order('replies.created_at DESC')
-    end
-
-    if @post
-      @search_results = @search_results.where(post_id: @post.id)
-    elsif params[:board_id].present?
-      post_ids = Post.where(board_id: params[:board_id]).pluck(:id)
-      @search_results = @search_results.where(post_id: post_ids)
-    end
-
-    if params[:template_id].present?
-      @templates = Template.where(id: params[:template_id])
-      if @templates.first.present?
-        character_ids = Character.where(template_id: @templates.first.id).pluck(:id)
-        @search_results = @search_results.where(character_id: character_ids)
-      end
-    elsif params[:author_id].present?
-      @templates = @templates.where(user_id: params[:author_id])
-    end
-
-    @search_results = @search_results
-      .select('replies.*, characters.name, characters.screenname, users.username, users.deleted as user_deleted')
-      .visible_to(current_user)
-      .joins(:user)
-      .left_outer_joins(:character)
-      .paginate(page: page)
-      .includes(:post)
-
-    @search_results = @search_results.where.not(post_id: current_user.hidden_posts) if logged_in? && !params[:show_blocked]
-
+    @search_results = searcher.search(params, page: page)
+    @templates = searcher.templates
     @audits = []
-
-    return if params[:condensed]
-
-    @search_results = @search_results
-      .select('icons.keyword, icons.url')
-      .left_outer_joins(:icon)
   end
 
   def create
