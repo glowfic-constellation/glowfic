@@ -1,5 +1,6 @@
+@use "sass:color";
 @use 'sass:math';
-@import 'palette';
+@use 'palette' as *;
 
 // Variables
 // global font sizes
@@ -147,9 +148,9 @@ $bg_color_content_border: transparent !default; // from river, is 0-width in def
 // mix colors X and Y with weight W (favoring Y, allowing values outside 0 and 1)
 @function mix-allow-heavy($color1, $color2, $value) {
   // @return (1 - $value) * $color1 + ($color2 * $value);
-  $red: (1 - $value) * red($color1) + (red($color2) * $value);
-  $green: (1 - $value) * green($color1) + (green($color2) * $value);
-  $blue: (1 - $value) * blue($color1) + (blue($color2) * $value);
+  $red: (1 - $value) * color.channel($color1, 'red', $space: rgb) + (color.channel($color2, 'red', $space: rgb) * $value);
+  $green: (1 - $value) * color.channel($color1, 'green', $space: rgb) + (color.channel($color2, 'green', $space: rgb) * $value);
+  $blue: (1 - $value) * color.channel($color1, 'blue', $space: rgb) + (color.channel($color2, 'blue', $space: rgb) * $value);
   @return rgb($red, $green, $blue);
 }
 
