@@ -140,6 +140,9 @@ Lint/ConstantDefinitionInBlock:
 Lint/ConstantOverwrittenInRescue: # new in 1.31
   Enabled: true
 
+Lint/ConstantReassignment: # new in 1.70
+  Enabled: true
+
 Lint/DeprecatedConstants: # (new in 1.8)
   Enabled: true
 
@@ -221,6 +224,9 @@ Lint/RedundantRegexpQuantifiers: # new in 1.53
   Enabled: true
 
 Lint/RequireRelativeSelfPath: # new in 1.22
+  Enabled: true
+
+Lint/SharedMutableDefault: # new in 1.70
   Enabled: true
 
 Lint/SuppressedException:
@@ -953,6 +959,9 @@ Style/InPatternThen: # new in 1.16
 Style/InvertibleUnlessCondition:  # new in 1.44
   Enabled: false
   # overriding InverseMethods isn't working right now and we have a lot of fine examples of "unless .present?"
+
+Style/ItAssignment: # new in 1.70
+  Enabled: true
 
 Style/KeywordArgumentsMerging: # new in 1.68
   Enabled: true
