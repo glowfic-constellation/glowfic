@@ -385,6 +385,7 @@ class RepliesController < WritableController
       # Create a fake temporary reply with the contents of the original one to be in history
       @multi_replies[idx] = new_reply = original_reply.dup
       new_reply.order = original_reply_order + idx + 1
+      new_reply.created_at = @reply.created_at
       new_reply.save!
 
       # Update the new reply added with the actual params that should be there
