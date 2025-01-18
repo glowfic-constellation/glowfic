@@ -209,7 +209,7 @@ class WritableController < ApplicationController
     )
   end
 
-  def permitted_params(param_hash=nil)
+  def permitted_params(param_hash=nil, extra_params=[])
     (param_hash || params).fetch(:reply, {}).permit(
       :post_id,
       :content,
@@ -218,6 +218,7 @@ class WritableController < ApplicationController
       :audit_comment,
       :character_alias_id,
       :editor_mode,
+      *extra_params,
     )
   end
 

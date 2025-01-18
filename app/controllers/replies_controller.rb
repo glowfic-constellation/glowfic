@@ -3,6 +3,7 @@ require 'will_paginate/array'
 
 class RepliesController < WritableController
   before_action :login_required, except: [:search, :show, :history]
+  before_action :get_multi_replies, only: [:create, :update]
   before_action :find_model, only: [:show, :history, :edit, :update, :destroy]
   before_action :editor_setup, only: [:edit]
   before_action :require_create_permission, only: [:create]
@@ -12,89 +13,32 @@ class RepliesController < WritableController
     @page_title = 'Search Replies'
     use_javascript('search')
 
-    @post = Post.find_by_id(params[:post_id]) if params[:post_id].present?
-    @icon = Icon.find_by_id(params[:icon_id]) if params[:icon_id].present?
-    if @post.try(:visible_to?, current_user)
-      @users = @post.authors.active
-      char_ids = @post.replies.select(:character_id).distinct.pluck(:character_id) + [@post.character_id]
-      @characters = Character.where(id: char_ids).ordered
-      @templates = Template.where(id: @characters.map(&:template_id).uniq.compact).ordered
+    @post = Post.find_by(id: params[:post_id]) if params[:post_id].present?
+    @icon = Icon.find_by(id: params[:icon_id]) if params[:icon_id].present?
+
+    searcher = Reply::Searcher.new(current_user: current_user, post: @post)
+    searcher.setup(params)
+
+    @users = searcher.users
+    @characters = searcher.characters
+    @templates = searcher.templates
+    @boards = searcher.boards
+
+    if @post&.visible_to?(current_user)
       gon.post_id = @post.id
-    else
-      @users = User.active.full.where(id: params[:author_id]) if params[:author_id].present?
-      @characters = Character.where(id: params[:character_id]) if params[:character_id].present?
-      @templates = Template.ordered.limit(25)
-      @boards = Board.where(id: params[:board_id]) if params[:board_id].present?
-      if @post
-        # post exists but post not visible
-        flash.now[:error] = "You do not have permission to view this post."
-        return
-      end
+    elsif @post
+      # post exists but not visible
+      flash.now[:error] = "You do not have permission to view this post."
+      return
     end
 
     return unless params[:commit].present?
 
     response.headers['X-Robots-Tag'] = 'noindex'
-    @search_results = Reply.unscoped
-    @search_results = @search_results.where(user_id: params[:author_id]) if params[:author_id].present?
-    @search_results = @search_results.where(character_id: params[:character_id]) if params[:character_id].present?
-    @search_results = @search_results.where(icon_id: params[:icon_id]) if params[:icon_id].present?
 
-    if params[:subj_content].present?
-      @search_results = @search_results.search(params[:subj_content]).with_pg_search_highlight
-      exact_phrases = params[:subj_content].scan(/"([^"]*)"/)
-      if exact_phrases.present?
-        exact_phrases.each do |phrase|
-          phrase = phrase.first.strip
-          next if phrase.blank?
-          @search_results = @search_results.where("replies.content ILIKE ?", "%#{phrase}%")
-        end
-      end
-    end
-
-    append_rank = params[:subj_content].present? ? ', rank DESC' : ''
-    if params[:sort] == 'created_new'
-      @search_results = @search_results.except(:order).order('replies.created_at DESC' + append_rank)
-    elsif params[:sort] == 'created_old'
-      @search_results = @search_results.except(:order).order('replies.created_at ASC' + append_rank)
-    elsif params[:subj_content].blank?
-      @search_results = @search_results.order('replies.created_at DESC')
-    end
-
-    if @post
-      @search_results = @search_results.where(post_id: @post.id)
-    elsif params[:board_id].present?
-      post_ids = Post.where(board_id: params[:board_id]).pluck(:id)
-      @search_results = @search_results.where(post_id: post_ids)
-    end
-
-    if params[:template_id].present?
-      @templates = Template.where(id: params[:template_id])
-      if @templates.first.present?
-        character_ids = Character.where(template_id: @templates.first.id).pluck(:id)
-        @search_results = @search_results.where(character_id: character_ids)
-      end
-    elsif params[:author_id].present?
-      @templates = @templates.where(user_id: params[:author_id])
-    end
-
-    @search_results = @search_results
-      .select('replies.*, characters.name, characters.screenname, users.username, users.deleted as user_deleted')
-      .visible_to(current_user)
-      .joins(:user)
-      .left_outer_joins(:character)
-      .paginate(page: page)
-      .includes(:post)
-
-    @search_results = @search_results.where.not(post_id: current_user.hidden_posts) if logged_in? && !params[:show_blocked]
-
+    @search_results = searcher.search(params, page: page)
+    @templates = searcher.templates
     @audits = []
-
-    return if params[:condensed]
-
-    @search_results = @search_results
-      .select('icons.keyword, icons.url')
-      .left_outer_joins(:icon)
   end
 
   def create
@@ -116,7 +60,24 @@ class RepliesController < WritableController
       redirect_to post_path(post_id, page: :unread, anchor: :unread) and return
     elsif params[:button_preview]
       draft = make_draft
-      preview(ReplyDraft.reply_from_draft(draft)) and return
+      preview_reply(ReplyDraft.reply_from_draft(draft)) and return
+    elsif params[:button_submit_previewed_multi_reply]
+      if editing_multi_reply?
+        edit_reply(true)
+      else
+        post_replies
+      end
+      return
+    elsif params[:button_discard_multi_reply]
+      flash[:success] = "Replies discarded."
+      if editing_multi_reply?
+        # Editing multi reply, going to redirect back to the reply I'm editing
+        redirect_to reply_path(@reply, anchor: "reply-#{@reply.id}")
+      else
+        # Posting a new multi reply, go back to unread
+        redirect_to post_path(params[:reply][:post_id], page: :unread, anchor: :unread)
+      end
+      return
     end
 
     reply = Reply.new(permitted_params)
@@ -139,10 +100,10 @@ class RepliesController < WritableController
           flash.now[:error] = "This looks like a duplicate. Did you attempt to post this twice? Please resubmit if this was intentional."
           @allow_dupe = true
           if most_recent_unseen_reply.nil? || (most_recent_unseen_reply.id == last_by_user.id && @unseen_replies.count == 1)
-            preview(reply)
+            preview_reply(reply)
           else
             draft = make_draft(false)
-            preview(ReplyDraft.reply_from_draft(draft))
+            preview_reply(ReplyDraft.reply_from_draft(draft))
           end
           return
         end
@@ -154,20 +115,17 @@ class RepliesController < WritableController
         pluraled = num > 1 ? "have been #{num} new replies" : "has been 1 new reply"
         flash.now[:error] = "There #{pluraled} since you last viewed this post."
         draft = make_draft
-        preview(ReplyDraft.reply_from_draft(draft)) and return
+        preview_reply(ReplyDraft.reply_from_draft(draft)) and return
       end
     end
 
-    begin
-      reply.save!
-    rescue ActiveRecord::RecordInvalid => e
-      render_errors(reply, action: 'created', now: true, err: e)
-
-      redirect_to posts_path and return unless reply.post
-      redirect_to post_path(reply.post)
+    if params[:button_add_more]
+      # If they click "Add More", fetch the existing array of multi replies if present and add the current permitted_params to that list
+      add_to_multi_reply(reply, permitted_params)
+    elsif editing_multi_reply?
+      edit_reply(true, new_multi_reply: reply)
     else
-      flash[:success] = "Reply posted."
-      redirect_to reply_path(reply, anchor: "reply-#{reply.id}")
+      post_replies(new_reply: reply)
     end
   end
 
@@ -187,7 +145,12 @@ class RepliesController < WritableController
   def update
     @reply.assign_attributes(permitted_params)
     process_npc(@reply, permitted_character_params)
-    preview(@reply) and return if params[:button_preview]
+    if params[:button_preview]
+      preview_reply(@reply) and return
+    elsif params[:button_add_more]
+      # This will take us to reply create instead, but this reply's ID will be saved
+      add_to_multi_reply(@reply, permitted_params) and return
+    end
 
     if current_user.id != @reply.user_id && @reply.audit_comment.blank?
       flash[:error] = "You must provide a reason for your moderator edit."
@@ -195,18 +158,7 @@ class RepliesController < WritableController
       render :edit and return
     end
 
-    begin
-      @reply.save!
-    rescue ActiveRecord::RecordInvalid => e
-      render_errors(@reply, action: 'updated', now: true, err: e)
-
-      @audits = { @reply.id => @post.audits.count }
-      editor_setup
-      render :edit
-    else
-      flash[:success] = "Reply updated."
-      redirect_to reply_path(@reply, anchor: "reply-#{@reply.id}")
-    end
+    edit_reply(false)
   end
 
   def destroy
@@ -297,17 +249,147 @@ class RepliesController < WritableController
     redirect_to post_path(@reply.post)
   end
 
-  def preview(written)
-    @written = written
-    @post = @written.post
-    @written.user = current_user unless @written.user
-    @audits = @written.id.present? ? { @written.id => @written.audits.count } : {}
+  def get_multi_replies
+    # Get the multi replies stored in the page JSON
+    @multi_replies_params = JSON.parse(params.fetch(:multi_replies_json, "[]")).map do |reply_json|
+      permitted_params(ActionController::Parameters.new({ reply: reply_json }), [:id])
+    end
+    @multi_replies = @multi_replies_params.map do |reply_params|
+      Reply.new(reply_params).tap { |r| r.user = current_user }
+    end
+  end
 
+  def preview_reply(reply)
+    # Previewing a specific reply
+    @post = reply.post
+    @reply = reply
+    @reply.user = current_user unless @reply.user
+    @audits = @reply.id.present? ? { @reply.id => @reply.audits.count } : {}
+    @adding_to_multi_reply = false
+    preview_replies
+  end
+
+  def add_to_multi_reply(reply, reply_params)
+    # Adding a new reply to a multi reply
+    post_id = params[:reply][:post_id]
+    ReplyDraft.draft_for(post_id, current_user.id)&.destroy!
+
+    # Save NPC
+    if reply.character&.new_record?
+      if reply.character.save
+        flash[:success] = "Your new NPC has been persisted!"
+        params[:reply][:character_id] = reply.character.id
+        reply_params[:character_id] = reply.character.id
+        reply.character_id = reply.character.id
+      else
+        flash[:error] = "There was a problem persisting your new NPC."
+      end
+    end
+
+    # Add reply to list of multi replies
+    reply.user = current_user unless reply.user
+    @multi_replies << reply
+    reply_params[:id] = reply.id if reply.id.present?
+    @multi_replies_params << reply_params
+
+    # Set up editor
+    @post = reply.post
+    empty_reply_hash = permitted_params.permit(:character_id, :icon_id, :character_alias_id)
+    @reply = @post.build_new_reply_for(current_user, empty_reply_hash)
+    @reply.editor_mode = reply.editor_mode
+    @adding_to_multi_reply = true
+    @audits = {}
+
+    preview_replies
+  end
+
+  def preview_replies
     @page_title = @post.subject
 
-    @reply = @written # So that editor_setup shows the correct characters
     editor_setup
     render :preview
+  end
+
+  def post_replies(new_reply: nil)
+    @multi_replies << new_reply if new_reply.present?
+
+    first_reply = @multi_replies.first
+    begin
+      Reply.transaction { @multi_replies.each(&:save!) }
+    rescue ActiveRecord::RecordInvalid => e
+      errored_reply = @multi_replies.detect { |r| r.errors.present? } || first_reply
+      render_errors(errored_reply, action: 'created', now: true, err: e)
+
+      redirect_to posts_path and return unless errored_reply.post
+      redirect_to post_path(errored_reply.post) and return
+    end
+
+    flash[:success] = "#{'Reply'.pluralize(@multi_replies.length)} posted."
+    redirect_to reply_path(first_reply, anchor: "reply-#{first_reply.id}")
+  end
+
+  def editing_multi_reply?
+    # If the list of params is present and the first item on the list has the ID stored, I am editing it
+    @multi_replies_params.present? && (@reply = Reply.find_by(id: @multi_replies_params.first["id"]))
+  end
+
+  def edit_reply(editing_multi_reply, new_multi_reply: nil)
+    begin
+      Reply.transaction do
+        edit_multi_replies(new_multi_reply) if editing_multi_reply
+
+        @reply.save!
+      end
+    rescue ActiveRecord::RecordInvalid => e
+      if @multi_replies.blank?
+        render_errors(@reply, action: 'updated', now: true, err: e)
+      else
+        errored_reply = @multi_replies.detect { |r| r.errors.present? } || @reply
+        render_errors(errored_reply, action: 'updated', now: true, err: e)
+      end
+
+      @post ||= @reply.post
+      @audits = { @reply.id => @post.audits.count }
+      editor_setup
+      render :edit
+    else
+      flash[:success] = "Reply updated."
+      redirect_to reply_path(@reply, anchor: "reply-#{@reply.id}")
+    end
+  end
+
+  def edit_multi_replies(new_multi_reply)
+    # Add new replies after the one being edited and before the next
+    if new_multi_reply.present?
+      # Including the reply in the text editor, not just the ones in the JSON
+      @multi_replies << new_multi_reply
+      @multi_replies_params << permitted_params
+    end
+    original_reply = @reply.dup
+
+    # Modify the original reply with the parameters of the first reply in the JSON
+    @reply.assign_attributes(@multi_replies_params.shift)
+    @multi_replies.shift
+
+    # Check whether there are any further replies beyond the very first one
+    num_new_replies = @multi_replies_params.length
+    return if num_new_replies == 0
+
+    # Reorder the replies after this one
+    original_reply_order = @reply.order
+    following_replies = @reply.post.replies.where("reply_order > ?", original_reply_order)
+    following_replies.update_all(["reply_order = reply_order + ?", num_new_replies]) # rubocop:disable Rails/SkipsModelValidations
+
+    # Create the new replies
+    @multi_replies_params.each_with_index do |reply_params, idx|
+      # Create a fake temporary reply with the contents of the original one to be in history
+      @multi_replies[idx] = new_reply = original_reply.dup
+      new_reply.order = original_reply_order + idx + 1
+      new_reply.save!
+
+      # Update the new reply added with the actual params that should be there
+      new_reply.update!(reply_params)
+    end
   end
 
   def make_draft(show_message=true)
