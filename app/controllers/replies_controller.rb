@@ -365,7 +365,7 @@ class RepliesController < WritableController
       @multi_replies << new_multi_reply
       @multi_replies_params << permitted_params
     end
-    original_reply = @reply.dup
+    reply_contents = @reply.dup
 
     # Modify the original reply with the parameters of the first reply in the JSON
     @reply.assign_attributes(@multi_replies_params.shift)
@@ -376,15 +376,15 @@ class RepliesController < WritableController
     return if num_new_replies == 0
 
     # Reorder the replies after this one
-    original_reply_order = @reply.order
-    following_replies = @reply.post.replies.where("reply_order > ?", original_reply_order)
+    original_order = @reply.order
+    following_replies = @reply.post.replies.where("reply_order > ?", original_order)
     following_replies.update_all(["reply_order = reply_order + ?", num_new_replies]) # rubocop:disable Rails/SkipsModelValidations
 
     # Create the new replies
     @multi_replies_params.each_with_index do |reply_params, idx|
       # Create a fake temporary reply with the contents of the original one to be in history
-      @multi_replies[idx] = new_reply = original_reply.dup
-      new_reply.order = original_reply_order + idx + 1
+      @multi_replies[idx] = new_reply = reply_contents.dup
+      new_reply.order = original_order + idx + 1
       new_reply.created_at = @reply.created_at
       new_reply.save!
 
