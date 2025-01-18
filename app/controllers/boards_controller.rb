@@ -56,7 +56,7 @@ class BoardsController < ApplicationController
   def show
     @page_title = @board.name
     @board_sections = @board.board_sections.ordered
-    @board_sections = @board_sections.paginate(per_page: 25, page: params[:page])
+    @board_sections = @board_sections.paginate(per_page: 25, page: page)
     board_posts = @board.posts.where(section_id: nil)
     if @board.ordered?
       board_posts = board_posts.ordered_in_section

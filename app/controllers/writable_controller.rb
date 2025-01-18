@@ -37,7 +37,7 @@ class WritableController < ApplicationController
 
   def show_post(cur_page=nil)
     per = per_page
-    cur_page ||= page
+    cur_page ||= page(allow_special: true)
     @replies = @post.replies
     @paginate_params = { controller: 'posts', action: 'show', id: @post.id }
 

@@ -24,6 +24,11 @@ RSpec.describe ReportsController do
       expect(response).to have_http_status(200)
     end
 
+    it "handles bad pages" do
+      get :show, params: { id: 'daily', page: 'unread' }
+      expect(response).to have_http_status(200)
+    end
+
     it "sets variables with logged in daily" do
       user = create(:user)
       post = create(:post)

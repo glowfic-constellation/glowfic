@@ -43,11 +43,11 @@ class ApplicationController < ActionController::Base
   end
 
   VALID_PAGES = ['last', 'unread']
-  def page
+  def page(allow_special: false)
     return @page if @page
     return (@page = 1) unless params[:page]
     @page = params[:page]
-    return @page if VALID_PAGES.include?(@page)
+    return @page if allow_special && VALID_PAGES.include?(@page)
     @page = @page.to_i
     return @page if @page > 0
     flash.now[:error] = "Page not recognized, defaulting to page 1."
