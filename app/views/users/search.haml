@@ -1,43 +1,28 @@
 = render 'search/breadcrumbs'
 
-%table.search-collapsible
-  %thead
-    %tr
-      %th.search-params-header
-        Search Users
-        - if @search_results
-          = "- #{@search_results.total_entries} results"
-      %th.search-results-header
-        - if @search_results
-          = render 'posts/paginator', paginated: @search_results, no_per: true
-  %tbody
-    %tr
-      %td.search-box
-        = form_tag search_users_path, method: :get do
-          %table.search-form
-            %tr
-              %td.width-70= label_tag :search_username, 'Username'
-              %td= text_field_tag :username, params[:username], style: 'width: 100%; margin: 5px 0px;', id: :search_username
-            %tr
-              %td.centered{colspan: 2}= submit_tag "Search", class: 'button'
-      %td.vtop
-        - if @search_results.present?
-          %table
-            %thead
-              %tr
-                %th.sub Name
-                %th.width-70.sub.centered Moiety
-                %th.sub Date Joined
-            %tbody
-              - @search_results.each do |user|
-                %tr.user-row
-                  - klass = cycle('even', 'odd')
-                  %td.padding-10.username{class: klass}= user_link(user)
-                  %td.padding-10.user-moiety.centered.width-70{class: klass}= color_block(user)
-                  %td.padding-10.user-date{class: klass}= pretty_time(user.created_at)
-
+.search-collapsible
+  .search-params-header
+    Search Users
+    - if @search_results
+      = "- #{@search_results.total_entries} results"
+  .search-results-header
+    - if @search_results
+      = render 'posts/paginator', paginated: @search_results, no_per: true
+  .search-box
+    = form_tag search_users_path, method: :get do
+      .search-form#users-search
+        .label= label_tag :search_username, 'Username'
+        .select= text_field_tag :username, params[:username], id: :search_username
+        .search-form-ender= submit_tag "Search", class: 'button'
+  .vtop
+    - if @search_results.present?
+      %table
+        %thead
+          %tr
+            %th.sub Name
+            %th.width-70.sub.centered Moiety
+            %th.sub Date Joined
+        = render 'list', users: @search_results, skip_footer: true
   - if @search_results && @search_results.total_pages > 1
-    %tfoot
-      %tr
-        %th.search-params-header.empty
-        %th.search-results-header= render 'posts/paginator', paginated: @search_results, no_per: true
+    .search-params-header.empty
+    .search-results-header= render 'posts/paginator', paginated: @search_results, no_per: true
