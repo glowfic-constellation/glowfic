@@ -158,7 +158,7 @@ RSpec.describe "Editing replies" do
 
       within(all_containers[4]) { expect(page).to have_selector('.post-content', exact_text: 'example text 2') }
 
-      expect(post.reload.tagged_at).to be_the_same_time_as(tagged_at)
+      expect(reply.post.reload.tagged_at).to be_the_same_time_as(tagged_at)
 
       # Now test using the "Save Previewed" button
       within(find_reply_on_page(reply)) do
