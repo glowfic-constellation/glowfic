@@ -1,3 +1,5 @@
+TIME_FORMAT = '%b %d, %Y %-l:%M %p'
+
 RSpec.describe "Editing replies" do
   def find_reply_on_page(reply)
     find('.post-reply') { |x| x.has_selector?('a', id: "reply-#{reply.id}") }
@@ -93,8 +95,14 @@ RSpec.describe "Editing replies" do
     scenario "to split a reply", :js do
       user = login
       user.update!(default_editor: 'html')
-      reply = create(:reply, user: user, content: 'example text', editor_mode: 'html')
-      create(:reply, user: user, post: reply.post, content: 'example text 2')
+
+      reply = Timecop.freeze(2.weeks.ago) do
+        reply = create(:reply, user: user, content: 'example text', editor_mode: 'html')
+        create(:reply, user: user, post: reply.post, content: 'example text 2')
+        reply
+      end
+
+      tagged_at = reply.post.tagged_at
 
       visit reply_path(reply)
       expect(page).to have_selector('.post-container', count: 3)
@@ -132,10 +140,25 @@ RSpec.describe "Editing replies" do
       expect(page).to have_selector('.success', exact_text: 'Reply updated.')
       expect(page).to have_selector('.post-container', count: 5)
       all_containers = page.find_all(".post-container")
-      within(all_containers[1]) { expect(page).to have_selector('.post-content', exact_text: 'other text 1') }
-      within(all_containers[2]) { expect(page).to have_selector('.post-content', exact_text: 'other text 2') }
-      within(all_containers[3]) { expect(page).to have_selector('.post-content', exact_text: 'other text 3') }
+
+      within(all_containers[1]) do
+        expect(page).to have_selector('.post-content', exact_text: 'other text 1')
+        expect(page).to have_selector('.post-footer', text: "Posted #{reply.created_at.strftime(TIME_FORMAT)} | Updated")
+      end
+
+      within(all_containers[2]) do
+        expect(page).to have_selector('.post-content', exact_text: 'other text 2')
+        expect(page).to have_selector('.post-footer', text: "Posted #{reply.created_at.strftime(TIME_FORMAT)} | Updated")
+      end
+
+      within(all_containers[3]) do
+        expect(page).to have_selector('.post-content', exact_text: 'other text 3')
+        expect(page).to have_selector('.post-footer', text: "Posted #{reply.created_at.strftime(TIME_FORMAT)} | Updated")
+      end
+
       within(all_containers[4]) { expect(page).to have_selector('.post-content', exact_text: 'example text 2') }
+
+      expect(post.reload.tagged_at).to be_the_same_time_as(tagged_at)
 
       # Now test using the "Save Previewed" button
       within(find_reply_on_page(reply)) do
