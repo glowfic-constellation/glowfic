@@ -5,10 +5,11 @@ class Reply::Creater < Object
   def initialize(params, user:, char_params: {})
     @reply = Reply.new(params)
     @reply.user = user
-    @reply = Character::NpcCreator.new(@reply, char_params).process
+    @reply = Character::NpcCreator.new(@reply, user: user, char_params: char_params).process
+    @params = params
   end
 
-  def check(params)
+  def check_status
     return :no_post unless @reply.post.present?
 
     post = @reply.post
@@ -23,12 +24,12 @@ class Reply::Creater < Object
 
     most_recent_unseen_reply = @unseen_replies.last
 
-    return :duplicate if params[:allow_dupe].blank? && check_dupe
+    return :duplicate if @params[:allow_dupe].blank? && check_dupe
     return :clear unless most_recent_unseen_reply.present?
 
     post.mark_read(current_user, at_time: post.read_time_for(@unseen_replies))
 
-    draft = Reply::Drafter.new(params, user: user, char_params: char_params).make_draft(false)
+    draft = Reply::Drafter.new(@params, user: user).make_draft(false)
     preview_reply(ReplyDraft.reply_from_draft(draft))
     :unseen
   end
@@ -44,7 +45,7 @@ class Reply::Creater < Object
     if most_recent_unseen_reply.nil? || (most_recent_unseen_reply.id == last_by_user.id && @unseen_replies.count == 1)
       preview_reply(@reply)
     else
-      draft = Reply::Drafter.new(params, user: user, char_params: char_params).make_draft(false)
+      draft = Reply::Drafter.new(@params, user: user).make_draft(false)
       preview_reply(ReplyDraft.reply_from_draft(draft))
     end
 

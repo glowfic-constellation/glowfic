@@ -82,7 +82,7 @@ class RepliesController < WritableController
 
     creater = Reply::Creater.new(permitted_params, user: current_user, char_params: permitted_character_params)
 
-    result = creater.check
+    result = creater.check_status
     @unseen_replies = creater.unseen_replies
     @audits = creater.audits || []
 
@@ -97,6 +97,8 @@ class RepliesController < WritableController
         pluraled = "#{'has'.pluralize(num)} been #{num} new #{'reply'.pluralize(num)}"
         flash.now[:error] = "There #{pluraled} since you last viewed this post."
     end
+
+    return unless result == :clear
 
     if params[:button_add_more]
       # If they click "Add More", fetch the existing array of multi replies if present and add the current permitted_params to that list
