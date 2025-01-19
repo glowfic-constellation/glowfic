@@ -96,10 +96,12 @@ RSpec.describe "Editing replies" do
       user = login
       user.update!(default_editor: 'html')
 
-      reply = Timecop.freeze(2.weeks.ago) do
-        reply = create(:reply, user: user, content: 'example text', editor_mode: 'html')
-        create(:reply, user: user, post: reply.post, content: 'example text 2')
-        reply
+      reply = nil
+      Reply.with_auditing do
+        Timecop.freeze(2.weeks.ago) do
+          reply = create(:reply, user: user, content: 'example text', editor_mode: 'html')
+          create(:reply, user: user, post: reply.post, content: 'example text 2')
+        end
       end
 
       tagged_at = reply.post.tagged_at
