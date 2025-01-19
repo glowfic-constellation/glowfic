@@ -2,29 +2,26 @@
 class Reply::Creater < Object
   attr_reader :reply, :unseen_replies, :audits, :draft, :multi_replies
 
-  def initialize(params, user:, char_params: {}, editing_multi_reply: false, multi_replies: [], multi_replies_params: [])
+  def initialize(params, user:, char_params: {}, multi_replies: [], multi_replies_params: [])
     @reply = Reply.new(params)
     @reply.user = user
     @reply = Character::NpcCreater.new(@reply, user: user, char_params: char_params).process
     @params = params
-    @editing_multi_reply = editing_multi_reply
     @multi_replies = multi_replies
     @multi_replies_params = multi_replies_params
   end
 
-  def check_buttons
+  def check_buttons(editing_multi_reply)
     if @params[:button_draft]
       @draft = make_draft
       :draft
     elsif @params[:button_delete_draft]
-      post_id = @params[:reply][:post_id]
-      @draft = ReplyDraft.draft_for(post_id, @reply.user.id)
-      @draft&.destroy ? :draft_destroy_success : :draft_destroy_failure
+      delete_draft
     elsif @params[:button_preview]
       @draft = make_draft
       :preview
     elsif @params[:button_submit_previewed_multi_reply]
-      @editing_multi_reply ? :edit_multi_reply : :create_multi_reply
+      editing_multi_reply ? :edit_multi_reply : :create_multi_reply
     elsif @params[:button_discard_multi_reply]
       :discard_multi_reply
     else
@@ -92,5 +89,17 @@ class Reply::Creater < Object
     end
 
     true
+  end
+
+  def delete_draft
+    post_id = @params[:post_id]
+    @draft = ReplyDraft.draft_for(post_id, @reply.user.id)
+    return :draft_destroy_failure unless @draft
+
+    if @draft.destroy
+      :draft_destroy_success
+    else
+      :draft_destroy_failure
+    end
   end
 end

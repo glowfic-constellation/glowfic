@@ -46,18 +46,20 @@ class RepliesController < WritableController
       permitted_params,
       user: current_user,
       char_params: permitted_character_params,
-      editing_multi_reply: editing_multi_reply?,
       multi_replies: @multi_replies,
       multi_replies_params: @multi_replies_params,
     )
 
-    buttons = creater.check_buttons
+    buttons = creater.check_buttons(editing_multi_reply?)
     draft = creater.draft
 
     case buttons
       when :draft
-        redirect = draft.post ? post_path(draft.post, page: :unread, anchor: :unread) : posts_path
-        redirect_to redirect
+        if draft.post
+          redirect_to post_path(draft.post, page: :unread, anchor: :unread)
+        else
+          redirect_to posts_path
+        end
       when :delete_draft_success
         flash[:success] = "Draft deleted."
         redirect_to post_path(post_id, page: :unread, anchor: :unread)
