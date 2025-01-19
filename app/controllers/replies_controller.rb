@@ -72,15 +72,15 @@ class RepliesController < WritableController
         else
           redirect_to posts_path
         end
-      when :delete_draft_success
+      when :draft_destroy_success
         flash[:success] = "Draft deleted."
-        redirect_to post_path(post_id, page: :unread, anchor: :unread)
-      when :delete_draft_failure
+        redirect_to post_path(params[:reply][:post_id], page: :unread, anchor: :unread)
+      when :draft_destroy_failure
         flash[:error] = {
           message: "Draft could not be deleted",
           array: draft&.errors&.full_messages,
         }
-        redirect_to post_path(post_id, page: :unread, anchor: :unread)
+        redirect_to post_path(params[:reply][:post_id], page: :unread, anchor: :unread)
       when :preview
         preview_reply(ReplyDraft.reply_from_draft(draft))
       when :edit_multi_reply

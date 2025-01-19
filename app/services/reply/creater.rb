@@ -99,8 +99,8 @@ class Reply::Creater < Object
     if most_recent_unseen_reply.nil? || (most_recent_unseen_reply.id == last_by_user.id && @unseen_replies.count == 1)
       # preview_reply(@reply)
     else
-      draft = make_draft
-      @reply = ReplyDraft.reply_from_draft(draft) # for preview
+      make_draft
+      @reply = ReplyDraft.reply_from_draft(@draft) # for preview
       # preview_reply(ReplyDraft.reply_from_draft(draft))
     end
 
@@ -108,8 +108,7 @@ class Reply::Creater < Object
   end
 
   def delete_draft
-    post_id = @params[:post_id]
-    @draft = ReplyDraft.draft_for(post_id, @reply.user.id)
+    @draft = ReplyDraft.draft_for(@params[:post_id], @reply.user.id)
     return :draft_destroy_failure unless @draft
 
     if @draft.destroy
