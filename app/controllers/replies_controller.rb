@@ -387,6 +387,8 @@ class RepliesController < WritableController
       new_reply.order = original_order + idx + 1
       new_reply.created_at = @reply.created_at
       new_reply.skip_post_update = true
+      new_reply.is_import = true
+      new_reply.skip_notify = true
       new_reply.save!
 
       # Update the new reply added with the actual params that should be there
