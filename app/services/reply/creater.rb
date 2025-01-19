@@ -30,7 +30,7 @@ class Reply::Creater < Object
     end
   end
 
-  def check_status
+  def check_status(allow_dupe)
     return :no_post unless @reply.post.present?
 
     post = @reply.post
@@ -45,7 +45,7 @@ class Reply::Creater < Object
 
     most_recent_unseen_reply = @unseen_replies.last
 
-    return :duplicate if @params[:allow_dupe].blank? && check_dupe(post, most_recent_unseen_reply)
+    return :duplicate if !allow_dupe && check_dupe(post, most_recent_unseen_reply)
     return :clear unless most_recent_unseen_reply.present?
 
     post.mark_read(@reply.user, at_time: post.read_time_for(@unseen_replies))

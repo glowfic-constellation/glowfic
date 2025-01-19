@@ -98,7 +98,7 @@ class RepliesController < WritableController
 
     return unless %i[none create_multi_reply].include?(buttons)
 
-    status = creater.check_status
+    status = creater.check_status(params[:allow_dupe].present?)
     @unseen_replies = creater.unseen_replies
     @audits = creater.audits || []
 
@@ -107,8 +107,8 @@ class RepliesController < WritableController
         # this should probably fail at this stage
       when :duplicate
         @allow_dupe = true
-        preview_reply(creater.reply)
         flash.now[:error] = "This looks like a duplicate. Did you attempt to post this twice? Please resubmit if this was intentional."
+        preview_reply(creater.reply)
       when :unseen
         num = @unseen_replies.count
         flash.now[:error] = "There #{'has'.pluralize(num)} been #{num} new #{'reply'.pluralize(num)} since you last viewed this post."
