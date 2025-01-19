@@ -1,17 +1,17 @@
 # frozen_string_literal: true
 class Reply::Drafter < Object
-  def initialize
-    if (@draft = ReplyDraft.draft_for(params[:reply][:post_id], current_user.id))
-      @draft.assign_attributes(permitted_params)
+  def initialize(params, user:, char_params: {})
+    if (@draft = ReplyDraft.draft_for(params[:reply][:post_id], user.id))
+      @draft.assign_attributes(params)
     else
-      @draft = ReplyDraft.new(permitted_params)
-      @draft.user = current_user
+      @draft = ReplyDraft.new(params)
+      @draft.user = user
     end
+    @draft = Character::NpcCreator.new(@draft, char_params).process
   end
 
   def make_draft(show_message=true)
-    process_npc(draft, permitted_character_params)
-    new_npc = !draft.character.nil? && !draft.character.persisted?
+    new_npc = !@draft.character.nil? && !@draft.character.persisted?
 
     begin
       @draft.save!
