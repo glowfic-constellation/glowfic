@@ -42,33 +42,33 @@ class RepliesController < WritableController
   end
 
   def create
-    if params[:button_draft]
+    creater = Reply::Creater.new(permitted_params, user: current_user, char_params: permitted_character_params)
+
+    buttons = creater.check_buttons
+    draft = creater.draft
+
+    case buttons
+    when :draft
+      redirect_to draft.post ? post_path(draft.post, page: :unread, anchor: :unread) : posts_path
+    when :delete_draft_success
+      flash[:success] = "Draft deleted."
+      redirect_to post_path(post_id, page: :unread, anchor: :unread)
+    when :delete_draft_failure
+      flash[:error] = {
+        message: "Draft could not be deleted",
+        array: draft&.errors&.full_messages,
+      }
+      redirect_to post_path(post_id, page: :unread, anchor: :unread)
+    when :preview
       draft = make_draft
-      redirect_to posts_path and return unless draft.post
-      redirect_to post_path(draft.post, page: :unread, anchor: :unread) and return
-    elsif params[:button_delete_draft]
-      post_id = params[:reply][:post_id]
-      draft = ReplyDraft.draft_for(post_id, current_user.id)
-      if draft&.destroy
-        flash[:success] = "Draft deleted."
-      else
-        flash[:error] = {
-          message: "Draft could not be deleted",
-          array: draft&.errors&.full_messages,
-        }
-      end
-      redirect_to post_path(post_id, page: :unread, anchor: :unread) and return
-    elsif params[:button_preview]
-      draft = make_draft
-      preview_reply(ReplyDraft.reply_from_draft(draft)) and return
-    elsif params[:button_submit_previewed_multi_reply]
+      preview_reply(ReplyDraft.reply_from_draft(draft))
+    when :multi_reply
       if editing_multi_reply?
         edit_reply(true)
       else
         post_replies
       end
-      return
-    elsif params[:button_discard_multi_reply]
+    when :discard_multi_reply
       flash[:success] = "Replies discarded."
       if editing_multi_reply?
         # Editing multi reply, going to redirect back to the reply I'm editing
@@ -77,16 +77,15 @@ class RepliesController < WritableController
         # Posting a new multi reply, go back to unread
         redirect_to post_path(params[:reply][:post_id], page: :unread, anchor: :unread)
       end
-      return
     end
 
-    creater = Reply::Creater.new(permitted_params, user: current_user, char_params: permitted_character_params)
+    return unless buttons == :none
 
-    result = creater.check_status
+    status = creater.check_status
     @unseen_replies = creater.unseen_replies
     @audits = creater.audits || []
 
-    case result
+    case status
       when :no_post
         # what do we do here
       when :duplicate
@@ -98,7 +97,7 @@ class RepliesController < WritableController
         flash.now[:error] = "There #{pluraled} since you last viewed this post."
     end
 
-    return unless result == :clear
+    return unless status == :clear
 
     if params[:button_add_more]
       # If they click "Add More", fetch the existing array of multi replies if present and add the current permitted_params to that list

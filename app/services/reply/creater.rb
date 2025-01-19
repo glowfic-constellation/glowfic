@@ -9,6 +9,46 @@ class Reply::Creater < Object
     @params = params
   end
 
+  def check_buttons
+    if params[:button_draft]
+      draft = make_draft
+      redirect_to posts_path and return unless draft.post
+      redirect_to post_path(draft.post, page: :unread, anchor: :unread) and return
+    elsif params[:button_delete_draft]
+      post_id = params[:reply][:post_id]
+      draft = ReplyDraft.draft_for(post_id, current_user.id)
+      if draft&.destroy
+        flash[:success] = "Draft deleted."
+      else
+        flash[:error] = {
+          message: "Draft could not be deleted",
+          array: draft&.errors&.full_messages,
+        }
+      end
+      redirect_to post_path(post_id, page: :unread, anchor: :unread) and return
+    elsif params[:button_preview]
+      draft = make_draft
+      preview_reply(ReplyDraft.reply_from_draft(draft)) and return
+    elsif params[:button_submit_previewed_multi_reply]
+      if editing_multi_reply?
+        edit_reply(true)
+      else
+        post_replies
+      end
+      return
+    elsif params[:button_discard_multi_reply]
+      flash[:success] = "Replies discarded."
+      if editing_multi_reply?
+        # Editing multi reply, going to redirect back to the reply I'm editing
+        redirect_to reply_path(@reply, anchor: "reply-#{@reply.id}")
+      else
+        # Posting a new multi reply, go back to unread
+        redirect_to post_path(params[:reply][:post_id], page: :unread, anchor: :unread)
+      end
+      return
+    end
+  end
+
   def check_status
     return :no_post unless @reply.post.present?
 
