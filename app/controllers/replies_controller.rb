@@ -81,7 +81,21 @@ class RepliesController < WritableController
     end
 
     creater = Reply::Creater.new(permitted_params, user: current_user, char_params: permitted_character_params)
-    creater.check
+
+    result = creater.check
+    @unseen_replies = creater.unseen_replies
+
+    case result
+      when :no_post
+        # what do we do here
+      when :duplicate
+        @allow_dupe = true
+        flash.now[:error] = "This looks like a duplicate. Did you attempt to post this twice? Please resubmit if this was intentional."
+      when :unseen
+        num = @unseen_replies.count
+        pluraled = "#{'has'.pluralize(num)} been #{num} new #{'reply'.pluralize(num)}"
+        flash.now[:error] = "There #{pluraled} since you last viewed this post."
+    end
 
     if params[:button_add_more]
       # If they click "Add More", fetch the existing array of multi replies if present and add the current permitted_params to that list
