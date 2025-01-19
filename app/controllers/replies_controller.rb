@@ -386,6 +386,7 @@ class RepliesController < WritableController
       @multi_replies[idx] = new_reply = reply_contents.dup
       new_reply.order = original_order + idx + 1
       new_reply.created_at = @reply.created_at
+      new_reply.skip_post_update = true
       new_reply.save!
 
       # Update the new reply added with the actual params that should be there
