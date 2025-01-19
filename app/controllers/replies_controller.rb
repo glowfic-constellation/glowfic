@@ -50,11 +50,23 @@ class RepliesController < WritableController
       multi_replies_params: @multi_replies_params,
     )
 
-    buttons = creater.check_buttons(editing_multi_reply?)
+    buttons = begin
+      creater.check_buttons(params, editing_multi_reply?)
+    rescue DraftNotSaved => e
+      render_errors(creater.draft, action: 'saved', class_name: 'Draft', err: e)
+      :draft_not_saved
+    end
+
+    if %i[draft preview].include?(buttons)
+      msg = "Draft saved."
+      msg += " Your new NPC character has also been persisted!" if creater.new_npc
+      flash[:success] = msg
+    end
+
     draft = creater.draft
 
     case buttons
-      when :draft
+      when :draft, :draft_not_saved
         if draft.post
           redirect_to post_path(draft.post, page: :unread, anchor: :unread)
         else
@@ -92,7 +104,7 @@ class RepliesController < WritableController
 
     case status
       when :no_post
-        # what do we do here
+        # this should probably fail at this stage
       when :duplicate
         @allow_dupe = true
         preview_reply(@reply)
@@ -100,21 +112,20 @@ class RepliesController < WritableController
       when :unseen
         num = @unseen_replies.count
         flash.now[:error] = "There #{'has'.pluralize(num)} been #{num} new #{'reply'.pluralize(num)} since you last viewed this post."
+        preview_reply(ReplyDraft.reply_from_draft(creater.draft))
     end
 
-    return unless status == :clear
-
-    reply = creater.reply
+    return unless %i[clear no_post].include?(status)
 
     if params[:button_add_more]
       # If they click "Add More", fetch the existing array of multi replies if present and add the current permitted_params to that list
-      add_to_multi_reply(reply, permitted_params)
+      add_to_multi_reply(creater.reply, permitted_params)
     elsif editing_multi_reply?
-      edit_reply(true, new_multi_reply: reply)
+      edit_reply(true, new_multi_reply: creater.reply)
     elsif buttons == :create_multi_reply
       post_replies(creater)
     else
-      post_replies(creater, new_reply: reply)
+      post_replies(creater, new_reply: creater.reply)
     end
   end
 
