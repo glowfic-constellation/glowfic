@@ -99,7 +99,8 @@ class Reply::Creater < Object
     if most_recent_unseen_reply.nil? || (most_recent_unseen_reply.id == last_by_user.id && @unseen_replies.count == 1)
       # preview_reply(@reply)
     else
-      make_draft(show_message: false)
+      draft = make_draft
+      @reply = ReplyDraft.reply_from_draft(draft) # for preview
       # preview_reply(ReplyDraft.reply_from_draft(draft))
     end
 

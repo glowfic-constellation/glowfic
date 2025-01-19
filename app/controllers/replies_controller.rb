@@ -107,7 +107,7 @@ class RepliesController < WritableController
         # this should probably fail at this stage
       when :duplicate
         @allow_dupe = true
-        preview_reply(@reply)
+        preview_reply(creater.reply)
         flash.now[:error] = "This looks like a duplicate. Did you attempt to post this twice? Please resubmit if this was intentional."
       when :unseen
         num = @unseen_replies.count
