@@ -1,8 +1,8 @@
 # frozen_string_literal: true
 class Character::NpcCreater < Object
-  def initialize(writable, params)
+  def initialize(writable, char_params)
     @writable = writable
-    @params = params
+    @params = char_params
   end
 
   def process

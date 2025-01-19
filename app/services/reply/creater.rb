@@ -5,7 +5,7 @@ class Reply::Creater < Object
   def initialize(params, user:, char_params: {}, multi_replies: [], multi_replies_params: [])
     @reply = Reply.new(params)
     @reply.user = user
-    @reply = Character::NpcCreater.new(@reply, user: user, char_params: char_params).process
+    @reply = Character::NpcCreater.new(@reply, char_params).process
     @params = params
     @char_params = char_params
     @multi_replies = multi_replies
