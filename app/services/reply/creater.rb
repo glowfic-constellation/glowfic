@@ -61,6 +61,22 @@ class Reply::Creater < Object
     Reply::Drafter.new(@params, user: @reply.user).make_draft(message)
   end
 
+  def post_replies(new_reply: nil)
+    @multi_replies << new_reply if new_reply.present?
+
+    first_reply = @multi_replies.first
+
+    begin
+      Reply.transaction { @multi_replies.each(&:save!) }
+    rescue ActiveRecord::RecordInvalid => e
+      errored_reply = @multi_replies.detect { |r| r.errors.present? } || first_reply
+      [errored_reply, e]
+    end
+
+    flash[:success] = "#{'Reply'.pluralize(@multi_replies.length)} posted."
+    redirect_to reply_path(first_reply, anchor: "reply-#{first_reply.id}")
+  end
+
   def check_dupe
     last_by_user = post.replies.where(user: @reply.user).ordered.last
     match_attrs = ['content', 'icon_id', 'character_id', 'character_alias_id']

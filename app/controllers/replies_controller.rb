@@ -42,7 +42,13 @@ class RepliesController < WritableController
   end
 
   def create
-    creater = Reply::Creater.new(permitted_params, user: current_user, char_params: permitted_character_params)
+    creater = Reply::Creater.new(
+      permitted_params,
+      user: current_user,
+      char_params: permitted_character_params,
+      multi_replies: @multi_replies,
+      multi_replies_params: @multi_replies_params,
+    )
 
     buttons = creater.check_buttons
     draft = creater.draft
@@ -63,7 +69,7 @@ class RepliesController < WritableController
       when :preview
         preview_reply(ReplyDraft.reply_from_draft(draft))
       when :edit_multi_reply
-        Reply::Updater.new(@params, user: @reply.user, multi_reply: true)
+        edit_reply(true)
       when :discard_multi_reply
         flash[:success] = "Replies discarded."
         if editing_multi_reply?
@@ -101,9 +107,9 @@ class RepliesController < WritableController
     elsif editing_multi_reply?
       edit_reply(true, new_multi_reply: reply)
     elsif buttons == :create_multi_reply
-      post_replies
+      post_replies(creater)
     else
-      post_replies(new_reply: reply)
+      post_replies(creater, new_reply: reply)
     end
   end
 
@@ -288,22 +294,18 @@ class RepliesController < WritableController
     render :preview
   end
 
-  def post_replies(new_reply: nil)
-    @multi_replies << new_reply if new_reply.present?
-
-    first_reply = @multi_replies.first
-    begin
-      Reply.transaction { @multi_replies.each(&:save!) }
-    rescue ActiveRecord::RecordInvalid => e
-      errored_reply = @multi_replies.detect { |r| r.errors.present? } || first_reply
+  def post_replies(creater, new_reply: nil)
+    succeeded = creater.post_replies(new_reply: new_reply)
+    if succeeded == true
+      flash[:success] = "#{'Reply'.pluralize(@multi_replies.length)} posted."
+      redirect_to reply_path(first_reply, anchor: "reply-#{first_reply.id}")
+    else
+      errored_reply, e = succeeded
       render_errors(errored_reply, action: 'created', now: true, err: e)
 
       redirect_to posts_path and return unless errored_reply.post
-      redirect_to post_path(errored_reply.post) and return
+      redirect_to post_path(errored_reply.post)
     end
-
-    flash[:success] = "#{'Reply'.pluralize(@multi_replies.length)} posted."
-    redirect_to reply_path(first_reply, anchor: "reply-#{first_reply.id}")
   end
 
   def editing_multi_reply?
@@ -312,6 +314,7 @@ class RepliesController < WritableController
   end
 
   def edit_reply(editing_multi_reply, new_multi_reply: nil)
+    # Reply::Updater.new(@params, user: @reply.user, multi_reply: editing_multi_reply)
     begin
       Reply.transaction do
         edit_multi_replies(new_multi_reply) if editing_multi_reply
