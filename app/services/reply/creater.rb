@@ -1,51 +1,32 @@
 # frozen_string_literal: true
 class Reply::Creater < Object
-  attr_reader :reply, :unseen_replies, :audits
+  attr_reader :reply, :unseen_replies, :audits, draft
 
-  def initialize(params, user:, char_params: {})
+  def initialize(params, user:, char_params: {}, multi_reply: false)
     @reply = Reply.new(params)
     @reply.user = user
     @reply = Character::NpcCreator.new(@reply, user: user, char_params: char_params).process
     @params = params
+    @multi_reply = multi_reply
   end
 
   def check_buttons
     if params[:button_draft]
-      draft = make_draft
-      redirect_to posts_path and return unless draft.post
-      redirect_to post_path(draft.post, page: :unread, anchor: :unread) and return
+      @draft = make_draft
+      :draft
     elsif params[:button_delete_draft]
       post_id = params[:reply][:post_id]
-      draft = ReplyDraft.draft_for(post_id, current_user.id)
-      if draft&.destroy
-        flash[:success] = "Draft deleted."
-      else
-        flash[:error] = {
-          message: "Draft could not be deleted",
-          array: draft&.errors&.full_messages,
-        }
-      end
-      redirect_to post_path(post_id, page: :unread, anchor: :unread) and return
+      @draft = ReplyDraft.draft_for(post_id, current_user.id)
+      @draft&.destroy ? :draft_destroy_success : :draft_destroy_failure
     elsif params[:button_preview]
-      draft = make_draft
-      preview_reply(ReplyDraft.reply_from_draft(draft)) and return
+      @draft = make_draft
+      :preview
     elsif params[:button_submit_previewed_multi_reply]
-      if editing_multi_reply?
-        edit_reply(true)
-      else
-        post_replies
-      end
-      return
+      editing_multi_reply? ? :edit_multi_reply : :create_multi_reply
     elsif params[:button_discard_multi_reply]
-      flash[:success] = "Replies discarded."
-      if editing_multi_reply?
-        # Editing multi reply, going to redirect back to the reply I'm editing
-        redirect_to reply_path(@reply, anchor: "reply-#{@reply.id}")
-      else
-        # Posting a new multi reply, go back to unread
-        redirect_to post_path(params[:reply][:post_id], page: :unread, anchor: :unread)
-      end
-      return
+      :discard_multi_reply
+    else
+      :none
     end
   end
 
@@ -69,12 +50,16 @@ class Reply::Creater < Object
 
     post.mark_read(current_user, at_time: post.read_time_for(@unseen_replies))
 
-    draft = Reply::Drafter.new(@params, user: user).make_draft(false)
+    @draft = make_draft(false)
     preview_reply(ReplyDraft.reply_from_draft(draft))
     :unseen
   end
 
   private
+
+  def make_draft(message=true)
+    Reply::Drafter.new(@params, user: @reply.user).make_draft(message)
+  end
 
   def check_dupe
     last_by_user = post.replies.where(user: @reply.user).ordered.last
@@ -90,5 +75,10 @@ class Reply::Creater < Object
     end
 
     true
+  end
+
+  def editing_multi_reply?
+    # If the list of params is present and the first item on the list has the ID stored, I am editing it
+    @multi_replies_params.present? && (@reply = Reply.find_by(id: @multi_replies_params.first["id"]))
   end
 end

@@ -48,38 +48,34 @@ class RepliesController < WritableController
     draft = creater.draft
 
     case buttons
-    when :draft
-      redirect_to draft.post ? post_path(draft.post, page: :unread, anchor: :unread) : posts_path
-    when :delete_draft_success
-      flash[:success] = "Draft deleted."
-      redirect_to post_path(post_id, page: :unread, anchor: :unread)
-    when :delete_draft_failure
-      flash[:error] = {
-        message: "Draft could not be deleted",
-        array: draft&.errors&.full_messages,
-      }
-      redirect_to post_path(post_id, page: :unread, anchor: :unread)
-    when :preview
-      draft = make_draft
-      preview_reply(ReplyDraft.reply_from_draft(draft))
-    when :multi_reply
-      if editing_multi_reply?
-        edit_reply(true)
-      else
-        post_replies
-      end
-    when :discard_multi_reply
-      flash[:success] = "Replies discarded."
-      if editing_multi_reply?
-        # Editing multi reply, going to redirect back to the reply I'm editing
-        redirect_to reply_path(@reply, anchor: "reply-#{@reply.id}")
-      else
-        # Posting a new multi reply, go back to unread
-        redirect_to post_path(params[:reply][:post_id], page: :unread, anchor: :unread)
-      end
+      when :draft
+        redirect = draft.post ? post_path(draft.post, page: :unread, anchor: :unread) : posts_path
+        redirect_to redirect
+      when :delete_draft_success
+        flash[:success] = "Draft deleted."
+        redirect_to post_path(post_id, page: :unread, anchor: :unread)
+      when :delete_draft_failure
+        flash[:error] = {
+          message: "Draft could not be deleted",
+          array: draft&.errors&.full_messages,
+        }
+        redirect_to post_path(post_id, page: :unread, anchor: :unread)
+      when :preview
+        preview_reply(ReplyDraft.reply_from_draft(draft))
+      when :edit_multi_reply
+        Reply::Updater.new(@params, user: @reply.user, multi_reply: true)
+      when :discard_multi_reply
+        flash[:success] = "Replies discarded."
+        if editing_multi_reply?
+          # Editing multi reply, going to redirect back to the reply I'm editing
+          redirect_to reply_path(@reply, anchor: "reply-#{@reply.id}")
+        else
+          # Posting a new multi reply, go back to unread
+          redirect_to post_path(params[:reply][:post_id], page: :unread, anchor: :unread)
+        end
     end
 
-    return unless buttons == :none
+    return unless %i[none create_multi_reply].includes?(buttons)
 
     status = creater.check_status
     @unseen_replies = creater.unseen_replies
@@ -104,6 +100,8 @@ class RepliesController < WritableController
       add_to_multi_reply(reply, permitted_params)
     elsif editing_multi_reply?
       edit_reply(true, new_multi_reply: reply)
+    elsif buttons == :create_multi_reply
+      post_replies
     else
       post_replies(new_reply: reply)
     end
