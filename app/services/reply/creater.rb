@@ -22,9 +22,9 @@ class Reply::Creater < Object
       make_draft
       :preview
     elsif params[:button_submit_previewed_multi_reply]
-      editing_multi_reply ? :edit_multi_reply : :create_multi_reply
+      handle_multi_reply_buttons(:submit_previewed_multi_reply, editing_multi_reply)
     elsif params[:button_discard_multi_reply]
-      :discard_multi_reply
+      handle_multi_reply_buttons(:discard_multi_reply, editing_multi_reply)
     else
       :none
     end
@@ -115,6 +115,14 @@ class Reply::Creater < Object
       :draft_destroy_success
     else
       :draft_destroy_failure
+    end
+  end
+
+  def handle_multi_reply_buttons(param, editing_multi_reply)
+    if param == :submit_previewed_multi_reply
+      editing_multi_reply ? :edit_multi_reply : :create_multi_reply
+    elsif param == :button_discard_multi_reply
+      editing_multi_reply ? :discard_split_reply : :discard_multi_reply
     end
   end
 end
