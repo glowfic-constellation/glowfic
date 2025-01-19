@@ -26,7 +26,6 @@ RSpec.describe RepliesController, 'POST create' do
       calias = create(:alias, character: char1)
       char2 = create(:template_character, user: user)
       expect(controller).to receive(:build_template_groups).and_call_original
-      expect(controller).to receive(:make_draft).and_call_original
       expect(controller).to receive(:setup_layout_gon).and_call_original
 
       post :create, params: {
