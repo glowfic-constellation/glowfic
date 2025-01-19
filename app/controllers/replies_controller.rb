@@ -84,6 +84,7 @@ class RepliesController < WritableController
 
     result = creater.check
     @unseen_replies = creater.unseen_replies
+    @audits = creater.audits || []
 
     case result
       when :no_post
