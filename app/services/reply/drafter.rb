@@ -1,13 +1,13 @@
 # frozen_string_literal: true
 class Reply::Drafter < Object
   def initialize(params, user:, char_params: {})
-    if (@draft = ReplyDraft.draft_for(params[:reply][:post_id], user.id))
+    if (@draft = ReplyDraft.draft_for(params[:post_id], user.id))
       @draft.assign_attributes(params)
     else
       @draft = ReplyDraft.new(params)
       @draft.user = user
     end
-    @draft = Character::NpcCreator.new(@draft, char_params).process
+    @draft = Character::NpcCreater.new(@draft, char_params).process
   end
 
   def make_draft(show_message=true)

@@ -10,15 +10,16 @@ class Character::NpcCreater < Object
 
     # we take the NPC's first post's subject as its nickname, for disambiguation in dropdowns etc
     # additionally, we grab the post's settings and attach those to the character
-    post = writable.is_a?(Post) ? writable : writable.post
+    post = @writable.is_a?(Post) ? @writable : @writable.post
 
     @writable.build_character(
-      permitted_character_params.merge(
-        default_icon_id: writable.icon_id,
-        user_id: writable.user_id,
+      @params.merge(
+        default_icon_id: @writable.icon_id,
+        user_id: @writable.user_id,
         nickname: post.subject,
         settings: post.settings,
       ),
     )
+    @writable
   end
 end

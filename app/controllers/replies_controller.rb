@@ -46,6 +46,7 @@ class RepliesController < WritableController
       permitted_params,
       user: current_user,
       char_params: permitted_character_params,
+      editing_multi_reply: editing_multi_reply?,
       multi_replies: @multi_replies,
       multi_replies_params: @multi_replies_params,
     )
@@ -81,7 +82,7 @@ class RepliesController < WritableController
         end
     end
 
-    return unless %i[none create_multi_reply].includes?(buttons)
+    return unless %i[none create_multi_reply].include?(buttons)
 
     status = creater.check_status
     @unseen_replies = creater.unseen_replies
@@ -92,14 +93,16 @@ class RepliesController < WritableController
         # what do we do here
       when :duplicate
         @allow_dupe = true
+        preview_reply(@reply)
         flash.now[:error] = "This looks like a duplicate. Did you attempt to post this twice? Please resubmit if this was intentional."
       when :unseen
         num = @unseen_replies.count
-        pluraled = "#{'has'.pluralize(num)} been #{num} new #{'reply'.pluralize(num)}"
-        flash.now[:error] = "There #{pluraled} since you last viewed this post."
+        flash.now[:error] = "There #{'has'.pluralize(num)} been #{num} new #{'reply'.pluralize(num)} since you last viewed this post."
     end
 
     return unless status == :clear
+
+    reply = creater.reply
 
     if params[:button_add_more]
       # If they click "Add More", fetch the existing array of multi replies if present and add the current permitted_params to that list
@@ -128,7 +131,7 @@ class RepliesController < WritableController
 
   def update
     @reply.assign_attributes(permitted_params)
-    process_npc(@reply, permitted_character_params)
+    @reply = Character::NpcCreater.new(@reply, permitted_character_params).process
     if params[:button_preview]
       preview_reply(@reply) and return
     elsif params[:button_add_more]
@@ -296,6 +299,9 @@ class RepliesController < WritableController
 
   def post_replies(creater, new_reply: nil)
     succeeded = creater.post_replies(new_reply: new_reply)
+    @multi_replies = creater.multi_replies
+    first_reply = @multi_replies.first
+
     if succeeded == true
       flash[:success] = "#{'Reply'.pluralize(@multi_replies.length)} posted."
       redirect_to reply_path(first_reply, anchor: "reply-#{first_reply.id}")
