@@ -90,23 +90,6 @@ class Reply::Creater < Object
     end
   end
 
-  def check_dupe(post, most_recent_unseen_reply)
-    last_by_user = post.replies.where(user: @reply.user).ordered.last
-    match_attrs = ['content', 'icon_id', 'character_id', 'character_alias_id']
-
-    return false unless last_by_user.present? && last_by_user.attributes.slice(*match_attrs) == @reply.attributes.slice(*match_attrs)
-
-    if most_recent_unseen_reply.nil? || (most_recent_unseen_reply.id == last_by_user.id && @unseen_replies.count == 1)
-      # preview_reply(@reply)
-    else
-      make_draft
-      @reply = ReplyDraft.reply_from_draft(@draft) # for preview
-      # preview_reply(ReplyDraft.reply_from_draft(draft))
-    end
-
-    true
-  end
-
   def delete_draft
     @draft = ReplyDraft.draft_for(@params[:post_id], @reply.user.id)
     return :draft_destroy_failure unless @draft
@@ -124,6 +107,23 @@ class Reply::Creater < Object
     elsif param == :button_discard_multi_reply
       editing_multi_reply ? :discard_split_reply : :discard_multi_reply
     end
+  end
+
+  def check_dupe(post, most_recent_unseen_reply)
+    last_by_user = post.replies.where(user: @reply.user).ordered.last
+    match_attrs = ['content', 'icon_id', 'character_id', 'character_alias_id']
+
+    return false unless last_by_user.present? && last_by_user.attributes.slice(*match_attrs) == @reply.attributes.slice(*match_attrs)
+
+    if most_recent_unseen_reply.nil? || (most_recent_unseen_reply.id == last_by_user.id && @unseen_replies.count == 1)
+      # preview_reply(@reply)
+    else
+      make_draft
+      @reply = ReplyDraft.reply_from_draft(@draft) # for preview
+      # preview_reply(ReplyDraft.reply_from_draft(draft))
+    end
+
+    true
   end
 end
 
