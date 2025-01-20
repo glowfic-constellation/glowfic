@@ -280,6 +280,7 @@ function setFormData(characterId, resp, options) {
   let restoreAlias = false;
   let hideCharacterSelect = true;
   let updateCharDropdowns = false;
+  let charAliasOverride = null;
 
   if (typeof options !== 'undefined') {
     restoreIcon = options.restore_icon;
