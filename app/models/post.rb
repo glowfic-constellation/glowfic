@@ -192,8 +192,8 @@ class Post < ApplicationRecord
         .where.not(character_id: recent_ids)
         .limit(count)
         .group('character_id')
-        .select('DISTINCT character_id, MAX(id)')
-        .order(Arel.sql('MAX(id) desc'))
+        .select('DISTINCT character_id, MAX(created_at)')
+        .order(Arel.sql('MAX(created_at) desc'))
         .pluck(:character_id)
     end
 
