@@ -80,6 +80,25 @@ function setupMetadataEditor() {
   });
 }
 
+function findMultiReplyAlias(characterId) {
+  // Try to find a character's last used alias on a multi-reply page
+  const multiRepliesJsonElement = document.querySelector("#multi_replies_json");
+  if (multiRepliesJsonElement === null) {
+    return null;
+  }
+
+  // I'm editing a multi-reply, so the relevant character might have aliases here that are not set in the thread
+  let aliasOverride = null;
+  const jsonArray = JSON.parse(multiRepliesJsonElement.value);
+  const latestElement = jsonArray.slice().reverse().find(item => item.character_id === String(characterId));
+  aliasOverrideStr = latestElement ? latestElement.character_alias_id : null;
+  if (aliasOverrideStr && aliasOverrideStr !== "") {
+    aliasOverride = Number(aliasOverrideStr);
+  }
+
+  return aliasOverride;
+}
+
 function setupWritableEditor() {
   $('.post-editor-expander').click(function() {
     $(this).children(".info").hide();
@@ -133,7 +152,7 @@ function setupWritableEditor() {
   $("#active_character").change(function() {
     const id = $(this).val();
     $("#reply_character_id").val(id);
-    getAndSetCharacterData({ id: id });
+    getAndSetCharacterData({ id: id }, { aliasOverride: findMultiReplyAlias(id) });
   });
 
   $("#active_npc").change(function() {
@@ -149,7 +168,7 @@ function setupWritableEditor() {
   $(".char-access-icon").click(function() {
     const id = $(this).data('character-id');
     $("#reply_character_id").val(id);
-    getAndSetCharacterData({ id: id }, { updateCharDropdowns: true });
+    getAndSetCharacterData({ id: id }, { updateCharDropdowns: true,  aliasOverride: findMultiReplyAlias(id)});
   });
 
   $("#character_alias").change(function() {
@@ -267,6 +286,7 @@ function setFormData(characterId, resp, options) {
     restoreAlias = options.restore_alias;
     hideCharacterSelect = options.hideCharacterSelect;
     updateCharDropdowns = options.updateCharDropdowns;
+    charAliasOverride = options.aliasOverride;
   }
 
   setSwitcherListSelected(characterId);
@@ -282,6 +302,8 @@ function setFormData(characterId, resp, options) {
   setAliasFromID('');
   if (restoreAlias) {
     setAliasFromID(selectedAliasID);
+  } else if (charAliasOverride) {
+    setAliasFromID(charAliasOverride);
   } else if (resp.alias_id_for_post) {
     setAliasFromID(resp.alias_id_for_post);
   }
