@@ -168,7 +168,7 @@ function setupWritableEditor() {
   $(".char-access-icon").click(function() {
     const id = $(this).data('character-id');
     $("#reply_character_id").val(id);
-    getAndSetCharacterData({ id: id }, { updateCharDropdowns: true,  aliasOverride: findMultiReplyAlias(id)});
+    getAndSetCharacterData({ id: id }, { updateCharDropdowns: true, aliasOverride: findMultiReplyAlias(id)});
   });
 
   $("#character_alias").change(function() {
