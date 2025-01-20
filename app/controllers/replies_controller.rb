@@ -281,7 +281,10 @@ class RepliesController < WritableController
   end
 
   def post_replies(new_reply: nil)
-    @multi_replies << new_reply if new_reply.present?
+    if new_reply.present?
+      @multi_replies << new_reply
+      @multi_replies_params << permitted_params
+    end
 
     first_reply = @multi_replies.first
     replies_post = first_reply.post
