@@ -255,126 +255,180 @@ RSpec.describe "Creating replies" do
     end
   end
 
-  scenario "User creates multiple replies at once", :js do
-    post = create(:post, subject: 'Sample post')
+  context "using the multi reply editor" do
+    scenario "works", :js do
+      post = create(:post, subject: 'Sample post')
 
-    user = login
-    character = create(:character, user: user)
-    npc_name = "Jade"
-    visit post_path(post)
+      user = login
+      character = create(:character, user: user)
+      npc_name = "Jade"
+      visit post_path(post)
 
-    # Use "Post Previewed" button
-    page.find('.post-expander', text: 'Join Thread').click
-    page.find('img[title="Choose Character"]').click
-    click_button 'Character'
-    page.find_by_id('select2-active_character-container').click
-    find_all("li", text: character.name).first.click
-    click_button "HTML"
-    within('#post-editor') do
-      fill_in id: "reply_content", with: "test reply 1"
-      click_button "Add More Replies"
-    end
-
-    expect(page).to have_no_selector('.error')
-    expect(page).to have_selector('.content-header', exact_text: 'Adding multiple replies')
-    expect(page).to have_selector('.post-container', count: 1)
-    expect(page).to have_selector('#post-editor')
-    within('#post-editor') do
-      expect(page).to have_selector('#name', exact_text: character.name)
+      # Use "Post Previewed" button
+      page.find('.post-expander', text: 'Join Thread').click
       page.find('img[title="Choose Character"]').click
-      click_button 'NPC'
-    end
-    page.find('.select2-selection__rendered', exact_text: 'Select NPC or type to create').click
-    page.find('.select2-container--open .select2-search__field').set(npc_name)
-    page.find('li', exact_text: "Create New: #{npc_name}").click
-    expect(page).to have_selector('#name', exact_text: npc_name)
+      click_button 'Character'
+      page.find_by_id('select2-active_character-container').click
+      find_all("li", text: character.name).first.click
+      click_button "HTML"
+      within('#post-editor') do
+        fill_in id: "reply_content", with: "test reply 1"
+        click_button "Add More Replies"
+      end
 
-    fill_in id: "reply_content", with: "test reply 2"
-    click_button "Add More Replies"
-
-    expect(page).to have_no_selector('.error')
-    within(".success") { expect(page).to have_text("Your new NPC has been persisted!") }
-    expect(page).to have_selector('.content-header', exact_text: 'Adding multiple replies')
-    expect(page).to have_selector('.post-container', count: 2)
-    expect(page).to have_selector('#post-editor')
-    within('#post-editor') do
+      expect(page).to have_no_selector('.error')
+      expect(page).to have_selector('.content-header', exact_text: 'Adding multiple replies')
+      expect(page).to have_selector('.post-container', count: 1)
+      expect(page).to have_selector('#post-editor')
+      within('#post-editor') do
+        expect(page).to have_selector('#name', exact_text: character.name)
+        page.find('img[title="Choose Character"]').click
+        click_button 'NPC'
+      end
+      page.find('.select2-selection__rendered', exact_text: 'Select NPC or type to create').click
+      page.find('.select2-container--open .select2-search__field').set(npc_name)
+      page.find('li', exact_text: "Create New: #{npc_name}").click
       expect(page).to have_selector('#name', exact_text: npc_name)
-    end
-    fill_in id: "reply_content", with: "test reply 3"
-    click_button "Preview Current"
 
-    expect(page).to have_no_selector('.error')
-    expect(page).to have_selector('.content-header', exact_text: 'Adding multiple replies')
-    expect(page).to have_selector('.content-header', exact_text: 'Previewing')
-    expect(page).to have_selector('.post-container', count: 3)
-    expect(page).to have_text("test reply 3", count: 2)
-    click_button "Add More Replies"
-
-    expect(page).to have_no_selector('.error')
-    expect(page).to have_selector('.content-header', exact_text: 'Adding multiple replies')
-    expect(page).to have_no_selector('.content-header', exact_text: 'Previewing')
-    expect(page).to have_selector('.post-container', count: 3)
-    expect(page).to have_text("test reply 3", count: 1)
-    fill_in id: "reply_content", with: "test reply 4"
-    accept_alert { click_button "Post Previewed" }
-
-    expect(page).to have_no_selector('.error')
-    expect(page).to have_selector('.success', exact_text: 'Replies posted.')
-    expect(page).to have_selector('.post-container', count: 4)
-    expect(page).to have_text("test reply 1")
-    expect(page).to have_text("test reply 2")
-    expect(page).to have_text("test reply 3")
-    expect(page).to have_no_text("test reply 4")
-
-    # Use "Post All" button
-    within('#post-editor') do
-      click_button "HTML"
-      fill_in id: "reply_content", with: "test reply 5"
+      fill_in id: "reply_content", with: "test reply 2"
       click_button "Add More Replies"
-    end
 
-    expect(page).to have_no_selector('.error')
-    expect(page).to have_selector('.content-header', exact_text: 'Adding multiple replies')
-    expect(page).to have_selector('.post-container', count: 1)
-    expect(page).to have_selector('#post-editor')
-    fill_in id: "reply_content", with: "test reply 6"
-    click_button "Add More Replies"
+      expect(page).to have_no_selector('.error')
+      within(".success") { expect(page).to have_text("Your new NPC has been persisted!") }
+      expect(page).to have_selector('.content-header', exact_text: 'Adding multiple replies')
+      expect(page).to have_selector('.post-container', count: 2)
+      expect(page).to have_selector('#post-editor')
+      within('#post-editor') do
+        expect(page).to have_selector('#name', exact_text: npc_name)
+      end
+      fill_in id: "reply_content", with: "test reply 3"
+      click_button "Preview Current"
 
-    expect(page).to have_no_selector('.error')
-    expect(page).to have_selector('.content-header', exact_text: 'Adding multiple replies')
-    expect(page).to have_selector('.post-container', count: 2)
-    expect(page).to have_selector('#post-editor')
-    fill_in id: "reply_content", with: "test reply 7"
-    click_button "Post All"
-
-    expect(page).to have_no_selector('.error')
-    expect(page).to have_selector('.success', exact_text: 'Replies posted.')
-    expect(page).to have_selector('.post-container', count: 7)
-    expect(page).to have_no_text("test reply 4")
-    expect(page).to have_text("test reply 5")
-    expect(page).to have_text("test reply 6")
-    expect(page).to have_text("test reply 7")
-
-    # Discard replies
-    within('#post-editor') do
-      click_button "HTML"
-      fill_in id: "reply_content", with: "test reply 8"
+      expect(page).to have_no_selector('.error')
+      expect(page).to have_selector('.content-header', exact_text: 'Adding multiple replies')
+      expect(page).to have_selector('.content-header', exact_text: 'Previewing')
+      expect(page).to have_selector('.post-container', count: 3)
+      expect(page).to have_text("test reply 3", count: 2)
       click_button "Add More Replies"
+
+      expect(page).to have_no_selector('.error')
+      expect(page).to have_selector('.content-header', exact_text: 'Adding multiple replies')
+      expect(page).to have_no_selector('.content-header', exact_text: 'Previewing')
+      expect(page).to have_selector('.post-container', count: 3)
+      expect(page).to have_text("test reply 3", count: 1)
+      fill_in id: "reply_content", with: "test reply 4"
+      accept_alert { click_button "Post Previewed" }
+
+      expect(page).to have_no_selector('.error')
+      expect(page).to have_selector('.success', exact_text: 'Replies posted.')
+      expect(page).to have_selector('.post-container', count: 4)
+      expect(page).to have_text("test reply 1")
+      expect(page).to have_text("test reply 2")
+      expect(page).to have_text("test reply 3")
+      expect(page).to have_no_text("test reply 4")
+
+      # Use "Post All" button
+      within('#post-editor') do
+        click_button "HTML"
+        fill_in id: "reply_content", with: "test reply 5"
+        click_button "Add More Replies"
+      end
+
+      expect(page).to have_no_selector('.error')
+      expect(page).to have_selector('.content-header', exact_text: 'Adding multiple replies')
+      expect(page).to have_selector('.post-container', count: 1)
+      expect(page).to have_selector('#post-editor')
+      fill_in id: "reply_content", with: "test reply 6"
+      click_button "Add More Replies"
+
+      expect(page).to have_no_selector('.error')
+      expect(page).to have_selector('.content-header', exact_text: 'Adding multiple replies')
+      expect(page).to have_selector('.post-container', count: 2)
+      expect(page).to have_selector('#post-editor')
+      fill_in id: "reply_content", with: "test reply 7"
+      click_button "Post All"
+
+      expect(page).to have_no_selector('.error')
+      expect(page).to have_selector('.success', exact_text: 'Replies posted.')
+      expect(page).to have_selector('.post-container', count: 7)
+      expect(page).to have_no_text("test reply 4")
+      expect(page).to have_text("test reply 5")
+      expect(page).to have_text("test reply 6")
+      expect(page).to have_text("test reply 7")
+
+      # Discard replies
+      within('#post-editor') do
+        click_button "HTML"
+        fill_in id: "reply_content", with: "test reply 8"
+        click_button "Add More Replies"
+      end
+
+      expect(page).to have_no_selector('.error')
+      expect(page).to have_selector('.content-header', exact_text: 'Adding multiple replies')
+      expect(page).to have_selector('.post-container', count: 1)
+      expect(page).to have_selector('#post-editor')
+      fill_in id: "reply_content", with: "test reply 9"
+      click_button "Add More Replies"
+      accept_alert { click_button "Discard Replies" }
+
+      expect(page).to have_no_selector('.error')
+      expect(page).to have_selector('.success', exact_text: "Replies discarded.")
+      expect(page).to have_selector('.post-container', count: 7)
+      expect(page).to have_no_text("test reply 8")
+      expect(page).to have_no_text("test reply 9")
     end
 
-    expect(page).to have_no_selector('.error')
-    expect(page).to have_selector('.content-header', exact_text: 'Adding multiple replies')
-    expect(page).to have_selector('.post-container', count: 1)
-    expect(page).to have_selector('#post-editor')
-    fill_in id: "reply_content", with: "test reply 9"
-    click_button "Add More Replies"
-    accept_alert { click_button "Discard Replies" }
+    scenario "shows unseen and duplicate replies warnings", :js do
+      user = login
+      user.update!(default_editor: 'html')
 
-    expect(page).to have_no_selector('.error')
-    expect(page).to have_selector('.success', exact_text: "Replies discarded.")
-    expect(page).to have_selector('.post-container', count: 7)
-    expect(page).to have_no_text("test reply 8")
-    expect(page).to have_no_text("test reply 9")
+      post = create(:post, subject: 'Sample post')
+      reply = create(:reply, user: user, post: post, content: "reply to dupe")
+      visit post_path(post)
+
+      # Will try to add a reply whose content is duplicated
+      within('#post-editor') do
+        fill_in id: "reply_content", with: reply.content
+        click_button "Add More Replies"
+      end
+      expect(page).to have_no_selector('.error')
+
+      within('#post-editor') do
+        fill_in 'reply_content', with: 'new reply 1'
+        click_button 'Add More Replies'
+      end
+      expect(page).to have_no_selector('.error')
+
+      within('#post-editor') do
+        fill_in 'reply_content', with: 'new reply 2'
+        click_button 'Post All'
+      end
+      expect(page).to have_selector('.error',
+        text: 'This looks like a duplicate. Did you attempt to post this twice? Please resubmit if this was intentional.',)
+
+      accept_alert { click_button "Post Previewed" }
+      expect(page).to have_selector('.post-content', exact_text: reply.content, count: 2)
+      expect(page).to have_selector('.post-content', exact_text: 'new reply 1', count: 1)
+      expect(page).to have_selector('.post-content', exact_text: 'new reply 2', count: 1)
+
+      # Will add more unseen replies after clicking "Add More Replies"
+      within('#post-editor') do
+        fill_in id: "reply_content", with: 'new reply 3'
+        click_button "Add More Replies"
+      end
+      create(:reply, post: post)
+
+      within('#post-editor') do
+        fill_in 'reply_content', with: 'new reply 4'
+        click_button 'Post All'
+      end
+      expect(page).to have_selector('.error', text: "There has been 1 new reply since you last viewed this post.")
+
+      accept_alert { click_button "Post Previewed" }
+      expect(page).to have_no_selector('.error')
+      expect(page).to have_selector('.post-content', exact_text: 'new reply 3', count: 1)
+      expect(page).to have_selector('.post-content', exact_text: 'new reply 4', count: 1)
+    end
   end
 
   scenario "User tries to reply to locked post" do

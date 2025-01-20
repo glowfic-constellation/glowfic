@@ -202,6 +202,45 @@ RSpec.describe "Editing replies" do
       expect(page).to have_no_text("text to discard")
     end
 
+    scenario "does not show unseen or duplicate replies warnings", :js do
+      user = login
+      user.update!(default_editor: 'html')
+
+      reply = create(:reply, user: user, content: 'example text', editor_mode: 'html')
+      create(:reply, user: user, post: reply.post, content: 'example text 2')
+
+      visit reply_path(reply)
+      within(find_reply_on_page(reply)) do
+        click_link 'Edit'
+      end
+
+      # Create extra replies "on a different tab"
+      create(:reply, post: reply.post) # Another user's reply
+      create(:reply, user: user, post: reply.post, content: 'other text 1') # reply by the same user with the same content as first multi-reply
+      create(:reply, user: user, post: reply.post, content: 'other text 3') # reply by the same user with the same content as last multi-reply
+
+      # add extra replies
+      within('#post-editor') do
+        fill_in 'reply_content', with: 'other text 1'
+        click_button 'Add More Replies'
+      end
+      within('#post-editor') do
+        fill_in 'reply_content', with: 'other text 2'
+        click_button 'Add More Replies'
+      end
+      within('#post-editor') do
+        fill_in 'reply_content', with: 'other text 3'
+        click_button 'Save All'
+      end
+
+      # Reply should be split without showing the "unseen replies" or "duplicate reply" warnings
+      expect(page).to have_no_selector('.error')
+      expect(page).to have_selector('.success', exact_text: 'Reply updated.')
+      expect(page).to have_selector('.post-container', count: 8)
+      expect(page).to have_selector('.post-content', exact_text: 'other text 1', count: 2)
+      expect(page).to have_selector('.post-content', exact_text: 'other text 3', count: 2)
+    end
+
     scenario "handles NPC saving errors", :js do
       user = login
       user.update!(default_editor: 'html')
