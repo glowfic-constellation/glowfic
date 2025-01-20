@@ -91,7 +91,7 @@ function findMultiReplyAlias(characterId) {
   let aliasOverride = null;
   const jsonArray = JSON.parse(multiRepliesJsonElement.value);
   const latestElement = jsonArray.slice().reverse().find(item => item.character_id === String(characterId));
-  aliasOverrideStr = latestElement ? latestElement.character_alias_id : null;
+  const aliasOverrideStr = latestElement ? latestElement.character_alias_id : null;
   if (aliasOverrideStr && aliasOverrideStr !== "") {
     aliasOverride = Number(aliasOverrideStr);
   }
