@@ -20,6 +20,7 @@
     = render 'replies/single', reply: reply, hide_footer: true, hide_post_edit_box: true
   = form_for @reply, html: { id: 'post_form' } do
     = hidden_field_tag :multi_replies_json, @multi_replies_params.to_json
+    = hidden_field_tag :allow_dupe, @allow_dupe
     = submit_tag (multi_reply_new ? 'Post Previewed' : 'Save Previewed'), class: 'button', id: 'submit_previewed_multi_reply_button', name: 'button_submit_previewed_multi_reply', data: { disable_with: 'Saving...', confirm: 'The reply currently in the editor will not be posted. Continue?' }
     %br
     %br
