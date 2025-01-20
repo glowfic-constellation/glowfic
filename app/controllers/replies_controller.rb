@@ -294,8 +294,13 @@ class RepliesController < WritableController
 
     # Set up editor
     @post = reply.post
-    empty_reply_hash = permitted_params.permit(:character_id, :icon_id, :character_alias_id)
+    empty_reply_hash = permitted_params.permit(:character_id, :character_alias_id)
     @reply = @post.build_new_reply_for(current_user, empty_reply_hash)
+    if @reply.character_id.nil?
+      @reply.icon_id = current_user.avatar_id
+    else
+      @reply.icon_id = @reply.character.default_icon.try(:id)
+    end
     @reply.editor_mode = reply.editor_mode
     @adding_to_multi_reply = true
     @audits = {}
