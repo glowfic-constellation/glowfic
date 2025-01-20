@@ -335,6 +335,7 @@ class RepliesController < WritableController
 
   def editing_multi_reply?
     # If the list of params is present and the first item on the list has the ID stored, I am editing it
+    # @reply isn't set correctly at this point so I update it to be the reply found by the first multi-reply element's ID
     @multi_replies_params.present? && (@reply = Reply.find_by(id: @multi_replies_params.first["id"]))
   end
 
