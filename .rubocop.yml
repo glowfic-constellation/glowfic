@@ -705,9 +705,6 @@ RSpec/StubbedMock:
   Exclude:
     - 'spec/script/post_split_spec.rb' # mocking multiple gets in order needs expect
 
-RSpec/StringAsInstanceDoubleConstant: # new in 3.1
-  Enabled: true
-
 RSpec/SubjectDeclaration:
   Enabled: false # we don't use subject
 
