@@ -55,6 +55,14 @@ class Reply < ApplicationRecord
     bookmarks.find_by(user_id: user.id)
   end
 
+  def assign_default_icon(user)
+    if character_id.nil?
+      self.icon_id = user.avatar_id
+    else
+      self.icon_id = character.default_icon&.id
+    end
+  end
+
   private
 
   def set_last_reply

@@ -151,12 +151,7 @@ class Post < ApplicationRecord
       reply.character_id = user.active_character_id
     end
 
-    if reply.character_id.nil?
-      reply.icon_id = user.avatar_id
-    else
-      reply.icon_id = reply.character.default_icon.try(:id)
-    end
-
+    reply.assign_default_icon(user)
     reply
   end
 
