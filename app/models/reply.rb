@@ -50,11 +50,6 @@ class Reply < ApplicationRecord
     self.reply_order = val
   end
 
-  def bookmark_by(user)
-    return unless user
-    bookmarks.find_by(user_id: user.id).id
-  end
-
   def assign_default_icon(user)
     if character_id.nil?
       self.icon_id = user.avatar_id
