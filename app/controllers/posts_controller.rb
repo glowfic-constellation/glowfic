@@ -139,7 +139,7 @@ class PostsController < WritableController
     @post.settings = process_tags(Setting, obj_param: :post, id_param: :setting_ids)
     @post.content_warnings = process_tags(ContentWarning, obj_param: :post, id_param: :content_warning_ids)
     @post.labels = process_tags(Label, obj_param: :post, id_param: :label_ids)
-    process_npc(@post, permitted_character_params)
+    @post = Character::NpcCreater.new(@post, permitted_character_params).process
 
     begin
       @post.save!
@@ -235,7 +235,7 @@ class PostsController < WritableController
         @post.settings = settings
         @post.content_warnings = warnings
         @post.labels = labels
-        process_npc(@post, permitted_character_params)
+        @post = Character::NpcCreater.new(@post, permitted_character_params).process
         @post.save!
         @post.author_for(current_user).update!(private_note: @post.private_note) if is_author
       end
@@ -360,7 +360,7 @@ class PostsController < WritableController
     @post.assign_attributes(permitted_params(false))
     @post.board ||= Board.find_by_id(3)
 
-    process_npc(@post, permitted_character_params)
+    @post = Character::NpcCreater.new(@post, permitted_character_params).process
 
     @author_ids = params.fetch(:post, {}).fetch(:unjoined_author_ids, [])
     @viewer_ids = params.fetch(:post, {}).fetch(:viewer_ids, [])

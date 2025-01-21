@@ -42,90 +42,90 @@ class RepliesController < WritableController
   end
 
   def create
-    if params[:button_draft]
-      draft = make_draft
-      redirect_to posts_path and return unless draft.post
-      redirect_to post_path(draft.post, page: :unread, anchor: :unread) and return
-    elsif params[:button_delete_draft]
-      post_id = params[:reply][:post_id]
-      draft = ReplyDraft.draft_for(post_id, current_user.id)
-      if draft&.destroy
+    creater = Reply::Creater.new(
+      permitted_params,
+      user: current_user,
+      char_params: permitted_character_params,
+      multi_replies: @multi_replies,
+      multi_replies_params: @multi_replies_params,
+    )
+
+    buttons = begin
+      creater.check_buttons(params, editing_multi_reply?)
+    rescue DraftNotSaved => e
+      render_errors(creater.draft, action: 'saved', class_name: 'Draft', err: e)
+      :draft_not_saved
+    end
+
+    if %i[draft preview].include?(buttons)
+      msg = "Draft saved."
+      msg += " Your new NPC character has also been persisted!" if creater.new_npc
+      flash[:success] = msg
+    end
+
+    draft = creater.draft
+    post_id = params[:reply][:post_id]
+
+    case buttons
+      when :draft, :draft_not_saved
+        if draft.post
+          redirect_to post_path(draft.post, page: :unread, anchor: :unread)
+        else
+          redirect_to posts_path
+        end
+      when :draft_destroy_success
         flash[:success] = "Draft deleted."
-      else
+        redirect_to post_path(post_id, page: :unread, anchor: :unread)
+      when :draft_destroy_failure
         flash[:error] = {
           message: "Draft could not be deleted",
           array: draft&.errors&.full_messages,
         }
-      end
-      redirect_to post_path(post_id, page: :unread, anchor: :unread) and return
-    elsif params[:button_preview]
-      draft = make_draft
-      preview_reply(ReplyDraft.reply_from_draft(draft)) and return
-    elsif params[:button_submit_previewed_multi_reply]
-      if editing_multi_reply?
+        redirect_to post_path(post_id, page: :unread, anchor: :unread)
+      when :preview
+        preview_reply(ReplyDraft.reply_from_draft(draft))
+      when :edit_multi_reply
         edit_reply(true)
-      else
-        post_replies
-      end
-      return
-    elsif params[:button_discard_multi_reply]
-      flash[:success] = "Replies discarded."
-      if editing_multi_reply?
+      when :discard_split_reply
+        flash[:success] = "Replies discarded."
         # Editing multi reply, going to redirect back to the reply I'm editing
         redirect_to reply_path(@reply, anchor: "reply-#{@reply.id}")
-      else
+      when :discard_multi_reply
+        flash[:success] = "Replies discarded."
         # Posting a new multi reply, go back to unread
-        redirect_to post_path(params[:reply][:post_id], page: :unread, anchor: :unread)
-      end
-      return
+        redirect_to post_path(post_id, page: :unread, anchor: :unread)
     end
 
-    reply = Reply.new(permitted_params)
-    reply.user = current_user
-    process_npc(reply, permitted_character_params)
+    return unless %i[none create_multi_reply].include?(buttons)
 
-    if reply.post.present?
-      last_seen_reply_order = reply.post.last_seen_reply_for(current_user).try(:reply_order)
-      @unseen_replies = reply.post.replies.ordered.paginate(page: 1, per_page: 10)
-      if last_seen_reply_order.present?
-        @unseen_replies = @unseen_replies.where('reply_order > ?', last_seen_reply_order)
-        @audits = Audited::Audit.where(auditable_id: @unseen_replies.map(&:id)).group(:auditable_id).count
-      end
-      most_recent_unseen_reply = @unseen_replies.last
+    status = creater.check_status(params[:allow_dupe].present?)
+    @unseen_replies = creater.unseen_replies
+    @audits = creater.audits || []
 
-      if params[:allow_dupe].blank?
-        last_by_user = reply.post.replies.where(user_id: reply.user_id).ordered.last
-        match_attrs = ['content', 'icon_id', 'character_id', 'character_alias_id']
-        if last_by_user.present? && last_by_user.attributes.slice(*match_attrs) == reply.attributes.slice(*match_attrs)
-          flash.now[:error] = "This looks like a duplicate. Did you attempt to post this twice? Please resubmit if this was intentional."
-          @allow_dupe = true
-          if most_recent_unseen_reply.nil? || (most_recent_unseen_reply.id == last_by_user.id && @unseen_replies.count == 1)
-            preview_reply(reply)
-          else
-            draft = make_draft(false)
-            preview_reply(ReplyDraft.reply_from_draft(draft))
-          end
-          return
-        end
-      end
-
-      if most_recent_unseen_reply.present?
-        reply.post.mark_read(current_user, at_time: reply.post.read_time_for(@unseen_replies))
+    case status
+      when :no_post
+        # this should probably fail at this stage
+      when :duplicate
+        @allow_dupe = true
+        flash.now[:error] = "This looks like a duplicate. Did you attempt to post this twice? Please resubmit if this was intentional."
+        preview_reply(creater.reply)
+      when :unseen
         num = @unseen_replies.count
-        pluraled = num > 1 ? "have been #{num} new replies" : "has been 1 new reply"
-        flash.now[:error] = "There #{pluraled} since you last viewed this post."
-        draft = make_draft
-        preview_reply(ReplyDraft.reply_from_draft(draft)) and return
-      end
+        flash.now[:error] = "There #{'has'.pluralize(num)} been #{num} new #{'reply'.pluralize(num)} since you last viewed this post."
+        preview_reply(ReplyDraft.reply_from_draft(creater.draft))
     end
+
+    return unless %i[clear no_post].include?(status)
 
     if params[:button_add_more]
       # If they click "Add More", fetch the existing array of multi replies if present and add the current permitted_params to that list
-      add_to_multi_reply(reply, permitted_params)
+      add_to_multi_reply(creater.reply, permitted_params)
     elsif editing_multi_reply?
-      edit_reply(true, new_multi_reply: reply)
+      edit_reply(true, new_multi_reply: creater.reply)
+    elsif buttons == :create_multi_reply
+      post_replies(creater)
     else
-      post_replies(new_reply: reply)
+      post_replies(creater, new_reply: creater.reply)
     end
   end
 
@@ -144,7 +144,7 @@ class RepliesController < WritableController
 
   def update
     @reply.assign_attributes(permitted_params)
-    process_npc(@reply, permitted_character_params)
+    @reply = Character::NpcCreater.new(@reply, permitted_character_params).process
     if params[:button_preview]
       preview_reply(@reply) and return
     elsif params[:button_add_more]
@@ -310,22 +310,21 @@ class RepliesController < WritableController
     render :preview
   end
 
-  def post_replies(new_reply: nil)
-    @multi_replies << new_reply if new_reply.present?
-
+  def post_replies(creater, new_reply: nil)
+    succeeded = creater.post_replies(new_reply: new_reply)
+    @multi_replies = creater.multi_replies
     first_reply = @multi_replies.first
-    begin
-      Reply.transaction { @multi_replies.each(&:save!) }
-    rescue ActiveRecord::RecordInvalid => e
-      errored_reply = @multi_replies.detect { |r| r.errors.present? } || first_reply
+
+    if succeeded == true
+      flash[:success] = "#{'Reply'.pluralize(@multi_replies.length)} posted."
+      redirect_to reply_path(first_reply, anchor: "reply-#{first_reply.id}")
+    else
+      errored_reply, e = succeeded
       render_errors(errored_reply, action: 'created', now: true, err: e)
 
       redirect_to posts_path and return unless errored_reply.post
-      redirect_to post_path(errored_reply.post) and return
+      redirect_to post_path(errored_reply.post)
     end
-
-    flash[:success] = "#{'Reply'.pluralize(@multi_replies.length)} posted."
-    redirect_to reply_path(first_reply, anchor: "reply-#{first_reply.id}")
   end
 
   def editing_multi_reply?
@@ -334,6 +333,7 @@ class RepliesController < WritableController
   end
 
   def edit_reply(editing_multi_reply, new_multi_reply: nil)
+    # Reply::Updater.new(@params, user: @reply.user, multi_reply: editing_multi_reply)
     begin
       Reply.transaction do
         edit_multi_replies(new_multi_reply) if editing_multi_reply
@@ -394,29 +394,5 @@ class RepliesController < WritableController
       # Update the new reply added with the actual params that should be there
       new_reply.update!(reply_params)
     end
-  end
-
-  def make_draft(show_message=true)
-    if (draft = ReplyDraft.draft_for(params[:reply][:post_id], current_user.id))
-      draft.assign_attributes(permitted_params)
-    else
-      draft = ReplyDraft.new(permitted_params)
-      draft.user = current_user
-    end
-    process_npc(draft, permitted_character_params)
-    new_npc = !draft.character.nil? && !draft.character.persisted?
-
-    begin
-      draft.save!
-    rescue ActiveRecord::RecordInvalid => e
-      render_errors(draft, action: 'saved', class_name: 'Draft', err: e)
-    else
-      if show_message
-        msg = "Draft saved."
-        msg += " Your new NPC character has also been persisted!" if new_npc
-        flash[:success] = msg
-      end
-    end
-    draft
   end
 end
