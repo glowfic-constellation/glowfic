@@ -37,6 +37,7 @@ class BookmarksController < ApplicationController
     @search_results = @search_results.where.not(post_id: current_user.hidden_posts) if logged_in? && !params[:show_blocked]
 
     @audits = []
+    calculate_reply_bookmarks(@search_results)
   end
 
   def create

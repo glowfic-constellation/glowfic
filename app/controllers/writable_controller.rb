@@ -100,6 +100,8 @@ class WritableController < ApplicationController
     @audits = @post.associated_audits.where(auditable_id: @replies.map(&:id)).group(:auditable_id).count
     @audits[:post] = @post.audits.count
 
+    calculate_reply_bookmarks(@replies)
+
     @next_post = @post.next_post(current_user)
     @prev_post = @post.prev_post(current_user)
 

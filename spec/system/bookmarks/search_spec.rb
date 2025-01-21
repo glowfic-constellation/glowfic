@@ -223,7 +223,7 @@ RSpec.describe "Searching bookmarks" do
 
     # Can copy another user's bookmark
     perform_search user: public_user
-    new_bookmark = public_bookmarks.detect { |bookmark| bookmark.name.present? && !bookmark.reply.bookmark_by(private_user) }
+    new_bookmark = public_bookmarks.detect { |bookmark| bookmark.name.present? && !bookmark.reply.bookmarks.find_by(user_id: private_user.id) }
     click_link(href: bookmarks_path(at_id: new_bookmark.reply.id, name: new_bookmark.name.presence))
     perform_search user: private_user
     expect(page).to have_link(new_bookmark.reply.user.username, href: user_path(new_bookmark.reply.user))
