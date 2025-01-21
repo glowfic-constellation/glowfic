@@ -106,6 +106,7 @@ Rails.application.routes.draw do
     end
     collection { get :search }
   end
+  resources :drafts, only: [:create, :destroy]
   resources :bookmarks, only: [:create, :destroy] do
     collection { get :search }
   end
