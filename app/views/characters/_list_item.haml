@@ -1,4 +1,4 @@
--# locals: ( character:, settings:, show_template: false, show_user: false, hide_buttons: false )
+-# locals: ( character:, settings:, show_template: false, show_user: false, hide_buttons: false, show_cluster: true )
 
 - char_id, char_name, nickname, screenname, pb, cluster, user_id, username, user_deleted = character
 - if show_template
@@ -11,10 +11,12 @@
     %td.padding-5{class: klass}
       - if template_id.present?
         = link_to template_name, template_path(template_id)
-  %td.padding-5{class: klass}= cluster
+  - if show_cluster
+    %td.padding-5{class: klass}= cluster
   %td.padding-5{class: klass, style: 'width:15%'}= nickname
   %td.padding-5{class: klass, style: 'width:15%'}= breakable_text(screenname)
-  %td.padding-5{class: klass, style: 'width:20%'}= pb
+  - pb_width = show_cluster ? 'width:20%' : 'width:25%'
+  %td.padding-5{class: klass, style: pb_width}= pb
   %td.padding-5{class: klass, style: 'width:15%'}
     - if show_user
       = user_mem_link(user_id, username, user_deleted)
