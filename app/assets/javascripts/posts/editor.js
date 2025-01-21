@@ -90,7 +90,7 @@ function findMultiReplyAlias(characterId) {
   // I'm editing a multi-reply, so the relevant character might have aliases here that are not set in the thread
   let aliasOverride = null;
   const jsonArray = JSON.parse(multiRepliesJsonElement.value);
-  const latestElement = jsonArray.slice().reverse().find(item => item.character_id === String(characterId));
+  const latestElement = jsonArray.reverse().find(item => item.character_id === String(characterId));
   const aliasOverrideStr = latestElement ? latestElement.character_alias_id : null;
   if (aliasOverrideStr && aliasOverrideStr !== "") {
     aliasOverride = Number(aliasOverrideStr);
