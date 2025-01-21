@@ -34,9 +34,9 @@
         = submit_tag (reply.new_record? ? 'Post' : 'Save'), class: 'button', id: 'submit_button', data: { disable_with: 'Saving...' }
         = submit_tag "Preview", class: 'button', id: 'preview_button', name: 'button_preview', data: { disable_with: 'Previewing...' }
         - if reply.new_record?
-          = submit_tag "Save Draft", class: 'button', id: 'draft_button', name: 'button_draft', data: { disable_with: 'Drafting...' }
+          = submit_tag "Save Draft", class: 'button', id: 'draft_button', name: 'button_draft', formaction: drafts_path, data: { disable_with: 'Drafting...' }
         - if @draft.present?
-          = submit_tag "Delete Draft", class: 'button', id: 'delete_draft_button', name: 'button_delete_draft', data: { disable_with: 'Deleting...', confirm: "Delete draft?" }
+          = submit_tag "Delete Draft", class: 'button', id: 'delete_draft_button', name: 'button_delete_draft', formaction: draft_path(@draft), formmethod: :delete, data: { disable_with: 'Deleting...', confirm: "Delete draft?" }
       - else
         = submit_tag (multi_reply_new ? 'Post All' : 'Save All'), class: 'button', id: 'submit_button', data: { disable_with: 'Saving...' }
         = submit_tag "Preview Current", class: 'button', id: 'preview_button', name: 'button_preview', data: { disable_with: 'Previewing...' }
