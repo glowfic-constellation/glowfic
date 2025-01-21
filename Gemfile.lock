@@ -171,7 +171,7 @@ GEM
     erubi (1.13.1)
     ethon (0.16.0)
       ffi (>= 1.15.0)
-    execjs (2.9.1)
+    execjs (2.10.0)
     factory_bot (6.5.0)
       activesupport (>= 5.0.0)
     factory_bot_rails (6.4.4)
@@ -513,7 +513,7 @@ GEM
     stringio (3.1.2)
     sysexits (1.2.0)
     temple (0.10.3)
-    terser (1.2.4)
+    terser (1.2.5)
       execjs (>= 0.3.0, < 3)
     test-unit (3.6.7)
       power_assert
