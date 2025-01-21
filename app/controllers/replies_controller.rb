@@ -39,6 +39,7 @@ class RepliesController < WritableController
     @search_results = searcher.search(params, page: page)
     @templates = searcher.templates
     @audits = []
+    @reply_bookmarks = {}
   end
 
   def create
@@ -230,6 +231,7 @@ class RepliesController < WritableController
     @reply = reply
     @reply.user = current_user unless @reply.user
     @audits = @reply.id.present? ? { @reply.id => @reply.audits.count } : {}
+    @reply_bookmarks = {}
     @adding_to_multi_reply = false
     preview_replies
   end
@@ -265,6 +267,7 @@ class RepliesController < WritableController
     @reply.editor_mode = reply.editor_mode
     @adding_to_multi_reply = true
     @audits = {}
+    @reply_bookmarks = {}
 
     preview_replies
   end
@@ -359,6 +362,7 @@ class RepliesController < WritableController
 
       @post ||= @reply.post
       @audits = { @reply.id => @post.audits.count }
+      @reply_bookmarks = {}
       editor_setup
       render :edit
     else

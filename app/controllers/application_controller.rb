@@ -155,6 +155,14 @@ class ApplicationController < ActionController::Base
     @unread_counts = @unread_counts.where('replies.created_at > post_views.read_at').group(:post_id).count
   end
 
+  def calculate_reply_bookmarks(replies)
+    @reply_bookmarks = {}
+    return unless logged_in?
+    @reply_bookmarks = Bookmark.where(user_id: current_user.id, type: "reply_bookmark", reply_id: replies.map(&:id)).pluck(
+      :reply_id, :id,
+    ).to_h
+  end
+
   attr_reader :unread_ids, :opened_ids, :unread_counts
   # unread_ids and unread_counts do not necessarily include fully unread posts
   helper_method :unread_ids, :opened_ids, :unread_counts

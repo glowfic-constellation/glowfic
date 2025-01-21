@@ -52,7 +52,7 @@ class Reply < ApplicationRecord
 
   def bookmark_by(user)
     return unless user
-    bookmarks.find_by(user_id: user.id)
+    bookmarks.find_by(user_id: user.id).id
   end
 
   def assign_default_icon(user)
