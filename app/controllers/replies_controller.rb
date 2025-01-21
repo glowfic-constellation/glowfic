@@ -84,41 +84,6 @@ class RepliesController < WritableController
     reply.user = current_user
     process_npc(reply, permitted_character_params)
 
-    if reply.post.present?
-      last_seen_reply_order = reply.post.last_seen_reply_for(current_user).try(:reply_order)
-      @unseen_replies = reply.post.replies.ordered.paginate(page: 1, per_page: 10)
-      if last_seen_reply_order.present?
-        @unseen_replies = @unseen_replies.where('reply_order > ?', last_seen_reply_order)
-        @audits = Audited::Audit.where(auditable_id: @unseen_replies.map(&:id)).group(:auditable_id).count
-      end
-      most_recent_unseen_reply = @unseen_replies.last
-
-      if params[:allow_dupe].blank?
-        last_by_user = reply.post.replies.where(user_id: reply.user_id).ordered.last
-        match_attrs = ['content', 'icon_id', 'character_id', 'character_alias_id']
-        if last_by_user.present? && last_by_user.attributes.slice(*match_attrs) == reply.attributes.slice(*match_attrs)
-          flash.now[:error] = "This looks like a duplicate. Did you attempt to post this twice? Please resubmit if this was intentional."
-          @allow_dupe = true
-          if most_recent_unseen_reply.nil? || (most_recent_unseen_reply.id == last_by_user.id && @unseen_replies.count == 1)
-            preview_reply(reply)
-          else
-            draft = make_draft(false)
-            preview_reply(ReplyDraft.reply_from_draft(draft))
-          end
-          return
-        end
-      end
-
-      if most_recent_unseen_reply.present?
-        reply.post.mark_read(current_user, at_time: reply.post.read_time_for(@unseen_replies))
-        num = @unseen_replies.count
-        pluraled = num > 1 ? "have been #{num} new replies" : "has been 1 new reply"
-        flash.now[:error] = "There #{pluraled} since you last viewed this post."
-        draft = make_draft
-        preview_reply(ReplyDraft.reply_from_draft(draft)) and return
-      end
-    end
-
     if params[:button_add_more]
       # If they click "Add More", fetch the existing array of multi replies if present and add the current permitted_params to that list
       add_to_multi_reply(reply, permitted_params)
@@ -294,8 +259,9 @@ class RepliesController < WritableController
 
     # Set up editor
     @post = reply.post
-    empty_reply_hash = permitted_params.permit(:character_id, :icon_id, :character_alias_id)
+    empty_reply_hash = permitted_params.permit(:character_id, :character_alias_id)
     @reply = @post.build_new_reply_for(current_user, empty_reply_hash)
+    @reply.assign_default_icon(current_user)
     @reply.editor_mode = reply.editor_mode
     @adding_to_multi_reply = true
     @audits = {}
@@ -311,9 +277,51 @@ class RepliesController < WritableController
   end
 
   def post_replies(new_reply: nil)
-    @multi_replies << new_reply if new_reply.present?
+    if new_reply.present?
+      @multi_replies << new_reply
+      @multi_replies_params << permitted_params
+    end
 
     first_reply = @multi_replies.first
+    replies_post = first_reply.post
+    if replies_post.present?
+      # Logic to check for reply duplication and unseen replies
+      last_seen_reply_order = replies_post.last_seen_reply_for(current_user).try(:reply_order)
+      @unseen_replies = replies_post.replies.ordered.paginate(page: 1, per_page: 10)
+      if last_seen_reply_order.present?
+        @unseen_replies = @unseen_replies.where('reply_order > ?', last_seen_reply_order)
+        @audits = Audited::Audit.where(auditable_id: @unseen_replies.map(&:id)).group(:auditable_id).count
+      end
+      most_recent_unseen_reply = @unseen_replies.last
+
+      if params[:allow_dupe].blank?
+        # Confirm that the user really wants the first of their new replies to match the latest reply on the thread
+        last_by_user = replies_post.replies.where(user_id: first_reply.user_id).ordered.last
+        match_attrs = ['content', 'icon_id', 'character_id', 'character_alias_id']
+        if last_by_user.present? && last_by_user.attributes.slice(*match_attrs) == first_reply.attributes.slice(*match_attrs)
+          flash.now[:error] = "This looks like a duplicate. Did you attempt to post this twice? Please resubmit if this was intentional."
+          @allow_dupe = true
+          if most_recent_unseen_reply.nil? || (most_recent_unseen_reply.id == last_by_user.id && @unseen_replies.count == 1)
+            preview_reply(first_reply)
+          else
+            draft = make_draft(false)
+            preview_reply(ReplyDraft.reply_from_draft(draft))
+          end
+          return
+        end
+      end
+
+      if most_recent_unseen_reply.present?
+        # Show a list of unseen replies before posting a new one
+        replies_post.mark_read(current_user, at_time: replies_post.read_time_for(@unseen_replies))
+        num = @unseen_replies.count
+        pluraled = num > 1 ? "have been #{num} new replies" : "has been 1 new reply"
+        flash.now[:error] = "There #{pluraled} since you last viewed this post."
+        draft = make_draft
+        preview_reply(ReplyDraft.reply_from_draft(draft)) and return
+      end
+    end
+
     begin
       Reply.transaction { @multi_replies.each(&:save!) }
     rescue ActiveRecord::RecordInvalid => e
@@ -330,6 +338,7 @@ class RepliesController < WritableController
 
   def editing_multi_reply?
     # If the list of params is present and the first item on the list has the ID stored, I am editing it
+    # @reply isn't set correctly at this point so I update it to be the reply found by the first multi-reply element's ID
     @multi_replies_params.present? && (@reply = Reply.find_by(id: @multi_replies_params.first["id"]))
   end
 

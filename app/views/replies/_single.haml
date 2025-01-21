@@ -1,4 +1,4 @@
--# locals: ( reply:, hide_footer: false, split_ui: false )
+-# locals: ( reply:, hide_footer: false, hide_post_edit_box: false, split_ui: false )
 
 - if reply.is_a?(Post)
   - write = 'post-post'.freeze
@@ -30,7 +30,7 @@
         - else
           .spacer-alt
         .post-author= user_mem_link(reply.user_id, reply.username, reply.user_deleted?)
-    - if reply.id.present?
+    - if reply.id.present? && !hide_post_edit_box
       .post-edit-box
         - if split_ui
           - if reply.is_a?(Reply)

@@ -151,12 +151,7 @@ class Post < ApplicationRecord
       reply.character_id = user.active_character_id
     end
 
-    if reply.character_id.nil?
-      reply.icon_id = user.avatar_id
-    else
-      reply.icon_id = reply.character.default_icon.try(:id)
-    end
-
+    reply.assign_default_icon(user)
     reply
   end
 
@@ -178,15 +173,24 @@ class Post < ApplicationRecord
     @last_seen = reply
   end
 
-  def recent_characters_for(user, count)
-    # fetch the (count) most recent non-nil character_ids for user in post
-    recent_ids = replies.where(user_id: user.id)
-      .where.not(character_id: nil)
-      .limit(count)
-      .group('character_id')
-      .select('DISTINCT character_id, MAX(id)')
-      .order(Arel.sql('MAX(id) desc'))
-      .pluck(:character_id)
+  def recent_characters_for(user, count, multi_replies_params: nil)
+    # fetch the (count) most recent non-nil character_ids for user in post, including those being added by multi-replies
+    recent_ids = []
+    if multi_replies_params
+      recent_ids = multi_replies_params.reverse.pluck(:character_id).compact_blank.uniq.take(count).map(&:to_i)
+      count -= recent_ids.length
+    end
+
+    if count > 0
+      recent_ids += replies.where(user_id: user.id)
+        .where.not(character_id: nil)
+        .where.not(character_id: recent_ids)
+        .limit(count)
+        .group('character_id')
+        .select('DISTINCT character_id, MAX(created_at)')
+        .order(Arel.sql('MAX(created_at) desc'))
+        .pluck(:character_id)
+    end
 
     # add the post's character_id to the last one if it's not over the limit
     recent_ids << character_id if character_id.present? && user_id == user.id && recent_ids.length < count && recent_ids.exclude?(character_id)
