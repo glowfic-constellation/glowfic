@@ -60,7 +60,7 @@ class BookmarksController < ApplicationController
       flash[:error] = "Bookmark already exists."
     end
 
-    redirect_back fallback_location: reply_path(@reply, anchor: "reply-#{@reply.id}")
+    redirect_to "#{request.referer || reply_path(@reply)}#reply-#{@reply.id}"
   end
 
   def destroy
@@ -72,7 +72,7 @@ class BookmarksController < ApplicationController
       flash[:success] = "Bookmark removed."
     end
 
-    redirect_back fallback_location: reply_path(@reply, anchor: "reply-#{@reply.id}")
+    redirect_to "#{request.referer || reply_path(@reply)}#reply-#{@reply.id}"
   end
 
   private
@@ -88,6 +88,6 @@ class BookmarksController < ApplicationController
     return if @bookmark.user.id == current_user.try(:id)
 
     flash[:error] = "You do not have permission to perform this action."
-    redirect_back fallback_location: reply_path(@reply, anchor: "reply-#{@reply.id}")
+    redirect_to "#{request.referer || reply_path(@reply)}#reply-#{@reply.id}"
   end
 end

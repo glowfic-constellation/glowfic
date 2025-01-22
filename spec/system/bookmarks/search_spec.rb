@@ -218,7 +218,7 @@ RSpec.describe "Searching bookmarks" do
     # Can remove bookmark from search page
     previous_path = current_url
     find("a[href='#{bookmark_path(last_bookmark)}'][data-method='delete']").click
-    expect(page).to have_current_path(previous_path)
+    expect(page).to have_current_path(previous_path + "#reply-#{last_bookmark.reply.id}") # It redirects back with an anchor
     expect(page).to have_no_selector(".bookmark-name[data-bookmark-id='#{last_bookmark.id}']")
 
     # Can copy another user's bookmark
