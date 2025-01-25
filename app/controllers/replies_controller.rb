@@ -16,14 +16,6 @@ class RepliesController < WritableController
     @post = Post.find_by(id: params[:post_id]) if params[:post_id].present?
     @icon = Icon.find_by(id: params[:icon_id]) if params[:icon_id].present?
 
-    searcher = Reply::Searcher.new(current_user: current_user, post: @post)
-    searcher.setup(params)
-
-    @users = searcher.users
-    @characters = searcher.characters
-    @templates = searcher.templates
-    @boards = searcher.boards
-
     if @post&.visible_to?(current_user)
       gon.post_id = @post.id
     elsif @post
@@ -31,6 +23,14 @@ class RepliesController < WritableController
       flash.now[:error] = "You do not have permission to view this post."
       return
     end
+
+    searcher = Reply::Searcher.new(current_user: current_user, post: @post)
+    searcher.setup(params)
+
+    @users = searcher.users
+    @characters = searcher.characters
+    @templates = searcher.templates
+    @boards = searcher.boards
 
     return unless params[:commit].present?
 
