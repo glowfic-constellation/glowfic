@@ -1330,6 +1330,33 @@ RSpec.describe Post do
     end
   end
 
+  context "scopes" do
+    it "scopes unignored posts properly" do
+      reader = create(:user)
+
+      unread_post = create(:post)
+      read_post = create(:post)
+
+      unread_ignored = create(:post)
+      read_ignored = create(:post)
+
+      ignored_board = create(:board)
+      create(:post, board: ignored_board)
+
+      read_post.mark_read(reader)
+
+      unread_ignored.ignore(reader)
+      read_ignored.ignore(reader)
+      read_ignored.mark_read(reader)
+
+      ignored_board.ignore(reader)
+
+      expect(Post.count).to eq(5)
+      expect(Post.not_ignored_by(reader)).to match_array([unread_post, read_post])
+      expect(Post.not_ignored_by(create(:user)).count).to eq(5)
+    end
+  end
+
   context "callbacks" do
     include ActiveJob::TestHelper
 

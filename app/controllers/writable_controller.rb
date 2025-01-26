@@ -5,6 +5,7 @@ class WritableController < ApplicationController
   def build_template_groups(user=nil)
     return unless logged_in?
     user ||= current_user
+    user = current_user unless user.id == current_user.id || current_user.has_permission?(:edit_posts)
 
     faked = Struct.new(:name, :id, :plucked_characters)
     faked_npcs = Struct.new(:name, :id, :plucked_npcs)
@@ -14,7 +15,7 @@ class WritableController < ApplicationController
       user.characters.non_npcs.where(template_id: nil, retired: false).ordered.pluck(Template::CHAR_PLUCK),
     )
     @templates = templates + [templateless]
-    all_npcs = faked_npcs.new('All NPCs', nil, user.characters.where(retired: false).npcs.ordered.pluck(Template::NPC_PLUCK))
+    all_npcs = faked_npcs.new('All NPCs', nil, user.characters.npcs.not_retired.ordered.pluck(Template::NPC_PLUCK))
     @npcs = [all_npcs]
 
     if @post
@@ -36,7 +37,7 @@ class WritableController < ApplicationController
 
   def show_post(cur_page=nil)
     per = per_page
-    cur_page ||= page
+    cur_page ||= page(allow_special: true)
     @replies = @post.replies
     @paginate_params = { controller: 'posts', action: 'show', id: @post.id }
 
@@ -99,6 +100,8 @@ class WritableController < ApplicationController
     @audits = @post.associated_audits.where(auditable_id: @replies.map(&:id)).group(:auditable_id).count
     @audits[:post] = @post.audits.count
 
+    calculate_reply_bookmarks(@replies)
+
     @next_post = @post.next_post(current_user)
     @prev_post = @post.prev_post(current_user)
 
@@ -132,7 +135,12 @@ class WritableController < ApplicationController
       @post.mark_read(current_user, at_time: @post.read_time_for(@replies))
     end
 
-    @warnings = @post.content_warnings if display_warnings?
+    if display_warnings?
+      @post_warnings = @post.content_warnings
+      @author_warnings = @post.tagging_authors.includes(:user_tags).each_with_object({}) do |author, hash|
+        hash[author] = author.user_tags unless author.user_tags.empty?
+      end
+    end
 
     render 'posts/show'
   end
@@ -203,7 +211,7 @@ class WritableController < ApplicationController
     )
   end
 
-  def permitted_params(param_hash=nil)
+  def permitted_params(param_hash=nil, extra_params=[])
     (param_hash || params).fetch(:reply, {}).permit(
       :post_id,
       :content,
@@ -212,6 +220,7 @@ class WritableController < ApplicationController
       :audit_comment,
       :character_alias_id,
       :editor_mode,
+      *extra_params,
     )
   end
 

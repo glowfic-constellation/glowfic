@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 source 'https://rubygems.org'
 
-ruby '3.3.4'
+ruby '3.3.6'
 
 gem 'api-pagination'
 gem 'apipie-rails'
@@ -10,16 +10,21 @@ gem 'apipie-rails'
 # - for migrations with `rails generate audited:upgrade`
 # - that the method set_audit_user has not changed, since we duplicate it in
 #   ApplicationRecord for use in callbacks to send audit user ids to background jobs.
-#   (currently https://github.com/collectiveidea/audited/blob/v5.5.0/lib/audited/audit.rb#L187)
-gem 'audited', '~> 5.5.0'
+#   (currently https://github.com/collectiveidea/audited/blob/v5.8.0/lib/audited/audit.rb#L187)
+# - the request store functionality hasn't changed: we use RequestStore instead of
+#   ActiveSupport::CurrentAttributes to avoid issues with values being reset in tests when
+#   executing jobs inline (currently overwriting
+#   https://github.com/collectiveidea/audited/blob/v5.8.0/lib/audited.rb#L33)
+gem 'audited', '~> 5.8.0'
 
-gem 'aws-sdk-rails', '~> 4'
+gem 'aws-actionmailer-ses', '~> 1'
+gem 'aws-sdk-rails', '~> 5'
 gem 'aws-sdk-s3', '~> 1'
 gem 'aws-sdk-ses', '~> 1'
 gem 'barnes' # heroku ruby-specific metrics
 gem 'bootstrap', '~> 5.3' # pin until major version is handled
 gem 'dartsass-sprockets'
-gem 'exception_notification'
+gem 'exception_notification', git: 'https://github.com/Throne3d/exception_notification.git', ref: 'b2131cf'
 gem 'get_process_mem'
 gem 'gon', '~> 6.4'
 gem 'haml-rails'
@@ -27,7 +32,7 @@ gem 'httparty'
 gem 'jquery-fileupload-rails'
 gem 'jquery-rails', '~> 4.6'
 gem 'jquery-ui-rails-dox-fork', require: 'jquery-ui-rails'
-gem 'json', '~> 2.7'
+gem 'json', '~> 2.9'
 gem 'jwt'
 gem 'newrelic_rpm'
 gem 'nilify_blanks'
@@ -35,9 +40,10 @@ gem 'nokogiri'
 gem 'pg', '~> 1.5'
 gem 'pg_search'
 gem 'rack-pratchett'
-gem 'rails', '~> 7.1.3'
+gem 'rails', '~> 8.0.1'
 gem "redcarpet", "~> 3.6"
 gem 'redis', '~> 5.3'
+gem 'request_store', '~> 1.7'
 gem 'resque'
 gem 'resque_mailer'
 gem 'sanitize'
@@ -47,7 +53,7 @@ gem 'sprockets'
 gem 'sprockets-rails'
 gem 'terser'
 gem 'test-unit', '~> 3.6' # required by Heroku for production console
-gem 'tinymce-rails', '~> 6.8'
+gem 'tinymce-rails', '~> 7.6'
 gem 'will_paginate'
 
 group :production do
@@ -59,17 +65,17 @@ group :production do
 end
 
 group :development do
-  gem "brakeman", '~> 6.1.2', require: false
-  gem 'haml_lint', '~> 0.58.0', require: false
+  gem "brakeman", '~> 6.2.2', require: false
+  gem 'haml_lint', '~> 0.59.0', require: false
   gem 'listen'
   gem 'memory_profiler'
   gem 'rack-mini-profiler'
-  gem 'rubocop', '~> 1.65.1', require: false
+  gem 'rubocop', '~> 1.70.0', require: false
   gem 'rubocop-capybara', '~> 2.21.0', require: false
   gem 'rubocop-factory_bot', '~> 2.26.0', require: false
-  gem 'rubocop-performance', '~> 1.21.1', require: false
-  gem 'rubocop-rails', '~> 2.25.1', require: false
-  gem 'rubocop-rspec', '~> 3.0.4', require: false
+  gem 'rubocop-performance', '~> 1.23.1', require: false
+  gem 'rubocop-rails', '~> 2.28.0', require: false
+  gem 'rubocop-rspec', '~> 3.4.0', require: false
   gem 'rubocop-rspec_rails', '~> 2.30.0', require: false
   gem 'traceroute'
 end
@@ -82,7 +88,6 @@ group :development, :test do
   gem 'rake', '~> 13.2'
   gem 'rspec-rails'
   gem 'seed_dump', '~> 3.2'
-  gem 'thin'
 end
 
 group :test do

@@ -14,7 +14,7 @@ const emptyGif = "data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEA
 
 $(document).ready(function() {
   fixButtons();
-  $(".icon-row td:has(input)").each(function() {
+  $(".icon-row .input-cell").each(function() {
     $(this).keydown(processDirectionalKey);
   });
 });
@@ -22,28 +22,28 @@ $(document).ready(function() {
 // eslint-disable-next-line complexity
 function processDirectionalKey(event) {
   if ([keyLeft, keyUp, keyRight, keyDown].indexOf(event.which) < 0) return; // skip if not a directional key
-  const tdBinding = $(this);
-  const input = $('input', tdBinding);
+  const divBinding = $(this);
+  const input = $('input', divBinding);
   if (input.get(0).type !== 'text') { return; } // skip if not text
   if (input.get(0).selectionStart !== input.get(0).selectionEnd) { return; } // skip processing if user has text selected
 
   const caret = input.get(0).selectionStart;
-  const index = tdBinding.closest('td').index();
+  const index = divBinding.closest('.input-cell').index();
 
   let consume = false;
   switch (event.which) {
   case keyLeft:
-    consume = processKeyLeft(tdBinding, caret);
+    consume = processKeyLeft(divBinding, caret);
     break;
   case keyRight:
-    consume = processKeyRight(tdBinding, caret, input.val().length);
+    consume = processKeyRight(divBinding, caret, input.val().length);
     break;
   case keyUp:
-    tdBinding.closest('tr').prev('.icon-row').children().eq(index).find('input').focus();
+    divBinding.closest('.icon-row').prev('.icon-row').children().eq(index).find('input').focus();
     consume = true;
     break;
   case keyDown:
-    tdBinding.closest('tr').next('.icon-row').children().eq(index).find('input').focus();
+    divBinding.closest('.icon-row').next('.icon-row').children().eq(index).find('input').focus();
     consume = true;
     break;
   }
@@ -52,13 +52,13 @@ function processDirectionalKey(event) {
 
 function processKeyLeft(binding, caret) {
   if (caret !== 0) { return false; }
-  binding.closest('td').prev().find('input').focus();
+  binding.closest('.input-cell').prev().find('input').focus();
   return true;
 }
 
 function processKeyRight(binding, caret, length) {
   if (caret < length) { return false; }
-  binding.closest('td').next().find('input').focus();
+  binding.closest('.input-cell').next().find('input').focus();
   return true;
 }
 
@@ -69,8 +69,8 @@ function fixButtons() {
   $(".icon-row-rem").first().hide();
   bindAdd();
   bindRem();
-  $("#icon-table tr.icon-row:odd td").removeClass('even').addClass("odd");
-  $("#icon-table tr.icon-row:even td").removeClass('odd').addClass("even");
+  $("#icon-table .icon-row:odd div").removeClass('even').addClass("odd");
+  $("#icon-table .icon-row:even div").removeClass('odd').addClass("even");
 }
 
 function bindAdd() {
@@ -96,7 +96,7 @@ function addNewRow() {
   // handle the URL field specially
   // because uploads have special UI
   const urlField = inputs.first();
-  newRow.find('.conf').hide();
+  newRow.find('.conf').addClass('hidden');
   newRow.find('.conf .filename').text('');
   urlField.show();
   inputs.each(function() {
@@ -104,7 +104,7 @@ function addNewRow() {
   });
 
   newRow.insertAfter(oldRow);
-  $("td:has(input)", newRow).each(function() {
+  $(".input-cell", newRow).each(function() {
     $(this).keydown(processDirectionalKey);
   });
   return index;
@@ -112,7 +112,7 @@ function addNewRow() {
 
 function bindRem() {
   $(".icon-row-rem").click(function() {
-    const remRow = $(this).parents('tr');
+    const remRow = $(this).parents('.icon-row');
     const removingKey = $(remRow.find('input')[1]).val();
     remRow.remove();
     fixButtons();
@@ -147,7 +147,7 @@ function addUploadedIcon(url, key, data, _fileInput) {
   const iconIndex = addNewRow();
   const row = $(".icon-row").filter(function() { return $(this).data('index') === iconIndex; });
   const urlInput = $("#icons_"+iconIndex+"_url");
-  const urlCell = $(urlInput.parents('td:first'));
+  const urlCell = $(urlInput.closest('.url-cell'));
   urlInput.hide().val(url);
   row.find("input[id$='_s3_key']").val(key);
 

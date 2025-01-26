@@ -6,6 +6,7 @@ class User < ApplicationRecord
 
   MIN_USERNAME_LEN = 3
   MAX_USERNAME_LEN = 80
+  MIN_PASSWORD_LEN = 6
   CURRENT_TOS_VERSION = 20181109
   RESERVED_NAMES = ['(deleted user)', 'Glowfic Constellation']
 
@@ -31,6 +32,13 @@ class User < ApplicationRecord
   belongs_to :avatar, class_name: 'Icon', inverse_of: :user, optional: true
   belongs_to :active_character, class_name: 'Character', inverse_of: :user, optional: true
 
+  has_many :user_tags, inverse_of: :user, dependent: :destroy
+  has_many :content_warnings, -> { ordered_by_user_tag }, through: :user_tags, source: :content_warning, dependent: :destroy
+
+  has_many :bookmarks, inverse_of: :user, dependent: :destroy
+  has_many :bookmarked_replies, through: :bookmarks, source: :reply, dependent: :destroy
+  has_many :bookmarked_posts, -> { ordered }, through: :bookmarks, source: :post, dependent: :destroy
+
   validates :crypted, presence: true
   validates :email,
     presence: { on: :create },
@@ -40,9 +48,11 @@ class User < ApplicationRecord
     uniqueness: true,
     length: { in: MIN_USERNAME_LEN..MAX_USERNAME_LEN, allow_blank: true }
   validates :password,
-    length: { minimum: 6, if: :validate_password? },
+    length: { minimum: MIN_PASSWORD_LEN, if: :validate_password? },
     confirmation: { if: :validate_password? }
-  validates :moiety, format: { with: /\A([0-9A-F]{3}){0,2}\z/i }
+  validates :moiety, format: { with: /\A([0-9A-F]{3}){0,2}\z/i }, length: { maximum: 255 }
+  validates :moiety_name, length: { maximum: 255 }
+  validates :profile_editor_mode, inclusion: { in: ['html', 'rtf', 'md'] }, allow_nil: true
   validates :password, :password_confirmation, presence: { if: :validate_password? }
   validate :username_not_reserved
 
@@ -79,6 +89,11 @@ class User < ApplicationRecord
 
   def default_view
     super || 'icon'
+  end
+
+  def layout_darkmode?
+    return false unless layout
+    layout.include?('dark')
   end
 
   def archive

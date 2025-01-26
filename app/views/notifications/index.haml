@@ -6,13 +6,19 @@
         %th.sub
         %th.sub{colspan: 4} Notification
         %th.sub Received
+        %th.sub.check-all-box
+          - if @notifications.present?
+            = check_box_tag :check_all, nil, false, class: 'check-all', data: { check_box_name: "marked_ids[]" }
     %tbody
       = render partial: "notification", collection: @notifications
+      - unless @notifications.present?
+        %tr
+          %td.centered.padding-10.no-posts{ class: cycle('even', 'odd'), colspan: 7 } — No posts yet —
       %tr
         %td.right-align.padding-5{colspan: 7, class: cycle('even', 'odd')}
           = submit_tag "Mark Read", class: 'button'
           = submit_tag "Mark Unread", class: 'button'
-          = submit_tag "Delete", class: 'button', data: { confirm: "Are you sure you want to delete these messages?" }
+          = submit_tag "Delete", class: 'button', data: { confirm: "Are you sure you want to delete these notifications?" }
   - if @notifications.total_pages > 1
     %tfoot
       %tr

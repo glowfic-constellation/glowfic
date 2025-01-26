@@ -177,7 +177,7 @@ RSpec.describe SessionsController do
       expect(cookies[:accepted_tos]).to be_nil
       patch :confirm_tos
       expect(response).to redirect_to(root_url)
-      expect(cookies[:accepted_tos]).to eq(User::CURRENT_TOS_VERSION)
+      expect(cookies[:accepted_tos].to_i).to eq(User::CURRENT_TOS_VERSION)
     end
   end
 

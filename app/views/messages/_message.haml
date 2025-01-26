@@ -1,8 +1,10 @@
+-# locals: ( message:, message_counter: nil, all_collapse: false)
+
 - col_klass = exp_klass = cycle('even', 'odd')
-- if local_assigns[:message_counter].present?
+- unless message_counter.nil?
   - col_klass += ' message-collapse'
 
-- if local_assigns[:message_counter].nil? || (local_assigns[:all_collapse].nil? && local_assigns[:message_counter] >= @messages.length - 1)
+- if message_counter.nil? || (!all_collapse && message_counter >= @messages.length - 1)
   - col_klass += ' hidden'
 - else
   - exp_klass += ' hidden'
@@ -16,10 +18,10 @@
         .message-time Sent #{pretty_time(message.created_at)}
 
 .post-container.message-expanded{class: exp_klass, id: "expanded-#{message.id}"}
-  - if message.id && local_assigns[:message_counter].present?
+  - if message.id && !message_counter.nil?
     .message-expand
       .message-menu{data: { id: message.id }}
-        .float-left.text Click to collapse
+        .float-left.message-menu-text Click to collapse
         .float-right
           - if message.created_at
             .message-time Sent #{pretty_time(message.created_at)}

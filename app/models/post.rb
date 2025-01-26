@@ -22,6 +22,10 @@ class Post < ApplicationRecord
   has_many :favorites, as: :favorite, inverse_of: :favorite, dependent: :destroy
   has_many :views, class_name: 'Post::View', dependent: :destroy
 
+  has_many :bookmarks, inverse_of: :post, dependent: :destroy
+  has_many :bookmarking_users, -> { ordered }, through: :bookmarks, source: :user, dependent: :destroy
+  has_many :bookmarked_replies, -> { ordered }, through: :bookmarks, source: :reply, dependent: :destroy
+
   has_many :post_tags, inverse_of: :post, dependent: :destroy
   has_many :labels, -> { ordered_by_post_tag }, through: :post_tags, source: :label, dependent: :destroy
   has_many :settings, -> { ordered_by_post_tag }, through: :post_tags, source: :setting, dependent: :destroy
@@ -37,7 +41,7 @@ class Post < ApplicationRecord
   attr_accessor :is_import
   attr_writer :skip_edited
 
-  validates :subject, presence: true
+  validates :subject, presence: true, length: { maximum: 255 }
   validates :description, length: { maximum: 255 }
   validate :valid_board, :valid_board_section
 
@@ -106,6 +110,13 @@ class Post < ApplicationRecord
     end
   }
 
+  scope :not_ignored_by, ->(user) {
+    joins("LEFT JOIN post_views ON post_views.post_id = posts.id AND post_views.user_id = #{user.id}")
+      .joins("LEFT JOIN board_views on board_views.board_id = posts.board_id AND board_views.user_id = #{user.id}")
+      .where(post_views: { ignored: [nil, false] })
+      .where(board_views: { ignored: [nil, false] })
+  }
+
   def visible_to?(user)
     return false if user&.author_blocking?(self, author_ids)
     return true if privacy_public?
@@ -114,6 +125,11 @@ class Post < ApplicationRecord
     return true if privacy_full_accounts? && !user.read_only?
     return user.id == user_id if privacy_private?
     (post_viewers.pluck(:user_id) + [user_id]).include?(user.id)
+  end
+
+  def has_replies_bookmarked_by?(user)
+    return false unless user
+    bookmarking_users.where(id: user.id).exists?
   end
 
   def build_new_reply_for(user, reply_params={})
@@ -135,12 +151,7 @@ class Post < ApplicationRecord
       reply.character_id = user.active_character_id
     end
 
-    if reply.character_id.nil?
-      reply.icon_id = user.avatar_id
-    else
-      reply.icon_id = reply.character.default_icon.try(:id)
-    end
-
+    reply.assign_default_icon(user)
     reply
   end
 
@@ -162,15 +173,24 @@ class Post < ApplicationRecord
     @last_seen = reply
   end
 
-  def recent_characters_for(user, count)
-    # fetch the (count) most recent non-nil character_ids for user in post
-    recent_ids = replies.where(user_id: user.id)
-      .where.not(character_id: nil)
-      .limit(count)
-      .group('character_id')
-      .select('DISTINCT character_id, MAX(id)')
-      .order(Arel.sql('MAX(id) desc'))
-      .pluck(:character_id)
+  def recent_characters_for(user, count, multi_replies_params: nil)
+    # fetch the (count) most recent non-nil character_ids for user in post, including those being added by multi-replies
+    recent_ids = []
+    if multi_replies_params
+      recent_ids = multi_replies_params.reverse.pluck(:character_id).compact_blank.uniq.take(count).map(&:to_i)
+      count -= recent_ids.length
+    end
+
+    if count > 0
+      recent_ids += replies.where(user_id: user.id)
+        .where.not(character_id: nil)
+        .where.not(character_id: recent_ids)
+        .limit(count)
+        .group('character_id')
+        .select('DISTINCT character_id, MAX(created_at)')
+        .order(Arel.sql('MAX(created_at) desc'))
+        .pluck(:character_id)
+    end
 
     # add the post's character_id to the last one if it's not over the limit
     recent_ids << character_id if character_id.present? && user_id == user.id && recent_ids.length < count && recent_ids.exclude?(character_id)

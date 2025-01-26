@@ -1,3 +1,5 @@
+-# locals: ( post:, subtitle: nil )
+
 - content_for :breadcrumbs do
   = link_to "Continuities", continuities_path
   &raquo;
@@ -6,9 +8,9 @@
     &raquo;
     = link_to post.section.name, board_section_path(post.section)
   &raquo;
-  - if local_assigns[:subtitle]
+  - if subtitle.nil?
+    %b= post.subject
+  - else
     = link_to post.subject, post_path(post)
     &raquo;
     %b= subtitle
-  - else
-    %b= post.subject

@@ -2,7 +2,9 @@ inherit_from: .rubocop_todo.yml
 
 AllCops:
   TargetRubyVersion: 3.3
-  TargetRailsVersion: 7.1
+  TargetRailsVersion: 8.0
+  # used so rubocop doesn't edit old migrations, doesn't need to be perfectly up to date
+  MigratedSchemaVersion: 20241222000400
   DisabledByDefault: false
   Exclude:
     - 'config/initializers/audited.rb'
@@ -138,6 +140,9 @@ Lint/ConstantDefinitionInBlock:
 Lint/ConstantOverwrittenInRescue: # new in 1.31
   Enabled: true
 
+Lint/ConstantReassignment: # new in 1.70
+  Enabled: true
+
 Lint/DeprecatedConstants: # (new in 1.8)
   Enabled: true
 
@@ -153,6 +158,9 @@ Lint/DuplicateMatchPattern: # new in 1.50
 Lint/DuplicateRegexpCharacterClassElement: # (new in 1.1)
   Enabled: true
 
+Lint/DuplicateSetElement: # new in 1.67
+  Enabled: true
+
 Lint/EmptyBlock: # (new in 1.1)
   Enabled: true
 
@@ -160,6 +168,9 @@ Lint/EmptyClass: # (new in 1.3)
   Enabled: true
 
 Lint/EmptyInPattern: # new in 1.16
+  Enabled: true
+
+Lint/HashNewWithKeywordArgumentsAsDefault: # new in 1.69
   Enabled: true
 
 Lint/IncompatibleIoSelectWithFiberScheduler: # new in 1.21
@@ -190,6 +201,9 @@ Lint/NoReturnInBeginEndBlocks: # (new in 1.2)
 Lint/NumberedParameterAssignment: # (new in 1.9)
   Enabled: true
 
+Lint/NumericOperationWithConstantResult: # new in 1.69
+  Enabled: true
+
 Lint/OrAssignmentToConstant: # (new in 1.9)
   Enabled: true
 
@@ -212,6 +226,9 @@ Lint/RedundantRegexpQuantifiers: # new in 1.53
 Lint/RequireRelativeSelfPath: # new in 1.22
   Enabled: true
 
+Lint/SharedMutableDefault: # new in 1.70
+  Enabled: true
+
 Lint/SuppressedException:
   Exclude:
     - 'spec/jobs/application_job_spec.rb'
@@ -226,10 +243,19 @@ Lint/ToEnumArguments: # (new in 1.1)
 Lint/TripleQuotes: # (new in 1.9)
   Enabled: true
 
+Lint/UnescapedBracketInRegexp: # new in 1.68
+  Enabled: true
+
 Lint/UnexpectedBlockArity: # (new in 1.5)
   Enabled: true
 
 Lint/UnmodifiedReduceAccumulator: # (new in 1.1)
+  Enabled: true
+
+Lint/UselessDefined: # new in 1.69
+  Enabled: true
+
+Lint/UselessNumericOperation: # new in 1.66
   Enabled: true
 
 Lint/UselessRescue: # new in 1.43
@@ -345,6 +371,10 @@ Performance/SortReverse:
 Performance/Squeeze:
   Enabled: true
 
+Performance/StringBytesize: # new in 1.23
+  Enabled: false
+  # we don't use byte operations
+
 Performance/StringIdentifierArgument: # new in 1.13
   Enabled: true
 
@@ -430,6 +460,9 @@ Rails/DynamicFindBy:
     - find_by_id
 
 Rails/EagerEvaluationLogMessage: # new in 2.11
+  Enabled: true
+
+Rails/EnumSyntax: # new in 2.26
   Enabled: true
 
 Rails/EnvironmentVariableAccess: # (new in 2.10)
@@ -614,6 +647,7 @@ RSpec/DescribeMethod:
   Exclude:
     - 'spec/controllers/posts/*'
     - 'spec/controllers/replies/*'
+    - 'spec/controllers/bookmarks/*'
 
 RSpec/EmptyOutput:
   Enabled: false # we don't use the output matcher
@@ -665,6 +699,7 @@ RSpec/SpecFilePathFormat:
   Exclude:
     - 'spec/controllers/posts/*'
     - 'spec/controllers/replies/*'
+    - 'spec/controllers/bookmarks/*'
 
 RSpec/StubbedMock:
   Exclude:
@@ -769,6 +804,9 @@ Security/IoMethods: # new in 1.22
 Style/AndOr:
   EnforcedStyle: 'conditionals'
 
+Style/AmbiguousEndlessMethodDefinition: # new in 1.68
+  Enabled: true
+
 Style/ArgumentsForwarding: # (new in 1.1)
   Enabled: true
   UseAnonymousForwarding: false  # TODO: consider enabling
@@ -786,6 +824,9 @@ Style/AsciiComments:
 Style/AutoResourceCleanup:
   Enabled: true
 
+Style/BitwisePredicate: # new in 1.68
+  Enabled: false # we don't really use bitwise operations
+
 Style/BlockDelimiters:
   AllowedMethods: ['lambda', 'proc', 'it', 'expect']
 
@@ -799,6 +840,9 @@ Style/ClassEqualityComparison:
   Enabled: false
 
 Style/CollectionCompact: # (new in 1.2)
+  Enabled: true
+
+Style/CombinableDefined: # new in 1.68
   Enabled: true
 
 Style/CommentAnnotation:
@@ -817,6 +861,9 @@ Style/DataInheritance: # new in 1.49
   Enabled: true
 
 Style/DirEmpty: # new in 1.48
+  Enabled: true
+
+Style/DigChain: # new in 1.69
   Enabled: true
 
 Style/Documentation:
@@ -856,11 +903,20 @@ Style/FetchEnvVar: # new in 1.28
 Style/FileEmpty: # new in 1.48
   Enabled: true
 
+Style/FileNull: # new in 1.69
+  Enabled: false
+  # we don't use /dev/null
+
 Style/FileRead: # new in 1.24
   Enabled: true
 
+Style/FileTouch: # new in 1.69
+  Enabled: false
+  # we don't use file operations
+
 Style/FileWrite: # new in 1.24
-  Enabled: true
+  Enabled: false
+  # we don't use file operations
 
 Style/FormatStringToken:
   EnforcedStyle: 'template'
@@ -900,6 +956,12 @@ Style/InPatternThen: # new in 1.16
 Style/InvertibleUnlessCondition:  # new in 1.44
   Enabled: false
   # overriding InverseMethods isn't working right now and we have a lot of fine examples of "unless .present?"
+
+Style/ItAssignment: # new in 1.70
+  Enabled: true
+
+Style/KeywordArgumentsMerging: # new in 1.68
+  Enabled: true
 
 Style/KeywordParametersOrder:
   Enabled: false
@@ -1014,6 +1076,9 @@ Style/RedundantHeredocDelimiterQuotes: # new in 1.45
 Style/RedundantInitialize: # new in 1.27
   Enabled: true
 
+Style/RedundantInterpolationUnfreeze: # new in 1.66
+  Enabled: true
+
 Style/RedundantLineContinuation: # new in 1.49
   Enabled: true
 
@@ -1037,6 +1102,9 @@ Style/RegexpLiteral:
   AllowInnerSlashes: true
 
 Style/ReturnNilInPredicateMethodDefinition: # new in 1.53
+  Enabled: true
+
+Style/SafeNavigationChainLength: # new in 1.68
   Enabled: true
 
 Style/SelectByRegexp: # new in 1.22

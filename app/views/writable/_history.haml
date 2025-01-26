@@ -1,3 +1,5 @@
+-# locals: ( audited: )
+
 .content-header Edit History (Oldest to Newest)
 %table
   %tbody
@@ -55,10 +57,11 @@
         %tr
           %th.sub Privacy
           %td{colspan: 3, class: cycle('even', 'odd')}
+            - dark_layout = current_user&.layout_darkmode?
             Changed from
-            %b= privacy_state(Post.privacies.key(audit.audited_changes['privacy'][0]))
+            %b= privacy_state(Post.privacies.key(audit.audited_changes['privacy'][0]), dark_layout: dark_layout)
             to
-            %b= privacy_state(cur.privacy)
+            %b= privacy_state(cur.privacy, dark_layout: dark_layout)
       - if audit.action != 'destroy' && (audit.action == 'create' || audit.audited_changes.keys.intersect?(%w(character_alias_id character_id content description icon_id subject)))
         %tr
           %th.sub.vtop Content

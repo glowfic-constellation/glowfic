@@ -252,12 +252,12 @@ div.post-subheader { width: 100%; }
   margin-bottom: 5px;
 }
 
-#post_content, #reply_content {
+#post_content, #reply_content, #user_profile {
   width: 100%;
   display: block;
 }
 
-#reply_content {
+#reply_content, #user_profile {
   height: 130px;
   box-sizing: content-box;
 }
@@ -396,6 +396,11 @@ div.post-subheader { width: 100%; }
   }
 }
 
+// TODO: fix this properly, this is a hack
+@media (max-width: 600px) {
+  #post-form-wrapper { clear: both; }
+}
+
 /* Pagination */
 .pagination {
   font-size: $font_size_small;
@@ -507,7 +512,8 @@ div.post-subheader { width: 100%; }
 /* Handle post tables */
 .post-completed {
   text-align: center;
-  width: 70px;
+  min-width: 50px;
+  max-width: 70px;
   white-space: nowrap;
 }
 
@@ -555,4 +561,10 @@ div.post-subheader { width: 100%; }
 .mod {
   width: 100%;
   height: 50px;
+}
+
+/* Bookmark Edit Form */
+.bookmark-editor-fields { margin-right: 20px; }
+@media (max-width: 850px) {
+  .bookmark-editor-fields, .bookmark-editor-buttons { display: block; margin-right: 0; }
 }

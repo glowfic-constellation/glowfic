@@ -4,14 +4,17 @@ class PostsController < WritableController
 
   before_action :login_required, except: [:index, :show, :history, :warnings, :search, :stats]
   before_action :readonly_forbidden, only: [:owed]
-  before_action :find_model, only: [:show, :history, :delete_history, :stats, :warnings, :edit, :update, :destroy]
-  before_action :require_edit_permission, only: [:edit, :delete_history]
+  before_action :find_model, only: [:show, :history, :delete_history, :stats, :warnings, :edit, :update, :destroy, :split, :do_split, :preview_split]
+  before_action :require_edit_permission, only: [:edit, :delete_history, :split, :do_split, :preview_split]
+  before_action :require_locked_authorship, only: [:split, :do_split, :preview_split]
   before_action :require_import_permission, only: [:new, :create]
   before_action :require_create_permission, only: [:new, :create]
   before_action :editor_setup, only: [:new, :edit]
 
   def index
-    @posts = posts_from_relation(Post.ordered, show_blocked: !!params[:show_blocked])
+    @posts = Post.ordered
+    @posts = @posts.not_ignored_by(current_user) if current_user&.hide_from_all
+    @posts = posts_from_relation(@posts, show_blocked: !!params[:show_blocked])
     @page_title = 'Recent Threads'
   end
 
@@ -45,21 +48,18 @@ class PostsController < WritableController
 
   def unread
     @started = (params[:started] == 'true') || (params[:started].nil? && current_user.unread_opened)
-    @posts = Post.joins("LEFT JOIN post_views ON post_views.post_id = posts.id AND post_views.user_id = #{current_user.id}")
-    @posts = @posts.joins("LEFT JOIN board_views on board_views.board_id = posts.board_id AND board_views.user_id = #{current_user.id}")
+    @posts = Post.not_ignored_by(current_user)
     @posts = @posts.where.not(post_views: { read_at: nil }) if @started
 
-    # post view does not exist and (board view does not exist or post has updated since non-ignored board view read_at)
-    no_post_view = @posts.where(post_views: { user_id: nil })
+    # post view does not exist and (board view does not exist or post has updated since board view read_at)
+    no_post_view = @posts.where(post_views: { id: nil })
     updated_since_board_read = no_post_view.where(board_views: { read_at: nil })
       .or(no_post_view.where("date_trunc('second', board_views.read_at) < date_trunc('second', posts.tagged_at)"))
-      .where(board_views: { ignored: false })
     no_post_view = no_post_view.where(board_views: { user_id: nil }).or(updated_since_board_read)
 
-    # post view exists and post has updated since non-ignored post view read_at and (board view does not exist or is not ignored)
-    with_post_view = @posts.where(post_views: { ignored: false }) # non-existant post-views will return nil here
-    with_post_view = with_post_view.where(board_views: { user_id: nil }).or(with_post_view.where(board_views: { ignored: false }))
-    with_post_view = with_post_view.where(post_views: { read_at: nil })
+    # post view exists and post has updated since post view read_at
+    with_post_view = @posts.where.not(post_views: { id: nil })
+    with_post_view = with_post_view.where(post_views: { read_at: nil }) # possible if someone ignores and then unignores a post
       .or(with_post_view.where("date_trunc('second', post_views.read_at) < date_trunc('second', posts.tagged_at)"))
 
     @posts = with_post_view.or(no_post_view)
@@ -156,7 +156,11 @@ class PostsController < WritableController
   end
 
   def show
-    render :flat, layout: false and return if params[:view] == 'flat'
+    if params[:view] == 'flat'
+      response.headers['X-Robots-Tag'] = 'noindex'
+      render :flat, layout: false
+      return
+    end
     show_post
   end
 
@@ -177,6 +181,7 @@ class PostsController < WritableController
     @preceding = [@post] unless @preceding.present?
     @following = @post.replies.where('id > ?', @audit.auditable_id).order(id: :asc).limit(2)
     @audits = {} # set to prevent crashes, but we don't need this calculated, we don't want to display edit history on this page
+    @reply_bookmarks = {}
   end
 
   def stats
@@ -239,6 +244,7 @@ class PostsController < WritableController
       render_errors(@post, action: 'updated', now: true, err: e)
 
       @audits = { post: @post.audits.count }
+      @reply_bookmarks = {}
       editor_setup
       render :edit
     else
@@ -266,7 +272,7 @@ class PostsController < WritableController
 
   def search
     @page_title = 'Search Posts'
-    use_javascript('posts/search')
+    use_javascript('search')
 
     # don't start blank if the parameters are set
     @setting = Setting.where(id: params[:setting_id]) if params[:setting_id].present?
@@ -281,6 +287,7 @@ class PostsController < WritableController
 
     return unless params[:commit].present?
 
+    response.headers['X-Robots-Tag'] = 'noindex'
     @search_results = Post.ordered
     @search_results = @search_results.where(board_id: params[:board_id]) if params[:board_id].present?
     @search_results = @search_results.where(id: Setting.find(params[:setting_id]).post_tags.pluck(:post_id)) if params[:setting_id].present?
@@ -322,6 +329,32 @@ class PostsController < WritableController
     redirect_to post_path(@post, params)
   end
 
+  def split
+    @page_title = 'Split Post'
+  end
+
+  def do_split
+    unless (@reply = Reply.find_by(id: params[:reply_id]))
+      flash[:error] = "Reply could not be found."
+      redirect_to post_path(@post) and return
+    end
+
+    unless @reply.post == @post
+      flash[:error] = "Reply given by id is not present in this post."
+      redirect_to post_path(@post) and return
+    end
+
+    if params[:subject].blank?
+      flash[:error] = "Subject must not be blank."
+      redirect_to split_post_path(@post, reply_id: params[:reply_id]) and return
+    end
+    preview_split and return if params[:button_preview].present?
+
+    SplitPostJob.perform_later(params[:reply_id], params[:subject])
+    flash[:success] = "Post will be split."
+    redirect_to post_path(@post)
+  end
+
   private
 
   def preview
@@ -340,10 +373,16 @@ class PostsController < WritableController
     @written = @post
 
     @audits = { post: @post.audits.count } if @post.id.present?
+    @reply_bookmarks = {}
 
     editor_setup
     @page_title = 'Previewing: ' + @post.subject.to_s
     render :preview
+  end
+
+  def preview_split
+    @page_title = 'Preview Split Post'
+    render :preview_split
   end
 
   def mark_unread
@@ -458,6 +497,12 @@ class PostsController < WritableController
     return if current_user.has_permission?(:import_posts)
     flash[:error] = "You do not have access to this feature."
     redirect_to new_post_path
+  end
+
+  def require_locked_authorship
+    return if @post.authors_locked
+    flash[:error] = "Post must be locked to current authors to be split."
+    redirect_to @post
   end
 
   def permitted_params(include_associations=true)

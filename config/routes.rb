@@ -24,6 +24,7 @@ Rails.application.routes.draw do
       put :password
       put :upgrade
       get :output
+      get :profile_edit
     end
   end
   resources :password_resets, only: [:new, :create, :show, :update]
@@ -86,6 +87,8 @@ Rails.application.routes.draw do
       get :delete_history
       get :stats
       post :warnings
+      get :split
+      post :do_split
     end
     collection do
       post :mark
@@ -101,6 +104,9 @@ Rails.application.routes.draw do
       get :history
       post :restore
     end
+    collection { get :search }
+  end
+  resources :bookmarks, only: [:create, :destroy] do
     collection { get :search }
   end
   resources :tags, except: [:new, :create]
@@ -135,14 +141,21 @@ Rails.application.routes.draw do
       resources :index_sections, only: [] do
         collection { post :reorder }
       end
+      resources :replies, only: [] do
+        member { get :bookmark }
+      end
       resources :posts, only: [:index, :show, :update] do
         resources :replies, only: :index
         collection { post :reorder }
       end
+      resources :bookmarks, only: [:create, :update, :destroy]
       resources :tags, only: [:index, :show]
       resources :templates, only: :index
       resources :users, only: :index do
-        member { get :posts }
+        member do
+          get :posts
+          get :bookmarks
+        end
       end
 
       post '/login' => 'sessions#create', as: :login
@@ -169,8 +182,6 @@ Rails.application.routes.draw do
 
     resources :posts, only: [] do
       collection do
-        get :split
-        post :do_split
         get :regenerate_flat
         post :do_regenerate
       end

@@ -6,10 +6,8 @@
   %b Edit
 
 = form_for @index, method: :put do |f|
-  %table.form-table
-    %thead
-      %tr
-        %th.editor-title{colspan: 2} Edit Index
+  .form-table#index-editor
+    .editor-title Edit Index
     = render 'editor', f: f
 
 %br
@@ -22,4 +20,4 @@
 = render 'boards/reorder_sections', sections: @index_sections
 
 %br
-= render 'boards/reorder_posts', unsectioned_posts: @unsectioned_posts, id: :index_post_id, klass: IndexPost
+= render 'boards/reorder_posts', unsectioned_posts: @unsectioned_posts, id: :index_post_id

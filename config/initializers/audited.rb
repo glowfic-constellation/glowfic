@@ -1,4 +1,15 @@
+require 'request_store'
+
 module Audited
+  # reverts the use of ActiveSupport::CurrentAttributes from
+  # https://github.com/collectiveidea/audited/pull/702 due to misbehavior around
+  # perform_enqueued_jobs in tests and resetting of Model.auditing_enabled config settings
+  class << self
+    def store
+      ::RequestStore.store[:audited_store] ||= {}
+    end
+  end
+
   module Auditor
     module AuditedInstanceMethods
       private

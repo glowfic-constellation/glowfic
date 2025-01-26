@@ -21,6 +21,7 @@ class ReportsController < ApplicationController
     if @report_type == 'daily'
       @new_today = params[:new_today].present?
       @posts = DailyReport.new(@day).posts(sort, @new_today)
+      @posts = @posts.not_ignored_by(current_user) if current_user&.hide_from_all
       @posts = posts_from_relation(@posts, max: !@new_today)
     else
       @posts = Post.where(tagged_at: 1.month.ago.all_month)

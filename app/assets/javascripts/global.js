@@ -13,8 +13,15 @@ $(document).ready(function() {
     return false;
   });
 
-  $("#select_all").click(function() {
-    $(".select-all-box").prop('checked', this.checked);
+  $('.check-all').on('change', function() {
+    // The check-all's checkbox value will contain the name of the checkboxes which are meant to be checked
+    $(`.check-all-item[name="${this.dataset.checkBoxName}"]`).prop('checked', this.checked);
+  });
+
+  $('.check-all-item').on('change', function() {
+    const checkboxes = $(`.check-all-item[name="${this.name}"]`);
+    const allChecked = checkboxes.filter(':checked').length === checkboxes.length;
+    $(`.check-all[data-check-box-name="${this.name}"]`).prop('checked', allChecked);
   });
 
   // Set localStorage if login status has changed
@@ -54,6 +61,19 @@ $(document).ready(function() {
     const msgText = 'logged ' + (e.newValue === 'true' ? 'in' : 'out');
     warningBox.html('You have <strong>' + msgText + '</strong> in another tab. Please reload before submitting any forms.');
   });
+
+  // overwrite jquery-ujs disable-with to only change text of clicked button
+  jQuery.rails.disableFormElements = function(form) {
+    form.find(jQuery.rails.disableSelector).each(function() {
+      const element = $(this);
+      const submittedBy = form.data('ujs:submit-button');
+      if (submittedBy && element.attr('name') === submittedBy.name && element.attr('value') === submittedBy.value) {
+        jQuery.rails.disableFormElement(element);
+      } else {
+        element.prop('disabled', true);
+      }
+    });
+  };
 });
 
 function addParameter(url, param, value) {

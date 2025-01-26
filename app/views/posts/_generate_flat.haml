@@ -1,7 +1,9 @@
+-# locals: ( replies: )
+
 - 1.upto((replies.count(:all) / 250.0).ceil).each do |index|
   - replies.paginate(per_page: 250, page: index).each do |reply|
     .post-container.post-reply
-      <a id="reply-#{reply.id}" class="noheight"> </a>
+      %a.noheight{id: "reply-#{reply.id}"}= " "
       .padding-10
         .post-info-box
           - if reply.icon_id

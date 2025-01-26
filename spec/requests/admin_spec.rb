@@ -1,5 +1,5 @@
 RSpec.describe 'Admin panel' do
-  let(:admin) { create(:admin_user, password: 'known') }
+  let(:admin) { create(:admin_user, password: known_test_password) }
 
   before(:each) do
     login(admin)
@@ -12,44 +12,6 @@ RSpec.describe 'Admin panel' do
       expect(response).to render_template(:index)
       expect(response.body).to include('Admin Tools')
     end
-  end
-
-  it 'renders the post split form' do
-    target = create(:post)
-    reply = create(:reply, post: target)
-
-    get '/admin/posts/split'
-    aggregate_failures do
-      expect(response).to have_http_status(200)
-      expect(response).to render_template(:split)
-      expect(response.body).to include('Split Post')
-    end
-
-    update_params = {
-      reply_id: reply.id,
-      subject: 'test',
-    }
-    post '/admin/posts/do_split', params: {
-      **update_params,
-      button_preview: true,
-    }
-    aggregate_failures do
-      expect(response).to have_http_status(200)
-      expect(response).to render_template(:preview_split)
-      expect(response.body).to match(/Splitting.*at reply id #/m)
-    end
-
-    expect {
-      post '/admin/posts/do_split', params: update_params
-    }.to have_enqueued_job(SplitPostJob).with(reply.id.to_s, 'test')
-    aggregate_failures do
-      expect(response).to redirect_to(admin_url)
-      expect(flash[:error]).to be_nil
-      expect(flash[:success]).to eq('Post will be split.')
-    end
-    expect {
-      perform_enqueued_jobs
-    }.to change { Post.count }.by(1).and change { Reply.count }.by(-1)
   end
 
   it 'renders the post flat post regeneration form' do

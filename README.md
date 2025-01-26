@@ -5,7 +5,7 @@
 ### Dependencies
 
 *   [Ruby](https://www.ruby-lang.org/en/) 3.3
-*   [Rails](http://rubyonrails.org/) 7.1
+*   [Rails](http://rubyonrails.org/) 7.2
 *   [Redis](https://redis.io/topics/quickstart)
 *   [PostgreSQL](https://www.postgresql.org/)
 
@@ -103,11 +103,11 @@ If it has changed, you can rebuild the glowfic image with:
 
 Now, update the gems used for the project:
 
-*   `docker-bin/bundler`
+*   `bin-docker/bundle`
 
 And finally, run any database migrations that might have been added in the meantime:
 
-*   `docker-bin/rake db:migrate`
+*   `bin-docker/rake db:migrate`
 
 You should now be able to execute the server, as before but now with the latest updates.
 
@@ -171,5 +171,5 @@ bin-docker/backstop approve $LAYOUT
 
 ### Attribution
 
-We make use of the [famfamfam silk](http://www.famfamfam.com/lab/icons/silk/) pack of icons, which is licensed under a Creative Commons Attribution license, including some icons that have been modified from the originals.
+We make use of the [famfamfam silk](https://github.com/legacy-icons/famfamfam-silk) pack of icons, which is licensed under a Creative Commons Attribution license, including some icons that have been modified from the originals.
 These can be found in various locations, including in the dropdown menu in posts.

@@ -1,3 +1,5 @@
+-# locals: ( board: )
+
 %tr
   - klass = cycle('even', 'odd')
   %td.padding-10.board-title{class: klass}= link_to board.name, continuity_path(board)

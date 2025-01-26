@@ -1,6 +1,6 @@
 RSpec.describe "Editing a character" do
   scenario "Updating a basic character", :js do
-    user = create(:user, password: 'known')
+    user = create(:user, password: known_test_password)
     character = create(:character, user: user)
     visit edit_character_path(character)
     expect(page).to have_selector('.flash.error')
@@ -8,11 +8,11 @@ RSpec.describe "Editing a character" do
       expect(page).to have_text("You must be logged in")
     end
 
-    login(user, 'known')
+    login(user, known_test_password)
     visit edit_character_path(character)
     expect(page).to have_no_selector('.flash.error')
     expect(page).to have_no_text("You must be logged in")
-    expect(page).to have_selector("th", text: character.name)
+    expect(page).to have_selector(".editor-title", text: character.name)
 
     within('.character-form') do
       fill_in 'Template Nickname', with: 'Example nickname'

@@ -8,8 +8,8 @@ $(document).ready(function() {
 function addUploadedIcon(url, s3Key, data, fileInput) {
   const iconId = fileInput.data('icon-id');
   const iconRow = "#icon-row-" + iconId;
-  $(iconRow + " .icon_conf").show();
-  $(iconRow + " .icon_url_field").hide();
+  $(iconRow + " .icon_conf").removeClass('hidden');
+  $(iconRow + " .icon_url_field").addClass('hidden');
   $(iconRow).find('input[id$=_url]').first().hide().val(url);
   $(iconRow).find('input[id$=_s3_key]').first().hide().val(s3Key);
   $("#loading-"+iconId).hide();

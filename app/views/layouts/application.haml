@@ -60,7 +60,7 @@
           #user-info
             = link_to current_user do
               - if current_user.avatar
-                = image_tag current_user.avatar.url, class: 'icon', id: 'user-icon', title: current_user.avatar.keyword, alt: current_user.avatar.keyword
+                %img#user-icon.icon{src: current_user.avatar.url, title: current_user.avatar.keyword, alt: current_user.avatar.keyword}
               - else
                 .no-img
               #user-username= current_user.username
@@ -100,11 +100,11 @@
             - elsif !current_page?(login_path)
               = form_tag login_path, method: :post, id: 'header-form' do
                 #header-forms
-                  = text_field_tag :username, params[:username], placeholder: "Username"
-                  = password_field_tag :password, params[:password], placeholder: "Password"
+                  = text_field_tag :username, params[:username], placeholder: "Username", id: 'header-username', autocomplete: 'username'
+                  = password_field_tag :password, params[:password], placeholder: "Password", id: 'header-password', autocomplete: 'current-password'
                 #header-remember
-                  = check_box_tag :remember_me
-                  = label_tag :remember_me, "Remember Me"
+                  = check_box_tag :remember_me, class: 'vmid', id: 'header-rememberme'
+                  = label_tag 'header-rememberme', "Remember Me", class: 'vmid'
                 #header-buttons
                   = submit_tag "Log in", class: 'button'
                 #header-buttons-links
@@ -148,7 +148,7 @@
       - if content_for?(:flashes)
         = content_for :flashes
       - unless logged_in? || tos_skippable?
-        #tos.hidden= render 'about/accept_tos'
+        #tos= render 'about/accept_tos'
       #content
         = yield
         .clear &nbsp;

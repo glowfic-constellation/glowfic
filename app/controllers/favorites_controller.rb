@@ -19,6 +19,7 @@ class FavoritesController < ApplicationController
     character_posts = Reply.where(character_id: character_favorites).select(:post_id)
 
     @posts = Post.where(id: author_posts).or(Post.where(id: post_favorites)).or(Post.where(id: character_posts)).or(Post.where(board_id: board_favorites))
+    @posts = @posts.not_ignored_by(current_user) if current_user&.hide_from_all
     @posts = posts_from_relation(@posts.ordered, with_unread: true)
     @hide_quicklinks = true
   end

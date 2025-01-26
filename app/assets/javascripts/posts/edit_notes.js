@@ -59,8 +59,8 @@ $(document).ready(function() {
   });
 });
 
-function noteFromData(note, encodedNote) {
-  if (note) { return decodeURI(encodedNote); }
+function noteFromData(note) {
+  if (note) { return note; }
   return $("<em>").html("(You haven't written a note yet!)");
 }
 
@@ -77,7 +77,7 @@ function saveNoteChanges(success) {
     success: function(data) {
       originalValue = newNote;
       $(".loading").hide();
-      $(".private-note").html(noteFromData(newNote, data.private_note));
+      $(".private-note").html(noteFromData(data.private_note));
       $(".private-note-editor").hide();
       $(".private-note").show();
       $(".saveconf").show().delay(2000).fadeOut();

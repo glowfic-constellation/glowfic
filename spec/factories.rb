@@ -32,7 +32,7 @@ FactoryBot.define do
     sequence :username, ordered_numbers do |n|
       "JohnDoe#{n}"
     end
-    password { "password" }
+    password { 'knownpass' }
     sequence :email do |n|
       "fake#{n}@faker.com"
     end
@@ -150,6 +150,13 @@ FactoryBot.define do
     sequence :content, ordered_numbers do |n|
       "test draft #{n}"
     end
+  end
+
+  factory :bookmark do
+    user
+    reply
+    post { reply.post }
+    type { "reply_bookmark" }
   end
 
   factory :character do

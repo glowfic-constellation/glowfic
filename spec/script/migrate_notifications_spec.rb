@@ -1,6 +1,6 @@
 require Rails.root.join('script', 'migrate_notifications.rb')
 
-RSpec.describe "migrate_notifications" do # rubocop:disable Rspec/DescribeClass
+RSpec.describe "migrate_notifications" do # rubocop:disable RSpec/DescribeClass
   let(:import_url) { 'http://wild-pegasus-appeared.dreamwidth.org/403.html?style=site&view=flat' }
 
   before(:each) { ResqueSpec.reset! }

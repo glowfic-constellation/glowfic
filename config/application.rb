@@ -52,17 +52,21 @@ module Glowfic
     end
   end
 
+  # Configuration for the application, engines, and railties goes here.
+  #
+  # These settings can be overridden in specific environments using the files
+  # in config/environments, which are processed later.
   class Application < Rails::Application
     # Initialize configuration defaults for originally generated Rails version.
-    config.load_defaults 6.1
+    config.load_defaults 7.2
 
-    # use newer 7.0 cache format
-    config.active_support.cache_format_version = 7.0
+    # use newer 7.1 cache format
+    config.active_support.cache_format_version = 7.1
 
     # Please, add to the `ignore` list any other `lib` subdirectories that do
     # not contain `.rb` files, or that should not be reloaded or eager loaded.
     # Common ones are `templates`, `generators`, or `middleware`, for example.
-    config.autoload_lib(ignore: %w(assets tasks))
+    config.autoload_lib(ignore: %w[assets tasks])
 
     # Configuration for the application, engines, and railties goes here.
     #
@@ -80,5 +84,13 @@ module Glowfic
     # redis-rails does not support cache versioning
     config.active_record.cache_versioning = false
     config.active_record.collection_cache_versioning = false
+
+    # Setting enables YJIT as of Ruby 3.3, to bring sizeable performance improvements. We are
+    # deploying to a memory constrained environment so we set this to `false`.
+    config.yjit = false
+
+    # reduce memory use of strings in ActionView Templates
+    # https://guides.rubyonrails.org/configuring.html#config-action-view-frozen-string-literal
+    config.action_view.frozen_string_literal = true
   end
 end

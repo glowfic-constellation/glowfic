@@ -38,6 +38,17 @@ RSpec.describe NotificationsController do
       expect(flash[:error]).not_to be_present
     end
 
+    it "handles later pages" do
+      notifications = create_list(:notification, 15, user: user)
+      create_list(:notification, 25, user: user)
+      post_ids = notifications.map(&:post_id).compact_blank
+      login_as(user)
+      get :index, params: { page: 2 }
+      expect(assigns(:notifications).map(&:id)).to match_array(notifications.map(&:id))
+      expect(assigns(:posts).keys).to match_array(post_ids)
+      expect(flash[:error]).not_to be_present
+    end
+
     it "respects post visibility" do
       create(:notification, user: user, notification_type: :new_favorite_post, post: create(:post, privacy: :private))
       create(:notification, user: user, notification_type: :new_favorite_post, post: create(:post, privacy: :access_list))
@@ -59,9 +70,37 @@ RSpec.describe NotificationsController do
       expect(user.blocked_posts).to match_array(blocked_posts.map(&:id))
       blocked_posts.each { |post| create(:notification, user: user, post: post) }
 
+      ignored_board = create(:board)
+      ignored_board.ignore(user)
+      visible << create(:notification, user: user, notification_type: :new_favorite_post, post: create(:post, board: ignored_board))
+
+      ignored_post = create(:post)
+      ignored_post.ignore(user)
+      visible << create(:notification, user: user, notification_type: :new_favorite_post, post: ignored_post)
+
       login_as(user)
       get :index
       expect(assigns(:notifications).map(&:id)).to match_array(visible.map(&:id))
+      expect(flash[:error]).not_to be_present
+    end
+
+    it "respects ignored posts" do
+      user.update!(hide_from_all: true)
+
+      ignored_board = create(:board)
+      create(:notification, user: user, notification_type: :new_favorite_post, post: create(:post, board: ignored_board))
+      ignored_board.ignore(user)
+
+      ignored_post = create(:post)
+      create(:notification, user: user, notification_type: :new_favorite_post, post: ignored_post)
+      ignored_post.ignore(user)
+
+      visible_post = create(:post)
+      visible_notif = create(:notification, user: user, notification_type: :new_favorite_post, post: visible_post)
+
+      login_as(user)
+      get :index
+      expect(assigns(:notifications)).to eq([visible_notif])
       expect(flash[:error]).not_to be_present
     end
   end

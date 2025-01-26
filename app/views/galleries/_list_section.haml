@@ -1,3 +1,5 @@
+-# locals: ( icons:, gallery: nil, is_owner: false, skip_forms: false )
+
 %tr.gallery{id: "gallery#{gallery ? gallery.id : 0}"}
   %td
     = form_tag delete_multiple_icons_path, method: :delete do

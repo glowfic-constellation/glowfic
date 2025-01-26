@@ -36,8 +36,6 @@ RSpec.describe UsersController do
       get :new
       expect(response).to have_http_status(200)
       expect(assigns(:page_title)).to eq('Sign Up')
-      expect(controller.gon.min).to eq(User::MIN_USERNAME_LEN)
-      expect(controller.gon.max).to eq(User::MAX_USERNAME_LEN)
     end
 
     it "complains when logged in" do
@@ -62,8 +60,6 @@ RSpec.describe UsersController do
       expect(flash[:error]).to eq("You must accept the Terms and Conditions to use the Constellation.")
       expect(assigns(:user)).not_to be_valid
       expect(assigns(:page_title)).to eq('Sign Up')
-      expect(controller.gon.min).to eq(User::MIN_USERNAME_LEN)
-      expect(controller.gon.max).to eq(User::MAX_USERNAME_LEN)
     end
 
     it "requires stupid captcha" do
@@ -81,8 +77,6 @@ RSpec.describe UsersController do
       expect(flash[:error][:message]).to eq("There was a problem completing your sign up.")
       expect(assigns(:user)).not_to be_valid
       expect(assigns(:page_title)).to eq('Sign Up')
-      expect(controller.gon.min).to eq(User::MIN_USERNAME_LEN)
-      expect(controller.gon.max).to eq(User::MAX_USERNAME_LEN)
     end
 
     it "rejects short passwords" do
@@ -278,6 +272,39 @@ RSpec.describe UsersController do
     end
   end
 
+  describe "GET profile_edit" do
+    let(:user)  { create(:user) }
+    let(:user_id) { user.id }
+
+    it "requires login" do
+      get :profile_edit, params: { id: -1 }
+      expect(response).to redirect_to(root_url)
+      expect(flash[:error]).to eq("You must be logged in to view that page.")
+    end
+
+    it "requires own user" do
+      login
+      get :profile_edit, params: { id: user_id }
+      expect(response).to redirect_to(continuities_url)
+      expect(flash[:error]).to eq('You do not have permission to modify this account.')
+    end
+
+    it "succeeds" do
+      login_as(user)
+      get :profile_edit, params: { id: user_id }
+      expect(response.status).to eq(200)
+    end
+
+    context "with views" do
+      render_views
+
+      it "displays options" do
+        login_as(user)
+        expect { get :profile_edit, params: { id: user_id } }.not_to raise_error
+      end
+    end
+  end
+
   describe "PUT update" do
     it "requires login" do
       put :update, params: { id: -1 }
@@ -303,15 +330,13 @@ RSpec.describe UsersController do
       expect(user2.reload.email).not_to eq('bademail@example.com')
     end
 
-    it "works with valid params" do
+    it "updates settings with valid params" do
       user = create(:user)
       login_as(user)
 
       user_details = {
         email: 'testuser314@example.com',
         email_notifications: true,
-        moiety_name: 'Testmoiety',
-        moiety: 'AAAAAA',
         favorite_notifications: false,
         show_user_in_switcher: false,
         default_character_split: 'none',
@@ -324,6 +349,35 @@ RSpec.describe UsersController do
 
       put :update, params: { id: user.id, user: user_details }
       expect(response).to redirect_to(edit_user_url(user))
+      expect(flash[:success]).to eq('Changes saved.')
+
+      user.reload
+      user_details.each do |key, value|
+        expect(user.public_send(key)).to eq(value)
+      end
+    end
+
+    it "updates profile with valid params" do
+      user = create(:user)
+      login_as(user)
+
+      author_cw = create(:content_warning)
+
+      user_details = {
+        profile: 'Profile Description',
+        profile_editor_mode: 'rtf',
+        moiety_name: 'Testmoiety',
+        moiety: 'AAAAAA',
+        content_warning_ids: [author_cw.id],
+      }
+
+      # ensure new values are different, so test tests correct things
+      user_details.each do |key, value|
+        expect(user.public_send(key)).not_to eq(value)
+      end
+
+      put :update, params: { id: user.id, user: user_details, button_submit_profile: true }
+      expect(response).to redirect_to(user_url(user))
       expect(flash[:success]).to eq('Changes saved.')
 
       user.reload

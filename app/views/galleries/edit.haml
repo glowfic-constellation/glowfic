@@ -1,5 +1,7 @@
 - content_for :breadcrumbs do
-  = link_to "Galleries", user_galleries_path(current_user)
+  = link_to "You", user_path(current_user)
+  &raquo;
+  = link_to "Your Galleries", user_galleries_path(current_user)
   &raquo;
   = link_to @gallery.name, @gallery
   &raquo;
@@ -7,15 +9,10 @@
 
 - data = { 'form-data' => @s3_direct_post.fields, url: @s3_direct_post.url, host: URI.parse(@s3_direct_post.url).host, limit: 1 }
 = form_for @gallery, method: :put, html: { class: 'icon-upload' }, data: data do |f|
-  %table.form-table.gallery-edit-form
-    %thead
-      %tr
-        %th.editor-title{colspan: 2}
-          Edit Gallery
-    %tbody.gallery-editor
-      = render 'editor', f: f, gallery: @gallery
-      %tr
-        %th.subber{colspan: 2} Edit Icons
+  .form-table.gallery-edit-form.gallery-editor
+    .editor-title Edit Gallery
+    = render 'editor', f: f, gallery: @gallery
+    .subber Edit Icons
   .gallery-icons-edit
     = f.fields_for :galleries_icons, @gallery.galleries_icons.joins(:icon).order(Arel.sql('LOWER(keyword)')) do |gif|
       .gallery-icon-editor

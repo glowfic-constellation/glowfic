@@ -187,6 +187,11 @@ RSpec.describe "Listing characters" do
 
     include_examples "characters#index", false
 
+    scenario "Handles bad pages" do
+      visit user_characters_path(user_id: user.id, view: 'list', character_split: 'template', page: "nvOpzp; AND 1=1")
+      expect(page).to have_text("Sample user's Characters")
+    end
+
     scenario "Viewing NPCs" do
       create(:character, user: user, npc: true, name: "MyNPC")
 

@@ -99,7 +99,7 @@ RSpec.describe "Character" do
 
   describe "facecasts" do
     it "shows facecasts for several characters" do
-      main_user = create(:user, username: 'John Doe', password: 'known')
+      main_user = create(:user, username: 'John Doe', password: known_test_password)
       other_user = create(:user, username: 'Jane Doe')
       login(main_user)
 
@@ -140,6 +140,23 @@ RSpec.describe "Character" do
         expect(response.body).to include("Search Characters")
         expect(response.body).to include("Sample character")
         expect(response.body).not_to include("Other character")
+      end
+    end
+  end
+
+  describe "index" do
+    it "handles bad pages" do
+      user = create(:user, password: known_test_password)
+      create(:character, user: user)
+      create_list(:template, 51, user: user) # rubocop:disable FactoryBot/ExcessiveCreateList
+      login(user)
+
+      get "/characters?page=nvOpzp; AND 1=1"
+
+      aggregate_failures do
+        expect(response).to have_http_status(200)
+        expect(response).to render_template(:index)
+        expect(response.body).to include("Your Characters")
       end
     end
   end

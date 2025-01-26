@@ -259,6 +259,20 @@ RSpec.describe BoardsController do
       expect(assigns(:posts).size).to eq(25)
     end
 
+    it "paginates sections" do
+      create_list(:board_section, 26, board: board)
+      get :show, params: { id: board.id }
+      expect(assigns(:board_sections).size).to eq(25)
+      expect(assigns(:board_sections).total_pages).to eq(2)
+    end
+
+    it "does not choke on bad pages" do
+      create_list(:board_section, 26, board: board)
+      get :show, params: { id: board.id, page: "nvOpzp; AND 1=1" }
+      expect(assigns(:board_sections).size).to eq(25)
+      expect(assigns(:board_sections).total_pages).to eq(2)
+    end
+
     it "orders the posts by tagged_at in unordered boards" do
       Array.new(3) { create(:post, board: board, tagged_at: Time.zone.now + rand(5..30).hours) }
       get :show, params: { id: board.id }

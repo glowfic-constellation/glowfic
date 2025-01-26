@@ -13,6 +13,9 @@ class Reply < ApplicationRecord
   validate :author_can_write_in_post, on: :create
   audited associated_with: :post, except: :reply_order, update_with_comment_only: false
 
+  has_many :bookmarks, inverse_of: :reply, dependent: :destroy
+  has_many :bookmarking_users, -> { ordered }, through: :bookmarks, source: :user, dependent: :destroy
+
   after_create :notify_other_authors, :destroy_draft, :update_active_char, :set_last_reply, :update_post, :update_post_authors
   after_update :update_post
   after_destroy :set_previous_reply_to_last, :remove_post_author, :update_flat_post
@@ -27,6 +30,7 @@ class Reply < ApplicationRecord
   )
 
   scope :visible_to, ->(user) { where(post_id: Post.visible_to(user).select(:id)) }
+  scope :bookmark_visible_to, ->(bookmark_owner, viewing_user) { where(bookmarks: bookmark_owner.bookmarks.visible_to(viewing_user)) }
 
   def post_page(per=25)
     per_page = per > 0 ? per : post.replies.count
@@ -44,6 +48,14 @@ class Reply < ApplicationRecord
 
   def order=(val)
     self.reply_order = val
+  end
+
+  def assign_default_icon(user)
+    if character_id.nil?
+      self.icon_id = user.avatar_id
+    else
+      self.icon_id = character.default_icon&.id
+    end
   end
 
   private

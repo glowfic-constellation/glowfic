@@ -24,6 +24,11 @@ RSpec.describe ReportsController do
       expect(response).to have_http_status(200)
     end
 
+    it "handles bad pages" do
+      get :show, params: { id: 'daily', page: 'unread' }
+      expect(response).to have_http_status(200)
+    end
+
     it "sets variables with logged in daily" do
       user = create(:user)
       post = create(:post)
@@ -108,6 +113,24 @@ RSpec.describe ReportsController do
       login_as(user)
       get :show, params: { id: 'daily', day: today.to_date.to_s, new_today: 'true' }
       expect(assigns(:posts).map(&:id)).to eq([valid.id])
+    end
+
+    it "handles ignored posts/boards" do
+      today = DateTime.now.utc.beginning_of_day
+
+      user = create(:user, hide_from_all: true, timezone: 'UTC')
+      board = create(:board)
+      Timecop.freeze(today + 1.hour) { create(:post, board: board) }
+      board.ignore(user)
+
+      post = Timecop.freeze(today + 2.hours) { create(:post) }
+      post.ignore(user)
+
+      visible_post = Timecop.freeze(today + 3.hours) { create(:post) }
+
+      login_as(user)
+      get :show, params: { id: 'daily', day: today.to_date.to_s }
+      expect(assigns(:posts).map(&:id)).to eq([visible_post.id])
     end
 
     context "with views" do

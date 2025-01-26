@@ -17,6 +17,19 @@
 # Don't calculate coverage when running single tests or recording API examples
 unless ENV.fetch('SKIP_COVERAGE', false) || ENV.fetch('APIPIE_RECORD', false) || RSpec.configuration.files_to_run.count <= 1
   require 'simplecov'
+
+  # skip warning for HAML compiled file length when close enough (within 2 lines difference)
+  # tends to be due to small compilation differences; hopefully a future HAML version improves it
+  # https://github.com/simplecov-ruby/simplecov/blob/v0.22.0/lib/simplecov/source_file.rb#L251
+  module SimpleCov # rubocop:disable Style/ClassAndModuleChildren
+    class SourceFile
+      def coverage_exceeding_source_warn
+        return if filename.end_with?('.haml') && coverage_data['lines'].size <= src.size + 2
+        warn "Warning: coverage data provided by Coverage [#{coverage_data['lines'].size}] exceeds number of lines in #{filename} [#{src.size}]"
+      end
+    end
+  end
+
   SimpleCov.start 'rails' do
     add_group("Controllers") { |src| src.filename.include?('app/controllers') and src.filename.exclude?('app/controllers/api') }
     add_group "Presenters", "app/presenters"
@@ -24,6 +37,7 @@ unless ENV.fetch('SKIP_COVERAGE', false) || ENV.fetch('APIPIE_RECORD', false) ||
     add_group "API", "app/controllers/api"
     add_group "Services", "app/services"
     add_group "Exceptions", "app/exceptions"
+    add_group "Views", "app/views"
     SimpleCov.groups.delete('Channels')
     changed_files = `git status --untracked=all --porcelain`
     unless changed_files.empty?
@@ -35,7 +49,8 @@ unless ENV.fetch('SKIP_COVERAGE', false) || ENV.fetch('APIPIE_RECORD', false) ||
       end
     end
     enable_coverage :branch
-    minimum_coverage line: 99.98, branch: 94.72
+    minimum_coverage line: 95.2, branch: 88.1
+    enable_coverage_for_eval
   end
 end
 
@@ -152,6 +167,7 @@ RSpec.configure do |config|
   config.before(:each, :js, type: :system) do
     driven_by :selenium, using: :headless_chrome do |options|
       options.add_argument('--no-sandbox')
+      options.add_argument('--disable-dev-shm-usage')
       options.add_argument("--user-data-dir=#{ENV['CHROMEDRIVER_CONFIG']}") if ENV['CHROMEDRIVER_CONFIG']
       options.add_argument('--window-size=1366,768')
     end
@@ -209,3 +225,22 @@ Post.auditing_enabled = false
 Reply.auditing_enabled = false
 Character.auditing_enabled = false
 Block.auditing_enabled = false
+
+# fix coverage for view specs being overwritten by specs without render_views
+# https://github.com/rspec/rspec-rails/blob/v7.1.0/lib/rspec/rails/view_rendering.rb#L52
+module RSpec::Rails::ViewRendering # rubocop:disable Style/ClassAndModuleChildren
+  class EmptyTemplateResolver
+    def self.nullify_template_rendering(templates)
+      templates.map do |template|
+        ::ActionView::Template.new(
+          "",
+          template.identifier + ".no_render", # overwrite path of fake template to avoid collisions
+          EmptyTemplateHandler,
+          virtual_path: template.virtual_path,
+          format: template_format(template),
+          locals: [],
+        )
+      end
+    end
+  end
+end

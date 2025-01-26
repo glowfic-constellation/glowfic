@@ -19,5 +19,3 @@ class TagSearcher < Object
     raise InvalidTagType.new("Invalid filter")
   end
 end
-
-class InvalidTagType < ApiError; end

@@ -14,17 +14,17 @@ class Block < ApplicationRecord
   after_create :mark_messages_read
   after_commit :invalidate_caches
 
-  enum hide_me: {
+  enum :hide_me, {
     none: 0,
     posts: 1,
     all: 2,
-  }, _prefix: true
+  }, prefix: true
 
-  enum hide_them: {
+  enum :hide_them, {
     none: 0,
     posts: 1,
     all: 2,
-  }, _prefix: true
+  }, prefix: true
 
   CACHE_VERSION = 6
 

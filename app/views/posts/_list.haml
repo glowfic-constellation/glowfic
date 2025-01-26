@@ -1,12 +1,14 @@
+-# locals: ( posts:, table_class: '', hide_continuity: false, show_unread_count: false, check_box_name: nil )
+
 - col_count = 5
-- col_count += 1 unless local_assigns[:hide_continuity] # Include continuity name
-- col_count += 1 if local_assigns[:show_unread_count] # Include # Unread
-- col_count += 1 if local_assigns.key?(:check_box_name) # Include form check box tags
-- post_args = local_assigns.except(:posts, :list)
+- col_count += 1 unless hide_continuity # Include continuity name
+- col_count += 1 if show_unread_count # Include # Unread
+- col_count += 1 if check_box_name # Include form check box tags
+- post_args = local_assigns.except(:posts, :list, :table_class)
 
 %span.time-loaded= pretty_time(DateTime.now.in_time_zone)
 
-%table{class: local_assigns[:table_class].to_s}
+%table{class: table_class.to_s}
   %thead
     %tr
       %th.table-title{colspan: col_count}= content_for :posts_title
@@ -18,15 +20,17 @@
     %tr
       %th.sub.width-15
       %th.sub Thread
-      - unless local_assigns[:hide_continuity]
+      - unless hide_continuity
         %th.sub Continuity
       %th.sub Authors
       %th.sub Replies
-      - if local_assigns[:show_unread_count]
+      - if show_unread_count
         %th.sub Unread
       %th.sub Last Updated
-      - if local_assigns[:check_box_name]
-        %th.sub
+      - if check_box_name
+        %th.sub.check-all-box
+          - unless posts.empty?
+            = check_box_tag :check_all, nil, false, class: 'check-all', data: { check_box_name: check_box_name }
   %tbody
     = render partial: 'posts/list_item', collection: posts, as: :post, locals: post_args
     - if posts.empty?

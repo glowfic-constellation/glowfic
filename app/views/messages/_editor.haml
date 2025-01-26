@@ -1,30 +1,27 @@
+-# locals: ()
+
 = form_for @message, html: { id: 'message_form' } do |f|
   = hidden_field_tag :parent_id, @message.parent_id
-  %table
-    %thead
-      %tr
-        %th.table-title{colspan: 2}
-          - if @message.thread_id.present?
-            Reply to Thread
-          - else
-            Compose New Message
-    %tbody
-      %tr
-        %th.sub.padding-10.width-150= f.label :recipient_id
-        %td.even.padding-10
-          - if @message.parent
-            = user_link(@message.recipient) if @message.recipient
-          - else
-            = f.select :recipient_id, @select_items, prompt: true
-      - unless @message.thread_id.present?
-        %tr
-          %th.sub.padding-10= f.label :subject
-          %td.odd.padding-10= f.text_field :subject, placeholder: 'Subject'
-      %tr#message-row
-        %th.sub.padding-10.vtop= f.label :message
-        %td.even.padding-10= f.text_area :message
-    %tfoot
-      %tr
-        %th.form-table-ender{colspan: 2}
-          = f.submit "Send", class: 'button'
-          = f.submit "Preview", class: 'button', name: 'button_preview'
+  .form-table
+    .editor-title
+      - if @message.thread_id.present?
+        Reply to Thread
+      - else
+        Compose New Message
+    %div
+      .sub.padding-10.width-150= f.label :recipient_id
+      .even.padding-10
+        - if @message.parent
+          = user_link(@message.recipient) if @message.recipient
+        - else
+          = f.select :recipient_id, @select_items, prompt: true
+    - unless @message.thread_id.present?
+      %div
+        .sub.padding-10= f.label :subject
+        .odd.padding-10= f.text_field :subject, placeholder: 'Subject'
+    #message-row
+      .sub.padding-10.vtop= f.label :message
+      .even.padding-10= f.text_area :message
+    .form-table-ender
+      = f.submit "Send", class: 'button'
+      = f.submit "Preview", class: 'button', name: 'button_preview'

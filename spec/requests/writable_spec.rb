@@ -1,7 +1,7 @@
 RSpec.describe "Writable" do
   describe "creation" do
     it "creates a new post and reply and edits them with history" do
-      user = create(:user, username: "John Doe", password: "known")
+      user = create(:user, username: "John Doe", password: known_test_password)
       login(user)
 
       board = create(:board)
@@ -133,7 +133,7 @@ RSpec.describe "Writable" do
     end
 
     it "renders the post import page" do
-      user = create(:importing_user, password: "known")
+      user = create(:importing_user, password: known_test_password)
       login(user)
 
       get "/posts/new?view=import"

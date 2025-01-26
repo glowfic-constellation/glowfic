@@ -33,6 +33,13 @@ RSpec.describe GalleriesController do
         expect(assigns(:page_title)).to eq("#{user.username}'s Galleries")
       end
 
+      it "displays error on invalid pages" do
+        user = create(:user)
+        get :index, params: { user_id: user.id, page: "nvOpzp; AND 1=1" }
+        expect(response).to have_http_status(200)
+        expect(assigns(:page)).to eq(1)
+      end
+
       it "displays error if user id invalid and logged out" do
         get :index, params: { user_id: -1 }
         expect(flash[:error]).to eq('User could not be found.')
@@ -52,6 +59,14 @@ RSpec.describe GalleriesController do
         expect(flash[:error]).to eq('User could not be found.')
         expect(response).to redirect_to(root_url)
       end
+    end
+
+    it "paginates many galleries" do
+      user = create(:user)
+      create_list(:gallery, 101, user: user) # rubocop:disable FactoryBot/ExcessiveCreateList
+      get :index, params: { user_id: user.id }
+      expect(assigns(:galleries).size).to eq(100)
+      expect(assigns(:galleries).total_pages).to eq(2)
     end
   end
 
@@ -166,6 +181,14 @@ RSpec.describe GalleriesController do
           expect(flash[:error]).to eq('User could not be found.')
         end
 
+        it "displays error on invalid pages" do
+          user = create(:user)
+          get :show, params: { id: '0', user_id: user.id, page: "'" }
+          expect(response).to render_template('show')
+          expect(response).to have_http_status(200)
+          expect(assigns(:page)).to eq(1)
+        end
+
         it "requires specified user to be full user" do
           user = create(:reader_user)
           get :index, params: { user_id: user.id }
@@ -221,6 +244,14 @@ RSpec.describe GalleriesController do
           expect(assigns(:page_title)).to eq('Galleryless Icons')
           expect(assigns(:user)).to eq(user)
         end
+      end
+
+      it "paginates large galleryless" do
+        user = create(:user)
+        create_list(:icon, 101, user: user) # rubocop:disable FactoryBot/ExcessiveCreateList
+        get :show, params: { id: '0', user_id: user.id }
+        expect(assigns(:icons).size).to eq(100)
+        expect(assigns(:icons).total_pages).to eq(2)
       end
     end
 
@@ -279,6 +310,13 @@ RSpec.describe GalleriesController do
         expect(meta_og[:url]).to eq(gallery_url(gallery))
         expect(meta_og[:title]).to eq("user » gallery")
         expect(meta_og[:description]).to eq("16 icons\nTags: Tag 1, Tag 2")
+      end
+
+      it "paginates large gallery" do
+        gallery = create(:gallery, icon_count: 101)
+        get :show, params: { id: gallery.id }
+        expect(assigns(:icons).size).to eq(100)
+        expect(assigns(:icons).total_pages).to eq(2)
       end
     end
 

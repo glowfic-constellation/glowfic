@@ -263,6 +263,22 @@ RSpec.describe Character do
     end
   end
 
+  describe ".not_retired" do
+    it "works" do
+      template1 = create(:template, retired: false)
+      template2 = create(:template, retired: true)
+
+      char1 = create(:character, retired: false)
+      create(:character, retired: true)
+      char3 = create(:character, retired: false, template: template1)
+      create(:character, retired: true, template: template1)
+      create(:character, retired: false, template: template2)
+      create(:character, retired: true, template: template2)
+
+      expect(Character.not_retired).to match_array([char1, char3])
+    end
+  end
+
   describe "audits" do
     before(:each) do
       Character.auditing_enabled = true

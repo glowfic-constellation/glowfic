@@ -1,13 +1,13 @@
 - content_for :breadcrumbs do
-  = link_to "Characters", user_characters_path(current_user)
+  = link_to "You", user_path(current_user)
+  &raquo;
+  = link_to "Your Characters", user_characters_path(current_user)
   &raquo;
   = link_to @template.name, @template
   &raquo;
   %b Edit
 
 = form_for @template, url: @template, method: :put do |f|
-  %table.form-table
-    %thead
-      %tr
-        %th.editor-title{colspan: 2} Edit Template
+  .form-table
+    .editor-title Edit Template
     = render 'editor', f: f

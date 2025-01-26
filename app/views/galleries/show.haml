@@ -2,7 +2,9 @@
   = render 'single', gallery: @gallery, hide_minmax: true, icons: icons, is_owner: @user == current_user, skip_forms: false
   - content_for :breadcrumbs do
     - if @user.id == current_user.try(:id)
-      = link_to "Galleries", user_galleries_path(current_user)
+      = link_to "You", user_path(current_user)
+      &raquo;
+      = link_to "Your Galleries", user_galleries_path(current_user)
     - else
       = user_link(@user)
       - unless @user.deleted?
@@ -10,3 +12,8 @@
         = link_to "#{@user.username}'s Galleries", user_galleries_path(@user)
     &raquo;
     %b= @gallery ? @gallery.name : 'Galleryless Icons'
+
+  - if icons.methods.include?(:total_pages) && icons.total_pages > 1
+    %tfoot
+      %tr
+        %td{colspan: ((page_view == 'list') ? 5 : 1) }= render 'posts/paginator', paginated: icons, no_per: true

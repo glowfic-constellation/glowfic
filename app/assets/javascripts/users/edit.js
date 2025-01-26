@@ -1,4 +1,4 @@
-/* global createSelect2 */
+/* global createTagSelect, createSelect2 */
 
 $(document).ready(function() {
   createSelect2('#user_per_page', {

@@ -10,10 +10,10 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2023_09_30_053037) do
+ActiveRecord::Schema[8.0].define(version: 2024_12_24_202900) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "citext"
-  enable_extension "plpgsql"
+  enable_extension "pg_catalog.plpgsql"
 
   create_table "audits", id: :serial, force: :cascade do |t|
     t.integer "auditable_id"
@@ -86,6 +86,22 @@ ActiveRecord::Schema[7.1].define(version: 2023_09_30_053037) do
     t.text "description"
     t.boolean "pinned", default: false
     t.boolean "authors_locked", default: true
+  end
+
+  create_table "bookmarks", force: :cascade do |t|
+    t.integer "user_id", null: false
+    t.integer "reply_id", null: false
+    t.integer "post_id", null: false
+    t.string "name"
+    t.string "type", default: "reply_bookmark", null: false
+    t.boolean "public", default: false, null: false
+    t.datetime "created_at"
+    t.datetime "updated_at"
+    t.index ["post_id", "user_id"], name: "index_bookmarks_on_post_id_and_user_id"
+    t.index ["post_id"], name: "index_bookmarks_on_post_id"
+    t.index ["reply_id"], name: "index_bookmarks_on_reply_id"
+    t.index ["user_id", "reply_id", "type"], name: "index_bookmarks_on_user_id_and_reply_id_and_type", unique: true
+    t.index ["user_id"], name: "index_bookmarks_on_user_id"
   end
 
   create_table "character_aliases", id: :serial, force: :cascade do |t|
@@ -435,7 +451,17 @@ ActiveRecord::Schema[7.1].define(version: 2023_09_30_053037) do
     t.datetime "created_at", precision: nil
     t.datetime "updated_at", precision: nil
     t.text "description"
+    t.boolean "retired", default: false
     t.index ["user_id"], name: "index_templates_on_user_id"
+  end
+
+  create_table "user_tags", force: :cascade do |t|
+    t.integer "user_id", null: false
+    t.integer "tag_id", null: false
+    t.datetime "created_at"
+    t.datetime "updated_at"
+    t.index ["tag_id"], name: "index_user_tags_on_tag_id"
+    t.index ["user_id"], name: "index_user_tags_on_user_id"
   end
 
   create_table "users", id: :serial, force: :cascade do |t|
@@ -469,8 +495,13 @@ ActiveRecord::Schema[7.1].define(version: 2023_09_30_053037) do
     t.integer "tos_version"
     t.boolean "deleted", default: false
     t.boolean "default_hide_retired_characters", default: false
+    t.boolean "hide_from_all", default: false
+    t.string "profile"
+    t.string "profile_editor_mode", default: "html"
+    t.boolean "public_bookmarks", default: false
+    t.boolean "default_hide_edit_delete_buttons", default: false
+    t.boolean "default_hide_add_bookmark_button", default: false
     t.index ["email"], name: "index_users_on_email", unique: true
     t.index ["username"], name: "index_users_on_username", unique: true
   end
-
 end

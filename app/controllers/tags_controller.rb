@@ -25,6 +25,7 @@ class TagsController < ApplicationController
     @page_title = @tag.name.to_s
     @view = params[:view]
     @meta_og = og_data
+    response.headers['X-Robots-Tag'] = 'noindex' if @view
 
     if @view == 'posts'
       @posts = posts_from_relation(@tag.posts.ordered)
@@ -34,6 +35,8 @@ class TagsController < ApplicationController
     elsif @view == 'galleries'
       @galleries = @tag.galleries.with_icon_count.ordered_by_name
       use_javascript('galleries/expander')
+    elsif @view == 'users'
+      @users = @tag.users.ordered.paginate(page: page)
     elsif @view != 'settings'
       @view = 'info'
     end

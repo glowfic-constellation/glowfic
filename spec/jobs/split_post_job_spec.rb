@@ -80,6 +80,29 @@ RSpec.describe SplitPostJob do
     expect(Reply.find_by(id: reply.id)).not_to be_present
   end
 
+  it "copies original post's properties" do
+    user = create(:user)
+    board = create(:board)
+    section = create(:board_section, board: board)
+    setting = create(:setting, name: 'setting')
+    warning = create(:content_warning, name: 'warning')
+    label = create(:label, name: 'label')
+    post = create(:post, user: user, board: board, section: section, setting_ids: [setting.id], content_warning_ids: [warning.id],
+      label_ids: [label.id],)
+    reply = create(:reply, post: post, user: user)
+
+    expect {
+      SplitPostJob.perform_now(reply.id, title)
+    }.to change { Post.count }.by(1).and change { Reply.count }.by(-1)
+
+    new_post = Post.last
+    expect(new_post.board).to eq(board)
+    expect(new_post.section).to eq(section)
+    expect(new_post.setting_ids).to match_array([setting.id])
+    expect(new_post.content_warning_ids).to match_array([warning.id])
+    expect(new_post.label_ids).to match_array([label.id])
+  end
+
   it "does not affect other posts" do
     user = create(:user)
     coauthor = create(:user)

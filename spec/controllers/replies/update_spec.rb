@@ -130,7 +130,7 @@ RSpec.describe RepliesController, 'PUT update' do
     it "takes correct actions" do
       Reply.auditing_enabled = true
       user = create(:user)
-      reply_post = create(:post, user: user)
+      reply_post = create(:post)
       reply = create(:reply, post: reply_post, user: user)
       login_as(user)
       expect(ReplyDraft.count).to eq(0)
@@ -162,16 +162,16 @@ RSpec.describe RepliesController, 'PUT update' do
       expect(ReplyDraft.count).to eq(0)
       expect(assigns(:audits)).to eq({ reply.id => 1 })
 
-      written = assigns(:written)
+      written = assigns(:reply)
       expect(written).not_to be_a_new_record
-      expect(written.user).to eq(reply_post.user)
+      expect(written.user).to eq(user)
       expect(written.character).to eq(char)
       expect(written.icon).to eq(icon)
       expect(written.character_alias).to eq(calias)
 
       # check it still remembers its current attributes, since this is a preview
       persisted = written.reload
-      expect(persisted.user).to eq(reply_post.user)
+      expect(persisted.user).to eq(user)
       expect(persisted.character).to be_nil
       expect(persisted.icon).to be_nil
       expect(persisted.character_alias).to be_nil
@@ -203,7 +203,7 @@ RSpec.describe RepliesController, 'PUT update' do
           character: { name: 'NPC', npc: true },
         }
       }.not_to change { Character.count }
-      written = assigns(:written)
+      written = assigns(:reply)
       expect(written.character.name).to eq('NPC')
       expect(written.character.nickname).to eq(reply.post.subject)
 
@@ -230,9 +230,9 @@ RSpec.describe RepliesController, 'PUT update' do
       }
 
       expect(response).to render_template(:preview)
-      expect(assigns(:written).user).to eq(reply.user)
-      expect(assigns(:written).audit_comment).to eq('note')
-      expect(assigns(:written).content).to eq(newcontent)
+      expect(assigns(:reply).user).to eq(reply.user)
+      expect(assigns(:reply).audit_comment).to eq('note')
+      expect(assigns(:reply).content).to eq(newcontent)
 
       expect(controller.gon.editor_user[:username]).to eq(user.username)
       expect(assigns(:templates)).to eq([char.template])

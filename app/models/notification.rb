@@ -1,3 +1,4 @@
+# frozen_string_literal: true
 class Notification < ApplicationRecord
   belongs_to :user, inverse_of: :notifications, optional: false
   belongs_to :post, inverse_of: :notifications, optional: true
@@ -15,7 +16,13 @@ class Notification < ApplicationRecord
       .or(left_outer_joins(:post).where(post_id: nil))
   }
 
-  enum notification_type: {
+  scope :not_ignored_by, ->(user) {
+    left_outer_joins(:post)
+      .merge(Post.not_ignored_by(user))
+      .or(left_outer_joins(:post).where(post_id: nil))
+  }
+
+  enum :notification_type, {
     import_success: 0,
     import_fail: 1,
     new_favorite_post: 2,

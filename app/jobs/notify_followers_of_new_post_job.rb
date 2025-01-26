@@ -50,7 +50,7 @@ class NotifyFollowersOfNewPostJob < ApplicationJob
   end
 
   def self.notification_about(post, user, unread_only: false)
-    notif = Notification.find_by(post: post, notification_type: [:new_favorite_post, :joined_favorite_post])
+    notif = Notification.find_by(post: post, user: user, notification_type: [:new_favorite_post, :joined_favorite_post])
     if notif
       return notif if !unread_only || notif.unread
     else

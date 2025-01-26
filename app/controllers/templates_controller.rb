@@ -121,6 +121,6 @@ class TemplatesController < ApplicationController
   end
 
   def permitted_params
-    params.fetch(:template, {}).permit(:name, :description, character_ids: [])
+    params.fetch(:template, {}).permit(:name, :description, :retired, character_ids: [])
   end
 end

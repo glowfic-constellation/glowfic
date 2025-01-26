@@ -1,7 +1,6 @@
-%tbody
-  %tr
-    %th.sub.vtop= f.label :content
-    %td.even= f.text_area :content
-%tfoot
-  %tr
-    %th.form-table-ender{colspan: 2}= submit_tag "Save", class: 'button'
+-# locals: ( f: )
+
+%div
+  .sub.vtop= f.label :content
+  .even= f.text_area :content
+.form-table-ender= submit_tag "Save", class: 'button'

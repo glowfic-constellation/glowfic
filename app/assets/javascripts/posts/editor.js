@@ -1,43 +1,9 @@
 //= require posts/edit_notes
-/* global gon, tinyMCE, resizeScreenname, createTagSelect, createSelect2 */
+//= require writable
+/* global gon, resizeScreenname, createTagSelect, createSelect2, setupEditorHelpBox, toggleEditor, setupTinyMCE */
 
-let tinyMCEInit = false;
 let shownIcons = [];
 let iconSelectBox;
-
-function tinyMCEConfig(selector) {
-  const height = ($(selector).height() || 150) + 15;
-  return {
-    // integration configs
-    selector: selector,
-    plugins: ["wordcount", "image", "link", "autoresize"],
-    cache_suffix: '?v=6.8.2-2024-01-23',
-    // interface configs
-    menubar: false, // disable "File", "Edit", etc
-    contextmenu: false,
-    min_height: height,
-    // - toolbar
-    toolbar_sticky: true,
-    toolbar: ["bold italic underline strikethrough forecolor | link image | blockquote hr bullist numlist | undo redo"],
-    // - statusbar
-    statusbar: true,
-    branding: false,
-    elementpath: false,
-    resize: true,
-    // editor content behavior
-    body_class: gon.editor_class,
-    custom_undo_redo_levels: 10,
-    content_css: gon.tinymce_css_path,
-    browser_spellcheck: true,
-    document_base_url: gon.base_url,
-    relative_urls: false,
-    remove_script_host: true,
-    text_patterns: false, // disable markdown-like autoformatting from TinyMCE 6 (for now)
-    // plugin configs
-    // - autoresize
-    autoresize_bottom_margin: 5,
-  };
-}
 
 $(document).ready(function() {
   setupMetadataEditor();
@@ -114,6 +80,25 @@ function setupMetadataEditor() {
   });
 }
 
+function findMultiReplyAlias(characterId) {
+  // Try to find a character's last used alias on a multi-reply page
+  const multiRepliesJsonElement = document.querySelector("#multi_replies_json");
+  if (multiRepliesJsonElement === null) {
+    return null;
+  }
+
+  // I'm editing a multi-reply, so the relevant character might have aliases here that are not set in the thread
+  let aliasOverride = null;
+  const jsonArray = JSON.parse(multiRepliesJsonElement.value);
+  const latestElement = jsonArray.reverse().find(item => item.character_id === String(characterId));
+  const aliasOverrideStr = latestElement ? latestElement.character_alias_id : null;
+  if (aliasOverrideStr && aliasOverrideStr !== "") {
+    aliasOverride = Number(aliasOverrideStr);
+  }
+
+  return aliasOverride;
+}
+
 function setupWritableEditor() {
   $('.post-editor-expander').click(function() {
     $(this).children(".info").hide();
@@ -122,7 +107,7 @@ function setupWritableEditor() {
 
   // SET UP WRITABLE EDITOR:
 
-  // TODO fix hack
+  // TODO: fix hack
   // Hack because having In Thread characters as a group in addition to Template groups
   // duplicates characters in the dropdown, and therefore multiple options are selected
   let selectd;
@@ -132,7 +117,7 @@ function setupWritableEditor() {
   });
   $(selectd).prop("selected", true);
 
-  // TODO fix hack
+  // TODO: fix hack
   // Only initialize TinyMCE if it's required
   if ($("#rtf").hasClass('selected') === true) {
     setupTinyMCE();
@@ -145,27 +130,8 @@ function setupWritableEditor() {
   $("#icon_dropdown").change(function() { setIconFromId($(this).val()); });
   $("#icon_dropdown").keyup(function() { setIconFromId($(this).val()); });
 
-  const editorHelp = $("#editor-help-box");
-  const defaultHelpWidth = 500;
-  const defaultHelpHeight = 700;
-  editorHelp.dialog({
-    autoOpen: false,
-    title: 'Editor Help',
-    width: defaultHelpWidth,
-    height: defaultHelpHeight
-  });
-
-  $('#rtf, #html, #md').click(toggleEditor);
-  $('#editor-help').click(function() {
-    if (editorHelp.dialog('isOpen')) {
-      editorHelp.dialog('close');
-    } else {
-      const width = Math.min($(window).width()-20, defaultHelpWidth);
-      const height = Math.min($(window).height()-20, defaultHelpHeight);
-      editorHelp.dialog('option', {width: width, height: height}).dialog('open');
-      editorHelp.dialog('open');
-    }
-  });
+  $('#rtf, #html, #md').click(function() { toggleEditor(this, 'editor_mode', ['post_content', 'reply_content']); });
+  setupEditorHelpBox();
 
   $("#swap-character").click(function() {
     $('#character-selector').toggle();
@@ -186,7 +152,7 @@ function setupWritableEditor() {
   $("#active_character").change(function() {
     const id = $(this).val();
     $("#reply_character_id").val(id);
-    getAndSetCharacterData({ id: id });
+    getAndSetCharacterData({ id: id }, { aliasOverride: findMultiReplyAlias(id) });
   });
 
   $("#active_npc").change(function() {
@@ -202,7 +168,7 @@ function setupWritableEditor() {
   $(".char-access-icon").click(function() {
     const id = $(this).data('character-id');
     $("#reply_character_id").val(id);
-    getAndSetCharacterData({ id: id }, { updateCharDropdowns: true });
+    getAndSetCharacterData({ id: id }, { updateCharDropdowns: true, aliasOverride: findMultiReplyAlias(id)});
   });
 
   $("#character_alias").change(function() {
@@ -217,7 +183,7 @@ function setupWritableEditor() {
 
   // Hides selectors when you hit the escape key
   $(document).bind("keydown", function(e) {
-    e = e || window.event;
+    e = e || window.event; // FIXME: event is deprecated
     const charCode = e.which || e.keyCode;
     if (charCode === 27) {
       $('#icon-overlay').hide();
@@ -268,35 +234,6 @@ function fixWritableFormCaching() {
   setSwitcherListSelected(selectedCharID);
 }
 
-function toggleEditor() {
-  if (this.id === 'rtf') {
-    $("#html").removeClass('selected');
-    $("#md").removeClass('selected');
-    $("#editor_mode").val('rtf');
-    $(this).addClass('selected');
-    if (tinyMCEInit) {
-      tinyMCE.execCommand('mceAddEditor', true, { id: 'post_content', options: tinyMCEConfig('#post_content') });
-      tinyMCE.execCommand('mceAddEditor', true, { id: 'reply_content', options: tinyMCEConfig('#reply_content') });
-    } else {
-      setupTinyMCE();
-    }
-  } else if (this.id === 'md') {
-    $("#html").removeClass('selected');
-    $("#rtf").removeClass('selected');
-    $("#editor_mode").val('md');
-    $(this).addClass('selected');
-    tinyMCE.execCommand('mceRemoveEditor', false, 'post_content');
-    tinyMCE.execCommand('mceRemoveEditor', false, 'reply_content');
-  } else if (this.id === 'html') {
-    $("#rtf").removeClass('selected');
-    $("#md").removeClass('selected');
-    $("#editor_mode").val('html');
-    $(this).addClass('selected');
-    tinyMCE.execCommand('mceRemoveEditor', false, 'post_content');
-    tinyMCE.execCommand('mceRemoveEditor', false, 'reply_content');
-  }
-}
-
 function bindGallery() {
   iconSelectBox.find('img').click(function() {
     const id = $(this).data('icon-id');
@@ -337,28 +274,20 @@ function iconNode(icon) {
   return $("<div>").attr('class', 'gallery-icon').append(iconImg).append("<br />").append(document.createTextNode(imgKey));
 }
 
-function setupTinyMCE() {
-  const selector = 'textarea.tinymce';
-  if (typeof tinyMCE === 'undefined') {
-    setTimeout(arguments.callee, 50);
-  } else {
-    tinyMCE.init(tinyMCEConfig(selector));
-    tinyMCEInit = true;
-  }
-}
-
 // eslint-disable-next-line complexity
 function setFormData(characterId, resp, options) {
   let restoreIcon = false;
   let restoreAlias = false;
   let hideCharacterSelect = true;
   let updateCharDropdowns = false;
+  let charAliasOverride = null;
 
   if (typeof options !== 'undefined') {
     restoreIcon = options.restore_icon;
     restoreAlias = options.restore_alias;
     hideCharacterSelect = options.hideCharacterSelect;
     updateCharDropdowns = options.updateCharDropdowns;
+    charAliasOverride = options.aliasOverride;
   }
 
   setSwitcherListSelected(characterId);
@@ -374,6 +303,8 @@ function setFormData(characterId, resp, options) {
   setAliasFromID('');
   if (restoreAlias) {
     setAliasFromID(selectedAliasID);
+  } else if (charAliasOverride) {
+    setAliasFromID(charAliasOverride);
   } else if (resp.alias_id_for_post) {
     setAliasFromID(resp.alias_id_for_post);
   }

@@ -1,66 +1,65 @@
-%tbody
-  %tr
-    %th.sub= f.label :name
-    %td{class: cycle('even', 'odd')}= f.text_field :name, placeholder: "Character Name", class: 'text'
-  %tr
-    %th.sub= f.label :nickname
-    %td{class: cycle('even', 'odd')}= f.text_field :nickname, placeholder: "Template Nickname", class: 'text'
-  %tr
-    %th.sub= f.label :screenname
-    %td{class: cycle('even', 'odd')}= f.text_field :screenname, placeholder: "Screen Name", class: 'text'
-  %tr
-    %th.sub= f.label :setting_ids, 'Setting'
-    %td{class: cycle('even', 'odd')}= tag_select(@character, f, :settings)
-  %tr
-    - klass = cycle('even', 'odd')
-    %th.sub.vtop= f.label :template_id
-    %td{class: klass}
-      = f.collection_select :template_id, @templates, :id, :name, { include_blank: '— Choose Template —' },
-        { class: 'text chosen-select', disabled: params[:new_template].present? }
-      - if @character.user == current_user
-        %br
+-# locals: ( f: )
+
+%div
+  .sub= f.label :name
+  %div{class: cycle('even', 'odd')}= f.text_field :name, placeholder: "Character Name"
+%div
+  .sub= f.label :nickname
+  %div{class: cycle('even', 'odd')}= f.text_field :nickname, placeholder: "Template Nickname"
+%div
+  .sub= f.label :screenname
+  %div{class: cycle('even', 'odd')}= f.text_field :screenname, placeholder: "Screen Name"
+%div
+  .sub= f.label :setting_ids, 'Setting'
+  .select2-field{class: cycle('even', 'odd')}= tag_select(@character, f, :settings)
+%div
+  - klass = cycle('even', 'odd')
+  .sub.vtop= f.label :template_id
+  #template-choice{class: klass}
+    = f.collection_select :template_id, @templates, :id, :name, { include_blank: '— Choose Template —' },
+      { class: 'chosen-select', disabled: params[:new_template].present? }
+    - if @character.user == current_user
+      .checkbox-field
         = check_box_tag :new_template, '1', params[:new_template].present?
         = label_tag :new_template, 'Create New Template'
-  - if @character.user == current_user
-    %tr#create_template{class: ('hidden' unless params[:new_template])}
-      = f.fields_for :template do |ff|
-        %th.sub= ff.label :name, '↳ Name'
-        %td{class: klass}
-          = ff.hidden_field :id
-          = ff.text_field :name, placeholder: "Template Name", class: 'text'
-  %tr
-    %th.sub= f.label :cluster
-    %td{class: cycle('even', 'odd')}= f.text_field :cluster, placeholder: "Template Cluster Name", class: 'text'
-  - if @character.user.galleries.present?
-    %tr
-      %th.sub= f.label :ungrouped_gallery_ids, 'Galleries'
-      %td{class: cycle('even', 'odd')}
-        = f.collection_select(:ungrouped_gallery_ids,
-        @character.user.galleries.ordered_by_name,
-        :id, :name, { selected: @character.ungrouped_gallery_ids }, { multiple: true })
-    %tr
-      %th.sub= f.label :gallery_group_ids, 'Gallery Groups'
-      %td{class: cycle('even', 'odd')}= tag_select(@character, f, :gallery_groups)
-  %tr
-    %th.sub= f.label :pb, 'Facecast'
-    %td{class: cycle('even', 'odd')}= f.text_field :pb, placeholder: "Facecast", class: 'text'
-  %tr
-    %th.sub.vtop= f.label :description
-    %td{class: cycle('even', 'odd')}= f.text_area :description, placeholder: 'Description', class: 'text', cols: 35
-  %tr
-    %th.sub= f.label :npc, 'NPC?'
-    %td{class: cycle('even', 'odd')}
-      = f.check_box :npc, class: 'vmid'
-      = f.label :npc, 'Remove from character page and show in separate dropdown when writing', class: 'no-margin'
-  %tr
-    %th.sub= f.label :retired, 'Retired?'
-    %td{class: cycle('even', 'odd')}
-      = f.check_box :retired, class: 'vmid'
-      = f.label :retired, 'Do not display in character selector', class: 'no-margin'
-  - if current_user.id != @character.user_id
-    %tr
-      %th.sub.vtop= f.label :audit_comment, 'Moderator Note'
-      %td{class: cycle('even', 'odd')}= f.text_area :audit_comment, placeholder: 'Explain reason for moderation here', class: 'text', cols: 35
-%tfoot
-  %tr
-    %th.form-table-ender{colspan: 2}= submit_tag "Save", class: 'button'
+- if @character.user == current_user
+  #create_template{class: ('hidden' unless params[:new_template])}
+    = f.fields_for :template do |ff|
+      .sub= ff.label :name, '↳ Name'
+      %div{class: klass}
+        = ff.hidden_field :id
+        = ff.text_field :name, placeholder: "Template Name"
+%div
+  .sub= f.label :cluster
+  %div{class: cycle('even', 'odd')}= f.text_field :cluster, placeholder: "Template Cluster Name"
+- if @character.user.galleries.present?
+  %div
+    .sub= f.label :ungrouped_gallery_ids, 'Galleries'
+    .select2-field{class: cycle('even', 'odd')}
+      = f.collection_select(:ungrouped_gallery_ids,
+      @character.user.galleries.ordered_by_name,
+      :id, :name, { selected: @character.ungrouped_gallery_ids }, { multiple: true })
+  %div
+    .sub= f.label :gallery_group_ids, 'Gallery Groups'
+    .select2-field{class: cycle('even', 'odd')}= tag_select(@character, f, :gallery_groups)
+%div
+  .sub= f.label :pb, 'Facecast'
+  %div{class: cycle('even', 'odd')}= f.text_field :pb, placeholder: "Facecast"
+%div
+  .sub.vtop= f.label :description
+  %div{class: cycle('even', 'odd')}= f.text_area :description, placeholder: 'Description', cols: 35
+%div
+  .sub= f.label :npc, 'NPC?'
+  .checkbox-field{class: cycle('even', 'odd')}
+    = f.check_box :npc
+    = f.label :npc, 'Remove from character page and show in separate dropdown when writing'
+%div
+  .sub= f.label :retired, 'Retired?'
+  .checkbox-field{class: cycle('even', 'odd')}
+    = f.check_box :retired
+    = f.label :retired, 'Do not display in character selector'
+- if current_user.id != @character.user_id
+  %div
+    .sub.vtop= f.label :audit_comment, 'Moderator Note'
+    %div{class: cycle('even', 'odd')}= f.text_area :audit_comment, placeholder: 'Explain reason for moderation here', cols: 35
+.form-table-ender= submit_tag "Save", class: 'button'

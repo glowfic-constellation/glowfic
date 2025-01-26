@@ -28,7 +28,7 @@ services:
     <<: *svc
     ports:
       - 3000:3000
-    command: bin/rails s
+    command: bin/with-bundle bin/rails s
     environment:
       <<: *env
       BIND_HOST: 0.0.0.0
@@ -36,7 +36,7 @@ services:
       RAILS_DEVELOPMENT_HOSTS: web:3000
   worker:
     <<: *svc
-    command: bundle exec rake resque:work
+    command: bin/with-bundle rake resque:work
     environment:
       <<: *env
       TERM_CHILD: 1
@@ -52,7 +52,7 @@ services:
       - POSTGRES_PASSWORD=postgres
       - PGUSER=postgres
       - PGPASSWORD=postgres
-    image: postgres:14-alpine
+    image: postgres:16-alpine
     volumes:
       - postgres-data:/var/lib/postgresql/data
     ports:

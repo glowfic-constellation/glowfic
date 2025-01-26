@@ -1,9 +1,13 @@
+-# locals: ()
+
 - content_for :breadcrumbs do
   %b
     Search:
     = link_to_unless_current "Posts", search_posts_path
     |
     = link_to_unless_current "Replies", search_replies_path
+    |
+    = link_to_unless_current "Bookmarks", search_bookmarks_path
     |
     = link_to_unless_current "Characters", search_characters_path
     |

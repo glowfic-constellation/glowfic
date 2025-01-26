@@ -1,11 +1,12 @@
 # frozen_string_literal: true
 class UsersController < ApplicationController
   include DateSelectable
+  include Taggable
 
   before_action :signup_prep, only: :new
   before_action :login_required, except: [:index, :show, :new, :create, :search]
   before_action :logout_required, only: [:new, :create]
-  before_action :require_own_user, only: [:edit, :update, :password, :upgrade]
+  before_action :require_own_user, only: [:edit, :update, :password, :upgrade, :profile_edit]
   before_action :require_readonly_user, only: :upgrade
 
   def index
@@ -71,12 +72,22 @@ class UsersController < ApplicationController
     @page_title = 'Edit Account'
   end
 
+  def profile_edit
+    use_javascript('users/profile_edit')
+    gon.editor_class = 'layout_' + current_user.layout if current_user.layout
+    gon.tinymce_css_path = helpers.stylesheet_path('tinymce')
+    @page_title = 'Edit Author Profile'
+  end
+
   def update
     store_tos and return if params[:tos_check]
 
     params[:user][:per_page] = -1 if params[:user].try(:[], :per_page) == 'all'
 
     begin
+      if params.fetch(:user, {}).key?(:content_warning_ids)
+        current_user.content_warnings = process_tags(ContentWarning, obj_param: :user, id_param: :content_warning_ids)
+      end
       current_user.update!(user_params)
     rescue ActiveRecord::RecordInvalid => e
       render_errors(current_user, action: 'saved', now: true, class_name: 'Changes', err: e)
@@ -86,7 +97,11 @@ class UsersController < ApplicationController
       render :edit
     else
       flash[:success] = "Changes saved."
-      redirect_to edit_user_path(current_user)
+      if params[:button_submit_profile]
+        redirect_to user_path(current_user)
+      else
+        redirect_to edit_user_path(current_user)
+      end
     end
   end
 
@@ -134,6 +149,7 @@ class UsersController < ApplicationController
   def search
     @page_title = 'Search Users'
     return unless params[:commit].present?
+    response.headers['X-Robots-Tag'] = 'noindex'
     username = '%' + params[:username].to_s + '%'
     @search_results = User.active.where("username ILIKE ?", username).ordered.paginate(page: page)
   end
@@ -177,8 +193,6 @@ class UsersController < ApplicationController
 
   def signup_prep
     use_javascript('users/new')
-    gon.max = User::MAX_USERNAME_LEN
-    gon.min = User::MIN_USERNAME_LEN
     @page_title = 'Sign Up'
   end
 
@@ -222,15 +236,21 @@ class UsersController < ApplicationController
       :default_editor,
       :moiety,
       :moiety_name,
+      :profile,
+      :profile_editor_mode,
       :layout,
       :time_display,
       :unread_opened,
+      :visible_unread,
+      :hide_from_all,
       :hide_warnings,
       :hide_hiatused_tags_owed,
+      :public_bookmarks,
       :ignore_unread_daily_report,
-      :visible_unread,
       :favorite_notifications,
       :show_user_in_switcher,
+      :default_hide_edit_delete_buttons,
+      :default_hide_add_bookmark_button,
     )
   end
 

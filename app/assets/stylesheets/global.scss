@@ -44,7 +44,6 @@ input, textarea, button {
 
 input[type='checkbox'] { height: 23px; }
 textarea { padding: 5px; }
-.form-table td input[type='radio'] { width: unset; }
 
 button, .button {
   background: $bg_color_button;
@@ -57,8 +56,11 @@ button, .button {
 
 /* Display Helpers */
 .no-margin { margin: 0; }
+.no-margin-left { margin-left: 0 !important; }
+.margin-left-200 { margin-left: 200px; }
 .noheight { font-size: 0; }
 .margin-10 { margin: 10px; }
+.margin-top-7 { margin-top: 7px; }
 .padding-5 { padding: 5px 10px; }
 .padding-10 { padding: 10px; }
 .padding-15 { padding: 15px; }
@@ -66,6 +68,7 @@ button, .button {
 .padding-right-10 { padding-right: 10px; }
 .width-15 { width: 15px !important; }
 .width-70 { width: 70px; }
+.line-height-1-8 { line-height: 1.8; }
 
 .width-150 {
   width: 150px;
@@ -118,9 +121,9 @@ a.disabled-arrow {
 }
 
 /* Displaying forum threads */
-.even, .odd, .post-post, .post-reply, #post-editor { padding: 5px; }
+.even, .odd, .post-post, .post-reply, .profile, #post-editor { padding: 5px; }
 
-.even, .post-post, .post-reply:nth-child(even), #post-editor { background-color: $bg_color_even; }
+.even, .post-post, .post-reply:nth-child(even), .profile, #post-editor { background-color: $bg_color_even; }
 
 .odd, .post-reply:nth-child(odd), .post-post + #post-editor, .post-post + a + #post-editor { background-color: $bg_color_odd; }
 
@@ -172,3 +175,5 @@ span.badge {
   text-shadow: 0 0 2px $shadow_color_badge, 0 0 2px $shadow_color_badge;
   margin: 2px;
 }
+
+.narrow-select > select { width: 95px; }

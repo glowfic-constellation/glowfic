@@ -1,4 +1,6 @@
 RSpec.describe AboutController do
+  render_views
+
   describe "GET tos" do
     it "succeeds when logged out" do
       get :tos

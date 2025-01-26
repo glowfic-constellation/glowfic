@@ -56,6 +56,7 @@ class BoardsController < ApplicationController
   def show
     @page_title = @board.name
     @board_sections = @board.board_sections.ordered
+    @board_sections = @board_sections.paginate(per_page: 25, page: page)
     board_posts = @board.posts.where(section_id: nil)
     if @board.ordered?
       board_posts = board_posts.ordered_in_section
@@ -129,9 +130,10 @@ class BoardsController < ApplicationController
   def search
     @page_title = 'Search Continuities'
     @user = User.active.full.where(id: params[:author_id]).ordered if params[:author_id].present?
-    use_javascript('boards/search')
+    use_javascript('search')
     return unless params[:commit].present?
 
+    response.headers['X-Robots-Tag'] = 'noindex'
     searcher = Board::Searcher.new
     @search_results = searcher.search(params)
     @search_results = boards_from_relation(@search_results).paginate(page: page)
