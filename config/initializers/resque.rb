@@ -28,3 +28,11 @@ end
 # require 'resque/failure/redis'
 # Resque::Failure::MultipleWithRetrySuppression.classes = [Resque::Failure::Redis]
 # Resque::Failure.backend = Resque::Failure::MultipleWithRetrySuppression
+
+# logs Resque failures and sends them to ExceptionNotification
+require 'resque/failure/multiple'
+require 'resque/failure/redis'
+require 'exception_notification/resque'
+
+Resque::Failure::Multiple.classes = [Resque::Failure::Redis, ExceptionNotification::Resque]
+Resque::Failure.backend = Resque::Failure::Multiple
