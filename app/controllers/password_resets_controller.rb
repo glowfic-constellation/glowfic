@@ -26,7 +26,7 @@ class PasswordResetsController < ApplicationController
 
     existing = user.password_resets.active.unused.first
     if existing.present?
-      UserMailer.password_reset_link(existing.id).deliver
+      UserMailer.password_reset_link(existing.id).deliver_later
       flash[:success] = "Your password reset link has been re-sent." # rubocop:disable Rails/ActionControllerFlashBeforeRender
       params[:email] = params[:username] = nil
       redirect_to new_password_reset_path and return
@@ -39,7 +39,7 @@ class PasswordResetsController < ApplicationController
       render_errors(password_reset, action: 'created', now: true, err: e)
       render :new
     else
-      UserMailer.password_reset_link(password_reset.id).deliver
+      UserMailer.password_reset_link(password_reset.id).deliver_later
       params[:email] = params[:username] = nil
       flash[:success] = "A password reset link has been emailed to you."
       redirect_to new_password_reset_path

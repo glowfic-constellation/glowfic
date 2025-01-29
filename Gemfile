@@ -45,7 +45,6 @@ gem "redcarpet", "~> 3.6"
 gem 'redis', '~> 5.3'
 gem 'request_store', '~> 1.7'
 gem 'resque'
-gem 'resque_mailer'
 gem 'sanitize'
 gem 'scout_apm'
 gem 'select2-rails'

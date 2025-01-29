@@ -104,7 +104,7 @@ class Reply < ApplicationRecord
       next if author.id == user_id
       next unless author.email.present?
       next unless author.email_notifications?
-      UserMailer.post_has_new_reply(author.id, self.id).deliver
+      UserMailer.post_has_new_reply(author.id, self.id).deliver_later
     end
   end
 

@@ -49,6 +49,6 @@ class Notification < ApplicationRecord
     return if skip_email
     return unless user.email.present?
     return unless user.email_notifications?
-    UserMailer.new_notification(self.id).deliver
+    UserMailer.new_notification(self.id).deliver_later
   end
 end

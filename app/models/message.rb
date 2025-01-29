@@ -92,7 +92,7 @@ class Message < ApplicationRecord
     return unless visible_inbox
     return unless recipient.email.present?
     return unless recipient.email_notifications?
-    UserMailer.new_message(self.id).deliver
+    UserMailer.new_message(self.id).deliver_later
   end
 
   def unblocked_recipient
