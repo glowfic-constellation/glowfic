@@ -1,11 +1,6 @@
 RSpec.describe UserMailer do
   let(:user) { create(:user) }
 
-  before(:each) do
-    ResqueSpec.reset!
-    ActionMailer::Base.deliveries.clear
-  end
-
   def html_text(html_part)
     Nokogiri::HTML5.parse(html_part.body.to_s).at("body").text.gsub(/[\s\n]+/, " ").strip
   end
@@ -34,13 +29,14 @@ RSpec.describe UserMailer do
     it "does not crash on deleted reply" do
       reply = create(:reply)
 
-      ActionMailer::Base.deliveries.clear
-      UserMailer.post_has_new_reply(user.id, reply.id).deliver
-      expect(UserMailer).to have_queue_size_of(1)
+      clear_enqueued_jobs
+
+      UserMailer.post_has_new_reply(user.id, reply.id).deliver_later
+      expect(ActiveJob::Base.queue_adapter.enqueued_jobs.size).to eq(1)
 
       reply.destroy!
-      ResqueSpec.perform_next(UserMailer.queue)
-      expect(UserMailer).to have_queue_size_of(0)
+      perform_enqueued_jobs
+      expect(ActiveJob::Base.queue_adapter.enqueued_jobs.size).to eq(0)
       expect(ActionMailer::Base.deliveries.count).to eq(0)
     end
   end

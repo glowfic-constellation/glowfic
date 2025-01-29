@@ -1,4 +1,6 @@
 RSpec.describe Message do
+  include ActionMailer::TestHelper
+
   describe "validations" do
     it "cannot have a nil sender" do
       message = build(:message)
@@ -15,34 +17,35 @@ RSpec.describe Message do
   end
 
   describe "#notify_recipient" do
-    before(:each) { ResqueSpec.reset! }
-
     it "does not send with notifications off" do
-      message = create(:message)
+      message = nil
+      expect {
+        message = create(:message)
+      }.not_to have_enqueued_email
       expect(message.recipient.email_notifications).not_to eq(true)
-      expect(UserMailer).to have_queue_size_of(0)
     end
 
     it "does not send with no email" do
       user = create(:user)
       user.update_columns(email: nil) # rubocop:disable Rails/SkipsModelValidations
-      create(:message, recipient: user)
-      expect(UserMailer).to have_queue_size_of(0)
+      expect { create(:message, recipient: user) }.not_to have_enqueued_email
     end
 
     it "sends with notifications on" do
       notified_user = create(:user, email_notifications: true)
-      message = create(:message, recipient: notified_user)
-
-      expect(UserMailer).to have_queue_size_of(1)
-      expect(UserMailer).to have_queued(:new_message, [message.id])
+      message = nil
+      expect {
+        message = create(:message, recipient: notified_user)
+      }.to have_enqueued_email(UserMailer, :new_message)
+      assert_enqueued_email_with(UserMailer, :new_message, args: [message.id])
     end
 
     it "does not notify blocking recipients" do
       recipient = create(:user, email_notifications: true)
       block = create(:block, block_interactions: true, blocking_user: recipient)
-      create(:message, sender: block.blocked_user, recipient: recipient)
-      expect(UserMailer).to have_queue_size_of(0)
+      expect {
+        create(:message, sender: block.blocked_user, recipient: recipient)
+      }.not_to have_enqueued_email
     end
   end
 

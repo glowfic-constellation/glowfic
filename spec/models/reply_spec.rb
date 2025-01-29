@@ -1,4 +1,6 @@
 RSpec.describe Reply do
+  include ActionMailer::TestHelper
+
   describe "#has_icons?" do
     let(:user) { create(:user) }
 
@@ -49,14 +51,13 @@ RSpec.describe Reply do
   end
 
   describe "#notify_other_authors" do
-    before(:each) { ResqueSpec.reset! }
-
     it "does nothing if skip_notify is set" do
       notified_user = create(:user, email_notifications: true)
       post = create(:post, user: notified_user)
 
-      create(:reply, post: post, skip_notify: true)
-      expect(UserMailer).to have_queue_size_of(0)
+      expect {
+        create(:reply, post: post, skip_notify: true)
+      }.not_to have_enqueued_email
     end
 
     it "does nothing if the previous reply was yours" do
@@ -65,39 +66,44 @@ RSpec.describe Reply do
 
       reply = create(:reply, post: post, skip_notify: true)
 
-      create(:reply, post: post, user: reply.user)
-      expect(UserMailer).to have_queue_size_of(0)
+      expect {
+        create(:reply, post: post, user: reply.user)
+      }.not_to have_enqueued_email
     end
 
     it "does nothing if the post was yours on the first reply" do
       notified_user = create(:user, email_notifications: true)
       post = create(:post, user: notified_user)
 
-      create(:reply, post: post, user: notified_user)
-      expect(UserMailer).to have_queue_size_of(0)
+      expect {
+        create(:reply, post: post, user: notified_user)
+      }.not_to have_enqueued_email
     end
 
     it "does not send to authors with notifications off" do
       post = create(:post)
       expect(post.user.email_notifications).not_to eq(true)
-      create(:reply, post: post)
-      expect(UserMailer).to have_queue_size_of(0)
+      expect {
+        create(:reply, post: post)
+      }.not_to have_enqueued_email
     end
 
     it "does not send to emailless users" do
       user = create(:user)
       user.update_columns(email: nil) # rubocop:disable Rails/SkipsModelValidations
       post = create(:post, user: user)
-      create(:reply, post: post)
-      expect(UserMailer).to have_queue_size_of(0)
+      expect {
+        create(:reply, post: post)
+      }.not_to have_enqueued_email
     end
 
     it "does not send to users who have opted out of owed" do
       user = create(:user, email_notifications: true)
       post = create(:post, user: user)
       post.opt_out_of_owed(user)
-      create(:reply, post: post)
-      expect(UserMailer).to have_queue_size_of(0)
+      expect {
+        create(:reply, post: post)
+      }.not_to have_enqueued_email
     end
 
     it "sends to all other active authors if previous reply wasn't yours" do
@@ -107,10 +113,13 @@ RSpec.describe Reply do
       another_notified_user = create(:user, email_notifications: true)
       create(:reply, user: another_notified_user, post: post, skip_notify: true)
 
-      reply = create(:reply, post: post)
-      expect(UserMailer).to have_queue_size_of(2)
-      expect(UserMailer).to have_queued(:post_has_new_reply, [notified_user.id, reply.id])
-      expect(UserMailer).to have_queued(:post_has_new_reply, [another_notified_user.id, reply.id])
+      clear_enqueued_jobs
+      reply = nil
+      expect {
+        reply = create(:reply, post: post)
+      }.to have_enqueued_email(UserMailer, :post_has_new_reply).twice
+      assert_enqueued_email_with(UserMailer, :post_has_new_reply, args: [notified_user.id, reply.id])
+      assert_enqueued_email_with(UserMailer, :post_has_new_reply, args: [another_notified_user.id, reply.id])
     end
 
     it "sends if the post was yours but previous reply wasn't" do
@@ -120,9 +129,12 @@ RSpec.describe Reply do
       another_notified_user = create(:user, email_notifications: true)
       create(:reply, user: another_notified_user, post: post, skip_notify: true)
 
-      reply = create(:reply, post: post, user: notified_user)
-      expect(UserMailer).to have_queue_size_of(1)
-      expect(UserMailer).to have_queued(:post_has_new_reply, [another_notified_user.id, reply.id])
+      clear_enqueued_jobs
+      reply = nil
+      expect {
+        reply = create(:reply, post: post, user: notified_user)
+      }.to have_enqueued_email(UserMailer, :post_has_new_reply)
+      assert_enqueued_email_with(UserMailer, :post_has_new_reply, args: [another_notified_user.id, reply.id])
     end
   end
 

@@ -4,4 +4,8 @@ class ApplicationMailer < ActionMailer::Base
   helper :application
   helper :mailer
   layout 'mailer'
+
+  def queue
+    :mailer
+  end
 end
