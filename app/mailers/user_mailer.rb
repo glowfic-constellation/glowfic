@@ -22,6 +22,7 @@ class UserMailer < ApplicationMailer
   def new_message(message_id)
     @message = Message.find(message_id)
     @subject = "New message from #{@message.sender_name}: #{@message.unempty_subject}"
+    Rails.logger.warn "UserMailer.new_message: method(:config) => #{method(:config).inspect}, class.method(:config) => #{self.class.method(:config).inspect}"
     mail(to: @message.recipient.email, subject: @subject)
   end
 
