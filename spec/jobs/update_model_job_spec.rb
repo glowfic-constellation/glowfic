@@ -1,6 +1,4 @@
 RSpec.describe UpdateModelJob do
-  before(:each) { ResqueSpec.reset! }
-
   it "crashes on invalid models" do
     expect {
       UpdateModelJob.perform_now('NotClass', {}, {}, nil)

@@ -1,9 +1,9 @@
 require Rails.root.join('script', 'migrate_notifications.rb')
 
 RSpec.describe "migrate_notifications" do # rubocop:disable RSpec/DescribeClass
-  let(:import_url) { 'http://wild-pegasus-appeared.dreamwidth.org/403.html?style=site&view=flat' }
+  include ActiveJob::TestHelper
 
-  before(:each) { ResqueSpec.reset! }
+  let(:import_url) { 'http://wild-pegasus-appeared.dreamwidth.org/403.html?style=site&view=flat' }
 
   def relation_for(messages)
     Message.where(id: messages.map(&:id))
@@ -159,9 +159,10 @@ RSpec.describe "migrate_notifications" do # rubocop:disable RSpec/DescribeClass
       content = "#{coauthor.username} has just joined the post entitled #{post.subject} with "
       content += "#{author.username}. #{ScrapePostJob.view_post(post.id)}"
       message = create(:message, sender_id: 0, subject: subject, recipient: notified, message: content)
-      ResqueSpec.reset!
-      create_notifications(Message.where(id: message.id), :joined_favorite_post)
-      expect(UserMailer).to have_queue_size_of(0)
+
+      expect {
+        create_notifications(Message.where(id: message.id), :joined_favorite_post)
+      }.not_to have_enqueued_email
     end
   end
 

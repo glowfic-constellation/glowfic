@@ -1,4 +1,6 @@
 RSpec.describe PasswordResetsController do
+  include ActionMailer::TestHelper
+
   describe "GET new" do
     it "requires logout" do
       user = create(:user)
@@ -75,21 +77,25 @@ RSpec.describe PasswordResetsController do
       user = create(:user)
       reset = create(:password_reset, user: user)
       expect(PasswordReset.count).to eq(1)
-      post :create, params: { username: user.username, email: user.email }
+      expect {
+        post :create, params: { username: user.username, email: user.email }
+      }.to have_enqueued_email(UserMailer, :password_reset_link).with(reset.id)
       expect(flash[:success]).to eq("Your password reset link has been re-sent.")
-      expect(UserMailer).to have_queued(:password_reset_link, [reset.id])
       expect(PasswordReset.count).to eq(1)
     end
 
     it "sends password reset" do
       ActionMailer::Base.deliveries.clear
       user = create(:user)
-      post :create, params: { username: user.username, email: user.email }
+      clear_enqueued_jobs
+      expect {
+        post :create, params: { username: user.username, email: user.email }
+      }.to have_enqueued_email(UserMailer, :password_reset_link)
+      assert_enqueued_email_with(UserMailer, :password_reset_link, args: [PasswordReset.first.id])
       expect(response).to redirect_to(new_password_reset_url)
       expect(flash[:success]).to eq("A password reset link has been emailed to you.")
       expect(PasswordReset.count).to eq(1)
       expect(PasswordReset.first.user_id).to eq(user.id)
-      expect(UserMailer).to have_queued(:password_reset_link, [PasswordReset.last.id])
     end
   end
 
