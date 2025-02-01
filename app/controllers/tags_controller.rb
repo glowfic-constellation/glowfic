@@ -95,7 +95,7 @@ class TagsController < ApplicationController
       flash[:error] = "Tag could not be found."
       redirect_to tags_path and return
     end
-    return unless @tag.is_a(AccessCircle)
+    return unless @tag.is_a?(AccessCircle)
     if @tag.visible_to?(current_user)
       redirect_to @tag
     else
