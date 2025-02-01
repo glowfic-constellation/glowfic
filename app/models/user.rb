@@ -149,6 +149,11 @@ class User < ApplicationRecord
     inactivity_status || super
   end
 
+  def send_email_changed_notification
+    return unless devise_email_before_last_save.present? # override to allow email change when old email is empty
+    send_devise_notification(:email_changed, to: devise_email_before_last_save)
+  end
+
   private
 
   def inactivity_status
