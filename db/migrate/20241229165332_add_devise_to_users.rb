@@ -9,20 +9,19 @@ class AddDeviseToUsers < ActiveRecord::Migration[8.0]
     # we use a securerandom password (not exposed); users will have to reset passwords in this eventuality
     # as we don't have access to their underlying password, and we're removing devise support by rolling this back
     reversible do |direction|
-      direction.up { }
       direction.down do
         User.reset_column_information
-        puts "Migrating users back to legacy password format (random password will be set)"
+        Rails.logger.info "Migrating users back to legacy password format (random password will be set)"
         User.where(legacy_password_hash: nil).find_each do |user|
-          puts "- User #{user.id}/#{user.username}"
+          Rails.logger.info "- User #{user.id}/#{user.username}"
           user.salt_uuid ||= SecureRandom.uuid
           crypted = user.send(:crypted_password, SecureRandom.alphanumeric(32))
-          user.update_columns(legacy_password_hash: crypted, salt_uuid: user.salt_uuid) # intentionally skip callbacks
+          user.update_columns(legacy_password_hash: crypted, salt_uuid: user.salt_uuid) # intentionally skip callbacks # rubocop:disable Rails/SkipsModelValidations
         end
       end
     end
 
-    change_table :users do |t|
+    change_table :users, bulk: true do |t|
       ## Database authenticatable
       # t.string :email,              null: false, default: ""
       t.string :encrypted_password, null: false, default: ""
@@ -73,9 +72,8 @@ class AddDeviseToUsers < ActiveRecord::Migration[8.0]
     reversible do |direction|
       direction.up do
         User.reset_column_information
-        User.where.not(email: nil).update_all(confirmed_at: Time.now)
+        User.where.not(email: nil).update_all(confirmed_at: Time.zone.now) # intentionally skip callbacks # rubocop:disable Rails/SkipsModelValidations
       end
-      direction.down { }
     end
   end
 end
