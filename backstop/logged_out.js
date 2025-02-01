@@ -13,6 +13,11 @@ const scenarios = filteredScenarios(['home']).concat([
     path: "login",
     selectors: ["#content"]
   },
+  {
+    label: "password_reset",
+    path: "users/password/new",
+    selectors: ["#content"],
+  },
 ]);
 
 var updateConfigWithID = require('./shared_config/utils').updateConfigWithID;
