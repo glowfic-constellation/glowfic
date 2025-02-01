@@ -5,7 +5,7 @@ RSpec.describe "Logging out" do
     click_button "Log out"
     page.accept_confirm
 
-    expect(page).to have_selector('.flash.success', text: 'You have been logged out.')
+    expect(page).to have_selector('.flash.notice', text: 'You have been logged out.')
     expect(page).to have_no_selector('#user-info')
     expect(page).to have_current_path(root_path)
 

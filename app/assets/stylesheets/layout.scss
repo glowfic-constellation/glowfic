@@ -183,8 +183,8 @@
   margin-top: 5px;
 }
 
-.flash.error { background-color: $bg_color_flash_error; }
-.flash.success { background-color: $bg_color_flash_success; }
+.flash.error, .flash.alert { background-color: $bg_color_flash_error; }
+.flash.success, .flash.notice { background-color: $bg_color_flash_success; }
 .flash.breadcrumbs { background-color: $bg_color_flash_breadcrumbs; }
 
 /* Top-right timestamp on certain timestamped pages */
@@ -365,6 +365,11 @@ td, .table-list li { font-size: $font_size_small; }
 
   &#contribute { grid-template-columns: none; }
   .subber, .table-title, .editor-title, .form-table-ender { grid-template-columns: none; }
+  .form-table-ender.vertical-grid {
+    grid-auto-flow: row;
+    justify-items: center;
+    & > div { padding: 1px; }
+  }
   .colspan { grid-template-columns: none; }
 
   &#section-editor { grid-template-columns: minmax(min-content, 131px) auto; }

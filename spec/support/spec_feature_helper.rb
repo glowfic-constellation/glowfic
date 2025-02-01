@@ -1,4 +1,5 @@
 module SpecSystemHelper
+  # TODO: replace with config.include Devise::Test::IntegrationHelpers, type: :feature
   # constant as a method to allow it to be .included by RSpec
   def known_test_password
     'knownpass'
@@ -23,5 +24,13 @@ module SpecSystemHelper
 
   def table_titled(title)
     find('table') { |x| x.has_selector?('.table-title', text: title) }
+  end
+
+  def mail_queue
+    ActiveJob::Base.queue_adapter.enqueued_jobs
+  end
+
+  def deserialize_enqueued_mail(mail)
+    ActiveJob::Arguments.deserialize(mail[:args])
   end
 end

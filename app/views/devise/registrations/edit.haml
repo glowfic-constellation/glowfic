@@ -1,0 +1,23 @@
+= render "devise/shared/error_messages", resource: resource
+
+= form_for(resource, as: resource_name, url: registration_path(resource_name), html: { method: :put, id: 'change_password_form' }) do |f|
+  .form-table#change-password
+    .editor-title Change Email or Password
+    %div
+      .sub= f.label :email, 'Email'
+      %div{class: cycle('even', 'odd')}
+        = f.text_field :email, required: true, autofocus: true
+        - if devise_mapping.confirmable? && resource.pending_reconfirmation?
+          %span.details Currently waiting for email confirmation for: #{resource.unconfirmed_email}
+    %div
+      .sub= f.label :current_password, 'Old'
+      %div{class: cycle('even', 'odd')}= f.password_field :current_password, placeholder: "Current Password", autocomplete: 'current-password'
+    %div
+      .sub= f.label :password, 'New'
+      %div{class: cycle('even', 'odd')}
+        = f.password_field :password, placeholder: "New Password", autocomplete: 'new-password', minlength: User::MIN_PASSWORD_LEN
+        %span.details (Leave these fields blank to only change your email)
+    %div
+      .sub= f.label :password_confirmation, 'Confirm'
+      %div{class: cycle('even', 'odd')}= f.password_field :password_confirmation, placeholder: "Confirm Password", autocomplete: 'new-password', minlength: User::MIN_PASSWORD_LEN
+    .form-table-ender= f.submit "Save", class: 'button'

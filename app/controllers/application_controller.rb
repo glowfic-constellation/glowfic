@@ -8,11 +8,11 @@ class ApplicationController < ActionController::Base
   rescue_from ActionController::InvalidAuthenticityToken, with: :handle_invalid_token
 
   before_action :check_tos
-  before_action :check_permanent_user
+  before_action :migrate_old_authentication
+  before_action :set_user_token
   before_action :show_password_warning
   before_action :require_glowfic_domain
   before_action :set_login_gon
-  before_action :check_forced_logout
   around_action :set_timezone
   after_action :store_location
 
@@ -80,7 +80,7 @@ class ApplicationController < ActionController::Base
     return true if Rails.env.test? && params[:force_tos].nil?
     return true unless standard_request?
     return true if params[:tos_check].present?
-    return true if ['about', 'sessions', 'password_resets'].include?(params[:controller])
+    return true if ['about', 'sessions'].include?(params[:controller])
     return true if params[:controller] == 'users' && params[:action] == 'new'
 
     tos_version = logged_in? ? current_user.tos_version : cookies[:accepted_tos]
@@ -183,17 +183,12 @@ class ApplicationController < ActionController::Base
 
   private
 
-  def check_forced_logout
-    return unless logged_in?
-    return unless current_user.suspended? || current_user.deleted?
-    logout
-  end
-
   def show_password_warning
     return unless logged_in?
-    return unless current_user.salt_uuid.nil?
+    return unless current_user.salt_uuid.nil? && current_user.encrypted_password.blank?
     logout
     flash.now[:error] = "Because Marri accidentally made passwords a bit too secure, you must log back in to continue using the site."
+    # TODO: after Devise migration, show warning if encrypted_password blank too
   end
 
   def store_location
@@ -203,7 +198,7 @@ class ApplicationController < ActionController::Base
 
   def set_login_gon
     gon.logged_in = logged_in?
-    gon.api_token = session[:api_token]["value"] if logged_in?
+    gon.api_token = set_user_token["value"] if logged_in?
   end
 
   def set_timezone(&)

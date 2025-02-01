@@ -4,15 +4,22 @@ RSpec.describe User do
   describe "password encryption" do
     it "should support nil salt_uuid" do
       user = create(:user)
-      user.update_columns(salt_uuid: nil, crypted: user.send(:old_crypted_password, 'test')) # rubocop:disable Rails/SkipsModelValidations
+      user.update_columns(salt_uuid: nil, legacy_password_hash: user.send(:old_crypted_password, 'testpass'), encrypted_password: '') # rubocop:disable Rails/SkipsModelValidations
       user.reload
-      expect(user.authenticate('test')).to eq(true)
+      expect(user.valid_password?('testpass')).to eq(true)
     end
 
     it "should set and support salt_uuid" do
-      user = create(:user, password: 'testpass')
+      user = create(:user, salt_uuid: SecureRandom.uuid)
+      user.update_columns(legacy_password_hash: user.send(:crypted_password, 'testpass'), encrypted_password: '') # rubocop:disable Rails/SkipsModelValidations
       expect(user.salt_uuid).not_to be_nil
-      expect(user.authenticate('testpass')).to eq(true)
+      expect(user.valid_password?('testpass')).to eq(true)
+    end
+
+    it "should set and support encrypted_password" do
+      user = create(:user, password: 'testpass')
+      expect(user.encrypted_password).not_to be_nil
+      expect(user.valid_password?('testpass')).to eq(true)
     end
   end
 
@@ -37,7 +44,6 @@ RSpec.describe User do
   describe "emails" do
     def generate_emailless_user
       user = build(:user, email: nil)
-      user.send(:encrypt_password)
       user.save!(validate: false)
       user
     end
@@ -53,16 +59,6 @@ RSpec.describe User do
       expect(user).not_to be_valid
       user.email = 'testuser@example.com'
       expect(user).to be_valid
-    end
-
-    it "should allow users with no email to be changed" do
-      generate_emailless_user # to have duplicate without email
-      user = generate_emailless_user
-      user.layout = 'starrydark'
-      expect(user).to be_valid
-      expect {
-        user.save!
-      }.not_to raise_error
     end
 
     it "should allow users with no email to get an email" do

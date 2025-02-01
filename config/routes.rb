@@ -2,18 +2,23 @@
 require 'resque/server'
 
 Rails.application.routes.draw do
+  devise_for :users, skip: :unlock, controllers: {
+    confirmations: 'user/confirmations',
+    # omniauth_callbacks: 'user/omniauth_callbacks',
+    passwords: 'user/passwords',
+    registrations: 'user/registrations',
+    sessions: 'user/sessions',
+    # unlocks: 'user/unlocks',
+  }
   # For details on the DSL available within this file, see https://guides.rubyonrails.org/routing.html
   apipie
 
   root to: 'sessions#index'
 
   # Accounts
-  get '/login' => 'sessions#new', as: :login
-  post '/login' => 'sessions#create'
-  delete '/logout' => 'sessions#destroy', as: :logout
   patch '/confirm_tos' => 'sessions#confirm_tos', as: :confirm_tos
   get '/users/:id/templates' => redirect('/users/%{id}/characters')
-  resources :users, except: :destroy do
+  resources :users, except: [:new, :create, :destroy] do
     resources :characters, only: :index
     resources :galleries, only: [:index, :show]
     resources :boards, only: :index
@@ -21,13 +26,11 @@ Rails.application.routes.draw do
       get :search
     end
     member do
-      put :password
       put :upgrade
       get :output
       get :profile_edit
     end
   end
-  resources :password_resets, only: [:new, :create, :show, :update]
 
   # Messages and notifications
   resources :messages, except: [:edit, :update, :destroy] do

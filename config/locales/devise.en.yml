@@ -1,0 +1,63 @@
+# Additional translations at https://github.com/heartcombo/devise/wiki/I18n
+
+en:
+  devise:
+    confirmations:
+      confirmed: "Email address confirmed."
+      send_instructions: "A confirmation link has been emailed to you."
+      send_paranoid_instructions: "A confirmation link has been emailed to you."
+    failure:
+      already_authenticated: "You are already logged in."
+      inactive: "Account not activated."
+      invalid: "Invalid username or password."
+      locked: "You could not be logged in."
+      last_attempt: "You have one more attempt before your account is locked."
+      not_found_in_database: "Invalid username or password."
+      timeout: "Oops, looks like your session expired! Please try another tab or log in again to resume glowficcing. If you were writing a reply, it has been cached for your next page load."
+      unauthenticated: "You must be logged in to view that page."
+      unconfirmed: "You must confirm your email address to continue."
+    mailer:
+      confirmation_instructions:
+        subject: "Confirmation instructions"
+      reset_password_instructions:
+        subject: "Reset password instructions"
+      unlock_instructions:
+        subject: "Unlock instructions"
+      email_changed:
+        subject: "Email Changed"
+      password_change:
+        subject: "Password Changed"
+    omniauth_callbacks:
+      failure: "%{kind} could not be authenticated because %{reason}."
+      success: "%{kind} account authenticated."
+    passwords:
+      no_token: "Authentication token not found. If you got here from a password reset email, make sure you used the link provided."
+      send_instructions: "A password reset link has been emailed to you."
+      send_paranoid_instructions: "A password reset link has been emailed to you."
+      updated: "Password changed. You are now signed in."
+      updated_not_active: "Password changed."
+    registrations:
+      destroyed: "Account deactivated."
+      signed_up: "User created. You have been logged in."
+      signed_up_but_inactive: "User created. However, you could not be signed in because your account is not yet activated."
+      signed_up_but_locked: "User created. However, you could not be signed in because your account is locked."
+      signed_up_but_unconfirmed: "User created. A confirmation link has been emailed to you; use this to activate your account."
+      update_needs_confirmation: "Account updated. A confirmation link has been emailed to you; use this to confirm your new email."
+      updated: "Account updated."
+      updated_but_not_signed_in: "Account updated. Since your password was changed, you need to sign in again."
+    sessions:
+      signed_in: "You are now logged in. Welcome back!"
+      signed_out: "You have been logged out."
+      already_signed_out: "You are already logged out."
+    unlocks:
+      send_instructions: "An email with instructions for how to unlock your account has been sent."
+      send_paranoid_instructions: "An email with instructions for how to unlock your account has been sent."
+      unlocked: "Account  unlocked successfully. Sign in to continue."
+  errors:
+    messages:
+      already_confirmed: "already confirmed, try signing in"
+      confirmation_period_expired: "must be confirmed within %{period}, request a new one"
+      expired: "expired, request a new one"
+      not_found: "not found"
+      not_locked: "not locked"
+      not_saved: "Your %{resource} could not be saved because of the following problems:"

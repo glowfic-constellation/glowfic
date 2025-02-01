@@ -1,6 +1,7 @@
 module SpecTestHelper
   def login_as(user)
-    request.session[:user_id] = user.id
+    sign_in(user)
+    user.id
   end
 
   def login

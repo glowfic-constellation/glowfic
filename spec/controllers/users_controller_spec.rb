@@ -31,120 +31,6 @@ RSpec.describe UsersController do
     end
   end
 
-  describe "GET new" do
-    it "succeeds when logged out" do
-      get :new
-      expect(response).to have_http_status(200)
-      expect(assigns(:page_title)).to eq('Sign Up')
-    end
-
-    it "complains when logged in" do
-      login
-      post :create
-      expect(response).to redirect_to(continuities_path)
-      expect(flash[:error]).to eq('You are already logged in.')
-    end
-  end
-
-  describe "POST create" do
-    it "complains when logged in" do
-      login
-      post :create
-      expect(response).to redirect_to(continuities_path)
-      expect(flash[:error]).to eq('You are already logged in.')
-    end
-
-    it "requires tos acceptance" do
-      post :create
-      expect(response).to render_template(:new)
-      expect(flash[:error]).to eq("You must accept the Terms and Conditions to use the Constellation.")
-      expect(assigns(:user)).not_to be_valid
-      expect(assigns(:page_title)).to eq('Sign Up')
-    end
-
-    it "requires stupid captcha" do
-      post :create, params: { tos: true }
-      expect(response).to render_template(:new)
-      expect(flash[:error]).to eq("Please check your math and try again.")
-      expect(assigns(:user)).not_to be_valid
-      expect(assigns(:page_title)).to eq('Sign Up')
-    end
-
-    it "requires valid fields" do
-      allow(ENV).to receive(:[]).with('ACCOUNT_SECRET').and_return('ALLHAILTHECOIN')
-      post :create, params: { secret: "ALLHAILTHECOIN", tos: true, addition: '14' }
-      expect(response).to render_template(:new)
-      expect(flash[:error][:message]).to eq("There was a problem completing your sign up.")
-      expect(assigns(:user)).not_to be_valid
-      expect(assigns(:page_title)).to eq('Sign Up')
-    end
-
-    it "rejects short passwords" do
-      allow(ENV).to receive(:[]).with('ACCOUNT_SECRET').and_return('ALLHAILTHECOIN')
-      user = build(:user).attributes.with_indifferent_access.merge(password: 'short', password_confirmation: 'short')
-      post :create, params: { secret: 'ALLHAILTHECOIN', tos: true, addition: '14' }.merge(user: user)
-      expect(response).to render_template(:new)
-      expect(flash[:error][:message]).to eq('There was a problem completing your sign up.')
-      expect(flash[:error][:array]).to eq(['Password is too short (minimum is 6 characters)'])
-      expect(assigns(:user)).not_to be_valid
-      expect(assigns(:page_title)).to eq('Sign Up')
-    end
-
-    it "signs you up" do
-      allow(ENV).to receive(:[]).with('ACCOUNT_SECRET').and_return('ALLHAILTHECOIN')
-      pass = 'testpassword'
-      user = build(:user).attributes.with_indifferent_access.merge(password: pass, password_confirmation: pass, email: 'testemail@example.com')
-
-      expect {
-        post :create, params: { secret: "ALLHAILTHECOIN", tos: true, addition: '14' }.merge(user: user)
-      }.to change { User.count }.by(1)
-      expect(response).to redirect_to(root_url)
-      expect(flash[:success]).to eq("User created! You have been logged in.")
-
-      new_user = assigns(:current_user)
-      expect(new_user).not_to be_nil
-      expect(new_user.username).to eq(user[:username])
-      expect(new_user.authenticate(user[:password])).to eq(true)
-      expect(new_user.email).to eq(user[:email])
-      expect(new_user.read_only?).to eq(false)
-    end
-
-    it "creates reader account without secret" do
-      allow(ENV).to receive(:[]).with('ACCOUNT_SECRET').and_return('ALLHAILTHECOIN')
-      pass = 'testpassword'
-      user = build(:user).attributes.with_indifferent_access.merge(password: pass, password_confirmation: pass, email: 'testemail@example.com')
-
-      post :create, params: { tos: true, addition: '14' }.merge(user: user)
-
-      expect(response).to redirect_to(root_url)
-      expect(flash[:success]).to eq("User created! You have been logged in.")
-      expect(assigns(:user).read_only?).to eq(true)
-    end
-
-    it "allows long passwords" do
-      allow(ENV).to receive(:[]).with('ACCOUNT_SECRET').and_return('ALLHAILTHECOIN')
-      pass = 'this is a long password to test the password validation feature and to see if it accepts this'
-      user = build(:user).attributes.with_indifferent_access.merge(password: pass, password_confirmation: pass)
-      expect {
-        post :create, params: { secret: 'ALLHAILTHECOIN', tos: true, addition: '14' }.merge(user: user)
-      }.to change { User.count }.by(1)
-      expect(response).to redirect_to(root_url)
-      expect(flash[:success]).to eq("User created! You have been logged in.")
-      expect(assigns(:current_user)).not_to be_nil
-      expect(assigns(:current_user).username).to eq(user['username'])
-      expect(assigns(:current_user).authenticate(pass)).to eq(true)
-    end
-
-    it "strips spaces" do
-      allow(ENV).to receive(:[]).with('ACCOUNT_SECRET').and_return('ALLHAILTHECOIN')
-      user = build(:user, username: 'withspace ').attributes
-      user = user.with_indifferent_access.merge(password: 'password', password_confirmation: 'password')
-      post :create, params: { secret: 'ALLHAILTHECOIN', tos: true, addition: '14' }.merge(user: user)
-      expect(flash[:success]).to eq("User created! You have been logged in.")
-      expect(assigns(:current_user).username).to eq('withspace')
-    end
-  end
-
   describe "GET show" do
     it "requires valid user" do
       get :show, params: { id: -1 }
@@ -335,7 +221,6 @@ RSpec.describe UsersController do
       login_as(user)
 
       user_details = {
-        email: 'testuser314@example.com',
         email_notifications: true,
         favorite_notifications: false,
         show_user_in_switcher: false,
@@ -389,7 +274,7 @@ RSpec.describe UsersController do
     it "updates username and still allows login" do
       pass = 'password123'
       user = create(:user, username: 'user123', password: pass)
-      expect(user.authenticate(pass)).to eq(true)
+      expect(user.valid_password?(pass)).to eq(true)
       login_as(user)
       put :update, params: { id: user.id, user: { username: 'user124' } }
       expect(response).to redirect_to(edit_user_url(user))
@@ -397,8 +282,8 @@ RSpec.describe UsersController do
 
       user.reload
       expect(user.username).to eq('user124')
-      expect(user.authenticate(pass)).to eq(true)
-      expect(user.authenticate(pass + '1')).not_to eq(true)
+      expect(user.valid_password?(pass)).to eq(true)
+      expect(user.valid_password?(pass + '1')).not_to eq(true)
     end
 
     context "tos" do
@@ -421,103 +306,6 @@ RSpec.describe UsersController do
         expect(flash[:error][:array]).to eq(["Username is too short (minimum is 3 characters)"])
         expect(response).to render_template('about/accept_tos')
       end
-    end
-  end
-
-  describe "PUT password" do
-    it "requires login" do
-      put :password, params: { id: -1 }
-      expect(response).to redirect_to(root_url)
-      expect(flash[:error]).to eq("You must be logged in to view that page.")
-    end
-
-    it "requires own user" do
-      user = create(:user)
-      login
-      put :password, params: { id: user.id }
-      expect(response).to redirect_to(continuities_url)
-      expect(flash[:error]).to eq('You do not have permission to modify this account.')
-    end
-
-    it "requires correct password" do
-      pass = 'testpass'
-      fakepass = 'wrongpass'
-      newpass = 'newpass'
-      user = create(:user, password: 'testpass')
-      login_as(user)
-
-      put :password, params: {
-        id: user.id,
-        old_password: fakepass,
-        user: { password: newpass, password_confirmation: newpass },
-      }
-
-      expect(response).to render_template(:edit)
-      expect(flash[:error]).to eq('Incorrect password entered.')
-      user.reload
-      expect(user.authenticate(pass)).to eq(true)
-      expect(user.authenticate(fakepass)).not_to eq(true)
-      expect(user.authenticate(newpass)).not_to eq(true)
-    end
-
-    it "requires valid password" do
-      pass = 'testpass'
-      newpass = 'bad'
-      user = create(:user, password: pass)
-      login_as(user)
-
-      put :password, params: {
-        id: user.id,
-        old_password: pass,
-        user: { password: newpass, password_confirmation: newpass },
-      }
-
-      expect(response).to render_template(:edit)
-      expect(flash[:error][:message]).to eq('There was a problem with your changes.')
-      expect(user.authenticate(pass)).to eq(true)
-      expect(user.authenticate(newpass)).not_to eq(true)
-    end
-
-    it "requires valid confirmation" do
-      pass = 'testpass'
-      newpass = 'newpassword'
-      user = create(:user, password: pass)
-      login_as(user)
-
-      put :password, params: {
-        id: user.id,
-        old_password: pass,
-        user: { password: newpass, password_confirmation: 'wrongconfirmation' },
-      }
-
-      expect(response).to render_template(:edit)
-      expect(flash[:error][:message]).to eq('There was a problem with your changes.')
-      user.reload
-      expect(user.authenticate(pass)).to eq(true)
-      expect(user.authenticate(newpass)).not_to eq(true)
-    end
-
-    it "succeeds" do
-      pass = 'testpass'
-      newpass = 'newpassword'
-      user = create(:user, password: pass)
-      login_as(user)
-
-      put :password, params: {
-        id: user.id,
-        old_password: pass,
-        user: { password: newpass, password_confirmation: newpass },
-      }
-
-      expect(response).to redirect_to(edit_user_url(user))
-      expect(flash[:success]).to eq('Changes saved.')
-      user.reload
-      expect(user.authenticate(pass)).not_to eq(true)
-      expect(user.authenticate(newpass)).to eq(true)
-    end
-
-    it "has more tests" do
-      skip
     end
   end
 
@@ -545,34 +333,30 @@ RSpec.describe UsersController do
     end
 
     it "requires valid secret" do
-      allow(ENV).to receive(:[]).with('ACCOUNT_SECRET').and_return('chocolate')
       user = create(:user, role_id: Permissible::READONLY)
       login_as(user)
-      put :upgrade, params: { id: user.id, secret: 'vanilla' }
+      put :upgrade, params: { id: user.id, secret: ENV.fetch("ACCOUNT_SECRET") + "different" }
       expect(response).to render_template(:edit)
       expect(flash[:error]).to eq("That is not the correct secret. Please ask someone in the community for help.")
     end
 
     it "handles update failures" do
-      allow(ENV).to receive(:[]).with('ACCOUNT_SECRET').and_return('chocolate')
       user = create(:user, role_id: Permissible::READONLY)
 
-      allow(User).to receive(:find_by_id).and_call_original
-      allow(User).to receive(:find_by_id).with(user.id).and_return(user)
+      allow(controller).to receive(:current_user).and_return(user)
       allow(user).to receive(:update).and_return(false)
       expect(user).to receive(:update)
 
       login_as(user)
-      put :upgrade, params: { id: user.id, secret: 'chocolate' }
+      put :upgrade, params: { id: user.id, secret: ENV.fetch("ACCOUNT_SECRET") }
       expect(flash[:error]).to eq("There was a problem updating your account.")
       expect(response).to render_template(:edit)
     end
 
     it "works" do
-      allow(ENV).to receive(:[]).with('ACCOUNT_SECRET').and_return('chocolate')
       user = create(:user, role_id: Permissible::READONLY)
       login_as(user)
-      put :upgrade, params: { id: user.id, secret: 'chocolate' }
+      put :upgrade, params: { id: user.id, secret: ENV.fetch("ACCOUNT_SECRET") }
       expect(response).to redirect_to(edit_user_url(user))
       expect(flash[:success]).to eq("Changes saved successfully.")
       expect(user.reload).not_to be_read_only
