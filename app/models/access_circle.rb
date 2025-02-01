@@ -8,7 +8,7 @@ class AccessCircle < Tag
   scope :visible, -> { where(owned: false) }
 
   def visible_to?(user)
-    return false unless logged_in?
+    return false if user.nil?
     return true unless owned?
     return true if user.admin?
     user.id == user_id
