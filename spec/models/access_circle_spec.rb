@@ -31,4 +31,44 @@ RSpec.describe AccessCircle do
       expect(circle).to be_valid
     end
   end
+
+  describe 'visible_to?' do
+    let(:user) { create(:user) }
+    let(:circle) { create(:access_circle, user: user) }
+    let(:reader) { create(:reader_user) }
+    let(:other) { create(:user) }
+
+    it 'does not allow logged out users' do
+      expect(circle.visible_to?(nil)).to eq(false)
+    end
+
+    it 'does not allow logged out users for public circles' do
+      circle.update!(owed: false)
+      expect(circle.visible_to?(nil)).to eq(false)
+    end
+
+    it 'returns true if the circle is public' do
+      circle.update!(owned: false)
+
+      aggregate_failures do
+        expect(circle.visible_to?(reader)).to eq(true)
+        expect(circle.visible_to?(other)).to eq(true)
+      end
+    end
+
+    it 'returns true for admins' do
+      expect(circle.visible_to?(create(:admin_user))).to eq(true)
+    end
+
+    it 'returns true for own circles' do
+      expect(circle.visible_to?(user)).to eq(true)
+    end
+
+    it 'returns false for other circles' do
+      aggregate_failures do
+        expect(circle.visible_to?(reader)).to eq(false)
+        expect(circle.visible_to?(other)).to eq(false)
+      end
+    end
+  end
 end
