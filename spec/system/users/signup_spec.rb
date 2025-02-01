@@ -1,5 +1,5 @@
 RSpec.describe "Signing up" do
-  before(:each) { ResqueSpec.reset! }
+  include ActionMailer::TestHelper
 
   scenario "works", :js do
     existing_user = create(:user)
@@ -74,20 +74,20 @@ RSpec.describe "Signing up" do
       fill_in "Email", with: "different" + existing_user.email
       fill_in "Password", with: new_user_password
       fill_in "Confirm", with: new_user_password
-      click_button "Sign Up"
-      click_button "Sign Up" # When clicking the first time it just deselected the input rather than actually clicking
+      expect {
+        click_button "Sign Up"
+        click_button "Sign Up" # When clicking the first time it just deselected the input rather than actually clicking
+      }.to have_enqueued_email(DeviseMailer, :confirmation_instructions)
     end
     expect(page).to have_selector('.flash.notice',
       text: "User created. A confirmation link has been emailed to you; use this to activate your account.",)
     expect(page).to have_current_path(root_path)
 
-    # Get confirmation email
-    expect(DeviseMailer).to have_queue_size_of(1)
-
     # complete confirmation request
     # NB. can't pull from the database as the token there is hashed - must pull the token direct from the mail
     # https://github.com/heartcombo/devise/blob/v4.9.4/lib/devise/models/recoverable.rb#L134
-    token = ResqueSpec.queue_for(DeviseMailer).last[:args][1][1]
+    mail_args = deserialize_enqueued_mail(mail_queue.last)
+    token = mail_args[-1][:args][1]
     visit user_confirmation_path(confirmation_token: token)
     expect(page).to have_current_path(new_user_session_path)
     expect(page).to have_selector('.flash.notice', text: "Email address confirmed.")
@@ -128,20 +128,20 @@ RSpec.describe "Signing up" do
       fill_in "Secret (optional)", with: ENV.fetch("ACCOUNT_SECRET")
       fill_in "Captcha", with: "14"
       check "Terms"
-      click_button "Sign Up"
+      expect {
+        click_button "Sign Up"
+      }.to have_enqueued_email(DeviseMailer, :confirmation_instructions)
     end
 
     expect(page).to have_selector('.flash.notice',
       text: "User created. A confirmation link has been emailed to you; use this to activate your account.",)
     expect(page).to have_current_path(root_path)
 
-    # Get confirmation email
-    expect(DeviseMailer).to have_queue_size_of(1)
-
     # complete confirmation request
     # NB. can't pull from the database as the token there is hashed - must pull the token direct from the mail
     # https://github.com/heartcombo/devise/blob/v4.9.4/lib/devise/models/recoverable.rb#L134
-    token = ResqueSpec.queue_for(DeviseMailer).last[:args][1][1]
+    mail_args = deserialize_enqueued_mail(mail_queue.last)
+    token = mail_args[-1][:args][1]
     visit user_confirmation_path(confirmation_token: token)
     expect(page).to have_current_path(new_user_session_path)
     expect(page).to have_selector('.flash.notice', text: "Email address confirmed.")
@@ -212,19 +212,19 @@ RSpec.describe "Signing up" do
     within(".form-table") do
       fill_in "Password", with: new_user_password
       fill_in "Confirm", with: new_user_password
-      click_button "Sign Up"
+      expect {
+        click_button "Sign Up"
+      }.to have_enqueued_email(DeviseMailer, :confirmation_instructions)
     end
     expect(page).to have_selector('.flash.notice',
       text: "User created. A confirmation link has been emailed to you; use this to activate your account.",)
     expect(page).to have_current_path(root_path)
 
-    # Get confirmation email
-    expect(DeviseMailer).to have_queue_size_of(1)
-
     # complete confirmation request
     # NB. can't pull from the database as the token there is hashed - must pull the token direct from the mail
     # https://github.com/heartcombo/devise/blob/v4.9.4/lib/devise/models/recoverable.rb#L134
-    token = ResqueSpec.queue_for(DeviseMailer).last[:args][1][1]
+    mail_args = deserialize_enqueued_mail(mail_queue.last)
+    token = mail_args[-1][:args][1]
     visit user_confirmation_path(confirmation_token: token)
     expect(page).to have_current_path(new_user_session_path)
     expect(page).to have_selector('.flash.notice', text: "Email address confirmed.")
@@ -260,28 +260,29 @@ RSpec.describe "Signing up" do
     expect(page).to have_selector('.flash.notice',
       text: "User created. A confirmation link has been emailed to you; use this to activate your account.",)
     expect(page).to have_current_path(root_path)
-    expect(DeviseMailer).to have_queue_size_of(1)
+    assert_enqueued_emails 1
 
     within("#header-buttons-links") { click_link "Sign up" }
     click_link "Didn't get a confirmation email?"
     fill_in "Email", with: "not an email"
     click_button "Resend confirmation instructions"
     expect(page).to have_selector(".flash.notice", text: "A confirmation link has been emailed to you.")
-    expect(DeviseMailer).to have_queue_size_of(1)
+    assert_enqueued_emails 1 # no extra email should be sent
 
     click_link "Didn't get a confirmation email?"
     fill_in "Email", with: "wrong" + new_user_email
     click_button "Resend confirmation instructions"
     expect(page).to have_selector(".flash.notice", text: "A confirmation link has been emailed to you.")
-    expect(DeviseMailer).to have_queue_size_of(1)
+    assert_enqueued_emails 1 # no extra email should be sent
 
     click_link "Didn't get a confirmation email?"
     fill_in "Email", with: new_user_email
     click_button "Resend confirmation instructions"
     expect(page).to have_selector(".flash.notice", text: "A confirmation link has been emailed to you.")
-    expect(DeviseMailer).to have_queue_size_of(2)
+    assert_enqueued_emails 2
 
-    token = ResqueSpec.queue_for(DeviseMailer).last[:args][1][1]
+    mail_args = deserialize_enqueued_mail(mail_queue.last)
+    token = mail_args[-1][:args][1]
     visit user_confirmation_path(confirmation_token: token)
     expect(page).to have_current_path(new_user_session_path)
     expect(page).to have_selector('.flash.notice', text: "Email address confirmed.")

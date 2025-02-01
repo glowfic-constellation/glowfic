@@ -39,7 +39,7 @@ RSpec.describe "Users" do
         expect(response.body).to include("Sign Up")
       end
 
-      ResqueSpec.reset!
+      clear_enqueued_jobs
       expect {
         post "/users", params: {
           user: {
@@ -51,8 +51,7 @@ RSpec.describe "Users" do
           addition: 14,
           tos: true,
         }
-      }.to change { User.count }.by(1)
-      expect(DeviseMailer).to have_queue_size_of(1)
+      }.to change { User.count }.by(1).and have_enqueued_email(DeviseMailer, :confirmation_instructions)
 
       aggregate_failures do
         expect(response).to redirect_to(root_path)

@@ -154,6 +154,12 @@ class User < ApplicationRecord
     send_devise_notification(:email_changed, to: devise_email_before_last_save)
   end
 
+  def send_devise_notification(notification, *args)
+    # override to use ActiveJob (deliver_later) instead of deliver_now
+    message = devise_mailer.send(notification, self, *args)
+    message.deliver_later
+  end
+
   private
 
   def inactivity_status
