@@ -43,23 +43,7 @@ class RepliesController < WritableController
   end
 
   def create
-    if params[:button_draft]
-      draft = make_draft
-      redirect_to posts_path and return unless draft.post
-      redirect_to post_path(draft.post, page: :unread, anchor: :unread) and return
-    elsif params[:button_delete_draft]
-      post_id = params[:reply][:post_id]
-      draft = ReplyDraft.draft_for(post_id, current_user.id)
-      if draft&.destroy
-        flash[:success] = "Draft deleted."
-      else
-        flash[:error] = {
-          message: "Draft could not be deleted",
-          array: draft&.errors&.full_messages,
-        }
-      end
-      redirect_to post_path(post_id, page: :unread, anchor: :unread) and return
-    elsif params[:button_preview]
+    if params[:button_preview]
       draft = make_draft
       preview_reply(ReplyDraft.reply_from_draft(draft)) and return
     elsif params[:button_submit_previewed_multi_reply]
@@ -407,29 +391,5 @@ class RepliesController < WritableController
       # Update the new reply added with the actual params that should be there
       new_reply.update!(reply_params)
     end
-  end
-
-  def make_draft(show_message=true)
-    if (draft = ReplyDraft.draft_for(params[:reply][:post_id], current_user.id))
-      draft.assign_attributes(permitted_params)
-    else
-      draft = ReplyDraft.new(permitted_params)
-      draft.user = current_user
-    end
-    process_npc(draft, permitted_character_params)
-    new_npc = !draft.character.nil? && !draft.character.persisted?
-
-    begin
-      draft.save!
-    rescue ActiveRecord::RecordInvalid => e
-      render_errors(draft, action: 'saved', class_name: 'Draft', err: e)
-    else
-      if show_message
-        msg = "Draft saved."
-        msg += " Your new NPC character has also been persisted!" if new_npc
-        flash[:success] = msg
-      end
-    end
-    draft
   end
 end
