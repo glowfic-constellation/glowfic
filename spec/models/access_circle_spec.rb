@@ -43,7 +43,7 @@ RSpec.describe AccessCircle do
     end
 
     it 'does not allow logged out users for public circles' do
-      circle.update!(owed: false)
+      circle.update!(owned: false)
       expect(circle.visible_to?(nil)).to eq(false)
     end
 
