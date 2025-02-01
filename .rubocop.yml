@@ -133,6 +133,9 @@ Lint/AmbiguousOperatorPrecedence: # new in 1.21
 Lint/AmbiguousRange: # new in 1.19
   Enabled: true
 
+Lint/ArrayLiteralInRegexp: # new in 1.71
+  Enabled: true
+
 Lint/ConstantDefinitionInBlock:
   Exclude:
     - 'spec/lib/presentable_spec.rb'
@@ -942,6 +945,9 @@ Style/HashConversion: # (new in 1.10)
   Enabled: true
 
 Style/HashExcept: # (new in 1.7)
+  Enabled: true
+
+Style/HashSlice: # new in 1.71
   Enabled: true
 
 Style/HashSyntax:
