@@ -1,6 +1,4 @@
 RSpec.describe DeleteIconFromS3Job do
-  before(:each) { ResqueSpec.reset! }
-
   it "deletes the given key" do
     key = 'arbitrary'
     delete_key = { delete: { objects: [{ key: key }] } }

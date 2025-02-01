@@ -50,9 +50,12 @@ class Reply < ApplicationRecord
     self.reply_order = val
   end
 
-  def bookmark_by(user)
-    return unless user
-    bookmarks.find_by(user_id: user.id)
+  def assign_default_icon(user)
+    if character_id.nil?
+      self.icon_id = user.avatar_id
+    else
+      self.icon_id = character.default_icon&.id
+    end
   end
 
   private
@@ -101,7 +104,7 @@ class Reply < ApplicationRecord
       next if author.id == user_id
       next unless author.email.present?
       next unless author.email_notifications?
-      UserMailer.post_has_new_reply(author.id, self.id).deliver
+      UserMailer.post_has_new_reply(author.id, self.id).deliver_later
     end
   end
 

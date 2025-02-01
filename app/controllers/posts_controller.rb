@@ -181,6 +181,7 @@ class PostsController < WritableController
     @preceding = [@post] unless @preceding.present?
     @following = @post.replies.where('id > ?', @audit.auditable_id).order(id: :asc).limit(2)
     @audits = {} # set to prevent crashes, but we don't need this calculated, we don't want to display edit history on this page
+    @reply_bookmarks = {}
   end
 
   def stats
@@ -243,6 +244,7 @@ class PostsController < WritableController
       render_errors(@post, action: 'updated', now: true, err: e)
 
       @audits = { post: @post.audits.count }
+      @reply_bookmarks = {}
       editor_setup
       render :edit
     else
@@ -371,6 +373,7 @@ class PostsController < WritableController
     @written = @post
 
     @audits = { post: @post.audits.count } if @post.id.present?
+    @reply_bookmarks = {}
 
     editor_setup
     @page_title = 'Previewing: ' + @post.subject.to_s

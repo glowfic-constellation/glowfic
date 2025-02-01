@@ -33,6 +33,13 @@ RSpec.describe GalleriesController do
         expect(assigns(:page_title)).to eq("#{user.username}'s Galleries")
       end
 
+      it "displays error on invalid pages" do
+        user = create(:user)
+        get :index, params: { user_id: user.id, page: "nvOpzp; AND 1=1" }
+        expect(response).to have_http_status(200)
+        expect(assigns(:page)).to eq(1)
+      end
+
       it "displays error if user id invalid and logged out" do
         get :index, params: { user_id: -1 }
         expect(flash[:error]).to eq('User could not be found.')
@@ -172,6 +179,14 @@ RSpec.describe GalleriesController do
           get :show, params: { id: '0', user_id: -1 }
           expect(response).to redirect_to(root_url)
           expect(flash[:error]).to eq('User could not be found.')
+        end
+
+        it "displays error on invalid pages" do
+          user = create(:user)
+          get :show, params: { id: '0', user_id: user.id, page: "'" }
+          expect(response).to render_template('show')
+          expect(response).to have_http_status(200)
+          expect(assigns(:page)).to eq(1)
         end
 
         it "requires specified user to be full user" do

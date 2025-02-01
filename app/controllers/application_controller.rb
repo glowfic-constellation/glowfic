@@ -43,11 +43,11 @@ class ApplicationController < ActionController::Base
   end
 
   VALID_PAGES = ['last', 'unread']
-  def page
+  def page(allow_special: false)
     return @page if @page
     return (@page = 1) unless params[:page]
     @page = params[:page]
-    return @page if VALID_PAGES.include?(@page)
+    return @page if allow_special && VALID_PAGES.include?(@page)
     @page = @page.to_i
     return @page if @page > 0
     flash.now[:error] = "Page not recognized, defaulting to page 1."
@@ -153,6 +153,14 @@ class ApplicationController < ActionController::Base
     @unread_counts = Reply.where(post_id: @unread_ids).joins('INNER JOIN post_views ON replies.post_id = post_views.post_id')
     @unread_counts = @unread_counts.where(post_views: { user_id: current_user.id })
     @unread_counts = @unread_counts.where('replies.created_at > post_views.read_at').group(:post_id).count
+  end
+
+  def calculate_reply_bookmarks(replies)
+    @reply_bookmarks = {}
+    return unless logged_in?
+    @reply_bookmarks = Bookmark.where(user_id: current_user.id, type: "reply_bookmark", reply_id: replies.map(&:id)).pluck(
+      :reply_id, :id,
+    ).to_h
   end
 
   attr_reader :unread_ids, :opened_ids, :unread_counts

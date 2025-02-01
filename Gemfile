@@ -47,7 +47,6 @@ gem "redcarpet", "~> 3.6"
 gem 'redis', '~> 5.3'
 gem 'request_store', '~> 1.7'
 gem 'resque'
-gem 'resque_mailer'
 gem 'sanitize'
 gem 'scout_apm'
 gem 'select2-rails'
@@ -68,16 +67,16 @@ end
 
 group :development do
   gem "brakeman", '~> 6.2.2', require: false
-  gem 'haml_lint', '~> 0.59.0', require: false
+  gem 'haml_lint', '~> 0.60.0', require: false
   gem 'listen'
   gem 'memory_profiler'
   gem 'rack-mini-profiler'
-  gem 'rubocop', '~> 1.70.0', require: false
+  gem 'rubocop', '~> 1.71.1', require: false
   gem 'rubocop-capybara', '~> 2.21.0', require: false
   gem 'rubocop-factory_bot', '~> 2.26.0', require: false
   gem 'rubocop-performance', '~> 1.23.1', require: false
-  gem 'rubocop-rails', '~> 2.28.0', require: false
-  gem 'rubocop-rspec', '~> 3.3.0', require: false
+  gem 'rubocop-rails', '~> 2.29.0', require: false
+  gem 'rubocop-rspec', '~> 3.4.0', require: false
   gem 'rubocop-rspec_rails', '~> 2.30.0', require: false
   gem 'traceroute'
 end
@@ -96,7 +95,6 @@ group :test do
   gem 'capybara'
   gem 'factory_bot_rails'
   gem 'rails-controller-testing'
-  gem 'resque_spec'
   gem 'selenium-webdriver'
   gem 'simplecov'
   gem 'timecop'

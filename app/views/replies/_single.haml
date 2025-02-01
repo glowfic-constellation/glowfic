@@ -1,4 +1,4 @@
--# locals: ( reply:, hide_footer: false, split_ui: false )
+-# locals: ( reply:, hide_footer: false, hide_post_edit_box: false, split_ui: false )
 
 - if reply.is_a?(Post)
   - write = 'post-post'.freeze
@@ -30,7 +30,7 @@
         - else
           .spacer-alt
         .post-author= user_mem_link(reply.user_id, reply.username, reply.user_deleted?)
-    - if reply.id.present?
+    - if reply.id.present? && !hide_post_edit_box
       .post-edit-box
         - if split_ui
           - if reply.is_a?(Reply)
@@ -50,8 +50,8 @@
                 = image_tag "icons/cross.png".freeze, title: 'Delete'.freeze, alt: 'Delete'.freeze
           - if reply.is_a?(Reply) && logged_in?
             - if !current_user.try(:default_hide_add_bookmark_button) || params[:show_all_reply_buttons] == "true"
-              - if (bookmark = reply.bookmark_by(current_user))
-                = link_to bookmark_path(bookmark), method: :delete do
+              - if (bookmark_id = @reply_bookmarks[reply.id])
+                = link_to bookmark_path(bookmark_id), method: :delete do
                   = image_tag "icons/bookmark_delete.png".freeze, title: 'Remove Bookmark'.freeze, alt: 'Remove Bookmark'.freeze
               - else
                 = link_to bookmarks_path(at_id: reply.id), method: :post do

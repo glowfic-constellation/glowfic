@@ -29,8 +29,9 @@ RSpec.describe GenerateFlatPostJob do
     it "quits if lock present" do
       post = create(:post)
       $redis.set(GenerateFlatPostJob.lock_key(post.id), true)
-      create(:reply)
-      expect(GenerateFlatPostJob).not_to have_queued(post.id).in(:high)
+      expect {
+        create(:reply, post: post)
+      }.not_to have_enqueued_job(GenerateFlatPostJob)
     end
 
     it "deletes key when retry gives up" do

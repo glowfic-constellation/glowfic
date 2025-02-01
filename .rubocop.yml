@@ -4,12 +4,12 @@ AllCops:
   TargetRubyVersion: 3.3
   TargetRailsVersion: 8.0
   # used so rubocop doesn't edit old migrations, doesn't need to be perfectly up to date
-  MigratedSchemaVersion: 20241222000400
+  MigratedSchemaVersion: 20241224202900
   DisabledByDefault: false
+  SuggestExtensions: false
   Exclude:
     - 'config/initializers/audited.rb'
     - 'config/initializers/will_paginate.rb'
-    - 'db/migrate/**.rb'
     - 'db/schema.rb'
     - 'backstop/*'
     - 'vendor/**/*'
@@ -131,6 +131,9 @@ Lint/AmbiguousOperatorPrecedence: # new in 1.21
   Enabled: true
 
 Lint/AmbiguousRange: # new in 1.19
+  Enabled: true
+
+Lint/ArrayLiteralInRegexp: # new in 1.71
   Enabled: true
 
 Lint/ConstantDefinitionInBlock:
@@ -514,6 +517,9 @@ Rails/MatchRoute: # new in 2.7
 Rails/MigrationClassName: # new in 2.14
   Enabled: true
 
+Rails/MultipleRoutePaths: # new in 2.29
+  Enabled: true
+
 Rails/NegateInclude:
   Enabled: true
 
@@ -574,6 +580,9 @@ Rails/SquishedSQLHeredocs:
   Enabled: true
 
 Rails/StripHeredoc: # new in 2.15
+  Enabled: true
+
+Rails/StrongParametersExpect: # new in 2.29
   Enabled: true
 
 Rails/ThreeStateBooleanColumn: # new in 2.19
@@ -704,9 +713,6 @@ RSpec/SpecFilePathFormat:
 RSpec/StubbedMock:
   Exclude:
     - 'spec/script/post_split_spec.rb' # mocking multiple gets in order needs expect
-
-RSpec/StringAsInstanceDoubleConstant: # new in 3.1
-  Enabled: true
 
 RSpec/SubjectDeclaration:
   Enabled: false # we don't use subject
@@ -945,6 +951,9 @@ Style/HashConversion: # (new in 1.10)
   Enabled: true
 
 Style/HashExcept: # (new in 1.7)
+  Enabled: true
+
+Style/HashSlice: # new in 1.71
   Enabled: true
 
 Style/HashSyntax:

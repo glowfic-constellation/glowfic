@@ -81,7 +81,7 @@ class Icon < ApplicationRecord
 
   def uploaded_url_yours
     return unless uploaded?
-    return if url.include?("users%2F#{user_id}%2Ficons%2F") && \
+    return if url.include?("users%2F#{user_id}%2Ficons%2F") &&
               s3_key.starts_with?("users/#{user_id}/icons/")
     errors.add(:url, :invalid, message: 'is invalid')
   end
