@@ -16,12 +16,12 @@
           Info
       %tr
         %td.centered{class: cycle('even', 'odd')}
-          = link_to access_circle_path(@circle, view: 'posts') do
+          = link_to access_circle_path(@circle, view: 'posts'), rel: 'nofollow' do
             = image_tag "icons/book_open.png", class: 'vmid', alt: ''
             Posts
       %tr
         %td.centered{class: cycle('even', 'odd')}
-          = link_to access_circle_path(@circle, view: 'users') do
+          = link_to access_circle_path(@circle, view: 'users'), rel: 'nofollow' do
             = image_tag "icons/group.png", class: 'vmid', alt: ''
             Users
     - if @circle.editable_by?(current_user)
