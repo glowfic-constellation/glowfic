@@ -441,7 +441,7 @@ GEM
     rubocop-performance (1.23.1)
       rubocop (>= 1.48.1, < 2.0)
       rubocop-ast (>= 1.31.1, < 2.0)
-    rubocop-rails (2.28.0)
+    rubocop-rails (2.29.0)
       activesupport (>= 4.2.0)
       rack (>= 1.1)
       rubocop (>= 1.52.0, < 2.0)
@@ -608,7 +608,7 @@ DEPENDENCIES
   rubocop-capybara (~> 2.21.0)
   rubocop-factory_bot (~> 2.26.0)
   rubocop-performance (~> 1.23.1)
-  rubocop-rails (~> 2.28.0)
+  rubocop-rails (~> 2.29.0)
   rubocop-rspec (~> 3.4.0)
   rubocop-rspec_rails (~> 2.30.0)
   sanitize
