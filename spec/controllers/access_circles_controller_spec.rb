@@ -1,5 +1,6 @@
 RSpec.describe AccessCirclesController do
   let(:user) { create(:user) }
+  let(:reader) { create(:reader_user) }
   let(:circle) { create(:circle, user: user) }
   let(:users) { User.where(id: create_list(:user, 5).map(&:id)) }
   let(:unrelated) { create(:user) }
@@ -75,6 +76,14 @@ RSpec.describe AccessCirclesController do
       expect(flash[:error]).to eq("You must be logged in to view that page.")
     end
 
+    it 'requires full user' do
+      login_as(reader)
+
+      get :new
+      expect(response).to redirect_to(continuities_path)
+      expect(flash[:error]).to eq("You do not have permission to create access circles.")
+    end
+
     context "with views" do
       render_views
 
@@ -93,6 +102,14 @@ RSpec.describe AccessCirclesController do
       post :create
       expect(response).to redirect_to(root_url)
       expect(flash[:error]).to eq("You must be logged in to view that page.")
+    end
+
+    it 'requires full user' do
+      login_as(reader)
+
+      post :create
+      expect(response).to redirect_to(continuities_path)
+      expect(flash[:error]).to eq("You do not have permission to create access circles.")
     end
 
     it "requires valid parameters" do
