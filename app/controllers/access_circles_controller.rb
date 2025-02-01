@@ -3,6 +3,7 @@ class AccessCirclesController < ApplicationController
   before_action :login_required
   before_action :find_model, only: [:show, :edit, :update, :destroy]
   before_action :find_user, only: [:index]
+  before_action :require_create_permission, only: [:new, :create]
   before_action :require_edit_permission, only: [:edit, :update]
   before_action :require_delete_permission, only: [:destroy]
   before_action :require_index_permission, only: [:index]
@@ -119,6 +120,12 @@ class AccessCirclesController < ApplicationController
     return if (@user = User.active.find_by(id: params[:user_id]))
     flash[:error] = 'User could not be found.'
     redirect_to root_path
+  end
+
+  def require_create_permission
+    return unless current_user.read_only?
+    flash[:error] = "You do not have permission to create access circles."
+    redirect_to continuities_path
   end
 
   def require_edit_permission
