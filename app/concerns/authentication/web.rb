@@ -15,13 +15,12 @@ module Authentication::Web
       # if the old cookie's corresponding user isn't found, log them out
       unless (user = User.find_by(id: cookies.signed[:user_id]))
         logout
-        cookies.delete(:user_id, cookie_options) # delete old-style authentication token
         return
       end
 
       # transition the old authentication to the new Devise session
       # (can't do the rememberable cookie without upgrading their password hash: requires authenticatable_salt to be set!)
-      reset_session
+      logout
 
       sign_in(:user, user)
       if user.authenticatable_salt.present?
@@ -32,8 +31,6 @@ module Authentication::Web
           "Our password security has been upgraded. " \
           "Your session has been temporarily restored, but please log out and back in to save a new 'Remember Me' token!"
       end
-
-      cookies.delete(:user_id, cookie_options) # delete old-style authentication token
     end
 
     # alias devise methods for backwards compatibility
@@ -45,6 +42,7 @@ module Authentication::Web
 
     def logout
       reset_session
+      cookies.delete(:user_id, cookie_options)
       session.delete(:api_token)
       sign_out(:user)
       @current_user = nil
