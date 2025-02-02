@@ -19,9 +19,17 @@ module Authentication::Web
         return
       end
 
-      # transition the old authentication to the new Devise session and cookie
+      # transition the old authentication to the new Devise session
+      # (can't do the rememberable cookie without upgrading their password hash: requires authenticatable_salt to be set!)
       sign_in(:user, user)
-      remember_me(user)
+      if user.authenticatable_salt.present?
+        remember_me(user)
+        flash[:notice] = "Your session has been restored!"
+      else
+        flash[:notice] =
+          "Our password security has been upgraded. " \
+          "Your session has been temporarily restored, but please log out and back in to save a new 'Remember Me' token!"
+      end
       cookies.delete(:user_id, cookie_options) # delete old-style authentication token
     end
 

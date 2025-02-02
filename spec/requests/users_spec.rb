@@ -256,9 +256,31 @@ RSpec.describe "Users" do
   end
 
   describe "old authentication token" do
-    it "is migrated to Devise cookie when stored in cookie" do
-      user = create(:user, password: 'password')
+    it "is migrated to Devise session when stored in cookie" do
+      # create user with pre-Devise password
+      user = create(:user)
+      user.salt_uuid = SecureRandom.uuid
+      user.update_columns(salt_uuid: user.salt_uuid, legacy_password_hash: user.send(:crypted_password, 'password'), encrypted_password: "") # rubocop:disable Rails/SkipsModelValidations
 
+      set_signed_cookie(:user_id, user.id)
+      expect(cookie_user_id).to be_nil
+
+      get "/"
+      aggregate_failures do
+        expect(session_user_id).to eq(user.id) # warden session is set
+        expect(cookie_user_id).to be_nil # warden remember-me cannot be set (user password hasn't been upgraded yet)
+        expect(session[:user_id]).to be_nil # old auth session is not set
+        expect(load_signed_cookie(:user_id)).to be_nil # old auth cookie is deleted
+        expect(response.body).to include("Your session has been temporarily restored")
+        expect(controller.send(:user_signed_in?)).to eq(true) # controller recognizes user as logged in
+      end
+    end
+
+    it "is migrated to Devise cookie when stored in cookie if password was already migrated" do
+      # create user with post-Devise password
+      user = create(:user)
+
+      # situation: already upgraded the hash on one device, and now upgrading a session on another device
       set_signed_cookie(:user_id, user.id)
       expect(cookie_user_id).to be_nil
 
@@ -268,6 +290,7 @@ RSpec.describe "Users" do
         expect(cookie_user_id).to eq(user.id) # warden remember-me is set
         expect(session[:user_id]).to be_nil # old auth session is not set
         expect(load_signed_cookie(:user_id)).to be_nil # old auth cookie is deleted
+        expect(response.body).to include("Your session has been restored") # not temporary
         expect(controller.send(:user_signed_in?)).to eq(true) # controller recognizes user as logged in
       end
     end
@@ -303,7 +326,10 @@ RSpec.describe "Users" do
     end
 
     it "works after token migration" do
+      # create user with pre-Devise password
       user = create(:user, password: 'password')
+      user.salt_uuid = SecureRandom.uuid
+      user.update_columns(salt_uuid: user.salt_uuid, legacy_password_hash: user.send(:crypted_password, 'password'), encrypted_password: "") # rubocop:disable Rails/SkipsModelValidations
 
       set_signed_cookie(:user_id, user.id)
       expect(cookie_user_id).to be_nil
@@ -311,7 +337,7 @@ RSpec.describe "Users" do
       get "/"
       aggregate_failures do
         expect(session_user_id).to eq(user.id) # warden session is set
-        expect(cookie_user_id).to eq(user.id) # warden remember-me is set
+        expect(response.body).to include("Your session has been temporarily restored")
         expect(controller.send(:user_signed_in?)).to eq(true) # controller recognizes user as logged in
       end
 
