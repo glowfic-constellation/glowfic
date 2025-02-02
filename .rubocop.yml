@@ -431,6 +431,11 @@ Rails/Blank:
   Enabled: true
   UnlessPresent: false
 
+Rails/BulkChangeTable:
+  # prefer verbose output column-by-column instead
+  # motivation to enable this seems weak
+  Enabled: false
+
 Rails/CompactBlank: # new in 2.13
   Enabled: true
 
@@ -528,6 +533,7 @@ Rails/Output:
     - 'app/services/reply_scraper.rb' # post_scraper.rb (which calls ReplyScraper) is run manually in the command line
     - 'db/seeds.rb'
     - 'db/seeds/**' # seed files are run from the command line
+    - 'db/migrate/**'
 
 Rails/Pluck:
   Enabled: true

@@ -11,9 +11,9 @@ class AddDeviseToUsers < ActiveRecord::Migration[8.0]
     reversible do |direction|
       direction.down do
         User.reset_column_information
-        Rails.logger.info "Migrating users back to legacy password format (random password will be set)"
+        puts "Migrating users back to legacy password format (random password will be set)"
         User.where(legacy_password_hash: nil).find_each do |user|
-          Rails.logger.info "- User #{user.id}/#{user.username}"
+          puts "- User #{user.id}/#{user.username}"
           user.salt_uuid ||= SecureRandom.uuid
           crypted = user.send(:crypted_password, SecureRandom.alphanumeric(32))
           user.update_columns(legacy_password_hash: crypted, salt_uuid: user.salt_uuid) # intentionally skip callbacks # rubocop:disable Rails/SkipsModelValidations
@@ -21,7 +21,7 @@ class AddDeviseToUsers < ActiveRecord::Migration[8.0]
       end
     end
 
-    change_table :users, bulk: true do |t|
+    change_table :users do |t|
       ## Database authenticatable
       # t.string :email,              null: false, default: ""
       t.string :encrypted_password, null: false, default: ""
@@ -71,6 +71,7 @@ class AddDeviseToUsers < ActiveRecord::Migration[8.0]
 
     reversible do |direction|
       direction.up do
+        puts "Confirming existing emails!"
         User.reset_column_information
         User.where.not(email: nil).update_all(confirmed_at: Time.zone.now) # intentionally skip callbacks # rubocop:disable Rails/SkipsModelValidations
       end
