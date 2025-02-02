@@ -28,7 +28,8 @@ module Authentication::Web
       else
         flash[:notice] =
           "Our password security has been upgraded. " \
-          "Your session has been temporarily restored, but please log out and back in to save a new 'Remember Me' token!"
+          "Your session has been temporarily restored, but please log out and back in to save a new 'Remember Me' token! " \
+          "You may have to hit log out twice to fully clear your session."
       end
     end
 
