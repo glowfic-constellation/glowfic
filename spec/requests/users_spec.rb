@@ -269,8 +269,8 @@ RSpec.describe "Users" do
       aggregate_failures do
         expect(session_user_id).to eq(user.id) # warden session is set
         expect(cookie_user_id).to be_nil # warden remember-me cannot be set (user password hasn't been upgraded yet)
-        expect(session[:user_id]).to be_nil # old auth session is not set
-        expect(load_signed_cookie(:user_id)).to be_nil # old auth cookie is deleted
+        expect(session[:user_id]).to be_blank # old auth session is not set
+        expect(load_signed_cookie(:user_id)).to be_blank # old auth cookie is deleted
         expect(response.body).to include("Your session has been temporarily restored")
         expect(controller.send(:user_signed_in?)).to eq(true) # controller recognizes user as logged in
       end
@@ -288,8 +288,8 @@ RSpec.describe "Users" do
       aggregate_failures do
         expect(session_user_id).to eq(user.id) # warden session is set
         expect(cookie_user_id).to eq(user.id) # warden remember-me is set
-        expect(session[:user_id]).to be_nil # old auth session is not set
-        expect(load_signed_cookie(:user_id)).to be_nil # old auth cookie is deleted
+        expect(session[:user_id]).to be_blank # old auth session is not set
+        expect(load_signed_cookie(:user_id)).to be_blank # old auth cookie is deleted
         expect(response.body).to include("Your session has been restored") # not temporary
         expect(controller.send(:user_signed_in?)).to eq(true) # controller recognizes user as logged in
       end
@@ -345,7 +345,7 @@ RSpec.describe "Users" do
       aggregate_failures do
         expect(session_user_id).to be_nil # warden session is unset
         expect(cookie_user_id).to be_nil # warden remember-me is unset
-        expect(load_signed_cookie(:user_id)).to be_nil # old auth cookie is not set
+        expect(load_signed_cookie(:user_id)).to be_blank # old auth cookie is not set
         expect(controller.send(:user_signed_in?)).to eq(false) # controller recognizes user as logged in
       end
     end

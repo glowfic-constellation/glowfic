@@ -15,6 +15,7 @@ module Authentication::Web
       # if the old cookie's corresponding user isn't found, log them out
       unless (user = User.find_by(id: cookies.signed[:user_id]))
         logout
+        cookies.delete(:user_id, cookie_options)
         return
       end
 
@@ -31,6 +32,8 @@ module Authentication::Web
           "Our password security has been upgraded. " \
           "Your session has been temporarily restored, but please log out and back in to save a new 'Remember Me' token!"
       end
+      session[:user_id] = ""
+      cookies.permanent.signed[:user_id] = cookie_options.merge(value: "")
     end
 
     # alias devise methods for backwards compatibility
