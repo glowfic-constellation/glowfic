@@ -15,7 +15,7 @@ const scenarios = filteredScenarios(['home']).concat([
   },
   {
     label: "password_reset",
-    path: "password_resets/new",
+    path: "users/password/new",
     selectors: ["#content"],
   },
 ]);

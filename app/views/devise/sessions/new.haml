@@ -1,0 +1,17 @@
+= form_for(resource, as: resource_name, url: session_path(resource_name)) do |f|
+  .form-table
+    .editor-title Sign In
+    #username-row
+      .sub.vtop= f.label :username
+      .even= f.text_field :username, autofocus: true, placeholder: "Username", autocomplete: "username"
+    #password-row
+      .sub.vtop= f.label :password
+      .odd
+        = f.password_field :password, placeholder: "Password", autocomplete: "current-password"
+        #remember-link= link_to "Forgot Password?", new_password_path(resource_name)
+    #remember-me
+      .sub.vtop= f.label :remember_me
+      .even= f.check_box :remember_me
+    .form-table-ender.vertical-grid
+      %div= f.submit "Sign In", class: 'button'
+      = render "devise/shared/links"

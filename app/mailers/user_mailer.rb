@@ -13,12 +13,6 @@ class UserMailer < ApplicationMailer
     mail(to: @user.email, subject: @subject)
   end
 
-  def password_reset_link(password_reset_id)
-    @subject = "Password Reset Link"
-    @password_reset = PasswordReset.find(password_reset_id)
-    mail(to: @password_reset.user.email, subject: @subject)
-  end
-
   def new_message(message_id)
     @message = Message.find(message_id)
     @subject = "New message from #{@message.sender_name}: #{@message.unempty_subject}"

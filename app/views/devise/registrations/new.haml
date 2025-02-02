@@ -1,10 +1,12 @@
-= form_for @user, url: users_path, method: :post do |f|
+= render "devise/shared/error_messages", resource: resource
+
+= form_for(resource, as: resource_name, url: registration_path(resource_name)) do |f|
   .form-table#signup
     .editor-title Sign Up
     #signup-username
       .sub.vtop= f.label :username
       .even
-        = f.text_field :username, placeholder: "Username", autofocus: true, autocomplete: "username", minlength: User::MIN_USERNAME_LEN, maxlength: User::MAX_USERNAME_LEN, required: true
+        = f.text_field :username, autofocus: true, placeholder: "Username", autocomplete: "username", minlength: User::MIN_USERNAME_LEN, maxlength: User::MAX_USERNAME_LEN, required: true
         .user-alert.hidden
           = image_tag 'icons/exclamation.png', alt: '!', title: ''
           %span.msg
@@ -30,12 +32,12 @@
           = image_tag 'icons/exclamation.png', alt: '!', title: ''
           %span.msg
     #signup-secret
-      .sub.vtop= f.label :secret, "Secret (optional)"
+      .sub.vtop= label_tag :secret, "Secret (optional)"
       .even
         = text_field_tag :secret, params[:secret], placeholder: "Secret"
         %span.details (If you don't know what this is, please leave it blank!)
     #signup-captcha
-      .sub.vtop Captcha
+      .sub.vtop= label_tag :addition, "Captcha"
       .odd
         = text_field_tag :addition, params[:addition], placeholder: "Please enter five times two plus four as a number (e.g. 3 not three)"
     #signup-terms
@@ -51,4 +53,6 @@
         .user-alert.hidden
           = image_tag 'icons/exclamation.png', alt: '!', title: ''
           %span.msg
-    .form-table-ender= submit_tag "Sign Up", class: 'button'
+    .form-table-ender.vertical-grid
+      %div= submit_tag "Sign Up", class: 'button'
+      = render "devise/shared/links"

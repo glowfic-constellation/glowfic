@@ -1,17 +1,20 @@
 # frozen_string_literal: true
 class User < ApplicationRecord
+  # Include default devise modules. Others available are:
+  # :timeoutable and :omniauthable
+  devise :database_authenticatable, :registerable,
+    :recoverable, :rememberable, :validatable,
+    :confirmable, :lockable, :trackable,
+    :argon2, argon2_options: { profile: Rails.env.test? ? :unsafe_cheapest : :rfc_9106_low_memory }
   include Blockable
   include Presentable
   include Permissible
 
   MIN_USERNAME_LEN = 3
   MAX_USERNAME_LEN = 80
-  MIN_PASSWORD_LEN = 6
+  MIN_PASSWORD_LEN = 6 # must match config/initializers/devise.rb
   CURRENT_TOS_VERSION = 20181109
   RESERVED_NAMES = ['(deleted user)', 'Glowfic Constellation']
-
-  attr_accessor :password, :password_confirmation
-  attr_writer :validate_password
 
   has_many :icons
   has_many :characters
@@ -21,7 +24,6 @@ class User < ApplicationRecord
   has_many :sent_messages, class_name: 'Message', foreign_key: 'sender_id', inverse_of: :sender
   has_many :messages, foreign_key: 'recipient_id', inverse_of: :recipient
   has_many :notifications, inverse_of: :user
-  has_many :password_resets
   has_many :favorites
   has_many :favoriteds, as: :favorite, class_name: 'Favorite', inverse_of: :favorite
   has_many :posts
@@ -39,7 +41,6 @@ class User < ApplicationRecord
   has_many :bookmarked_replies, through: :bookmarks, source: :reply, dependent: :destroy
   has_many :bookmarked_posts, -> { ordered }, through: :bookmarks, source: :post, dependent: :destroy
 
-  validates :crypted, presence: true
   validates :email,
     presence: { on: :create },
     uniqueness: { allow_blank: true }
@@ -47,29 +48,18 @@ class User < ApplicationRecord
     presence: true,
     uniqueness: true,
     length: { in: MIN_USERNAME_LEN..MAX_USERNAME_LEN, allow_blank: true }
-  validates :password,
-    length: { minimum: MIN_PASSWORD_LEN, if: :validate_password? },
-    confirmation: { if: :validate_password? }
   validates :moiety, format: { with: /\A([0-9A-F]{3}){0,2}\z/i }, length: { maximum: 255 }
   validates :moiety_name, length: { maximum: 255 }
   validates :profile_editor_mode, inclusion: { in: ['html', 'rtf', 'md'] }, allow_nil: true
-  validates :password, :password_confirmation, presence: { if: :validate_password? }
   validate :username_not_reserved
 
-  before_validation :encrypt_password, :strip_spaces
   after_update :update_flat_posts
-  after_save :clear_password
 
   scope :ordered, -> { order(username: :asc) }
   scope :active, -> { where(deleted: false) }
   scope :full, -> { where.not(role_id: Permissible::READONLY).or(where(role_id: nil)) }
 
   nilify_blanks
-
-  def authenticate(password)
-    return crypted == crypted_password(password) if salt_uuid.present?
-    crypted == old_crypted_password(password)
-  end
 
   def gon_attributes
     {
@@ -126,16 +116,66 @@ class User < ApplicationRecord
     blocked_or_hidden_posts('hidden', posts_blocked, full_blocked)
   end
 
-  private
+  # override devise to migrate passwords from legacy format
+  # https://github.com/heartcombo/devise/wiki/How-To:-Migration-legacy-database
+  def valid_password?(password)
+    # 2024+ password format
+    return super unless self.legacy_password_hash.present?
 
-  def strip_spaces
-    self.username = self.username.strip if self.username.present?
+    valid = if salt_uuid.present? # 2016-2024 password format
+      legacy_password_hash == crypted_password(password)
+    else # pre-2016 password format
+      legacy_password_hash == old_crypted_password(password)
+    end
+
+    # migrate to new password format (devise, 2025+)
+    self.update!(password: password, legacy_password_hash: nil, salt_uuid: nil) if valid
+
+    valid
   end
 
-  def encrypt_password
-    return unless password.present?
-    self.salt_uuid ||= SecureRandom.uuid
-    self.crypted = crypted_password(password)
+  def reset_password(*args)
+    self.legacy_password_hash = nil
+    self.salt_uuid = nil
+    super
+  end
+
+  # override devise to block inactive users from signing in
+  def active_for_authentication?
+    super && inactivity_status.nil?
+  end
+
+  def inactive_message
+    inactivity_status || super
+  end
+
+  def send_email_changed_notification
+    return unless devise_email_before_last_save.present? # override to allow email change when old email is empty
+    send_devise_notification(:email_changed, to: devise_email_before_last_save)
+  end
+
+  def send_devise_notification(notification, *args)
+    # override to use ActiveJob (deliver_later) instead of deliver_now
+    message = devise_mailer.send(notification, self, *args)
+    message.deliver_later
+  end
+
+  private
+
+  def inactivity_status
+    # should match a key in devise.failure (i18n)
+    if deleted?
+      :invalid
+    elsif suspended?
+      notify_admins_of_blocked_login
+      :locked
+    end
+  end
+
+  def notify_admins_of_blocked_login
+    raise NameError.new("Login attempt by suspended user #{id}")
+  rescue NameError => e
+    ExceptionNotifier.notify_exception(e)
   end
 
   def crypted_password(unencrypted)
@@ -152,15 +192,6 @@ class User < ApplicationRecord
 
   def old_salt
     "1d0e9f00dc7#{username.to_s.downcase}dda7264ec524b051e434f4dda9ecfef8891004efe56fbff6a0"
-  end
-
-  def clear_password
-    self.password = nil
-    self.password_confirmation = nil
-  end
-
-  def validate_password?
-    !!@validate_password
   end
 
   def username_not_reserved
