@@ -14,7 +14,7 @@ RUN apt-get update \
   && apt install -y chromium \
   && apt-get clean
 
-ARG bundler_version=2.5.6
+ARG bundler_version=2.6.2
 
 RUN gem install bundler -v $bundler_version
 
