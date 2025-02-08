@@ -1,0 +1,13 @@
+- content_for :breadcrumbs do
+  = link_to "Access Circles", user_access_circles_path(current_user)
+  &raquo;
+  = link_to @circle.name, @circle
+  &raquo;
+  %b Edit
+
+= form_for @circle, url: access_circle_path(@circle), method: :put do |f|
+  %table.form-table
+    %thead
+      %tr
+        %th.editor-title{colspan: 2} Edit Access Circle
+      = render 'editor', f: f
