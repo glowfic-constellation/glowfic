@@ -283,12 +283,12 @@ RSpec.describe "Editing replies" do
 
       # Check that all aliases are selected correctly
       switcher_chars[1].click
-      within('.post-character') { expect(find_by_id('name').text).to eq(char3_alias.name) }
+      expect(page).to have_selector('.post-character #name', exact_text: char3_alias.name)
       switcher_chars[2].click
-      within('.post-character') { expect(find_by_id('name').text).to eq(char2_alias.name) }
+      expect(page).to have_selector('.post-character #name', exact_text: char2_alias.name)
       switcher_chars[3].click
       within('.post-character') do
-        expect(find_by_id('name').text).to eq(char1.name)
+        expect(page).to have_selector('#name', exact_text: char1.name)
 
         find_by_id('swap-alias').click
         find_by_id('select2-character_alias-container').click
@@ -313,11 +313,11 @@ RSpec.describe "Editing replies" do
         end
 
         # Check that alias is selected correctly
-        within('.post-character') { expect(find_by_id('name').text).to eq(char1_alias.name) }
+        expect(page).to have_selector('.post-character #name', exact_text: char1_alias.name)
         switcher_chars[2].click
-        within('.post-character') { expect(find_by_id('name').text).to eq(char3_alias.name) }
+        expect(page).to have_selector('.post-character #name', exact_text: char3_alias.name)
         switcher_chars[1].click
-        within('.post-character') { expect(find_by_id('name').text).to eq(char1_alias.name) }
+        expect(page).to have_selector('.post-character #name', exact_text: char1_alias.name)
 
         # Include a new character
         within('.post-author') do
@@ -344,12 +344,12 @@ RSpec.describe "Editing replies" do
         end
 
         # Check that aliases are selected correctly
-        within('.post-character') { expect(find_by_id('name').text).to eq(char4.name) }
+        expect(page).to have_selector('.post-character #name', exact_text: char4.name)
         switcher_chars[2].click
-        within('.post-character') { expect(find_by_id('name').text).to eq(char1_alias.name) }
+        expect(page).to have_selector('.post-character #name', exact_text: char1_alias.name)
         switcher_chars[1].click
         within('.post-character') do
-          expect(find_by_id('name').text).to eq(char4.name)
+          expect(page).to have_selector('#name', exact_text: char4.name)
 
           find_by_id('swap-alias').click
           find_by_id('select2-character_alias-container').click
@@ -359,7 +359,7 @@ RSpec.describe "Editing replies" do
       # Change the character's alias and submit to multi-reply editor
       page.find('li', exact_text: char4_alias.name).click
       click_button "Add More Replies"
-      within('#post-editor .post-character') { expect(find_by_id('name').text).to eq(char4_alias.name) }
+      expect(page).to have_selector('#post-editor .post-character #name', exact_text: char4_alias.name)
     end
 
     scenario "handles NPC saving errors", :js do
