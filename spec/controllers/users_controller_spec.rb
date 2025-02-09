@@ -558,6 +558,15 @@ RSpec.describe UsersController do
       expect(flash[:error]).to eq("This account does not need to be upgraded.")
     end
 
+    it "can be disabled" do
+      allow(ENV).to receive(:fetch).with('UPGRADES_LOCKED').and_return('yep')
+      user = create(:user, role_id: Permissible::READONLY)
+      login_as(user)
+      put :upgrade, params: { id: user.id, secret: 'chocolate' }
+      expect(response).to render_template(:edit)
+      expect(flash[:error]).to eq("We're sorry, upgrades are currently disabled.")
+    end
+
     it "requires valid secret" do
       allow(ENV).to receive(:[]).with('ACCOUNT_SECRET').and_return('chocolate')
       user = create(:user, role_id: Permissible::READONLY)

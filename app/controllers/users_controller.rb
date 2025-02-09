@@ -131,7 +131,7 @@ class UsersController < ApplicationController
   end
 
   def upgrade
-    if ENV.fetch("LOCK_UPGRADES").present?
+    if ENV.fetch("UPGRADES_LOCKED").present?
       flash.now[:error] = "We're sorry, upgrades are currently disabled."
       @page_title = 'Edit Account'
       render :edit and return
