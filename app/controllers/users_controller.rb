@@ -131,7 +131,7 @@ class UsersController < ApplicationController
   end
 
   def upgrade
-    if ENV.fetch("UPGRADES_LOCKED").present?
+    if ENV.fetch("UPGRADES_LOCKED", nil).present?
       flash.now[:error] = "We're sorry, upgrades are currently disabled."
       @page_title = 'Edit Account'
       render :edit and return
@@ -199,7 +199,7 @@ class UsersController < ApplicationController
   end
 
   def check_lock
-    return unless ENV.fetch("SIGNUPS_LOCKED").present?
+    return unless ENV.fetch("SIGNUPS_LOCKED", nil).present?
     flash[:error] = "We're sorry, signups are currently closed."
     redirect_to(root_path)
   end
