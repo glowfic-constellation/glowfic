@@ -119,12 +119,17 @@ class Post < ApplicationRecord
 
   def visible_to?(user)
     return false if user&.author_blocking?(self, author_ids)
+    return false if self.class.posts_fulllocked?(user)
     return true if privacy_public?
     return false unless user
     return true if privacy_registered? || user.admin?
     return true if privacy_full_accounts? && !user.read_only?
     return user.id == user_id if privacy_private?
     (post_viewers.pluck(:user_id) + [user_id]).include?(user.id)
+  end
+
+  def self.posts_fulllocked?(user)
+    ENV["POSTS_LOCKED_FULL"].present? && (user.nil? || user.read_only?)
   end
 
   def has_replies_bookmarked_by?(user)
