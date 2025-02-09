@@ -33,7 +33,7 @@ RSpec.describe UsersController do
 
   describe "GET new" do
     it "can be disabled" do
-      allow(ENV).to receive(:fetch).with('LOCK_UPGRADES').and_return('yep')
+      allow(ENV).to receive(:fetch).with('SIGNUPS_LOCKED').and_return('yep')
       get :new
       expect(response).to redirect_to(root_path)
       expect(flash[:error]).to eq("We're sorry, signups are currently closed.")
@@ -55,7 +55,7 @@ RSpec.describe UsersController do
 
   describe "POST create" do
     it "can be disabled" do
-      allow(ENV).to receive(:fetch).with('LOCK_UPGRADES').and_return('yep')
+      allow(ENV).to receive(:fetch).with('SIGNUPS_LOCKED').and_return('yep')
       post :create
       expect(response).to redirect_to(root_path)
       expect(flash[:error]).to eq("We're sorry, signups are currently closed.")

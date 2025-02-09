@@ -199,7 +199,7 @@ class UsersController < ApplicationController
   end
 
   def check_lock
-    return unless ENV["SIGNUPS_LOCKED"].present?
+    return unless ENV.fetch("SIGNUPS_LOCKED").present?
     flash[:error] = "We're sorry, signups are currently closed."
     redirect_to(root_path)
   end
