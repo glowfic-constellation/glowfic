@@ -131,6 +131,12 @@ class UsersController < ApplicationController
   end
 
   def upgrade
+    if ENV["LOCK_UPGRADES"].present?
+      flash.now[:error] = "We're sorry, upgrades are currently disabled."
+      @page_title = 'Edit Account'
+      render :edit and return
+    end
+
     unless params[:secret] == ENV["ACCOUNT_SECRET"]
       flash.now[:error] = "That is not the correct secret. Please ask someone in the community for help."
       @page_title = 'Edit Account'
