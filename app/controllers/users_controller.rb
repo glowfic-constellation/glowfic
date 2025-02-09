@@ -8,6 +8,7 @@ class UsersController < ApplicationController
   before_action :logout_required, only: [:new, :create]
   before_action :require_own_user, only: [:edit, :update, :password, :upgrade, :profile_edit]
   before_action :require_readonly_user, only: :upgrade
+  before_action :check_lock, only: [:new, :create]
 
   def index
     @page_title = 'Users'
@@ -189,6 +190,12 @@ class UsersController < ApplicationController
     return if current_user.read_only?
     flash[:error] = "This account does not need to be upgraded."
     redirect_to edit_user_path(current_user)
+  end
+
+  def check_lock
+    return unless ENV["SIGNUPS_LOCKED"].present?
+    flash[:error] = "We're sorry, signups are currently closed."
+    redirect_to(root_path)
   end
 
   def signup_prep
