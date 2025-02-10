@@ -167,7 +167,7 @@ RSpec.describe ApplicationController do
           create(:post, privacy: :registered).id,
           create(:post, privacy: :full_accounts).id,
         ]
-        
+
         relation = Post.where(id: ids)
         fetched_posts = controller.send(:posts_from_relation, relation)
         expect(fetched_posts).to be_empty
@@ -180,7 +180,7 @@ RSpec.describe ApplicationController do
           create(:post, privacy: :registered).id,
           create(:post, privacy: :full_accounts).id,
         ]
-        
+
         user = create(:reader_user)
         login_as(user)
 
@@ -196,7 +196,7 @@ RSpec.describe ApplicationController do
           create(:post, privacy: :registered).id,
           create(:post, privacy: :full_accounts).id,
         ]
-        
+
         user = create(:user)
         login_as(user)
 
