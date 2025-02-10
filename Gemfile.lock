@@ -256,7 +256,7 @@ GEM
       thor (>= 0.14, < 2.0)
     jquery-ui-rails-dox-fork (7.0.2)
       railties (>= 3.2.16)
-    json (2.9.1)
+    json (2.10.0)
     jwt (2.10.1)
       base64
     language_server-protocol (3.17.0.4)
@@ -598,7 +598,7 @@ DEPENDENCIES
   jquery-fileupload-rails
   jquery-rails (~> 4.6)
   jquery-ui-rails-dox-fork
-  json (~> 2.9)
+  json (~> 2.10)
   jwt
   listen
   memory_profiler
