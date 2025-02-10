@@ -527,6 +527,13 @@ RSpec.describe Post do
       it "is visible to logged out users" do
         expect(post).to be_visible_to(nil)
       end
+
+      it "is not visible with lock on" do
+        allow(ENV).to receive(:[]).with('POSTS_LOCKED_FULL').and_return('yep')
+        expect(post).not_to be_visible_to(nil)
+        expect(post).not_to be_visible_to(create(:reader_user))
+        expect(post).to be_visible_to(create(:user))
+      end
     end
 
     context "private" do
@@ -596,6 +603,13 @@ RSpec.describe Post do
       it "is not visible to logged out (nil) users" do
         expect(post).not_to be_visible_to(nil)
       end
+
+      it "is not visible with lock on" do
+        allow(ENV).to receive(:[]).with('POSTS_LOCKED_FULL').and_return('yep')
+        expect(post).not_to be_visible_to(nil)
+        expect(post).not_to be_visible_to(create(:reader_user))
+        expect(post).to be_visible_to(create(:user))
+      end
     end
 
     context "full accounts" do
@@ -620,6 +634,13 @@ RSpec.describe Post do
 
       it "is not visible to logged out (nil) users" do
         expect(post).not_to be_visible_to(nil)
+      end
+
+      it "is visible with lock on" do
+        allow(ENV).to receive(:[]).with('POSTS_LOCKED_FULL').and_return('yep')
+        expect(post).not_to be_visible_to(nil)
+        expect(post).not_to be_visible_to(create(:reader_user))
+        expect(post).to be_visible_to(create(:user))
       end
     end
 

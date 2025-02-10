@@ -32,6 +32,13 @@ RSpec.describe UsersController do
   end
 
   describe "GET new" do
+    it "can be disabled" do
+      allow(ENV).to receive(:fetch).with('SIGNUPS_LOCKED', nil).and_return('yep')
+      get :new
+      expect(response).to redirect_to(root_path)
+      expect(flash[:error]).to eq("We're sorry, signups are currently closed.")
+    end
+
     it "succeeds when logged out" do
       get :new
       expect(response).to have_http_status(200)
@@ -47,6 +54,13 @@ RSpec.describe UsersController do
   end
 
   describe "POST create" do
+    it "can be disabled" do
+      allow(ENV).to receive(:fetch).with('SIGNUPS_LOCKED', nil).and_return('yep')
+      post :create
+      expect(response).to redirect_to(root_path)
+      expect(flash[:error]).to eq("We're sorry, signups are currently closed.")
+    end
+
     it "complains when logged in" do
       login
       post :create
@@ -542,6 +556,15 @@ RSpec.describe UsersController do
       put :upgrade, params: { id: user.id, secret: 'chocolate' }
       expect(response).to redirect_to(edit_user_url(user))
       expect(flash[:error]).to eq("This account does not need to be upgraded.")
+    end
+
+    it "can be disabled" do
+      allow(ENV).to receive(:fetch).with('UPGRADES_LOCKED', nil).and_return('yep')
+      user = create(:user, role_id: Permissible::READONLY)
+      login_as(user)
+      put :upgrade, params: { id: user.id, secret: 'chocolate' }
+      expect(response).to render_template(:edit)
+      expect(flash[:error]).to eq("We're sorry, upgrades are currently disabled.")
     end
 
     it "requires valid secret" do

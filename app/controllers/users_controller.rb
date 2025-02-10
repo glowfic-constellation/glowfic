@@ -8,6 +8,7 @@ class UsersController < ApplicationController
   before_action :logout_required, only: [:new, :create]
   before_action :require_own_user, only: [:edit, :update, :password, :upgrade, :profile_edit]
   before_action :require_readonly_user, only: :upgrade
+  before_action :check_lock, only: [:new, :create]
 
   def index
     @page_title = 'Users'
@@ -130,6 +131,12 @@ class UsersController < ApplicationController
   end
 
   def upgrade
+    if ENV.fetch("UPGRADES_LOCKED", nil).present?
+      flash.now[:error] = "We're sorry, upgrades are currently disabled."
+      @page_title = 'Edit Account'
+      render :edit and return
+    end
+
     unless params[:secret] == ENV["ACCOUNT_SECRET"]
       flash.now[:error] = "That is not the correct secret. Please ask someone in the community for help."
       @page_title = 'Edit Account'
@@ -189,6 +196,12 @@ class UsersController < ApplicationController
     return if current_user.read_only?
     flash[:error] = "This account does not need to be upgraded."
     redirect_to edit_user_path(current_user)
+  end
+
+  def check_lock
+    return unless ENV.fetch("SIGNUPS_LOCKED", nil).present?
+    flash[:error] = "We're sorry, signups are currently closed."
+    redirect_to(root_path)
   end
 
   def signup_prep
