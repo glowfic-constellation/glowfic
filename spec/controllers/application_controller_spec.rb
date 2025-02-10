@@ -155,6 +155,57 @@ RSpec.describe ApplicationController do
       expect(fetched3.joined_author_ids).to match_array([post3.user_id, post3_user2.id, post3_user3.id])
     end
 
+    context "locked to full users" do
+      before(:each) do
+        allow(ENV).to receive(:[]).with('POSTS_LOCKED_FULL').and_return('yep')
+      end
+
+      it "hides all posts from logged out users" do
+        ids = [
+          create(:post, privacy: :private).id,
+          create(:post, privacy: :public).id,
+          create(:post, privacy: :registered).id,
+          create(:post, privacy: :full_accounts).id,
+        ]
+        
+        relation = Post.where(id: ids)
+        fetched_posts = controller.send(:posts_from_relation, relation)
+        expect(fetched_posts).to be_empty
+      end
+
+      it "hides all posts from logged in reader users" do
+        ids = [
+          create(:post, privacy: :private).id,
+          create(:post, privacy: :public).id,
+          create(:post, privacy: :registered).id,
+          create(:post, privacy: :full_accounts).id,
+        ]
+        
+        user = create(:reader_user)
+        login_as(user)
+
+        relation = Post.where(id: ids)
+        fetched_posts = controller.send(:posts_from_relation, relation)
+        expect(fetched_posts).to be_empty
+      end
+
+      it "works normally for full users" do
+        ids = [
+          create(:post, privacy: :private).id,
+          create(:post, privacy: :public).id,
+          create(:post, privacy: :registered).id,
+          create(:post, privacy: :full_accounts).id,
+        ]
+        
+        user = create(:user)
+        login_as(user)
+
+        relation = Post.where(id: ids)
+        fetched_posts = controller.send(:posts_from_relation, relation)
+        expect(fetched_posts.count).to eq(3)
+      end
+    end
+
     context "when logged in" do
       let(:user) { create(:user) }
 

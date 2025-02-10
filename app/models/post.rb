@@ -93,7 +93,9 @@ class Post < ApplicationRecord
   }
 
   scope :visible_to, ->(user) {
-    if user
+    if posts_fulllocked?(user)
+      where('false')
+    elsif user
       if user.read_only?
         where(user_id: user.id)
           .or(where(privacy: [:public, :registered]))
