@@ -34,7 +34,7 @@ RSpec.describe PostsController, 'POST mark' do
     end
 
     it "works for reader users" do
-      user.update!(role_id: Permissible::READONLY)
+      user.update!(role_id: :read_only)
 
       post :mark, params: { marked_ids: posts.map { |x| x.id.to_s }, commit: "Mark Read" }
 
@@ -63,7 +63,7 @@ RSpec.describe PostsController, 'POST mark' do
     end
 
     it "works for reader users" do
-      user.update!(role_id: Permissible::READONLY)
+      user.update!(role_id: :read_only)
 
       post :mark, params: { marked_ids: posts.map { |x| x.id.to_s } }
 
@@ -103,7 +103,7 @@ RSpec.describe PostsController, 'POST mark' do
     before(:each) { login_as(user) }
 
     it "requires full user" do
-      user.update!(role_id: Permissible::READONLY)
+      user.update!(role_id: :read_only)
       post :mark, params: { marked_ids: [reply_post.id], commit: 'Remove from Replies Owed' }
       expect(response).to redirect_to(continuities_path)
       expect(flash[:error]).to eq("This feature is not available to read-only accounts.")
@@ -145,7 +145,7 @@ RSpec.describe PostsController, 'POST mark' do
     before(:each) { login_as(user) }
 
     it "requires full user" do
-      user.update!(role_id: Permissible::READONLY)
+      user.update!(role_id: :read_only)
       post :mark, params: { marked_ids: [reply_post.id], commit: 'Show in Replies Owed' }
       expect(response).to redirect_to(continuities_path)
       expect(flash[:error]).to eq("This feature is not available to read-only accounts.")

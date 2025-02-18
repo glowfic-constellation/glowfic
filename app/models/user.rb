@@ -62,7 +62,7 @@ class User < ApplicationRecord
 
   scope :ordered, -> { order(username: :asc) }
   scope :active, -> { where(deleted: false) }
-  scope :full, -> { where.not(role_id: Permissible::READONLY).or(where(role_id: nil)) }
+  scope :full, -> { where.not(role_id: :read_only).or(where(role_id: nil)) }
 
   nilify_blanks
 

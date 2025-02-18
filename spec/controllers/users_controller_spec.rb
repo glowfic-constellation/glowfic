@@ -551,7 +551,7 @@ RSpec.describe UsersController do
     end
 
     it "requires reader account" do
-      user = create(:user, role_id: Permissible::ADMIN)
+      user = create(:user, role_id: :admin)
       login_as(user)
       put :upgrade, params: { id: user.id, secret: 'chocolate' }
       expect(response).to redirect_to(edit_user_url(user))
@@ -569,7 +569,7 @@ RSpec.describe UsersController do
 
     it "requires valid secret" do
       allow(ENV).to receive(:[]).with('ACCOUNT_SECRET').and_return('chocolate')
-      user = create(:user, role_id: Permissible::READONLY)
+      user = create(:user, role_id: :read_only)
       login_as(user)
       put :upgrade, params: { id: user.id, secret: 'vanilla' }
       expect(response).to render_template(:edit)
@@ -578,7 +578,7 @@ RSpec.describe UsersController do
 
     it "handles update failures" do
       allow(ENV).to receive(:[]).with('ACCOUNT_SECRET').and_return('chocolate')
-      user = create(:user, role_id: Permissible::READONLY)
+      user = create(:user, role_id: :read_only)
 
       allow(User).to receive(:find_by_id).and_call_original
       allow(User).to receive(:find_by_id).with(user.id).and_return(user)
@@ -593,7 +593,7 @@ RSpec.describe UsersController do
 
     it "works" do
       allow(ENV).to receive(:[]).with('ACCOUNT_SECRET').and_return('chocolate')
-      user = create(:user, role_id: Permissible::READONLY)
+      user = create(:user, role_id: :read_only)
       login_as(user)
       put :upgrade, params: { id: user.id, secret: 'chocolate' }
       expect(response).to redirect_to(edit_user_url(user))

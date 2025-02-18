@@ -26,7 +26,7 @@ RSpec.describe PostsController, 'POST unhide' do
     end
 
     it "reader users" do
-      user.update!(role_id: Permissible::READONLY)
+      user.update!(role_id: :read_only)
       post :unhide, params: { unhide_posts: [hidden_post.id] }
       expect(response).to redirect_to(hidden_posts_url)
     end

@@ -1073,7 +1073,7 @@ RSpec.describe Post do
       end
 
       it "does not show full account privacy posts as reader user" do
-        user.update!(role_id: Permissible::READONLY)
+        user.update!(role_id: :read_only)
         posts = create_list(:post, 2, privacy: :registered)
         create(:post, privacy: :full_accounts)
         expect(Post.visible_to(user)).to match_array(posts)
