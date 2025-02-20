@@ -29,11 +29,12 @@
         .user-alert.hidden
           = image_tag 'icons/exclamation.png', alt: '!', title: ''
           %span.msg
-    #signup-secret
-      .sub.vtop= f.label :secret, "Secret (optional)"
-      .even
-        = text_field_tag :secret, params[:secret], placeholder: "Secret"
-        %span.details (If you don't know what this is, please leave it blank!)
+    - unless ENV.fetch("UPGRADES_LOCKED", nil).present?
+      #signup-secret
+        .sub.vtop= f.label :secret, "Secret (optional)"
+        .even
+          = text_field_tag :secret, params[:secret], placeholder: "Secret"
+          %span.details (If you don't know what this is, please leave it blank!)
     #signup-captcha
       .sub.vtop Captcha
       .odd

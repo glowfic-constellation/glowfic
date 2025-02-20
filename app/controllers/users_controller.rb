@@ -17,6 +17,9 @@ class UsersController < ApplicationController
 
   def new
     @user = User.new
+    if ENV.fetch("UPGRADES_LOCKED", nil).present?
+      flash.now[:error] = "Full accounts are currently unavailable. You are welcome to sign up for a reader account."
+    end
   end
 
   def create
@@ -36,7 +39,12 @@ class UsersController < ApplicationController
       render :new and return
     end
 
-    @user.role_id = Permissible::READONLY if params[:secret] != ENV["ACCOUNT_SECRET"]
+    if params[:secret] != ENV["ACCOUNT_SECRET"]
+      @user.role_id = Permissible::READONLY
+    elsif ENV.fetch("UPGRADES_LOCKED", nil).present?
+      flash.now[:error] = "We're sorry, full accounts are currently unavailable."
+      @user.role_id = Permissible::READONLY
+    end
 
     begin
       @user.save!
