@@ -17,9 +17,8 @@ class UsersController < ApplicationController
 
   def new
     @user = User.new
-    if ENV.fetch("UPGRADES_LOCKED", nil).present?
-      flash.now[:error] = "Full accounts are currently unavailable. You are welcome to sign up for a reader account."
-    end
+    return unless ENV.fetch("UPGRADES_LOCKED", nil).present?
+    flash.now[:error] = "Full accounts are currently unavailable. You are welcome to sign up for a reader account."
   end
 
   def create

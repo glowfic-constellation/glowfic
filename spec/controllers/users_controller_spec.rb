@@ -136,11 +136,10 @@ RSpec.describe UsersController do
       pass = 'testpassword'
       user = build(:user).attributes.with_indifferent_access.merge(password: pass, password_confirmation: pass, email: 'testemail@example.com')
 
-      post :create, params: { secret: "ALLHAILTHECOIN", tos: true, addition: '14' }.merge(user: user)
+      post :create, params: { tos: true, addition: '14' }.merge(user: user)
 
       expect(response).to redirect_to(root_url)
       expect(flash[:success]).to eq("User created! You have been logged in.")
-      expect(flash[:error]).to eq("We're sorry, full accounts are currently unavailable.")
       expect(assigns(:user).read_only?).to eq(true)
     end
 
@@ -151,10 +150,11 @@ RSpec.describe UsersController do
       pass = 'testpassword'
       user = build(:user).attributes.with_indifferent_access.merge(password: pass, password_confirmation: pass, email: 'testemail@example.com')
 
-      post :create, params: { tos: true, addition: '14' }.merge(user: user)
+      post :create, params: { secret: "ALLHAILTHECOIN", tos: true, addition: '14' }.merge(user: user)
 
       expect(response).to redirect_to(root_url)
       expect(flash[:success]).to eq("User created! You have been logged in.")
+      expect(flash[:error]).to eq("We're sorry, full accounts are currently unavailable.")
       expect(assigns(:user).read_only?).to eq(true)
     end
 
