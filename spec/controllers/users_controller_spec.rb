@@ -39,6 +39,14 @@ RSpec.describe UsersController do
       expect(flash[:error]).to eq("We're sorry, signups are currently closed.")
     end
 
+    it "shows message when upgrades locked" do
+      allow(ENV).to receive(:fetch).with('SIGNUPS_LOCKED', nil).and_return(nil)
+      allow(ENV).to receive(:fetch).with('UPGRADES_LOCKED', nil).and_return('yep')
+      get :new
+      expect(response).to render_template(:new)
+      expect(flash[:error]).to eq("Full accounts are currently unavailable. You are welcome to sign up for a reader account.")
+    end
+
     it "succeeds when logged out" do
       get :new
       expect(response).to have_http_status(200)
@@ -132,6 +140,21 @@ RSpec.describe UsersController do
 
       expect(response).to redirect_to(root_url)
       expect(flash[:success]).to eq("User created! You have been logged in.")
+      expect(assigns(:user).read_only?).to eq(true)
+    end
+
+    it "creates reader account with upgrade lock" do
+      allow(ENV).to receive(:[]).with('ACCOUNT_SECRET').and_return('ALLHAILTHECOIN')
+      allow(ENV).to receive(:fetch).with('SIGNUPS_LOCKED', nil).and_return(nil)
+      allow(ENV).to receive(:fetch).with('UPGRADES_LOCKED', nil).and_return('yep')
+      pass = 'testpassword'
+      user = build(:user).attributes.with_indifferent_access.merge(password: pass, password_confirmation: pass, email: 'testemail@example.com')
+
+      post :create, params: { secret: "ALLHAILTHECOIN", tos: true, addition: '14' }.merge(user: user)
+
+      expect(response).to redirect_to(root_url)
+      expect(flash[:success]).to eq("User created! You have been logged in.")
+      expect(flash[:error]).to eq("We're sorry, full accounts are currently unavailable.")
       expect(assigns(:user).read_only?).to eq(true)
     end
 
