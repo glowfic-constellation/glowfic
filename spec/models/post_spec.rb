@@ -100,7 +100,7 @@ RSpec.describe Post do
         let!(:reply2) do
           Timecop.freeze(post.edited_at + 30.minutes) { create(:reply, post: post) }
         end
-        let!(:old_tagged_at) { post.tagged_at } # rubocop:disable RSpec/LetSetup # false positive
+        let!(:old_tagged_at) { post.tagged_at } # rubocop:disable RSpec/LetSetup -- false positive
 
         it "should not update if first reply edited" do
           old_tagged_at = post.tagged_at
