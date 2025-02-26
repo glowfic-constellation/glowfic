@@ -1176,10 +1176,10 @@ Style/TrailingCommaInArguments:
   EnforcedStyleForMultiline: 'consistent_comma'
 
 Style/TrailingCommaInArrayLiteral:
-  EnforcedStyleForMultiline: 'consistent_comma'
+  EnforcedStyleForMultiline: 'diff_comma'
 
 Style/TrailingCommaInHashLiteral:
-  EnforcedStyleForMultiline: 'consistent_comma'
+  EnforcedStyleForMultiline: 'diff_comma'
 
 Style/WordArray:
   Enabled: false

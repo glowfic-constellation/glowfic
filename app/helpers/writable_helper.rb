@@ -68,7 +68,7 @@ module WritableHelper
   LINEBREAK = /\r?\n/
   BR = '<br>'
   MD_EXTENSIONS = { tables: true, fenced_code_blocks: true, autolink: true, disable_indented_code_blocks: true,
-                    strikethrough: true, lax_spacing: true, space_after_headers: true, }.freeze
+                    strikethrough: true, lax_spacing: true, space_after_headers: true }.freeze
   MD_RENDERER = Redcarpet::Render::HTML.new(prettify: true, hard_wrap: true, with_toc_data: true)
   MD_CONVERTER = Redcarpet::Markdown.new(MD_RENDERER, MD_EXTENSIONS)
 
