@@ -19,6 +19,7 @@ class RepliesController < WritableController
     if @post&.visible_to?(current_user)
       gon.post_id = @post.id
     elsif @post
+      # post exists but not visible
       @post = nil
       flash.now[:error] = "You do not have permission to view this post."
     end
