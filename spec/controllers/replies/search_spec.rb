@@ -168,7 +168,7 @@ RSpec.describe RepliesController, 'GET search' do
       reply1.post.update!(privacy: :private)
       expect(reply1.post.reload).not_to be_visible_to(nil)
       get :search, params: { commit: true, post_id: reply1.post_id }
-      expect(assigns(:search_results)).to be_nil
+      expect(assigns(:search_results)).to be_empty
       expect(flash[:error]).to eq('You do not have permission to view this post.')
     end
 

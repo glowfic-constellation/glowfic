@@ -24,7 +24,7 @@ RSpec.describe "Reply" do
     it "works with invalid post" do
       private_post = create(:post, privacy: :private)
 
-      get "/replies/search?post_id=#{private_post.id}"
+      get "/replies/search?post_id=#{private_post.id}&commit=Search"
 
       aggregate_failures do
         expect(response).to have_http_status(200)
