@@ -21,6 +21,7 @@ class RepliesController < WritableController
     elsif @post
       # post exists but not visible
       @post = nil
+      params[:commit] = nil
       flash.now[:error] = "You do not have permission to view this post."
     end
 
