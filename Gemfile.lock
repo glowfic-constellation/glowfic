@@ -263,7 +263,7 @@ GEM
     listen (3.9.0)
       rb-fsevent (~> 0.10, >= 0.10.3)
       rb-inotify (~> 0.9, >= 0.9.10)
-    logger (1.6.5)
+    logger (1.6.6)
     loofah (2.24.0)
       crass (~> 1.0.2)
       nokogiri (>= 1.12.0)
@@ -520,7 +520,7 @@ GEM
       activesupport (>= 6.1)
       sprockets (>= 3.0.0)
     statsd-ruby (1.5.0)
-    stringio (3.1.2)
+    stringio (3.1.5)
     sysexits (1.2.0)
     temple (0.10.3)
     terser (1.2.5)
@@ -531,7 +531,7 @@ GEM
     tilt (2.6.0)
     timecop (0.9.10)
     timeout (0.4.3)
-    tinymce-rails (7.6.1)
+    tinymce-rails (7.7.1)
       railties (>= 3.1.1)
     traceroute (0.8.1)
       rails (>= 3.0.0)
@@ -556,7 +556,7 @@ GEM
     xpath (3.2.0)
       nokogiri (~> 1.8)
     yell (2.2.2)
-    zeitwerk (2.7.1)
+    zeitwerk (2.7.2)
 
 PLATFORMS
   aarch64-linux
@@ -640,7 +640,7 @@ DEPENDENCIES
   terser
   test-unit (~> 3.6)
   timecop
-  tinymce-rails (~> 7.6)
+  tinymce-rails (~> 7.7)
   traceroute
   webmock
   will_paginate
