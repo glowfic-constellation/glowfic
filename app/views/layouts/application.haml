@@ -88,7 +88,7 @@
                     = link_to notifications_path do
                       Notifications
                       - unread_notifs = current_user.notifications.unread.visible_to(current_user)
-                      - unread_notifs = unread_notifs.not_ignored_by(current_user) if current_user&.hide_from_all
+                      - unread_notifs = unread_notifs.not_ignored_by(current_user) if current_user.hide_from_all
                       - unread_notif_count = unread_notifs.count
                       - if unread_notif_count > 0
                         %span.badge.badge-primary= unread_notif_count
