@@ -3,6 +3,9 @@
 User-agent: BLEXBot
 Crawl-delay: 30
 
+User-agent: GPTBot
+Disallow: /
+
 User-agent: *
 Disallow: /replies/
 Disallow: /posts/*reply_id
