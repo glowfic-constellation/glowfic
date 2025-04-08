@@ -42,7 +42,7 @@ Rails.application.routes.draw do
     collection { get :search }
   end
   resources :characters do
-    resources :aliases, only: [:new, :create, :destroy]
+    resources :aliases, only: [:new, :create, :edit, :update, :destroy]
     member do
       get :replace
       post :do_replace
