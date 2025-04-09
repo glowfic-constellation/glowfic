@@ -19,7 +19,7 @@ x-svc: &svc
     - postgres
     - minio
   volumes:
-    - .:/code
+    - .:/code:z
     - bundler-volume:/usr/local/bundle
     - webdrivers:/root/.webdrivers # caches webdrivers for selenium feature specs
 
