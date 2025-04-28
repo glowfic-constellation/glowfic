@@ -3,7 +3,7 @@ class AliasesController < ApplicationController
   before_action :login_required
   before_action :require_permission
   before_action :find_character
-  before_action :find_model, only: :destroy
+  before_action :find_model, only: [:edit, :update, :destroy]
 
   def new
     @page_title = "New Alias: " + @character.name
@@ -23,6 +23,24 @@ class AliasesController < ApplicationController
       render :new
     else
       flash[:success] = "Alias created."
+      redirect_to edit_character_path(@character)
+    end
+  end
+
+  def edit
+    @page_title = "Edit Alias: " + @alias.name
+  end
+
+  def update
+    begin
+      @alias.update!(permitted_params)
+    rescue ActiveRecord::RecordInvalid => e
+      render_errors(@alias, action: 'updated', now: true, class_name: 'Alias', err: e)
+
+      @page_title = "Edit Alias: " + @alias.name_was
+      render :edit
+    else
+      flash[:success] = "Alias updated."
       redirect_to edit_character_path(@character)
     end
   end

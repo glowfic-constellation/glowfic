@@ -8,9 +8,9 @@
   &raquo;
   = link_to 'Edit', edit_character_path(@character)
   &raquo;
-  %b New Alias
+  %b Edit Alias
 
 = form_for @alias, url: character_aliases_path(@character), method: :post do |f|
   .form-table#alias-editor
-    .editor-title= "New Alias"
+    .editor-title= "Edit Alias"
     = render 'editor', f: f
