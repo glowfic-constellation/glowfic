@@ -2,7 +2,7 @@ version: "3.7"
 
 services:
   backstop:
-    image: backstopjs/backstopjs:5.4.4
+    image: backstopjs/backstopjs:6.3.3
     working_dir: /src
     volumes:
       - "./backstop/:/src"
