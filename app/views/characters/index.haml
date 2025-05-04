@@ -77,8 +77,8 @@
       = render 'group', group: @group, page_view: page_view, colspan: colspan
     - elsif @user.character_groups.exists?
       = render partial: 'group', collection: @user.character_groups.order(id: :asc), locals: { page_view: page_view, colspan: colspan }
-      - if (group_chars = @user.characters.non_npcs.where(character_group_id: nil)).exists?
-        = render 'group', characters: group_chars, group: nil, skip_grouped_templates: true, page_view: page_view, colspan: colspan
+      - if @user.characters.non_npcs.ungrouped.exists?
+        = render 'group', characters: @user.characters.non_npcs.ungrouped, group: nil, page_view: page_view, colspan: colspan
     - elsif @user.characters.exists?
       - templates = @user.templates.ordered
       - templates = templates.where(retired: false) unless show_retired
