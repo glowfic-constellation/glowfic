@@ -1,4 +1,4 @@
-@import 'starry_default_variables';
+@use 'starry_default_variables' as *;
 
 // main page
 $bg_color_page: #B0AFB7; // overall page
@@ -75,7 +75,7 @@ $bg_color_linkbox_subber: $colors_wildblueyonder;
 $bg_color_viewbutton: $colors_scampi;
 $bg_color_viewbutton_selected: $colors_wildblueyonder;
 
-@import 'starry_default_selectors';
+@use 'starry_default_selectors';
 
 // posts
 .post-screenname, .post-screenname a, .post-screenname a:visited { font-style: italic; }
