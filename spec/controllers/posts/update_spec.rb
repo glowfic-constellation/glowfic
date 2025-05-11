@@ -120,7 +120,7 @@ RSpec.describe PostsController, 'PUT update' do
 
         expect(response).to redirect_to(unread_posts_url)
         expect(flash[:success]).to eq("Post has been marked as read until reply ##{unread_reply.id}.")
-        expect(post.reload.last_read(user)).to be_the_same_time_as((unread_reply.created_at - 1.second))
+        expect(post.reload.last_read(user)).to be_the_same_time_as(unread_reply.created_at - 1.second)
         expect(post.reload.first_unread_for(user)).to eq(unread_reply)
       end
 
@@ -132,7 +132,7 @@ RSpec.describe PostsController, 'PUT update' do
 
         expect(response).to redirect_to(unread_posts_url)
         expect(flash[:success]).to eq("Post has been marked as read until reply ##{unread_reply.id}.")
-        expect(post.reload.last_read(user)).to be_the_same_time_as((unread_reply.created_at - 1.second))
+        expect(post.reload.last_read(user)).to be_the_same_time_as(unread_reply.created_at - 1.second)
         expect(post.reload.first_unread_for(user)).to eq(unread_reply)
         expect(post).to be_ignored_by(user)
       end

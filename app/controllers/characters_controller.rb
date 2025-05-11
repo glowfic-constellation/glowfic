@@ -75,7 +75,7 @@ class CharactersController < ApplicationController
   end
 
   def update
-    if current_user.id != @character.user_id && params.fetch(:character, {}).fetch(:audit_comment, nil).blank?
+    if current_user.id != @character.user_id && params.dig(:character, :audit_comment).blank?
       flash.now[:error] = "You must provide a reason for your moderator edit."
       editor_setup
       render :edit and return
