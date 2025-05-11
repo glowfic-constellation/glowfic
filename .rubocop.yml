@@ -146,6 +146,9 @@ Lint/ConstantOverwrittenInRescue: # new in 1.31
 Lint/ConstantReassignment: # new in 1.70
   Enabled: true
 
+Lint/CopDirectiveSyntax: # new in 1.72
+  Enabled: true
+
 Lint/DeprecatedConstants: # (new in 1.8)
   Enabled: true
 
@@ -217,6 +220,9 @@ Lint/ParenthesesAsGroupedExpression:
 Lint/RedundantDirGlobSort: # (new in 1.8)
   Enabled: true
 
+Lint/RedundantTypeConversion: # new in 1.72
+  Enabled: true
+
 Lint/RefinementImportMethods: # new in 1.27
   Enabled: true
 
@@ -237,6 +243,9 @@ Lint/SuppressedException:
     - 'spec/jobs/application_job_spec.rb'
     - 'spec/jobs/generate_flat_post_job_spec.rb'
 
+Lint/SuppressedExceptionInNumberConversion: # new in 1.72
+  Enabled: true
+
 Lint/SymbolConversion: # (new in 1.9)
   Enabled: true
 
@@ -253,6 +262,9 @@ Lint/UnexpectedBlockArity: # (new in 1.5)
   Enabled: true
 
 Lint/UnmodifiedReduceAccumulator: # (new in 1.1)
+  Enabled: true
+
+Lint/UselessConstantScoping: # new in 1.72
   Enabled: true
 
 Lint/UselessDefined: # new in 1.69
@@ -1082,6 +1094,9 @@ Style/RedundantException:
 Style/RedundantFilterChain: # new in 1.52
   Enabled: true
 
+Style/RedundantFormat: # new in 1.72
+  Enabled: true
+
 Style/RedundantHeredocDelimiterQuotes: # new in 1.45
   Enabled: true
 
@@ -1161,10 +1176,10 @@ Style/TrailingCommaInArguments:
   EnforcedStyleForMultiline: 'consistent_comma'
 
 Style/TrailingCommaInArrayLiteral:
-  EnforcedStyleForMultiline: 'consistent_comma'
+  EnforcedStyleForMultiline: 'diff_comma'
 
 Style/TrailingCommaInHashLiteral:
-  EnforcedStyleForMultiline: 'consistent_comma'
+  EnforcedStyleForMultiline: 'diff_comma'
 
 Style/WordArray:
   Enabled: false
