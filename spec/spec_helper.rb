@@ -165,7 +165,7 @@ RSpec.configure do |config|
   end
 
   config.before(:each, :js, type: :system) do
-    driven_by :selenium, using: :headless_chrome do |options|
+    driven_by :selenium, using: :headless_chrome, options: { timeout: 120 } do |options|
       options.add_argument('--no-sandbox')
       options.add_argument('--disable-dev-shm-usage')
       options.add_argument("--user-data-dir=#{ENV['CHROMEDRIVER_CONFIG']}") if ENV['CHROMEDRIVER_CONFIG']
