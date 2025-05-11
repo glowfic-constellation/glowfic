@@ -1,12 +1,3 @@
-GIT
-  remote: https://github.com/Throne3d/exception_notification.git
-  revision: b2131cfc5239d85d7e235512241af43cf1642555
-  ref: b2131cf
-  specs:
-    exception_notification (4.5.0)
-      actionmailer (>= 5.2, < 9)
-      activesupport (>= 5.2, < 9)
-
 GEM
   remote: https://rubygems.org/
   specs:
@@ -173,6 +164,9 @@ GEM
     erubi (1.13.1)
     ethon (0.16.0)
       ffi (>= 1.15.0)
+    exception_notification (5.0.0)
+      actionmailer (>= 7.1, < 9)
+      activesupport (>= 7.1, < 9)
     execjs (2.10.0)
     factory_bot (6.5.0)
       activesupport (>= 5.0.0)
@@ -591,7 +585,7 @@ DEPENDENCIES
   dartsass-sprockets
   database_cleaner
   dotenv
-  exception_notification!
+  exception_notification
   factory_bot_rails
   get_process_mem
   gon (~> 6.4)
