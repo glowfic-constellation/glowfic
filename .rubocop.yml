@@ -869,6 +869,9 @@ Style/CombinableDefined: # new in 1.68
 Style/CommentAnnotation:
   Enabled: false
 
+Style/ComparableBetween: # new in 1.74
+  Enabled: true
+
 Style/ComparableClamp: # new in 1.44
   Enabled: true
 
@@ -965,6 +968,9 @@ Style/HashConversion: # (new in 1.10)
 Style/HashExcept: # (new in 1.7)
   Enabled: true
 
+Style/HashFetchChain: # new in 1.75
+  Enabled: true
+
 Style/HashSlice: # new in 1.71
   Enabled: true
 
@@ -982,6 +988,9 @@ Style/InvertibleUnlessCondition:  # new in 1.44
   # overriding InverseMethods isn't working right now and we have a lot of fine examples of "unless .present?"
 
 Style/ItAssignment: # new in 1.70
+  Enabled: true
+
+Style/ItBlockParameter: # new in 1.75
   Enabled: true
 
 Style/KeywordArgumentsMerging: # new in 1.68
