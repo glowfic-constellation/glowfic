@@ -20,7 +20,7 @@ RSpec.describe "Show a list of galleries" do
     gallery_row = find('tr') { |x| x.has_selector?('.gallery-name a', exact_text: name) }
     within(gallery_row) do
       expect(page).to have_selector('.gallery-icon-count', exact_text: size.to_s)
-      tag_box = page.all('.tag-box').first
+      tag_box = page.first('.tag-box')
       seen_tags = (tag_box.try(:all, '.tag-item-link') || []).map(&:text)
       expect(seen_tags).to eq(tags)
     end

@@ -57,7 +57,7 @@ RSpec.describe "Searching bookmarks" do
   end
 
   def clear_posts_selection
-    all(".select2-selection__choice__remove").first.click until all(".select2-selection__choice__remove", wait: false).empty?
+    first(".select2-selection__choice__remove").click until all(".select2-selection__choice__remove", wait: false).empty?
   end
 
   def validate_bookmarks_found(bookmarks, posts, condensed: false)
