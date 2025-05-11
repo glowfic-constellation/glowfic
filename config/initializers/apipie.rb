@@ -9,6 +9,7 @@ Apipie.configure do |config|
   config.default_locale          = 'en'
 end
 
+# rubocop:disable all
 module Apipie
   class MethodDescription
     private
@@ -27,3 +28,4 @@ module Apipie
     end
   end
 end
+# rubocop:enable all

@@ -1,3 +1,4 @@
+# rubocop:disable all
 module Yell
   class Formatter
     private
@@ -23,3 +24,4 @@ module Yell
     end
   end
 end
+# rubocop:enable all

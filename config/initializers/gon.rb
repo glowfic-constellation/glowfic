@@ -1,3 +1,4 @@
+# rubocop:disable all
 class Gon
   module Base
     class << self
@@ -20,3 +21,4 @@ class Gon
     end
   end
 end
+# rubocop:enable all
