@@ -10,7 +10,7 @@ module Concealable
       private: 1,
       access_list: 2,
       full_accounts: 3, # registered accounts that are not read-only
-      registered: 4, # all registered accounts, both full and read-only # rubocop:disable Style/TrailingCommaInHashLiteral -- false positive
+      registered: 4, # all registered accounts, both full and read-only
     }, prefix: true
 
     def visible_to?(user)
