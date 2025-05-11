@@ -156,7 +156,7 @@ GEM
     date (3.4.1)
     diff-lcs (1.5.1)
     docile (1.4.0)
-    dotenv (3.1.7)
+    dotenv (3.1.8)
     drb (2.2.1)
     erubi (1.13.1)
     ethon (0.16.0)
