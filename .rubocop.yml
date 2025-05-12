@@ -14,8 +14,10 @@ AllCops:
     - 'backstop/*'
     - 'vendor/**/*'
 
-require:
+plugins:
   - rubocop-capybara
+
+require:
   - rubocop-factory_bot
   - rubocop-performance
   - rubocop-rails
@@ -731,9 +733,8 @@ RSpec/SubjectDeclaration:
 
 ################## Capybara ####################################
 
-Capybara/ClickLinkOrButtonStyle: # new in 2.19
-  # disabled because we have lots of buttons wrapped in links that cause ambiguous matches
-  Enabled: false
+Capybara/FindAllFirst: # new in 2.22
+  Enabled: true
 
 Capybara/MatchStyle: # new in 2.17
   Enabled: true
@@ -741,6 +742,9 @@ Capybara/MatchStyle: # new in 2.17
 Capybara/NegationMatcher: # new in 2.14
   Enabled: true
   EnforcedStyle: have_no
+
+Capybara/NegationMatcherAfterVisit: # new in 2.22
+  Enabled: false # followup PR
 
 Capybara/RedundantWithinFind: # new in 2.20
   Enabled: true
