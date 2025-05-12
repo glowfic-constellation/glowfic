@@ -91,7 +91,7 @@ RSpec.describe NotifyFollowersOfNewPostJob do
 
       before(:each) { create(:favorite, user: notified, favorite: author) }
 
-      include_examples "new"
+      it_behaves_like "new"
 
       it "works for self-threads" do
         expect {
@@ -111,7 +111,7 @@ RSpec.describe NotifyFollowersOfNewPostJob do
 
       before(:each) { create(:favorite, user: notified, favorite: board) }
 
-      include_examples "new"
+      it_behaves_like "new"
 
       it "does not send twice if the user has favorited both the poster and the continuity" do
         create(:favorite, user: notified, favorite: author)

@@ -61,11 +61,11 @@ RSpec.describe PostsController, 'GET index' do
   end
 
   context "when logged out" do
-    include_examples "logged out post list"
+    it_behaves_like "logged out post list"
   end
 
   context "when logged in" do
-    include_examples "logged in post list"
+    it_behaves_like "logged in post list"
 
     context "with ignored posts" do
       let(:user) { create(:user) }

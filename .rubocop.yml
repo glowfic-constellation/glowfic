@@ -19,8 +19,6 @@ plugins:
   - rubocop-factory_bot
   - rubocop-performance
   - rubocop-rails
-
-require:
   - rubocop-rspec
   - rubocop-rspec_rails
 
@@ -690,6 +688,9 @@ RSpec/ExpectChange:
 
 RSpec/HookArgument:
   EnforcedStyle: each
+
+RSpec/IncludeExamples: # new in 3.6
+  Enabled: true
 
 RSpec/IndexedLet:
   Enabled: false
