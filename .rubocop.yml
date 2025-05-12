@@ -16,10 +16,10 @@ AllCops:
 
 plugins:
   - rubocop-capybara
+  - rubocop-factory_bot
   - rubocop-rails
 
 require:
-  - rubocop-factory_bot
   - rubocop-performance
   - rubocop-rspec
   - rubocop-rspec_rails
