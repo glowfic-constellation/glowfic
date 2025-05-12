@@ -1,13 +1,14 @@
 TIME_FORMAT = '%b %d, %Y %-l:%M %p'
 
 RSpec.describe "Editing replies" do
+  let(:user) { create(:user, default_editor: 'html') }
+  let(:reply) { create(:reply, user: user, content: 'example text', editor_mode: 'html') }
+
   def find_reply_on_page(reply)
     find('.post-reply') { |x| x.has_selector?('a', id: "reply-#{reply.id}") }
   end
 
   scenario "Logged-out user tries to edit a reply" do
-    reply = create(:reply)
-
     visit reply_path(reply)
     within(find_reply_on_page(reply)) do
       expect(page).to have_no_link('Edit')
@@ -20,10 +21,7 @@ RSpec.describe "Editing replies" do
   end
 
   scenario "User edits a reply" do
-    user = create(:user, password: known_test_password)
-    reply = create(:reply, user: user, content: 'example text')
-
-    login(user, known_test_password)
+    login(user)
 
     visit reply_path(reply)
     expect(page).to have_selector('.post-container', count: 2)
@@ -50,10 +48,7 @@ RSpec.describe "Editing replies" do
   end
 
   scenario "User edits a reply with preview" do
-    user = create(:user, password: known_test_password)
-    reply = create(:reply, user: user, content: 'example text')
-
-    login(user, known_test_password)
+    login(user)
 
     visit reply_path(reply)
     expect(page).to have_selector('.post-container', count: 2)
@@ -77,9 +72,7 @@ RSpec.describe "Editing replies" do
     expect(page).to have_no_selector('.flash.error')
     expect(page).to have_no_selector('.flash.success')
 
-    within('.post-container') do
-      expect(page).to have_selector('.post-content', exact_text: 'other text')
-    end
+    expect(page).to have_selector('.post-container .post-content', exact_text: 'other text')
 
     within('#post-editor') do
       expect(page).to have_field('reply_content', with: 'other text')
@@ -98,8 +91,7 @@ RSpec.describe "Editing replies" do
 
   context "using the multi reply editor" do
     scenario "works", :js do
-      user = login
-      user.update!(default_editor: 'html')
+      login(user)
 
       reply = Reply.with_auditing do
         Timecop.freeze(2.weeks.ago) do
@@ -149,7 +141,7 @@ RSpec.describe "Editing replies" do
       expect(page).to have_selector('.flash.success', exact_text: 'Reply updated.')
       expect(page).to have_no_selector('.flash.error')
       expect(page).to have_selector('.post-container', count: 5)
-      all_containers = page.find_all(".post-container")
+      all_containers = find_all(".post-container")
 
       within(all_containers[1]) do
         expect(page).to have_selector('.post-content', exact_text: 'other text 1')
@@ -187,7 +179,7 @@ RSpec.describe "Editing replies" do
       end
       accept_alert { click_button "Save Previewed" }
       expect(page).to have_selector('.post-container', count: 6)
-      all_containers = page.find_all(".post-container")
+      all_containers = all(".post-container")
       within(all_containers[1]) { expect(page).to have_selector('.post-content', exact_text: 'other text 4') }
       within(all_containers[2]) { expect(page).to have_selector('.post-content', exact_text: 'other text 5') }
       within(all_containers[3]) { expect(page).to have_selector('.post-content', exact_text: 'other text 2') }
@@ -211,10 +203,8 @@ RSpec.describe "Editing replies" do
     end
 
     scenario "does not show unseen or duplicate replies warnings", :js do
-      user = login
-      user.update!(default_editor: 'html')
-
-      reply = create(:reply, user: user, content: 'example text', editor_mode: 'html')
+      login(user)
+      reply
       create(:reply, user: user, post: reply.post, content: 'example text 2')
 
       visit reply_path(reply)
@@ -251,8 +241,7 @@ RSpec.describe "Editing replies" do
     end
 
     scenario "interacts correctly with the quick switcher", :js do
-      user = login
-      user.update!(default_editor: 'html')
+      login(user)
 
       # Create characters and aliases
       char1 = create(:character, user: user, name: "char1")
@@ -304,7 +293,7 @@ RSpec.describe "Editing replies" do
       end
 
       # Change the character's alias and submit to multi-reply editor
-      page.find('li', exact_text: char1_alias.name).click
+      find('li', exact_text: char1_alias.name).click
       click_button "Add More Replies"
 
       within('#post-editor') do
@@ -334,7 +323,8 @@ RSpec.describe "Editing replies" do
           find_by_id('select2-active_character-container').click
         end
       end
-      page.find('li', exact_text: char4.name).click
+
+      find('li', exact_text: char4.name).click
       click_button "HTML" # Just to force the editor to update
       click_button "Add More Replies"
 
@@ -366,14 +356,13 @@ RSpec.describe "Editing replies" do
       end
 
       # Change the character's alias and submit to multi-reply editor
-      page.find('li', exact_text: char4_alias.name).click
+      find('li', exact_text: char4_alias.name).click
       click_button "Add More Replies"
       expect(page).to have_selector('#post-editor .post-character #name', exact_text: char4_alias.name)
     end
 
     scenario "handles NPC saving errors", :js do
-      user = login
-      user.update!(default_editor: 'html')
+      login(user)
 
       create(:character, user: user) # User has to have at least one character to be able to create an NPC
       npc = create(:character, npc: true, user: user)
@@ -395,14 +384,14 @@ RSpec.describe "Editing replies" do
 
       within('#post-editor') do
         fill_in 'reply_content', with: 'other text 2'
-        page.find('img[title="Choose Character"]').click
+        find('img[title="Choose Character"]').click
         click_button 'NPC'
       end
 
-      page.find('.select2-selection__rendered', exact_text: 'Select NPC or type to create').click
+      find('.select2-selection__rendered', exact_text: 'Select NPC or type to create').click
       new_npc_name = npc.name + "different"
-      page.find('.select2-container--open .select2-search__field').set(new_npc_name)
-      page.find('li', exact_text: "Create New: #{new_npc_name}").click
+      find('.select2-container--open .select2-search__field').set(new_npc_name)
+      find('li', exact_text: "Create New: #{new_npc_name}").click
 
       allow(reply_stub).to receive(:post).and_return(reply.post)
       allow(Reply).to receive(:new).and_return(reply_stub)
@@ -416,13 +405,12 @@ RSpec.describe "Editing replies" do
     end
 
     scenario "handles reply saving errors", :js do
-      user = login
-      user.update!(default_editor: 'html')
+      login(user)
 
       reply_stub = create(:reply, user: user)
       visit reply_path(reply_stub)
 
-      reply = create(:reply, user: user, content: 'example text', editor_mode: 'html')
+      reply
       create(:reply, user: user, post: reply.post, content: 'example text 2')
       visit reply_path(reply)
 
@@ -453,8 +441,6 @@ RSpec.describe "Editing replies" do
   end
 
   scenario "User tries to edit someone else's reply" do
-    reply = create(:reply, content: 'example text')
-
     login
     visit reply_path(reply)
     within(find_reply_on_page(reply)) do
@@ -467,10 +453,7 @@ RSpec.describe "Editing replies" do
   end
 
   scenario "Moderator edits a reply" do
-    user = create(:user)
-    reply = create(:reply, user: user, content: 'example text')
-
-    login(create(:mod_user, password: known_test_password), known_test_password)
+    login(create(:mod_user))
 
     visit reply_path(reply)
     expect(page).to have_selector('.post-container', count: 2)
@@ -499,10 +482,7 @@ RSpec.describe "Editing replies" do
   end
 
   scenario "Moderator edits a reply with preview" do
-    user = create(:user, password: known_test_password)
-    reply = create(:reply, user: user, content: 'example text')
-
-    login(create(:mod_user, password: known_test_password), known_test_password)
+    login(create(:mod_user))
 
     visit reply_path(reply)
     expect(page).to have_selector('.post-container', count: 2)

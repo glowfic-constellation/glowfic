@@ -2,10 +2,7 @@ RSpec.describe "Creating a new template" do
   scenario "Create an invalid template" do
     # view new template form without being logged in
     visit new_template_path
-    expect(page).to have_selector('.flash.error')
-    within('.flash.error') do
-      expect(page).to have_text("You must be logged in")
-    end
+    expect(page).to have_selector('.flash.error', exact_text: 'You must be logged in to view that page.')
 
     # view new template form with no characters
     user = login
@@ -18,8 +15,8 @@ RSpec.describe "Creating a new template" do
     create(:template_character, user: user)
     visit new_template_path
     expect(page).to have_selector('.editor-title', text: 'New Template')
-    expect(page).to have_no_selector('.flash.error')
     expect(page).to have_no_selector('.sub', text: 'Characters')
+    expect(page).to have_no_selector('.flash.error')
 
     # view new template form with untemplated characters
     create(:character, user: user)

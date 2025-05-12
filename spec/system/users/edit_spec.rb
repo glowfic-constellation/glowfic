@@ -1,21 +1,21 @@
 RSpec.describe "Editing account settings" do
-  let(:user) { create(:user, username: 'John Doe', password: known_test_password, email: 'dummy@example.com') }
+  let(:user) { create(:user, username: 'John Doe', email: 'dummy@example.com') }
 
   scenario "Logged-out user tries to edit a user" do
     visit edit_user_path(user)
-    expect(page).to have_selector('.error', text: 'You must be logged in to view that page.')
+    expect(page).to have_selector('.flash.error', exact_text: 'You must be logged in to view that page.')
     expect(page).to have_current_path(root_path)
   end
 
   scenario "User tries to edit a different user" do
     login
     visit edit_user_path(user)
-    expect(page).to have_selector('.error', text: 'You do not have permission to modify this account.')
+    expect(page).to have_selector('.flash.error', exact_text: 'You do not have permission to modify this account.')
     expect(page).to have_current_path(continuities_path)
   end
 
   scenario "User edits themself", :js do
-    login(user, known_test_password)
+    login(user)
     visit edit_user_path(user)
     expect(page).to have_selector('.editor-title', exact_text: 'Settings')
     expect(page).to have_no_selector('.flash.error')
