@@ -5,8 +5,8 @@ RSpec.describe "Unread posts" do
 
     user = login
     visit unread_posts_path
-    expect(page).to have_text("Unread Posts")
-    expect(page).to have_text("No posts yet")
+    expect(page).to have_selector('.table-title', text: 'Unread Posts')
+    expect(page).to have_text('No posts yet')
     expect(page).to have_no_selector('.flash.error')
 
     create_list(:post, 2)
@@ -36,7 +36,7 @@ RSpec.describe "Unread posts" do
   scenario "check-all checkbox works", :js do
     login
     visit unread_posts_path
-    expect(page).to have_text('Unread Posts')
+    expect(page).to have_selector('.table-title', text: 'Unread Posts')
     expect(page).to have_no_selector('.check-all')
     expect(page).to have_no_selector('.check-all-item[name="marked_ids[]"]')
 

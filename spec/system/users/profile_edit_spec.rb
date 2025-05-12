@@ -1,5 +1,5 @@
 RSpec.describe "Editing user profile" do
-  let(:user) { create(:user, username: 'John Doe', password: known_test_password, email: 'dummy@example.com') }
+  let(:user) { create(:user, username: 'John Doe', email: 'dummy@example.com') }
 
   scenario "Logged-out user tries to edit a user" do
     visit profile_edit_user_path(user)
@@ -15,7 +15,7 @@ RSpec.describe "Editing user profile" do
   end
 
   scenario "User edits themself", :js do
-    login(user, known_test_password)
+    login(user)
 
     # Page exists
     visit profile_edit_user_path(user)
@@ -25,7 +25,7 @@ RSpec.describe "Editing user profile" do
     # Profile description field exists and can be filled
     expect(page).to have_field('user_profile', with: '')
     fill_in 'user_profile', with: 'User Description'
-    page.find_by_id("rtf").click
+    find_by_id("rtf").click
 
     # Moiety fields exist and can be filled
     expect(page).to have_field('user_moiety_name', with: '')
@@ -35,22 +35,22 @@ RSpec.describe "Editing user profile" do
 
     # Content warnings exist and can be filled
     expect(page).to have_no_selector('.select2-selection__choice')
-    page.find('.select2-search__field').click
-    page.find('.select2-search__field').set("warning 1")
-    page.find('li', exact_text: 'warning 1').click
+    find('.select2-search__field').click
+    find('.select2-search__field').set("warning 1")
+    find('li', exact_text: 'warning 1').click
     expect(page).to have_selector('.select2-selection__choice', exact_text: '×warning 1')
 
     click_button 'Save'
 
     # Everything has the correct values
-    within('.error') do
+    within('.flash.error') do
       expect(page).to have_text("This author has set some general content warnings which might apply to their posts even when not otherwise warned")
-      page.find('summary').click
+      find('summary').click
       expect(page).to have_text('warning 1')
     end
     expect(page).to have_text("Red")
     expect(page).to have_text("User Description")
-    moiety = page.find('.user-moiety span')
+    moiety = find('.user-moiety span')
     expect(moiety).to be_present
     expect(moiety[:style]).to eq('cursor: default; color: rgb(255, 0, 0);')
 
@@ -64,13 +64,13 @@ RSpec.describe "Editing user profile" do
     within("#edit_user_#{user.id}") { click_button 'Save' }
     expect(find_by_id('user_username').value).to eq("Updated Username")
     visit user_path(user)
-    within('.error') do
-      page.find('summary').click
+    within('.flash.error') do
+      find('summary').click
       expect(page).to have_text('warning 1')
     end
     expect(page).to have_text("Red")
     expect(page).to have_text("User Description")
-    moiety = page.find('.user-moiety span')
+    moiety = find('.user-moiety span')
     expect(moiety).to be_present
     expect(moiety[:style]).to eq('cursor: default; color: rgb(255, 0, 0);')
   end

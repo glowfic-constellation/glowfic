@@ -1,10 +1,10 @@
 RSpec.describe "Create new block" do
-  let(:user) { create(:user, username: 'John Doe', password: known_test_password) }
+  let(:user) { create(:user, username: 'John Doe') }
   let(:blocked) { create(:user, username: 'Person You Want To Block') }
 
-  scenario "Creating an invalid block" do
-    login(user, known_test_password)
+  before(:each) { login(user) }
 
+  scenario "Creating an invalid block" do
     visit new_block_path(block: { blocked_user_id: blocked.id })
 
     expect(page).to have_selector('.breadcrumbs', text: 'Blocks » New')
@@ -23,8 +23,6 @@ RSpec.describe "Create new block" do
   end
 
   scenario "User blocks another from their userpage" do
-    login(user, known_test_password)
-
     visit user_path(blocked)
     click_link 'Block'
 
@@ -48,7 +46,6 @@ RSpec.describe "Create new block" do
 
   scenario "User blocks another from blocks#index" do
     skip "Due to ajax loading this doesn't actually work atm"
-    login(user, known_test_password)
 
     visit blocks_path
     click_link '+ Block User'
