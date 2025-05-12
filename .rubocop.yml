@@ -401,6 +401,10 @@ Performance/StringInclude:
 Performance/Sum:
   Enabled: true
 
+Performance/ZipWithoutBlock: # new in 1.24
+  Enabled: false
+  # unlikely to be hit on our codebase (and hasn't been a problem)
+
 ##################### Rails ##################################
 
 Rails/ActionControllerFlashBeforeRender: # new in 2.16
