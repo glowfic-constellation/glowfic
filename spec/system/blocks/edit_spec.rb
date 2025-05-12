@@ -1,10 +1,11 @@
 RSpec.describe "Edit a block" do
-  let(:user) { create(:user, username: 'John Doe', password: known_test_password) }
+  let(:user) { create(:user, username: 'John Doe') }
   let(:blocked) { create(:user, username: 'Person You Want To Block') }
   let(:block) { create(:block, blocking_user: user, blocked_user: blocked, block_interactions: true, hide_them: :posts) }
 
+  before(:each) { login(user) }
+
   scenario 'Edit an invalid block' do
-    login(user, known_test_password)
     visit edit_block_path(block)
 
     expect(page).to have_selector('.breadcrumbs', text: 'Blocks » Block on Person You Want To Block » Edit')
@@ -24,7 +25,6 @@ RSpec.describe "Edit a block" do
   end
 
   scenario 'Edit a block' do
-    login(user, known_test_password)
     visit edit_block_path(block)
 
     expect(page).to have_selector('.breadcrumbs', text: 'Blocks » Block on Person You Want To Block » Edit')
