@@ -16,11 +16,11 @@ AllCops:
 
 plugins:
   - rubocop-capybara
-
-require:
   - rubocop-factory_bot
   - rubocop-performance
   - rubocop-rails
+
+require:
   - rubocop-rspec
   - rubocop-rspec_rails
 
@@ -400,6 +400,10 @@ Performance/StringInclude:
 
 Performance/Sum:
   Enabled: true
+
+Performance/ZipWithoutBlock: # new in 1.24
+  Enabled: false
+  # unlikely to be hit on our codebase (and hasn't been a problem)
 
 ##################### Rails ##################################
 
