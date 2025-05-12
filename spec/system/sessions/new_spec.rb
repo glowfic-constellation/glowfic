@@ -3,7 +3,10 @@
 RSpec.describe "Logging in" do
   scenario "Log in with invalid details" do
     visit login_path
+
+    expect(page).to have_selector('.editor-title', text: 'Sign In')
     expect(page).to have_no_selector('.flash')
+
     within('.form-table') do
       fill_in 'Username', with: 'Invalid user'
       fill_in 'Password', with: 'failed password'
@@ -30,9 +33,10 @@ RSpec.describe "Logging in" do
     password = 'my password1234@'
     create(:user, username: username, password: password)
     visit login_path
+
+    expect(page).to have_selector('.editor-title', text: 'Sign In')
     expect(page).to have_no_selector('.flash')
 
-    expect(page).to have_selector('.form-table')
     within('.form-table') do
       fill_in 'Username', with: username
       fill_in 'Password', with: password
@@ -40,16 +44,16 @@ RSpec.describe "Logging in" do
     end
 
     expect(page).to have_current_path(continuities_path)
-    expect(page).to have_no_selector('.flash.error')
     expect(page).to have_selector('.flash.success', text: 'You are now logged in as Test user. Welcome back!')
+    expect(page).to have_no_selector('.flash.error')
     expect(page).to have_no_selector('#username')
     expect(page).to have_selector('#user-username', text: username)
 
     # make sure we're still logged in after navigating somewhere else
     visit root_path
+    expect(page).to have_selector('#user-username', text: username)
     expect(page).to have_no_selector('.flash')
     expect(page).to have_no_selector('#username')
-    expect(page).to have_selector('#user-username', text: username)
   end
 
   scenario "Error while already logged in" do

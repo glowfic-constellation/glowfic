@@ -1,25 +1,26 @@
 RSpec.describe "Creating posts" do
   scenario "User creates a post", :js do
     visit new_post_path
-    within(".error") { expect(page).to have_text("You must be logged in") }
+    expect(page).to have_selector('.flash.error', exact_text: 'You must be logged in to view that page.')
 
     user = login
     create(:board)
 
     visit new_post_path
-    expect(page).to have_no_selector(".error")
     expect(page).to have_selector(".content-header", text: "Create a new post")
+    expect(page).to have_no_selector(".flash.error")
 
     click_button "Post"
-    expect(page).to have_selector('.error', text: "Subject can't be blank")
+    expect(page).to have_selector('.flash.error', text: "Subject can't be blank")
     expect(page).to have_selector(".content-header", text: "Create a new post")
 
     click_button "HTML"
     fill_in "post_subject", with: "test subject"
     fill_in "post_content", with: "test content"
     click_button "Post"
-    expect(page).to have_no_selector(".error")
-    expect(page).to have_selector('.success', exact_text: 'Post created.')
+
+    expect(page).to have_selector('.flash.success', exact_text: 'Post created.')
+    expect(page).to have_no_selector('.flash.error')
     expect(page).to have_selector('.post-container', count: 1)
     expect(page).to have_selector('#post-title', exact_text: 'test subject')
 
@@ -37,8 +38,8 @@ RSpec.describe "Creating posts" do
     create(:board)
 
     visit new_post_path
-    expect(page).to have_no_selector(".error")
     expect(page).to have_selector(".content-header", text: "Create a new post")
+    expect(page).to have_no_selector('.flash.error')
 
     fill_in "post_subject", with: "test subject"
     click_button "HTML"
@@ -46,10 +47,11 @@ RSpec.describe "Creating posts" do
     click_button 'Preview'
 
     # verify preview, change
-    expect(page).to have_no_selector('.error')
     expect(page).to have_selector('.content-header', exact_text: 'test subject')
     expect(page).to have_selector('.post-container', count: 1)
     expect(page).to have_selector('#post-editor')
+    expect(page).to have_no_selector('.flash.error')
+
     within('#post-editor') do
       expect(page).to have_field('Subject', with: 'test subject')
       expect(page).to have_field('post_content', with: 'test content')
@@ -58,8 +60,8 @@ RSpec.describe "Creating posts" do
     end
     click_button 'Post'
 
-    expect(page).to have_no_selector(".error")
-    expect(page).to have_selector('.success', exact_text: 'Post created.')
+    expect(page).to have_selector('.flash.success', exact_text: 'Post created.')
+    expect(page).to have_no_selector('.flash.error')
     expect(page).to have_selector('.post-container', count: 1)
     expect(page).to have_selector('#post-title', exact_text: 'other subject')
 
@@ -89,10 +91,11 @@ RSpec.describe "Creating posts" do
     click_button 'Preview'
 
     # verify preview, change
-    expect(page).to have_no_selector('.error')
     expect(page).to have_selector('.content-header', exact_text: 'test subject')
     expect(page).to have_selector('.post-container', count: 1)
     expect(page).to have_selector('#post-editor')
+    expect(page).to have_no_selector('.flash.error')
+
     within('#post-editor') do
       expect(page).to have_field('Subject', with: 'test subject')
       expect(page).to have_selector('#name', exact_text: 'Adam')
@@ -100,8 +103,8 @@ RSpec.describe "Creating posts" do
     click_button 'Post'
 
     # post preserved NPC
-    expect(page).to have_no_selector(".error")
-    expect(page).to have_selector('.success', exact_text: 'Post created.')
+    expect(page).to have_selector('.flash.success', exact_text: 'Post created.')
+    expect(page).to have_no_selector('.flash.error')
     expect(page).to have_selector('.post-container', count: 1)
 
     within('.post-container') do
@@ -130,10 +133,11 @@ RSpec.describe "Creating posts" do
     click_button 'Preview'
 
     # verify preview, change
-    expect(page).to have_no_selector('.error')
     expect(page).to have_selector('.content-header', exact_text: 'test subject')
     expect(page).to have_selector('.post-container', count: 1)
     expect(page).to have_selector('#post-editor')
+    expect(page).to have_no_selector('.flash.error')
+
     within('#post-editor') do
       expect(page).to have_field('Subject', with: 'test subject')
       expect(page).to have_selector('#name', exact_text: 'Fred')
@@ -141,9 +145,9 @@ RSpec.describe "Creating posts" do
     click_button 'Post'
 
     # post preserved NPC
-    expect(page).to have_no_selector(".error")
-    expect(page).to have_selector('.success', exact_text: 'Post created.')
+    expect(page).to have_selector('.flash.success', exact_text: 'Post created.')
     expect(page).to have_selector('.post-container', count: 1)
+    expect(page).to have_no_selector('.flash.error')
 
     within('.post-container') do
       expect(page).to have_link('Fred', href: character_path(npc)) # should be the same Fred as before
@@ -153,15 +157,15 @@ RSpec.describe "Creating posts" do
   scenario "Fields are preserved on failed post#create", :js do
     login
     visit new_post_path
-    expect(page).to have_no_selector(".error")
     expect(page).to have_selector(".content-header", text: "Create a new post")
+    expect(page).to have_no_selector('.flash.error')
 
     fill_in "post_subject", with: "test subject"
     click_button "HTML"
     fill_in "post_content", with: "test content"
     click_button "Post"
 
-    expect(page).to have_selector('.error', text: "Post could not be created because of the following problems:\nBoard must exist")
+    expect(page).to have_selector('.flash.error', text: "Post could not be created because of the following problems:\nBoard must exist")
     expect(page).to have_selector('#post-editor')
     within('#post-editor') do
       expect(page).to have_selector('.view-button.selected', text: 'HTML')
