@@ -11,6 +11,7 @@ RSpec.describe "Logging out" do
 
     # make sure we're still logged out after navigating somewhere else
     visit continuities_path
+    expect(page).to have_selector('.table-title', text: 'Continuities')
     expect(page).to have_no_selector('.flash')
     expect(page).to have_no_selector('#user-info')
   end

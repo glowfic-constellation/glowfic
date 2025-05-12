@@ -17,8 +17,8 @@ RSpec.describe "Editing account settings" do
   scenario "User edits themself", :js do
     login(user, known_test_password)
     visit edit_user_path(user)
-    expect(page).to have_no_selector('.error')
     expect(page).to have_selector('.editor-title', exact_text: 'Settings')
+    expect(page).to have_no_selector('.flash.error')
 
     hide_edit_delete_buttons = find_by_id("user_default_hide_edit_delete_buttons")
     hide_add_bookmark_button = find_by_id('user_default_hide_add_bookmark_button')

@@ -10,47 +10,45 @@ RSpec.describe "Creating a new template" do
     # view new template form with no characters
     user = login
     visit new_template_path
+    expect(page).to have_selector('.editor-title', text: 'New Template')
+    expect(page).to have_no_selector('.sub', text: 'Characters')
     expect(page).to have_no_selector('.flash.error')
-    expect(page).to have_no_text("You must be logged in")
-    expect(page).to have_selector(".editor-title", text: "New Template")
-    expect(page).to have_no_selector(".sub", text: "Characters")
 
     # view new template form with no untemplated characters
     create(:template_character, user: user)
     visit new_template_path
+    expect(page).to have_selector('.editor-title', text: 'New Template')
     expect(page).to have_no_selector('.flash.error')
-    expect(page).to have_no_selector(".sub", text: "Characters")
+    expect(page).to have_no_selector('.sub', text: 'Characters')
 
     # view new template form with untemplated characters
     create(:character, user: user)
     visit new_template_path
+    expect(page).to have_selector('.sub', text: 'Characters')
     expect(page).to have_no_selector('.flash.error')
-    expect(page).to have_selector(".sub", text: "Characters")
 
     # create template with no data
     within('.form-table') do
       click_button 'Save'
     end
-    expect(page).to have_selector('.flash.error')
-    within('.flash.error') do
-      error_message = "Template could not be created because of the following problems:\nName can't be blank"
-      expect(page).to have_text(error_message)
-    end
+
+    error_message = "Template could not be created because of the following problems:\nName can't be blank"
+    expect(page).to have_selector('.flash.error', exact_text: error_message)
   end
 
   scenario "Create a simple template" do
     login
     visit new_template_path
+    expect(page).to have_selector('.editor-title', text: 'New Template')
     expect(page).to have_no_selector('.flash.error')
+
     within('.form-table') do
       fill_in 'Template Name', with: 'Example template'
       click_button 'Save'
     end
+
+    expect(page).to have_selector('.flash.success', exact_text: 'Template created.')
     expect(page).to have_no_selector('.flash.error')
-    expect(page).to have_selector('.flash.success')
-    within('.flash.success') do
-      expect(page).to have_text('Template created.')
-    end
   end
 
   scenario "Create template with description and characters" do
@@ -69,11 +67,9 @@ RSpec.describe "Creating a new template" do
       click_button 'Save'
     end
 
-    expect(page).to have_selector('.flash.error')
-    within('.flash.error') do
-      error_message = "Template could not be created because of the following problems:\nName can't be blank Characters is invalid"
-      expect(page).to have_text(error_message)
-    end
+    error_message = "Template could not be created because of the following problems:\nName can't be blank Characters is invalid"
+    expect(page).to have_selector('.flash.error', exact_text: error_message)
+
     within('.form-table') do
       expect(page).to have_field('Template Name', with: '')
       expect(page).to have_field('template_description', with: 'Example template description')
@@ -89,10 +85,8 @@ RSpec.describe "Creating a new template" do
       fill_in 'Template Name', with: 'Example template'
       click_button 'Save'
     end
+
+    expect(page).to have_selector('.flash.success', exact_text: 'Template created.')
     expect(page).to have_no_selector('.flash.error')
-    expect(page).to have_selector('.flash.success')
-    within('.flash.success') do
-      expect(page).to have_text('Template created.')
-    end
   end
 end

@@ -10,9 +10,9 @@ RSpec.describe "Editing a character" do
 
     login(user, known_test_password)
     visit edit_character_path(character)
+
+    expect(page).to have_selector('.editor-title', text: character.name)
     expect(page).to have_no_selector('.flash.error')
-    expect(page).to have_no_text("You must be logged in")
-    expect(page).to have_selector(".editor-title", text: character.name)
 
     within('.character-form') do
       fill_in 'Template Nickname', with: 'Example nickname'
@@ -22,11 +22,9 @@ RSpec.describe "Editing a character" do
       click_button 'Save'
     end
 
+    expect(page).to have_selector('.flash.success', exact_text: 'Character updated.')
     expect(page).to have_no_selector('.flash.error')
-    expect(page).to have_selector('.flash.success')
-    within('.flash.success') do
-      expect(page).to have_text('Character updated.')
-    end
+
     expect(page).to have_text('Example nickname')
     expect(page).to have_text('example_screenname')
     expect(page).to have_text('Example facecast')
@@ -47,11 +45,9 @@ RSpec.describe "Editing a character" do
       click_button 'Save'
     end
 
+    expect(page).to have_selector('.flash.success', exact_text: 'Character updated.')
     expect(page).to have_no_selector('.flash.error')
-    expect(page).to have_selector('.flash.success')
-    within('.flash.success') do
-      expect(page).to have_text('Character updated.')
-    end
+
     expect(page).to have_text(/MyChar\s+\(NPC\)/)
     expect(page).to have_text('Example facecast')
     expect(page).to have_text(/Original post.*Thread/)
@@ -70,11 +66,9 @@ RSpec.describe "Editing a character" do
       click_button 'Save'
     end
 
+    expect(page).to have_selector('.flash.success', exact_text: 'Character updated.')
     expect(page).to have_no_selector('.flash.error')
-    expect(page).to have_selector('.flash.success')
-    within('.flash.success') do
-      expect(page).to have_text('Character updated.')
-    end
+
     expect(page).to have_no_text('(NPC)')
     expect(page).to have_text('example_screenname')
     expect(page).to have_text(/Nickname.*Thread/)
