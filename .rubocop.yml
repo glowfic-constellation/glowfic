@@ -19,8 +19,6 @@ plugins:
   - rubocop-factory_bot
   - rubocop-performance
   - rubocop-rails
-
-require:
   - rubocop-rspec
   - rubocop-rspec_rails
 
