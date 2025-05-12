@@ -689,6 +689,9 @@ RSpec/ExpectChange:
 RSpec/HookArgument:
   EnforcedStyle: each
 
+RSpec/IncludeExamples: # new in 3.6
+  Enabled: true
+
 RSpec/IndexedLet:
   Enabled: false
 

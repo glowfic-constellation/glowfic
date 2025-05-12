@@ -142,7 +142,7 @@ RSpec.describe ApplicationHelper do
     let(:dark_icon) { 'icons/bullet_go.png' }
     let(:method) { helper.unread_img }
 
-    include_examples 'link_img'
+    it_behaves_like 'link_img'
   end
 
   describe "#lastlink_img" do
@@ -150,7 +150,7 @@ RSpec.describe ApplicationHelper do
     let(:dark_icon) { 'icons/bullet_go_strong.png' }
     let(:method) { helper.lastlink_img }
 
-    include_examples 'link_img'
+    it_behaves_like 'link_img'
   end
 
   describe "#per_page_options" do

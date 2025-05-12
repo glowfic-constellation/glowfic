@@ -216,7 +216,7 @@ RSpec.describe PostHelper do
       helper.unread_post?(post, ids)
     end
 
-    include_examples 'unread_or_opened'
+    it_behaves_like 'unread_or_opened'
   end
 
   describe "#opened_post?" do
@@ -224,6 +224,6 @@ RSpec.describe PostHelper do
       helper.opened_post?(post, ids)
     end
 
-    include_examples 'unread_or_opened'
+    it_behaves_like 'unread_or_opened'
   end
 end

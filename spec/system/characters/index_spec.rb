@@ -185,7 +185,7 @@ RSpec.describe "Listing characters" do
       ]
     end
 
-    include_examples "characters#index", false
+    it_behaves_like "characters#index", false
 
     scenario "Handles bad pages" do
       visit user_characters_path(user_id: user.id, view: 'list', character_split: 'template', page: "nvOpzp; AND 1=1")
@@ -233,6 +233,6 @@ RSpec.describe "Listing characters" do
       ]
     end
 
-    include_examples "characters#index", true
+    it_behaves_like "characters#index", true
   end
 end
