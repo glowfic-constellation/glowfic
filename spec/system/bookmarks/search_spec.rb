@@ -1,33 +1,24 @@
 RSpec.describe "Searching bookmarks" do
-  let!(:private_user) { create(:user, password: known_test_password) }
+  let!(:private_user) { create(:user) }
   let!(:public_user) { create(:user, public_bookmarks: true) }
   let!(:posts) { create_list(:post, 3) }
   let!(:replies) do
     posts.map do |post|
-      icons = create_list(:icon, 3)
-      [
-        create(:reply, post: post, user: icons[0].user, icon: icons[0]),
-        create(:reply, post: post, user: icons[1].user, icon: icons[1]),
-        create(:reply, post: post, user: icons[2].user, icon: icons[2]),
-      ]
+      create_list(:icon, 3).map do |icon|
+        create(:reply, post: post, user: icon.user, icon: icon)
+      end
     end.flatten
   end
+
   let!(:private_bookmarks) do
-    [
-      create(:bookmark, user: private_user, reply: replies[1]),
-      create(:bookmark, user: private_user, reply: replies[3]),
-      create(:bookmark, user: private_user, reply: replies[4], name: "Bookmark Name 1"),
-      create(:bookmark, user: private_user, reply: replies[6], name: "Bookmark Name 2"),
-    ]
+    marks = replies.values_at(1, 3).map { |reply| create(:bookmark, user: private_user, reply: reply) }
+    marks2 = replies.values_at(4, 6).map.with_index { |reply, i| create(:bookmark, user: private_user, reply: reply, name: "Bookmark Name #{i}") }
+    marks + marks2
   end
+
   let!(:public_bookmarks) do
-    [
-      create(:bookmark, user: public_user, reply: replies[2], name: "Bookmark Name 3"),
-      create(:bookmark, user: public_user, reply: replies[4]),
-      create(:bookmark, user: public_user, reply: replies[5]),
-      create(:bookmark, user: public_user, reply: replies[7]),
-      create(:bookmark, user: public_user, reply: replies[8]),
-    ]
+    marks = replies.values_at(4, 5, 7, 8).map { |reply| create(:bookmark, user: public_user, reply: reply) }
+    marks.prepend(create(:bookmark, user: public_user, reply: replies[2], name: "Bookmark Name 3"))
   end
 
   def perform_search(user: nil, posts: nil, condensed: nil, logged_in_user: nil)
@@ -93,7 +84,7 @@ RSpec.describe "Searching bookmarks" do
     end
 
     expect(page).to have_text("#{num_results} results")
-    within(".paginator") { expect(page).to have_text("Total: #{num_results}") }
+    expect(page).to have_selector('.paginator', text: "Total: #{num_results}")
   end
 
   scenario "works", :js do
@@ -131,7 +122,7 @@ RSpec.describe "Searching bookmarks" do
     validate_bookmarks_found public_bookmarks, posts
 
     # Searching for own bookmarks does show results
-    login(private_user, known_test_password)
+    login(private_user)
     visit search_bookmarks_path
     perform_search user: private_user, logged_in_user: private_user
     validate_bookmarks_found private_bookmarks, posts
@@ -152,7 +143,7 @@ RSpec.describe "Searching bookmarks" do
   end
 
   scenario "allows managing own bookmarks", :js do
-    login(private_user, known_test_password)
+    login(private_user)
     visit search_bookmarks_path
     perform_search user: private_user
 
@@ -183,17 +174,17 @@ RSpec.describe "Searching bookmarks" do
     new_bookmark_name = "New Bookmark Name #{first_bookmark.id}"
     first_bookmark_name_text_field.set(new_bookmark_name)
     click_button "Save"
-    expect(find(".saveconf[data-bookmark-id='#{first_bookmark.id}']")).to be_visible
+    expect(find('.saveconf')['data-bookmark-id']).to eq(first_bookmark.id.to_s)
     expect(first_bookmark_name_text_field).not_to be_visible
     refresh
     expect(find(".bookmark-name[data-bookmark-id='#{first_bookmark.id}']")).to have_text(new_bookmark_name)
 
     # Can toggle bookmark publicness
     first_bookmark_edit_button.click
-    first_bookmark_public_checkbox = find(".bookmark-public-checkbox[data-bookmark-id='#{first_bookmark.id}']")
+    first_bookmark_public_checkbox = find('.bookmark-public-checkbox')
     first_bookmark_public_checkbox.click
     click_button "Save"
-    expect(find(".saveconf[data-bookmark-id='#{first_bookmark.id}']")).to be_visible
+    expect(find('.saveconf')['data-bookmark-id']).to eq(first_bookmark.id.to_s)
     refresh
     first_bookmark_edit_button.click
     expect(first_bookmark_public_checkbox).to be_checked
