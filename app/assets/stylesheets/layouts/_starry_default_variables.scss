@@ -1,86 +1,90 @@
-@import 'palette';
+@use 'palette' as *;
+@forward 'palette';
 
-// header
-$bg_color_header_middle: #05050F !default; // middle header strip with user items
-$bg_color_header_bottom: $colors_gunpowder !default; // bottom header strip with navigation
-$font_color_header_link_hover: $colors_silver !default;
+@use 'variables' with (
+  // header
+  $bg_color_header_middle: #05050F, // middle header strip with user items
+  $bg_color_header_bottom: $colors_gunpowder, // bottom header strip with navigation
+  $font_color_header_link_hover: $colors_silver,
 
-// main page
-$font_color_page: $colors_black !default;
+  // main page
+  $font_color_page: $colors_black,
 
-$font_color_search_box: $colors_bright !default;
+  $font_color_search_box: $colors_bright,
 
-// links
-$font_color_link: #666284 !default; // link
-$font_color_link_visited: $colors_gunpowder !default;
+  // links
+  $font_color_link: #666284, // link
+  $font_color_link_visited: $colors_gunpowder,
 
-// flashes
-// these are the notifications that appear when you submit a form or get a message
-$font_color_breadcrumbs_bold: $colors_concrete !default;
-$font_color_breadcrumbs_link_visited: $colors_santasgrey !default;
+  // flashes
+  // these are the notifications that appear when you submit a form or get a message
+  $font_color_breadcrumbs_bold: $colors_concrete,
+  $font_color_breadcrumbs_link_visited: $colors_santasgrey,
 
-// misc
-$font_color_descriptions_link: $colors_logan !default;
-$font_color_descriptions_link_visited: $colors_santasgrey !default;
-$bg_color_descriptions: $colors_gunpowder !default; // description subheadings on templates page ("single-description"), *not* posts
+  // misc
+  $font_color_descriptions_link: $colors_logan,
+  $font_color_descriptions_link_visited: $colors_santasgrey,
+  $bg_color_descriptions: $colors_gunpowder, // description subheadings on templates page ("single-description"), *not* posts
 
-// content headers
-$font_color_head_link: $colors_logan !default; // TODO: check this
-$font_color_head_link_visited: $colors_santasgrey !default;
+  // content headers
+  $font_color_head_link: $colors_logan, // TODO: check this
+  $font_color_head_link_visited: $colors_santasgrey,
 
-$font_color_sub: $colors_concrete !default;
+  $font_color_sub: $colors_concrete,
 
-$bg_color_subber: $colors_gunpowder !default; // tertiary content header
-$font_color_subber_bold: $colors_concrete !default;
-$font_color_subber_link_visited: $colors_santasgrey !default;
+  $bg_color_subber: $colors_gunpowder, // tertiary content header
+  $font_color_subber_bold: $colors_concrete,
+  $font_color_subber_link_visited: $colors_santasgrey,
 
-// content
-$bg_color_even: #E3E3E3 !default;
-$bg_color_odd: $colors_alto_darker !default;
-$opacity_blockquote: 0.2 !default;
+  // content
+  $bg_color_even: #E3E3E3,
+  $bg_color_odd: $colors_alto_darker,
+  $opacity_blockquote: 0.2,
 
-// posts
-$bg_color_navbutton: $colors_mulledwine !default;
+  // posts
+  $bg_color_navbutton: $colors_mulledwine,
 
-$font_color_post_description: $colors_concrete !default;
-$bg_color_post_description: $colors_gunpowder !default;
+  $font_color_post_description: $colors_concrete,
+  $bg_color_post_description: $colors_gunpowder,
 
-$border_color_post_menu: #808080 !default;
-$bg_color_post_menu: #BCBCBC !default;
-$bg_color_menu_link_hover: #D3D3D3 !default;
+  $border_color_post_menu: #808080,
+  $bg_color_post_menu: #BCBCBC,
+  $bg_color_menu_link_hover: #D3D3D3,
 
-$bg_color_selectionpopup: $colors_gunpowder !default; // selection popups like character/alias on posts#editor
-$font_color_selectionpopup: $colors_alto_brighter !default;
-$bg_color_icon_selector: $colors_gunpowder !default;
-$font_color_icon_selector: $colors_alto_brighter !default;
+  $bg_color_selectionpopup: $colors_gunpowder, // selection popups like character/alias on posts#editor
+  $font_color_selectionpopup: $colors_alto_brighter,
+  $bg_color_icon_selector: $colors_gunpowder,
+  $font_color_icon_selector: $colors_alto_brighter,
 
-$font_color_post_info: $colors_concrete !default;
-$font_weight_post_info: bold !default;
-$font_color_post_screenname: $colors_santasgrey !default;
+  $font_color_post_info: $colors_concrete,
+  $font_weight_post_info: bold,
+  $font_color_post_screenname: $colors_santasgrey,
 
-$font_color_paginate: $colors_concrete !default;
-$font_color_paginate_link: $colors_concrete !default;
-$font_color_paginate_link_visited: $colors_santasgrey !default;
-$font_color_paginate_link_disabled: #58546B;
-$bg_color_paginate_current_page: $colors_gunpowder !default;
+  $font_color_paginate: $colors_concrete,
+  $font_color_paginate_link: $colors_concrete,
+  $font_color_paginate_link_visited: $colors_santasgrey,
+  $font_color_paginate_link_disabled: #58546B,
+  $bg_color_paginate_current_page: $colors_gunpowder,
 
-// icons
-$bg_color_icon: $colors_alto_darker !default;
-$bg_color_icon_credit: $colors_alto_darker !default;
-$border_color_icon_editor: $colors_gunpowder !default;
-$bg_color_icon_editor: $colors_alto_darker !default;
+  // icons
+  $bg_color_icon: $colors_alto_darker,
+  $bg_color_icon_credit: $colors_alto_darker,
+  $border_color_icon_editor: $colors_gunpowder,
+  $bg_color_icon_editor: $colors_alto_darker,
 
-// tag items
-$font_color_tag_item: #444158 !default;
-$font_color_tag_item_gallery: #F7F7F7 !default;
+  // tag items
+  $font_color_tag_item: #444158,
+  $font_color_tag_item_gallery: #F7F7F7,
 
-// link-boxes
-$bg_color_linkbox_new: $colors_mulledwine !default;
-$bg_color_linkbox_edit: $colors_mulledwine !default;
-$bg_color_linkbox_favorite: $colors_mulledwine !default;
-$bg_color_linkbox_delete: $colors_mulledwine !default;
-$bg_color_linkbox_dismiss: $colors_mulledwine !default;
+  // link-boxes
+  $bg_color_linkbox_new: $colors_mulledwine,
+  $bg_color_linkbox_edit: $colors_mulledwine,
+  $bg_color_linkbox_favorite: $colors_mulledwine,
+  $bg_color_linkbox_delete: $colors_mulledwine,
+  $bg_color_linkbox_dismiss: $colors_mulledwine,
 
-// other buttons
-$bg_color_viewbutton: $colors_mulledwine !default;
-$bg_color_viewbutton_selected: #4D4B5B !default;
+  // other buttons
+  $bg_color_viewbutton: $colors_mulledwine,
+  $bg_color_viewbutton_selected: #4D4B5B,
+);
+@forward 'variables';

@@ -1,4 +1,4 @@
-@import 'starry_default_variables';
+@use 'starry_default_variables' as *;
 
 // main page
 $bg_color_page: #211E2F; // overall page
@@ -58,7 +58,9 @@ $bg_color_tag_item_odd: #1A1A22;
 // link-boxes
 $bg_color_linkbox_subber: #5C5778;
 
-@import 'starry_default_selectors';
+@use 'starry_default_selectors';
+
+@use 'dark_themes_selectors';
 
 .flash.success, .flash.error { color: $font_color_flash; }
 
@@ -101,5 +103,3 @@ $bg_color_select2_highlight: #5B586B;
 $bg_color_select2_selected: #3F3D4C;
 $bg_color_select2_search: $bg_color_select2_highlight;
 $opacity_mce_label: 0.8;
-
-@import 'dark_themes_selectors'
