@@ -40,23 +40,26 @@ RSpec.describe "Viewing posts" do
     let(:post_with_warnings) { create(:post, user: author, content_warnings: [post_warning]) }
 
     scenario "when user has content warnings turned on" do
-      visit post_path(create(:post))
-      expect(page).to have_no_selector('.error')
+      post1 = create(:post)
+      visit post_path(post1)
+
+      expect(page).to have_selector('.content-header', text: post1.subject)
+      expect(page).to have_no_selector('.flash.error')
 
       visit post_path(create(:post, content_warnings: [post_warning]))
-      within('.error') do
+      within('.flash.error') do
         expect(page).to have_text('This post has the following content warnings')
         expect(page).to have_text('violence')
       end
 
       visit post_path(create(:post, user: author))
-      within('.error') do
+      within('.flash.error') do
         expect(page).to have_text("This post's authors have general content warnings that might apply to the current post")
         expect(page).to have_text('nsfw')
       end
 
       visit post_path(post_with_warnings)
-      within('.error') do
+      within('.flash.error') do
         expect(page).to have_text('This post has the following content warnings')
         expect(page).to have_text('violence')
         expect(page).to have_text("This post's authors also have general content warnings that might apply to the current post")
@@ -68,11 +71,13 @@ RSpec.describe "Viewing posts" do
       user = login
       user.update!(hide_warnings: true)
       visit post_path(post_with_warnings)
+      expect(page).to have_selector('.content-header', text: post_with_warnings.subject)
       expect(page).to have_no_selector('.error')
     end
 
     scenario "when user ignores warnings" do
       visit post_path(post_with_warnings, ignore_warnings: true)
+      expect(page).to have_selector('.content-header', text: post_with_warnings.subject)
       expect(page).to have_no_selector('.error')
     end
   end
@@ -132,6 +137,7 @@ RSpec.describe "Viewing posts" do
 
     login(user, known_test_password)
     visit post_path(post)
+    expect(page).to have_selector('.content-header', text: post.subject)
     expect(page).to have_no_link("Split Post Here")
     within('#post-menu-box') { click_link("Split Post") }
     expect(page).to have_link("Split Post Here", count: 5)
@@ -140,18 +146,19 @@ RSpec.describe "Viewing posts" do
     expect(page).to have_no_link("Split Post Here")
     within('#post-menu-box') { click_link("Split Post") }
 
-    within('.error') do
+    within('.flash.error') do
       expect(page).to have_text('You are in Split Post mode. Please click the scissors icon on the reply you wish to make the start of the new post.')
       exit_split_post_mode_button = find(".link-box.action-dismiss.float-right")
       expect(exit_split_post_mode_button.text).to eq("Exit Split Post mode")
       exit_split_post_mode_button.find(:xpath, "..").click # xpath gets parent
     end
+
     expect(page).to have_no_link("Split Post Here")
     within('#post-menu-box') { click_link("Split Post") }
 
     reply = post.replies[2]
     click_link("Split Post Here", href: "/posts/#{post.id}/split?reply_id=#{reply.id}")
-    within('.error') { expect(page).to have_text("Post must be locked to current authors to be split.") }
+    expect(page).to have_selector('.flash.error', exact_text: 'Post must be locked to current authors to be split.')
     visit edit_post_path(post)
     find_by_id("post_authors_locked").click
     click_button "Save"
@@ -182,6 +189,7 @@ RSpec.describe "Viewing posts" do
     end
 
     visit post_path(post)
+    expect(page).to have_selector('.content-header', text: post.subject)
     expect(page).to have_no_text(reply.content)
 
     click_link("Unread")
@@ -213,24 +221,29 @@ RSpec.describe "Viewing posts" do
 
     user.update!(default_hide_add_bookmark_button: true)
     visit post_path(post)
+    expect(page).to have_selector('.content-header', text: post.subject)
     expect(page).to have_no_link("Add Bookmark")
     expect(page).to have_no_link("Edit")
+
     within('#post-menu-box') { click_link "Show Hidden Reply Buttons" }
     expect(page).to have_link("Add Bookmark", count: 5)
     expect(page).to have_link("Edit", count: 3)
+
     within('#post-menu-box') { click_link "Hide Reply Buttons" }
     expect(page).to have_no_link("Add Bookmark")
     expect(page).to have_no_link("Edit")
 
     user.update!(default_hide_edit_delete_buttons: false)
     visit post_path(post)
-    expect(page).to have_no_link("Add Bookmark")
     expect(page).to have_link("Edit", count: 3)
+    expect(page).to have_no_link("Add Bookmark")
+
     within('#post-menu-box') { click_link "Show Hidden Reply Buttons" }
     expect(page).to have_link("Add Bookmark", count: 5)
     expect(page).to have_link("Edit", count: 3)
+
     within('#post-menu-box') { click_link "Hide Reply Buttons" }
-    expect(page).to have_no_link("Add Bookmark")
     expect(page).to have_link("Edit", count: 3)
+    expect(page).to have_no_link("Add Bookmark")
   end
 end
