@@ -5,9 +5,12 @@ RSpec.describe "Unread posts" do
 
     user = login
     visit unread_posts_path
-    expect(page).to have_no_selector(".error")
-    expect(page).to have_text("Unread Posts")
-    expect(page).to have_text("No posts yet")
+
+    aggregate_failures do
+      expect(page).to have_no_selector(".error")
+      expect(page).to have_text("Unread Posts")
+      expect(page).to have_text("No posts yet")
+    end
 
     create_list(:post, 2)
     3.times do
@@ -24,27 +27,40 @@ RSpec.describe "Unread posts" do
     end
 
     visit unread_posts_path
-    expect(page).to have_selector('.post-subject', count: 5)
-    expect(page).to have_xpath("//img[contains(@src, 'note')]")
+
+    aggregate_failures do
+      expect(page).to have_selector('.post-subject', count: 5)
+      expect(page).to have_xpath("//img[contains(@src, 'note')]")
+    end
 
     user.update!(layout: 'starrydark')
     click_link "Opened Threads »"
-    expect(page).to have_selector('.post-subject', count: 3)
-    expect(page).to have_xpath("//img[contains(@src, 'bullet')]")
+
+    aggregate_failures do
+      expect(page).to have_selector('.post-subject', count: 3)
+      expect(page).to have_xpath("//img[contains(@src, 'bullet')]")
+    end
   end
 
   scenario "check-all checkbox works", :js do
     login
     visit unread_posts_path
-    expect(page).to have_no_selector('.check-all')
-    expect(page).to have_no_selector('.check-all-item[name="marked_ids[]"]')
+
+    aggregate_failures do
+      expect(page).to have_no_selector('.check-all')
+      expect(page).to have_no_selector('.check-all-item[name="marked_ids[]"]')
+    end
 
     create_list(:post, 2)
     visit unread_posts_path
+
     check_all_boxes = find('.check-all[data-check-box-name="marked_ids[]"]')
-    expect(check_all_boxes).to be_present
     notification_checkboxes = all('.check-all-item[name="marked_ids[]"]')
-    expect(notification_checkboxes.length).to be(2)
+
+    aggregate_failures do
+      expect(check_all_boxes).to be_present
+      expect(notification_checkboxes.length).to be(2)
+    end
 
     check_all_boxes.click
     expect(notification_checkboxes).to all(be_checked)
@@ -54,10 +70,13 @@ RSpec.describe "Unread posts" do
 
     notification_checkboxes[0].click
     expect(check_all_boxes).not_to be_checked
+
     notification_checkboxes[1].click
     expect(check_all_boxes).to be_checked
+
     notification_checkboxes[0].click
     expect(check_all_boxes).not_to be_checked
+
     check_all_boxes.click
     expect(notification_checkboxes[0]).to be_checked
   end

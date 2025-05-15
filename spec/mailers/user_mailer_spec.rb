@@ -26,7 +26,7 @@ RSpec.describe UserMailer do
       expect(ActionMailer::Base.deliveries.count).to eq(1)
     end
 
-    it "does not crash on deleted reply" do
+    it "does not crash on deleted reply", aggregate_failures: false do
       reply = create(:reply)
 
       clear_enqueued_jobs
@@ -36,8 +36,11 @@ RSpec.describe UserMailer do
 
       reply.destroy!
       perform_enqueued_jobs
-      expect(ActiveJob::Base.queue_adapter.enqueued_jobs.size).to eq(0)
-      expect(ActionMailer::Base.deliveries.count).to eq(0)
+
+      aggregate_failures do
+        expect(ActiveJob::Base.queue_adapter.enqueued_jobs.size).to eq(0)
+        expect(ActionMailer::Base.deliveries.count).to eq(0)
+      end
     end
   end
 

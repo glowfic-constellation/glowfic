@@ -20,7 +20,7 @@ RSpec.describe ReplyDraft do
       expect(draft).not_to be_valid
     end
 
-    it "is limited to one per user per post" do
+    it "is limited to one per user per post", :aggregate_failures do
       post = create(:post)
       user = create(:user)
       create(:reply_draft, user: user, post: post)
@@ -79,7 +79,7 @@ RSpec.describe ReplyDraft do
       expect(found).to be_nil
     end
 
-    it "builds reply from draft" do
+    it "builds reply from draft", :aggregate_failures do
       draft = create(:reply_draft)
       found = ReplyDraft.draft_reply_for(draft.post, draft.user)
       expect(found).to be_a(Reply)

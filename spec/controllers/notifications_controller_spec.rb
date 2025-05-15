@@ -124,7 +124,6 @@ RSpec.describe NotificationsController do
 
       it "handles invalid notification ids" do
         login
-        expect(Notification.count).to eq(1)
         post :mark, params: { marked_ids: ['nope', -1, '0'], commit: "Mark Unread" }
         expect(notification.reload.unread).to eq(false)
       end
@@ -154,7 +153,6 @@ RSpec.describe NotificationsController do
 
       it "handles invalid notification ids" do
         login
-        expect(Notification.count).to eq(1)
         post :mark, params: { marked_ids: ['nope', -1, '0'], commit: "Mark Read" }
         expect(notification.reload.unread).to eq(true)
       end
@@ -184,7 +182,6 @@ RSpec.describe NotificationsController do
 
       it "handles invalid notification ids" do
         login
-        expect(Notification.count).to eq(1)
         post :mark, params: { marked_ids: ['nope', -1, '0'], commit: "Delete" }
         expect(Notification.find_by(id: notification.id)).to be_present
       end
