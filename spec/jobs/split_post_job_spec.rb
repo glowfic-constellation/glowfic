@@ -26,7 +26,7 @@ RSpec.describe SplitPostJob do
       }.to raise_error(RuntimeError, "Couldn't find reply")
     end
 
-    it "works" do
+    it "works", :aggregate_failures do
       expect {
         SplitPostJob.perform_now(reply.id, title)
       }.to change { Post.count }.by(1)
@@ -39,7 +39,7 @@ RSpec.describe SplitPostJob do
     end
   end
 
-  it "works with many replies" do
+  it "works with many replies", :aggregate_failures do
     user = create(:user)
     coauthor = create(:user)
     cameo = create(:user)
@@ -80,7 +80,7 @@ RSpec.describe SplitPostJob do
     expect(Reply.find_by(id: reply.id)).not_to be_present
   end
 
-  it "copies original post's properties" do
+  it "copies original post's properties", :aggregate_failures do
     user = create(:user)
     board = create(:board)
     section = create(:board_section, board: board)
@@ -103,7 +103,7 @@ RSpec.describe SplitPostJob do
     expect(new_post.label_ids).to match_array([label.id])
   end
 
-  it "does not affect other posts" do
+  it "does not affect other posts", :aggregate_failures do
     user = create(:user)
     coauthor = create(:user)
 

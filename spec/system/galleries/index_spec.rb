@@ -1,4 +1,4 @@
-RSpec.describe "Show a list of galleries" do
+RSpec.describe "Show a list of galleries", :aggregate_failures do
   let(:user) { create(:user, username: 'Test user') }
 
   before(:each) do
@@ -16,14 +16,16 @@ RSpec.describe "Show a list of galleries" do
   end
 
   def expect_gallery_of(name, size, tags=[])
-    gallery_row = find('tr') { |x| x.has_selector?('.gallery-name a', exact_text: name) }
-    within(gallery_row) do
-      expect(page).to have_selector('.gallery-icon-count', exact_text: size.to_s)
-      if tags.empty?
-        expect(page).to have_no_selector('.tag-box .tag-item-link')
-      else
-        seen_tags = all('.tag-box .tag-item-link').map(&:text)
-        expect(seen_tags).to eq(tags)
+    aggregate_failures do
+      gallery_row = find('tr') { |x| x.has_selector?('.gallery-name a', exact_text: name) }
+      within(gallery_row) do
+        expect(page).to have_selector('.gallery-icon-count', exact_text: size.to_s)
+        if tags.empty?
+          expect(page).to have_no_selector('.tag-box .tag-item-link')
+        else
+          seen_tags = all('.tag-box .tag-item-link').map(&:text)
+          expect(seen_tags).to eq(tags)
+        end
       end
     end
   end

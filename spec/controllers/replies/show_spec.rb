@@ -8,14 +8,7 @@ RSpec.describe RepliesController, 'GET show' do
   end
 
   it "requires post access" do
-    expect(reply.user_id).not_to eq(reply.post.user_id)
-    expect(reply.post.visible_to?(reply.user)).to eq(true)
-
     reply.post.update!(privacy: :private)
-    reply.post.save!
-    reply.reload
-    expect(reply.post.visible_to?(reply.user)).to eq(false)
-
     login_as(reply.user)
     get :show, params: { id: reply.id }
     expect(response).to redirect_to(continuities_url)

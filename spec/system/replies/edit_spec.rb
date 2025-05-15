@@ -15,51 +15,63 @@ RSpec.describe "Editing replies" do
     end
 
     visit edit_reply_path(reply)
-    expect(page).to have_selector('.flash.error', text: 'You must be logged in to view that page.')
-    expect(page).to have_current_path(root_path)
-    expect(page).to have_no_selector('#post-editor')
+
+    aggregate_failures do
+      expect(page).to have_selector('.flash.error', text: 'You must be logged in to view that page.')
+      expect(page).to have_current_path(root_path)
+      expect(page).to have_no_selector('#post-editor')
+    end
   end
 
   scenario "User edits a reply" do
     login(user)
-
     visit reply_path(reply)
+
     expect(page).to have_selector('.post-container', count: 2)
+
     within(find_reply_on_page(reply)) do
       click_link 'Edit'
     end
 
-    expect(page).to have_selector('.content-header', exact_text: 'Edit reply')
-    expect(page).to have_no_selector('.post-container')
-    expect(page).to have_no_selector('.flash.error')
+    aggregate_failures do
+      expect(page).to have_selector('.content-header', exact_text: 'Edit reply')
+      expect(page).to have_no_selector('.post-container')
+      expect(page).to have_no_selector('.flash.error')
+    end
 
     within('#post-editor') do
       fill_in 'reply_content', with: 'other text'
       click_button 'submit_button'
     end
 
-    expect(page).to have_selector('.flash.success', exact_text: 'Reply updated.')
-    expect(page).to have_no_selector('.flash.error')
+    aggregate_failures do
+      expect(page).to have_selector('.flash.success', exact_text: 'Reply updated.')
+      expect(page).to have_no_selector('.flash.error')
 
-    expect(page).to have_selector('.post-container', count: 2)
-    within(find_reply_on_page(reply)) do
-      expect(page).to have_selector('.post-content', exact_text: 'other text')
+      expect(page).to have_selector('.post-container', count: 2)
+
+      within(find_reply_on_page(reply)) do
+        expect(page).to have_selector('.post-content', exact_text: 'other text')
+      end
     end
   end
 
   scenario "User edits a reply with preview" do
     login(user)
-
     visit reply_path(reply)
+
     expect(page).to have_selector('.post-container', count: 2)
+
     within(find_reply_on_page(reply)) do
       click_link 'Edit'
     end
 
     # first changes, then preview
-    expect(page).to have_selector('.content-header', exact_text: 'Edit reply')
-    expect(page).to have_no_selector('.post-container')
-    expect(page).to have_no_selector('.flash.error')
+    aggregate_failures do
+      expect(page).to have_selector('.content-header', exact_text: 'Edit reply')
+      expect(page).to have_no_selector('.post-container')
+      expect(page).to have_no_selector('.flash.error')
+    end
 
     within('#post-editor') do
       fill_in 'reply_content', with: 'other text'
@@ -67,25 +79,31 @@ RSpec.describe "Editing replies" do
     end
 
     # verify preview, change again
-    expect(page).to have_selector('.content-header', exact_text: reply.post.subject)
-    expect(page).to have_selector('.post-container', count: 1)
-    expect(page).to have_no_selector('.flash.error')
-    expect(page).to have_no_selector('.flash.success')
+    aggregate_failures do
+      expect(page).to have_selector('.content-header', exact_text: reply.post.subject)
+      expect(page).to have_selector('.post-container', count: 1)
+      expect(page).to have_no_selector('.flash.error')
+      expect(page).to have_no_selector('.flash.success')
+      expect(page).to have_selector('.post-container .post-content', exact_text: 'other text')
 
-    expect(page).to have_selector('.post-container .post-content', exact_text: 'other text')
+      within('#post-editor') do
+        expect(page).to have_field('reply_content', with: 'other text')
+      end
+    end
 
     within('#post-editor') do
-      expect(page).to have_field('reply_content', with: 'other text')
       fill_in 'reply_content', with: 'third text'
       click_button 'submit_button'
     end
 
-    expect(page).to have_selector('.flash.success', exact_text: 'Reply updated.')
-    expect(page).to have_no_selector('.flash.error')
+    aggregate_failures do
+      expect(page).to have_selector('.flash.success', exact_text: 'Reply updated.')
+      expect(page).to have_no_selector('.flash.error')
 
-    expect(page).to have_selector('.post-container', count: 2)
-    within(find_reply_on_page(reply)) do
-      expect(page).to have_selector('.post-content', exact_text: 'third text')
+      expect(page).to have_selector('.post-container', count: 2)
+      within(find_reply_on_page(reply)) do
+        expect(page).to have_selector('.post-content', exact_text: 'third text')
+      end
     end
   end
 
@@ -104,33 +122,41 @@ RSpec.describe "Editing replies" do
       tagged_at = reply.post.tagged_at
 
       visit reply_path(reply)
+
       expect(page).to have_selector('.post-container', count: 3)
+
       within(find_reply_on_page(reply)) do
         click_link 'Edit'
       end
 
       # add two extra replies
-      expect(page).to have_selector('.content-header', exact_text: 'Edit reply')
-      expect(page).to have_no_selector('.post-container')
-      expect(page).to have_no_selector('.flash.error')
+      aggregate_failures do
+        expect(page).to have_selector('.content-header', exact_text: 'Edit reply')
+        expect(page).to have_no_selector('.post-container')
+        expect(page).to have_no_selector('.flash.error')
+      end
 
       within('#post-editor') do
         fill_in 'reply_content', with: 'other text 1'
         click_button 'Add More Replies'
       end
 
-      expect(page).to have_selector('.content-header', exact_text: 'Editing reply and adding more')
-      expect(page).to have_selector('.post-container', count: 1)
-      expect(page).to have_no_selector('.flash.error')
+      aggregate_failures do
+        expect(page).to have_selector('.content-header', exact_text: 'Editing reply and adding more')
+        expect(page).to have_selector('.post-container', count: 1)
+        expect(page).to have_no_selector('.flash.error')
+      end
 
       within('#post-editor') do
         fill_in 'reply_content', with: 'other text 2'
         click_button 'Add More Replies'
       end
 
-      expect(page).to have_selector('.content-header', exact_text: 'Editing reply and adding more')
-      expect(page).to have_selector('.post-container', count: 2)
-      expect(page).to have_no_selector('.flash.error')
+      aggregate_failures do
+        expect(page).to have_selector('.content-header', exact_text: 'Editing reply and adding more')
+        expect(page).to have_selector('.post-container', count: 2)
+        expect(page).to have_no_selector('.flash.error')
+      end
 
       within('#post-editor') do
         fill_in 'reply_content', with: 'other text 3'
@@ -138,71 +164,84 @@ RSpec.describe "Editing replies" do
       end
 
       # All replies should be there in the right order
-      expect(page).to have_selector('.flash.success', exact_text: 'Reply updated.')
-      expect(page).to have_no_selector('.flash.error')
-      expect(page).to have_selector('.post-container', count: 5)
-      all_containers = find_all(".post-container")
+      aggregate_failures do
+        expect(page).to have_selector('.flash.success', exact_text: 'Reply updated.')
+        expect(page).to have_no_selector('.flash.error')
+        expect(page).to have_selector('.post-container', count: 5)
 
-      within(all_containers[1]) do
-        expect(page).to have_selector('.post-content', exact_text: 'other text 1')
-        expect(page).to have_selector('.post-footer', text: "Posted #{reply.created_at.strftime(TIME_FORMAT)} | Updated")
+        all_containers = all(".post-container")
+
+        within(all_containers[1]) do
+          expect(page).to have_selector('.post-content', exact_text: 'other text 1')
+          expect(page).to have_selector('.post-footer', text: "Posted #{reply.created_at.strftime(TIME_FORMAT)} | Updated")
+        end
+
+        within(all_containers[2]) do
+          expect(page).to have_selector('.post-content', exact_text: 'other text 2')
+          expect(page).to have_selector('.post-footer', text: "Posted #{reply.created_at.strftime(TIME_FORMAT)} | Updated")
+        end
+
+        within(all_containers[3]) do
+          expect(page).to have_selector('.post-content', exact_text: 'other text 3')
+          expect(page).to have_selector('.post-footer', text: "Posted #{reply.created_at.strftime(TIME_FORMAT)} | Updated")
+        end
+
+        within(all_containers[4]) { expect(page).to have_selector('.post-content', exact_text: 'example text 2') }
+
+        expect(reply.post.reload.tagged_at).to be_the_same_time_as(tagged_at)
       end
-
-      within(all_containers[2]) do
-        expect(page).to have_selector('.post-content', exact_text: 'other text 2')
-        expect(page).to have_selector('.post-footer', text: "Posted #{reply.created_at.strftime(TIME_FORMAT)} | Updated")
-      end
-
-      within(all_containers[3]) do
-        expect(page).to have_selector('.post-content', exact_text: 'other text 3')
-        expect(page).to have_selector('.post-footer', text: "Posted #{reply.created_at.strftime(TIME_FORMAT)} | Updated")
-      end
-
-      within(all_containers[4]) { expect(page).to have_selector('.post-content', exact_text: 'example text 2') }
-
-      expect(reply.post.reload.tagged_at).to be_the_same_time_as(tagged_at)
 
       # Now test using the "Save Previewed" button
       within(find_reply_on_page(reply)) do
         click_link 'Edit'
       end
+
       within('#post-editor') do
         fill_in 'reply_content', with: 'other text 4'
         click_button 'Add More Replies'
       end
+
       within('#post-editor') do
         fill_in 'reply_content', with: 'other text 5'
         click_button 'Add More Replies'
       end
+
       within('#post-editor') do
         fill_in 'reply_content', with: 'other text 6'
       end
+
       accept_alert { click_button "Save Previewed" }
-      expect(page).to have_selector('.post-container', count: 6)
-      all_containers = all(".post-container")
-      within(all_containers[1]) { expect(page).to have_selector('.post-content', exact_text: 'other text 4') }
-      within(all_containers[2]) { expect(page).to have_selector('.post-content', exact_text: 'other text 5') }
-      within(all_containers[3]) { expect(page).to have_selector('.post-content', exact_text: 'other text 2') }
-      within(all_containers[4]) { expect(page).to have_selector('.post-content', exact_text: 'other text 3') }
-      within(all_containers[5]) { expect(page).to have_selector('.post-content', exact_text: 'example text 2') }
-      expect(page).to have_no_text("other text 6")
+
+      aggregate_failures do
+        expect(page).to have_selector('.post-container', count: 6)
+        all_containers = all(".post-container")
+        within(all_containers[1]) { expect(page).to have_selector('.post-content', exact_text: 'other text 4') }
+        within(all_containers[2]) { expect(page).to have_selector('.post-content', exact_text: 'other text 5') }
+        within(all_containers[3]) { expect(page).to have_selector('.post-content', exact_text: 'other text 2') }
+        within(all_containers[4]) { expect(page).to have_selector('.post-content', exact_text: 'other text 3') }
+        within(all_containers[5]) { expect(page).to have_selector('.post-content', exact_text: 'example text 2') }
+        expect(page).to have_no_text("other text 6")
+      end
 
       # Now test discarding
       within(find_reply_on_page(reply)) do
         click_link 'Edit'
       end
+
       within('#post-editor') do
         fill_in 'reply_content', with: 'text to discard 1'
         click_button 'Add More Replies'
       end
+
       within('#post-editor') do
         fill_in 'reply_content', with: 'text to discard 2'
         accept_alert { click_button "Discard Replies" }
       end
+
       expect(page).to have_no_text("text to discard")
     end
 
-    scenario "does not show unseen or duplicate replies warnings", :js do
+    scenario "does not show unseen or duplicate replies warnings", :aggregate_failures, :js do
       login(user)
       reply
       create(:reply, user: user, post: reply.post, content: 'example text 2')
@@ -232,15 +271,17 @@ RSpec.describe "Editing replies" do
       end
 
       # Reply should be split without showing the "unseen replies" or "duplicate reply" warnings
-      expect(page).to have_selector('.flash.success', exact_text: 'Reply updated.')
-      expect(page).to have_no_selector('.flash.error')
+      aggregate_failures do
+        expect(page).to have_selector('.flash.success', exact_text: 'Reply updated.')
+        expect(page).to have_no_selector('.flash.error')
 
-      expect(page).to have_selector('.post-container', count: 8)
-      expect(page).to have_selector('.post-content', exact_text: 'other text 1', count: 2)
-      expect(page).to have_selector('.post-content', exact_text: 'other text 3', count: 2)
+        expect(page).to have_selector('.post-container', count: 8)
+        expect(page).to have_selector('.post-content', exact_text: 'other text 1', count: 2)
+        expect(page).to have_selector('.post-content', exact_text: 'other text 3', count: 2)
+      end
     end
 
-    scenario "interacts correctly with the quick switcher", :js do
+    scenario "interacts correctly with the quick switcher", :js do # rubocop:disable RSpec/MultipleExpectations
       login(user)
 
       # Create characters and aliases
@@ -266,15 +307,18 @@ RSpec.describe "Editing replies" do
         click_link 'Edit'
       end
 
-      # Check that the quick switcher has the characters in the right orders
       switcher_chars = within('.post-char-access') do
         switcher_chars = all('.char-access-icon')
-        expect(switcher_chars.size).to eq(4)
 
-        expected_ids = ["", char3.id.to_s, char2.id.to_s, char1.id.to_s]
-        actual_ids = switcher_chars.map { |img| img[:'data-character-id'] }
+        aggregate_failures do
+          # Check that the switcher has the correct characters in the right order
+          expect(switcher_chars.size).to eq(4)
 
-        expect(actual_ids).to eq(expected_ids)
+          expected_ids = ["", char3.id.to_s, char2.id.to_s, char1.id.to_s]
+          actual_ids = switcher_chars.map { |img| img[:'data-character-id'] }
+
+          expect(actual_ids).to eq(expected_ids)
+        end
 
         switcher_chars
       end
@@ -282,8 +326,10 @@ RSpec.describe "Editing replies" do
       # Check that all aliases are selected correctly
       switcher_chars[1].click
       expect(page).to have_selector('.post-character #name', exact_text: char3_alias.name)
+
       switcher_chars[2].click
       expect(page).to have_selector('.post-character #name', exact_text: char2_alias.name)
+
       switcher_chars[3].click
       within('.post-character') do
         expect(page).to have_selector('#name', exact_text: char1.name)
@@ -297,9 +343,10 @@ RSpec.describe "Editing replies" do
       click_button "Add More Replies"
 
       within('#post-editor') do
-        # Check that the switcher has the correct characters in the right order
-        switcher_chars = within('.post-char-access') do
-          switcher_chars = all('.char-access-icon')
+        switcher_chars = all('.post-char-access .char-access-icon')
+
+        aggregate_failures do
+          # Check that the switcher has the correct characters in the right order
           expect(switcher_chars.size).to eq(4)
 
           expected_ids = ["", char1.id.to_s, char3.id.to_s, char2.id.to_s]
@@ -307,13 +354,13 @@ RSpec.describe "Editing replies" do
 
           expect(actual_ids).to eq(expected_ids)
 
-          switcher_chars
+          # Check that alias is selected correctly
+          expect(page).to have_selector('.post-character #name', exact_text: char1_alias.name)
         end
 
-        # Check that alias is selected correctly
-        expect(page).to have_selector('.post-character #name', exact_text: char1_alias.name)
         switcher_chars[2].click
         expect(page).to have_selector('.post-character #name', exact_text: char3_alias.name)
+
         switcher_chars[1].click
         expect(page).to have_selector('.post-character #name', exact_text: char1_alias.name)
 
@@ -329,9 +376,10 @@ RSpec.describe "Editing replies" do
       click_button "Add More Replies"
 
       within('#post-editor') do
-        # Check that the switcher has the correct characters in the right order
-        switcher_chars = within('.post-char-access') do
-          switcher_chars = all('.char-access-icon')
+        switcher_chars = all('.post-char-access .char-access-icon')
+
+        aggregate_failures do
+          # Check that the switcher has the correct characters in the right order
           expect(switcher_chars.size).to eq(5)
 
           expected_ids = ["", char4.id.to_s, char1.id.to_s, char3.id.to_s, char2.id.to_s]
@@ -339,13 +387,13 @@ RSpec.describe "Editing replies" do
 
           expect(actual_ids).to eq(expected_ids)
 
-          switcher_chars
+          # Check that aliases are selected correctly
+          expect(page).to have_selector('.post-character #name', exact_text: char4.name)
         end
 
-        # Check that aliases are selected correctly
-        expect(page).to have_selector('.post-character #name', exact_text: char4.name)
         switcher_chars[2].click
         expect(page).to have_selector('.post-character #name', exact_text: char1_alias.name)
+
         switcher_chars[1].click
         within('.post-character') do
           expect(page).to have_selector('#name', exact_text: char4.name)
@@ -443,27 +491,35 @@ RSpec.describe "Editing replies" do
   scenario "User tries to edit someone else's reply" do
     login
     visit reply_path(reply)
+
     within(find_reply_on_page(reply)) do
       expect(page).to have_no_link('Edit')
     end
 
     visit edit_reply_path(reply)
-    expect(page).to have_selector('.flash.error', text: 'You do not have permission to modify this reply.')
-    expect(page).to have_current_path(post_path(reply.post))
+
+    aggregate_failures do
+      expect(page).to have_selector('.flash.error', text: 'You do not have permission to modify this reply.')
+      expect(page).to have_current_path(post_path(reply.post))
+    end
   end
 
   scenario "Moderator edits a reply" do
     login(create(:mod_user))
 
     visit reply_path(reply)
+
     expect(page).to have_selector('.post-container', count: 2)
+
     within(find_reply_on_page(reply)) do
       click_link 'Edit'
     end
 
-    expect(page).to have_selector('.content-header', exact_text: 'Edit reply')
-    expect(page).to have_no_selector('.post-container')
-    expect(page).to have_no_selector('.flash.error')
+    aggregate_failures do
+      expect(page).to have_selector('.content-header', exact_text: 'Edit reply')
+      expect(page).to have_no_selector('.post-container')
+      expect(page).to have_no_selector('.flash.error')
+    end
 
     within('#post-editor') do
       fill_in 'reply_content', with: 'other text'
@@ -471,13 +527,15 @@ RSpec.describe "Editing replies" do
       click_button 'Save'
     end
 
-    expect(page).to have_selector('.flash.success', exact_text: 'Reply updated.')
-    expect(page).to have_no_selector('.flash.error')
-    expect(page).to have_selector('.post-container', count: 2)
+    aggregate_failures do
+      expect(page).to have_selector('.flash.success', exact_text: 'Reply updated.')
+      expect(page).to have_no_selector('.flash.error')
+      expect(page).to have_selector('.post-container', count: 2)
 
-    within(find_reply_on_page(reply)) do
-      expect(page).to have_selector('.post-content', exact_text: 'other text')
-      expect(page).to have_selector('.post-author', exact_text: user.username)
+      within(find_reply_on_page(reply)) do
+        expect(page).to have_selector('.post-content', exact_text: 'other text')
+        expect(page).to have_selector('.post-author', exact_text: user.username)
+      end
     end
   end
 
@@ -485,15 +543,19 @@ RSpec.describe "Editing replies" do
     login(create(:mod_user))
 
     visit reply_path(reply)
+
     expect(page).to have_selector('.post-container', count: 2)
+
     within(find_reply_on_page(reply)) do
       click_link 'Edit'
     end
 
     # first changes, then preview
-    expect(page).to have_selector('.content-header', exact_text: 'Edit reply')
-    expect(page).to have_no_selector('.post-container')
-    expect(page).to have_no_selector('.flash.error')
+    aggregate_failures do
+      expect(page).to have_selector('.content-header', exact_text: 'Edit reply')
+      expect(page).to have_no_selector('.post-container')
+      expect(page).to have_no_selector('.flash.error')
+    end
 
     within('#post-editor') do
       fill_in 'reply_content', with: 'other text'
@@ -502,31 +564,38 @@ RSpec.describe "Editing replies" do
     end
 
     # verify preview, change again
-    expect(page).to have_selector('.content-header', exact_text: reply.post.subject)
-    expect(page).to have_selector('.post-container', count: 1)
-    expect(page).to have_no_selector('.flash.error')
-    expect(page).to have_no_selector('.flash.success')
+    aggregate_failures do
+      expect(page).to have_selector('.content-header', exact_text: reply.post.subject)
+      expect(page).to have_selector('.post-container', count: 1)
+      expect(page).to have_no_selector('.flash.error')
+      expect(page).to have_no_selector('.flash.success')
 
-    within('.post-container') do
-      expect(page).to have_selector('.post-content', exact_text: 'other text')
-      expect(page).to have_selector('.post-author', exact_text: user.username)
+      within('.post-container') do
+        expect(page).to have_selector('.post-content', exact_text: 'other text')
+        expect(page).to have_selector('.post-author', exact_text: user.username)
+      end
+
+      within('#post-editor') do
+        expect(page).to have_field('reply_content', with: 'other text')
+        expect(page).to have_field('Moderator note', with: 'example edit')
+      end
     end
 
     within('#post-editor') do
-      expect(page).to have_field('reply_content', with: 'other text')
-      expect(page).to have_field('Moderator note', with: 'example edit')
       fill_in 'reply_content', with: 'third text'
       fill_in 'Moderator note', with: 'another edit'
       click_button 'Save'
     end
 
-    expect(page).to have_selector('.flash.success', exact_text: 'Reply updated.')
-    expect(page).to have_no_selector('.flash.error')
-    expect(page).to have_selector('.post-container', count: 2)
+    aggregate_failures do
+      expect(page).to have_selector('.flash.success', exact_text: 'Reply updated.')
+      expect(page).to have_no_selector('.flash.error')
+      expect(page).to have_selector('.post-container', count: 2)
 
-    within(find_reply_on_page(reply)) do
-      expect(page).to have_selector('.post-content', exact_text: 'third text')
-      expect(page).to have_selector('.post-author', exact_text: user.username)
+      within(find_reply_on_page(reply)) do
+        expect(page).to have_selector('.post-content', exact_text: 'third text')
+        expect(page).to have_selector('.post-author', exact_text: user.username)
+      end
     end
   end
 end

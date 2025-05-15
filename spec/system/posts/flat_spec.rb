@@ -1,4 +1,4 @@
-RSpec.describe "Viewing flat posts" do
+RSpec.describe "Viewing flat posts", :aggregate_failures do
   scenario "User views a flat post" do
     user = login
     post = create(:post, user: user, subject: "test subject", content: "test content", editor_mode: 'html')

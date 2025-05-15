@@ -1,5 +1,5 @@
 RSpec.describe Post::View do
-  describe "validations" do
+  describe "validations", :aggregate_failures do
     it "requires post" do
       view = build(:post_view, post: nil)
       expect(view).not_to be_valid
@@ -70,8 +70,10 @@ RSpec.describe Post::View do
       post = perform_enqueued_jobs(only: NotifyFollowersOfNewPostJob) do
         create(:post, user: favorited_user)
       end
-      expect(user.notifications.count).to eq(1)
-      expect(user.notifications.first.unread).to be true
+      aggregate_failures do
+        expect(user.notifications.count).to eq(1)
+        expect(user.notifications.first.unread).to be(true)
+      end
       post
     end
 

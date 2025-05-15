@@ -367,7 +367,7 @@ RSpec.describe UsersController do
       expect(user2.reload.email).not_to eq('bademail@example.com')
     end
 
-    it "updates settings with valid params" do
+    it "updates settings with valid params", aggregate_failures: false do
       user = create(:user)
       login_as(user)
 
@@ -380,21 +380,27 @@ RSpec.describe UsersController do
       }
 
       # ensure new values are different, so test tests correct things
-      user_details.each do |key, value|
-        expect(user.public_send(key)).not_to eq(value)
+
+      aggregate_failures do
+        user_details.each do |key, value|
+          expect(user.public_send(key)).not_to eq(value)
+        end
       end
 
       put :update, params: { id: user.id, user: user_details }
-      expect(response).to redirect_to(edit_user_url(user))
-      expect(flash[:success]).to eq('Changes saved.')
 
-      user.reload
-      user_details.each do |key, value|
-        expect(user.public_send(key)).to eq(value)
+      aggregate_failures do
+        expect(response).to redirect_to(edit_user_url(user))
+        expect(flash[:success]).to eq('Changes saved.')
+
+        user.reload
+        user_details.each do |key, value|
+          expect(user.public_send(key)).to eq(value)
+        end
       end
     end
 
-    it "updates profile with valid params" do
+    it "updates profile with valid params", aggregate_failures: false do
       user = create(:user)
       login_as(user)
 
@@ -409,33 +415,41 @@ RSpec.describe UsersController do
       }
 
       # ensure new values are different, so test tests correct things
-      user_details.each do |key, value|
-        expect(user.public_send(key)).not_to eq(value)
+      aggregate_failures do
+        user_details.each do |key, value|
+          expect(user.public_send(key)).not_to eq(value)
+        end
       end
 
       put :update, params: { id: user.id, user: user_details, button_submit_profile: true }
-      expect(response).to redirect_to(user_url(user))
-      expect(flash[:success]).to eq('Changes saved.')
 
-      user.reload
-      user_details.each do |key, value|
-        expect(user.public_send(key)).to eq(value)
+      aggregate_failures do
+        expect(response).to redirect_to(user_url(user))
+        expect(flash[:success]).to eq('Changes saved.')
+
+        user.reload
+        user_details.each do |key, value|
+          expect(user.public_send(key)).to eq(value)
+        end
       end
     end
 
-    it "updates username and still allows login" do
+    it "updates username and still allows login", aggregate_failures: false do
       pass = 'password123'
       user = create(:user, username: 'user123', password: pass)
       expect(user.authenticate(pass)).to eq(true)
       login_as(user)
       put :update, params: { id: user.id, user: { username: 'user124' } }
-      expect(response).to redirect_to(edit_user_url(user))
-      expect(flash[:success]).to eq('Changes saved.')
 
-      user.reload
-      expect(user.username).to eq('user124')
-      expect(user.authenticate(pass)).to eq(true)
-      expect(user.authenticate(pass + '1')).not_to eq(true)
+      aggregate_failures do
+        expect(response).to redirect_to(edit_user_url(user))
+        expect(flash[:success]).to eq('Changes saved.')
+
+        user.reload
+        expect(user.username).to eq('user124')
+        expect(user.authenticate(pass)).to eq(true)
+        expect(user.authenticate(pass + '1')).not_to eq(true)
+      end
     end
 
     context "tos" do

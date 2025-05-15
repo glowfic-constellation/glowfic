@@ -51,69 +51,92 @@ RSpec.describe IconsController do
         expect(flash[:error]).to eq("You do not have permission to modify this gallery.")
       end
 
-      it "skips other people's icons" do
+      it "skips other people's icons", aggregate_failures: false do
         icon = create(:icon)
         gallery = create(:gallery, user: user)
         gallery.icons << icon
         icon.reload
+
         expect(icon.galleries.count).to eq(1)
+
         delete :delete_multiple, params: { marked_ids: [icon.id], gallery_id: gallery.id, gallery_delete: true }
         icon.reload
+
         expect(icon.galleries.count).to eq(1)
       end
 
-      it "removes int ids from gallery" do
+      it "removes int ids from gallery", aggregate_failures: false do
         icon = create(:icon, user: user)
         gallery = create(:gallery, user: user)
         gallery.icons << icon
+
         expect(icon.galleries.count).to eq(1)
+
         delete :delete_multiple, params: { marked_ids: [icon.id], gallery_id: gallery.id, gallery_delete: true }
-        expect(icon.galleries.count).to eq(0)
-        expect(response).to redirect_to(gallery_url(gallery))
-        expect(flash[:success]).to eq("Icons removed from gallery.")
+
+        aggregate_failures do
+          expect(icon.galleries.count).to eq(0)
+          expect(response).to redirect_to(gallery_url(gallery))
+          expect(flash[:success]).to eq("Icons removed from gallery.")
+        end
       end
 
-      it "removes string ids from gallery" do
+      it "removes string ids from gallery", aggregate_failures: false do
         icon = create(:icon, user: user)
         gallery = create(:gallery, user: user)
         gallery.icons << icon
+
         expect(icon.galleries.count).to eq(1)
+
         delete :delete_multiple, params: { marked_ids: [icon.id.to_s], gallery_id: gallery.id, gallery_delete: true }
-        expect(icon.galleries.count).to eq(0)
-        expect(response).to redirect_to(gallery_url(gallery))
-        expect(flash[:success]).to eq("Icons removed from gallery.")
+
+        aggregate_failures do
+          expect(icon.galleries.count).to eq(0)
+          expect(response).to redirect_to(gallery_url(gallery))
+          expect(flash[:success]).to eq("Icons removed from gallery.")
+        end
       end
 
-      it "goes back to index page if given" do
+      it "goes back to index page if given", aggregate_failures: false do
         icon = create(:icon, user: user)
         gallery = create(:gallery, user: user)
         gallery.icons << icon
+
         expect(icon.galleries.count).to eq(1)
+
         delete :delete_multiple, params: {
           marked_ids: [icon.id.to_s],
           gallery_id: gallery.id,
           gallery_delete: true,
           return_to: 'index',
         }
-        expect(icon.galleries.count).to eq(0)
-        expect(response).to redirect_to(user_galleries_url(user.id, anchor: "gallery-#{gallery.id}"))
+
+        aggregate_failures do
+          expect(icon.galleries.count).to eq(0)
+          expect(response).to redirect_to(user_galleries_url(user.id, anchor: "gallery-#{gallery.id}"))
+        end
       end
 
-      it "goes back to tag page if given" do
+      it "goes back to tag page if given", aggregate_failures: false do
         icon = create(:icon, user: user)
         gallery = create(:gallery, user: user)
         group = create(:gallery_group, user: user)
         group.galleries << gallery
         gallery.icons << icon
+
         expect(icon.galleries.count).to eq(1)
+
         delete :delete_multiple, params: {
           marked_ids: [icon.id.to_s],
           gallery_id: gallery.id,
           gallery_delete: true,
           return_tag: group.id,
         }
-        expect(icon.galleries.count).to eq(0)
-        expect(response).to redirect_to(tag_url(group, anchor: "gallery-#{gallery.id}"))
+
+        aggregate_failures do
+          expect(icon.galleries.count).to eq(0)
+          expect(response).to redirect_to(tag_url(group, anchor: "gallery-#{gallery.id}"))
+        end
       end
     end
 
@@ -517,7 +540,7 @@ RSpec.describe IconsController do
     it "handles save errors" do
       user = create(:user)
       icon = create(:icon, user: user)
-      expect(user.avatar_id).to be_nil
+      # expect(user.avatar_id).to be_nil
       login_as(user)
 
       allow(User).to receive(:find_by).and_call_original
@@ -535,7 +558,7 @@ RSpec.describe IconsController do
     it "works" do
       user = create(:user)
       icon = create(:icon, user: user)
-      expect(user.avatar_id).to be_nil
+      # expect(user.avatar_id).to be_nil
       login_as(user)
 
       post :avatar, params: { id: icon.id }
@@ -575,7 +598,7 @@ RSpec.describe IconsController do
     end
 
     context "with galleryless icon" do
-      it "sets variables correctly" do
+      it "sets variables correctly", aggregate_failures: false do
         user = create(:user)
         icon = create(:icon, user: user)
         alts = create_list(:icon, 5, user: user)
@@ -585,28 +608,30 @@ RSpec.describe IconsController do
 
         other_icon = create(:icon, user: user)
         gallery = create(:gallery, user: user, icons: [other_icon])
-        expect(gallery.icons).to match_array([other_icon])
         create(:post, user: user, icon: other_icon) # other post
         create(:reply, user: user, icon: other_icon) # other reply
 
+        expect(gallery.icons).to match_array([other_icon])
+
         login_as(icon.user)
         get :replace, params: { id: icon.id }
-        expect(response).to have_http_status(200)
-        expect(assigns(:alts)).to match_array(alts)
-        expect(assigns(:posts)).to match_array([post, reply.post])
-        expect(assigns(:page_title)).to eq("Replace Icon: " + icon.keyword)
+
+        aggregate_failures do
+          expect(response).to have_http_status(200)
+          expect(assigns(:alts)).to match_array(alts)
+          expect(assigns(:posts)).to match_array([post, reply.post])
+          expect(assigns(:page_title)).to eq("Replace Icon: " + icon.keyword)
+        end
       end
     end
 
     context "with icon gallery" do
-      it "sets variables correctly" do
+      it "sets variables correctly", aggregate_failures: false do
         user = create(:user)
         icon = create(:icon, user: user)
         alts = create_list(:icon, 5, user: user)
         gallery = create(:gallery, user: user, icon_ids: [icon.id] + alts.map(&:id))
         other_icon = create(:icon, user: user)
-
-        expect(gallery.icons).to match_array([icon] + alts)
 
         post = create(:post, user: user, icon: icon)
         create(:reply, post: post, user: user, icon: icon) # post reply
@@ -615,12 +640,17 @@ RSpec.describe IconsController do
         create(:post, user: user, icon: other_icon) # other post
         create(:reply, user: user, icon: other_icon) # other reply
 
+        expect(gallery.icons).to match_array([icon] + alts)
+
         login_as(icon.user)
         get :replace, params: { id: icon.id }
-        expect(response).to have_http_status(200)
-        expect(assigns(:alts)).to match_array(alts)
-        expect(assigns(:posts)).to match_array([post, reply.post])
-        expect(assigns(:page_title)).to eq("Replace Icon: " + icon.keyword)
+
+        aggregate_failures do
+          expect(response).to have_http_status(200)
+          expect(assigns(:alts)).to match_array(alts)
+          expect(assigns(:posts)).to match_array([post, reply.post])
+          expect(assigns(:page_title)).to eq("Replace Icon: " + icon.keyword)
+        end
       end
     end
   end

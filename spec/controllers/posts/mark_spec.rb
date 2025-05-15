@@ -71,7 +71,7 @@ RSpec.describe PostsController, 'POST mark' do
       expect(flash[:success]).to eq("2 posts hidden from this page.")
     end
 
-    it "does not mess with read timestamps" do
+    it "does not mess with read timestamps", aggregate_failures: false do
       time = 10.minutes.ago
       post1, post2, post3 = Timecop.freeze(time) { create_list(:post, 3) }
 
@@ -91,11 +91,13 @@ RSpec.describe PostsController, 'POST mark' do
 
       post :mark, params: { marked_ids: [post1, post2, post3].map { |x| x.id.to_s } }
 
-      expect(response).to redirect_to(unread_posts_url)
-      expect(flash[:success]).to eq("3 posts hidden from this page.")
-      expect(post1.reload.last_read(user)).to be_nil
-      expect(post2.reload.last_read(user)).to be_the_same_time_as(time2)
-      expect(post3.reload.last_read(user)).to be_the_same_time_as(time3)
+      aggregate_failures do
+        expect(response).to redirect_to(unread_posts_url)
+        expect(flash[:success]).to eq("3 posts hidden from this page.")
+        expect(post1.reload.last_read(user)).to be_nil
+        expect(post2.reload.last_read(user)).to be_the_same_time_as(time2)
+        expect(post3.reload.last_read(user)).to be_the_same_time_as(time3)
+      end
     end
   end
 

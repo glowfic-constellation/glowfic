@@ -64,23 +64,35 @@ RSpec.describe MessagesController do
 
       before(:each) { [m1, m2, m3, m4, m5, m6, m7, m8, m9] }
 
-      it "excludes blocked messages in inbox" do
+      it "excludes blocked messages in inbox", aggregate_failures: false do
         login_as(m1.recipient)
         get :index
-        expect(assigns(:messages).count).to eq(4)
-        expect(assigns(:messages).map(&:thread_id)).to match_array([m1.id, m2.id, m5.id, m7.id])
+
+        aggregate_failures do
+          expect(assigns(:messages).count).to eq(4)
+          expect(assigns(:messages).map(&:thread_id)).to match_array([m1.id, m2.id, m5.id, m7.id])
+        end
+
         create(:block, blocking_user: m1.recipient, blocked_user: m1.sender)
+
         get :index
+
         expect(assigns(:messages).count).to eq(0)
       end
 
-      it "excludes blocked messages in outbox" do
+      it "excludes blocked messages in outbox", aggregate_failures: false do
         login_as(m1.recipient)
         get :index, params: { view: 'outbox' }
-        expect(assigns(:messages).count).to eq(4) # m2/3, m4, m5/6, m7/8/9
-        expect(assigns(:messages).map(&:thread_id)).to match_array([m2.id, m4.id, m5.id, m7.id])
+
+        aggregate_failures do
+          expect(assigns(:messages).count).to eq(4) # m2/3, m4, m5/6, m7/8/9
+          expect(assigns(:messages).map(&:thread_id)).to match_array([m2.id, m4.id, m5.id, m7.id])
+        end
+
         create(:block, blocking_user: m1.recipient, blocked_user: m1.sender)
+
         get :index, params: { view: 'outbox' }
+
         expect(assigns(:messages).count).to eq(0)
       end
     end
@@ -567,7 +579,7 @@ RSpec.describe MessagesController do
       end
 
       context "sender" do
-        it "works" do
+        it "works", aggregate_failures: false do
           message = create(:message)
           login_as(message.sender)
           expect(message.visible_outbox).to eq(true)
@@ -577,7 +589,7 @@ RSpec.describe MessagesController do
       end
 
       context "recipient" do
-        it "works" do
+        it "works", aggregate_failures: false do
           message = create(:message)
           login_as(message.recipient)
           expect(message.visible_inbox).to eq(true)

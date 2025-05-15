@@ -36,7 +36,7 @@ RSpec.describe Notification do
     end
   end
 
-  describe "#check_read" do
+  describe "#check_read", :aggregate_failures do
     let(:post) { create(:post) }
     let(:user) { create(:user) }
     let(:notification) { create(:notification, user: user, post: post) }

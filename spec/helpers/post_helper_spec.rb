@@ -1,5 +1,5 @@
 RSpec.describe PostHelper do
-  describe "#author_links" do
+  describe "#author_links", :aggregate_failures do
     let(:post) { create(:post) }
 
     context "with only deleted users" do

@@ -39,7 +39,7 @@ RSpec.describe Icon do
     end
 
     describe "#uploaded_url_yours" do
-      it "does not allow url/s3_key mismatch" do
+      it "does not allow url/s3_key mismatch", :aggregate_failures do
         icon = build(:icon, user: create(:user))
         icon.url = "https://d1anwqy6ci9o1i.cloudfront.net/users%2F#{icon.user.id}%2Ficons%2Fnonsense-fakeimg2.png"
         icon.s3_key = "users/#{icon.user.id + 1}/icons/nonsense-fakeimg2.png"
@@ -185,7 +185,7 @@ RSpec.describe Icon do
       icon.update!(url: "https://www.fakeicon.com/new_icon", s3_key: nil)
     end
 
-    shared_examples "works" do
+    shared_examples "works", :aggregate_failures do
       let(:post1) { create(:post, icon: icon, user: user) }
       let(:post2) { create(:post, unjoined_authors: [user]) }
       let(:reply) { create(:reply, icon: icon, post: post2, user: user) }

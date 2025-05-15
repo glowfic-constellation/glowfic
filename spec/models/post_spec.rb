@@ -1,5 +1,5 @@
 RSpec.describe Post do
-  describe "timestamps" do
+  describe "timestamps", :aggregate_failures do
     let!(:post) { create(:post) }
     let!(:old_edited_at) { post.edited_at }
     let!(:time) { post.edited_at + 1.hour }
@@ -173,18 +173,23 @@ RSpec.describe Post do
       post = Timecop.freeze(time - 5.minutes) do
         create(:post)
       end
-      expect(post.edited_at).to be_the_same_time_as(time - 5.minutes)
-      expect(post.updated_at).to be_the_same_time_as(time - 5.minutes)
-      expect(post.audits.count).to eq(1)
+
+      aggregate_failures do
+        expect(post.edited_at).to be_the_same_time_as(time - 5.minutes)
+        expect(post.updated_at).to be_the_same_time_as(time - 5.minutes)
+        expect(post.audits.count).to eq(1)
+      end
 
       Timecop.freeze(time) do
         post.update!(character: create(:character, user: post.user))
       end
 
       # editing a post's character changes edit and makes audit but does not tag
-      expect(post.edited_at).to be_the_same_time_as(time)
-      expect(post.audits.count).to eq(2)
-      expect(post.tagged_at).to be_the_same_time_as(time - 5.minutes)
+      aggregate_failures do
+        expect(post.edited_at).to be_the_same_time_as(time)
+        expect(post.audits.count).to eq(2)
+        expect(post.tagged_at).to be_the_same_time_as(time - 5.minutes)
+      end
       Post.auditing_enabled = false
     end
   end
@@ -207,24 +212,23 @@ RSpec.describe Post do
       end
     end
 
-    it "should handle mix and match section/no section creates" do
+    it "should handle mix and match section/no section creates", :aggregate_failures do
       board = create(:board)
-      section = create(:board_section, board_id: board.id)
-      expect(section.section_order).to eq(0)
-      5.times do |i|
-        post = create(:post, board_id: board.id, section_id: section.id)
-        expect(post.section_order).to eq(i)
-      end
-      post = create(:post, board_id: board.id)
-      expect(post.section_order).to eq(0)
-      post = create(:post, board_id: board.id)
-      expect(post.section_order).to eq(1)
-      post = create(:post, board_id: board.id, section_id: section.id)
-      expect(post.section_order).to eq(5)
-      section = create(:board_section, board_id: board.id)
-      expect(section.section_order).to eq(1)
-      post = create(:post, board_id: board.id)
-      expect(post.section_order).to eq(2)
+      section0 = create(:board_section, board: board)
+      section1 = create(:board_section, board: board)
+      posts = create_list(:post, 5, board: board, section: section0)
+      post0 = create(:post, board: board)
+      post1 = create(:post, board: board)
+      post2 = create(:post, board: board, section: section0)
+      post3 = create(:post, board: board)
+
+      expect(section0.section_order).to eq(0)
+      expect(section1.section_order).to eq(1)
+      expect(posts.map(&:section_order)).to eq([*0..4])
+      expect(post0.section_order).to eq(0)
+      expect(post1.section_order).to eq(1)
+      expect(post2.section_order).to eq(5)
+      expect(post3.section_order).to eq(2)
 
       board.board_sections.ordered.each_with_index do |s, i|
         expect(s.section_order).to eq(i)
@@ -234,123 +238,155 @@ RSpec.describe Post do
         expect(s.section_order).to eq(i)
       end
 
-      section.posts.ordered_in_section.each_with_index do |s, i|
+      section0.posts.ordered_in_section.each_with_index do |s, i|
         expect(s.section_order).to eq(i)
       end
     end
 
     it "should update when section is changed" do
       board = create(:board)
-      section = create(:board_section, board_id: board.id)
-      post = create(:post, board_id: board.id, section_id: section.id)
-      expect(post.section_order).to eq(0)
-      post = create(:post, board_id: board.id, section_id: section.id)
-      expect(post.section_order).to eq(1)
-      section = create(:board_section, board_id: board.id)
-      post.update!(section_id: section.id)
-      post.reload
-      expect(post.section_order).to eq(0)
+      section1 = create(:board_section, board: board)
+      section2 = create(:board_section, board: board)
+      post1 = create(:post, board: board, section: section1)
+      post2 = create(:post, board: board, section: section1)
+
+      aggregate_failures do
+        expect(post1.section_order).to eq(0)
+        expect(post2.section_order).to eq(1)
+      end
+
+      post1.update!(section: section2)
+      post1.reload
+
+      expect(post1.section_order).to eq(0)
     end
 
     it "should update when board is changed" do
-      board = create(:board)
-      create(:post, board_id: board.id)
-      create(:post, board_id: board.id)
-      post = create(:post, board_id: board.id)
+      board1 = create(:board)
+      board2 = create(:board)
+      create_list(:post, 2, board: board1)
+      post = create(:post, board: board1)
+
       expect(post.section_order).to eq(2)
-      board = create(:board)
-      post.board = board
+
+      post.board = board2
       post.save!
       post.reload
+
       expect(post.section_order).to eq(0)
     end
 
     it "should not increment on non-section update" do
       board = create(:board)
       post = create(:post, board_id: board.id)
+      create_list(:post, 2, board: board)
+
       expect(post.section_order).to eq(0)
-      create(:post, board_id: board.id)
-      create(:post, board_id: board.id)
+
       post.update!(content: 'new content')
       post.reload
+
       expect(post.section_order).to eq(0)
     end
 
     it "should reorder upon deletion" do
       board = create(:board, authors_locked: true)
       post0 = create(:post, board: board, user: board.creator)
-      expect(post0.section_order).to eq(0)
       post1 = create(:post, board: board, user: board.creator)
-      expect(post1.section_order).to eq(1)
       post2 = create(:post, board: board, user: board.creator)
-      expect(post2.section_order).to eq(2)
       post3 = create(:post, board: board, user: board.creator)
-      expect(post3.section_order).to eq(3)
+
+      aggregate_failures do
+        expect(post0.section_order).to eq(0)
+        expect(post1.section_order).to eq(1)
+        expect(post2.section_order).to eq(2)
+        expect(post3.section_order).to eq(3)
+      end
+
       post1.destroy!
-      expect(post0.reload.section_order).to eq(0)
-      expect(post2.reload.section_order).to eq(1)
-      expect(post3.reload.section_order).to eq(2)
+
+      aggregate_failures do
+        expect(post0.reload.section_order).to eq(0)
+        expect(post2.reload.section_order).to eq(1)
+        expect(post3.reload.section_order).to eq(2)
+      end
     end
 
     it "should reorder upon board change" do
       board = create(:board, authors_locked: true)
-      post0 = create(:post, board_id: board.id, user: board.creator)
-      expect(post0.section_order).to eq(0)
-      post1 = create(:post, board_id: board.id, user: board.creator)
-      expect(post1.section_order).to eq(1)
-      post2 = create(:post, board_id: board.id, user: board.creator)
-      expect(post2.section_order).to eq(2)
-      post3 = create(:post, board_id: board.id, user: board.creator)
-      expect(post3.section_order).to eq(3)
+      post0 = create(:post, board: board, user: board.creator)
+      post1 = create(:post, board: board, user: board.creator)
+      post2 = create(:post, board: board, user: board.creator)
+      post3 = create(:post, board: board, user: board.creator)
+
+      aggregate_failures do
+        expect(post0.section_order).to eq(0)
+        expect(post1.section_order).to eq(1)
+        expect(post2.section_order).to eq(2)
+        expect(post3.section_order).to eq(3)
+      end
+
       post1.board = create(:board)
       post1.save!
-      expect(post0.reload.section_order).to eq(0)
-      expect(post2.reload.section_order).to eq(1)
-      expect(post3.reload.section_order).to eq(2)
+
+      aggregate_failures do
+        expect(post0.reload.section_order).to eq(0)
+        expect(post2.reload.section_order).to eq(1)
+        expect(post3.reload.section_order).to eq(2)
+      end
     end
 
     it "should autofill correctly upon board change" do
       board = create(:board)
       board2 = create(:board)
-      post0 = create(:post, board_id: board.id)
-      post1 = create(:post, board_id: board.id)
-      post2 = create(:post, board_id: board2.id)
-      expect(post0.section_order).to eq(0)
-      expect(post1.section_order).to eq(1)
-      expect(post2.section_order).to eq(0)
+      post0 = create(:post, board: board)
+      post1 = create(:post, board: board)
+      post2 = create(:post, board: board2)
 
-      post2.board_id = board.id
+      aggregate_failures do
+        expect(post0.section_order).to eq(0)
+        expect(post1.section_order).to eq(1)
+        expect(post2.section_order).to eq(0)
+      end
+
+      post2.board = board
       post2.skip_edited = true
       post2.save!
 
-      expect(post0.section_order).to eq(0)
-      expect(post1.section_order).to eq(1)
-      expect(post2.section_order).to eq(2)
+      aggregate_failures do
+        expect(post0.section_order).to eq(0)
+        expect(post1.section_order).to eq(1)
+        expect(post2.section_order).to eq(2)
+      end
     end
 
     it "should autofill correctly upon board change with mix" do
       board = create(:board)
       board2 = create(:board)
 
-      section1 = create(:board_section, board_id: board.id)
-      post = create(:post, board_id: board.id)
-      section2 = create(:board_section, board_id: board.id)
+      section1 = create(:board_section, board: board)
+      post = create(:post, board: board)
+      section2 = create(:board_section, board: board)
 
-      expect(section1.section_order).to eq(0)
-      expect(post.section_order).to eq(0)
-      expect(section2.section_order).to eq(1)
+      aggregate_failures do
+        expect(section1.section_order).to eq(0)
+        expect(post.section_order).to eq(0)
+        expect(section2.section_order).to eq(1)
+      end
 
-      post.board_id = board2.id
+      post.board = board2
       post.skip_edited = true
       post.save!
 
-      expect(post.reload.section_order).to eq(0)
-      expect(section1.reload.section_order).to eq(0)
-      expect(section2.reload.section_order).to eq(1)
+      aggregate_failures do
+        expect(post.reload.section_order).to eq(0)
+        expect(section1.reload.section_order).to eq(0)
+        expect(section2.reload.section_order).to eq(1)
+      end
     end
   end
 
-  describe "#has_icons?" do
+  describe "#has_icons?", :aggregate_failures do
     let(:user) { create(:user) }
 
     context "without character" do
@@ -410,7 +446,6 @@ RSpec.describe Post do
     it "requires user's character" do
       post = create(:post)
       character = create(:character)
-      expect(post.user).not_to eq(character.user)
       post.character = character
       expect(post.valid?).not_to eq(true)
     end
@@ -418,7 +453,6 @@ RSpec.describe Post do
     it "requires user's icon" do
       post = create(:post)
       icon = create(:icon)
-      expect(post.user).not_to eq(icon.user)
       post.icon = icon
       expect(post.valid?).not_to eq(true)
     end
@@ -444,7 +478,7 @@ RSpec.describe Post do
     end
   end
 
-  describe "#word_count" do
+  describe "#word_count", :aggregate_failures do
     it "guesses correctly with replies" do
       post = create(:post, content: 'one two three four five')
       create(:reply, post: post, content: 'six seven')
@@ -528,7 +562,7 @@ RSpec.describe Post do
         expect(post).to be_visible_to(nil)
       end
 
-      it "is not visible with lock on" do
+      it "is not visible with lock on", :aggregate_failures do
         allow(ENV).to receive(:[]).with('POSTS_LOCKED_FULL').and_return('yep')
         expect(post).not_to be_visible_to(nil)
         expect(post).not_to be_visible_to(create(:reader_user))
@@ -604,7 +638,7 @@ RSpec.describe Post do
         expect(post).not_to be_visible_to(nil)
       end
 
-      it "is not visible with lock on" do
+      it "is not visible with lock on", :aggregate_failures do
         allow(ENV).to receive(:[]).with('POSTS_LOCKED_FULL').and_return('yep')
         expect(post).not_to be_visible_to(nil)
         expect(post).not_to be_visible_to(create(:reader_user))
@@ -636,7 +670,7 @@ RSpec.describe Post do
         expect(post).not_to be_visible_to(nil)
       end
 
-      it "is visible with lock on" do
+      it "is visible with lock on", :aggregate_failures do
         allow(ENV).to receive(:[]).with('POSTS_LOCKED_FULL').and_return('yep')
         expect(post).not_to be_visible_to(nil)
         expect(post).not_to be_visible_to(create(:reader_user))
@@ -667,7 +701,7 @@ RSpec.describe Post do
     end
   end
 
-  describe "#first_unread_for" do
+  describe "#first_unread_for", :aggregate_failures do
     it "uses instance variable if set" do
       post = create(:post)
       post.instance_variable_set(:@first_unread, 3)
@@ -740,7 +774,7 @@ RSpec.describe Post do
   end
 
   describe "#recent_characters_for" do
-    it "is blank if user has not responded to post" do
+    it "is blank if user has not responded to post", :aggregate_failures do
       post = create(:post)
       create(:reply, post: post)
       user = create(:user)
@@ -785,7 +819,7 @@ RSpec.describe Post do
       expect(post.recent_characters_for(user, 4)).to eq([reply_char2, char, reply_char])
     end
 
-    it "limits the amount of returned data" do
+    it "limits the amount of returned data", :aggregate_failures do
       user = create(:user)
       characters = create_list(:character, 10, user: user)
       post_char = create(:character, user: user)
@@ -820,7 +854,7 @@ RSpec.describe Post do
       expect(post.reload).not_to be_show_warnings_for(user)
     end
 
-    it "resets with new warning without changing read time" do
+    it "resets with new warning without changing read time", :aggregate_failures do
       at_time = 3.days.ago
       post.mark_read(user, at_time: at_time, force: true)
       post.content_warnings << create(:content_warning)
@@ -829,7 +863,7 @@ RSpec.describe Post do
     end
   end
 
-  describe "#build_new_reply_for" do
+  describe "#build_new_reply_for", :aggregate_failures do
     it "uses a draft if one exists" do
       post = create(:post)
       draft = create(:reply_draft, post: post)
@@ -956,7 +990,7 @@ RSpec.describe Post do
   end
 
   describe "authors" do
-    it "automatically creates an author on creation" do
+    it "automatically creates an author on creation", :aggregate_failures do
       post = create(:post)
       expect(post.authors).to eq([post.user])
       author = post.post_authors.first
@@ -964,7 +998,7 @@ RSpec.describe Post do
       expect(author.joined_at).to be_the_same_time_as(post.created_at)
     end
 
-    it "invites coauthors on creation" do
+    it "invites coauthors on creation", :aggregate_failures do
       invited = create(:user)
       post = create(:post, unjoined_author_ids: [invited.id])
       expect(post.authors).to match_array([post.user, invited])
@@ -977,8 +1011,11 @@ RSpec.describe Post do
       post = create(:post)
       expect(post.authors).to eq([post.user])
       reply = create(:reply, post: post)
-      expect(post.authors.reload).to match_array([post.user, reply.user])
-      expect(post.authors.count).to eq(post.joined_authors.count)
+
+      aggregate_failures do
+        expect(post.authors.reload).to match_array([post.user, reply.user])
+        expect(post.authors.count).to eq(post.joined_authors.count)
+      end
     end
   end
 
@@ -1243,7 +1280,7 @@ RSpec.describe Post do
     end
   end
 
-  describe "adjacent posts" do
+  describe "adjacent posts", :aggregate_failures do
     let(:user) { create(:user) }
     let(:board) { create(:board, creator: user) }
     let(:section) { create(:board_section, board: board) }
@@ -1352,7 +1389,7 @@ RSpec.describe Post do
   end
 
   context "scopes" do
-    it "scopes unignored posts properly" do
+    it "scopes unignored posts properly", :aggregate_failures do
       reader = create(:user)
 
       unread_post = create(:post)
@@ -1390,7 +1427,7 @@ RSpec.describe Post do
       expect(NotifyFollowersOfNewPostJob).to have_been_enqueued.with(post.id, post.user_id).on_queue('notifier')
     end
 
-    it "should only enqueue a message on authors' first join" do
+    it "should only enqueue a message on authors' first join" do # rubocop:disable RSpec/MultipleExpectations
       clear_enqueued_jobs
       author = create(:user)
 

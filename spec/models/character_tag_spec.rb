@@ -24,19 +24,25 @@ RSpec.describe CharacterTag do
         character.gallery_groups << group
         character.save!
         character.reload
-        expect(character.galleries).to match_array([gallery1, gallery2])
-        expect(character.characters_galleries.find_by(gallery_id: gallery1.id)).not_to be_added_by_group
-        expect(character.characters_galleries.find_by(gallery_id: gallery2.id)).to be_added_by_group
+
+        aggregate_failures do
+          expect(character.galleries).to match_array([gallery1, gallery2])
+          expect(character.characters_galleries.find_by(gallery_id: gallery1.id)).not_to be_added_by_group
+          expect(character.characters_galleries.find_by(gallery_id: gallery2.id)).to be_added_by_group
+        end
 
         character.gallery_groups << group2
         character.save!
         character.reload
-        expect(character.galleries).to match_array([gallery1, gallery2])
-        expect(character.characters_galleries.find_by(gallery_id: gallery1.id)).not_to be_added_by_group
-        expect(character.characters_galleries.find_by(gallery_id: gallery2.id)).to be_added_by_group
+
+        aggregate_failures do
+          expect(character.galleries).to match_array([gallery1, gallery2])
+          expect(character.characters_galleries.find_by(gallery_id: gallery1.id)).not_to be_added_by_group
+          expect(character.characters_galleries.find_by(gallery_id: gallery2.id)).to be_added_by_group
+        end
       end
 
-      it "adds galleries from given group" do
+      it "adds galleries from given group", :aggregate_failures do
         group = create(:gallery_group)
         user = create(:user)
         gallery1 = create(:gallery, user: user, gallery_groups: [group])
@@ -63,13 +69,19 @@ RSpec.describe CharacterTag do
       gallery_both = create(:gallery, user: user, gallery_groups: [group])
       character.reload
       character.characters_galleries.find_by(gallery_id: gallery_both.id).update!(added_by_group: false)
-      expect(character.galleries).to match_array([other_gallery, gallery_auto, gallery_both])
-      expect(character.characters_galleries.find_by(gallery_id: gallery_auto.id)).to be_added_by_group
+
+      aggregate_failures do
+        expect(character.galleries).to match_array([other_gallery, gallery_auto, gallery_both])
+        expect(character.characters_galleries.find_by(gallery_id: gallery_auto.id)).to be_added_by_group
+      end
 
       character.update!(gallery_groups: [])
       character.reload
-      expect(character.galleries).to match_array([other_gallery, gallery_both])
-      expect(character.characters_galleries.find_by(gallery_id: gallery_both.id)).not_to be_added_by_group
+
+      aggregate_failures do
+        expect(character.galleries).to match_array([other_gallery, gallery_both])
+        expect(character.characters_galleries.find_by(gallery_id: gallery_both.id)).not_to be_added_by_group
+      end
     end
 
     it "does not destroy gallery groups when destroyed" do
@@ -78,11 +90,15 @@ RSpec.describe CharacterTag do
       other = create(:character, gallery_groups: [group])
       character.reload
       other.reload
-      expect(character.gallery_groups).to match_array([group])
-      expect(other.gallery_groups).to match_array([group])
+
+      aggregate_failures do
+        expect(character.gallery_groups).to match_array([group])
+        expect(other.gallery_groups).to match_array([group])
+      end
 
       Audited.audit_class.as_user(character.user) { character.destroy! }
       group.reload
+
       expect(other.reload.gallery_groups).to match_array([group])
     end
   end

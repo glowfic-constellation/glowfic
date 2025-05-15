@@ -16,39 +16,45 @@ RSpec.describe DailyReport do
           end
         end
 
-        it "should work on a regular day" do
+        it "should work on a regular day", :aggregate_failures do
           time = Time.zone.local(2017, 1, 2, 10, 0) # 2017-01-02 10:00
           day = time.beginning_of_day
+
           shown_posts = Array.new(24) do |i| # 0 .. 23
             step = day + i.hours
             Timecop.freeze(step) { create(:post) }
           end
+
+          hidden_post1 = Timecop.freeze(day - 1.hour) { create(:post) }
+          hidden_post2 = Timecop.freeze(day.end_of_day + 1.hour) { create(:post) }
+
           shown_posts.each do |post|
             expect(post.tagged_at).to be_between(day, day.end_of_day).inclusive
           end
 
-          hidden_post1 = Timecop.freeze(day - 1.hour) { create(:post) }
-          hidden_post2 = Timecop.freeze(day.end_of_day + 1.hour) { create(:post) }
           expect(hidden_post1.tagged_at).not_to be_between(day, day.end_of_day).inclusive
           expect(hidden_post2.tagged_at).not_to be_between(day, day.end_of_day).inclusive
 
           expect(DailyReport.new(time).posts).to match_array(shown_posts)
         end
 
-        it "should work on a daylight change day" do
+        it "should work on a daylight change day", :aggregate_failures do
           time = Time.zone.local(*dst_day_params)
           # clock goes back; 25 hours in the day
           day = time.beginning_of_day
+
           shown_posts = Array.new(25) do |i| # 0 .. 24
             step = day + i.hours
             Timecop.freeze(step) { create(:post) }
           end
+
+          hidden_post1 = Timecop.freeze(day - 1.hour) { create(:post) }
+          hidden_post2 = Timecop.freeze(day.end_of_day + 1.hour) { create(:post) }
+
           shown_posts.each do |post|
             expect(post.tagged_at).to be_between(day, day.end_of_day).inclusive
           end
 
-          hidden_post1 = Timecop.freeze(day - 1.hour) { create(:post) }
-          hidden_post2 = Timecop.freeze(day.end_of_day + 1.hour) { create(:post) }
           expect(hidden_post1.tagged_at).not_to be_between(day, day.end_of_day).inclusive
           expect(hidden_post2.tagged_at).not_to be_between(day, day.end_of_day).inclusive
 
@@ -90,7 +96,7 @@ RSpec.describe DailyReport do
       end
     end
 
-    it "does not perform time zone fuckery" do
+    it "does not perform time zone fuckery", :aggregate_failures do
       # 2am UTC 5/21 is 10pm EDT 5/20
       mismatch_time = DateTime.new(2020, 5, 21, 2, 30, 0).utc
 
@@ -150,16 +156,24 @@ RSpec.describe DailyReport do
       user = create(:user)
       date = 4.days.ago
       later = date + 2.days
+
       Timecop.freeze(date) do
         DailyReport.mark_read(user, at_time: date.to_date)
       end
-      expect(DailyReport.unread_date_for(user)).to eq(date.to_date + 1.day)
-      expect(Rails.cache.exist?(ReportView.cache_string_for(user.id))).to eq(true)
+
+      aggregate_failures do
+        expect(DailyReport.unread_date_for(user)).to eq(date.to_date + 1.day)
+        expect(Rails.cache.exist?(ReportView.cache_string_for(user.id))).to eq(true)
+      end
+
       Timecop.freeze(later) do
         DailyReport.mark_read(user, at_time: later.to_date)
       end
-      expect(Rails.cache.exist?(ReportView.cache_string_for(user.id))).to eq(false)
-      expect(DailyReport.unread_date_for(user)).to eq(later.to_date + 1.day)
+
+      aggregate_failures do
+        expect(Rails.cache.exist?(ReportView.cache_string_for(user.id))).to eq(false)
+        expect(DailyReport.unread_date_for(user)).to eq(later.to_date + 1.day)
+      end
     end
 
     skip "has more tests"
@@ -170,7 +184,7 @@ RSpec.describe DailyReport do
       expect(DailyReport.badge_for(nil)).to eq(0)
     end
 
-    it "respects timezone" do
+    it "respects timezone", :aggregate_failures do
       # Hawaii 7pm April 3 UTC 5am April 4
       date = DateTime.new(2020, 4, 4, 5, 0, 0)
       later_date = date + 2.days

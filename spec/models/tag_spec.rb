@@ -8,14 +8,18 @@ RSpec.describe Tag do
       create_list(:post, 3, label_ids: [good_tag.id], setting_ids: [], content_warning_ids: [])
       create_list(:post, 2, label_ids: [bad_tag.id], setting_ids: [], content_warning_ids: [])
 
-      expect(good_tag.posts.count).to eq(3)
-      expect(bad_tag.posts.count).to eq(2)
+      aggregate_failures do
+        expect(good_tag.posts.count).to eq(3)
+        expect(bad_tag.posts.count).to eq(2)
+      end
 
       good_tag.merge_with(bad_tag)
 
-      expect(Tag.find_by_id(bad_tag.id)).to be_nil
-      expect(bad_tag.posts.count).to eq(0)
-      expect(good_tag.posts.count).to eq(5)
+      aggregate_failures do
+        expect(Tag.find_by_id(bad_tag.id)).to be_nil
+        expect(bad_tag.posts.count).to eq(0)
+        expect(good_tag.posts.count).to eq(5)
+      end
     end
 
     it "takes the correct actions for user tags" do
@@ -25,14 +29,18 @@ RSpec.describe Tag do
       create_list(:user, 3, content_warning_ids: [good_tag.id])
       create_list(:user, 2, content_warning_ids: [bad_tag.id])
 
-      expect(good_tag.users.count).to eq(3)
-      expect(bad_tag.users.count).to eq(2)
+      aggregate_failures do
+        expect(good_tag.users.count).to eq(3)
+        expect(bad_tag.users.count).to eq(2)
+      end
 
       good_tag.merge_with(bad_tag)
 
-      expect(ContentWarning.find_by_id(bad_tag.id)).to be_nil
-      expect(bad_tag.users.count).to eq(0)
-      expect(good_tag.users.count).to eq(5)
+      aggregate_failures do
+        expect(ContentWarning.find_by_id(bad_tag.id)).to be_nil
+        expect(bad_tag.users.count).to eq(0)
+        expect(good_tag.users.count).to eq(5)
+      end
     end
   end
 
@@ -62,7 +70,7 @@ RSpec.describe Tag do
     end
   end
 
-  describe "#user_count" do
+  describe "#user_count", :aggregate_failures do
     it "works" do
       tag1 = create(:content_warning)
 
@@ -83,7 +91,7 @@ RSpec.describe Tag do
     end
   end
 
-  describe "#post_count" do
+  describe "#post_count", :aggregate_failures do
     it "works" do
       tag1 = create(:label)
       tag2 = create(:label)
@@ -97,7 +105,7 @@ RSpec.describe Tag do
     end
   end
 
-  describe "#character_count" do
+  describe "#character_count", :aggregate_failures do
     def create_tags
       tag1 = create(:gallery_group)
       tag2 = create(:gallery_group)

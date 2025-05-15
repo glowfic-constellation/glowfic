@@ -363,114 +363,142 @@ RSpec.describe Api::V1::CharactersController do
       expect(response.parsed_body['errors'][0]['message']).to eq("You must be logged in to view that page.")
     end
 
-    it "requires a character you have access to" do
+    it "requires a character you have access to", aggregate_failures: false do
       character = create(:character)
-      char_gal1 = create(:characters_gallery, character_id: character.id)
-      char_gal2 = create(:characters_gallery, character_id: character.id)
-      expect(char_gal1.reload.section_order).to eq(0)
-      expect(char_gal2.reload.section_order).to eq(1)
+      char_gal1 = create(:characters_gallery, character: character)
+      char_gal2 = create(:characters_gallery, character: character)
+
+      aggregate_failures do
+        expect(char_gal1.reload.section_order).to eq(0)
+        expect(char_gal2.reload.section_order).to eq(1)
+      end
 
       section_ids = [char_gal2.id, char_gal1.id]
 
       api_login
       post :reorder, params: { ordered_characters_gallery_ids: section_ids }
-      expect(response).to have_http_status(403)
-      expect(char_gal1.reload.section_order).to eq(0)
-      expect(char_gal2.reload.section_order).to eq(1)
+
+      aggregate_failures do
+        expect(response).to have_http_status(403)
+        expect(char_gal1.reload.section_order).to eq(0)
+        expect(char_gal2.reload.section_order).to eq(1)
+      end
     end
 
-    it "requires a single character" do
+    it "requires a single character", aggregate_failures: false do
       user = create(:user)
       character1 = create(:character, user: user)
       character2 = create(:character, user: user)
-      char_gal1 = create(:characters_gallery, character_id: character1.id)
-      char_gal2 = create(:characters_gallery, character_id: character2.id)
-      char_gal3 = create(:characters_gallery, character_id: character2.id)
+      char_gal1 = create(:characters_gallery, character: character1)
+      char_gal2 = create(:characters_gallery, character: character2)
+      char_gal3 = create(:characters_gallery, character: character2)
 
-      expect(char_gal1.reload.section_order).to eq(0)
-      expect(char_gal2.reload.section_order).to eq(0)
-      expect(char_gal3.reload.section_order).to eq(1)
+      aggregate_failures do
+        expect(char_gal1.reload.section_order).to eq(0)
+        expect(char_gal2.reload.section_order).to eq(0)
+        expect(char_gal3.reload.section_order).to eq(1)
+      end
 
       section_ids = [char_gal3.id, char_gal2.id, char_gal1.id]
       api_login_as(user)
       post :reorder, params: { ordered_characters_gallery_ids: section_ids }
-      expect(response).to have_http_status(422)
-      expect(response.parsed_body['errors'][0]['message']).to eq('Character galleries must be from one character')
-      expect(char_gal1.reload.section_order).to eq(0)
-      expect(char_gal2.reload.section_order).to eq(0)
-      expect(char_gal3.reload.section_order).to eq(1)
+
+      aggregate_failures do
+        expect(response).to have_http_status(422)
+        expect(response.parsed_body['errors'][0]['message']).to eq('Character galleries must be from one character')
+        expect(char_gal1.reload.section_order).to eq(0)
+        expect(char_gal2.reload.section_order).to eq(0)
+        expect(char_gal3.reload.section_order).to eq(1)
+      end
     end
 
-    it "requires valid section ids" do
+    it "requires valid section ids", aggregate_failures: false do
       character = create(:character)
-      char_gal1 = create(:characters_gallery, character_id: character.id)
-      char_gal2 = create(:characters_gallery, character_id: character.id)
-      expect(char_gal1.reload.section_order).to eq(0)
-      expect(char_gal2.reload.section_order).to eq(1)
+      char_gal1 = create(:characters_gallery, character: character)
+      char_gal2 = create(:characters_gallery, character: character)
+
+      aggregate_failures do
+        expect(char_gal1.reload.section_order).to eq(0)
+        expect(char_gal2.reload.section_order).to eq(1)
+      end
+
       section_ids = [-1]
 
       api_login_as(character.user)
       post :reorder, params: { ordered_characters_gallery_ids: section_ids }
-      expect(response).to have_http_status(404)
-      expect(response.parsed_body['errors'][0]['message']).to eq('Some character galleries could not be found: -1')
-      expect(char_gal1.reload.section_order).to eq(0)
-      expect(char_gal2.reload.section_order).to eq(1)
+
+      aggregate_failures do
+        expect(response).to have_http_status(404)
+        expect(response.parsed_body['errors'][0]['message']).to eq('Some character galleries could not be found: -1')
+        expect(char_gal1.reload.section_order).to eq(0)
+        expect(char_gal2.reload.section_order).to eq(1)
+      end
     end
 
-    it "works for valid changes", :show_in_doc do
+    it "works for valid changes", :show_in_doc, aggregate_failures: false do
       character = create(:character)
       character2 = create(:character, user: character.user)
-      char_gal1 = create(:characters_gallery, character_id: character.id)
-      char_gal2 = create(:characters_gallery, character_id: character.id)
-      char_gal3 = create(:characters_gallery, character_id: character.id)
-      char_gal4 = create(:characters_gallery, character_id: character.id)
-      char_gal5 = create(:characters_gallery, character_id: character2.id)
+      char_gal1 = create(:characters_gallery, character: character)
+      char_gal2 = create(:characters_gallery, character: character)
+      char_gal3 = create(:characters_gallery, character: character)
+      char_gal4 = create(:characters_gallery, character: character)
+      char_gal5 = create(:characters_gallery, character: character2)
 
-      expect(char_gal1.reload.section_order).to eq(0)
-      expect(char_gal2.reload.section_order).to eq(1)
-      expect(char_gal3.reload.section_order).to eq(2)
-      expect(char_gal4.reload.section_order).to eq(3)
-      expect(char_gal5.reload.section_order).to eq(0)
+      aggregate_failures do
+        expect(char_gal1.reload.section_order).to eq(0)
+        expect(char_gal2.reload.section_order).to eq(1)
+        expect(char_gal3.reload.section_order).to eq(2)
+        expect(char_gal4.reload.section_order).to eq(3)
+        expect(char_gal5.reload.section_order).to eq(0)
+      end
 
       section_ids = [char_gal3.id, char_gal1.id, char_gal4.id, char_gal2.id]
 
       api_login_as(character.user)
       post :reorder, params: { ordered_characters_gallery_ids: section_ids }
-      expect(response).to have_http_status(200)
-      expect(response.parsed_body).to eq({ 'characters_gallery_ids' => section_ids })
-      expect(char_gal1.reload.section_order).to eq(1)
-      expect(char_gal2.reload.section_order).to eq(3)
-      expect(char_gal3.reload.section_order).to eq(0)
-      expect(char_gal4.reload.section_order).to eq(2)
-      expect(char_gal5.reload.section_order).to eq(0)
+
+      aggregate_failures do
+        expect(response).to have_http_status(200)
+        expect(response.parsed_body).to eq({ 'characters_gallery_ids' => section_ids })
+        expect(char_gal1.reload.section_order).to eq(1)
+        expect(char_gal2.reload.section_order).to eq(3)
+        expect(char_gal3.reload.section_order).to eq(0)
+        expect(char_gal4.reload.section_order).to eq(2)
+        expect(char_gal5.reload.section_order).to eq(0)
+      end
     end
 
-    it "works when specifying valid subset", :show_in_doc do
+    it "works when specifying valid subset", :show_in_doc, aggregate_failures: false do
       character = create(:character)
       character2 = create(:character, user: character.user)
-      char_gal1 = create(:characters_gallery, character_id: character.id)
-      char_gal2 = create(:characters_gallery, character_id: character.id)
-      char_gal3 = create(:characters_gallery, character_id: character.id)
-      char_gal4 = create(:characters_gallery, character_id: character.id)
-      char_gal5 = create(:characters_gallery, character_id: character2.id)
+      char_gal1 = create(:characters_gallery, character: character)
+      char_gal2 = create(:characters_gallery, character: character)
+      char_gal3 = create(:characters_gallery, character: character)
+      char_gal4 = create(:characters_gallery, character: character)
+      char_gal5 = create(:characters_gallery, character: character2)
 
-      expect(char_gal1.reload.section_order).to eq(0)
-      expect(char_gal2.reload.section_order).to eq(1)
-      expect(char_gal3.reload.section_order).to eq(2)
-      expect(char_gal4.reload.section_order).to eq(3)
-      expect(char_gal5.reload.section_order).to eq(0)
+      aggregate_failures do
+        expect(char_gal1.reload.section_order).to eq(0)
+        expect(char_gal2.reload.section_order).to eq(1)
+        expect(char_gal3.reload.section_order).to eq(2)
+        expect(char_gal4.reload.section_order).to eq(3)
+        expect(char_gal5.reload.section_order).to eq(0)
+      end
 
       section_ids = [char_gal3.id, char_gal1.id]
 
       api_login_as(character.user)
       post :reorder, params: { ordered_characters_gallery_ids: section_ids }
-      expect(response).to have_http_status(200)
-      expect(response.parsed_body).to eq({ 'characters_gallery_ids' => [char_gal3.id, char_gal1.id, char_gal2.id, char_gal4.id] })
-      expect(char_gal1.reload.section_order).to eq(1)
-      expect(char_gal2.reload.section_order).to eq(2)
-      expect(char_gal3.reload.section_order).to eq(0)
-      expect(char_gal4.reload.section_order).to eq(3)
-      expect(char_gal5.reload.section_order).to eq(0)
+
+      aggregate_failures do
+        expect(response).to have_http_status(200)
+        expect(response.parsed_body).to eq({ 'characters_gallery_ids' => [char_gal3.id, char_gal1.id, char_gal2.id, char_gal4.id] })
+        expect(char_gal1.reload.section_order).to eq(1)
+        expect(char_gal2.reload.section_order).to eq(2)
+        expect(char_gal3.reload.section_order).to eq(0)
+        expect(char_gal4.reload.section_order).to eq(3)
+        expect(char_gal5.reload.section_order).to eq(0)
+      end
     end
   end
 end

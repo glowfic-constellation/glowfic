@@ -1,0 +1,4 @@
+inherit_from: ../../.rubocop.yml
+
+RSpec/MultipleExpectations:
+  Max: 15 # TODO: this is because of the specs that test create view and update in one test. It should probably be, like, 6

@@ -52,6 +52,7 @@ RSpec.describe Admin::PostsController do
       expect {
         post :do_regenerate
       }.not_to enqueue_job(GenerateFlatPostJob)
+
       expect(response).to redirect_to(admin_url)
       expect(flash[:success]).to eq("Flat posts will be regenerated as needed.")
     end
@@ -61,6 +62,7 @@ RSpec.describe Admin::PostsController do
       expect {
         post :do_regenerate, params: { force: true }
       }.to enqueue_job(GenerateFlatPostJob).exactly(10).times
+
       expect(response).to redirect_to(admin_url)
       expect(flash[:success]).to eq("Flat posts will be regenerated as needed.")
     end
@@ -70,6 +72,7 @@ RSpec.describe Admin::PostsController do
       expect {
         post :do_regenerate, params: { force: true }
       }.to enqueue_job(GenerateFlatPostJob).exactly(10).times
+
       expect(response).to redirect_to(admin_url)
       expect(flash[:success]).to eq("Flat posts will be regenerated as needed.")
     end

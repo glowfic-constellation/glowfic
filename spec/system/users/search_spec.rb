@@ -17,23 +17,33 @@ RSpec.describe "Searching users" do
     end
 
     search_for('Fred')
-    expect(page).to have_text("Total: 0")
-    expect(page).to have_no_text('Test')
-    expect(page).to have_no_text('Dominique')
+
+    aggregate_failures do
+      expect(page).to have_text("Total: 0")
+      expect(page).to have_no_text('Test')
+      expect(page).to have_no_text('Dominique')
+    end
 
     search_for('Test')
-    expect(page).to have_text("Total: 3")
-    within('.user-row:nth-child(1)') do
-      expect(page).to have_link('Test Alice', href: user_path(simple_user))
+
+    aggregate_failures do
+      expect(page).to have_text("Total: 3")
+
+      within('.user-row:nth-child(1)') do
+        expect(page).to have_link('Test Alice', href: user_path(simple_user))
+      end
+
+      within('.user-row:nth-child(2)') do
+        expect(page).to have_link('Test Bob', href: user_path(moietied_user))
+        expect(page).to have_selector("span[title='Test moiety']")
+      end
+
+      within('.user-row:nth-child(3)') do
+        expect(page).to have_link('Test Charlie', href: user_path(old_user))
+        expect(page).to have_text('Jan 01, 2018 12:00 AM')
+      end
+
+      expect(page).to have_no_text('Dominique')
     end
-    within('.user-row:nth-child(2)') do
-      expect(page).to have_link('Test Bob', href: user_path(moietied_user))
-      expect(page).to have_selector("span[title='Test moiety']")
-    end
-    within('.user-row:nth-child(3)') do
-      expect(page).to have_link('Test Charlie', href: user_path(old_user))
-      expect(page).to have_text('Jan 01, 2018 12:00 AM')
-    end
-    expect(page).to have_no_text('Dominique')
   end
 end

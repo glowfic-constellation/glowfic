@@ -7,7 +7,7 @@ RSpec.describe ScrapePostJob do
     allow(STDOUT).to receive(:puts).with("Importing thread 'linear b'")
   end
 
-  it "creates the correct objects" do
+  it "creates the correct objects", :aggregate_failures do
     Post.auditing_enabled = true
     url = 'http://wild-pegasus-appeared.dreamwidth.org/403.html?style=site&view=flat'
     stub_fixture(url, 'scrape_no_replies')
@@ -28,7 +28,7 @@ RSpec.describe ScrapePostJob do
     Post.auditing_enabled = false
   end
 
-  it "sends messages on username exceptions" do
+  it "sends messages on username exceptions", :aggregate_failures do
     url = 'http://wild-pegasus-appeared.dreamwidth.org/403.html?style=site&view=flat'
     stub_fixture(url, 'scrape_no_replies')
     board = create(:board)
@@ -71,21 +71,23 @@ RSpec.describe ScrapePostJob do
       status: Post.statuses[:complete],
     }
 
-    expect(ScrapePostJob).to receive(:notify_exception).with(
-      an_instance_of(AlreadyImportedError),
-      url, params, user: board.creator,
-    ).and_call_original
+    aggregate_failures do
+      expect(ScrapePostJob).to receive(:notify_exception).with(
+        an_instance_of(AlreadyImportedError),
+        url, params, user: board.creator,
+      ).and_call_original
 
-    begin
-      ScrapePostJob.perform_now(url, params, user: board.creator)
-    rescue AlreadyImportedError
-      expect(Notification.count).to eq(1)
-      notification = Notification.first
-      expect(notification.notification_type).to eq('import_fail')
-      expect(notification.post).to eq(post)
-      expect(Post.count).to eq(1)
-    else
-      raise "Error should be handled"
+      begin
+        ScrapePostJob.perform_now(url, params, user: board.creator)
+      rescue AlreadyImportedError
+        expect(Notification.count).to eq(1)
+        notification = Notification.first
+        expect(notification.notification_type).to eq('import_fail')
+        expect(notification.post).to eq(post)
+        expect(Post.count).to eq(1)
+      else
+        raise "Error should be handled"
+      end
     end
   end
 end

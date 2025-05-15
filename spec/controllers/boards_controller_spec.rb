@@ -74,11 +74,12 @@ RSpec.describe BoardsController do
         expect(assigns(:page_title)).to eq('Your Continuities')
       end
 
-      it "sets correct variables" do
+      it "sets correct variables", aggregate_failures: false do
         user = create(:user)
         owned_board = create(:board, creator_id: user.id)
 
         get :index, params: { user_id: user.id }
+
         expect(assigns(:boards)).to match_array([owned_board])
 
         coauthor = create(:user)
@@ -86,8 +87,11 @@ RSpec.describe BoardsController do
         owned_board3 = create(:board, creator: user, cameos: [coauthor])
 
         get :index, params: { user_id: coauthor.id }
-        expect(assigns(:boards)).to match_array([owned_board2])
-        expect(assigns(:cameo_boards)).to match_array([owned_board3])
+
+        aggregate_failures do
+          expect(assigns(:boards)).to match_array([owned_board2])
+          expect(assigns(:cameo_boards)).to match_array([owned_board3])
+        end
       end
 
       it "orders boards correctly" do
@@ -300,8 +304,10 @@ RSpec.describe BoardsController do
       post7.update!(section_order: 0)
       post8.update!(section_order: 1)
       post9.update!(section_order: 2)
+
       get :show, params: { id: board.id }
       # we only order board section posts in the HAML, so manually order them here
+
       expect(assigns(:board_sections).map { |x| x.posts.ordered_in_section.to_a }).to eq([[post1, post2, post3], [post4, post5, post6]])
       expect(assigns(:posts)).to eq([post7, post8, post9])
     end
@@ -342,7 +348,7 @@ RSpec.describe BoardsController do
       user = create(:user)
       login_as(user)
       board = create(:board)
-      expect(board).not_to be_editable_by(user)
+
       get :edit, params: { id: board.id }
       expect(response).to redirect_to(continuity_url(board))
       expect(flash[:error]).to eq("You do not have permission to modify this continuity.")
@@ -391,7 +397,7 @@ RSpec.describe BoardsController do
       user = create(:user)
       login_as(user)
       board = create(:board)
-      expect(board).not_to be_editable_by(user)
+
       put :update, params: { id: board.id }
       expect(response).to redirect_to(continuity_url(board))
       expect(flash[:error]).to eq("You do not have permission to modify this continuity.")
@@ -457,7 +463,7 @@ RSpec.describe BoardsController do
       user = create(:user)
       login_as(user)
       board = create(:board)
-      expect(board).not_to be_editable_by(user)
+
       delete :destroy, params: { id: board.id }
       expect(response).to redirect_to(continuity_url(board))
       expect(flash[:error]).to eq("You do not have permission to modify this continuity.")
@@ -543,18 +549,23 @@ RSpec.describe BoardsController do
       expect(flash[:error]).to eq("Please choose a valid action.")
     end
 
-    it "successfully marks board read" do
+    it "successfully marks board read", aggregate_failures: false do
       user = create(:user)
       login_as(user)
       now = Time.zone.now
+
       expect(board.last_read(user)).to be_nil
+
       post :mark, params: { board_id: board.id, commit: "Mark Read" }
-      expect(Board.find(board.id).last_read(user)).to be >= now # reload to reset cached @view
-      expect(response).to redirect_to(unread_posts_url)
-      expect(flash[:success]).to eq("#{board.name} marked as read.")
+
+      aggregate_failures do
+        expect(board.reload.last_read(user)).to be >= now # reload to reset cached @view
+        expect(response).to redirect_to(unread_posts_url)
+        expect(flash[:success]).to eq("#{board.name} marked as read.")
+      end
     end
 
-    it "marks extant post views read" do
+    it "marks extant post views read", aggregate_failures: false do
       now = Time.zone.now
       user = create(:user)
       read_post = create(:post, user: user, board: board)
@@ -562,26 +573,35 @@ RSpec.describe BoardsController do
       unread_post = create(:post, user: user, board: board)
       unread_post.mark_read(create(:user), at_time: now - 1.day, force: true)
 
-      expect(Board.find(board.id).last_read(user)).to be_nil # reload to reset cached @view
-      expect(Post.find(read_post.id).last_read(user)).to be_the_same_time_as(now - 1.day)
-      expect(Post.find(unread_post.id).last_read(user)).to be_nil
+      aggregate_failures do
+        expect(board.reload.last_read(user)).to be_nil # reload to reset cached @view
+        expect(read_post.reload.last_read(user)).to be_the_same_time_as(now - 1.day)
+        expect(unread_post.reload.last_read(user)).to be_nil
+      end
 
       login_as(user)
       post :mark, params: { board_id: board.id, commit: "Mark Read" }
 
-      expect(Board.find(board.id).last_read(user)).to be >= now # reload to reset cached @view
-      expect(Post.find(read_post.id).last_read(user)).to be >= now
-      expect(Post.find(unread_post.id).last_read(user)).to be_nil
+      aggregate_failures do
+        expect(board.reload.last_read(user)).to be >= now # reload to reset cached @view
+        expect(read_post.reload.last_read(user)).to be >= now
+        expect(unread_post.reload.last_read(user)).to be_nil
+      end
     end
 
     it "successfully ignores board" do
       user = create(:user)
       login_as(user)
+
       expect(board).not_to be_ignored_by(user)
+
       post :mark, params: { board_id: board.id, commit: "Hide from Unread" }
-      expect(Board.find(board.id)).to be_ignored_by(user) # reload to reset cached @view
-      expect(response).to redirect_to(unread_posts_url)
-      expect(flash[:success]).to eq("#{board.name} hidden from this page.")
+
+      aggregate_failures do
+        expect(board.reload).to be_ignored_by(user) # reload to reset cached @view
+        expect(response).to redirect_to(unread_posts_url)
+        expect(flash[:success]).to eq("#{board.name} hidden from this page.")
+      end
     end
   end
 

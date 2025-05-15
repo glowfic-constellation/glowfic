@@ -19,7 +19,7 @@ RSpec.describe NewsController do
       expect(assigns(:news).total_pages).to eq(2)
     end
 
-    it "marks the news post read" do
+    it "marks the news post read", aggregate_failures: false do
       user = create(:user)
       news = create(:news)
       expect(NewsView.find_by(user: user)).to be_nil

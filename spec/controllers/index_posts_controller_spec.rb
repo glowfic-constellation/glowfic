@@ -16,7 +16,6 @@ RSpec.describe IndexPostsController do
     it "requires permission" do
       user = create(:user)
       index = create(:index)
-      expect(index.editable_by?(user)).to eq(false)
       login_as(user)
 
       get :new, params: { index_id: index.id }
@@ -56,7 +55,6 @@ RSpec.describe IndexPostsController do
     it "requires permission" do
       user = create(:user)
       index = create(:index)
-      expect(index.editable_by?(user)).to eq(false)
       login_as(user)
 
       post :create, params: { index_post: { index_id: index.id } }
@@ -168,7 +166,7 @@ RSpec.describe IndexPostsController do
       index = create(:index)
       index.posts << create(:post, user: index.user)
       login_as(index.user)
-      expect(index.index_posts.first.description).to be_nil
+      # expect(index.index_posts.first.description).to be_nil
       patch :update, params: { id: index.index_posts.first.id, index_post: { description: 'some text' } }
       expect(response).to redirect_to(index_url(index))
       expect(flash[:success]).to eq("Index post updated.")

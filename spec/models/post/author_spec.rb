@@ -4,7 +4,7 @@ RSpec.describe Post::Author do
       expect(create(:post_author)).to be_valid
     end
 
-    it 'suceeds with multiple posts and one user' do
+    it 'suceeds with multiple posts and one user', :aggregate_failures do
       user = create(:user)
       post1 = create(:post)
       post2 = create(:post)
@@ -16,7 +16,7 @@ RSpec.describe Post::Author do
       }.not_to raise_error
     end
 
-    it 'succeeds with one post and multiple users' do
+    it 'succeeds with one post and multiple users', :aggregate_failures do
       user1 = create(:user)
       user2 = create(:user)
       post = create(:post)
@@ -42,7 +42,7 @@ RSpec.describe Post::Author do
       expect(post_author).to be_valid
     end
 
-    it "should enforce uniqueness for a specific user and post" do
+    it "should enforce uniqueness for a specific user and post", :aggregate_failures do
       user = create(:user)
       post = create(:post)
       create(:post_author, user: user, post: post) # post_author

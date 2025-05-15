@@ -4,8 +4,11 @@ RSpec.describe News do
       news = create(:news)
       expect(NewsView.count).to eq(0)
       news.mark_read(news.user)
-      expect(NewsView.count).to eq(1)
-      expect(NewsView.last.news).to eq(news)
+
+      aggregate_failures do
+        expect(NewsView.count).to eq(1)
+        expect(NewsView.last.news).to eq(news)
+      end
     end
 
     it "works for subsequent reads" do

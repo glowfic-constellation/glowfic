@@ -88,16 +88,18 @@ RSpec.describe Api::V1::BookmarksController do
       expect(bookmark.public).to be true
     end
 
-    it "updates existing bookmark", :show_in_doc do
+    it "updates existing bookmark", :show_in_doc, aggregate_failures: false do
       user = api_login
 
       bookmark = create(:bookmark, user: user)
       expect(bookmark.name).to be_nil
 
       post :create, params: { reply_id: bookmark.reply.id, name: "New Name" }
-      expect(response).to have_http_status(200)
 
-      expect(Bookmark.find_by_id(bookmark.id).name).to eq("New Name")
+      aggregate_failures do
+        expect(response).to have_http_status(200)
+        expect(Bookmark.find_by_id(bookmark.id).name).to eq("New Name")
+      end
     end
 
     it "handles failed saves" do
@@ -177,20 +179,25 @@ RSpec.describe Api::V1::BookmarksController do
       expect(response.parsed_body['errors'][0]['message']).to eq("You do not have permission to perform this action.")
     end
 
-    it "succeeds with only name", :show_in_doc do
+    it "succeeds with only name", :show_in_doc, aggregate_failures: false do
       user = api_login
       bookmark = create(:bookmark, user: user)
-      expect(bookmark.name).to be_nil
-      expect(bookmark.public).to be false
+
+      aggregate_failures do
+        expect(bookmark.name).to be_nil
+        expect(bookmark.public).to be(false)
+      end
 
       patch :update, params: { id: bookmark.id, name: "New name" }
-
-      expect(response).to have_http_status(200)
-      expect(response.parsed_body['name']).to eq("New name")
-      expect(response.parsed_body['public']).to be false
       bookmark.reload
-      expect(bookmark.name).to eq('New name')
-      expect(bookmark.public).to be false
+
+      aggregate_failures do
+        expect(response).to have_http_status(200)
+        expect(response.parsed_body['name']).to eq("New name")
+        expect(response.parsed_body['public']).to be(false)
+        expect(bookmark.name).to eq('New name')
+        expect(bookmark.public).to be(false)
+      end
     end
 
     it "accepts blank name", :show_in_doc do
@@ -205,36 +212,46 @@ RSpec.describe Api::V1::BookmarksController do
       expect(bookmark.name).to eq('')
     end
 
-    it "succeeds with only public", :show_in_doc do
+    it "succeeds with only public", :show_in_doc, aggregate_failures: false do
       user = api_login
       bookmark = create(:bookmark, user: user, name: "Old name")
-      expect(bookmark.name).to eq("Old name")
-      expect(bookmark.public).to be false
+
+      aggregate_failures do
+        expect(bookmark.name).to eq("Old name")
+        expect(bookmark.public).to be(false)
+      end
 
       patch :update, params: { id: bookmark.id, public: true }
-
-      expect(response).to have_http_status(200)
-      expect(response.parsed_body['name']).to eq("Old name")
-      expect(response.parsed_body['public']).to be true
       bookmark.reload
-      expect(bookmark.name).to eq('Old name')
-      expect(bookmark.public).to be true
+
+      aggregate_failures do
+        expect(response).to have_http_status(200)
+        expect(response.parsed_body['name']).to eq("Old name")
+        expect(response.parsed_body['public']).to be true
+        expect(bookmark.name).to eq('Old name')
+        expect(bookmark.public).to be(true)
+      end
     end
 
     it "succeeds with both parameters", :show_in_doc do
       user = api_login
       bookmark = create(:bookmark, user: user, name: "Old name")
-      expect(bookmark.name).to eq("Old name")
-      expect(bookmark.public).to be false
+
+      aggregate_failures do
+        expect(bookmark.name).to eq("Old name")
+        expect(bookmark.public).to be(false)
+      end
 
       patch :update, params: { id: bookmark.id, name: "New name", public: true }
-
-      expect(response).to have_http_status(200)
-      expect(response.parsed_body['name']).to eq("New name")
-      expect(response.parsed_body['public']).to be true
       bookmark.reload
-      expect(bookmark.name).to eq('New name')
-      expect(bookmark.public).to be true
+
+      aggregate_failures do
+        expect(response).to have_http_status(200)
+        expect(response.parsed_body['name']).to eq("New name")
+        expect(response.parsed_body['public']).to be(true)
+        expect(bookmark.name).to eq('New name')
+        expect(bookmark.public).to be(true)
+      end
     end
   end
 

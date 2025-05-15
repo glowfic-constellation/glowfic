@@ -709,7 +709,10 @@ RSpec/MessageSpies:
   EnforcedStyle: receive
 
 RSpec/MultipleExpectations:
-  Enabled: false
+  Max: 3
+  Exclude:
+    - spec/controllers/**/*
+    - spec/mailers/**/*
 
 RSpec/MultipleMemoizedHelpers:
   Enabled: false

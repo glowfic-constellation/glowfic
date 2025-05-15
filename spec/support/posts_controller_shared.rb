@@ -1,5 +1,5 @@
 RSpec.shared_examples "logged out post list" do
-  it "does not show user-only posts" do
+  it "does not show user-only posts", :aggregate_failures do
     posts = create_list(:post, 2)
     create_list(:post, 2, privacy: :registered)
     create_list(:post, 2, privacy: :full_accounts)
@@ -16,7 +16,7 @@ RSpec.shared_examples "logged in post list" do
 
   before(:each) { login_as(user) }
 
-  context "with private posts" do
+  context "with private posts", :aggregate_failures do
     let!(:private_post) { create(:post, privacy: :private) }
     let!(:access_post) { create(:post, privacy: :access_list) }
 
@@ -36,7 +36,7 @@ RSpec.shared_examples "logged in post list" do
     end
   end
 
-  context "with limited access posts" do
+  context "with limited access posts", :aggregate_failures do
     let!(:limited_post) { create(:post, privacy: :full_accounts) }
 
     it "does not show limited access threads to reader accounts" do
@@ -53,7 +53,7 @@ RSpec.shared_examples "logged in post list" do
     end
   end
 
-  context "with blocking" do
+  context "with blocking", :aggregate_failures do
     let!(:blocked_user) { create(:user) }
     let!(:blocking_user) { create(:user) }
 
@@ -101,7 +101,7 @@ RSpec.shared_examples "logged in post list" do
       end
     end
 
-    context "with unlocked posts" do
+    context "with unlocked posts", :aggregate_failures do
       let!(:blocking_post) { create(:post, user: blocking_user, authors_locked: false) }
       let!(:blocked_post) { create(:post, user: blocked_user, authors_locked: false) }
 

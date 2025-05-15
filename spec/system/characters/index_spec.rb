@@ -102,7 +102,7 @@ RSpec.describe "Listing characters" do
       expect(page).to have_no_text('Unrelated group')
     end
 
-    scenario "Viewing in list mode, separated by template" do
+    scenario "Viewing in list mode, separated by template", :aggregate_failures do
       visit user_characters_path(user_id: user.id, view: 'list', character_split: 'template')
       expect(page).to have_text("Sample user's Characters")
 
@@ -116,7 +116,7 @@ RSpec.describe "Listing characters" do
       end
     end
 
-    scenario "Viewing in list mode, unseparated" do
+    scenario "Viewing in list mode, unseparated", :aggregate_failures do
       visit user_characters_path(user_id: user.id, view: 'list', character_split: 'none')
       expect(page).to have_text("Sample user's Characters")
 
@@ -146,7 +146,7 @@ RSpec.describe "Listing characters" do
       end
     end
 
-    scenario "Viewing in icon mode, separated by template" do
+    scenario "Viewing in icon mode, separated by template", :aggregate_failures do
       visit user_characters_path(user_id: user.id, view: 'icon', character_split: 'template')
       expect(page).to have_text("Sample user's Characters")
 
@@ -160,7 +160,7 @@ RSpec.describe "Listing characters" do
       end
     end
 
-    scenario "Viewing in icon mode, unseparated" do
+    scenario "Viewing in icon mode, unseparated", :aggregate_failures do
       visit user_characters_path(user_id: user.id, view: 'icon', character_split: 'none')
       expect(page).to have_text("Sample user's Characters")
 
@@ -196,12 +196,18 @@ RSpec.describe "Listing characters" do
       create(:character, user: user, npc: true, name: "MyNPC")
 
       visit user_characters_path(user_id: user.id)
-      expect(page).to have_text("Test character")
-      expect(page).to have_no_text("MyNPC")
+
+      aggregate_failures do
+        expect(page).to have_text("Test character")
+        expect(page).to have_no_text("MyNPC")
+      end
+
       click_link "NPCs"
 
-      expect(page).to have_no_text("Test character")
-      expect(page).to have_text("MyNPC")
+      aggregate_failures do
+        expect(page).to have_no_text("Test character")
+        expect(page).to have_text("MyNPC")
+      end
     end
   end
 

@@ -1,5 +1,5 @@
 RSpec.describe Setting do
-  context "tags" do
+  context "tags", :aggregate_failures do
     it "creates only in-memory tags on invalid create" do
       harry_potter = create(:setting, name: 'Harry Potter')
       setting = build(:setting, name: '', parent_settings: [harry_potter])

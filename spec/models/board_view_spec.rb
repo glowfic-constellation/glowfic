@@ -1,5 +1,5 @@
 RSpec.describe BoardView do
-  describe "validations" do
+  describe "validations", :aggregate_failures do
     it "requires board" do
       view = build(:board_view, board: nil)
       expect(view).not_to be_valid

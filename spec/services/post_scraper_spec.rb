@@ -1,4 +1,4 @@
-RSpec.describe PostScraper do
+RSpec.describe PostScraper, :aggregate_failures do
   it "should add view to url" do
     scraper = PostScraper.new('http://wild-pegasus-appeared.dreamwidth.org/403.html')
     expect(scraper.url).to include('view=flat')

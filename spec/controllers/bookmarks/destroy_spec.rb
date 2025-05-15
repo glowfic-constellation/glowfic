@@ -34,6 +34,7 @@ RSpec.describe BookmarksController, 'DELETE destroy' do
   it "succeeds for bookmark owner" do
     login_as(user)
     delete :destroy, params: { id: bookmark.id }
+
     expect(response).to redirect_to(reply_url(reply, anchor: "reply-#{reply.id}"))
     expect(flash[:success]).to eq("Bookmark removed.")
     expect(Bookmark.find_by_id(bookmark.id)).to be_nil

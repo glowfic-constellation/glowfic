@@ -54,4 +54,11 @@ RSpec.configure do |config|
   config.filter_rails_from_backtrace!
   # arbitrary gems may also be filtered via:
   # config.filter_gems_from_backtrace("gem name")
+
+  # Turn on aggregate_failure for controller and mailer tests
+  aggregate_types = %w[controllers mailers]
+  aggregate_regex = /spec\/(?:#{aggregate_types.join('|')})/
+  config.define_derived_metadata(file_path: aggregate_regex) do |meta|
+    meta[:aggregate_failures] = true
+  end
 end
