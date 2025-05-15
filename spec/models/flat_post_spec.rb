@@ -6,9 +6,12 @@ RSpec.describe FlatPost do
       post = create(:post)
       expect(post.flat_post).to be_present
       flatpost = FlatPost.create(post: post)
-      expect(flatpost.persisted?).to be(false)
-      expect(flatpost).not_to be_valid
-      expect(flatpost.errors.messages).to eq({ post: ['has already been taken'] })
+
+      aggregate_failures do
+        expect(flatpost.persisted?).to be(false)
+        expect(flatpost).not_to be_valid
+        expect(flatpost.errors.messages).to eq({ post: ['has already been taken'] })
+      end
     end
 
     it "can have multiple on different posts" do
@@ -32,7 +35,7 @@ RSpec.describe FlatPost do
       expect(GenerateFlatPostJob).to have_been_enqueued.with(post.id).on_queue('high')
     end
 
-    it "regenerates only old flat posts with argument" do
+    it "regenerates only old flat posts with argument", :aggregate_failures do
       post = create(:post)
       nonpost = Timecop.freeze(post.tagged_at + 2.hours) { create(:post) }
       delete_lock(post)
@@ -42,7 +45,7 @@ RSpec.describe FlatPost do
       expect(GenerateFlatPostJob).not_to have_been_enqueued.with(nonpost.id).on_queue('high')
     end
 
-    it "regenerates only matching flat posts with arguments" do
+    it "regenerates only matching flat posts with arguments", :aggregate_failures do
       post = create(:post)
       nonpost = create(:post)
 

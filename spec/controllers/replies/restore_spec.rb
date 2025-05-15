@@ -13,13 +13,19 @@ RSpec.describe RepliesController, 'POST restore' do
     skip "TODO Currently relies on inability to create replies"
   end
 
-  it "must find the reply" do
-    expect(Reply.find_by_id(99)).to be_nil
-    expect(Audited::Audit.find_by(auditable_id: 99)).to be_nil
+  it "must find the reply", aggregate_failures: false do
+    aggregate_failures do
+      expect(Reply.find_by_id(99)).to be_nil
+      expect(Audited::Audit.find_by(auditable_id: 99)).to be_nil
+    end
+
     login
     post :restore, params: { id: 99 }
-    expect(response).to redirect_to(continuities_url)
-    expect(flash[:error]).to eq("Reply could not be found.")
+
+    aggregate_failures do
+      expect(response).to redirect_to(continuities_url)
+      expect(flash[:error]).to eq("Reply could not be found.")
+    end
   end
 
   it "must be a deleted reply" do
@@ -103,40 +109,52 @@ RSpec.describe RepliesController, 'POST restore' do
     expect(reloaded_post.replies.pluck(:reply_order).sort).to eq(0.upto(2).to_a)
   end
 
-  it "handles only reply deletion" do
+  it "handles only reply deletion", aggregate_failures: false do
     rpost = create(:post)
-    expect(rpost.last_user).to eq(rpost.user)
-    expect(rpost.last_reply).to be_nil
-
     deleted_reply = Timecop.freeze(rpost.reload.tagged_at + 1.day) { create(:reply, post: rpost) }
-    rpost = Post.find(rpost.id)
-    expect(rpost.last_user).to eq(deleted_reply.user)
-    expect(rpost.last_reply).to eq(deleted_reply)
+    rpost.reload
+
+    aggregate_failures do
+      expect(rpost.last_user).to eq(deleted_reply.user)
+      expect(rpost.last_reply).to eq(deleted_reply)
+    end
 
     deleted_reply.destroy!
     rpost = Post.find(rpost.id)
-    expect(rpost.last_user).to eq(rpost.user)
-    expect(rpost.last_reply).to be_nil
+
+    aggregate_failures do
+      expect(rpost.last_user).to eq(rpost.user)
+      expect(rpost.last_reply).to be_nil
+    end
 
     login_as(deleted_reply.user)
     post :restore, params: { id: deleted_reply.id }
     rpost = Post.find(rpost.id)
-    expect(rpost.last_user).to eq(deleted_reply.user)
-    expect(rpost.last_reply).to eq(deleted_reply)
+
+    aggregate_failures do
+      expect(rpost.last_user).to eq(deleted_reply.user)
+      expect(rpost.last_reply).to eq(deleted_reply)
+    end
   end
 
-  it "does not allow restoring something already restored" do
+  it "does not allow restoring something already restored", aggregate_failures: false do
     reply = create(:reply)
     reply.destroy!
     login_as(reply.user)
+
     post :restore, params: { id: reply.id }
+
     expect(flash[:success]).to eq("Reply restored.")
+
     post :restore, params: { id: reply.id }
-    expect(flash[:error]).to eq("Reply does not need restoring.")
-    expect(response).to redirect_to(post_url(reply.post))
+
+    aggregate_failures do
+      expect(flash[:error]).to eq("Reply does not need restoring.")
+      expect(response).to redirect_to(post_url(reply.post))
+    end
   end
 
-  it "correctly restores a previously restored reply" do
+  it "correctly restores a previously restored reply", aggregate_failures: false do
     reply = Timecop.freeze(2.days.ago) { create(:reply, content: 'not yet restored') }
     original_created_at = reply.created_at
     reply.destroy!
@@ -145,19 +163,24 @@ RSpec.describe RepliesController, 'POST restore' do
     Timecop.freeze(1.day.ago) do
       post :restore, params: { id: reply.id }
     end
-
-    expect(flash[:success]).to eq("Reply restored.")
-
     reply = Reply.find(reply.id)
-    expect(reply.created_at).to be_the_same_time_as(original_created_at)
+
+    aggregate_failures do
+      expect(flash[:success]).to eq("Reply restored.")
+      expect(reply.created_at).to be_the_same_time_as(original_created_at)
+    end
+
     reply.update!(content: 'restored right')
     reply.destroy!
 
     post :restore, params: { id: reply.id }
-    expect(flash[:success]).to eq("Reply restored.")
     reply = Reply.find(reply.id)
-    expect(reply.created_at).to be_the_same_time_as(original_created_at)
-    expect(reply.content).to eq('restored right')
+
+    aggregate_failures do
+      expect(flash[:success]).to eq("Reply restored.")
+      expect(reply.created_at).to be_the_same_time_as(original_created_at)
+      expect(reply.content).to eq('restored right')
+    end
   end
 
   it "correctly restores the reply's created_at date" do
