@@ -127,7 +127,7 @@ RSpec.describe BlocksController do
       expect(flash[:success]).to eq("User blocked.")
     end
 
-    it "refreshes caches" do
+    it "refreshes caches", aggregate_failures: false do
       user = create(:user)
       blocked = create(:user)
       blocking = create(:user)
@@ -136,9 +136,11 @@ RSpec.describe BlocksController do
       hidden_post = create(:post, user: blocked, authors_locked: true)
       user_post = create(:post, user: user, authors_locked: true)
 
-      expect(user.hidden_posts).to be_empty
-      expect(user.blocked_posts).to eq([blocked_post.id])
-      expect(blocked.blocked_posts).to be_empty
+      aggregate_failures do
+        expect(user.hidden_posts).to be_empty
+        expect(user.blocked_posts).to eq([blocked_post.id])
+        expect(blocked.blocked_posts).to be_empty
+      end
 
       login_as(user)
 
@@ -151,12 +153,14 @@ RSpec.describe BlocksController do
         },
       }
 
-      expect(Rails.cache.exist?(Block.cache_string_for(user.id, 'blocked'))).to be(true)
-      expect(Rails.cache.exist?(Block.cache_string_for(user.id, 'hidden'))).to be(false)
-      expect(Rails.cache.exist?(Block.cache_string_for(blocked.id, 'blocked'))).to be(false)
+      aggregate_failures do
+        expect(Rails.cache.exist?(Block.cache_string_for(user.id, 'blocked'))).to be(true)
+        expect(Rails.cache.exist?(Block.cache_string_for(user.id, 'hidden'))).to be(false)
+        expect(Rails.cache.exist?(Block.cache_string_for(blocked.id, 'blocked'))).to be(false)
 
-      expect(user.hidden_posts).to eq([hidden_post.id])
-      expect(blocked.blocked_posts).to eq([user_post.id])
+        expect(user.hidden_posts).to eq([hidden_post.id])
+        expect(blocked.blocked_posts).to eq([user_post.id])
+      end
     end
   end
 
@@ -322,7 +326,7 @@ RSpec.describe BlocksController do
       expect(flash[:success]).to eq("User unblocked.")
     end
 
-    it "refreshes caches" do
+    it "refreshes caches", aggregate_failures: false do
       user = create(:user)
       blocked = create(:user)
       blocking = create(:user)
@@ -332,24 +336,28 @@ RSpec.describe BlocksController do
       hidden_post = create(:post, user: blocked, authors_locked: true)
       user_post = create(:post, user: user, authors_locked: true)
 
-      expect(user.hidden_posts).to eq([hidden_post.id])
-      expect(user.blocked_posts).to eq([blocked_post.id])
-      expect(blocked.blocked_posts).to eq([user_post.id])
+      aggregate_failures do
+        expect(user.hidden_posts).to eq([hidden_post.id])
+        expect(user.blocked_posts).to eq([blocked_post.id])
+        expect(blocked.blocked_posts).to eq([user_post.id])
+
+        expect(Rails.cache.exist?(Block.cache_string_for(user.id, 'blocked'))).to be(true)
+        expect(Rails.cache.exist?(Block.cache_string_for(user.id, 'hidden'))).to be(true)
+        expect(Rails.cache.exist?(Block.cache_string_for(blocked.id, 'blocked'))).to be(true)
+      end
 
       login_as(user)
 
-      expect(Rails.cache.exist?(Block.cache_string_for(user.id, 'blocked'))).to be(true)
-      expect(Rails.cache.exist?(Block.cache_string_for(user.id, 'hidden'))).to be(true)
-      expect(Rails.cache.exist?(Block.cache_string_for(blocked.id, 'blocked'))).to be(true)
-
       delete :destroy, params: { id: block.id }
 
-      expect(Rails.cache.exist?(Block.cache_string_for(user.id, 'blocked'))).to be(true)
-      expect(Rails.cache.exist?(Block.cache_string_for(user.id, 'hidden'))).to be(false)
-      expect(Rails.cache.exist?(Block.cache_string_for(blocked.id, 'blocked'))).to be(false)
+      aggregate_failures do
+        expect(Rails.cache.exist?(Block.cache_string_for(user.id, 'blocked'))).to be(true)
+        expect(Rails.cache.exist?(Block.cache_string_for(user.id, 'hidden'))).to be(false)
+        expect(Rails.cache.exist?(Block.cache_string_for(blocked.id, 'blocked'))).to be(false)
 
-      expect(user.hidden_posts).to be_empty
-      expect(blocked.blocked_posts).to be_empty
+        expect(user.hidden_posts).to be_empty
+        expect(blocked.blocked_posts).to be_empty
+      end
     end
   end
 end

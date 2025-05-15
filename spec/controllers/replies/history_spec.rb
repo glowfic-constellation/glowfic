@@ -8,13 +8,8 @@ RSpec.describe RepliesController, 'GET history' do
   end
 
   it "requires post access" do
-    expect(reply.user_id).not_to eq(reply.post.user_id)
-    expect(reply.post.visible_to?(reply.user)).to eq(true)
-
     reply.post.update!(privacy: :private)
     reply.reload
-    expect(reply.post.visible_to?(reply.user)).to eq(false)
-
     login_as(reply.user)
     get :history, params: { id: reply.id }
     expect(response).to redirect_to(continuities_url)

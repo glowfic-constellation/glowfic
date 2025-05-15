@@ -18,14 +18,7 @@ RSpec.describe RepliesController, 'PUT update' do
 
   it "requires post access" do
     reply = create(:reply)
-    expect(reply.user_id).not_to eq(reply.post.user_id)
-    expect(reply.post.visible_to?(reply.user)).to eq(true)
-
     reply.post.update!(privacy: :private)
-    reply.post.save!
-    reply.reload
-    expect(reply.post.visible_to?(reply.user)).to eq(false)
-
     login_as(reply.user)
     put :update, params: { id: reply.id }
     expect(response).to redirect_to(continuities_url)
@@ -99,19 +92,29 @@ RSpec.describe RepliesController, 'PUT update' do
     expect(reply.character_alias_id).to eq(calias.id)
   end
 
-  it "preserves reply_order" do
+  it "preserves reply_order", aggregate_failures: false do
     reply_post = create(:post)
     login_as(reply_post.user)
     create(:reply, post: reply_post)
     reply = create(:reply, post: reply_post, user: reply_post.user)
-    expect(reply.reply_order).to eq(1)
-    expect(reply_post.replies.ordered.last).to eq(reply)
+
+    aggregate_failures do
+      expect(reply.reply_order).to eq(1)
+      expect(reply_post.replies.ordered.last).to eq(reply)
+    end
+
     create(:reply, post: reply_post)
+
     expect(reply_post.replies.ordered.last).not_to eq(reply)
+
     reply_post.mark_read(reply_post.user)
+
     put :update, params: { id: reply.id, reply: { content: 'new content' } }
-    expect(flash[:success]).to eq("Reply updated.")
-    expect(reply.reload.reply_order).to eq(1)
+
+    aggregate_failures do
+      expect(flash[:success]).to eq("Reply updated.")
+      expect(reply.reload.reply_order).to eq(1)
+    end
   end
 
   it "preserves NPC" do

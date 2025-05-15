@@ -6,6 +6,7 @@ RSpec.describe "Adding icons to a gallery" do
     click_link "+ Add Icons"
 
     expect(page).to have_text("Add New Icons to Gallery")
+
     within(all('.icon-row').last) do
       fill_in "URL", with: "https://example.com/icon.png"
       fill_in "Keyword", with: "test icon 1"
@@ -20,22 +21,27 @@ RSpec.describe "Adding icons to a gallery" do
     end
 
     expect(page).to have_selector('.icon-row', count: 3)
+
     within(all('.icon-row').last) do
       click_link "Delete Row"
     end
+
     expect(page).to have_selector('.icon-row', count: 2)
 
     click_button "Add New Icons"
 
     expect(page).to have_text("Icons saved.")
+
     click_link "Icons", href: /view=icons/
 
-    within(".icons-box") do
-      expect(page).to have_text("test icon 1")
-      expect(page).to have_text("test icon 2")
-      expect(page).to have_selector("img", count: 2)
-      expect(page).to have_selector("img") { |elem| elem[:src] == "https://example.com/icon.png" }
-      expect(page).to have_selector("img") { |elem| elem[:src] == "https://example.com/icon2.png" }
+    aggregate_failures do
+      within(".icons-box") do
+        expect(page).to have_text("test icon 1")
+        expect(page).to have_text("test icon 2")
+        expect(page).to have_selector("img", count: 2)
+        expect(page).to have_selector("img") { |elem| elem[:src] == "https://example.com/icon.png" }
+        expect(page).to have_selector("img") { |elem| elem[:src] == "https://example.com/icon2.png" }
+      end
     end
   end
 
@@ -52,13 +58,18 @@ RSpec.describe "Adding icons to a gallery" do
     click_link "+ Add Icons"
     click_link "Add Existing Icons »"
 
-    expect(page).to have_text("Add Existing Icons to Gallery")
-    expect(page).to have_text("test icon 1")
+    aggregate_failures do
+      expect(page).to have_text("Add Existing Icons to Gallery")
+      expect(page).to have_text("test icon 1")
+    end
+
     icon = page.find(".gallery-icon", text: "test icon 1")
     icon.find("img").click
     first(:button, "Add Icons to Gallery").click
 
-    expect(page).to have_text("Icons added to gallery.")
-    expect(page).to have_text("test icon 1")
+    aggregate_failures do
+      expect(page).to have_text("Icons added to gallery.")
+      expect(page).to have_text("test icon 1")
+    end
   end
 end
