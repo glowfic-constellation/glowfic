@@ -3,11 +3,13 @@ RSpec.describe "Viewing users" do
 
   scenario "Interacting with author warnings" do
     visit user_path(user)
-    expect(page).to have_no_selector('.error')
+    expect(page).to have_selector('.info-box-header', text: user.username)
+    expect(page).to have_no_selector('.flash.error')
 
     user.update!(content_warnings: [create(:content_warning, name: 'nsfw')])
     visit user_path(user)
-    within('.error') do
+
+    within('.flash.error') do
       expect(page).to have_text("This author has set some general content warnings which might apply to their posts even when not otherwise warned")
       expect(page).to have_text('nsfw')
     end
@@ -24,6 +26,7 @@ RSpec.describe "Viewing users" do
 
     scenario "doesn't show other user's empty profile" do
       visit user_path(user)
+      expect(page).to have_selector('.info-box-header', text: user.username)
       expect(page).to have_no_text("Author Profile")
       expect(page).to have_no_link(href: profile_edit_user_path(user))
     end

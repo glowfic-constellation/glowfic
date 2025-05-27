@@ -12,8 +12,8 @@ RSpec.describe "Creating replies" do
     within('#post-editor') do
       click_button 'Preview'
     end
-    expect(page).to have_no_selector('.error')
-    expect(page).to have_selector('.success', exact_text: 'Draft saved.')
+    expect(page).to have_selector('.flash.success', exact_text: 'Draft saved.')
+    expect(page).to have_no_selector('.flash.error')
     expect(page).to have_selector('#post-editor')
 
     # then save:
@@ -21,8 +21,9 @@ RSpec.describe "Creating replies" do
       click_button 'Post'
     end
 
-    expect(page).to have_no_selector('.error')
-    expect(page).to have_selector('.success', exact_text: 'Reply posted.')
+    expect(page).to have_selector('.flash.success', exact_text: 'Reply posted.')
+    expect(page).to have_no_selector('.flash.error')
+
     expect(page).to have_selector('.post-container', count: 2)
     within('.post-reply') do
       expect(page).to have_selector('.post-author', exact_text: user.username)
@@ -52,8 +53,9 @@ RSpec.describe "Creating replies" do
       click_button 'Post'
     end
 
-    expect(page).to have_no_selector('.error')
-    expect(page).to have_selector('.success', exact_text: 'Reply posted.')
+    expect(page).to have_selector('.flash.success', exact_text: 'Reply posted.')
+    expect(page).to have_no_selector('.flash.error')
+
     expect(page).to have_selector('.post-container', count: 2)
     within('.post-reply') do
       expect(page).to have_selector('.post-author', exact_text: user.username)
@@ -106,8 +108,9 @@ RSpec.describe "Creating replies" do
       click_button "Post"
     end
 
-    expect(page).to have_no_selector('.error')
-    expect(page).to have_selector('.success', exact_text: 'Reply posted.')
+    expect(page).to have_selector('.flash.success', exact_text: 'Reply posted.')
+    expect(page).to have_no_selector('.flash.error')
+
     expect(page).to have_selector('.post-container', count: 2)
     within('.post-reply') do
       expect(page).to have_text(user.username)
@@ -135,8 +138,8 @@ RSpec.describe "Creating replies" do
     click_button 'Preview'
 
     # verify preview, change
-    expect(page).to have_no_selector('.error')
     expect(page).to have_text("Draft saved. Your new NPC character has also been persisted!")
+    expect(page).to have_no_selector('.flash.error')
     expect(page).to have_selector('.content-header', exact_text: 'Sample post')
     expect(page).to have_selector('.post-container', count: 1)
     expect(page).to have_selector('#post-editor')
@@ -146,8 +149,8 @@ RSpec.describe "Creating replies" do
     click_button 'Post'
 
     # reply uses NPC
-    expect(page).to have_no_selector(".error")
-    expect(page).to have_selector('.success', exact_text: 'Reply posted.')
+    expect(page).to have_selector('.flash.success', exact_text: 'Reply posted.')
+    expect(page).to have_no_selector('.flash.error')
     expect(page).to have_selector('.post-reply', count: 1)
 
     within('.post-reply') do
@@ -177,8 +180,8 @@ RSpec.describe "Creating replies" do
     click_button 'Preview'
 
     # verify preview, change
-    expect(page).to have_no_selector('.error')
     expect(page).to have_text("Draft saved.") # (no NPC created)
+    expect(page).to have_no_selector('.flash.error')
     expect(page).to have_selector('.content-header', exact_text: 'Sample post')
     expect(page).to have_selector('.post-container', count: 1)
     expect(page).to have_selector('#post-editor')
@@ -188,8 +191,8 @@ RSpec.describe "Creating replies" do
     click_button 'Post'
 
     # reply uses NPC
-    expect(page).to have_no_selector(".error")
-    expect(page).to have_selector('.success', exact_text: 'Reply posted.')
+    expect(page).to have_selector('.flash.success', exact_text: 'Reply posted.')
+    expect(page).to have_no_selector('.flash.error')
     expect(page).to have_selector('.post-reply', count: 1)
 
     within('.post-reply') do
@@ -219,7 +222,7 @@ RSpec.describe "Creating replies" do
     click_button 'Preview'
 
     # verify preview
-    expect(page).to have_no_selector('.error')
+    expect(page).to have_no_selector('.flash.error')
     expect(page).to have_text("Draft saved.")
     within('.post-reply') do
       expect(page).to have_selector('.post-character', exact_text: 'Alias 2')
@@ -230,8 +233,8 @@ RSpec.describe "Creating replies" do
     click_button 'Post'
 
     # reply uses alias
-    expect(page).to have_no_selector(".error")
-    expect(page).to have_selector('.success', exact_text: 'Reply posted.')
+    expect(page).to have_selector('.flash.success', exact_text: 'Reply posted.')
+    expect(page).to have_no_selector('.flash.error')
     expect(page).to have_selector('.post-reply', count: 1)
 
     within('.post-reply') do
@@ -276,15 +279,17 @@ RSpec.describe "Creating replies" do
         click_button "Add More Replies"
       end
 
-      expect(page).to have_no_selector('.error')
       expect(page).to have_selector('.content-header', exact_text: 'Adding multiple replies')
       expect(page).to have_selector('.post-container', count: 1)
       expect(page).to have_selector('#post-editor')
+      expect(page).to have_no_selector('.flash.error')
+
       within('#post-editor') do
         expect(page).to have_selector('#name', exact_text: character.name)
         page.find('img[title="Choose Character"]').click
         click_button 'NPC'
       end
+
       page.find('.select2-selection__rendered', exact_text: 'Select NPC or type to create').click
       page.find('.select2-container--open .select2-search__field').set(npc_name)
       page.find('li', exact_text: "Create New: #{npc_name}").click
@@ -293,34 +298,36 @@ RSpec.describe "Creating replies" do
       fill_in id: "reply_content", with: "test reply 2"
       click_button "Add More Replies"
 
-      expect(page).to have_no_selector('.error')
-      within(".success") { expect(page).to have_text("Your new NPC has been persisted!") }
+      expect(page).to have_selector('.flash.success', exact_text: 'Your new NPC has been persisted!')
+      expect(page).to have_no_selector('.flash.error')
       expect(page).to have_selector('.content-header', exact_text: 'Adding multiple replies')
       expect(page).to have_selector('.post-container', count: 2)
       expect(page).to have_selector('#post-editor')
+
       within('#post-editor') do
         expect(page).to have_selector('#name', exact_text: npc_name)
       end
+
       fill_in id: "reply_content", with: "test reply 3"
       click_button "Preview Current"
 
-      expect(page).to have_no_selector('.error')
       expect(page).to have_selector('.content-header', exact_text: 'Adding multiple replies')
       expect(page).to have_selector('.content-header', exact_text: 'Previewing')
       expect(page).to have_selector('.post-container', count: 3)
+      expect(page).to have_no_selector('.flash.error')
       expect(page).to have_text("test reply 3", count: 2)
       click_button "Add More Replies"
 
-      expect(page).to have_no_selector('.error')
       expect(page).to have_selector('.content-header', exact_text: 'Adding multiple replies')
       expect(page).to have_no_selector('.content-header', exact_text: 'Previewing')
+      expect(page).to have_no_selector('.flash.error')
       expect(page).to have_selector('.post-container', count: 3)
       expect(page).to have_text("test reply 3", count: 1)
       fill_in id: "reply_content", with: "test reply 4"
       accept_alert { click_button "Post Previewed" }
 
-      expect(page).to have_no_selector('.error')
-      expect(page).to have_selector('.success', exact_text: 'Replies posted.')
+      expect(page).to have_selector('.flash.success', exact_text: 'Replies posted.')
+      expect(page).to have_no_selector('.flash.error')
       expect(page).to have_selector('.post-container', count: 4)
       expect(page).to have_text("test reply 1")
       expect(page).to have_text("test reply 2")
@@ -334,22 +341,23 @@ RSpec.describe "Creating replies" do
         click_button "Add More Replies"
       end
 
-      expect(page).to have_no_selector('.error')
       expect(page).to have_selector('.content-header', exact_text: 'Adding multiple replies')
+      expect(page).to have_no_selector('.flash.error')
       expect(page).to have_selector('.post-container', count: 1)
       expect(page).to have_selector('#post-editor')
       fill_in id: "reply_content", with: "test reply 6"
       click_button "Add More Replies"
 
-      expect(page).to have_no_selector('.error')
       expect(page).to have_selector('.content-header', exact_text: 'Adding multiple replies')
+      expect(page).to have_no_selector('.flash.error')
       expect(page).to have_selector('.post-container', count: 2)
       expect(page).to have_selector('#post-editor')
       fill_in id: "reply_content", with: "test reply 7"
       click_button "Post All"
 
-      expect(page).to have_no_selector('.error')
-      expect(page).to have_selector('.success', exact_text: 'Replies posted.')
+      expect(page).to have_selector('.flash.success', exact_text: 'Replies posted.')
+      expect(page).to have_no_selector('.flash.error')
+
       expect(page).to have_selector('.post-container', count: 7)
       expect(page).to have_no_text("test reply 4")
       expect(page).to have_text("test reply 5")
@@ -363,16 +371,16 @@ RSpec.describe "Creating replies" do
         click_button "Add More Replies"
       end
 
-      expect(page).to have_no_selector('.error')
       expect(page).to have_selector('.content-header', exact_text: 'Adding multiple replies')
+      expect(page).to have_no_selector('.flash.error')
       expect(page).to have_selector('.post-container', count: 1)
       expect(page).to have_selector('#post-editor')
       fill_in id: "reply_content", with: "test reply 9"
       click_button "Add More Replies"
       accept_alert { click_button "Discard Replies" }
 
-      expect(page).to have_no_selector('.error')
-      expect(page).to have_selector('.success', exact_text: "Replies discarded.")
+      expect(page).to have_no_selector('.flash.error')
+      expect(page).to have_selector('.flash.success', exact_text: "Replies discarded.")
       expect(page).to have_selector('.post-container', count: 7)
       expect(page).to have_no_text("test reply 8")
       expect(page).to have_no_text("test reply 9")
@@ -391,19 +399,24 @@ RSpec.describe "Creating replies" do
         fill_in id: "reply_content", with: reply.content
         click_button "Add More Replies"
       end
-      expect(page).to have_no_selector('.error')
+
+      expect(page).to have_selector('.content-header', exact_text: 'Adding multiple replies')
+      expect(page).to have_no_selector('.flash.error')
 
       within('#post-editor') do
         fill_in 'reply_content', with: 'new reply 1'
         click_button 'Add More Replies'
       end
-      expect(page).to have_no_selector('.error')
+
+      expect(page).to have_selector('.content-header', exact_text: 'Adding multiple replies')
+      expect(page).to have_no_selector('.flash.error')
 
       within('#post-editor') do
         fill_in 'reply_content', with: 'new reply 2'
         click_button 'Post All'
       end
-      expect(page).to have_selector('.error',
+
+      expect(page).to have_selector('.flash.error',
         text: 'This looks like a duplicate. Did you attempt to post this twice? Please resubmit if this was intentional.',)
 
       accept_alert { click_button "Post Previewed" }
@@ -422,12 +435,12 @@ RSpec.describe "Creating replies" do
         fill_in 'reply_content', with: 'new reply 4'
         click_button 'Post All'
       end
-      expect(page).to have_selector('.error', text: "There has been 1 new reply since you last viewed this post.")
+      expect(page).to have_selector('.flash.error', text: "There has been 1 new reply since you last viewed this post.")
 
       accept_alert { click_button "Post Previewed" }
-      expect(page).to have_no_selector('.error')
       expect(page).to have_selector('.post-content', exact_text: 'new reply 3', count: 1)
       expect(page).to have_selector('.post-content', exact_text: 'new reply 4', count: 1)
+      expect(page).to have_no_selector('.flash.error')
     end
   end
 
@@ -436,6 +449,8 @@ RSpec.describe "Creating replies" do
 
     login
     visit post_path(post)
+
+    expect(page).to have_selector('.content-header', exact_text: post.subject)
     expect(page.text).not_to include('Join Thread')
     expect(page).to have_no_selector('#post-editor')
   end
@@ -444,6 +459,8 @@ RSpec.describe "Creating replies" do
     post = create(:post)
 
     visit post_path(post)
+
+    expect(page).to have_selector('.content-header', exact_text: post.subject)
     expect(page.text).not_to include('Join Thread')
     expect(page).to have_no_selector('#post-editor')
   end

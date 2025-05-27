@@ -19,8 +19,8 @@ RSpec.describe "Editing user profile" do
 
     # Page exists
     visit profile_edit_user_path(user)
-    expect(page).to have_no_selector('.error')
     expect(page).to have_selector('.content-header', exact_text: 'Edit profile')
+    expect(page).to have_no_selector('.flash.error')
 
     # Profile description field exists and can be filled
     expect(page).to have_field('user_profile', with: '')
