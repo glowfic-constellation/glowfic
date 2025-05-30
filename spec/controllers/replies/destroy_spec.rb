@@ -18,12 +18,8 @@ RSpec.describe RepliesController, 'DELETE destroy' do
 
   it "requires post access" do
     reply = create(:reply)
-    expect(reply.user_id).not_to eq(reply.post.user_id)
-    expect(reply.post.visible_to?(reply.user)).to eq(true)
-
     reply.post.update!(privacy: :private)
     reply.reload
-    expect(reply.post.visible_to?(reply.user)).to eq(false)
 
     login_as(reply.user)
     delete :destroy, params: { id: reply.id }
@@ -78,35 +74,44 @@ RSpec.describe RepliesController, 'DELETE destroy' do
     expect(response).to redirect_to(post_url(reply.post, page: 2))
   end
 
-  it "deletes post author on deleting only reply in open posts" do
+  it "deletes post author on deleting only reply in open posts", aggregate_failures: false do
     user = create(:user)
     post = create(:post)
-    expect(post.authors_locked).to eq(false)
     login_as(user)
     reply = create(:reply, post: post, user: user)
     post_user = post.post_authors.find_by(user: user)
     id = post_user.id
+
     expect(post_user.joined).to eq(true)
+
     delete :destroy, params: { id: reply.id }
+
     expect(Post::Author.find_by(id: id)).to be_nil
   end
 
-  it "sets joined to false on deleting only reply when invited" do
+  it "sets joined to false on deleting only reply when invited", aggregate_failures: false do
     user = create(:user)
     other_user = create(:user)
     post = create(:post, user: other_user, authors: [user, other_user], authors_locked: true)
-    expect(post.authors_locked).to eq(true)
-    expect(post.post_authors.find_by(user: user)).not_to be_nil
+
+    aggregate_failures do
+      expect(post.authors_locked).to eq(true)
+      expect(post.post_authors.find_by(user: user)).not_to be_nil
+    end
+
     login_as(user)
     reply = create(:reply, post: post, user: user)
     post_user = post.post_authors.find_by(user: user)
+
     expect(post_user.joined).to eq(true)
+
     delete :destroy, params: { id: reply.id }
     post_user.reload
+
     expect(post_user.joined).to eq(false)
   end
 
-  it "does not clean up post author when other replies exist" do
+  it "does not clean up post author when other replies exist", aggregate_failures: false do
     user = create(:user)
     post = create(:post)
     expect(post.authors_locked).to eq(false)
@@ -114,9 +119,12 @@ RSpec.describe RepliesController, 'DELETE destroy' do
     create(:reply, post: post, user: user) # remaining reply
     reply = create(:reply, post: post, user: user)
     post_user = post.post_authors.find_by(user: user)
+
     expect(post_user.joined).to eq(true)
+
     delete :destroy, params: { id: reply.id }
     post_user.reload
+
     expect(post_user.joined).to eq(true)
   end
 

@@ -1,5 +1,5 @@
 RSpec.describe "Post stats" do
-  scenario "User views a stats page" do
+  scenario "User views a stats page", :aggregate_failures do
     post = create(:post, subject: "stats post test")
     character = create(:character, user: post.user, name: "statchar")
     create_list(:reply, 3, post: post, user: post.user, character: character)

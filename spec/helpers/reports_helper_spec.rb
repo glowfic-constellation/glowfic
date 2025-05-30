@@ -10,7 +10,7 @@ RSpec.describe ReportsHelper do
     assign(:opened_posts, Post::View.where(user_id: user.id).select([:post_id, :read_at, :ignored]))
   end
 
-  describe "#has_unread?" do
+  describe "#has_unread?", :aggregate_failures do
     it "requires opened_posts" do
       assign(:opened_posts, nil)
       expect(helper.has_unread?(post)).to eq(false)
@@ -42,7 +42,7 @@ RSpec.describe ReportsHelper do
     end
   end
 
-  describe "#never_read?" do
+  describe "#never_read?", :aggregate_failures do
     before(:each) do
       without_partial_double_verification do
         allow(helper).to receive(:logged_in?).and_return(true)

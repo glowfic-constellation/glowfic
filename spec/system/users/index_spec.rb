@@ -1,5 +1,5 @@
 RSpec.describe "Listing users" do
-  scenario "Logged-out user views simple list of users" do
+  scenario "Logged-out user views simple list of users", :aggregate_failures do
     simple_user = create(:user, username: 'Alice')
     moietied_user = create(:user, username: 'Bob', moiety: 'FF0000', moiety_name: 'Test moiety')
     old_user = create(:user, username: 'Charlie', created_at: Time.zone.local(2018, 1, 1))

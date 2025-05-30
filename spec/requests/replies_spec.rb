@@ -21,16 +21,14 @@ RSpec.describe "Reply" do
       end
     end
 
-    it "works with invalid post" do
+    it "works with invalid post", :aggregate_failures do
       private_post = create(:post, privacy: :private)
 
       get "/replies/search?post_id=#{private_post.id}&commit=Search"
 
-      aggregate_failures do
-        expect(response).to have_http_status(200)
-        expect(response).to render_template(:search)
-        expect(response.body).to include("You do not have permission to view this post.")
-      end
+      expect(response).to have_http_status(200)
+      expect(response).to render_template(:search)
+      expect(response.body).to include("You do not have permission to view this post.")
     end
   end
 end

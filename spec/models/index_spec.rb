@@ -23,7 +23,7 @@ RSpec.describe Index do
         .and change { IndexSection.count }.by(-1)
     end
 
-    it "should affect nothing else when deleting an indexpost" do
+    it "should affect nothing else when deleting an indexpost", :aggregate_failures do
       other = create(:index_post, index_section: section, index: index)
       expect(sectionpost.section_order).to eq(0)
       expect(other.section_order).to eq(1)

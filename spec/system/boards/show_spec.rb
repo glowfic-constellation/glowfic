@@ -1,4 +1,4 @@
-RSpec.describe "Show a single continuity" do
+RSpec.describe "Show a single continuity", :aggregate_failures do
   scenario "View a standard continuity" do
     board = create(:board, name: "Test board")
     create_list(:post, 5, board: board, user: board.creator)

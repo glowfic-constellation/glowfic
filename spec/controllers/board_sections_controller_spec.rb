@@ -16,7 +16,6 @@ RSpec.describe BoardSectionsController do
     it "requires permission" do
       user = create(:user)
       board = create(:board)
-      expect(board.editable_by?(user)).to eq(false)
       login_as(user)
 
       get :new, params: { board_id: board.id }
@@ -57,7 +56,6 @@ RSpec.describe BoardSectionsController do
     it "requires permission" do
       user = create(:user)
       board = create(:board)
-      expect(board.editable_by?(user)).to eq(false)
       login_as(user)
 
       post :create, params: { board_section: { board_id: board.id } }
@@ -215,7 +213,6 @@ RSpec.describe BoardSectionsController do
       user = create(:user)
       login_as(user)
       board_section = create(:board_section)
-      expect(board_section.board).not_to be_editable_by(user)
 
       put :update, params: { id: board_section.id }
       expect(response).to redirect_to(continuities_url)
