@@ -124,7 +124,12 @@ class WritableController < ApplicationController
         build_template_groups
 
         session_params = ActionController::Parameters.new(reply: session.fetch(:attempted_reply, {}))
-        reply_hash = permitted_params(session_params)
+        reply_hash = if params[:draft].present?
+          permitted_params(ActionController::Parameters.new(reply: params[:draft]))
+        else
+          session_params = ActionController::Parameters.new(reply: session.fetch(:attempted_reply, {}))
+          permitted_params(session_params)
+        end
         session.delete(:attempted_reply)
 
         @reply = @post.build_new_reply_for(current_user, reply_hash)
