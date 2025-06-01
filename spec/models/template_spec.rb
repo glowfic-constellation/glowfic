@@ -1,29 +1,37 @@
 RSpec.describe Template do
-  it "requires a name" do
-    template = build(:template, name: nil)
-    expect(template).not_to be_valid
-    expect {
-      template.save!
-    }.to raise_error(ActiveRecord::RecordInvalid, "Validation failed: Name can't be blank")
-    expect(Template.count).to eq(0)
-  end
+  describe "validations" do
+    it "requires a name" do
+      template = build(:template, name: nil)
+      expect(template).not_to be_valid
+      expect {
+        template.save!
+      }.to raise_error(ActiveRecord::RecordInvalid, "Validation failed: Name can't be blank")
+      expect(Template.count).to eq(0)
+    end
 
-  it "requires a user" do
-    template = build(:template, user_id: 999)
-    expect(template).not_to be_valid
-    expect {
-      template.save!
-    }.to raise_error(ActiveRecord::RecordInvalid, "Validation failed: User must exist")
-    expect(Template.count).to eq(0)
-  end
+    it "requires a user" do
+      template = build(:template, user_id: 999)
+      expect(template).not_to be_valid
+      expect {
+        template.save!
+      }.to raise_error(ActiveRecord::RecordInvalid, "Validation failed: User must exist")
+      expect(Template.count).to eq(0)
+    end
 
-  it "succeeds without characters" do
-    template = build(:template, characters: [])
-    expect(template).to be_valid
-    expect {
-      template.save!
-    }.not_to raise_error
-    expect(Template.first).to eq(template.reload)
+    it "succeeds without characters" do
+      template = build(:template, characters: [])
+      expect(template).to be_valid
+      expect {
+        template.save!
+      }.not_to raise_error
+      expect(Template.first).to eq(template.reload)
+    end
+
+    it "requires a valid group if one is given" do
+      template = build(:template, character_group: create(:character_group))
+      expect(template).not_to be_valid
+      expect(template.errors.full_messages).to eq(['Character group must be yours'])
+    end
   end
 
   it "orders characters when given" do

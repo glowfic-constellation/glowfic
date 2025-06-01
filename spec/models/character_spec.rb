@@ -1,10 +1,9 @@
 RSpec.describe Character do
   describe "validations" do
     it "requires valid group" do
-      character = build(:character)
-      expect(character).to be_valid
-      character.character_group_id = 0
+      character = build(:character, character_group: create(:character_group))
       expect(character).not_to be_valid
+      expect(character.errors.full_messages).to eq(['Character group must be yours'])
     end
 
     it "requires valid default icon" do
@@ -21,6 +20,13 @@ RSpec.describe Character do
       expect(character).to be_valid
       character.gallery_ids = [gallery.id]
       expect(character).not_to be_valid
+    end
+
+    it "cannot have both group and template" do
+      user = create(:user)
+      character = build(:template_character, user: user, character_group: create(:character_group, user: user))
+      expect(character).not_to be_valid
+      expect(character.errors.full_messages).to match_array(['Template and character group cannot co-exist', 'Template characters is invalid'])
     end
 
     it "strips facecast" do
