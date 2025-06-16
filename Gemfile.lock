@@ -332,8 +332,9 @@ GEM
     rack (3.1.16)
     rack-attack (6.7.0)
       rack (>= 1.0, < 4)
-    rack-cors (2.0.2)
-      rack (>= 2.0.0)
+    rack-cors (3.0.0)
+      logger
+      rack (>= 3.0.14)
     rack-mini-profiler (4.0.0)
       rack (>= 1.2.0)
     rack-pratchett (0.1.1)
