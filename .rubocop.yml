@@ -749,7 +749,7 @@ Capybara/NegationMatcher: # new in 2.14
   EnforcedStyle: have_no
 
 Capybara/NegationMatcherAfterVisit: # new in 2.22
-  Enabled: false # followup PR
+  Enabled: true
 
 Capybara/RedundantWithinFind: # new in 2.20
   Enabled: true

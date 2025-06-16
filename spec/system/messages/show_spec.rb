@@ -65,6 +65,7 @@ RSpec.describe "Message threads" do
   scenario "check-all checkbox works", :js do
     user = login
     visit messages_path(view: 'inbox')
+    expect(page).to have_selector('.table-title', text: 'Inbox')
     expect(page).to have_no_selector('.check-all')
     expect(page).to have_no_selector('.check-all-item[name="marked_ids[]"]')
 
