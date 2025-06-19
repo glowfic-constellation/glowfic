@@ -57,6 +57,19 @@ jobs:
           bundler-cache: true  # runs bundle install (with version based on Gemfile.lock) and automatically caches result
       - name: Load database schema
         run: bundle exec rails db:schema:load --trace
+      - name: Asset cache
+        id: asset-cache
+        uses: actions/cache@v4
+        with:
+          path: |
+            public/assets
+            tmp/cache/assets/sprockets
+          key: ${{ runner.os }}-assets-${{ hashFiles('**/Gemfile.lock') }}
+          restore-keys:
+            ${{ runner.os }}-assets-
+      - name: Precompile assets
+        # for faster server bootup for Capybara tests
+        run: RAILS_ENV=test bundle exec rake assets:precompile
       - name: Run rspec tests and report coverage
         uses: paambaati/codeclimate-action@v9.0.0
         with:

@@ -1,7 +1,7 @@
 inherit_from: .rubocop_todo.yml
 
 AllCops:
-  TargetRubyVersion: 3.3
+  TargetRubyVersion: 3.4
   TargetRailsVersion: 8.0
   # used so rubocop doesn't edit old migrations, doesn't need to be perfectly up to date
   MigratedSchemaVersion: 20241224202900
@@ -14,7 +14,7 @@ AllCops:
     - 'backstop/*'
     - 'vendor/**/*'
 
-require:
+plugins:
   - rubocop-capybara
   - rubocop-factory_bot
   - rubocop-performance
@@ -146,6 +146,9 @@ Lint/ConstantOverwrittenInRescue: # new in 1.31
 Lint/ConstantReassignment: # new in 1.70
   Enabled: true
 
+Lint/CopDirectiveSyntax: # new in 1.72
+  Enabled: true
+
 Lint/DeprecatedConstants: # (new in 1.8)
   Enabled: true
 
@@ -217,6 +220,9 @@ Lint/ParenthesesAsGroupedExpression:
 Lint/RedundantDirGlobSort: # (new in 1.8)
   Enabled: true
 
+Lint/RedundantTypeConversion: # new in 1.72
+  Enabled: true
+
 Lint/RefinementImportMethods: # new in 1.27
   Enabled: true
 
@@ -237,6 +243,9 @@ Lint/SuppressedException:
     - 'spec/jobs/application_job_spec.rb'
     - 'spec/jobs/generate_flat_post_job_spec.rb'
 
+Lint/SuppressedExceptionInNumberConversion: # new in 1.72
+  Enabled: true
+
 Lint/SymbolConversion: # (new in 1.9)
   Enabled: true
 
@@ -253,6 +262,9 @@ Lint/UnexpectedBlockArity: # (new in 1.5)
   Enabled: true
 
 Lint/UnmodifiedReduceAccumulator: # (new in 1.1)
+  Enabled: true
+
+Lint/UselessConstantScoping: # new in 1.72
   Enabled: true
 
 Lint/UselessDefined: # new in 1.69
@@ -386,6 +398,10 @@ Performance/StringInclude:
 
 Performance/Sum:
   Enabled: true
+
+Performance/ZipWithoutBlock: # new in 1.24
+  Enabled: false
+  # unlikely to be hit on our codebase (and hasn't been a problem)
 
 ##################### Rails ##################################
 
@@ -673,6 +689,9 @@ RSpec/ExpectChange:
 RSpec/HookArgument:
   EnforcedStyle: each
 
+RSpec/IncludeExamples: # new in 3.6
+  Enabled: true
+
 RSpec/IndexedLet:
   Enabled: false
 
@@ -719,9 +738,8 @@ RSpec/SubjectDeclaration:
 
 ################## Capybara ####################################
 
-Capybara/ClickLinkOrButtonStyle: # new in 2.19
-  # disabled because we have lots of buttons wrapped in links that cause ambiguous matches
-  Enabled: false
+Capybara/FindAllFirst: # new in 2.22
+  Enabled: true
 
 Capybara/MatchStyle: # new in 2.17
   Enabled: true
@@ -729,6 +747,9 @@ Capybara/MatchStyle: # new in 2.17
 Capybara/NegationMatcher: # new in 2.14
   Enabled: true
   EnforcedStyle: have_no
+
+Capybara/NegationMatcherAfterVisit: # new in 2.22
+  Enabled: true
 
 Capybara/RedundantWithinFind: # new in 2.20
   Enabled: true
@@ -857,6 +878,9 @@ Style/CombinableDefined: # new in 1.68
 Style/CommentAnnotation:
   Enabled: false
 
+Style/ComparableBetween: # new in 1.74
+  Enabled: true
+
 Style/ComparableClamp: # new in 1.44
   Enabled: true
 
@@ -953,6 +977,9 @@ Style/HashConversion: # (new in 1.10)
 Style/HashExcept: # (new in 1.7)
   Enabled: true
 
+Style/HashFetchChain: # new in 1.75
+  Enabled: true
+
 Style/HashSlice: # new in 1.71
   Enabled: true
 
@@ -970,6 +997,9 @@ Style/InvertibleUnlessCondition:  # new in 1.44
   # overriding InverseMethods isn't working right now and we have a lot of fine examples of "unless .present?"
 
 Style/ItAssignment: # new in 1.70
+  Enabled: true
+
+Style/ItBlockParameter: # new in 1.75
   Enabled: true
 
 Style/KeywordArgumentsMerging: # new in 1.68
@@ -1082,6 +1112,9 @@ Style/RedundantException:
 Style/RedundantFilterChain: # new in 1.52
   Enabled: true
 
+Style/RedundantFormat: # new in 1.72
+  Enabled: true
+
 Style/RedundantHeredocDelimiterQuotes: # new in 1.45
   Enabled: true
 
@@ -1161,10 +1194,10 @@ Style/TrailingCommaInArguments:
   EnforcedStyleForMultiline: 'consistent_comma'
 
 Style/TrailingCommaInArrayLiteral:
-  EnforcedStyleForMultiline: 'consistent_comma'
+  EnforcedStyleForMultiline: 'diff_comma'
 
 Style/TrailingCommaInHashLiteral:
-  EnforcedStyleForMultiline: 'consistent_comma'
+  EnforcedStyleForMultiline: 'diff_comma'
 
 Style/WordArray:
   Enabled: false

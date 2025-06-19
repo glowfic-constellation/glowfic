@@ -55,7 +55,7 @@
             %li
               = link_to character.name, character_path(character)
               = surround '(', ')' do
-                = link_to "#{count} times", search_replies_path(post_id: @post.id, character_id: character.id, commit: true, sort: :created_new)
+                = link_to "#{count} #{'time'.pluralize(count)}", search_replies_path(post_id: @post.id, character_id: character.id, commit: true, sort: :created_new)
 
     - if @post.settings.present?
       %tr

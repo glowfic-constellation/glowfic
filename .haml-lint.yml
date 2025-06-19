@@ -32,5 +32,8 @@ linters:
   SpaceInsideHashAttributes:
     enabled: false
 
+  StrictLocals:
+    enabled: true
+
   ViewLength:
     enabled: false

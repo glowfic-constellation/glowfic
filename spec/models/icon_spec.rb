@@ -226,14 +226,14 @@ RSpec.describe Icon do
       let(:user) { create(:user) }
       let(:icon) { create(:uploaded_icon, user: user) }
 
-      include_examples "works"
+      it_behaves_like "works"
     end
 
     context "with external icons" do
       let(:user) { create(:user) }
       let(:icon) { create(:icon, user: user) }
 
-      include_examples "works"
+      it_behaves_like "works"
     end
   end
 end

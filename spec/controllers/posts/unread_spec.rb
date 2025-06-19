@@ -172,6 +172,6 @@ RSpec.describe PostsController, 'GET unread' do
   end
 
   context "when logged in" do
-    include_examples "logged in post list"
+    it_behaves_like "logged in post list"
   end
 end

@@ -4,7 +4,7 @@
 
 ### Dependencies
 
-*   [Ruby](https://www.ruby-lang.org/en/) 3.3
+*   [Ruby](https://www.ruby-lang.org/en/) 3.4
 *   [Rails](http://rubyonrails.org/) 7.2
 *   [Redis](https://redis.io/topics/quickstart)
 *   [PostgreSQL](https://www.postgresql.org/)

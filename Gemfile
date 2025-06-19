@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 source 'https://rubygems.org'
 
-ruby '3.3.7'
+ruby '3.4.4'
 
 gem 'api-pagination'
 gem 'apipie-rails'
@@ -24,7 +24,7 @@ gem 'aws-sdk-ses', '~> 1'
 gem 'barnes' # heroku ruby-specific metrics
 gem 'bootstrap', '~> 5.3' # pin until major version is handled
 gem 'dartsass-sprockets'
-gem 'exception_notification', git: 'https://github.com/Throne3d/exception_notification.git', ref: 'b2131cf'
+gem 'exception_notification'
 gem 'get_process_mem'
 gem 'gon', '~> 6.4'
 gem 'haml-rails'
@@ -32,7 +32,7 @@ gem 'httparty'
 gem 'jquery-fileupload-rails'
 gem 'jquery-rails', '~> 4.6'
 gem 'jquery-ui-rails-dox-fork', require: 'jquery-ui-rails'
-gem 'json', '~> 2.10'
+gem 'json', '~> 2.12'
 gem 'jwt'
 gem 'newrelic_rpm'
 gem 'nilify_blanks'
@@ -40,9 +40,9 @@ gem 'nokogiri'
 gem 'pg', '~> 1.5'
 gem 'pg_search'
 gem 'rack-pratchett'
-gem 'rails', '~> 8.0.1'
+gem 'rails', '~> 8.0.2'
 gem "redcarpet", "~> 3.6"
-gem 'redis', '~> 5.3'
+gem 'redis', '~> 5.4'
 gem 'request_store', '~> 1.7'
 gem 'resque'
 gem 'sanitize'
@@ -52,7 +52,7 @@ gem 'sprockets'
 gem 'sprockets-rails'
 gem 'terser'
 gem 'test-unit', '~> 3.6' # required by Heroku for production console
-gem 'tinymce-rails', '~> 7.6'
+gem 'tinymce-rails', '~> 7.8' # when upgrading, bump cache_suffix in app/assets/javascripts/writable.js
 gem 'will_paginate'
 
 group :production do
@@ -64,18 +64,18 @@ group :production do
 end
 
 group :development do
-  gem "brakeman", '~> 6.2.2', require: false
-  gem 'haml_lint', '~> 0.60.0', require: false
+  gem "brakeman", '~> 7.0.2', require: false
+  gem 'haml_lint', '~> 0.62.0', require: false
   gem 'listen'
   gem 'memory_profiler'
   gem 'rack-mini-profiler'
-  gem 'rubocop', '~> 1.71.2', require: false
-  gem 'rubocop-capybara', '~> 2.21.0', require: false
-  gem 'rubocop-factory_bot', '~> 2.26.0', require: false
-  gem 'rubocop-performance', '~> 1.23.1', require: false
-  gem 'rubocop-rails', '~> 2.29.1', require: false
-  gem 'rubocop-rspec', '~> 3.4.0', require: false
-  gem 'rubocop-rspec_rails', '~> 2.30.0', require: false
+  gem 'rubocop', '~> 1.75.5', require: false
+  gem 'rubocop-capybara', '~> 2.22.1', require: false
+  gem 'rubocop-factory_bot', '~> 2.27.1', require: false
+  gem 'rubocop-performance', '~> 1.25.0', require: false
+  gem 'rubocop-rails', '~> 2.31.0', require: false
+  gem 'rubocop-rspec', '~> 3.6.0', require: false
+  gem 'rubocop-rspec_rails', '~> 2.31.0', require: false
   gem 'traceroute'
 end
 
@@ -84,7 +84,7 @@ group :development, :test do
   gem 'database_cleaner'
   gem 'dotenv'
   gem 'html-proofer', '< 4'
-  gem 'rake', '~> 13.2'
+  gem 'rake', '~> 13.3'
   gem 'rspec-rails'
   gem 'seed_dump', '~> 3.2'
 end

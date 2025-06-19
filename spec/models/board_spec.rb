@@ -148,7 +148,7 @@ RSpec.describe Board do
       let(:options) { { include: [:board_sections] } }
       let(:json) { { id: board.id, name: board.name, board_sections: board.board_sections.ordered } }
 
-      include_examples 'sections'
+      it_behaves_like 'sections'
 
       it "works with sections" do
         sections = create_list(:board_section, 4, board: board)
@@ -161,7 +161,7 @@ RSpec.describe Board do
       let(:options) { {} }
       let(:json) { { id: board.id, name: board.name } }
 
-      include_examples 'sections'
+      it_behaves_like 'sections'
 
       it "works with sections" do
         create_list(:board_section, 4, board: board)

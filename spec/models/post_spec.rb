@@ -100,7 +100,7 @@ RSpec.describe Post do
         let!(:reply2) do
           Timecop.freeze(post.edited_at + 30.minutes) { create(:reply, post: post) }
         end
-        let!(:old_tagged_at) { post.tagged_at } # rubocop:disable RSpec/LetSetup # false positive
+        let!(:old_tagged_at) { post.tagged_at } # rubocop:disable RSpec/LetSetup -- false positive
 
         it "should not update if first reply edited" do
           old_tagged_at = post.tagged_at
@@ -1027,7 +1027,7 @@ RSpec.describe Post do
     context "with open post" do
       let(:post) { create(:post, user: poster, joined_authors: [poster], unjoined_authors: [coauthor], authors_locked: false) }
 
-      include_examples "common taggable tests"
+      it_behaves_like "common taggable tests"
 
       it "should allow non-authors to reply" do
         expect(post).to be_taggable_by(create(:user))
@@ -1037,7 +1037,7 @@ RSpec.describe Post do
     context "with closed post" do
       let(:post) { create(:post, user: poster, joined_authors: [poster], unjoined_authors: [coauthor], authors_locked: true) }
 
-      include_examples "common taggable tests"
+      it_behaves_like "common taggable tests"
 
       it "should not allow non-authors" do
         expect(post).not_to be_taggable_by(create(:user))

@@ -2,6 +2,7 @@ RSpec.describe "User notifications" do
   scenario "check-all checkbox works", :js do
     user = login
     visit notifications_path
+    expect(page).to have_selector('.content-header', text: 'Notifications')
     expect(page).to have_no_selector('.check-all')
     expect(page).to have_no_selector('.check-all-item[name="marked_ids[]"]')
 

@@ -1,6 +1,11 @@
 RSpec.describe AliasesController do
   include ActiveJob::TestHelper
 
+  let(:user) { create(:user) }
+  let(:reader) { create(:reader_user) }
+  let(:character) { create(:character) }
+  let(:calias) { create(:alias, character: character) }
+
   describe "GET new" do
     it "requires login" do
       get :new, params: { character_id: -1 }
@@ -9,31 +14,27 @@ RSpec.describe AliasesController do
     end
 
     it "requires full account" do
-      login_as(create(:reader_user))
+      login_as(reader)
       get :new, params: { character_id: -1 }
       expect(response).to redirect_to(continuities_path)
       expect(flash[:error]).to eq("You do not have permission to create aliases.")
     end
 
     it "requires valid character" do
-      user_id = login
+      login_as(user)
       get :new, params: { character_id: -1 }
-      expect(response).to redirect_to(user_characters_url(user_id))
+      expect(response).to redirect_to(user_characters_url(user.id))
       expect(flash[:error]).to eq("Character could not be found.")
     end
 
     it "requires your character" do
-      user = create(:user)
       login_as(user)
-      character = create(:character)
-      expect(character.user_id).not_to eq(user.id)
       get :new, params: { character_id: character.id }
       expect(response).to redirect_to(user_characters_url(user.id))
       expect(flash[:error]).to eq("You do not have permission to modify this character.")
     end
 
     it "succeeds" do
-      character = create(:character)
       login_as(character.user)
       get :new, params: { character_id: character.id }
       expect(response.status).to eq(200)
@@ -51,31 +52,27 @@ RSpec.describe AliasesController do
     end
 
     it "requires full account" do
-      login_as(create(:reader_user))
+      login_as(reader)
       post :create, params: { character_id: -1 }
       expect(response).to redirect_to(continuities_path)
       expect(flash[:error]).to eq("You do not have permission to create aliases.")
     end
 
     it "requires valid character" do
-      user_id = login
+      login_as(user)
       post :create, params: { character_id: -1 }
-      expect(response).to redirect_to(user_characters_url(user_id))
+      expect(response).to redirect_to(user_characters_url(user.id))
       expect(flash[:error]).to eq("Character could not be found.")
     end
 
     it "requires your character" do
-      user = create(:user)
       login_as(user)
-      character = create(:character)
-      expect(character.user_id).not_to eq(user.id)
       post :create, params: { character_id: character.id }
       expect(response).to redirect_to(user_characters_url(user.id))
       expect(flash[:error]).to eq("You do not have permission to modify this character.")
     end
 
     it "fails with missing params" do
-      character = create(:character)
       login_as(character.user)
       post :create, params: { character_id: character.id }
       expect(response.status).to eq(200)
@@ -85,7 +82,6 @@ RSpec.describe AliasesController do
     end
 
     it "fails with invalid params" do
-      character = create(:character)
       login_as(character.user)
       post :create, params: { character_id: character.id, character_alias: { name: '' } }
       expect(response.status).to eq(200)
@@ -95,17 +91,139 @@ RSpec.describe AliasesController do
     end
 
     it "succeeds when valid" do
-      expect(CharacterAlias.count).to eq(0)
       test_name = 'Test character alias'
-
-      character = create(:character)
       login_as(character.user)
 
-      post :create, params: { character_id: character.id, character_alias: { name: test_name } }
+      expect {
+        post :create, params: {
+          character_id: character.id,
+          character_alias: { name: test_name },
+        }
+      }.to change { CharacterAlias.count }.by(1)
 
       expect(response).to redirect_to(edit_character_url(character))
       expect(flash[:success]).to eq("Alias created.")
-      expect(CharacterAlias.count).to eq(1)
+      expect(character.aliases.count).to eq(1)
+      expect(assigns(:alias).name).to eq(test_name)
+    end
+  end
+
+  describe "GET edit" do
+    it "requires login" do
+      get :edit, params: { id: -1, character_id: -1 }
+      expect(response).to redirect_to(root_url)
+      expect(flash[:error]).to eq("You must be logged in to view that page.")
+    end
+
+    it "requires full account" do
+      login_as(reader)
+      get :edit, params: { id: -1, character_id: -1 }
+      expect(response).to redirect_to(continuities_path)
+      expect(flash[:error]).to eq("You do not have permission to create aliases.")
+    end
+
+    it "requires valid character" do
+      login_as(user)
+      get :edit, params: { id: -1, character_id: -1 }
+      expect(response).to redirect_to(user_characters_url(user.id))
+      expect(flash[:error]).to eq("Character could not be found.")
+    end
+
+    it "requires your character" do
+      login_as(user)
+      get :edit, params: { id: calias.id, character_id: character.id }
+      expect(response).to redirect_to(user_characters_url(user.id))
+      expect(flash[:error]).to eq("You do not have permission to modify this character.")
+    end
+
+    it "requires valid alias" do
+      login_as(character.user)
+      get :edit, params: { id: -1, character_id: character.id }
+      expect(response).to redirect_to(edit_character_url(character))
+      expect(flash[:error]).to eq("Alias could not be found.")
+    end
+
+    it "requires aliases to match character" do
+      calias = create(:alias)
+      login_as(character.user)
+      get :edit, params: { id: calias.id, character_id: character.id }
+      expect(response).to redirect_to(edit_character_url(character))
+      expect(flash[:error]).to eq("Alias could not be found for that character.")
+    end
+
+    it "succeeds" do
+      login_as(character.user)
+      get :edit, params: { id: calias.id, character_id: character.id }
+      expect(response.status).to eq(200)
+      expect(assigns(:page_title)).to eq("Edit Alias: #{calias.name}")
+      expect(assigns(:alias)).to eq(calias)
+      expect(assigns(:alias).character).to eq(character)
+    end
+  end
+
+  describe "PUT update" do
+    it "requires login" do
+      put :update, params: { id: -1, character_id: -1 }
+      expect(response).to redirect_to(root_url)
+      expect(flash[:error]).to eq("You must be logged in to view that page.")
+    end
+
+    it "requires full account" do
+      login_as(reader)
+      put :update, params: { id: -1, character_id: -1 }
+      expect(response).to redirect_to(continuities_path)
+      expect(flash[:error]).to eq("You do not have permission to create aliases.")
+    end
+
+    it "requires valid character" do
+      login_as(user)
+      put :update, params: { id: -1, character_id: -1 }
+      expect(response).to redirect_to(user_characters_url(user.id))
+      expect(flash[:error]).to eq("Character could not be found.")
+    end
+
+    it "requires your character" do
+      login_as(user)
+      put :update, params: { id: calias.id, character_id: character.id }
+      expect(response).to redirect_to(user_characters_url(user.id))
+      expect(flash[:error]).to eq("You do not have permission to modify this character.")
+    end
+
+    it "requires valid alias" do
+      login_as(character.user)
+      put :update, params: { id: -1, character_id: character.id }
+      expect(response).to redirect_to(edit_character_url(character))
+      expect(flash[:error]).to eq("Alias could not be found.")
+    end
+
+    it "requires aliases to match character" do
+      calias = create(:alias)
+      login_as(character.user)
+      put :update, params: { id: calias.id, character_id: character.id }
+      expect(response).to redirect_to(edit_character_url(character))
+      expect(flash[:error]).to eq("Alias could not be found for that character.")
+    end
+
+    it "fails with invalid params" do
+      login_as(character.user)
+      put :update, params: { id: calias.id, character_id: character.id, character_alias: { name: '' } }
+      expect(response.status).to eq(200)
+      expect(flash[:error][:message]).to eq("Alias could not be updated because of the following problems:")
+      expect(assigns(:page_title)).to eq("Edit Alias: #{calias.name}")
+    end
+
+    it "succeeds when valid" do
+      test_name = 'Test character alias'
+      login_as(character.user)
+
+      put :update, params: {
+        id: calias.id,
+        character_id: character.id,
+        character_alias: { name: test_name },
+      }
+
+      expect(response).to redirect_to(edit_character_url(character))
+      expect(flash[:success]).to eq("Alias updated.")
       expect(character.aliases.count).to eq(1)
       expect(assigns(:alias).name).to eq(test_name)
     end
@@ -119,31 +237,27 @@ RSpec.describe AliasesController do
     end
 
     it "requires full account" do
-      login_as(create(:reader_user))
+      login_as(reader)
       delete :destroy, params: { id: -1, character_id: -1 }
       expect(response).to redirect_to(continuities_path)
       expect(flash[:error]).to eq("You do not have permission to create aliases.")
     end
 
     it "requires valid character" do
-      user_id = login
+      login_as(user)
       delete :destroy, params: { id: -1, character_id: -1 }
-      expect(response).to redirect_to(user_characters_url(user_id))
+      expect(response).to redirect_to(user_characters_url(user.id))
       expect(flash[:error]).to eq("Character could not be found.")
     end
 
     it "requires your character" do
-      user = create(:user)
       login_as(user)
-      character = create(:character)
-      expect(character.user_id).not_to eq(user.id)
       delete :destroy, params: { id: -1, character_id: character.id }
       expect(response).to redirect_to(user_characters_url(user.id))
       expect(flash[:error]).to eq("You do not have permission to modify this character.")
     end
 
     it "requires valid alias" do
-      character = create(:character)
       login_as(character.user)
       delete :destroy, params: { id: -1, character_id: character.id }
       expect(response).to redirect_to(edit_character_url(character))
@@ -151,33 +265,29 @@ RSpec.describe AliasesController do
     end
 
     it "requires aliases to match character" do
-      character = create(:character)
       calias = create(:alias)
       login_as(character.user)
-      expect(character.id).not_to eq(calias.character_id)
       delete :destroy, params: { id: calias.id, character_id: character.id }
       expect(response).to redirect_to(edit_character_url(character))
       expect(flash[:error]).to eq("Alias could not be found for that character.")
     end
 
     it "succeeds" do
-      calias = create(:alias)
-      reply = create(:reply, user: calias.character.user, character: calias.character, character_alias: calias)
-      draft = create(:reply_draft, user: calias.character.user, character: calias.character, character_alias: calias)
-      login_as(calias.character.user)
+      reply = create(:reply, user: character.user, character: character, character_alias: calias)
+      draft = create(:reply_draft, user: character.user, character: character, character_alias: calias)
+      login_as(character.user)
       perform_enqueued_jobs(only: UpdateModelJob) do
-        delete :destroy, params: { id: calias.id, character_id: calias.character_id }
+        delete :destroy, params: { id: calias.id, character_id: character.id }
       end
-      expect(response).to redirect_to(edit_character_url(calias.character))
+      expect(response).to redirect_to(edit_character_url(character))
       expect(flash[:success]).to eq("Alias removed.")
       expect(draft.reload.character_alias_id).to be_nil
       expect(reply.reload.character_alias_id).to be_nil
     end
 
     it "handles destroy failure" do
-      calias = create(:alias)
-      reply = create(:reply, user: calias.character.user, character: calias.character, character_alias: calias)
-      login_as(calias.character.user)
+      reply = create(:reply, user: character.user, character: character, character_alias: calias)
+      login_as(character.user)
 
       allow(CharacterAlias).to receive(:find_by).and_call_original
       allow(CharacterAlias).to receive(:find_by).with({ id: calias.id.to_s }).and_return(calias)
