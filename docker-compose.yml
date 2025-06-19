@@ -19,15 +19,26 @@ x-svc: &svc
     - postgres
     - minio
   volumes:
-    - .:/code
+    - .:/code:z
     - bundler-volume:/usr/local/bundle
     - webdrivers:/root/.webdrivers # caches webdrivers for selenium feature specs
 
 services:
+  anubis:
+    image: ghcr.io/techarohq/anubis:latest
+    environment:
+      BIND: "3000"
+      DIFFICULTY: "4"
+      SERVE_ROBOTS_TXT: "true"
+      TARGET: "http://web:3001"
+      OG_PASSTHROUGH: "true"
+      OG_EXPIRY_TIME: "24h"
+    ports:
+      - 3000:3000
   web:
     <<: *svc
     ports:
-      - 3000:3000
+      - 3001:3001
     command: bin/with-bundle bin/rails s
     environment:
       <<: *env
