@@ -25,7 +25,7 @@ class Api::V1::IndexPostsController < Api::ApiController
     end
 
     indexes = Index.where(id: posts.select(:index_id).distinct.pluck(:index_id))
-    unless indexes.count == 1
+    unless indexes.one?
       error = { message: 'Posts must be from one index' }
       render json: { errors: [error] }, status: :unprocessable_entity and return
     end
