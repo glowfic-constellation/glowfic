@@ -27,6 +27,7 @@ class BookmarksController < ApplicationController
 
     @search_results = @search_results
       .joins(:post)
+      .includes([:icon])
       .order('posts.subject, replies.created_at, posts.id')
       .joins(:user)
       .left_outer_joins(:character)

@@ -56,7 +56,7 @@ class IconsController < UploadingController
       @times_used = (posts_using.count + replies_using.count)
       @posts_used = (posts_using.pluck(:id) + replies_using.select(:post_id).distinct.pluck(:post_id)).uniq.count
     end
-    @galleries = @icon.galleries.ordered_by_name
+    @galleries = @icon.galleries.includes([:default_icon]).ordered_by_name
     @meta_og = og_data
     response.headers['X-Robots-Tag'] = 'noindex' if params[:view]
   end

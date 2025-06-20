@@ -13,7 +13,7 @@ class RepliesController < WritableController
     @page_title = 'Search Replies'
     use_javascript('search')
 
-    @post = Post.find_by(id: params[:post_id]) if params[:post_id].present?
+    @post = Post.find_by(id: params[:post_id]).includes([:audits]) if params[:post_id].present?
     @icon = Icon.find_by(id: params[:icon_id]) if params[:icon_id].present?
 
     if @post&.visible_to?(current_user)
