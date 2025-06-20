@@ -2,7 +2,8 @@
 return unless Rails.env.production?
 
 # allow all IPs in RACK_ATTACK_SAFE_IP split by comma
-ENV.fetch("RACK_ATTACK_SAFE_IP", "").split(",").each do |ip|
+$safe_ips = ENV.fetch("RACK_ATTACK_SAFE_IP", "").split(",")
+$safe_ips.each do |ip|
   next if ip == ""
   Rack::Attack.safelist_ip(ip)
 end
@@ -11,4 +12,41 @@ end
 ENV.fetch("RACK_ATTACK_BAD_IP", "").split(",").each do |ip|
   next if ip == ""
   Rack::Attack.blocklist_ip(ip)
+end
+
+class Rack::Attack
+  # Configure Cache
+  url = ENV.fetch("HEROKU_REDIS_TEAL_URL", nil)
+  Rack::Attack.cache.store = ActiveSupport::Cache::MemoryStore.new(url: url, ssl_params: { verify_mode: OpenSSL::SSL::VERIFY_NONE }) if url
+
+  # Throttle all requests by IP (60rpm)
+  # Key: "rack::attack:#{Time.now.to_i/:period}:req/ip:#{req.ip}"
+  throttle('req/ip', limit: ENV.fetch("RACK_ATTACK_IP_LIMIT", 25).to_i, period: 5.minutes) do |req|
+    req.ip
+  end
+
+  # Throttle POST requests to /login by IP address to prevent brute force login attacks
+  # Key: "rack::attack:#{Time.now.to_i/:period}:logins/ip:#{req.ip}"
+  throttle('logins/ip', limit: 5, period: 20.seconds) do |req|
+    req.ip if req.path == '/login' && req.post?
+  end
+
+  # Return to user how many seconds to wait until they can start sending requests again
+  Rack::Attack.throttled_response_retry_after_header = true
+
+  # Includes conventional RateLimit-* headers for safe IPs:
+  Rack::Attack.throttled_responder = lambda do |req|
+    return [429, {}, ["Throttled\n"]] unless $safe_ips.include?(req.ip)
+
+    match_data = req.env['rack.attack.match_data']
+    now = match_data[:epoch_time]
+
+    headers = {
+      'RateLimit-Limit'     => match_data[:limit].to_s,
+      'RateLimit-Remaining' => '0',
+      'RateLimit-Reset'     => (now + (match_data[:period] - now % match_data[:period])).to_s,
+    }
+
+    [429, headers, ["Throttled\n"]]
+  end
 end
