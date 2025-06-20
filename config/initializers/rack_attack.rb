@@ -2,15 +2,13 @@
 return unless Rails.env.production?
 
 # allow all IPs in RACK_ATTACK_SAFE_IP split by comma
-$safe_ips = ENV.fetch("RACK_ATTACK_SAFE_IP", "").split(",")
+$safe_ips = ENV.fetch("RACK_ATTACK_SAFE_IP", "").split(",").compact_blank
 $safe_ips.each do |ip|
-  next if ip == ""
   Rack::Attack.safelist_ip(ip)
 end
 
 # block all IPs in RACK_ATTACK_BAD_IP split by comma
-ENV.fetch("RACK_ATTACK_BAD_IP", "").split(",").each do |ip|
-  next if ip == ""
+ENV.fetch("RACK_ATTACK_BAD_IP", "").split(",").compact_blank.each do |ip|
   Rack::Attack.blocklist_ip(ip)
 end
 
