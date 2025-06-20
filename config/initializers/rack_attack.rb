@@ -16,7 +16,7 @@ end
 
 class Rack::Attack
   # Configure Cache
-  url = ENV["HEROKU_REDIS_TEAL_URL"]
+  url = ENV.fetch("HEROKU_REDIS_TEAL_URL", nil)
   Rack::Attack.cache.store = ActiveSupport::Cache::MemoryStore.new(url: url, ssl_params: { verify_mode: OpenSSL::SSL::VERIFY_NONE }) if url
 
   # Throttle all requests by IP (60rpm)
@@ -28,9 +28,7 @@ class Rack::Attack
   # Throttle POST requests to /login by IP address to prevent brute force login attacks
   # Key: "rack::attack:#{Time.now.to_i/:period}:logins/ip:#{req.ip}"
   throttle('logins/ip', limit: 5, period: 20.seconds) do |req|
-    if req.path == '/login' && req.post?
-      req.ip
-    end
+    req.ip if req.path == '/login' && req.post?
   end
 
   # Return to user how many seconds to wait until they can start sending requests again
@@ -38,17 +36,17 @@ class Rack::Attack
 
   # Includes conventional RateLimit-* headers for safe IPs:
   Rack::Attack.throttled_responder = lambda do |req|
-    return [ 429, {}, ["Throttled\n"]] unless $safe_ips.include?(req.ip)
+    return [429, {}, ["Throttled\n"]] unless $safe_ips.include?(req.ip)
 
     match_data = req.env['rack.attack.match_data']
     now = match_data[:epoch_time]
 
     headers = {
-      'RateLimit-Limit' => match_data[:limit].to_s,
+      'RateLimit-Limit'     => match_data[:limit].to_s,
       'RateLimit-Remaining' => '0',
-      'RateLimit-Reset' => (now + (match_data[:period] - now % match_data[:period])).to_s
+      'RateLimit-Reset'     => (now + (match_data[:period] - now % match_data[:period])).to_s
     }
 
-    [ 429, headers, ["Throttled\n"]]
+    [429, headers, ["Throttled\n"]]
   end
 end
