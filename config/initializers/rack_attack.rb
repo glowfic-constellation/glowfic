@@ -32,14 +32,6 @@ class Rack::Attack
     end
   end
 
-  # Throttle POST requests to /login by email param
-  # Key: "rack::attack:#{Time.now.to_i/:period}:logins/email:#{normalized_email}"
-  throttle('logins/email', limit: 5, period: 20.seconds) do |req|
-    if req.path == '/login' && req.post?
-      req.params['email'].to_s.downcase.gsub(/\s+/, "").presence
-    end
-  end
-
   # Return to user how many seconds to wait until they can start sending requests again
   Rack::Attack.throttled_response_retry_after_header = true
 
