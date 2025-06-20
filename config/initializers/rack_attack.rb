@@ -14,13 +14,15 @@ ENV.fetch("RACK_ATTACK_BAD_IP", "").split(",").each do |ip|
   Rack::Attack.blocklist_ip(ip)
 end
 
+url = ENV["HEROKU_REDIS_TEAL_URL"]
+
 class Rack::Attack
   # Configure Cache
-  Rack::Attack.cache.store = ActiveSupport::Cache::MemoryStore.new # TODO is this right
+  Rack::Attack.cache.store = (url: url, ssl_params: { verify_mode: OpenSSL::SSL::VERIFY_NONE }) if url
 
   # Throttle all requests by IP (60rpm)
   # Key: "rack::attack:#{Time.now.to_i/:period}:req/ip:#{req.ip}"
-  throttle('req/ip', limit: 300, period: 5.minutes) do |req|
+  throttle('req/ip', limit: 25, period: 5.minutes) do |req|
     req.ip
   end
 
