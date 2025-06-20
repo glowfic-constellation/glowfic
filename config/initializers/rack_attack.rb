@@ -21,7 +21,7 @@ class Rack::Attack
 
   # Throttle all requests by IP (60rpm)
   # Key: "rack::attack:#{Time.now.to_i/:period}:req/ip:#{req.ip}"
-  throttle('req/ip', limit: 25, period: 5.minutes) do |req|
+  throttle('req/ip', limit: ENV.fetch("RACK_ATTACK_IP_LIMIT", 25).to_i, period: 5.minutes) do |req|
     req.ip
   end
 
@@ -44,7 +44,7 @@ class Rack::Attack
     headers = {
       'RateLimit-Limit'     => match_data[:limit].to_s,
       'RateLimit-Remaining' => '0',
-      'RateLimit-Reset'     => (now + (match_data[:period] - now % match_data[:period])).to_s
+      'RateLimit-Reset'     => (now + (match_data[:period] - now % match_data[:period])).to_s,
     }
 
     [429, headers, ["Throttled\n"]]
