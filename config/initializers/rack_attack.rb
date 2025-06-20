@@ -18,7 +18,7 @@ url = ENV["HEROKU_REDIS_TEAL_URL"]
 
 class Rack::Attack
   # Configure Cache
-  Rack::Attack.cache.store = (url: url, ssl_params: { verify_mode: OpenSSL::SSL::VERIFY_NONE }) if url
+  Rack::Attack.cache.store = ActiveSupport::Cache::MemoryStore.new(url: url, ssl_params: { verify_mode: OpenSSL::SSL::VERIFY_NONE }) if url
 
   # Throttle all requests by IP (60rpm)
   # Key: "rack::attack:#{Time.now.to_i/:period}:req/ip:#{req.ip}"
