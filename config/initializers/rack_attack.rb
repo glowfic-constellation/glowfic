@@ -21,9 +21,7 @@ class Rack::Attack
 
   # Throttle all requests by IP (60rpm)
   # Key: "rack::attack:#{Time.now.to_i/:period}:req/ip:#{req.ip}"
-  throttle('req/ip', limit: ENV.fetch("RACK_ATTACK_IP_LIMIT", 25).to_i, period: 5.minutes) do |req|
-    req.ip
-  end
+  throttle('req/ip', limit: ENV.fetch("RACK_ATTACK_IP_LIMIT", 25).to_i, period: 5.minutes, &:ip)
 
   # Throttle POST requests to /login by IP address to prevent brute force login attacks
   # Key: "rack::attack:#{Time.now.to_i/:period}:logins/ip:#{req.ip}"
