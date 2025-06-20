@@ -289,7 +289,7 @@ class RepliesController < WritableController
         if last_by_user.present? && last_by_user.attributes.slice(*match_attrs) == first_reply.attributes.slice(*match_attrs)
           flash.now[:error] = "This looks like a duplicate. Did you attempt to post this twice? Please resubmit if this was intentional."
           @allow_dupe = true
-          if most_recent_unseen_reply.nil? || (most_recent_unseen_reply.id == last_by_user.id && @unseen_replies.count == 1)
+          if most_recent_unseen_reply.nil? || (most_recent_unseen_reply.id == last_by_user.id && @unseen_replies.one?)
             preview_reply(first_reply)
           else
             draft = make_draft(false)

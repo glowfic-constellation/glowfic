@@ -37,12 +37,12 @@ class PostsController < WritableController
       @posts = hiatused
     elsif current_user.hide_hiatused_tags_owed?
       @posts = @posts.where.not(status: :hiatus).where('tagged_at > ?', 1.month.ago)
-      @hiatused_exist = true if hiatused.count > 0
+      @hiatused_exist = true if hiatused.any?
     end
 
     @posts = posts_from_relation(@posts.ordered)
     @page_title = 'Replies Owed'
-    @page_title = "[#{@posts.count}] Replies Owed" if @posts.count > 0
+    @page_title = "[#{@posts.count}] Replies Owed" if @posts.any?
     fresh_when(etag: @posts, public: false)
   end
 
