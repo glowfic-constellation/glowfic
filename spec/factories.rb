@@ -232,6 +232,11 @@ FactoryBot.define do
     factory :gallery_group, class: :gallery_group do
       type { 'GalleryGroup' }
     end
+
+    factory :access_circle, class: :access_circle, aliases: [:circle] do
+      type { 'AccessCircle' }
+      owned { true }
+    end
   end
 
   factory :message do
