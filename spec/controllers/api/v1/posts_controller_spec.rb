@@ -149,8 +149,8 @@ RSpec.describe Api::V1::PostsController do
     end
   end
 
-  describe "POST reorder" do
-    it "requires login", :show_in_doc do
+  describe "POST reorder", aggregate_failures: false do
+    it "requires login", :aggregate_failures, :show_in_doc do
       post :reorder
       expect(response).to have_http_status(401)
       expect(response.parsed_body['errors'][0]['message']).to eq("You must be logged in to view that page.")
@@ -161,16 +161,22 @@ RSpec.describe Api::V1::PostsController do
         board = create(:board)
         board_post1 = create(:post, board_id: board.id)
         board_post2 = create(:post, board_id: board.id)
-        expect(board_post1.reload.section_order).to eq(0)
-        expect(board_post2.reload.section_order).to eq(1)
+
+        aggregate_failures do
+          expect(board_post1.reload.section_order).to eq(0)
+          expect(board_post2.reload.section_order).to eq(1)
+        end
 
         post_ids = [board_post2.id, board_post1.id]
 
         api_login
         post :reorder, params: { ordered_post_ids: post_ids }
-        expect(response).to have_http_status(403)
-        expect(board_post1.reload.section_order).to eq(0)
-        expect(board_post2.reload.section_order).to eq(1)
+
+        aggregate_failures do
+          expect(response).to have_http_status(403)
+          expect(board_post1.reload.section_order).to eq(0)
+          expect(board_post2.reload.section_order).to eq(1)
+        end
       end
 
       it "requires a single board without section_id" do
@@ -181,18 +187,23 @@ RSpec.describe Api::V1::PostsController do
         board_post2 = create(:post, board_id: board2.id)
         board_post3 = create(:post, board_id: board2.id)
 
-        expect(board_post1.reload.section_order).to eq(0)
-        expect(board_post2.reload.section_order).to eq(0)
-        expect(board_post3.reload.section_order).to eq(1)
+        aggregate_failures do
+          expect(board_post1.reload.section_order).to eq(0)
+          expect(board_post2.reload.section_order).to eq(0)
+          expect(board_post3.reload.section_order).to eq(1)
+        end
 
         post_ids = [board_post3.id, board_post2.id, board_post1.id]
         api_login_as(user)
         post :reorder, params: { ordered_post_ids: post_ids }
-        expect(response).to have_http_status(422)
-        expect(response.parsed_body['errors'][0]['message']).to eq('Posts must be from one continuity')
-        expect(board_post1.reload.section_order).to eq(0)
-        expect(board_post2.reload.section_order).to eq(0)
-        expect(board_post3.reload.section_order).to eq(1)
+
+        aggregate_failures do
+          expect(response).to have_http_status(422)
+          expect(response.parsed_body['errors'][0]['message']).to eq('Posts must be from one continuity')
+          expect(board_post1.reload.section_order).to eq(0)
+          expect(board_post2.reload.section_order).to eq(0)
+          expect(board_post3.reload.section_order).to eq(1)
+        end
       end
 
       it "requires section_id if posts in section" do
@@ -202,29 +213,33 @@ RSpec.describe Api::V1::PostsController do
         board_post1 = create(:post, board_id: board.id, section_id: section.id)
         board_post2 = create(:post, board_id: board.id, section_id: section.id)
 
-        expect(board_post1.reload.section_order).to eq(0)
-        expect(board_post2.reload.section_order).to eq(1)
+        aggregate_failures do
+          expect(board_post1.reload.section_order).to eq(0)
+          expect(board_post2.reload.section_order).to eq(1)
+        end
 
         post_ids = [board_post2.id, board_post1.id]
         api_login_as(user)
         post :reorder, params: { ordered_post_ids: post_ids }
-        expect(response).to have_http_status(422)
-        expect(response.parsed_body['errors'][0]['message']).to eq('Posts must be from one specified section in the continuity, or no section')
-        expect(board_post1.reload.section_order).to eq(0)
-        expect(board_post2.reload.section_order).to eq(1)
+
+        aggregate_failures do
+          expect(response).to have_http_status(422)
+          expect(response.parsed_body['errors'][0]['message']).to eq('Posts must be from one specified section in the continuity, or no section')
+          expect(board_post1.reload.section_order).to eq(0)
+          expect(board_post2.reload.section_order).to eq(1)
+        end
       end
 
-      it "requires valid post_ids" do
+      it "requires valid post_ids", :aggregate_failures do
         user = create(:user)
         board = create(:board, creator: user)
-        post1 = create(:post, board_id: board.id)
-        post2 = create(:post, board_id: board.id)
-        expect(post1.reload.section_order).to eq(0)
-        expect(post2.reload.section_order).to eq(1)
+        create(:post, board: board)
+        create(:post, board: board)
 
         post_ids = [-1]
         api_login_as(user)
         post :reorder, params: { ordered_post_ids: post_ids }
+
         expect(response).to have_http_status(404)
         expect(response.parsed_body['errors'][0]['message']).to eq('Some posts could not be found: -1')
       end
@@ -238,23 +253,28 @@ RSpec.describe Api::V1::PostsController do
         board_post4 = create(:post, board_id: board.id)
         board_post5 = create(:post, board_id: board2.id)
 
-        expect(board_post1.reload.section_order).to eq(0)
-        expect(board_post2.reload.section_order).to eq(1)
-        expect(board_post3.reload.section_order).to eq(2)
-        expect(board_post4.reload.section_order).to eq(3)
-        expect(board_post5.reload.section_order).to eq(0)
+        aggregate_failures do
+          expect(board_post1.reload.section_order).to eq(0)
+          expect(board_post2.reload.section_order).to eq(1)
+          expect(board_post3.reload.section_order).to eq(2)
+          expect(board_post4.reload.section_order).to eq(3)
+          expect(board_post5.reload.section_order).to eq(0)
+        end
 
         post_ids = [board_post3.id, board_post1.id, board_post4.id, board_post2.id]
 
         api_login_as(board.creator)
         post :reorder, params: { ordered_post_ids: post_ids }
-        expect(response).to have_http_status(200)
-        expect(response.parsed_body).to eq({ 'post_ids' => post_ids })
-        expect(board_post1.reload.section_order).to eq(1)
-        expect(board_post2.reload.section_order).to eq(3)
-        expect(board_post3.reload.section_order).to eq(0)
-        expect(board_post4.reload.section_order).to eq(2)
-        expect(board_post5.reload.section_order).to eq(0)
+
+        aggregate_failures do
+          expect(response).to have_http_status(200)
+          expect(response.parsed_body).to eq({ 'post_ids' => post_ids })
+          expect(board_post1.reload.section_order).to eq(1)
+          expect(board_post2.reload.section_order).to eq(3)
+          expect(board_post3.reload.section_order).to eq(0)
+          expect(board_post4.reload.section_order).to eq(2)
+          expect(board_post5.reload.section_order).to eq(0)
+        end
       end
 
       it "works when specifying valid subset", :show_in_doc do
@@ -266,23 +286,28 @@ RSpec.describe Api::V1::PostsController do
         board_post4 = create(:post, board_id: board.id)
         board_post5 = create(:post, board_id: board2.id)
 
-        expect(board_post1.reload.section_order).to eq(0)
-        expect(board_post2.reload.section_order).to eq(1)
-        expect(board_post3.reload.section_order).to eq(2)
-        expect(board_post4.reload.section_order).to eq(3)
-        expect(board_post5.reload.section_order).to eq(0)
+        aggregate_failures do
+          expect(board_post1.reload.section_order).to eq(0)
+          expect(board_post2.reload.section_order).to eq(1)
+          expect(board_post3.reload.section_order).to eq(2)
+          expect(board_post4.reload.section_order).to eq(3)
+          expect(board_post5.reload.section_order).to eq(0)
+        end
 
         post_ids = [board_post3.id, board_post1.id]
 
         api_login_as(board.creator)
         post :reorder, params: { ordered_post_ids: post_ids }
-        expect(response).to have_http_status(200)
-        expect(response.parsed_body).to eq({ 'post_ids' => [board_post3.id, board_post1.id, board_post2.id, board_post4.id] })
-        expect(board_post1.reload.section_order).to eq(1)
-        expect(board_post2.reload.section_order).to eq(2)
-        expect(board_post3.reload.section_order).to eq(0)
-        expect(board_post4.reload.section_order).to eq(3)
-        expect(board_post5.reload.section_order).to eq(0)
+
+        aggregate_failures do
+          expect(response).to have_http_status(200)
+          expect(response.parsed_body).to eq({ 'post_ids' => [board_post3.id, board_post1.id, board_post2.id, board_post4.id] })
+          expect(board_post1.reload.section_order).to eq(1)
+          expect(board_post2.reload.section_order).to eq(2)
+          expect(board_post3.reload.section_order).to eq(0)
+          expect(board_post4.reload.section_order).to eq(3)
+          expect(board_post5.reload.section_order).to eq(0)
+        end
       end
     end
 
@@ -292,16 +317,22 @@ RSpec.describe Api::V1::PostsController do
         section = create(:board_section, board_id: board.id)
         board_post1 = create(:post, board_id: board.id, section_id: section.id)
         board_post2 = create(:post, board_id: board.id, section_id: section.id)
-        expect(board_post1.reload.section_order).to eq(0)
-        expect(board_post2.reload.section_order).to eq(1)
+
+        aggregate_failures do
+          expect(board_post1.reload.section_order).to eq(0)
+          expect(board_post2.reload.section_order).to eq(1)
+        end
 
         post_ids = [board_post2.id, board_post1.id]
 
         api_login
         post :reorder, params: { ordered_post_ids: post_ids, section_id: section.id }
-        expect(response).to have_http_status(403)
-        expect(board_post1.reload.section_order).to eq(0)
-        expect(board_post2.reload.section_order).to eq(1)
+
+        aggregate_failures do
+          expect(response).to have_http_status(403)
+          expect(board_post1.reload.section_order).to eq(0)
+          expect(board_post2.reload.section_order).to eq(1)
+        end
       end
 
       it "requires a single section" do
@@ -313,18 +344,23 @@ RSpec.describe Api::V1::PostsController do
         board_post2 = create(:post, board_id: board.id, section_id: board_section2.id)
         board_post3 = create(:post, board_id: board.id, section_id: board_section2.id)
 
-        expect(board_post1.reload.section_order).to eq(0)
-        expect(board_post2.reload.section_order).to eq(0)
-        expect(board_post3.reload.section_order).to eq(1)
+        aggregate_failures do
+          expect(board_post1.reload.section_order).to eq(0)
+          expect(board_post2.reload.section_order).to eq(0)
+          expect(board_post3.reload.section_order).to eq(1)
+        end
 
         post_ids = [board_post3.id, board_post2.id, board_post1.id]
         api_login_as(user)
         post :reorder, params: { ordered_post_ids: post_ids, section_id: board_section1.id }
-        expect(response).to have_http_status(422)
-        expect(response.parsed_body['errors'][0]['message']).to eq('Posts must be from one specified section in the continuity, or no section')
-        expect(board_post1.reload.section_order).to eq(0)
-        expect(board_post2.reload.section_order).to eq(0)
-        expect(board_post3.reload.section_order).to eq(1)
+
+        aggregate_failures do
+          expect(response).to have_http_status(422)
+          expect(response.parsed_body['errors'][0]['message']).to eq('Posts must be from one specified section in the continuity, or no section')
+          expect(board_post1.reload.section_order).to eq(0)
+          expect(board_post2.reload.section_order).to eq(0)
+          expect(board_post3.reload.section_order).to eq(1)
+        end
       end
 
       it "requires valid section id" do
@@ -334,16 +370,21 @@ RSpec.describe Api::V1::PostsController do
         board_post1 = create(:post, board_id: board.id, section_id: section.id)
         board_post2 = create(:post, board_id: board.id, section_id: section.id)
 
-        expect(board_post1.reload.section_order).to eq(0)
-        expect(board_post2.reload.section_order).to eq(1)
+        aggregate_failures do
+          expect(board_post1.reload.section_order).to eq(0)
+          expect(board_post2.reload.section_order).to eq(1)
+        end
 
         post_ids = [board_post2.id, board_post1.id]
         api_login_as(user)
         post :reorder, params: { ordered_post_ids: post_ids, section_id: 0 }
-        expect(response).to have_http_status(422)
-        expect(response.parsed_body['errors'][0]['message']).to eq('Posts must be from one specified section in the continuity, or no section')
-        expect(board_post1.reload.section_order).to eq(0)
-        expect(board_post2.reload.section_order).to eq(1)
+
+        aggregate_failures do
+          expect(response).to have_http_status(422)
+          expect(response.parsed_body['errors'][0]['message']).to eq('Posts must be from one specified section in the continuity, or no section')
+          expect(board_post1.reload.section_order).to eq(0)
+          expect(board_post2.reload.section_order).to eq(1)
+        end
       end
 
       it "requires correct section id" do
@@ -355,18 +396,23 @@ RSpec.describe Api::V1::PostsController do
         board_post2 = create(:post, board_id: board.id, section_id: board_section2.id)
         board_post3 = create(:post, board_id: board.id, section_id: board_section2.id)
 
-        expect(board_post1.reload.section_order).to eq(0)
-        expect(board_post2.reload.section_order).to eq(0)
-        expect(board_post3.reload.section_order).to eq(1)
+        aggregate_failures do
+          expect(board_post1.reload.section_order).to eq(0)
+          expect(board_post2.reload.section_order).to eq(0)
+          expect(board_post3.reload.section_order).to eq(1)
+        end
 
         post_ids = [board_post3.id, board_post2.id]
         api_login_as(user)
         post :reorder, params: { ordered_post_ids: post_ids, section_id: board_section1.id }
-        expect(response).to have_http_status(422)
-        expect(response.parsed_body['errors'][0]['message']).to eq('Posts must be from one specified section in the continuity, or no section')
-        expect(board_post1.reload.section_order).to eq(0)
-        expect(board_post2.reload.section_order).to eq(0)
-        expect(board_post3.reload.section_order).to eq(1)
+
+        aggregate_failures do
+          expect(response).to have_http_status(422)
+          expect(response.parsed_body['errors'][0]['message']).to eq('Posts must be from one specified section in the continuity, or no section')
+          expect(board_post1.reload.section_order).to eq(0)
+          expect(board_post2.reload.section_order).to eq(0)
+          expect(board_post3.reload.section_order).to eq(1)
+        end
       end
 
       it "requires no section_id if posts not in section" do
@@ -376,16 +422,21 @@ RSpec.describe Api::V1::PostsController do
         board_post1 = create(:post, board_id: board.id)
         board_post2 = create(:post, board_id: board.id)
 
-        expect(board_post1.reload.section_order).to eq(0)
-        expect(board_post2.reload.section_order).to eq(1)
+        aggregate_failures do
+          expect(board_post1.reload.section_order).to eq(0)
+          expect(board_post2.reload.section_order).to eq(1)
+        end
 
         post_ids = [board_post2.id, board_post1.id]
         api_login_as(user)
         post :reorder, params: { ordered_post_ids: post_ids, section_id: section.id }
-        expect(response).to have_http_status(422)
-        expect(response.parsed_body['errors'][0]['message']).to eq('Posts must be from one specified section in the continuity, or no section')
-        expect(board_post1.reload.section_order).to eq(0)
-        expect(board_post2.reload.section_order).to eq(1)
+
+        aggregate_failures do
+          expect(response).to have_http_status(422)
+          expect(response.parsed_body['errors'][0]['message']).to eq('Posts must be from one specified section in the continuity, or no section')
+          expect(board_post1.reload.section_order).to eq(0)
+          expect(board_post2.reload.section_order).to eq(1)
+        end
       end
 
       it "requires valid post_ids" do
@@ -394,14 +445,20 @@ RSpec.describe Api::V1::PostsController do
         section = create(:board_section, board_id: board.id)
         post1 = create(:post, board_id: board.id, section_id: section.id)
         post2 = create(:post, board_id: board.id, section_id: section.id)
-        expect(post1.reload.section_order).to eq(0)
-        expect(post2.reload.section_order).to eq(1)
+
+        aggregate_failures do
+          expect(post1.reload.section_order).to eq(0)
+          expect(post2.reload.section_order).to eq(1)
+        end
 
         post_ids = [-1]
         api_login_as(user)
         post :reorder, params: { ordered_post_ids: post_ids, section_id: section.id }
-        expect(response).to have_http_status(404)
-        expect(response.parsed_body['errors'][0]['message']).to eq('Some posts could not be found: -1')
+
+        aggregate_failures do
+          expect(response).to have_http_status(404)
+          expect(response.parsed_body['errors'][0]['message']).to eq('Some posts could not be found: -1')
+        end
       end
 
       it "works for valid changes", :show_in_doc do
@@ -414,23 +471,28 @@ RSpec.describe Api::V1::PostsController do
         board_post4 = create(:post, board_id: board.id, section_id: section.id)
         board_post5 = create(:post, board_id: board.id, section_id: section2.id)
 
-        expect(board_post1.reload.section_order).to eq(0)
-        expect(board_post2.reload.section_order).to eq(1)
-        expect(board_post3.reload.section_order).to eq(2)
-        expect(board_post4.reload.section_order).to eq(3)
-        expect(board_post5.reload.section_order).to eq(0)
+        aggregate_failures do
+          expect(board_post1.reload.section_order).to eq(0)
+          expect(board_post2.reload.section_order).to eq(1)
+          expect(board_post3.reload.section_order).to eq(2)
+          expect(board_post4.reload.section_order).to eq(3)
+          expect(board_post5.reload.section_order).to eq(0)
+        end
 
         post_ids = [board_post3.id, board_post1.id, board_post4.id, board_post2.id]
 
         api_login_as(board.creator)
         post :reorder, params: { ordered_post_ids: post_ids, section_id: section.id }
-        expect(response).to have_http_status(200)
-        expect(response.parsed_body).to eq({ 'post_ids' => post_ids })
-        expect(board_post1.reload.section_order).to eq(1)
-        expect(board_post2.reload.section_order).to eq(3)
-        expect(board_post3.reload.section_order).to eq(0)
-        expect(board_post4.reload.section_order).to eq(2)
-        expect(board_post5.reload.section_order).to eq(0)
+
+        aggregate_failures do
+          expect(response).to have_http_status(200)
+          expect(response.parsed_body).to eq({ 'post_ids' => post_ids })
+          expect(board_post1.reload.section_order).to eq(1)
+          expect(board_post2.reload.section_order).to eq(3)
+          expect(board_post3.reload.section_order).to eq(0)
+          expect(board_post4.reload.section_order).to eq(2)
+          expect(board_post5.reload.section_order).to eq(0)
+        end
       end
 
       it "works when specifying valid subset", :show_in_doc do
@@ -443,23 +505,28 @@ RSpec.describe Api::V1::PostsController do
         board_post4 = create(:post, board_id: board.id, section_id: section.id)
         board_post5 = create(:post, board_id: board.id, section_id: section2.id)
 
-        expect(board_post1.reload.section_order).to eq(0)
-        expect(board_post2.reload.section_order).to eq(1)
-        expect(board_post3.reload.section_order).to eq(2)
-        expect(board_post4.reload.section_order).to eq(3)
-        expect(board_post5.reload.section_order).to eq(0)
+        aggregate_failures do
+          expect(board_post1.reload.section_order).to eq(0)
+          expect(board_post2.reload.section_order).to eq(1)
+          expect(board_post3.reload.section_order).to eq(2)
+          expect(board_post4.reload.section_order).to eq(3)
+          expect(board_post5.reload.section_order).to eq(0)
+        end
 
         post_ids = [board_post3.id, board_post1.id]
 
         api_login_as(board.creator)
         post :reorder, params: { ordered_post_ids: post_ids, section_id: section.id }
-        expect(response).to have_http_status(200)
-        expect(response.parsed_body).to eq({ 'post_ids' => [board_post3.id, board_post1.id, board_post2.id, board_post4.id] })
-        expect(board_post1.reload.section_order).to eq(1)
-        expect(board_post2.reload.section_order).to eq(2)
-        expect(board_post3.reload.section_order).to eq(0)
-        expect(board_post4.reload.section_order).to eq(3)
-        expect(board_post5.reload.section_order).to eq(0)
+
+        aggregate_failures do
+          expect(response).to have_http_status(200)
+          expect(response.parsed_body).to eq({ 'post_ids' => [board_post3.id, board_post1.id, board_post2.id, board_post4.id] })
+          expect(board_post1.reload.section_order).to eq(1)
+          expect(board_post2.reload.section_order).to eq(2)
+          expect(board_post3.reload.section_order).to eq(0)
+          expect(board_post4.reload.section_order).to eq(3)
+          expect(board_post5.reload.section_order).to eq(0)
+        end
       end
     end
   end

@@ -20,12 +20,12 @@ RSpec.describe "Viewing a template" do
   end
 
   before(:each) do
-    create(:template, user: user, name: 'Unrelated template') # unrelated template
-    create(:character, user: user, name: 'Unrelated character') # unrelated character
-    create(:post, user: user, subject: 'Unrelated post') # unrelated post
+    create(:template, user: user, name: 'Unrelated template')
+    create(:character, user: user, name: 'Unrelated character')
+    create(:post, user: user, subject: 'Unrelated post')
   end
 
-  scenario "Viewing in list mode" do
+  scenario "Viewing in list mode", :aggregate_failures do
     visit template_path(template, view: 'list')
     expect(page).to have_text('Template: sample template')
     expect(page).to have_no_text('Unrelated template')
@@ -56,7 +56,7 @@ RSpec.describe "Viewing a template" do
     end
   end
 
-  scenario "Viewing in icon mode" do
+  scenario "Viewing in icon mode", :aggregate_failures do
     visit template_path(template, view: 'icons')
     expect(page).to have_text('Template: sample template')
     expect(page).to have_no_text('Unrelated template')
@@ -64,8 +64,7 @@ RSpec.describe "Viewing a template" do
     # check characters
     within table_titled('Template: sample template') do
       characters.each do |character|
-        character_icon = find('.character-icon-item', text: character.name)
-        within(character_icon) do
+        within('.character-icon-item', text: character.name) do
           expect(page).to have_link(character.name, href: character_path(character))
           next unless (default_icon = character.default_icon).present?
 

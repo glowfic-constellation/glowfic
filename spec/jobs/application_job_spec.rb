@@ -28,7 +28,7 @@ RSpec.describe ApplicationJob do
     expect(StubJob).to have_been_enqueued.with(1).on_queue('high')
   end
 
-  it "sends email when retry gives up" do
+  it "sends email when retry gives up", :aggregate_failures do
     exc = StandardError.new
     expect(StubJob).to receive(:notify_exception).with(exc, 2, :test).and_call_original
     expect(ExceptionNotifier).to receive(:notify_exception).with(exc, data: { job: StubJob.name, args: [2, :test] })

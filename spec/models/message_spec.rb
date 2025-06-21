@@ -8,7 +8,7 @@ RSpec.describe Message do
       expect(message).not_to be_valid
     end
 
-    it "can have a zero sender_id to represent site messages" do
+    it "can have a zero sender_id to represent site messages", :aggregate_failures do
       message = build(:message)
       message.sender_id = 0
       expect(message).to be_valid
@@ -17,7 +17,7 @@ RSpec.describe Message do
   end
 
   describe "#notify_recipient" do
-    it "does not send with notifications off" do
+    it "does not send with notifications off", :aggregate_failures do
       message = nil
       expect {
         message = create(:message)
@@ -60,36 +60,54 @@ RSpec.describe Message do
 
     it "clears cache on new inbox message" do
       create_list(:message, 2, recipient: user)
-      expect(Message.unread_count_for(user)).to eq(2)
-      expect(Rails.cache.exist?(Message.cache_string_for(user.id))).to eq(true)
+
+      aggregate_failures do
+        expect(Message.unread_count_for(user)).to eq(2)
+        expect(Rails.cache.exist?(Message.cache_string_for(user.id))).to eq(true)
+      end
+
       create(:message, recipient: user)
-      expect(Rails.cache.exist?(Message.cache_string_for(user.id))).to eq(false)
-      expect(Message.unread_count_for(user)).to eq(3)
-      expect(Rails.cache.exist?(Message.cache_string_for(user.id))).to eq(true)
+
+      aggregate_failures do
+        expect(Rails.cache.exist?(Message.cache_string_for(user.id))).to eq(false)
+        expect(Message.unread_count_for(user)).to eq(3)
+        expect(Rails.cache.exist?(Message.cache_string_for(user.id))).to eq(true)
+      end
     end
 
     it "clears cache when inbox message marked read" do
       create(:message, recipient: user)
       message = create(:message, recipient: user)
       create_list(:message, 2, recipient: user)
-      expect(Message.unread_count_for(user)).to eq(4)
-      expect(Rails.cache.exist?(Message.cache_string_for(user.id))).to eq(true)
+
+      aggregate_failures do
+        expect(Message.unread_count_for(user)).to eq(4)
+        expect(Rails.cache.exist?(Message.cache_string_for(user.id))).to eq(true)
+      end
+
       message.update!(unread: false)
-      expect(Rails.cache.exist?(Message.cache_string_for(user.id))).to eq(false)
-      expect(Message.unread_count_for(user)).to eq(3)
-      expect(Rails.cache.exist?(Message.cache_string_for(user.id))).to eq(true)
+
+      aggregate_failures do
+        expect(Rails.cache.exist?(Message.cache_string_for(user.id))).to eq(false)
+        expect(Message.unread_count_for(user)).to eq(3)
+        expect(Rails.cache.exist?(Message.cache_string_for(user.id))).to eq(true)
+      end
     end
 
     it "does not clear cache on unrelated message" do
       create_list(:message, 2, recipient: user)
-      expect(Message.unread_count_for(user)).to eq(2)
-      expect(Rails.cache.exist?(Message.cache_string_for(user.id))).to eq(true)
+
+      aggregate_failures do
+        expect(Message.unread_count_for(user)).to eq(2)
+        expect(Rails.cache.exist?(Message.cache_string_for(user.id))).to eq(true)
+      end
+
       create(:message)
       expect(Rails.cache.exist?(Message.cache_string_for(user.id))).to eq(true)
     end
   end
 
-  it "hides blocked messages from recipient without erroring to sender" do
+  it "hides blocked messages from recipient without erroring to sender", :aggregate_failures do
     block = create(:block, block_interactions: true)
     message = build(:message, sender: block.blocked_user, recipient: block.blocking_user)
     expect(message.save).to be true
@@ -97,7 +115,7 @@ RSpec.describe Message do
     expect(message.unread).to eq(false)
   end
 
-  it "errors to sender if messaging a blocked user" do
+  it "errors to sender if messaging a blocked user", :aggregate_failures do
     block = create(:block, block_interactions: true)
     message = build(:message, sender: block.blocking_user, recipient: block.blocked_user)
     expect(message.save).to eq(false)
@@ -111,7 +129,7 @@ RSpec.describe Message do
     expect { message.save! }.not_to raise_error
   end
 
-  it "errors to sender if messaging a deleted user" do
+  it "errors to sender if messaging a deleted user", :aggregate_failures do
     message = build(:message, recipient: create(:user, deleted: true))
     expect(message).not_to be_valid
     expect(message.recipient).to be_nil
