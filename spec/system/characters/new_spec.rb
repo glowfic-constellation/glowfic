@@ -1,21 +1,25 @@
 RSpec.describe "Creating a new character" do
+  let(:user) { create(:user) }
+  let(:icons) do
+    create_list(:icon, 2, user: user).append(create(:icon, user: user, keyword: 'Example icon'))
+  end
+
   scenario "Create an invalid character", :js do
     # view new character form without being logged in
     visit new_character_path
     expect(page).to have_selector('.flash.error', exact_text: 'You must be logged in to view that page.')
 
     # view new character form with no icons
-    user = login
+    login(user)
     visit new_character_path
     expect(page).to have_selector('.editor-title', text: 'New Character')
     expect(page).to have_no_selector('.flash.error')
     expect(page).to have_no_selector('img.icon')
 
     # view new character form with icons
-    create_list(:icon, 2, user: user)
-    create(:icon, user: user, keyword: 'Example icon')
+    icons
     visit new_character_path
-    expect(page).to have_selector("img.icon", count: 3)
+    expect(page).to have_selector('img.icon', count: 3)
 
     # create character with no name
     find("img[alt='Example icon']").click
@@ -30,11 +34,8 @@ RSpec.describe "Creating a new character" do
       click_button 'Save'
     end
 
-    expect(page).to have_selector('.flash.error')
-    within('.flash.error') do
-      expect(page).to have_text('Character could not be created because of the following problems:')
-      expect(page).to have_text('Name can\'t be blank')
-    end
+    error_msg = "Character could not be created because of the following problems:\nName can't be blank"
+    expect(page).to have_selector('.flash.error', exact_text: error_msg)
 
     # check that it preserved inputs
     expect(page).to have_selector('.selected-icon')
@@ -79,13 +80,12 @@ RSpec.describe "Creating a new character" do
 
     expect(page).to have_selector('.flash.success', exact_text: 'Character created.')
     expect(page).to have_no_selector('.flash.error')
-    expect(page).to have_text(/Example character\s+\(NPC\)/)
+    expect(page).to have_selector('.info-box-header', exact_text: "Example character\n(NPC)")
   end
 
   scenario "Creating character with icon, description and extant template", :js do
-    user = login
-    create_list(:icon, 2, user: user)
-    icon = create(:icon, user: user, keyword: 'Example icon')
+    login(user)
+    icon = icons[2]
     template = create(:template, user: user, name: 'Example template')
     create(:template, user: user)
     visit new_character_path(template_id: template.id)
@@ -112,7 +112,7 @@ RSpec.describe "Creating a new character" do
       expect(page).to have_selector('.character-icon')
 
       within('.character-icon') do
-        expect(page).to have_selector("a[href='/icons/#{icon.id}']")
+        expect(find('a')[:href]).to include("/icons/#{icon.id}")
         expect(find('img')[:alt]).to eq('Example icon')
       end
     end

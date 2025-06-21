@@ -1,14 +1,13 @@
 RSpec.describe "Editing a character" do
-  scenario "Updating a basic character", :js do
-    user = create(:user, password: known_test_password)
-    character = create(:character, user: user)
-    visit edit_character_path(character)
-    expect(page).to have_selector('.flash.error')
-    within('.flash.error') do
-      expect(page).to have_text("You must be logged in")
-    end
+  let(:user) { create(:user) }
+  let(:character) { create(:character, user: user) }
 
-    login(user, known_test_password)
+  scenario "Updating a basic character", :js do
+    visit edit_character_path(character)
+
+    expect(page).to have_selector('.flash.error', exact_text: 'You must be logged in to view that page.')
+
+    login(user)
     visit edit_character_path(character)
 
     expect(page).to have_selector('.editor-title', text: character.name)
@@ -32,8 +31,8 @@ RSpec.describe "Editing a character" do
   end
 
   scenario "Updating an NPC character", :js do
-    user = login
-    character = create(:character, name: "MyChar", user: user, npc: true, nickname: "Thread")
+    character.update!(name: 'MyChar', npc: true, nickname: 'Thread')
+    login(user)
 
     # update facecast of NPC
     visit edit_character_path(character)
@@ -41,15 +40,15 @@ RSpec.describe "Editing a character" do
       expect(page).to have_field('Template Cluster Name', disabled: true)
       expect(page).to have_field('Facecast', disabled: false)
 
-      fill_in "Facecast", with: "Example facecast"
+      fill_in 'Facecast', with: 'Example facecast'
       click_button 'Save'
     end
 
     expect(page).to have_selector('.flash.success', exact_text: 'Character updated.')
     expect(page).to have_no_selector('.flash.error')
 
-    expect(page).to have_text(/MyChar\s+\(NPC\)/)
-    expect(page).to have_text('Example facecast')
+    expect(page).to have_selector('.info-box-header', exact_text: "MyChar\n(NPC)")
+    expect(page).to have_selector('.character-pb', exact_text: 'Example facecast')
     expect(page).to have_text(/Original post.*Thread/)
 
     # turn NPC into non-NPC
@@ -62,7 +61,7 @@ RSpec.describe "Editing a character" do
       expect(page).to have_field('Template Cluster Name', disabled: false)
       expect(page).to have_field('Facecast', disabled: false)
 
-      fill_in "Screenname", with: "example_screenname"
+      fill_in 'Screenname', with: 'example_screenname'
       click_button 'Save'
     end
 
@@ -70,7 +69,7 @@ RSpec.describe "Editing a character" do
     expect(page).to have_no_selector('.flash.error')
 
     expect(page).to have_no_text('(NPC)')
-    expect(page).to have_text('example_screenname')
+    expect(page).to have_selector('.character-screenname', exact_text: 'example_screenname')
     expect(page).to have_text(/Nickname.*Thread/)
   end
 end

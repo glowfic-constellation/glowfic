@@ -1,5 +1,5 @@
 RSpec.describe "Editing a template" do
-  let(:user) { create(:user, password: known_test_password) }
+  let(:user) { create(:user) }
   let(:template) { create(:template, user: user, name: 'Example Template') }
 
   scenario "Logged out user tries to edit a template" do
@@ -9,13 +9,13 @@ RSpec.describe "Editing a template" do
     expect(page).to have_no_link('Edit Template')
 
     visit edit_template_path(template)
-    expect(page).to have_selector('.error', text: 'You must be logged in to view that page.')
+    expect(page).to have_selector('.flash.error', text: 'You must be logged in to view that page.')
     expect(page).to have_current_path(root_path)
     expect(page).to have_no_selector('.form-table')
   end
 
   scenario "Editing a simple template" do
-    login(user, known_test_password)
+    login(user)
     visit edit_template_path(template)
 
     expect(page).to have_selector('.editor-title', text: 'Edit Template')
@@ -29,13 +29,11 @@ RSpec.describe "Editing a template" do
     expect(page).to have_selector('.flash.success', text: 'Template updated.')
     expect(page).to have_no_selector('.flash.error')
 
-    within('.table-title') do
-      expect(page).to have_text('Template: Renamed Template')
-    end
+    expect(page).to have_selector('.table-title', text: 'Template: Renamed Template')
   end
 
   scenario "Editing an invalid template" do
-    login(user, known_test_password)
+    login(user)
     visit edit_template_path(template)
 
     expect(page).to have_selector('.editor-title', text: 'Edit Template')
@@ -57,7 +55,7 @@ RSpec.describe "Editing a template" do
     create(:character, user: user, name: 'Unrelated Character')
     template.update!(description: 'This is a sample template with two characters.')
 
-    login(user, known_test_password)
+    login(user)
     visit edit_template_path(template)
 
     expect(page).to have_selector('.editor-title', text: 'Edit Template')
@@ -70,12 +68,8 @@ RSpec.describe "Editing a template" do
       click_button 'Save'
     end
 
-    expect(page).to have_selector('.flash.success')
+    expect(page).to have_selector('.flash.success', exact_text: 'Template updated.')
     expect(page).to have_no_selector('.flash.error')
-
-    within('.flash.success') do
-      expect(page).to have_text('Template updated.')
-    end
 
     within('.icons-box') do
       expect(page).to have_text('Stable Character')
