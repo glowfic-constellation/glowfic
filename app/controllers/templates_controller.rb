@@ -78,7 +78,8 @@ class TemplatesController < ApplicationController
 
   def editor_setup
     @selectable_characters = @template.try(:characters) || []
-    @selectable_characters += current_user.characters.where(template_id: nil).ordered
+    @selectable_characters += current_user.characters.includes([:default_icon])
+                                .where(template_id: nil).ordered
     @selectable_characters.uniq!
     @character_ids = permitted_params[:character_ids] if permitted_params.key?(:character_ids)
     @character_ids ||= @template.try(:character_ids) || []
