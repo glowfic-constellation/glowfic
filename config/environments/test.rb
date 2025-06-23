@@ -70,4 +70,46 @@ Rails.application.configure do
 
   # don't use digest string
   config.assets.digest = false
+
+  Prosopite.rails_logger = true
+  Prosopite.raise = true
+  # Prosopite highlights a lot of N+1 problems during a run of our test suite.
+  # This configuration allow-lists the known ones, which should prevent future
+  # code changes from introducing new N+1 queries unintentionally, at least.
+  #
+  # TODO Fix some of the below
+  Prosopite.allow_stack_paths = [
+    # These involve Ruby magic too deep for me to understand
+    'PostsController#destroy', 'PostsController#update', 'RepliesController#post_replies',
+    'CharactersController#create', 'CharactersController#destroy',
+
+    # Perfectly possible to fix without Ruby magic but I'm not sure how
+    'CharacterTag#add_galleries_to_character', 'CharacterTag#remove_galleries_from_character',
+    'CharactersController#duplicate',
+
+    # Requires replacing a use of #pick
+    'app/views/characters/_icon_view.haml',
+    'app/views/characters/_list_section.haml',
+
+    # Definitely solvable but I need to think about multi replies
+    'RepliesController#preview_replies',
+
+    # Background jobs can have a little inefficiency, as a treat
+    'app/jobs/', 'app/services/',
+
+    # Not yet evaluated
+    # TODO look at these in detail
+    'Reply#url', 'app/views/writable/_history.haml',
+    'GalleryTag#add_gallery_to_characters',
+    'RepliesController#edit_multi_replies',
+    'Post::View#mark_favorite_read',
+    'Post#view_for', 'app/views/galleries/_single.haml',
+    'Character#valid_galleries', 'BoardsController#destroy',
+    'app/views/galleries/_expandable.haml',
+    'IconsController#delete_multiple', 'app/views/reports/_monthly.haml',
+    'Gallery#character_gallery_for', 'Post::Author.clear_cache_for',
+    'app/views/bookmarks/search.haml', 'Message#num_in_thread',
+    'CharactersController#replace', 'app/views/characters/_group.haml',
+    'Post#word_count_for', 'IconHelper#dropdown_icons',
+  ]
 end
