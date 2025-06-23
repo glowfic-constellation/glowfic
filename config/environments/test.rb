@@ -80,35 +80,47 @@ Rails.application.configure do
   # TODO Fix some of the below
   Prosopite.allow_stack_paths = [
     # These involve Ruby magic too deep for me to understand
-    'PostsController#destroy', 'PostsController#update', 'RepliesController#post_replies',
+    'PostsController#destroy', 'PostsController#update',
+    'RepliesController#post_replies',
     'CharactersController#create', 'CharactersController#destroy',
+    'BoardsController#destroy',
+
+    # Ruby magic that seems simple but I don't want to get into it
+    'app/views/galleries/_expandable.haml',
 
     # Perfectly possible to fix without Ruby magic but I'm not sure how
-    'CharacterTag#add_galleries_to_character', 'CharacterTag#remove_galleries_from_character',
+    'CharacterTag#add_galleries_to_character',
+    'CharacterTag#remove_galleries_from_character',
     'CharactersController#duplicate',
+    'Post#word_count_for',
+    'app/views/galleries/_single.haml',
+
+    # Theoretically simple to fix, but requires restructuring a thing
+    'Post#mark_read',
+    'PostsController#mark',
+    'app/views/bookmarks/search.haml',
+    'Post::Author.clear_cache_for',
+    'app/views/reports/_monthly.haml',
 
     # Requires replacing a use of #pick
     'app/views/characters/_icon_view.haml',
     'app/views/characters/_list_section.haml',
 
+    # The fault lies in a 3rd party gem
+    'app/views/writable/_history.haml',
+
     # Definitely solvable but I need to think about multi replies
     'RepliesController#preview_replies',
+    'RepliesController#edit_multi_replies',
 
     # Background jobs can have a little inefficiency, as a treat
     'app/jobs/', 'app/services/',
 
     # Not yet evaluated
     # TODO look at these in detail
-    'Reply#url', 'app/views/writable/_history.haml',
     'GalleryTag#add_gallery_to_characters',
-    'RepliesController#edit_multi_replies',
-    'Post::View#mark_favorite_read',
-    'Post#view_for', 'app/views/galleries/_single.haml',
-    'Character#valid_galleries', 'BoardsController#destroy',
-    'app/views/galleries/_expandable.haml',
-    'IconsController#delete_multiple', 'app/views/reports/_monthly.haml',
-    'Gallery#character_gallery_for', 'Post::Author.clear_cache_for',
-    'app/views/bookmarks/search.haml',
-    'Post#word_count_for',
+    'Character#valid_galleries',
+    'IconsController#delete_multiple',
+    'Gallery#character_gallery_for',
   ]
 end
