@@ -109,6 +109,6 @@ Rails.application.configure do
     'IconsController#delete_multiple', 'app/views/reports/_monthly.haml',
     'Gallery#character_gallery_for', 'Post::Author.clear_cache_for',
     'app/views/bookmarks/search.haml',
-    'Post#word_count_for', 'IconHelper#dropdown_icons',
+    'Post#word_count_for',
   ]
 end
