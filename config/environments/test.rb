@@ -109,7 +109,7 @@ Rails.application.configure do
     'IconsController#delete_multiple', 'app/views/reports/_monthly.haml',
     'Gallery#character_gallery_for', 'Post::Author.clear_cache_for',
     'app/views/bookmarks/search.haml', 'Message#num_in_thread',
-    'CharactersController#replace', 'app/views/characters/_group.haml',
+    'app/views/characters/_group.haml',
     'Post#word_count_for', 'IconHelper#dropdown_icons',
   ]
 end
