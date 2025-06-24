@@ -34,6 +34,7 @@ RSpec.describe "Editing posts" do
     within('#post-editor') do
       expect(page).to have_field('Subject', with: 'test subject')
       expect(page).to have_field('post_content', with: 'test content')
+
       fill_in 'Subject', with: 'other subject'
       fill_in "post_content", with: "other content"
     end
@@ -44,10 +45,7 @@ RSpec.describe "Editing posts" do
 
     expect(page).to have_selector('.post-container', count: 1)
     expect(page).to have_selector('#post-title', exact_text: 'other subject')
-
-    within('.post-content') do
-      expect(page).to have_selector('p', exact_text: 'other content')
-    end
+    expect(page).to have_selector('.post-content p', exact_text: 'other content')
   end
 
   scenario "User edits a post with preview" do
@@ -79,6 +77,7 @@ RSpec.describe "Editing posts" do
     within('#post-editor') do
       expect(page).to have_field('Subject', with: 'other subject')
       expect(page).to have_field('post_content', with: 'other content')
+
       fill_in 'Subject', with: 'third subject'
       fill_in "post_content", with: "third content"
     end
@@ -89,9 +88,7 @@ RSpec.describe "Editing posts" do
     expect(page).to have_selector('.post-container', count: 1)
     expect(page).to have_selector('#post-title', exact_text: 'third subject')
 
-    within('.post-content') do
-      expect(page).to have_selector('p', exact_text: 'third content')
-    end
+    expect(page).to have_selector('.post-content p', exact_text: 'third content')
   end
 
   scenario "User tries to edit someone else's post" do
@@ -99,6 +96,7 @@ RSpec.describe "Editing posts" do
     visit post_path(post)
     expect(page).to have_selector('#post-title', exact_text: 'test subject')
     expect(page).to have_selector('.post-container', count: 1)
+
     within('.post-container') do
       expect(page).to have_no_link('Edit')
     end
@@ -135,15 +133,8 @@ RSpec.describe "Editing posts" do
 
     expect(page).to have_selector('.post-container', count: 1)
     expect(page).to have_selector('#post-title', exact_text: 'other subject')
-
-    within('.post-content') do
-      expect(page).to have_selector('p', exact_text: 'other content')
-    end
-
-    within('.post-container') do
-      # must not change post's user
-      expect(page).to have_selector('.post-author', exact_text: user.username)
-    end
+    expect(page).to have_selector('.post-content p', exact_text: 'other content')
+    expect(page).to have_selector('.post-container .post-author', exact_text: user.username) # must not change post's user
   end
 
   scenario "Moderator edits a post with preview" do
@@ -181,14 +172,11 @@ RSpec.describe "Editing posts" do
     end
     click_button 'Save'
 
-    expect(page).to have_selector('.success', exact_text: 'Post updated.')
+    expect(page).to have_selector('.flash.success', exact_text: 'Post updated.')
+    expect(page).to have_no_selector('.flash.error')
     expect(page).to have_selector('.post-container', count: 1)
     expect(page).to have_selector('#post-title', exact_text: 'third subject')
-    expect(page).to have_no_selector('.flash.error')
-
-    within('.post-content') do
-      expect(page).to have_selector('p', exact_text: 'third content')
-    end
+    expect(page).to have_selector('.post-content p', exact_text: 'third content')
   end
 
   scenario "Moderator saves no change to a post in a board they can't write in" do
@@ -227,9 +215,7 @@ RSpec.describe "Editing posts" do
     expect(page).to have_selector('.flash.breadcrumbs', exact_text: "Continuities » test board » test subject")
     expect(page).to have_no_selector('.flash.error')
     expect(page).to have_selector('.post-container', count: 1)
-    within('.post-container') do
-      expect(page).to have_no_selector('.post-updated')
-    end
+    expect(page).to have_no_selector('.post-container .post-updated')
   end
 
   scenario "Fields are preserved on failed post#update" do

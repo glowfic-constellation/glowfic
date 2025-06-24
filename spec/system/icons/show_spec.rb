@@ -1,7 +1,7 @@
 RSpec.describe "Viewing an icon" do
-  let(:user) { create(:user, username: 'Jane Doe', password: known_test_password) }
+  let(:user) { create(:user, username: 'Jane Doe') }
   let(:icon) { create(:icon, user: user, keyword: 'iconic') }
-  let(:gallery) { create(:gallery, user: user, name: 'Example Gallery') }
+  let(:gallery) { create(:gallery, user: user, icons: [icon], name: 'Example Gallery') }
 
   scenario "Viewing a galleryless icon" do
     visit icon_path(icon)
@@ -10,7 +10,7 @@ RSpec.describe "Viewing an icon" do
 
     within('.icon-info-box') do
       expect(page).to have_selector('.icon-keyword', text: 'iconic')
-      expect(page.find('.icon')['src']).to eq(icon.url)
+      expect(find('.icon')[:src]).to eq(icon.url)
       expect(page).to have_link('Stats')
       expect(page).to have_link('Galleries')
       expect(page).to have_link('Posts')
@@ -37,28 +37,24 @@ RSpec.describe "Viewing an icon" do
       click_link 'Galleries'
     end
 
-    within('.icon-right-content-box') do
-      expect(page).to have_text('— No galleries yet —')
-    end
+    expect(page).to have_selector('.icon-right-content-box', text: '— No galleries yet —')
 
     within('.icon-info-box') do
       click_link 'Posts'
     end
 
-    within('.icon-right-content-box') do
-      expect(page).to have_text('— No posts yet —')
-    end
+    expect(page).to have_selector('.icon-right-content-box', text: '— No posts yet —')
   end
 
   scenario "Viewing own icon" do
-    login(user, known_test_password)
+    login(user)
     visit icon_path(icon)
 
     expect(page).to have_selector('.breadcrumbs', text: 'Galleries » (0 Galleries) » iconic » Stats')
 
     within('.icon-info-box') do
       expect(page).to have_selector('.icon-keyword', text: 'iconic')
-      expect(page.find('.icon')['src']).to eq(icon.url)
+      expect(find('.icon')[:src]).to eq(icon.url)
       expect(page).to have_link('Stats')
       expect(page).to have_link('Galleries')
       expect(page).to have_link('Posts')
@@ -84,14 +80,14 @@ RSpec.describe "Viewing an icon" do
 
   scenario "Viewing an icon with a gallery" do
     login
-    gallery.update!(icons: [icon])
+    gallery
     visit icon_path(icon)
 
     expect(page).to have_selector('.breadcrumbs', text: 'Jane Doe » Jane Doe\'s Galleries » Example Gallery » iconic » Stats')
 
     within('.icon-info-box') do
       expect(page).to have_selector('.icon-keyword', text: 'iconic')
-      expect(page.find('.icon')['src']).to eq(icon.url)
+      expect(find('.icon')[:src]).to eq(icon.url)
       expect(page).to have_link('Stats')
       expect(page).to have_link('Galleries')
       expect(page).to have_link('Posts')
@@ -125,7 +121,7 @@ RSpec.describe "Viewing an icon" do
   end
 
   scenario "Viewing a complex icon" do
-    gallery.update!(icons: [icon])
+    gallery
     icon2 = create(:icon, user: user)
     g2 = create(:gallery, user: user, name: 'Second Gallery', icons: [icon, icon2])
 
@@ -137,11 +133,11 @@ RSpec.describe "Viewing an icon" do
 
     visit icon_path(icon)
 
-    expect(page).to have_selector('.breadcrumbs', text: 'Jane Doe » Jane Doe\'s Galleries » Example Gallery » iconic » Stats')
+    expect(page).to have_selector('.breadcrumbs', text: "Jane Doe » Jane Doe's Galleries » Example Gallery » iconic » Stats")
 
     within('.icon-info-box') do
       expect(page).to have_selector('.icon-keyword', text: 'iconic')
-      expect(page.find('.icon')['src']).to eq(icon.url)
+      expect(find('.icon')[:src]).to eq(icon.url)
       expect(page).to have_link('Stats')
       expect(page).to have_link('Galleries')
       expect(page).to have_link('Posts')

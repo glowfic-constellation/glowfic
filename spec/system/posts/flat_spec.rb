@@ -9,9 +9,6 @@ RSpec.describe "Viewing flat posts" do
     expect(page).to have_selector('.post-container', count: 1)
     expect(page).to have_selector('.post-post', count: 1)
     expect(page).to have_selector('#post-title', exact_text: "test subject")
-
-    within('.post-content') do
-      expect(page).to have_selector('p', exact_text: 'test content')
-    end
+    expect(page).to have_selector('.post-content p', exact_text: 'test content')
   end
 end

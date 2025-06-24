@@ -13,10 +13,11 @@ RSpec.describe "Replacing characters" do
     expect(page).to have_text("Replace All Uses of Character")
 
     within("#icon_dropdown") do
-      page.select "Alice"
-      page.select "Fred the <strong>!"
+      select "Alice"
+      select "Fred the <strong>!"
     end
-    within("#alias_dropdown") { page.select "The <strong>!" }
+
+    within("#alias_dropdown") { select "The <strong>!" }
   end
 
   # TODO: test actual replacement!
