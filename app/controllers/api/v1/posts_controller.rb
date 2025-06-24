@@ -72,7 +72,7 @@ class Api::V1::PostsController < Api::ApiController
     end
 
     boards = Board.where(id: posts.select(:board_id).distinct.pluck(:board_id))
-    unless boards.count == 1
+    unless boards.one?
       error = { message: 'Posts must be from one continuity' }
       render json: { errors: [error] }, status: :unprocessable_entity and return
     end
