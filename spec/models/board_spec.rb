@@ -6,7 +6,7 @@ RSpec.describe Board do
       expect(create(:board)).to be_valid
     end
 
-    it "succeeds with multiple boards with a single creator" do
+    it "succeeds with multiple boards with a single creator", :aggregate_failures do
       user = create(:user)
       create(:board, creator: user)
       second = build(:board, creator: user)
@@ -30,7 +30,7 @@ RSpec.describe Board do
     end
   end
 
-  it "should allow everyone to post if open to anyone" do
+  it "should allow everyone to post if open to anyone", :aggregate_failures do
     board = create(:board)
     user = create(:user)
     expect(board.authors_locked?).to be false
@@ -49,7 +49,7 @@ RSpec.describe Board do
       expect(board.writer_ids).to match_array([board.creator_id, coauthor.id])
     end
 
-    it "should allow coauthors and cameos to post" do
+    it "should allow coauthors and cameos to post", :aggregate_failures do
       coauthor = create(:user)
       cameo = create(:user)
       board = create(:board, writers: [coauthor], cameos: [cameo], authors_locked: true)
@@ -58,7 +58,7 @@ RSpec.describe Board do
       expect(cameo.writes_in?(board)).to be true
     end
 
-    it "should allow coauthors but not cameos to edit" do
+    it "should allow coauthors but not cameos to edit", :aggregate_failures do
       board = create(:board)
       coauthor = create(:user)
       cameo = create(:user)
@@ -95,11 +95,18 @@ RSpec.describe Board do
     create(:board_section, board: board) # section2
     create(:board_section, board: board) # section3
     section.update_columns(section_order: 6) # rubocop:disable Rails/SkipsModelValidations
-    expect(board.posts.ordered_in_section.pluck(:section_order)).to eq([1, 2, 2, 3])
-    expect(board.board_sections.ordered.pluck(:section_order)).to eq([1, 2, 6])
+
+    aggregate_failures do
+      expect(board.posts.ordered_in_section.pluck(:section_order)).to eq([1, 2, 2, 3])
+      expect(board.board_sections.ordered.pluck(:section_order)).to eq([1, 2, 6])
+    end
+
     board.send(:fix_ordering)
-    expect(board.posts.ordered_in_section.pluck(:section_order)).to eq([0, 1, 2, 3])
-    expect(board.board_sections.ordered.pluck(:section_order)).to eq([0, 1, 2])
+
+    aggregate_failures do
+      expect(board.posts.ordered_in_section.pluck(:section_order)).to eq([0, 1, 2, 3])
+      expect(board.board_sections.ordered.pluck(:section_order)).to eq([0, 1, 2])
+    end
   end
 
   describe "#ordered?" do
@@ -121,7 +128,7 @@ RSpec.describe Board do
     end
   end
 
-  it "deletes sections but moves posts to sandboxes" do
+  it "deletes sections but moves posts to sandboxes", :aggregate_failures do
     board = create(:board)
     create(:board, id: Board::ID_SANDBOX)
     section = create(:board_section, board: board)
@@ -130,7 +137,7 @@ RSpec.describe Board do
       Audited.audit_class.as_user(board.creator) { board.destroy! }
     end
     post.reload
-    expect(post.board_id).to eq(3)
+    expect(post.board_id).to eq(Board::ID_SANDBOX)
     expect(post.section).to be_nil
     expect(BoardSection.find_by_id(section.id)).to be_nil
   end

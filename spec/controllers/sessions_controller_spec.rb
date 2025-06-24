@@ -98,13 +98,16 @@ RSpec.describe SessionsController do
       expect(controller.send(:logged_in?)).not_to eq(true)
     end
 
-    it "disallows logins with old passwords when reset is pending" do
+    it "disallows logins with old passwords when reset is pending", aggregate_failures: false do
       user = create(:user)
       create(:password_reset, user: user)
       expect(user.password_resets.active.unused).not_to be_empty
       post :create, params: { username: user.username }
-      expect(flash[:error]).to eq("The password for this account has been reset. Please check your email.")
-      expect(controller.send(:logged_in?)).not_to eq(true)
+
+      aggregate_failures do
+        expect(flash[:error]).to eq("The password for this account has been reset. Please check your email.")
+        expect(controller.send(:logged_in?)).not_to eq(true)
+      end
     end
 
     it "requires a valid password" do
@@ -115,18 +118,23 @@ RSpec.describe SessionsController do
       expect(controller.send(:logged_in?)).not_to eq(true)
     end
 
-    it "logs in successfully with salt_uuid" do
+    it "logs in successfully with salt_uuid", aggregate_failures: false do
       password = 'password'
       user = create(:user, password: password)
-      expect(session[:user_id]).to be_nil
-      expect(controller.send(:logged_in?)).not_to eq(true)
+
+      aggregate_failures do
+        expect(session[:user_id]).to be_nil
+        expect(controller.send(:logged_in?)).not_to eq(true)
+      end
 
       post :create, params: { username: user.username, password: password }
 
-      expect(session[:user_id]).to eq(user.id)
-      expect(controller.send(:logged_in?)).to eq(true)
-      expect(flash[:success]).to eq("You are now logged in as #{user.username}. Welcome back!")
-      expect(cookies.signed[:user_id]).to be_nil
+      aggregate_failures do
+        expect(session[:user_id]).to eq(user.id)
+        expect(controller.send(:logged_in?)).to eq(true)
+        expect(flash[:success]).to eq("You are now logged in as #{user.username}. Welcome back!")
+        expect(cookies.signed[:user_id]).to be_nil
+      end
     end
 
     it "logs in successfully without salt_uuid and sets it" do
@@ -134,27 +142,35 @@ RSpec.describe SessionsController do
       user = create(:user)
       user.update_columns(salt_uuid: nil, crypted: user.send(:old_crypted_password, password)) # rubocop:disable Rails/SkipsModelValidations
       user.reload
-      expect(user.salt_uuid).to be_nil
-      expect(session[:user_id]).to be_nil
-      expect(controller.send(:logged_in?)).not_to eq(true)
+
+      aggregate_failures do
+        expect(user.salt_uuid).to be_nil
+        expect(session[:user_id]).to be_nil
+        expect(controller.send(:logged_in?)).not_to eq(true)
+      end
 
       post :create, params: { username: user.username, password: password }
 
-      expect(session[:user_id]).to eq(user.id)
-      expect(controller.send(:logged_in?)).to eq(true)
-      expect(flash[:success]).to eq("You are now logged in as #{user.username}. Welcome back!")
-      expect(cookies.signed[:user_id]).to be_nil
-      expect(user.reload.salt_uuid).not_to be_nil
-      expect(user.authenticate(password)).to eq(true)
+      aggregate_failures do
+        expect(session[:user_id]).to eq(user.id)
+        expect(controller.send(:logged_in?)).to eq(true)
+        expect(flash[:success]).to eq("You are now logged in as #{user.username}. Welcome back!")
+        expect(cookies.signed[:user_id]).to be_nil
+        expect(user.reload.salt_uuid).not_to be_nil
+        expect(user.authenticate(password)).to eq(true)
+      end
     end
 
-    it "creates permanent cookies when remember me is provided" do
+    it "creates permanent cookies when remember me is provided", aggregate_failures: false do
       password = 'password'
       user = create(:user, password: password)
       expect(cookies.signed[:user_id]).to be_nil
       post :create, params: { username: user.username, password: password, remember_me: true }
-      expect(controller.send(:logged_in?)).to eq(true)
-      expect(cookies.signed[:user_id]).to eq(user.id)
+
+      aggregate_failures do
+        expect(controller.send(:logged_in?)).to eq(true)
+        expect(cookies.signed[:user_id]).to eq(user.id)
+      end
     end
 
     it "disallows logins from deleted users" do
@@ -173,11 +189,14 @@ RSpec.describe SessionsController do
       expect(flash[:error]).to eq("You are already logged in.")
     end
 
-    it "creates cookie" do
+    it "creates cookie", aggregate_failures: false do
       expect(cookies[:accepted_tos]).to be_nil
       patch :confirm_tos
-      expect(response).to redirect_to(root_url)
-      expect(cookies[:accepted_tos].to_i).to eq(User::CURRENT_TOS_VERSION)
+
+      aggregate_failures do
+        expect(response).to redirect_to(root_url)
+        expect(cookies[:accepted_tos].to_i).to eq(User::CURRENT_TOS_VERSION)
+      end
     end
   end
 
