@@ -1,6 +1,6 @@
 -# locals: ( writable:, multi_replies_params: nil )
 
-- character_galleries = writable.character.galleries.ordered if writable.character && current_user.icon_picker_grouping? && writable.character.galleries.count > 1
+- character_galleries = writable.character.galleries.includes(:icons).ordered if writable.character && current_user.icon_picker_grouping? && writable.character.galleries.count > 1
 #post-editor.padding-10
   .post-info-box
     #current-icon-holder.post-icon

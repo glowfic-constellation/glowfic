@@ -19,6 +19,7 @@ class Character < ApplicationRecord
 
   has_many :character_tags, inverse_of: :character, dependent: :destroy
   has_many :settings, -> { ordered_by_char_tag }, through: :character_tags, source: :setting, dependent: :destroy
+  has_many :unordered_settings, through: :character_tags, source: :setting, dependent: :destroy
   has_many :gallery_groups, -> { ordered_by_char_tag }, through: :character_tags, source: :gallery_group, dependent: :destroy
 
   validates :name,
@@ -79,7 +80,7 @@ class Character < ApplicationRecord
 
   def selector_name(include_settings: false)
     parts = [name, nickname, screenname]
-    parts << settings.pluck(:name).join(' & ') if include_settings
+    parts << unordered_settings.map(&:name).join(' & ') if include_settings
     parts.compact_blank.join(' | ')
   end
 

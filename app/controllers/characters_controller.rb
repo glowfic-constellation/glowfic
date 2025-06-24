@@ -167,9 +167,10 @@ class CharactersController < ApplicationController
   def replace
     @page_title = 'Replace Character: ' + @character.name
     if @character.template
-      @alts = @character.template.characters
+      @alts = @character.template.characters.includes([:aliases, :default_icon, :unordered_settings])
     else
-      @alts = @character.user.characters.where(template_id: nil)
+      @alts = @character.user.characters.includes([:aliases, :default_icon, :unordered_settings])
+                .where(template_id: nil)
     end
     @alts -= [@character] unless @alts.size <= 1 || @character.aliases.exists?
     use_javascript('icons')

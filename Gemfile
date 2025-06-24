@@ -39,6 +39,8 @@ gem 'nilify_blanks'
 gem 'nokogiri'
 gem 'pg', '~> 1.5'
 gem 'pg_search'
+gem 'pg_query'
+gem 'prosopite'
 gem 'rack-pratchett'
 gem 'rails', '~> 8.0.2'
 gem "redcarpet", "~> 3.6"
