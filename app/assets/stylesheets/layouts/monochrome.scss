@@ -1,56 +1,58 @@
-@import 'variables';
+@use 'palette' as *;
 
-// header
-$bg_color_header_top: #757575; // top header strip for logo
-$bg_color_header_middle: #4A4A4A; // middle header strip with user items
+@use 'variables' with (
+  // header
+  $bg_color_header_top: #757575, // top header strip for logo
+  $bg_color_header_middle: #4A4A4A, // middle header strip with user items
 
-// main page
-$bg_color_page: #E0E0E0; // overall page
+  // main page
+  $bg_color_page: #E0E0E0, // overall page
 
-// links
-$font_color_link: #6F6F6F; // link
-$font_color_link_visited: #484848;
+  // links
+  $font_color_link: #6F6F6F, // link
+  $font_color_link_visited: #484848,
 
-// flashes
-// these are the notifications that appear when you submit a form or get a message
-$bg_color_flash_success: $colors_gallery; // success
-$bg_color_flash_breadcrumbs: #ADADAD; // breadcrumbs ("Continuities » Continuity » Section » Thread")
+  // flashes
+  // these are the notifications that appear when you submit a form or get a message
+  $bg_color_flash_success: $colors_gallery, // success
+  $bg_color_flash_breadcrumbs: #ADADAD, // breadcrumbs ("Continuities » Continuity » Section » Thread")
 
-// content headers
-$bg_color_sub: $colors_silver_darker; // secondary content header
-$bg_color_subber: #ADADAD; // tertiary content header
-$bg_color_ender: #ADADAD; // tertiary content header
+  // content headers
+  $bg_color_sub: $colors_silver_darker, // secondary content header
+  $bg_color_subber: #ADADAD, // tertiary content header
+  $bg_color_ender: #ADADAD, // tertiary content header
 
-$bg_color_navheader: $colors_silver_darker;
+  $bg_color_navheader: $colors_silver_darker,
 
-$bg_color_expander: #A0A0A0; // expander on posts
+  $bg_color_expander: #A0A0A0, // expander on posts
 
-$bg_color_post_icon: $colors_silver_darker;
-$bg_color_icon_selector: $colors_silver_darker;
+  $bg_color_post_icon: $colors_silver_darker,
+  $bg_color_icon_selector: $colors_silver_darker,
 
-$bg_color_post_character: #929292;
-$bg_color_post_screenname: #A5A5A5;
-$bg_color_post_author: $colors_silver_again;
+  $bg_color_post_character: #929292,
+  $bg_color_post_screenname: #A5A5A5,
+  $bg_color_post_author: $colors_silver_again,
 
-$font_color_paginate_link_visited: #3A3A3A;
-$bg_color_paginate_current_page: #616161;
+  $font_color_paginate_link_visited: #3A3A3A,
+  $bg_color_paginate_current_page: #616161,
 
-// icons
-$bg_color_icon: $colors_silver_darker;
-$bg_color_icon_credit: $colors_silver_darker;
-$border_color_icon_editor: #ADADAD;
-$bg_color_icon_editor: $colors_silver_darker;
+  // icons
+  $bg_color_icon: $colors_silver_darker,
+  $bg_color_icon_credit: $colors_silver_darker,
+  $border_color_icon_editor: #ADADAD,
+  $bg_color_icon_editor: $colors_silver_darker,
 
-$font_color_tag_item: #575757;
-$font_color_tag_item_gallery: #575757;
+  $font_color_tag_item: #575757,
+  $font_color_tag_item_gallery: #575757,
 
-// link-boxes
-$bg_color_linkbox_new: #5A5A5A;
-$bg_color_linkbox_edit: $colors_comet;
-$bg_color_linkbox_favorite: $colors_comet;
-$bg_color_linkbox_delete: $colors_rock;
-$bg_color_linkbox_dismiss: $colors_rock;
+  // link-boxes
+  $bg_color_linkbox_new: #5A5A5A,
+  $bg_color_linkbox_edit: $colors_comet,
+  $bg_color_linkbox_favorite: $colors_comet,
+  $bg_color_linkbox_delete: $colors_rock,
+  $bg_color_linkbox_dismiss: $colors_rock,
 
-$bg_color_badge: #E5D8AF;
+  $bg_color_badge: #E5D8AF,
+);
 
-@import 'monochrome_selectors'
+@use 'monochrome_selectors';
