@@ -173,6 +173,7 @@ class IconsController < UploadingController
       max_page = [(gallery.icons.count / 100.0).ceil, 1].max
       requested_page = [params[:page].to_i, 1].max
       page_to_use = [requested_page, max_page].min
+      page_to_use = nil if page_to_use <= 1
       redirect_to gallery_path(id: gallery.id, page: page_to_use)
     else
       redirect_to user_gallery_path(id: 0, user_id: current_user.id)
