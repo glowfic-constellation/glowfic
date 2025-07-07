@@ -115,6 +115,65 @@ RSpec.describe IconsController do
         expect(icon.galleries.count).to eq(0)
         expect(response).to redirect_to(tag_url(group, anchor: "gallery-#{gallery.id}"))
       end
+
+      context "in paginated galleries" do
+        let(:gallery) { create(:gallery, user: user) }
+
+        before(:each) do
+          # rubocop:disable FactoryBot/ExcessiveCreateList
+          icons = create_list(:icon, 99, user: user)
+          # rubocop:enable FactoryBot/ExcessiveCreateList
+          gallery.icons = icons
+        end
+
+        it "returns to page 1 when icons deleted from page 1" do
+          extra_icons = create_list(:icon, 3, user: user)
+          gallery.icons.concat(extra_icons)
+          expect(gallery.icons.count).to eq(102)
+          delete :delete_multiple, params: {
+            marked_ids: [extra_icons.first.id],
+            gallery_id: gallery.id,
+            gallery_delete: true,
+          }
+          expect(extra_icons.first.galleries.count).to eq(0)
+          expect(gallery.icons.count).to eq(101)
+          expect(response).to redirect_to(gallery_url(gallery))
+          expect(flash[:success]).to eq("Icons removed from gallery.")
+        end
+
+        it "returns to page 2 when icons deleted from page 2" do
+          extra_icons = create_list(:icon, 3, user: user)
+          gallery.icons.concat(extra_icons)
+          expect(gallery.icons.count).to eq(102)
+          delete :delete_multiple, params: {
+            marked_ids: [extra_icons.last.id],
+            gallery_id: gallery.id,
+            gallery_delete: true,
+            page: 2,
+          }
+          expect(extra_icons.last.galleries.count).to eq(0)
+          expect(gallery.icons.count).to eq(101)
+          expect(response).to redirect_to(gallery_url(gallery, page: 2))
+          expect(flash[:success]).to eq("Icons removed from gallery.")
+        end
+
+        it "returns to page 1 when page 2 is empty" do
+          extra_icons = create_list(:icon, 3, user: user)
+          gallery.icons.concat(extra_icons)
+          expect(gallery.icons.count).to eq(102)
+          delete :delete_multiple, params: {
+            marked_ids: [extra_icons[1].id, extra_icons[2].id],
+            gallery_id: gallery.id,
+            gallery_delete: true,
+            page: 2,
+          }
+          expect(extra_icons[1].galleries.count).to eq(0)
+          expect(extra_icons[2].galleries.count).to eq(0)
+          expect(gallery.icons.count).to eq(100)
+          expect(response).to redirect_to(gallery_url(gallery))
+          expect(flash[:success]).to eq("Icons removed from gallery.")
+        end
+      end
     end
 
     context "deleting icons from the site" do
