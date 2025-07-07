@@ -121,14 +121,12 @@ RSpec.describe IconsController do
 
         before(:each) do
           # rubocop:disable FactoryBot/ExcessiveCreateList
-          icons = create_list(:icon, 99, user: user)
+          create_list(:icon, 99, galleries: [gallery], user: user)
           # rubocop:enable FactoryBot/ExcessiveCreateList
-          gallery.icons = icons
         end
 
         it "returns to page 1 when icons deleted from page 1" do
-          extra_icons = create_list(:icon, 3, user: user)
-          gallery.icons.concat(extra_icons)
+          extra_icons = create_list(:icon, 3, galleries: [gallery], user: user)
           expect(gallery.icons.count).to eq(102)
           delete :delete_multiple, params: {
             marked_ids: [extra_icons.first.id],
@@ -142,8 +140,7 @@ RSpec.describe IconsController do
         end
 
         it "returns to page 2 when icons deleted from page 2" do
-          extra_icons = create_list(:icon, 3, user: user)
-          gallery.icons.concat(extra_icons)
+          extra_icons = create_list(:icon, 3, galleries: [gallery], user: user)
           expect(gallery.icons.count).to eq(102)
           delete :delete_multiple, params: {
             marked_ids: [extra_icons.last.id],
@@ -158,8 +155,7 @@ RSpec.describe IconsController do
         end
 
         it "returns to page 1 when page 2 is empty" do
-          extra_icons = create_list(:icon, 3, user: user)
-          gallery.icons.concat(extra_icons)
+          extra_icons = create_list(:icon, 3, galleries: [gallery], user: user)
           expect(gallery.icons.count).to eq(102)
           delete :delete_multiple, params: {
             marked_ids: [extra_icons[1].id, extra_icons[2].id],
