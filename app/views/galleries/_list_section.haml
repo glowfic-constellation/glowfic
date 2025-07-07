@@ -17,5 +17,6 @@
               .centered.icons-remove
                 - if gallery
                   = hidden_field_tag :gallery_id, gallery.id
+                  = hidden_field_tag :page, params[:page], id: nil
                   = submit_tag "- Remove selected icons from gallery", name: 'gallery_delete'
                 = submit_tag "x Delete selected icons permanently", data: { confirm: "Are you sure? These icons will be gone from the site!" }
