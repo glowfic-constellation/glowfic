@@ -164,9 +164,10 @@ class IconsController < UploadingController
     redirect_to user_galleries_path(current_user)
   end
 
-  def calculate_page_for_gallery(gallery, requested_page_param)
-    max_page = [(gallery.icons.count / 100.0).ceil, 1].max
-    requested_page = [requested_page_param.to_i, 1].max
+  def calculate_page_for_gallery(gallery)
+    per = icons_per_page
+    max_page = [(gallery.icons.count / per.to_f).ceil, 1].max
+    requested_page = [params[:page].to_i, 1].max
     page_to_use = [requested_page, max_page].min
     page_to_use = nil if page_to_use <= 1
     page_to_use
@@ -178,8 +179,9 @@ class IconsController < UploadingController
     elsif params[:return_tag].present? && (tag = Tag.find_by_id(params[:return_tag]))
       redirect_to tag_path(tag, anchor: "gallery-#{gallery.id}")
     elsif gallery
-      page_to_use = calculate_page_for_gallery(gallery, params[:page])
-      redirect_to gallery_path(id: gallery.id, page: page_to_use)
+      page_to_use = calculate_page_for_gallery(gallery)
+      per_page_num = icons_per_page == 100 ? nil : icons_per_page
+      redirect_to gallery_path(id: gallery.id, page: page_to_use, per_page: per_page_num)
     else
       redirect_to user_gallery_path(id: 0, user_id: current_user.id)
     end
