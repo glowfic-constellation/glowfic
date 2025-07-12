@@ -118,13 +118,13 @@ RSpec.describe IconsController do
 
       context "in paginated galleries" do
         let(:gallery) { create(:gallery, user: user) }
+        let!(:extra_icons) { create_list(:icon, 3, galleries: [gallery], user: user) }
 
         before(:each) do
           create_list(:icon, 9, galleries: [gallery], user: user)
         end
 
         it "returns to page 1 when icons deleted from page 1" do
-          extra_icons = create_list(:icon, 3, galleries: [gallery], user: user)
           expect(gallery.icons.count).to eq(12)
           delete :delete_multiple, params: {
             marked_ids: [extra_icons.first.id],
@@ -139,7 +139,6 @@ RSpec.describe IconsController do
         end
 
         it "returns to page 2 when icons deleted from page 2" do
-          extra_icons = create_list(:icon, 3, galleries: [gallery], user: user)
           expect(gallery.icons.count).to eq(12)
           delete :delete_multiple, params: {
             marked_ids: [extra_icons.last.id],
@@ -155,7 +154,6 @@ RSpec.describe IconsController do
         end
 
         it "returns to page 1 when page 2 is empty" do
-          extra_icons = create_list(:icon, 3, galleries: [gallery], user: user)
           expect(gallery.icons.count).to eq(12)
           delete :delete_multiple, params: {
             marked_ids: [extra_icons[1].id, extra_icons[2].id],
