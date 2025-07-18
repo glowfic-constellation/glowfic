@@ -39,6 +39,21 @@ RSpec.describe Api::V1::RepliesController do
       expect(response.headers['Link']).not_to be_nil
       expect(response.parsed_body.size).to eq(1)
     end
+
+    it "includes editor mode for your own replies" do
+      post = create(:post)
+      reply = create(:reply, post: post, editor_mode: 'html')
+      create(:reply, post: post, user: post.user)
+      api_login_as(reply.user)
+      get :index, params: { post_id: post.id }
+
+      expect(response).to have_http_status(200)
+      expect(response.parsed_body.size).to eq(2)
+      expect(response.parsed_body[0]['user']['id']).to eq(reply.user_id)
+      expect(response.parsed_body[0]['editor_mode']).to eq('html')
+      expect(response.parsed_body[1]['user']['id']).to eq(post.user_id)
+      expect(response.parsed_body[1]).not_to have_key('editor_mode')
+    end
   end
 
   describe 'GET bookmark' do

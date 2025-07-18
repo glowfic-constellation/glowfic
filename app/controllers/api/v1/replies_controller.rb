@@ -21,7 +21,7 @@ class Api::V1::RepliesController < Api::ApiController
       .left_outer_joins(:icon)
       .left_outer_joins(:character_alias)
       .ordered
-    paginate json: replies, per_page: per_page
+    paginate json: replies, per_page: per_page, user: current_user
   end
 
   api :GET, '/replies/:id/bookmark', "Load a user's bookmark attached to a reply if it exists and is visible"

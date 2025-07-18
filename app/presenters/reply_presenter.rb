@@ -7,7 +7,7 @@ class ReplyPresenter
   end
 
   def as_json(_options={})
-    {
+    dict = {
       id: reply.id,
       content: reply.content,
       created_at: reply.created_at,
@@ -17,6 +17,8 @@ class ReplyPresenter
       icon: icon(reply),
       user: user(reply),
     }
+    return dict unless @reply.user_id == _options[:user]&.id
+    dict.merge(editor_mode: @reply.editor_mode)
   end
 
   def character(reply)
