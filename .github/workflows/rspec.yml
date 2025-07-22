@@ -71,11 +71,12 @@ jobs:
         # for faster server bootup for Capybara tests
         run: RAILS_ENV=test bundle exec rake assets:precompile
       - name: Run rspec tests and report coverage
-        uses: paambaati/codeclimate-action@v9.0.0
-        with:
-          coverageCommand: bundle exec rspec spec --format documentation --format html --out rspec-results.html
-        env:
-          CC_TEST_REPORTER_ID: a3ae0fa6dd28afe102a694b98ced6bb567577524d44571589c4ed1a68f8cda2d
+        # uses: paambaati/codeclimate-action@v9.0.0
+        # with:
+        #  coverageCommand: bundle exec rspec spec --format documentation --format html --out rspec-results.html
+        # env:
+        #   CC_TEST_REPORTER_ID: a3ae0fa6dd28afe102a694b98ced6bb567577524d44571589c4ed1a68f8cda2d
+        run: bundle exec rspec spec --format documentation --format html --out rspec-results.html
       - name: Upload MinIO logs
         if: ${{ always() }}
         uses: actions/upload-artifact@v4
