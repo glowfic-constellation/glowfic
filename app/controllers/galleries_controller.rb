@@ -19,7 +19,7 @@ class GalleriesController < UploadingController
       @user.username + "'s Galleries"
     end
     @galleries = @user.galleries.ordered_by_name
-    @galleries = @galleries.paginate(per_page: 100, page: page)
+    @galleries = @galleries.paginate(page: page, per_page: icons_per_page)
     use_javascript('galleries/expander')
     gon.user_id = @user.id
   end
@@ -66,7 +66,7 @@ class GalleriesController < UploadingController
       @meta_og = og_data
     end
     @icons = @gallery ? @gallery.icons : @user.galleryless_icons
-    @icons = @icons.paginate(per_page: 100, page: page)
+    @icons = @icons.paginate(page: page, per_page: icons_per_page)
     @times_used, @posts_used = Icon.times_used(@icons, current_user) if page_view == 'list'
     response.headers['X-Robots-Tag'] = 'noindex' if params[:view]
     render :show, locals: { icons: @icons }
