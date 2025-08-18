@@ -18,7 +18,7 @@ RSpec.describe Block do
       expect(block).to be_valid
     end
 
-    it "should enforce uniqueness for a specific set of users" do
+    it "should enforce uniqueness for a specific set of users", :aggregate_failures do
       blocker = create(:user)
       blocked = create(:user)
       create(:block, blocking_user: blocker, blocked_user: blocked)
@@ -38,13 +38,13 @@ RSpec.describe Block do
       expect { build(:block, hide_me: -1) }.to raise_error(ArgumentError)
     end
 
-    it "should require an option to be set" do
+    it "should require an option to be set", :aggregate_failures do
       block = build(:block, hide_me: 0, hide_them: 0, block_interactions: false)
       expect(block).not_to be_valid
       expect { block.save! }.to raise_error(ActiveRecord::RecordInvalid)
     end
 
-    it 'suceeds with multiple blocked users and one blocking user' do
+    it 'suceeds with multiple blocked users and one blocking user', :aggregate_failures do
       blocker = create(:user)
       blocked1 = create(:user)
       blocked2 = create(:user)
@@ -56,7 +56,7 @@ RSpec.describe Block do
       }.not_to raise_error
     end
 
-    it 'succeeds with one blocked user and multiple blocking users' do
+    it 'succeeds with one blocked user and multiple blocking users', :aggregate_failures do
       blocked = create(:user)
       blocker1 = create(:user)
       blocker2 = create(:user)
@@ -69,7 +69,7 @@ RSpec.describe Block do
     end
   end
 
-  context "when hiding own content" do
+  context "when hiding own content", :aggregate_failures do
     it "should allow full blocking" do
       block = create(:block, hide_me: :all)
       expect(block.hide_my_posts?).to be(true)
@@ -89,7 +89,7 @@ RSpec.describe Block do
     end
   end
 
-  context "when hiding their content" do
+  context "when hiding their content", :aggregate_failures do
     it "should allow full blocking" do
       block = create(:block, hide_them: :all)
       expect(block.hide_their_posts?).to be(true)

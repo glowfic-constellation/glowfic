@@ -6,30 +6,32 @@ RSpec.describe "Viewing an icon" do
   scenario "Viewing a galleryless icon" do
     visit icon_path(icon)
 
-    expect(page).to have_selector('.breadcrumbs', text: 'Jane Doe » Jane Doe\'s Galleries » (0 Galleries) » iconic » Stats')
+    aggregate_failures 'Info' do
+      expect(page).to have_selector('.breadcrumbs', text: 'Jane Doe » Jane Doe\'s Galleries » (0 Galleries) » iconic » Stats')
 
-    within('.icon-info-box') do
-      expect(page).to have_selector('.icon-keyword', text: 'iconic')
-      expect(find('.icon')[:src]).to eq(icon.url)
-      expect(page).to have_link('Stats')
-      expect(page).to have_link('Galleries')
-      expect(page).to have_link('Posts')
-      expect(page).to have_link('Replies')
-      expect(page).to have_no_link('Edit Icon')
-      expect(page).to have_no_link('Make Avatar')
-      expect(page).to have_no_link('Replace Icon')
-      expect(page).to have_no_link('Delete Icon')
-    end
-
-    within('.icon-right-content-box') do
-      expect(page).to have_selector('th', text: 'Times Used')
-      within(row_for('Times Used')) do
-        expect(page).to have_selector('td', text: '0')
+      within('.icon-info-box') do
+        expect(page).to have_selector('.icon-keyword', text: 'iconic')
+        expect(find('.icon')[:src]).to eq(icon.url)
+        expect(page).to have_link('Stats')
+        expect(page).to have_link('Galleries')
+        expect(page).to have_link('Posts')
+        expect(page).to have_link('Replies')
+        expect(page).to have_no_link('Edit Icon')
+        expect(page).to have_no_link('Make Avatar')
+        expect(page).to have_no_link('Replace Icon')
+        expect(page).to have_no_link('Delete Icon')
       end
 
-      expect(page).to have_selector('th', text: 'Posts In')
-      within(row_for('Posts In')) do
-        expect(page).to have_selector('td', text: '0')
+      within('.icon-right-content-box') do
+        expect(page).to have_selector('th', text: 'Times Used')
+        within(row_for('Times Used')) do
+          expect(page).to have_selector('td', text: '0')
+        end
+
+        expect(page).to have_selector('th', text: 'Posts In')
+        within(row_for('Posts In')) do
+          expect(page).to have_selector('td', text: '0')
+        end
       end
     end
 
@@ -46,7 +48,7 @@ RSpec.describe "Viewing an icon" do
     expect(page).to have_selector('.icon-right-content-box', text: '— No posts yet —')
   end
 
-  scenario "Viewing own icon" do
+  scenario "Viewing own icon", :aggregate_failures do
     login(user)
     visit icon_path(icon)
 
@@ -83,30 +85,32 @@ RSpec.describe "Viewing an icon" do
     gallery
     visit icon_path(icon)
 
-    expect(page).to have_selector('.breadcrumbs', text: 'Jane Doe » Jane Doe\'s Galleries » Example Gallery » iconic » Stats')
+    aggregate_failures 'Info' do
+      expect(page).to have_selector('.breadcrumbs', text: 'Jane Doe » Jane Doe\'s Galleries » Example Gallery » iconic » Stats')
 
-    within('.icon-info-box') do
-      expect(page).to have_selector('.icon-keyword', text: 'iconic')
-      expect(find('.icon')[:src]).to eq(icon.url)
-      expect(page).to have_link('Stats')
-      expect(page).to have_link('Galleries')
-      expect(page).to have_link('Posts')
-      expect(page).to have_link('Replies')
-      expect(page).to have_no_link('Edit Icon')
-      expect(page).to have_no_link('Make Avatar')
-      expect(page).to have_no_link('Replace Icon')
-      expect(page).to have_no_link('Delete Icon')
-    end
-
-    within('.icon-right-content-box') do
-      expect(page).to have_selector('th', text: 'Times Used')
-      within(row_for('Times Used')) do
-        expect(page).to have_selector('td', text: '0')
+      within('.icon-info-box') do
+        expect(page).to have_selector('.icon-keyword', text: 'iconic')
+        expect(find('.icon')[:src]).to eq(icon.url)
+        expect(page).to have_link('Stats')
+        expect(page).to have_link('Galleries')
+        expect(page).to have_link('Posts')
+        expect(page).to have_link('Replies')
+        expect(page).to have_no_link('Edit Icon')
+        expect(page).to have_no_link('Make Avatar')
+        expect(page).to have_no_link('Replace Icon')
+        expect(page).to have_no_link('Delete Icon')
       end
 
-      expect(page).to have_selector('th', text: 'Posts In')
-      within(row_for('Posts In')) do
-        expect(page).to have_selector('td', text: '0')
+      within('.icon-right-content-box') do
+        expect(page).to have_selector('th', text: 'Times Used')
+        within(row_for('Times Used')) do
+          expect(page).to have_selector('td', text: '0')
+        end
+
+        expect(page).to have_selector('th', text: 'Posts In')
+        within(row_for('Posts In')) do
+          expect(page).to have_selector('td', text: '0')
+        end
       end
     end
 
@@ -114,9 +118,11 @@ RSpec.describe "Viewing an icon" do
       click_link 'Galleries'
     end
 
-    within('.icon-right-content-box') do
-      expect(page).to have_selector('.gallery-title', count: 1)
-      expect(page).to have_link(text: 'Example Gallery', href: gallery_path(gallery))
+    aggregate_failures 'Galleries' do
+      within('.icon-right-content-box') do
+        expect(page).to have_selector('.gallery-title', count: 1)
+        expect(page).to have_link(text: 'Example Gallery', href: gallery_path(gallery))
+      end
     end
   end
 
@@ -133,30 +139,32 @@ RSpec.describe "Viewing an icon" do
 
     visit icon_path(icon)
 
-    expect(page).to have_selector('.breadcrumbs', text: "Jane Doe » Jane Doe's Galleries » Example Gallery » iconic » Stats")
+    aggregate_failures 'Info' do
+      expect(page).to have_selector('.breadcrumbs', text: "Jane Doe » Jane Doe's Galleries » Example Gallery » iconic » Stats")
 
-    within('.icon-info-box') do
-      expect(page).to have_selector('.icon-keyword', text: 'iconic')
-      expect(find('.icon')[:src]).to eq(icon.url)
-      expect(page).to have_link('Stats')
-      expect(page).to have_link('Galleries')
-      expect(page).to have_link('Posts')
-      expect(page).to have_link('Replies')
-      expect(page).to have_no_link('Edit Icon')
-      expect(page).to have_no_link('Make Avatar')
-      expect(page).to have_no_link('Replace Icon')
-      expect(page).to have_no_link('Delete Icon')
-    end
-
-    within('.icon-right-content-box') do
-      expect(page).to have_selector('th', text: 'Times Used')
-      within(row_for('Times Used')) do
-        expect(page).to have_selector('td', text: '3')
+      within('.icon-info-box') do
+        expect(page).to have_selector('.icon-keyword', text: 'iconic')
+        expect(find('.icon')[:src]).to eq(icon.url)
+        expect(page).to have_link('Stats')
+        expect(page).to have_link('Galleries')
+        expect(page).to have_link('Posts')
+        expect(page).to have_link('Replies')
+        expect(page).to have_no_link('Edit Icon')
+        expect(page).to have_no_link('Make Avatar')
+        expect(page).to have_no_link('Replace Icon')
+        expect(page).to have_no_link('Delete Icon')
       end
 
-      expect(page).to have_selector('th', text: 'Posts In')
-      within(row_for('Posts In')) do
-        expect(page).to have_selector('td', text: '2')
+      within('.icon-right-content-box') do
+        expect(page).to have_selector('th', text: 'Times Used')
+        within(row_for('Times Used')) do
+          expect(page).to have_selector('td', text: '3')
+        end
+
+        expect(page).to have_selector('th', text: 'Posts In')
+        within(row_for('Posts In')) do
+          expect(page).to have_selector('td', text: '2')
+        end
       end
     end
 
@@ -164,15 +172,17 @@ RSpec.describe "Viewing an icon" do
       click_link 'Galleries'
     end
 
-    within('.icon-right-content-box') do
-      expect(page).to have_selector('.gallery-title', count: 2)
-      expect(page).to have_link('Example Gallery', href: gallery_path(gallery))
-      expect(page).to have_link('Second Gallery', href: gallery_path(g2))
+    aggregate_failures 'Galleries' do
+      within('.icon-right-content-box') do
+        expect(page).to have_selector('.gallery-title', count: 2)
+        expect(page).to have_link('Example Gallery', href: gallery_path(gallery))
+        expect(page).to have_link('Second Gallery', href: gallery_path(g2))
 
-      within("#gallery#{g2.id}") do
-        expect(page).to have_selector('.gallery-icon', count: 2)
-        expect(page).to have_link(href: icon_path(icon))
-        expect(page).to have_link(href: icon_path(icon2))
+        within("#gallery#{g2.id}") do
+          expect(page).to have_selector('.gallery-icon', count: 2)
+          expect(page).to have_link(href: icon_path(icon))
+          expect(page).to have_link(href: icon_path(icon2))
+        end
       end
     end
 
@@ -180,9 +190,11 @@ RSpec.describe "Viewing an icon" do
       click_link 'Posts'
     end
 
-    within('.icon-right-content-box') do
-      expect(page).to have_link('Example Post', href: post_path(post))
-      expect(page).to have_link('Example Reply Post', href: post_path(rpost))
+    aggregate_failures 'Posts' do
+      within('.icon-right-content-box') do
+        expect(page).to have_link('Example Post', href: post_path(post))
+        expect(page).to have_link('Example Reply Post', href: post_path(rpost))
+      end
     end
   end
 end

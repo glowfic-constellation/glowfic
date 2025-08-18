@@ -34,8 +34,11 @@ RSpec.describe 'Drafts' do
   describe 'destroy' do
     it 'requires a draft' do
       get "/posts/#{rpost.id}"
-      expect(response).to have_http_status(200)
-      expect(response.body).not_to include("Delete Draft")
+
+      aggregate_failures do
+        expect(response).to have_http_status(200)
+        expect(response.body).not_to include("Delete Draft")
+      end
 
       expect {
         delete "/drafts/0", params: { reply: { post_id: rpost.id, content: "Test content" } }
@@ -53,8 +56,11 @@ RSpec.describe 'Drafts' do
       draft = create(:reply_draft, user: user, post: rpost, content: 'Test content')
 
       get "/posts/#{rpost.id}"
-      expect(response).to have_http_status(200)
-      expect(response.body).to include("Delete Draft")
+
+      aggregate_failures do
+        expect(response).to have_http_status(200)
+        expect(response.body).to include("Delete Draft")
+      end
 
       expect {
         delete "/drafts/#{draft.id}", params: { reply: { post_id: rpost.id, content: "Test content" } }

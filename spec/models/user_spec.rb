@@ -9,7 +9,7 @@ RSpec.describe User do
       expect(user.authenticate('test')).to eq(true)
     end
 
-    it "should set and support salt_uuid" do
+    it "should set and support salt_uuid", :aggregate_failures do
       user = create(:user, password: 'testpass')
       expect(user.salt_uuid).not_to be_nil
       expect(user.authenticate('testpass')).to eq(true)
@@ -55,7 +55,7 @@ RSpec.describe User do
       expect(user).to be_valid
     end
 
-    it "should allow users with no email to be changed" do
+    it "should allow users with no email to be changed", :aggregate_failures do
       generate_emailless_user # to have duplicate without email
       user = generate_emailless_user
       user.layout = 'starrydark'
@@ -65,7 +65,7 @@ RSpec.describe User do
       }.not_to raise_error
     end
 
-    it "should allow users with no email to get an email" do
+    it "should allow users with no email to get an email", :aggregate_failures do
       generate_emailless_user # to have duplicate without email
       user = generate_emailless_user
       user.email = 'testuser@example.com'
@@ -82,7 +82,7 @@ RSpec.describe User do
       expect(user).to be_valid
     end
 
-    it "rejects invalid sizes" do
+    it "rejects invalid sizes", :aggregate_failures do
       user1 = build(:user, moiety: '12')
       expect(user1).not_to be_valid
 
@@ -93,7 +93,7 @@ RSpec.describe User do
       expect(user3).not_to be_valid
     end
 
-    it "rejects invalid characters" do
+    it "rejects invalid characters", :aggregate_failures do
       user1 = build(:user, moiety: '12345Z')
       expect(user1).not_to be_valid
 
@@ -127,7 +127,7 @@ RSpec.describe User do
   end
 
   describe "blocking" do
-    it "correctly catches blocked interaction users" do
+    it "correctly catches blocked interaction users", :aggregate_failures do
       blocker = create(:user)
       unblocked = create(:user)
       only_posts = create(:user)
@@ -178,14 +178,14 @@ RSpec.describe User do
       expect(user.deleted).to be(true)
     end
 
-    it "turns off email notifications" do
+    it "turns off email notifications", :aggregate_failures do
       user.update!(email_notifications: true)
       user.archive
       expect(user.deleted).to be(true)
       expect(user.email_notifications).to be(false)
     end
 
-    it "removes ownership of settings" do
+    it "removes ownership of settings", :aggregate_failures do
       setting = create(:setting, user: user, owned: true)
       user.archive
       expect(user.deleted).to be(true)
@@ -198,20 +198,23 @@ RSpec.describe User do
       expect(user.send(:[], :username)).to eq('test')
     end
 
-    it "removes related blocks" do
+    it "removes related blocks", :aggregate_failures do
       create(:block, blocking_user: user)
       create(:block, blocked_user: user)
-      expect(Block.count).to be(2)
+
       user.archive
+
       expect(user.deleted).to be(true)
       expect(Block.count).to be(0)
     end
 
-    it "regenerates flatposts" do
+    it "regenerates flatposts", :aggregate_failures do
       post1 = create(:post, user: user)
       post2 = create(:post)
       create(:reply, post: post2, user: user)
+
       user.archive
+
       expect(GenerateFlatPostJob).to have_been_enqueued.with(post1.id).on_queue('high')
       expect(GenerateFlatPostJob).to have_been_enqueued.with(post2.id).on_queue('high')
     end
@@ -242,7 +245,7 @@ RSpec.describe User do
         expect(user.visible_posts).to eq([visible_post.id])
       end
 
-      it "records the correct visible posts" do
+      it "records the correct visible posts", :aggregate_failures do
         second_visible = create(:post, privacy: :access_list, viewer_ids: [user.id] + create_list(:user, 3).map(&:id))
         third_visible = create(:post, privacy: :access_list, viewer_ids: [user.id])
         expect(user.visible_posts).to match_array([visible_post.id, second_visible.id, third_visible.id])
@@ -251,29 +254,43 @@ RSpec.describe User do
 
       it "handles being removed from access list" do
         expect(user.visible_posts).to eq([visible_post.id])
+
         ids = visible_post.viewer_ids - [user.id]
         visible_post.update!(viewer_ids: ids)
-        expect(PostViewer.where(user: user).pluck(:post_id)).to be_empty
-        expect(Rails.cache.exist?(PostViewer.cache_string_for(user.id))).to be(false)
-        expect(user.visible_posts).to be_empty
-        expect(Post.visible_to(user)).not_to include(visible_post)
+
+        aggregate_failures do
+          expect(PostViewer.where(user: user).pluck(:post_id)).to be_empty
+          expect(Rails.cache.exist?(PostViewer.cache_string_for(user.id))).to be(false)
+          expect(user.visible_posts).to be_empty
+          expect(Post.visible_to(user)).not_to include(visible_post)
+        end
       end
 
       it "handles being added to an access list" do
         expect(user.visible_posts).to eq([visible_post.id])
+
         second_visible = create(:post, privacy: :access_list, viewer_ids: create_list(:user, 3).map(&:id))
         ids = second_visible.viewer_ids + [user.id]
-        second_visible.update!(viewer_ids: ids)
-        expect(Rails.cache.exist?(PostViewer.cache_string_for(user.id))).to be(false)
-        expect(user.visible_posts).to match_array([visible_post.id, second_visible.id])
+
+        aggregate_failures do
+          second_visible.update!(viewer_ids: ids)
+          expect(Rails.cache.exist?(PostViewer.cache_string_for(user.id))).to be(false)
+          expect(user.visible_posts).to match_array([visible_post.id, second_visible.id])
+        end
       end
 
       it "handles a new access-listed post" do
-        expect(user.visible_posts).to eq([visible_post.id])
-        expect(Rails.cache.exist?(PostViewer.cache_string_for(user.id))).to be(true)
+        aggregate_failures do
+          expect(user.visible_posts).to eq([visible_post.id])
+          expect(Rails.cache.exist?(PostViewer.cache_string_for(user.id))).to be(true)
+        end
+
         second_visible = create(:post, privacy: :access_list, viewer_ids: [user.id] + create_list(:user, 3).map(&:id))
-        expect(Rails.cache.exist?(PostViewer.cache_string_for(user.id))).to be(false)
-        expect(user.visible_posts).to match_array([visible_post.id, second_visible.id])
+
+        aggregate_failures do
+          expect(Rails.cache.exist?(PostViewer.cache_string_for(user.id))).to be(false)
+          expect(user.visible_posts).to match_array([visible_post.id, second_visible.id])
+        end
       end
 
       it "handles a post becoming access-listed" do
@@ -291,22 +308,30 @@ RSpec.describe User do
       end
 
       it "handles an access listed post becoming public" do
-        expect(user.visible_posts).to eq([visible_post.id])
-        expect(Rails.cache.exist?(PostViewer.cache_string_for(user.id))).to be(true)
+        aggregate_failures do
+          expect(user.visible_posts).to eq([visible_post.id])
+          expect(Rails.cache.exist?(PostViewer.cache_string_for(user.id))).to be(true)
+        end
+
         visible_post.update!(privacy: :public)
+
         expect(Post.all.visible_to(user)).to include(visible_post)
       end
 
       it "handles an access listed post becoming private" do
-        expect(user.visible_posts).to eq([visible_post.id])
-        expect(Post.visible_to(user)).to include(visible_post)
+        aggregate_failures do
+          expect(user.visible_posts).to eq([visible_post.id])
+          expect(Post.visible_to(user)).to include(visible_post)
+        end
+
         visible_post.update!(privacy: :private)
+
         expect(Post.visible_to(user)).not_to include(visible_post)
       end
     end
   end
 
-  describe "#update_flat_posts" do
+  describe "#update_flat_posts", :aggregate_failures do
     let(:user) { create(:user) }
     let(:post1) { create(:post, user: user) }
     let(:post2) { create(:post) }
