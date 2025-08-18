@@ -1,4 +1,4 @@
-@import 'variables';
+@use 'variables' as *;
 
 body {
   background-color: $bg_color_input;

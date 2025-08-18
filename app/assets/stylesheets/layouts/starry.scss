@@ -1,4 +1,4 @@
-@import 'starry_default_variables';
+@use 'starry_default_variables' as *;
 
 // main page
 $bg_color_page: #6C697C; // overall page
@@ -41,7 +41,7 @@ $bg_color_tag_item: #2C2C5D;
 // link-boxes
 $bg_color_linkbox_subber: #66608B;
 
-@import 'starry_default_selectors';
+@use 'starry_default_selectors';
 
 // posts
 #post-menu-box { color: $font_color_post_menu; }

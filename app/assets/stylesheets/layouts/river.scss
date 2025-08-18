@@ -1,64 +1,66 @@
-@import 'variables';
+@use 'palette' as *;
 
-// main page
-$bg_color_page: #E0E0E0; // overall page
+@use 'variables' with (
+  // main page
+  $bg_color_page: #E0E0E0, // overall page
 
-// header
-$bg_color_header_top: #434D73; // top header strip for logo
-$bg_color_header_middle: #212135; // middle header strip with user items
-$bg_color_header_bottom: #ADB5B9; // bottom header strip with navigation
+  // header
+  $bg_color_header_top: #434D73, // top header strip for logo
+  $bg_color_header_middle: #212135, // middle header strip with user items
+  $bg_color_header_bottom: #ADB5B9, // bottom header strip with navigation
 
-// links
-$font_color_link: #3F5970; // link
-$font_color_link_visited: #284150;
+  // links
+  $font_color_link: #3F5970, // link
+  $font_color_link_visited: #284150,
 
-// flashes
-$bg_color_flash_success: $colors_gallery; // success
-$bg_color_flash_breadcrumbs: #A3A8A9; // breadcrumbs ("Continuities » Continuity » Section » Thread")
+  // flashes
+  $bg_color_flash_success: $colors_gallery, // success
+  $bg_color_flash_breadcrumbs: #A3A8A9, // breadcrumbs ("Continuities » Continuity » Section » Thread")
 
-// content headers
-$bg_color_sub: $colors_silver_darker; // secondary content header
-$bg_color_subber: #B9B6AD; // tertiary content header
-$bg_color_ender: #A3A8A9; // form table footer with submit
+  // content headers
+  $bg_color_sub: $colors_silver_darker, // secondary content header
+  $bg_color_subber: #B9B6AD, // tertiary content header
+  $bg_color_ender: #A3A8A9, // form table footer with submit
 
-// content
-$bg_color_even: #F3F3F3;
-$bg_color_odd: #E8E8E8;
-$bg_color_content_border: #AAAAAA;
+  // content
+  $bg_color_even: #F3F3F3,
+  $bg_color_odd: #E8E8E8,
+  $bg_color_content_border: #AAAAAA,
 
-$font_color_reply_footer: #717171;
+  $font_color_reply_footer: #717171,
 
-$bg_color_navheader: $colors_silver_darker;
+  $bg_color_navheader: $colors_silver_darker,
 
-$font_color_paginate_link_visited: #3A3A3A;
-$bg_color_paginate_current_page: #718EB9;
+  $font_color_paginate_link_visited: #3A3A3A,
+  $bg_color_paginate_current_page: #718EB9,
 
-$bg_color_expander: #A4B0BD; // expander on posts
+  $bg_color_expander: #A4B0BD, // expander on posts
 
-$bg_color_post_icon: $colors_hit_gray;
-$bg_color_icon_selector: $colors_hit_gray;
+  $bg_color_post_icon: $colors_hit_gray,
+  $bg_color_icon_selector: $colors_hit_gray,
 
-$bg_color_post_character: #929292;
-$bg_color_post_screenname: #A5A5A5;
-$bg_color_post_author: $colors_silver_again;
-$font_color_post_info: #B3D3FF;
+  $bg_color_post_character: #929292,
+  $bg_color_post_screenname: #A5A5A5,
+  $bg_color_post_author: $colors_silver_again,
+  $font_color_post_info: #B3D3FF,
 
-// icons
-$bg_color_icon: $colors_hit_gray;
-$bg_color_icon_credit: $colors_hit_gray;
-$border_color_icon_editor: #B9B6AD;
-$bg_color_icon_editor: $colors_hit_gray;
+  // icons
+  $bg_color_icon: $colors_hit_gray,
+  $bg_color_icon_credit: $colors_hit_gray,
+  $border_color_icon_editor: #B9B6AD,
+  $bg_color_icon_editor: $colors_hit_gray,
 
-// tag items
-$font_color_tag_item: #3E526F;
-$font_color_tag_item_gallery: #3E526F;
-$bg_color_tag_item: #D0CEC8;
+  // tag items
+  $font_color_tag_item: #3E526F,
+  $font_color_tag_item_gallery: #3E526F,
+  $bg_color_tag_item: #D0CEC8,
 
-// link-boxes
-$bg_color_linkbox_new: #3F5370;
-$bg_color_linkbox_edit: $colors_comet;
-$bg_color_linkbox_favorite: $colors_comet;
-$bg_color_linkbox_delete: $colors_rock;
-$bg_color_linkbox_dismiss: $colors_rock;
+  // link-boxes
+  $bg_color_linkbox_new: #3F5370,
+  $bg_color_linkbox_edit: $colors_comet,
+  $bg_color_linkbox_favorite: $colors_comet,
+  $bg_color_linkbox_delete: $colors_rock,
+  $bg_color_linkbox_dismiss: $colors_rock,
+);
 
-@import 'river_selectors'
+@use 'river_selectors';
