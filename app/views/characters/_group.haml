@@ -8,8 +8,8 @@
       = group ? "Group: #{group.name}" : 'Ungrouped Characters'
 - if characters.try(:exists?)
   - template_ids = characters.group(:template_id).pluck(:template_id).uniq.compact
-  - ::Template.where(id: template_ids).ordered.each do |template|
-    - next if skip_grouped_templates && template.characters.where.not(character_group_id: nil).exists?
+  - ::Template.select('*', 'exists (select * from characters where characters.template_id = templates.id and characters.character_group_id is not NULL) as has_non_null_character').where(id: template_ids).ordered.each do |template|
+    - next if skip_grouped_templates && template.has_non_null_character
     = render partial_type, name: template, characters: template.characters.ordered
   - if characters.non_npcs.where(template_id: nil).exists?
     = render partial_type, name: 'No Template', characters: characters.non_npcs.where(template_id: nil).ordered, show_new_character_button: @user.id == current_user&.id

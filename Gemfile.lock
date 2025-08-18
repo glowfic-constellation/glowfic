@@ -314,6 +314,8 @@ GEM
       ast (~> 2.4.1)
       racc
     pg (1.5.9)
+    pg_query (6.1.0)
+      google-protobuf (>= 3.25.3)
     pg_search (2.3.7)
       activerecord (>= 6.1)
       activesupport (>= 6.1)
@@ -323,6 +325,7 @@ GEM
       prettyprint
     prettyprint (0.2.0)
     prism (1.4.0)
+    prosopite (2.1.0)
     psych (5.2.6)
       date
       stringio
@@ -614,7 +617,9 @@ DEPENDENCIES
   nilify_blanks
   nokogiri
   pg (~> 1.5)
+  pg_query
   pg_search
+  prosopite
   puma
   rack-attack
   rack-cors

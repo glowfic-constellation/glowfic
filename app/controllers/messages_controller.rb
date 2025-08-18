@@ -19,8 +19,12 @@ class MessagesController < ApplicationController
       from_table = from_table.where.not(sender_id: blocked_ids).left_outer_joins(:sender).where('users.deleted IS NULL OR users.deleted = false')
       includes << :sender
     end
+    thread_counts = Message.from(from_table, "messages")
+      .select('thread_id, COUNT(*) as thread_count')
+      .group('thread_id').to_sql
     @messages = Message.from(from_table, "messages").joins(:first_thread)
-      .select('*', 'first_threads_messages.subject as thread_subject')
+      .joins("LEFT JOIN (#{thread_counts}) AS thread_counts ON thread_counts.thread_id = messages.thread_id")
+      .select('*', 'first_threads_messages.subject as thread_subject', 'thread_counts.thread_count')
       .includes(*includes).order('messages.id desc').paginate(page: page)
     @view = @page_title.downcase
   end

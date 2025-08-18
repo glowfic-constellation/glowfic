@@ -14,6 +14,7 @@ class ApplicationController < ActionController::Base
   before_action :set_login_gon
   before_action :check_forced_logout
   around_action :set_timezone
+  around_action :n_plus_one_detection
   after_action :store_location
 
   protected
@@ -262,5 +263,13 @@ class ApplicationController < ActionController::Base
       user_id: current_user.try(:id),
     }
     ExceptionNotifier.notify_exception(exception, data: data)
+  end
+
+  def n_plus_one_detection
+    return if Rails.env.production?
+    Prosopite.scan
+    yield
+  ensure
+    Prosopite.finish
   end
 end

@@ -51,6 +51,7 @@ class Message < ApplicationRecord
   end
 
   def num_in_thread
+    return self[:thread_count] if has_attribute?(:thread_count)
     self.class.where(thread_id: thread_id).count
   end
 
