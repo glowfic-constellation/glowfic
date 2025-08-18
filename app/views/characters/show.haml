@@ -59,6 +59,18 @@
           = link_to search_replies_path(commit: true, character_id: @character.id, sort: :created_new) do
             = image_tag "icons/table_multiple.png", alt: ''
             Replies
+            
+      - if logged_in? && @character.user_id != current_user.id
+        %tr
+          %td.centered{class: cycle('even', 'odd')}
+            - if (fav = Favorite.between(current_user, @character))
+              = link_to favorite_path(fav), method: :delete do
+                = image_tag "icons/star_delete.png", class: 'vmid', alt: ''
+                Unfavorite
+            - else
+              = link_to favorites_path(character_id: @character.id), method: :post do
+                = image_tag "icons/star_add.png", class: 'vmid', alt: ''
+                Favorite
       - if @character.editable_by?(current_user)
         %tr
           %td.centered{class: cycle('even', 'odd')}
