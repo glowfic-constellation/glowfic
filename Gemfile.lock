@@ -214,7 +214,7 @@ GEM
       activesupport (>= 5.1)
       haml (>= 4.0.6)
       railties (>= 5.1)
-    haml_lint (0.62.0)
+    haml_lint (0.66.0)
       haml (>= 5.0)
       parallel (~> 1.10)
       rainbow
@@ -254,7 +254,7 @@ GEM
     json (2.12.2)
     jwt (2.10.1)
       base64
-    language_server-protocol (3.17.0.4)
+    language_server-protocol (3.17.0.5)
     lint_roller (1.1.0)
     listen (3.9.0)
       rb-fsevent (~> 0.10, >= 0.10.3)
@@ -311,7 +311,7 @@ GEM
     nokogiri (1.18.9-x86_64-linux-musl)
       racc (~> 1.4)
     parallel (1.27.0)
-    parser (3.3.8.0)
+    parser (3.3.9.0)
       ast (~> 2.4.1)
       racc
     pg (1.5.9)
@@ -323,7 +323,7 @@ GEM
     pp (0.6.2)
       prettyprint
     prettyprint (0.2.0)
-    prism (1.4.0)
+    prism (1.5.1)
     psych (5.2.6)
       date
       stringio
@@ -400,7 +400,7 @@ GEM
       connection_pool
     redis-namespace (1.11.0)
       redis (>= 4)
-    regexp_parser (2.10.0)
+    regexp_parser (2.11.3)
     reline (0.6.2)
       io-console (~> 0.5)
     request_store (1.7.0)
@@ -441,7 +441,7 @@ GEM
       rubocop-ast (>= 1.44.0, < 2.0)
       ruby-progressbar (~> 1.7)
       unicode-display_width (>= 2.4.0, < 4.0)
-    rubocop-ast (1.44.1)
+    rubocop-ast (1.47.1)
       parser (>= 3.3.7.2)
       prism (~> 1.4)
     rubocop-capybara (2.22.1)
@@ -530,13 +530,13 @@ GEM
     statsd-ruby (1.5.0)
     stringio (3.1.7)
     sysexits (1.2.0)
-    temple (0.10.3)
+    temple (0.10.4)
     terser (1.2.6)
       execjs (>= 0.3.0, < 3)
     test-unit (3.7.0)
       power_assert
     thor (1.4.0)
-    tilt (2.6.0)
+    tilt (2.6.1)
     timecop (0.9.10)
     timeout (0.4.3)
     tinymce-rails (7.8.0)
@@ -547,9 +547,9 @@ GEM
       ethon (>= 0.9.0)
     tzinfo (2.0.6)
       concurrent-ruby (~> 1.0)
-    unicode-display_width (3.1.4)
-      unicode-emoji (~> 4.0, >= 4.0.4)
-    unicode-emoji (4.0.4)
+    unicode-display_width (3.2.0)
+      unicode-emoji (~> 4.1)
+    unicode-emoji (4.1.0)
     uri (1.0.3)
     useragent (0.16.11)
     webmock (3.25.1)
@@ -601,7 +601,7 @@ DEPENDENCIES
   get_process_mem
   gon (~> 6.4)
   haml-rails
-  haml_lint (~> 0.62.0)
+  haml_lint (~> 0.66.0)
   html-proofer (< 4)
   httparty
   jquery-fileupload-rails
