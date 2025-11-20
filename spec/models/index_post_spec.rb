@@ -1,5 +1,5 @@
 RSpec.describe IndexPost do
-  it "should autofill post section order on creation" do
+  it "should autofill post section order on creation", :aggregate_failures do
     index = create(:index)
     post2 = create(:post, user: index.user)
     post0 = create(:post, user: index.user)
@@ -22,11 +22,18 @@ RSpec.describe IndexPost do
     index.posts << post0
     index.posts << post1
     index.posts << post2
-    expect(post0.index_posts.first.section_order).to eq(0)
-    expect(post1.index_posts.first.section_order).to eq(1)
-    expect(post2.index_posts.first.section_order).to eq(2)
+
+    aggregate_failures do
+      expect(post0.index_posts.first.section_order).to eq(0)
+      expect(post1.index_posts.first.section_order).to eq(1)
+      expect(post2.index_posts.first.section_order).to eq(2)
+    end
+
     index.posts.destroy(post1)
-    expect(post0.index_posts.first.section_order).to eq(0)
-    expect(post2.index_posts.first.section_order).to eq(1)
+
+    aggregate_failures do
+      expect(post0.index_posts.first.section_order).to eq(0)
+      expect(post2.index_posts.first.section_order).to eq(1)
+    end
   end
 end

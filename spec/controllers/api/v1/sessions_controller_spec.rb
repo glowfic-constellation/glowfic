@@ -60,23 +60,28 @@ RSpec.describe Api::V1::SessionsController do
       expect(decoded_token['user_id']).to eq(user.id)
     end
 
-    it "logs in successfully without salt_uuid and sets it" do
+    it "logs in successfully without salt_uuid and sets it", aggregate_failures: false do
       password = 'password'
       user = create(:user)
       user.update_columns(salt_uuid: nil, crypted: user.send(:old_crypted_password, password)) # rubocop:disable Rails/SkipsModelValidations
       user.reload
-      expect(user.salt_uuid).to be_nil
-      expect(session[:user_id]).to be_nil
-      expect(controller.send(:logged_in?)).not_to eq(true)
+
+      aggregate_failures do
+        expect(user.salt_uuid).to be_nil
+        expect(session[:user_id]).to be_nil
+        expect(controller.send(:logged_in?)).not_to eq(true)
+      end
 
       post :create, params: { username: user.username, password: password }
 
-      expect(response).to have_http_status(200)
-      expect(response.parsed_body).to have_key('token')
-      decoded_token = JWT.decode(response.parsed_body['token'], Authentication.secret_key_api)[0]
-      expect(decoded_token['user_id']).to eq(user.id)
-      expect(user.reload.salt_uuid).not_to be_nil
-      expect(user.authenticate(password)).to eq(true)
+      aggregate_failures do
+        expect(response).to have_http_status(200)
+        expect(response.parsed_body).to have_key('token')
+        decoded_token = JWT.decode(response.parsed_body['token'], Authentication.secret_key_api)[0]
+        expect(decoded_token['user_id']).to eq(user.id)
+        expect(user.reload.salt_uuid).not_to be_nil
+        expect(user.authenticate(password)).to eq(true)
+      end
     end
   end
 end

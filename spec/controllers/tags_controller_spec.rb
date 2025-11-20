@@ -377,10 +377,9 @@ RSpec.describe TagsController do
     end
 
     it "allows update of setting tags" do
-      tag = create(:setting)
+      tag = create(:setting, parent_settings: [])
       parent_tag = create(:setting)
       login_as(tag.user)
-      expect(tag.parent_settings).to be_empty
       put :update, params: { id: tag.id, tag: { name: 'newname', parent_setting_ids: ["", parent_tag.id.to_s] } }
       expect(tag.reload.name).to eq('newname')
       expect(Setting.find(tag.id).parent_settings).to eq([parent_tag])

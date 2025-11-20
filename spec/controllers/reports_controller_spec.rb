@@ -163,7 +163,7 @@ RSpec.describe ReportsController do
 
     context "reading" do
       ["Hawaii", "UTC", "Auckland", nil].each do |place|
-        context "in #{place}" do
+        context "in #{place}", aggregate_failures: false do
           let(:user) { create(:user, timezone: place) }
 
           # the user's report_view.read_at should be set in their relevant timezone, since that's what will occur in the application
@@ -209,10 +209,12 @@ RSpec.describe ReportsController do
 
             login_as(user)
             get :show, params: { id: 'daily', day: viewed_time.to_date.to_s }
-
             user.reload
-            expect(user.report_view).not_to be_nil
-            expect(user.report_view.read_at.in_time_zone(place).to_date).to eq(expect_time.to_date)
+
+            aggregate_failures do
+              expect(user.report_view).not_to be_nil
+              expect(user.report_view.read_at.in_time_zone(place).to_date).to eq(expect_time.to_date)
+            end
           end
 
           it "does not mark read if you've read more recently" do
@@ -227,10 +229,12 @@ RSpec.describe ReportsController do
 
             login_as(user)
             get :show, params: { id: 'daily', day: viewed_time.to_date.to_s }
-
             user.reload
-            expect(user.report_view).not_to be_nil
-            expect(user.report_view.read_at.in_time_zone(place).to_date).to eq(expect_time.to_date)
+
+            aggregate_failures do
+              expect(user.report_view).not_to be_nil
+              expect(user.report_view.read_at.in_time_zone(place).to_date).to eq(expect_time.to_date)
+            end
           end
         end
       end

@@ -1,7 +1,7 @@
 RSpec.describe Reply do
   include ActionMailer::TestHelper
 
-  describe "#has_icons?" do
+  describe "#has_icons?", :aggregate_failures do
     let(:user) { create(:user) }
 
     context "without character" do
@@ -80,7 +80,7 @@ RSpec.describe Reply do
       }.not_to have_enqueued_email
     end
 
-    it "does not send to authors with notifications off" do
+    it "does not send to authors with notifications off", :aggregate_failures do
       post = create(:post)
       expect(post.user.email_notifications).not_to eq(true)
       expect {
@@ -139,11 +139,12 @@ RSpec.describe Reply do
   end
 
   describe "authors interactions" do
-    it "does not update can_owe upon creating a reply" do
+    it "does not update can_owe upon creating a reply" do # rubocop:disable RSpec/MultipleExpectations
       post = create(:post)
       reply = create(:reply, post: post)
 
       expect(post.author_for(reply.user).can_owe).to be(true)
+
       create(:reply, user: reply.user, post: post)
       expect(post.author_for(reply.user).can_owe).to be(true)
 
@@ -152,12 +153,13 @@ RSpec.describe Reply do
       author.save!
 
       expect(post.author_for(reply.user).can_owe).to be(false)
+
       create(:reply, user: reply.user, post: post)
       expect(post.author_for(reply.user).can_owe).to be(false)
     end
   end
 
-  describe ".ordered" do
+  describe ".ordered", :aggregate_failures do
     let(:post) { create(:post) }
 
     it "orders replies" do
@@ -187,7 +189,7 @@ RSpec.describe Reply do
   end
 
   describe "#destroy_subsequent_replies" do
-    it "works" do
+    it "works", :aggregate_failures do
       post = create(:post)
       replies = create_list(:reply, 2, post: post)
       reply = create(:reply, post: post)

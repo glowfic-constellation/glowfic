@@ -47,11 +47,13 @@ RSpec.describe GenerateFlatPostJob do
 
       GenerateFlatPostJob.perform_now(post.id)
 
-      expect(post.flat_post.reload.content).not_to be_nil
-      expect($redis.get(GenerateFlatPostJob.lock_key(post.id))).to be_nil
+      aggregate_failures do
+        expect(post.flat_post.reload.content).not_to be_nil
+        expect($redis.get(GenerateFlatPostJob.lock_key(post.id))).to be_nil
+      end
     end
 
-    it "unsets key even if error is raised" do
+    it "unsets key even if error is raised", :aggregate_failures do
       post = create(:post)
       flat = post.flat_post
       $redis.set(GenerateFlatPostJob.lock_key(post.id), true)
@@ -76,7 +78,7 @@ RSpec.describe GenerateFlatPostJob do
       expect($redis.get(GenerateFlatPostJob.lock_key(post.id))).to be_nil
     end
 
-    it "retries if resque is terminated" do
+    it "retries if resque is terminated", :aggregate_failures do
       post = create(:post)
       flat = post.flat_post
       $redis.set(GenerateFlatPostJob.lock_key(post.id), true)

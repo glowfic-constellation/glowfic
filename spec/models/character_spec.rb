@@ -29,17 +29,15 @@ RSpec.describe Character do
     end
   end
 
-  it "uniqs gallery images" do
-    character = create(:character)
-    icon = create(:icon, user: character.user)
-    gallery = create(:gallery, user: character.user)
-    gallery.icons << icon
+  it "uniqs gallery images", :aggregate_failures do
+    user = create(:user)
+    icon = create(:icon, user: user)
+    gallery = create(:gallery, user: user, icons: [icon])
+    gallery2 = create(:gallery, user: user, icons: [icon])
+    character = create(:character, user: user, galleries: [gallery, gallery2])
+
     expect(gallery.icons.map(&:id)).to eq([icon.id])
-    character.galleries << gallery
-    gallery = create(:gallery, user: character.user)
-    gallery.icons << icon
-    expect(gallery.icons.map(&:id)).to eq([icon.id])
-    character.galleries << gallery
+    expect(gallery2.icons.map(&:id)).to eq([icon.id])
     expect(character.galleries.size).to eq(2)
     expect(character.icons.map(&:id)).to eq([icon.id])
   end
@@ -64,7 +62,7 @@ RSpec.describe Character do
   end
 
   describe "#ungrouped_gallery_ids" do
-    it "returns only galleries not added by groups" do
+    it "returns only galleries not added by groups", :aggregate_failures do
       user = create(:user)
       character = create(:character, user: user)
       gallery1 = create(:gallery, user: user)
@@ -85,15 +83,21 @@ RSpec.describe Character do
       character = create(:character, user: user)
       gallery = create(:gallery, user: user)
 
-      expect(character.gallery_ids).to eq([])
-      expect(character.ungrouped_gallery_ids).to eq([])
+      aggregate_failures do
+        expect(character.gallery_ids).to eq([])
+        expect(character.ungrouped_gallery_ids).to eq([])
+      end
+
       character.ungrouped_gallery_ids = [gallery.id]
       character.save!
 
       character.reload
-      expect(character.characters_galleries.map(&:added_by_group?)).to match_array([false])
-      expect(character.gallery_ids).to match_array([gallery.id])
-      expect(character.ungrouped_gallery_ids).to match_array([gallery.id])
+
+      aggregate_failures do
+        expect(character.characters_galleries.map(&:added_by_group?)).to match_array([false])
+        expect(character.gallery_ids).to match_array([gallery.id])
+        expect(character.ungrouped_gallery_ids).to match_array([gallery.id])
+      end
     end
 
     it "sets already-attached galleries to not be added_by_group" do
@@ -104,16 +108,21 @@ RSpec.describe Character do
       gallery = create(:gallery, gallery_groups: [group], user: user)
 
       character.reload
-      expect(character.gallery_ids).to match_array([gallery.id])
-      expect(character.ungrouped_gallery_ids).to be_empty
+
+      aggregate_failures do
+        expect(character.gallery_ids).to match_array([gallery.id])
+        expect(character.ungrouped_gallery_ids).to be_empty
+      end
 
       character.ungrouped_gallery_ids = [gallery.id]
       character.save!
       character.reload
 
-      expect(character.gallery_ids).to match_array([gallery.id])
-      expect(character.ungrouped_gallery_ids).to match_array([gallery.id])
-      expect(character.characters_galleries.map(&:added_by_group)).to match_array([false])
+      aggregate_failures do
+        expect(character.gallery_ids).to match_array([gallery.id])
+        expect(character.ungrouped_gallery_ids).to match_array([gallery.id])
+        expect(character.characters_galleries.map(&:added_by_group)).to match_array([false])
+      end
     end
 
     it "removes associated galleries when not present only if not also present in groups, otherwise sets flag" do
@@ -131,16 +140,21 @@ RSpec.describe Character do
       character.characters_galleries.where(gallery_id: gallery_both.id).update_all(added_by_group: false) # rubocop:disable Rails/SkipsModelValidations
 
       character.reload
-      expect(character.gallery_ids).to match_array([gallery_manual.id, gallery_both.id, gallery_automatic.id])
-      expect(character.ungrouped_gallery_ids).to match_array([gallery_manual.id, gallery_both.id])
+
+      aggregate_failures do
+        expect(character.gallery_ids).to match_array([gallery_manual.id, gallery_both.id, gallery_automatic.id])
+        expect(character.ungrouped_gallery_ids).to match_array([gallery_manual.id, gallery_both.id])
+      end
 
       character.ungrouped_gallery_ids = [gallery_manual.id]
       character.save!
-
       character.reload
-      expect(character.gallery_ids).to match_array([gallery_manual.id, gallery_both.id, gallery_automatic.id])
-      expect(character.ungrouped_gallery_ids).to match_array([gallery_manual.id])
-      expect(character.characters_galleries.find_by(gallery_id: gallery_both.id)).to be_added_by_group
+
+      aggregate_failures do
+        expect(character.gallery_ids).to match_array([gallery_manual.id, gallery_both.id, gallery_automatic.id])
+        expect(character.ungrouped_gallery_ids).to match_array([gallery_manual.id])
+        expect(character.characters_galleries.find_by(gallery_id: gallery_both.id)).to be_added_by_group
+      end
     end
 
     it "deletes manually-added galleries when not present" do
@@ -149,12 +163,16 @@ RSpec.describe Character do
       character = create(:character, user: user, galleries: [gallery])
 
       character.reload
-      expect(character.gallery_ids).to eq([gallery.id])
-      expect(character.ungrouped_gallery_ids).to eq([gallery.id])
+
+      aggregate_failures do
+        expect(character.gallery_ids).to eq([gallery.id])
+        expect(character.ungrouped_gallery_ids).to eq([gallery.id])
+      end
+
       character.ungrouped_gallery_ids = []
       character.save!
-
       character.reload
+
       expect(character.gallery_ids).to eq([])
     end
 
@@ -171,15 +189,20 @@ RSpec.describe Character do
       character.characters_galleries.where(gallery_id: gallery_both.id).update_all(added_by_group: false) # rubocop:disable Rails/SkipsModelValidations
 
       character.reload
-      expect(character.gallery_ids).to match_array([gallery_manual.id, gallery_both.id, gallery_automatic.id])
-      expect(character.ungrouped_gallery_ids).to match_array([gallery_manual.id, gallery_both.id])
+
+      aggregate_failures do
+        expect(character.gallery_ids).to match_array([gallery_manual.id, gallery_both.id, gallery_automatic.id])
+        expect(character.ungrouped_gallery_ids).to match_array([gallery_manual.id, gallery_both.id])
+      end
 
       character.ungrouped_gallery_ids = [gallery_manual.id, gallery_both.id]
       character.save!
-
       character.reload
-      expect(character.gallery_ids).to match_array([gallery_manual.id, gallery_both.id, gallery_automatic.id])
-      expect(character.ungrouped_gallery_ids).to match_array([gallery_manual.id, gallery_both.id])
+
+      aggregate_failures do
+        expect(character.gallery_ids).to match_array([gallery_manual.id, gallery_both.id, gallery_automatic.id])
+        expect(character.ungrouped_gallery_ids).to match_array([gallery_manual.id, gallery_both.id])
+      end
     end
 
     ['before', 'after'].each do |time|
@@ -203,11 +226,13 @@ RSpec.describe Character do
 
           process_changes(character, [], [gallery.id], time)
           character.save!
-
           character.reload
-          expect(character.galleries).to match_array([gallery])
-          expect(character.ungrouped_gallery_ids).to match_array([gallery.id])
-          expect(character.gallery_groups).to be_empty
+
+          aggregate_failures do
+            expect(character.galleries).to match_array([gallery])
+            expect(character.ungrouped_gallery_ids).to match_array([gallery.id])
+            expect(character.gallery_groups).to be_empty
+          end
         end
 
         it "supports adding a gallery at the same time as swapping its group" do
@@ -220,11 +245,13 @@ RSpec.describe Character do
 
           process_changes(character, [group2.id], [gallery.id], time)
           character.save!
-
           character.reload
-          expect(character.galleries).to match_array([gallery])
-          expect(character.ungrouped_gallery_ids).to match_array([gallery.id])
-          expect(character.gallery_groups).to match_array([group2])
+
+          aggregate_failures do
+            expect(character.galleries).to match_array([gallery])
+            expect(character.ungrouped_gallery_ids).to match_array([gallery.id])
+            expect(character.gallery_groups).to match_array([group2])
+          end
         end
 
         it "keeps a gallery when removing at the same time as adding its group" do
@@ -236,11 +263,13 @@ RSpec.describe Character do
 
           process_changes(character, [group.id], [], time)
           character.save!
-
           character.reload
-          expect(character.galleries).to match_array([gallery])
-          expect(character.ungrouped_gallery_ids).to be_empty
-          expect(character.gallery_groups).to match_array([group])
+
+          aggregate_failures do
+            expect(character.galleries).to match_array([gallery])
+            expect(character.ungrouped_gallery_ids).to be_empty
+            expect(character.gallery_groups).to match_array([group])
+          end
         end
 
         it "keeps a gallery when removing at the same time as swapping its group" do
@@ -253,11 +282,13 @@ RSpec.describe Character do
 
           process_changes(character, [group2.id], [], time)
           character.save!
-
           character.reload
-          expect(character.galleries).to match_array([gallery])
-          expect(character.ungrouped_gallery_ids).to be_empty
-          expect(character.gallery_groups).to match_array([group2])
+
+          aggregate_failures do
+            expect(character.galleries).to match_array([gallery])
+            expect(character.ungrouped_gallery_ids).to be_empty
+            expect(character.gallery_groups).to match_array([group2])
+          end
         end
       end
     end
@@ -314,7 +345,7 @@ RSpec.describe Character do
   end
 
   describe "#galleries" do
-    it "updates order when adding galleries" do
+    it "updates order when adding galleries", :aggregate_failures do
       user = create(:user)
       gallery1 = create(:gallery, user: user)
       gallery2 = create(:gallery, user: user)
@@ -324,7 +355,7 @@ RSpec.describe Character do
       expect(char.character_gallery_for(gallery2.id).section_order).to eq(1)
     end
 
-    it "updates order when removing galleries" do
+    it "updates order when removing galleries", :aggregate_failures do
       user = create(:user)
       gallery1 = create(:gallery, user: user)
       gallery2 = create(:gallery, user: user)
@@ -378,7 +409,7 @@ RSpec.describe Character do
     end
   end
 
-  describe "#update_flat_posts" do
+  describe "#update_flat_posts", :aggregate_failures do
     include ActiveJob::TestHelper
 
     let(:user) { create(:user) }

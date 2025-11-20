@@ -25,6 +25,7 @@ RSpec.describe BookmarksController, 'POST create' do
   it "succeeds with a valid reply" do
     login_as(user)
     post :create, params: { at_id: reply.id }
+
     expect(response).to redirect_to(reply_url(reply, anchor: "reply-#{reply.id}"))
     expect(flash[:success]).to eq('Bookmark added.')
     bookmark = Bookmark.order(:id).last
@@ -38,6 +39,7 @@ RSpec.describe BookmarksController, 'POST create' do
   it "succeeds with name param" do
     login
     post :create, params: { at_id: reply.id, name: "new bookmark" }
+
     expect(response).to redirect_to(reply_url(reply, anchor: "reply-#{reply.id}"))
     expect(flash[:success]).to eq('Bookmark added.')
     bookmark = Bookmark.order(:id).last
@@ -48,6 +50,7 @@ RSpec.describe BookmarksController, 'POST create' do
   it "succeeds with public param" do
     login
     post :create, params: { at_id: reply.id, public: true }
+
     expect(response).to redirect_to(reply_url(reply, anchor: "reply-#{reply.id}"))
     expect(flash[:success]).to eq('Bookmark added.')
     bookmark = Bookmark.order(:id).last
@@ -59,6 +62,7 @@ RSpec.describe BookmarksController, 'POST create' do
     login_as(user)
     existing_bookmark = create(:bookmark, user: user, reply: reply)
     post :create, params: { at_id: reply.id }
+
     expect(response).to redirect_to(reply_url(reply, anchor: "reply-#{reply.id}"))
     expect(flash[:error]).to eq("Bookmark already exists.")
     newest_bookmark = Bookmark.order(:id).last
@@ -69,6 +73,7 @@ RSpec.describe BookmarksController, 'POST create' do
     existing_bookmark = create(:bookmark, user: user, reply: reply)
     login
     post :create, params: { at_id: reply.id }
+
     expect(response).to redirect_to(reply_url(reply, anchor: "reply-#{reply.id}"))
     expect(flash[:success]).to eq('Bookmark added.')
     new_bookmark = Bookmark.order(:id).last

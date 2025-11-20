@@ -1,4 +1,4 @@
-RSpec.describe PostImporter do
+RSpec.describe PostImporter, :aggregate_failures do
   include ActiveJob::TestHelper
 
   describe "import" do

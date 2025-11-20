@@ -1,5 +1,5 @@
 RSpec.describe "View blocks list" do
-  scenario 'Viewing a blocks list' do
+  scenario 'Viewing a blocks list', :aggregate_failures do
     user = create(:user, username: 'Jane Doe')
     blocked1 = create(:user, username: 'Alice')
     blocked2 = create(:user, username: 'Bob')

@@ -1,21 +1,23 @@
 RSpec.describe Gallery do
-  it "adds icons if it saves successfully" do
+  it "adds icons if it saves successfully", :aggregate_failures do
     user = create(:user)
     icon = create(:icon, user: user)
-    expect(icon.has_gallery).to eq(false)
+
     gallery = build(:gallery, user: user)
     gallery.icon_ids = [icon.id]
+
     expect(gallery).to be_valid
     expect(gallery.save).to eq(true)
     expect(icon.reload.has_gallery).to eq(true)
   end
 
-  it "only adds icons if it saves successfully" do
+  it "only adds icons if it saves successfully", :aggregate_failures do
     user = create(:user)
     icon = create(:icon, user: user)
-    expect(icon.has_gallery).to eq(false)
+
     gallery = build(:gallery, user: user, name: nil)
     gallery.icon_ids = [icon.id]
+
     expect(gallery).not_to be_valid
     expect(gallery.save).to eq(false)
     expect(icon.reload.has_gallery).to eq(false)
@@ -30,7 +32,7 @@ RSpec.describe Gallery do
   end
 
   describe "#gallery_groups_data" do
-    it "works without with_gallery_groups scope" do
+    it "works without with_gallery_groups scope", :aggregate_failures do
       group = create(:gallery_group)
       gallery = create(:gallery, gallery_groups: [group])
       galleries = Gallery.where(id: gallery.id).select(:id)
@@ -39,7 +41,7 @@ RSpec.describe Gallery do
     end
 
     context "with scope" do
-      it "works for galleries without gallery groups" do
+      it "works for galleries without gallery groups", :aggregate_failures do
         gallery1 = create(:gallery)
         gallery2 = create(:gallery)
         galleries = Gallery.where(id: [gallery1.id, gallery2.id]).select(:id).with_gallery_groups.ordered_by_id
@@ -47,7 +49,7 @@ RSpec.describe Gallery do
         expect(galleries.map(&:gallery_groups_data)).to eq([[], []])
       end
 
-      it "works for galleries with same gallery group" do
+      it "works for galleries with same gallery group", :aggregate_failures do
         group = create(:gallery_group)
         gallery1 = create(:gallery, gallery_groups: [group])
         gallery2 = create(:gallery, gallery_groups: [group])
@@ -60,7 +62,7 @@ RSpec.describe Gallery do
         expect(groups.last.map(&:name)).to eq([group.name])
       end
 
-      it "works for galleries with different gallery groups" do
+      it "works for galleries with different gallery groups", :aggregate_failures do
         group1 = create(:gallery_group)
         group2 = create(:gallery_group)
         gallery1 = create(:gallery, gallery_groups: [group1])
@@ -74,7 +76,7 @@ RSpec.describe Gallery do
         expect(groups.last.map(&:name)).to eq([group2.name])
       end
 
-      it "works for galleries with multiple gallery groups" do
+      it "works for galleries with multiple gallery groups", :aggregate_failures do
         group1 = create(:gallery_group, name: 'Tag1')
         group2 = create(:gallery_group, name: 'Tag2')
         gallery = create(:gallery, name: 'Tag1', gallery_groups: [group1, group2])

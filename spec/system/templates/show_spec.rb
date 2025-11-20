@@ -25,7 +25,7 @@ RSpec.describe "Viewing a template" do
     create(:post, user: user, subject: 'Unrelated post')
   end
 
-  scenario "Viewing in list mode" do
+  scenario "Viewing in list mode", :aggregate_failures do
     visit template_path(template, view: 'list')
     expect(page).to have_text('Template: sample template')
     expect(page).to have_no_text('Unrelated template')
@@ -56,7 +56,7 @@ RSpec.describe "Viewing a template" do
     end
   end
 
-  scenario "Viewing in icon mode" do
+  scenario "Viewing in icon mode", :aggregate_failures do
     visit template_path(template, view: 'icons')
     expect(page).to have_text('Template: sample template')
     expect(page).to have_no_text('Unrelated template')

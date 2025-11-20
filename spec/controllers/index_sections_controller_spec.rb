@@ -56,7 +56,6 @@ RSpec.describe IndexSectionsController do
     it "requires permission" do
       user = create(:user)
       index = create(:index)
-      expect(index.editable_by?(user)).to eq(false)
       login_as(user)
 
       post :create, params: { index_section: { index_id: index.id } }

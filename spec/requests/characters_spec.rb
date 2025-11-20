@@ -1,5 +1,5 @@
 RSpec.describe "Character" do
-  describe "show" do
+  describe "show", :aggregate_failures do
     let(:user) { create(:user, username: 'John Doe') }
     let(:expanded_character) do
       create(:character,
@@ -98,7 +98,7 @@ RSpec.describe "Character" do
   end
 
   describe "facecasts" do
-    it "shows facecasts for several characters" do
+    it "shows facecasts for several characters", :aggregate_failures do
       main_user = create(:user, username: 'John Doe', password: known_test_password)
       other_user = create(:user, username: 'Jane Doe')
       login(main_user)
@@ -108,16 +108,14 @@ RSpec.describe "Character" do
       create(:character, user: other_user, name: "Aisha", pb: "Gal Gadot")
 
       get "/characters/facecasts"
-      aggregate_failures do
-        expect(response).to have_http_status(200)
-        expect(response).to render_template(:facecasts)
-        page = Nokogiri::HTML5::Document.parse(response.body)
-        entries = page.css("tbody tr")
-        expect(entries.count).to eq(3)
-        expect(entries[0].text).to match(/Gal Gadot.*Character.*Aisha.*Jane Doe/m)
-        expect(entries[1].text).to match(/Sebastian Stan.*Character.*Alex.*John Doe/m)
-        expect(entries[2].text).to match(/Sebastian Stan.*Template.*Jons.*John Doe/m)
-      end
+      expect(response).to have_http_status(200)
+      expect(response).to render_template(:facecasts)
+      page = Nokogiri::HTML5::Document.parse(response.body)
+      entries = page.css("tbody tr")
+      expect(entries.count).to eq(3)
+      expect(entries[0].text).to match(/Gal Gadot.*Character.*Aisha.*Jane Doe/m)
+      expect(entries[1].text).to match(/Sebastian Stan.*Character.*Alex.*John Doe/m)
+      expect(entries[2].text).to match(/Sebastian Stan.*Template.*Jons.*John Doe/m)
     end
   end
 
@@ -145,7 +143,7 @@ RSpec.describe "Character" do
   end
 
   describe "index" do
-    it "handles bad pages" do
+    it "handles bad pages", :aggregate_failures do
       user = create(:user, password: known_test_password)
       create(:character, user: user)
       create_list(:template, 51, user: user) # rubocop:disable FactoryBot/ExcessiveCreateList
@@ -153,11 +151,9 @@ RSpec.describe "Character" do
 
       get "/characters?page=nvOpzp; AND 1=1"
 
-      aggregate_failures do
-        expect(response).to have_http_status(200)
-        expect(response).to render_template(:index)
-        expect(response.body).to include("Your Characters")
-      end
+      expect(response).to have_http_status(200)
+      expect(response).to render_template(:index)
+      expect(response.body).to include("Your Characters")
     end
   end
 end

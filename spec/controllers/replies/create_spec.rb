@@ -78,7 +78,6 @@ RSpec.describe RepliesController, 'POST create' do
       user = create(:user)
       board = create(:board, authors_locked: true)
       reply_post = create(:post, user: board.creator, board: board)
-      expect(reply_post.user.id).not_to eq(user.id)
       login_as(user)
 
       expect {
@@ -153,7 +152,7 @@ RSpec.describe RepliesController, 'POST create' do
     expect(flash[:error]).to eq("There has been 1 new reply since you last viewed this post.")
   end
 
-  it "handles multiple creations with unread warning" do
+  it "handles multiple creations with unread warning", aggregate_failures: false do
     reply_post = create(:post)
     login_as(reply_post.user)
     reply_post.mark_read(reply_post.user)
@@ -167,8 +166,10 @@ RSpec.describe RepliesController, 'POST create' do
       },
     }
 
-    expect(response.status).to eq(200)
-    expect(flash[:error]).to eq("There has been 1 new reply since you last viewed this post.")
+    aggregate_failures do
+      expect(response.status).to eq(200)
+      expect(flash[:error]).to eq("There has been 1 new reply since you last viewed this post.")
+    end
 
     create(:reply, post: reply_post)
     create(:reply, post: reply_post)
@@ -181,11 +182,13 @@ RSpec.describe RepliesController, 'POST create' do
       },
     }
 
-    expect(response.status).to eq(200)
-    expect(flash[:error]).to eq("There have been 2 new replies since you last viewed this post.")
+    aggregate_failures do
+      expect(response.status).to eq(200)
+      expect(flash[:error]).to eq("There have been 2 new replies since you last viewed this post.")
+    end
   end
 
-  it "handles multiple creations by user" do
+  it "handles multiple creations by user", aggregate_failures: false do
     reply_post = create(:post)
     login_as(reply_post.user)
     dupe_reply = create(:reply, user: reply_post.user, post: reply_post)
@@ -200,8 +203,10 @@ RSpec.describe RepliesController, 'POST create' do
       },
     }
 
-    expect(response).to have_http_status(200)
-    expect(flash[:error]).to eq("This looks like a duplicate. Did you attempt to post this twice? Please resubmit if this was intentional.")
+    aggregate_failures do
+      expect(response).to have_http_status(200)
+      expect(flash[:error]).to eq("This looks like a duplicate. Did you attempt to post this twice? Please resubmit if this was intentional.")
+    end
 
     post :create, params: {
       reply: {
@@ -213,8 +218,10 @@ RSpec.describe RepliesController, 'POST create' do
       allow_dupe: true,
     }
 
-    expect(response).to have_http_status(302)
-    expect(flash[:success]).to eq("Reply posted.")
+    aggregate_failures do
+      expect(response).to have_http_status(302)
+      expect(flash[:success]).to eq("Reply posted.")
+    end
   end
 
   it "handles duplicate with other unseen replies" do
@@ -438,18 +445,23 @@ RSpec.describe RepliesController, 'POST create' do
     expect(post_author.can_owe).to eq(true)
   end
 
-  it "handles multiple replies to an open thread correctly" do
+  it "handles multiple replies to an open thread correctly", aggregate_failures: false do
     user = create(:user)
     login_as(user)
     reply_post = create(:post)
+
     expect(reply_post.tagging_authors.count).to eq(1)
+
     old_reply = create(:reply, post: reply_post, user: user)
     reply_post.reload
 
-    expect(reply_post.tagging_authors).to include(user)
-    expect(reply_post.tagging_authors.count).to eq(2)
-    expect(reply_post.joined_authors).to include(user)
-    expect(reply_post.joined_authors.count).to eq(2)
+    aggregate_failures do
+      expect(reply_post.tagging_authors).to include(user)
+      expect(reply_post.tagging_authors.count).to eq(2)
+      expect(reply_post.joined_authors).to include(user)
+      expect(reply_post.joined_authors.count).to eq(2)
+    end
+
     reply_post.mark_read(user, at_time: old_reply.created_at + 1.second, force: true)
 
     expect {

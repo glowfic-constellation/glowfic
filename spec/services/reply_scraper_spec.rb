@@ -1,6 +1,6 @@
 require "spec_helper"
 
-RSpec.describe ReplyScraper do
+RSpec.describe ReplyScraper, :aggregate_failures do
   let(:user) { create(:user, username: "Marri") }
   let(:board) { create(:board, creator: user) }
   let(:post) { Post.new(board: board, subject: 'linear b', status: :complete, is_import: true) }

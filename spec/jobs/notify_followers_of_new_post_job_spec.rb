@@ -22,7 +22,7 @@ RSpec.describe NotifyFollowersOfNewPostJob do
     let(:title) { 'test subject' }
 
     shared_examples "new" do
-      it "works" do
+      it "works", :aggregate_failures do
         expect {
           perform_enqueued_jobs do
             create(:post, user: author, unjoined_authors: [coauthor], board: board, subject: title)
@@ -52,7 +52,7 @@ RSpec.describe NotifyFollowersOfNewPostJob do
         expect(Message.where(recipient_id: unnotified.id).count).to eq(0)
       end
 
-      it "does not send to non-viewers for access-locked posts" do
+      it "does not send to non-viewers for access-locked posts", :aggregate_failures do
         unnotified = create(:user)
         create(:favorite, user: unnotified, favorite: favorite)
         expect {
@@ -93,7 +93,7 @@ RSpec.describe NotifyFollowersOfNewPostJob do
 
       it_behaves_like "new"
 
-      it "works for self-threads" do
+      it "works for self-threads", :aggregate_failures do
         expect {
           perform_enqueued_jobs do
             create(:post, user: author, unjoined_authors: [], board: board, subject: title)
@@ -236,7 +236,7 @@ RSpec.describe NotifyFollowersOfNewPostJob do
     context "with favorited replier" do
       before(:each) { create(:favorite, user: notified, favorite: replier) }
 
-      it "sends the right message" do
+      it "sends the right message", :aggregate_failures do
         post = create(:post, user: author)
 
         expect {

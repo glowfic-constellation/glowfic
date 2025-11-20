@@ -51,8 +51,10 @@ RSpec.describe "migrate_notifications" do # rubocop:disable RSpec/DescribeClass
     end
     import_previous_messages = relation_for(import_previous_messages)
 
-    expect(Message.count).to eq(50)
-    expect(Post.count).to eq(40)
+    aggregate_failures do
+      expect(Message.count).to eq(50)
+      expect(Post.count).to eq(40)
+    end
 
     create_list(:message, 20) # non-site messages
 
@@ -61,43 +63,47 @@ RSpec.describe "migrate_notifications" do # rubocop:disable RSpec/DescribeClass
     migrated = create_list(:notification, 10, notification_type: :import_success) # already migrated
     migrated.each { |n| create(:message, sender_id: 0, recipient_id: n.user_id, subject: 'Post import succeeded', notification_id: n.id) }
 
-    expect(Message.count).to eq(90)
-    expect(Post.count).to eq(50)
-    expect(Notification.count).to eq(10)
+    aggregate_failures do
+      expect(Message.count).to eq(90)
+      expect(Post.count).to eq(50)
+      expect(Notification.count).to eq(10)
+    end
 
     migrated_messages = Message.where.not(id: other.map(&:id)).where(sender_id: 0)
 
     migrate_notifications
 
-    expect(Notification.count).to eq(60)
-    expect(Notification.pluck(:user_id)).to match_array(migrated_messages.pluck(:recipient_id))
-    expect(Notification.pluck(:id)).to match_array(migrated_messages.pluck(:notification_id))
+    aggregate_failures do
+      expect(Notification.count).to eq(60)
+      expect(Notification.pluck(:user_id)).to match_array(migrated_messages.pluck(:recipient_id))
+      expect(Notification.pluck(:id)).to match_array(migrated_messages.pluck(:notification_id))
 
-    [:new_favorite_post, :joined_favorite_post, :import_success].each do |type|
-      type_notifications = Notification.where(notification_type: type).where.not(id: migrated.map(&:id))
-      expect(type_notifications.count).to eq(10)
-      case type
-        when :new_favorite_post
-          expect(type_notifications.ids).to match_array(new_messages.reload.pluck(:notification_id))
-        when :joined_favorite_post
-          expect(type_notifications.ids).to match_array(join_messages.reload.pluck(:notification_id))
-        else
-          expect(type_notifications.ids).to match_array(import_messages.reload.pluck(:notification_id))
+      [:new_favorite_post, :joined_favorite_post, :import_success].each do |type|
+        type_notifications = Notification.where(notification_type: type).where.not(id: migrated.map(&:id))
+        expect(type_notifications.count).to eq(10)
+        case type
+          when :new_favorite_post
+            expect(type_notifications.ids).to match_array(new_messages.reload.pluck(:notification_id))
+          when :joined_favorite_post
+            expect(type_notifications.ids).to match_array(join_messages.reload.pluck(:notification_id))
+          else
+            expect(type_notifications.ids).to match_array(import_messages.reload.pluck(:notification_id))
+        end
       end
+
+      failure_notifications = Notification.where(notification_type: :import_fail)
+      expect(failure_notifications.count).to eq(20)
+
+      previous_notifications = failure_notifications.where.not(post_id: nil)
+      expect(previous_notifications.count).to eq(10)
+      expect(previous_notifications.ids).to match_array(import_previous_messages.reload.pluck(:notification_id))
+
+      error_notifications = failure_notifications.where.not(error_msg: nil)
+      expect(error_notifications.count).to eq(10)
+      expect(error_notifications.ids).to match_array(import_error_messages.reload.pluck(:notification_id))
+
+      expect(Notification.pluck(:post_id).compact).to match_array(Post.pluck(:id))
     end
-
-    failure_notifications = Notification.where(notification_type: :import_fail)
-    expect(failure_notifications.count).to eq(20)
-
-    previous_notifications = failure_notifications.where.not(post_id: nil)
-    expect(previous_notifications.count).to eq(10)
-    expect(previous_notifications.ids).to match_array(import_previous_messages.reload.pluck(:notification_id))
-
-    error_notifications = failure_notifications.where.not(error_msg: nil)
-    expect(error_notifications.count).to eq(10)
-    expect(error_notifications.ids).to match_array(import_error_messages.reload.pluck(:notification_id))
-
-    expect(Notification.pluck(:post_id).compact).to match_array(Post.pluck(:id))
   end
 
   describe "#create_notifications" do
@@ -105,7 +111,7 @@ RSpec.describe "migrate_notifications" do # rubocop:disable RSpec/DescribeClass
     let(:coauthor) { create(:user) }
     let(:post) { create(:post, user: author, unjoined_authors: [coauthor]) }
 
-    it "works for new post notification" do
+    it "works for new post notification", :aggregate_failures do
       subject = "New post by #{author.username}"
       content = "#{author.username} has just posted a new post entitled #{post.subject} in the #{post.board.name} continuity"
       content += " with #{coauthor.username}. #{ScrapePostJob.view_post(post.id)}"
@@ -116,7 +122,7 @@ RSpec.describe "migrate_notifications" do # rubocop:disable RSpec/DescribeClass
       expect(message.reload.notification_id).to eq(notification.id)
     end
 
-    it "works for joined post notification" do
+    it "works for joined post notification", :aggregate_failures do
       subject = "#{coauthor.username} has joined a new thread"
       content = "#{coauthor.username} has just joined the post entitled #{post.subject} with "
       content += "#{author.username}. #{ScrapePostJob.view_post(post.id)}"
@@ -127,7 +133,7 @@ RSpec.describe "migrate_notifications" do # rubocop:disable RSpec/DescribeClass
       expect(message.reload.notification_id).to eq(notification.id)
     end
 
-    it "works for import success notification" do
+    it "works for import success notification", :aggregate_failures do
       content = "Your post was successfully imported! #{ScrapePostJob.view_post(post.id)}"
       message = create(:message, sender_id: 0, subject: 'Post import succeeded', message: content)
       create_notifications(Message.where(id: message.id), :import_success)
@@ -136,7 +142,7 @@ RSpec.describe "migrate_notifications" do # rubocop:disable RSpec/DescribeClass
       expect(message.reload.notification_id).to eq(notification.id)
     end
 
-    it "works for many" do
+    it "works for many", :aggregate_failures do
       posts = create_list(:post, 10, unjoined_authors: [create(:user)])
       messages = posts.map do |post|
         subject = "New post by #{post.user.username}"
@@ -170,7 +176,7 @@ RSpec.describe "migrate_notifications" do # rubocop:disable RSpec/DescribeClass
     let(:msg_subject) { 'Post import failed' }
     let(:content) { "The url <a href='#{import_url}'>#{import_url}</a> could not be successfully scraped. " }
 
-    it "finds error message" do
+    it "finds error message", :aggregate_failures do
       error = "Unrecognized username: wild_pegasus_appeared"
       message = create(:message, subject: msg_subject, message: content + error)
       create_import_failure_notification(message)
@@ -181,7 +187,7 @@ RSpec.describe "migrate_notifications" do # rubocop:disable RSpec/DescribeClass
       expect(notification.error_msg).to eq(error)
     end
 
-    it "finds post_id" do
+    it "finds post_id", :aggregate_failures do
       post = create(:post, subject: 'linear b')
       message = create(:message, subject: msg_subject, message: content + "Your post was already imported! #{ScrapePostJob.view_post(post.id)}")
       create_import_failure_notification(message)
@@ -196,7 +202,7 @@ RSpec.describe "migrate_notifications" do # rubocop:disable RSpec/DescribeClass
   describe "#setup_notification" do
     let(:message) { create(:message, sender_id: 0) }
 
-    it "works for unread messages" do
+    it "works for unread messages", :aggregate_failures do
       notification = setup_notification(message, :new_favorite_post)
       expect(notification.user).to eq(message.recipient)
       expect(notification.notification_type).to eq(:new_favorite_post.to_s)
@@ -206,7 +212,7 @@ RSpec.describe "migrate_notifications" do # rubocop:disable RSpec/DescribeClass
       expect(notification.updated_at).to be_the_same_time_as(message.updated_at)
     end
 
-    it "works for read messages" do
+    it "works for read messages", :aggregate_failures do
       create_time = 1.day.ago
       Timecop.freeze(create_time) { message }
       time = create_time + 12.hours

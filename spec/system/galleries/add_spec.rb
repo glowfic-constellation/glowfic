@@ -23,6 +23,7 @@ RSpec.describe "Adding icons to a gallery" do
     end
 
     expect(page).to have_selector('.icon-row', count: 3)
+
     within(all('.icon-row').last) do
       click_link 'Delete Row'
     end
@@ -32,20 +33,23 @@ RSpec.describe "Adding icons to a gallery" do
     click_button 'Add New Icons'
 
     expect(page).to have_selector('.flash.success', exact_text: 'Icons saved.')
+
     click_link 'Icons', href: /view=icons/
 
-    within('.icons-box') do
-      expect(page).to have_selector('.gallery-icon', count: 2)
-      expect(page).to have_selector('img', count: 2)
+    aggregate_failures do
+      within('.icons-box') do
+        expect(page).to have_selector('.gallery-icon', count: 2)
+        expect(page).to have_selector('img', count: 2)
 
-      within(first('.gallery-icon')) do
-        expect(page).to have_selector('.icon-keyword', exact_text: 'test icon 1')
-        expect(find('img')[:src]).to eq('https://example.com/icon.png')
-      end
+        within(first('.gallery-icon')) do
+          expect(page).to have_selector('.icon-keyword', exact_text: 'test icon 1')
+          expect(find('img')[:src]).to eq('https://example.com/icon.png')
+        end
 
-      within(all('.gallery-icon')[1]) do
-        expect(page).to have_selector('.icon-keyword', exact_text: 'test icon 2')
-        expect(find('img')[:src]).to eq('https://example.com/icon2.png')
+        within(all('.gallery-icon')[1]) do
+          expect(page).to have_selector('.icon-keyword', exact_text: 'test icon 2')
+          expect(find('img')[:src]).to eq('https://example.com/icon2.png')
+        end
       end
     end
   end
@@ -62,13 +66,17 @@ RSpec.describe "Adding icons to a gallery" do
     click_link '+ Add Icons'
     click_link 'Add Existing Icons »'
 
-    expect(page).to have_selector('.content-header', text: 'Add Existing Icons to Gallery')
-    expect(page).to have_selector('.icon-keyword', exact_text: 'test icon 1')
+    aggregate_failures do
+      expect(page).to have_selector('.content-header', text: 'Add Existing Icons to Gallery')
+      expect(page).to have_selector('.icon-keyword', exact_text: 'test icon 1')
+    end
 
     find('.gallery-icon', text: 'test icon 1').find('img').click
     first(:button, 'Add Icons to Gallery').click
 
-    expect(page).to have_selector('.flash.success', exact_text: 'Icons added to gallery.')
-    expect(page).to have_selector('.icon-keyword', exact_text: 'test icon 1')
+    aggregate_failures do
+      expect(page).to have_selector('.flash.success', exact_text: 'Icons added to gallery.')
+      expect(page).to have_selector('.icon-keyword', exact_text: 'test icon 1')
+    end
   end
 end

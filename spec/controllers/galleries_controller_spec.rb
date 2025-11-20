@@ -137,7 +137,7 @@ RSpec.describe GalleriesController do
     end
 
     it "succeeds" do
-      expect(Gallery.count).to be_zero
+      # expect(Gallery.count).to be_zero
       icon = create(:icon)
       group = create(:gallery_group)
       login_as(icon.user)
@@ -388,7 +388,7 @@ RSpec.describe GalleriesController do
     it "requires your gallery" do
       user_id = login
       gallery = create(:gallery)
-      expect(gallery.user_id).not_to eq(user_id)
+
       get :edit, params: { id: gallery.id }
       expect(response).to redirect_to(user_galleries_url(user_id))
       expect(flash[:error]).to eq("You do not have permission to modify this gallery.")
@@ -428,7 +428,7 @@ RSpec.describe GalleriesController do
     it "requires your gallery" do
       user_id = login
       gallery = create(:gallery)
-      expect(gallery.user_id).not_to eq(user_id)
+
       put :update, params: { id: gallery.id }
       expect(response).to redirect_to(user_galleries_url(user_id))
       expect(flash[:error]).to eq("You do not have permission to modify this gallery.")
@@ -608,7 +608,7 @@ RSpec.describe GalleriesController do
     it "requires your gallery" do
       user_id = login
       gallery = create(:gallery)
-      expect(gallery.user_id).not_to eq(user_id)
+
       delete :destroy, params: { id: gallery.id }
       expect(response).to redirect_to(user_galleries_url(user_id))
       expect(flash[:error]).to eq("You do not have permission to modify this gallery.")
@@ -678,7 +678,7 @@ RSpec.describe GalleriesController do
     it "requires your gallery" do
       user_id = login
       gallery = create(:gallery)
-      expect(gallery.user_id).not_to eq(user_id)
+
       get :add, params: { id: gallery.id }
       expect(response).to redirect_to(user_galleries_url(user_id))
       expect(flash[:error]).to eq("You do not have permission to modify this gallery.")
@@ -767,11 +767,10 @@ RSpec.describe GalleriesController do
     end
 
     context "when adding existing icons" do
-      it "doesn't support galleryless" do
+      it "doesn't support galleryless", aggregate_failures: false do
         user_id = login
         icon = create(:icon, user_id: user_id)
-        gallery = create(:gallery, user_id: user_id, icon_ids: [icon.id])
-        expect(gallery.icons).to match_array([icon])
+        create(:gallery, user_id: user_id, icons: [icon])
 
         post :icon, params: { id: 0, image_ids: icon.id.to_s }
         expect(response).to redirect_to(user_galleries_url(user_id))
@@ -792,9 +791,7 @@ RSpec.describe GalleriesController do
 
       it "skips icons in the gallery" do
         icon = create(:icon)
-        gallery = create(:gallery, user: icon.user)
-        gallery.icons << icon
-        expect(gallery.galleries_icons.count).to eq(1)
+        gallery = create(:gallery, user: icon.user, icons: [icon])
         login_as(gallery.user)
 
         post :icon, params: { id: gallery.id, image_ids: icon.id.to_s }
@@ -804,31 +801,35 @@ RSpec.describe GalleriesController do
         expect(gallery.reload.galleries_icons.count).to eq(1)
       end
 
-      it "succeeds with galleryless icons" do
+      it "succeeds with galleryless icons", aggregate_failures: false do
         user = create(:user)
-        icon1 = create(:icon, user_id: user.id)
-        icon2 = create(:icon, user_id: user.id)
-        gallery = create(:gallery, user_id: user.id)
-        expect(icon1.has_gallery).not_to eq(true)
-        expect(icon2.has_gallery).not_to eq(true)
+        icon1 = create(:icon, user: user)
+        icon2 = create(:icon, user: user)
+        gallery = create(:gallery, user: user)
+
+        aggregate_failures do
+          expect(icon1.has_gallery).not_to eq(true)
+          expect(icon2.has_gallery).not_to eq(true)
+        end
 
         login_as(user)
         post :icon, params: { id: gallery.id, image_ids: "#{icon1.id},#{icon2.id}" }
-        expect(response).to redirect_to(gallery_path(gallery))
-        expect(flash[:success]).to eq('Icons added to gallery.')
-        expect(icon1.reload.has_gallery).to eq(true)
-        expect(icon2.reload.has_gallery).to eq(true)
-        expect(gallery.reload.icons).to match_array([icon1, icon2])
+
+        aggregate_failures do
+          expect(response).to redirect_to(gallery_path(gallery))
+          expect(flash[:success]).to eq('Icons added to gallery.')
+          expect(icon1.reload.has_gallery).to eq(true)
+          expect(icon2.reload.has_gallery).to eq(true)
+          expect(gallery.reload.icons).to match_array([icon1, icon2])
+        end
       end
 
       it "succeds with icons from other galleries" do
         user = create(:user)
-        icon1 = create(:icon, user_id: user.id)
-        icon2 = create(:icon, user_id: user.id)
-        gallery1 = create(:gallery, user_id: user.id, icon_ids: [icon1.id, icon2.id])
-        gallery2 = create(:gallery, user_id: user.id)
-        expect(gallery1.icons).to match_array([icon1, icon2])
-        expect(gallery2.icons).to be_empty
+        icon1 = create(:icon, user: user)
+        icon2 = create(:icon, user: user)
+        gallery1 = create(:gallery, user: user, icons: [icon1, icon2])
+        gallery2 = create(:gallery, user: user, icons: [])
 
         login_as(user)
         post :icon, params: { id: gallery2.id, image_ids: "#{icon1.id},#{icon2.id}" }

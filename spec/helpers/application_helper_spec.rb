@@ -1,16 +1,16 @@
 RSpec.describe ApplicationHelper do
   describe "#breakable_text" do
-    it "leaves blank strings intact" do
+    it "leaves blank strings intact", :aggregate_failures do
       expect(helper.send(:breakable_text, nil)).to eq(nil)
       expect(helper.send(:breakable_text, '')).to eq('')
     end
 
-    it "does not do anything special to linebreaks" do
+    it "does not do anything special to linebreaks", :aggregate_failures do
       expect(helper.send(:breakable_text, "text\ntext")).to eq("text\ntext")
       expect(helper.send(:breakable_text, "text\r\ntext")).to eq("text\r\ntext")
     end
 
-    it "escapes HTML elements" do
+    it "escapes HTML elements", :aggregate_failures do
       text = "screenname <b>text</b> &amp; more text"
       expected = "screenname &lt;b&gt;text&lt;/b&gt; &amp;amp; more text"
       result = helper.send(:breakable_text, text)
@@ -24,7 +24,7 @@ RSpec.describe ApplicationHelper do
       expect(helper.send(:breakable_text, text)).to eq(expected)
     end
 
-    it "leaves hyphenated text intact" do
+    it "leaves hyphenated text intact", :aggregate_failures do
       text = "screen-name"
       expected = text
       expect(helper.send(:breakable_text, text)).to eq(expected)

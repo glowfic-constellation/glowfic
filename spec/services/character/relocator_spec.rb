@@ -74,7 +74,7 @@ RSpec.describe Character::Relocator do
     end
   end
 
-  it 'successfully transfers complex cases' do
+  it 'successfully transfers complex cases', :aggregate_failures do
     template1 = create(:template, user: user)
     template2 = create(:template, user: user)
 

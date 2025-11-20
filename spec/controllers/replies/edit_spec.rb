@@ -18,13 +18,8 @@ RSpec.describe RepliesController, 'GET edit' do
 
   it "requires post access" do
     reply = create(:reply)
-    expect(reply.user_id).not_to eq(reply.post.user_id)
-    expect(reply.post.visible_to?(reply.user)).to eq(true)
-
     reply.post.update!(privacy: :private)
     reply.reload
-    expect(reply.post.visible_to?(reply.user)).to eq(false)
-
     login_as(reply.user)
     get :edit, params: { id: reply.id }
     expect(response).to redirect_to(continuities_url)

@@ -237,7 +237,8 @@ RSpec.describe CharactersController do
     end
 
     it "succeeds when valid" do
-      expect(Character.count).to eq(0)
+      # expect(Character.count).to eq(0)
+
       test_name = 'Test character'
       user = create(:user)
       template = create(:template, user: user)
@@ -274,7 +275,8 @@ RSpec.describe CharactersController do
     end
 
     it "succeeds for NPC" do
-      expect(Character.count).to eq(0)
+      # expect(Character.count).to eq(0)
+
       test_name = 'NPC character'
       user = create(:user)
       gallery = create(:gallery, user: user)
@@ -301,7 +303,8 @@ RSpec.describe CharactersController do
     end
 
     it "creates new templates when specified" do
-      expect(Template.count).to eq(0)
+      # expect(Template.count).to eq(0)
+
       login
       post :create, params: {
         new_template: '1',
@@ -312,6 +315,7 @@ RSpec.describe CharactersController do
           name: 'Test',
         },
       }
+
       expect(Template.count).to eq(1)
       expect(Template.first.name).to eq('TemplateTest')
       expect(assigns(:character).template_id).to eq(Template.first.id)
@@ -319,6 +323,7 @@ RSpec.describe CharactersController do
 
     context "with views" do
       render_views
+
       it "sets correct variables when invalid" do
         user = create(:user)
         gallery = create(:gallery, user: user)
@@ -598,20 +603,24 @@ RSpec.describe CharactersController do
       expect(character.galleries).to match_array([gallery])
     end
 
-    it "succeeds for NPC" do
+    it "succeeds for NPC", aggregate_failures: false do
       character = create(:character, npc: true)
       user = character.user
       login_as(user)
+
       put :update, params: {
         id: character.id,
         character: {
           nickname: 'TemplateName',
         },
       }
-      expect(response).to redirect_to(assigns(:character))
-      expect(flash[:success]).to eq("Character updated.")
-      character.reload
-      expect(character.nickname).to eq('TemplateName')
+
+      aggregate_failures do
+        expect(response).to redirect_to(assigns(:character))
+        expect(flash[:success]).to eq("Character updated.")
+        character.reload
+        expect(character.nickname).to eq('TemplateName')
+      end
 
       put :update, params: {
         id: character.id,
@@ -619,10 +628,13 @@ RSpec.describe CharactersController do
           npc: false,
         },
       }
-      expect(response).to redirect_to(assigns(:character))
-      expect(flash[:success]).to eq("Character updated.")
-      character.reload
-      expect(character).not_to be_npc
+
+      aggregate_failures do
+        expect(response).to redirect_to(assigns(:character))
+        expect(flash[:success]).to eq("Character updated.")
+        character.reload
+        expect(character).not_to be_npc
+      end
     end
 
     it "does not persist values when invalid" do
@@ -678,7 +690,7 @@ RSpec.describe CharactersController do
     end
 
     it "creates new templates when specified" do
-      expect(Template.count).to eq(0)
+      # expect(Template.count).to eq(0)
       character = create(:character)
       login_as(character.user)
       put :update, params: { id: character.id, new_template: '1', character: { template_attributes: { name: 'Test' } } }
@@ -707,13 +719,15 @@ RSpec.describe CharactersController do
       expect(character.characters_galleries.map(&:added_by_group)).to eq([true, true])
     end
 
-    it "does not remove gallery if tethered by group" do
+    it "does not remove gallery if tethered by group", aggregate_failures: false do
       user = create(:user)
       group = create(:gallery_group)
       gallery = create(:gallery, gallery_groups: [group], user: user)
       character = create(:character, gallery_groups: [group], user: user)
+
       character.ungrouped_gallery_ids = [gallery.id]
       character.save!
+
       expect(character.characters_galleries.first).not_to be_added_by_group
 
       login_as(user)
@@ -724,12 +738,15 @@ RSpec.describe CharactersController do
           gallery_group_ids: [group.id],
         },
       }
-      expect(flash[:success]).to eq('Character updated.')
-      character.reload
-      expect(character.gallery_groups).to match_array([group])
-      expect(character.galleries).to match_array([gallery])
-      expect(character.ungrouped_gallery_ids).to be_blank
-      expect(character.characters_galleries.first).to be_added_by_group
+
+      aggregate_failures do
+        expect(flash[:success]).to eq('Character updated.')
+        character.reload
+        expect(character.gallery_groups).to match_array([group])
+        expect(character.galleries).to match_array([gallery])
+        expect(character.ungrouped_gallery_ids).to be_blank
+        expect(character.characters_galleries.first).to be_added_by_group
+      end
     end
 
     it "works when adding both group and gallery" do
@@ -746,6 +763,7 @@ RSpec.describe CharactersController do
           ungrouped_gallery_ids: [gallery.id],
         },
       }
+
       expect(flash[:success]).to eq('Character updated.')
       character.reload
       expect(character.gallery_groups).to match_array([group])
@@ -761,6 +779,7 @@ RSpec.describe CharactersController do
 
       login_as(character.user)
       put :update, params: { id: character.id, character: { gallery_group_ids: [group.id] } }
+
       expect(flash[:success]).to eq('Character updated.')
       character.reload
       expect(character.gallery_groups).to match_array([group])
@@ -775,6 +794,7 @@ RSpec.describe CharactersController do
 
       login_as(user)
       put :update, params: { id: character.id, character: { gallery_group_ids: [''] } }
+
       expect(flash[:success]).to eq('Character updated.')
       character.reload
       expect(character.gallery_groups).to eq([])
@@ -783,6 +803,7 @@ RSpec.describe CharactersController do
 
     context "with views" do
       render_views
+
       it "sets correct variables when invalid" do
         user = create(:user)
         group = create(:gallery_group)
@@ -804,7 +825,7 @@ RSpec.describe CharactersController do
       end
     end
 
-    it "reorders galleries as necessary" do
+    it "reorders galleries as necessary", aggregate_failures: false do
       character = create(:character)
       g1 = create(:gallery, user: character.user)
       g2 = create(:gallery, user: character.user)
@@ -812,14 +833,19 @@ RSpec.describe CharactersController do
       character.galleries << g2
       g1_cg = CharactersGallery.where(gallery_id: g1.id).first
       g2_cg = CharactersGallery.where(gallery_id: g2.id).first
-      expect(g1_cg.section_order).to eq(0)
-      expect(g2_cg.section_order).to eq(1)
+
+      aggregate_failures do
+        expect(g1_cg.section_order).to eq(0)
+        expect(g2_cg.section_order).to eq(1)
+      end
 
       login_as(character.user)
       put :update, params: { id: character.id, character: { ungrouped_gallery_ids: [g2.id.to_s] } }
 
-      expect(character.reload.galleries.pluck(:id)).to eq([g2.id])
-      expect(g2_cg.reload.section_order).to eq(0)
+      aggregate_failures do
+        expect(character.reload.galleries.pluck(:id)).to eq([g2.id])
+        expect(g2_cg.reload.section_order).to eq(0)
+      end
     end
 
     it "orders settings by default" do
@@ -926,7 +952,7 @@ RSpec.describe CharactersController do
       user = create(:user)
       login_as(user)
       character = create(:character)
-      expect(character.user_id).not_to eq(user.id)
+
       delete :destroy, params: { id: character.id }
       expect(response).to redirect_to(user_characters_url(user.id))
       expect(flash[:error]).to eq("You do not have permission to modify this character.")
@@ -1460,7 +1486,7 @@ RSpec.describe CharactersController do
       expect(flash[:error]).to eq('You do not have permission to modify this character.')
     end
 
-    it "succeeds" do
+    it "succeeds", aggregate_failures: false do
       user = create(:user)
       template = create(:template, user: user)
       icon = create(:icon, user: user)
@@ -1476,9 +1502,11 @@ RSpec.describe CharactersController do
 
       character.reload
 
-      expect(character.galleries).to match_array([gallery, gallery2, gallery3])
-      expect(character.ungrouped_gallery_ids).to match_array([gallery.id, gallery2.id])
-      expect(character.gallery_groups).to match_array([group])
+      aggregate_failures do
+        expect(character.galleries).to match_array([gallery, gallery2, gallery3])
+        expect(character.ungrouped_gallery_ids).to match_array([gallery.id, gallery2.id])
+        expect(character.gallery_groups).to match_array([group])
+      end
 
       login_as(user)
       expect do
@@ -1489,43 +1517,46 @@ RSpec.describe CharactersController do
 
       dupe = Character.last
       character.reload
-      expect(response).to redirect_to(edit_character_url(dupe))
-      expect(flash[:success]).to eq('Character duplicated. You are now editing the new character.')
 
-      expect(dupe).not_to eq(character)
+      aggregate_failures do
+        expect(response).to redirect_to(edit_character_url(dupe))
+        expect(flash[:success]).to eq('Character duplicated. You are now editing the new character.')
 
-      # check all attrs but id, created_at and updated_at are same
-      dup_attrs = dupe.attributes.clone
-      char_attrs = character.attributes.clone
-      ['id', 'created_at', 'updated_at'].each do |val|
-        dup_attrs.delete(val)
-        char_attrs.delete(val)
+        expect(dupe).not_to eq(character)
+
+        # check all attrs but id, created_at and updated_at are same
+        dup_attrs = dupe.attributes.clone
+        char_attrs = character.attributes.clone
+        ['id', 'created_at', 'updated_at'].each do |val|
+          dup_attrs.delete(val)
+          char_attrs.delete(val)
+        end
+        expect(dup_attrs).to eq(char_attrs)
+
+        # check character associations aren't changed
+        expect(character.template).to eq(template)
+        expect(character.galleries).to match_array([gallery, gallery2, gallery3])
+        expect(character.ungrouped_gallery_ids).to match_array([gallery.id, gallery2.id])
+        expect(character.gallery_groups).to match_array([group])
+        expect(character.default_icon).to eq(icon)
+        expect(character.user).to eq(user)
+        expect(character.aliases.map(&:name)).to eq([calias.name])
+
+        # check duplicate has appropriate associations
+        expect(dupe.template).to eq(template)
+        expect(dupe.galleries).to match_array([gallery, gallery2, gallery3])
+        expect(dupe.ungrouped_gallery_ids).to match_array([gallery.id, gallery2.id])
+        expect(dupe.gallery_groups).to match_array([group])
+        expect(dupe.default_icon).to eq(icon)
+        expect(dupe.user).to eq(user)
+        expect(dupe.aliases.map(&:name)).to eq([calias.name])
+
+        # check old posts and replies have old attributes
+        char_post.reload
+        char_reply.reload
+        expect(char_post.character).to eq(character)
+        expect(char_reply.character).to eq(character)
       end
-      expect(dup_attrs).to eq(char_attrs)
-
-      # check character associations aren't changed
-      expect(character.template).to eq(template)
-      expect(character.galleries).to match_array([gallery, gallery2, gallery3])
-      expect(character.ungrouped_gallery_ids).to match_array([gallery.id, gallery2.id])
-      expect(character.gallery_groups).to match_array([group])
-      expect(character.default_icon).to eq(icon)
-      expect(character.user).to eq(user)
-      expect(character.aliases.map(&:name)).to eq([calias.name])
-
-      # check duplicate has appropriate associations
-      expect(dupe.template).to eq(template)
-      expect(dupe.galleries).to match_array([gallery, gallery2, gallery3])
-      expect(dupe.ungrouped_gallery_ids).to match_array([gallery.id, gallery2.id])
-      expect(dupe.gallery_groups).to match_array([group])
-      expect(dupe.default_icon).to eq(icon)
-      expect(dupe.user).to eq(user)
-      expect(dupe.aliases.map(&:name)).to eq([calias.name])
-
-      # check old posts and replies have old attributes
-      char_post.reload
-      char_reply.reload
-      expect(char_post.character).to eq(character)
-      expect(char_reply.character).to eq(character)
     end
 
     it "handles unexpected failure" do

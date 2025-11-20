@@ -72,9 +72,11 @@ RSpec.describe "Icon" do
 
       perform_enqueued_jobs
 
-      expect(model.reload.icon).to eq(other)
-      expect(reply.reload.icon).to eq(other)
-      expect(unaffected.reload.icon).not_to eq(other)
+      aggregate_failures do
+        expect(model.reload.icon).to eq(other)
+        expect(reply.reload.icon).to eq(other)
+        expect(unaffected.reload.icon).not_to eq(other)
+      end
     end
   end
 end

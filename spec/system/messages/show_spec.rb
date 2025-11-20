@@ -24,10 +24,12 @@ RSpec.describe "Message threads" do
     visit messages_path(view: 'outbox')
     click_link outgoing1.unempty_subject
 
-    expect(page).to have_selector('.message-collapse', count: 4)
-    short = ("abcde" * 15)[0...73] + "…"
-    expect(page).to have_selector('.message-collapse', text: short)
-    expect(page).to have_no_selector('.message-collapse', text: "abcde" * 20)
+    aggregate_failures do
+      expect(page).to have_selector('.message-collapse', count: 4)
+      short = ("abcde" * 15)[0...73] + "…"
+      expect(page).to have_selector('.message-collapse', text: short)
+      expect(page).to have_no_selector('.message-collapse', text: "abcde" * 20)
+    end
   end
 
   scenario "ordering of inbox messages within threading" do
@@ -36,18 +38,24 @@ RSpec.describe "Message threads" do
     [incoming1, incoming2]
 
     visit messages_path(view: 'inbox')
-    expect(page).to have_selector('.message-row', count: 2)
-    table_rows = all('.message-row')
-    expect(table_rows[0]).to have_text(incoming2.unempty_subject)
-    expect(table_rows[1]).to have_text(incoming1.unempty_subject)
+
+    aggregate_failures do
+      expect(page).to have_selector('.message-row', count: 2)
+      table_rows = all('.message-row')
+      expect(table_rows[0]).to have_text(incoming2.unempty_subject)
+      expect(table_rows[1]).to have_text(incoming1.unempty_subject)
+    end
 
     create(:message, thread_id: incoming1.id, sender: other_user, recipient: user)
 
     visit messages_path(view: 'inbox')
-    expect(page).to have_selector('.message-row', count: 2)
-    table_rows = all('.message-row')
-    expect(table_rows[0]).to have_text(incoming1.unempty_subject)
-    expect(table_rows[1]).to have_text(incoming2.unempty_subject)
+
+    aggregate_failures do
+      expect(page).to have_selector('.message-row', count: 2)
+      table_rows = all('.message-row')
+      expect(table_rows[0]).to have_text(incoming1.unempty_subject)
+      expect(table_rows[1]).to have_text(incoming2.unempty_subject)
+    end
   end
 
   scenario "ordering of outbox messages within threading" do
@@ -56,34 +64,45 @@ RSpec.describe "Message threads" do
     [outgoing1, outgoing2]
 
     visit messages_path(view: 'outbox')
-    expect(page).to have_selector('.message-row', count: 2)
-    table_rows = all('.message-row')
-    expect(table_rows[0]).to have_text(outgoing2.unempty_subject)
-    expect(table_rows[1]).to have_text(outgoing1.unempty_subject)
+
+    aggregate_failures do
+      expect(page).to have_selector('.message-row', count: 2)
+      table_rows = all('.message-row')
+      expect(table_rows[0]).to have_text(outgoing2.unempty_subject)
+      expect(table_rows[1]).to have_text(outgoing1.unempty_subject)
+    end
 
     thread2
     visit messages_path(view: 'outbox')
-    expect(page).to have_selector('.message-row', count: 2)
-    table_rows = all('.message-row')
-    expect(table_rows[0]).to have_text(outgoing1.unempty_subject)
-    expect(table_rows[1]).to have_text(outgoing2.unempty_subject)
+
+    aggregate_failures do
+      expect(page).to have_selector('.message-row', count: 2)
+      table_rows = all('.message-row')
+      expect(table_rows[0]).to have_text(outgoing1.unempty_subject)
+      expect(table_rows[1]).to have_text(outgoing2.unempty_subject)
+    end
   end
 
   scenario "check-all checkbox works", :js do
     user = login
     visit messages_path(view: 'inbox')
-    expect(page).to have_selector('.table-title', text: 'Inbox')
-    expect(page).to have_no_selector('.check-all')
-    expect(page).to have_no_selector('.check-all-item[name="marked_ids[]"]')
+
+    aggregate_failures do
+      expect(page).to have_selector('.table-title', text: 'Inbox')
+      expect(page).to have_no_selector('.check-all')
+      expect(page).to have_no_selector('.check-all-item[name="marked_ids[]"]')
+    end
 
     create_list(:message, 2, recipient: user)
     visit messages_path(view: 'inbox')
 
     check_all_boxes = find('.check-all[data-check-box-name="marked_ids[]"]')
-    expect(check_all_boxes).to be_present
-
     message_checkboxes = all('.check-all-item[name="marked_ids[]"]')
-    expect(message_checkboxes.length).to be(2)
+
+    aggregate_failures do
+      expect(check_all_boxes).to be_present
+      expect(message_checkboxes.length).to be(2)
+    end
 
     check_all_boxes.click
     expect(message_checkboxes).to all(be_checked)
@@ -93,10 +112,13 @@ RSpec.describe "Message threads" do
 
     message_checkboxes[0].click
     expect(check_all_boxes).not_to be_checked
+
     message_checkboxes[1].click
     expect(check_all_boxes).to be_checked
+
     message_checkboxes[0].click
     expect(check_all_boxes).not_to be_checked
+
     check_all_boxes.click
     expect(message_checkboxes[0]).to be_checked
   end

@@ -40,7 +40,7 @@ RSpec.describe WritableHelper do
       expect(helper.sanitize_simple_link_text(text)).to eq(text)
     end
 
-    it "permits links" do
+    it "permits links", :aggregate_failures do
       text = 'here is <a href="http://example.com">a link</a> '
       text += '<a href="https://example.com">another link</a> '
       text += '<a href="/characters/1">yet another link</a>'
@@ -65,7 +65,7 @@ RSpec.describe WritableHelper do
     end
   end
 
-  describe "#sanitize_written_content" do
+  describe "#sanitize_written_content", :aggregate_failures do
     ['rtf', 'html', 'md'].each do |editor_mode|
       # applies only for single-line input
       def format_input(text, editor_mode)
@@ -91,7 +91,7 @@ RSpec.describe WritableHelper do
           expect(helper.sanitize_written_content(format_input(text, editor_mode), editor_mode)).to eq("<p>#{text}</p>")
         end
 
-        it "permits images" do
+        it "permits images", :aggregate_failures do
           text = 'images: <img src="http://example.com/image.png"> <img src="https://example.com/image.jpg"> <img src="/image.gif">'
           result = helper.sanitize_written_content(format_input(text, editor_mode), editor_mode)
           expect(result).to eq("<p>#{text}</p>")
@@ -124,7 +124,7 @@ RSpec.describe WritableHelper do
         expect(result).to be_html_safe
       end
 
-      it "permits some attributes on only some tags" do
+      it "permits some attributes on only some tags", :aggregate_failures do
         text = '<p><a width="100%" href="https://example.com">test</a></p> <hr width="100%">'
         expected = '<p><a href="https://example.com">test</a></p> <hr width="100%">'
         expect(helper.sanitize_written_content(text, 'rtf')).to eq(expected)

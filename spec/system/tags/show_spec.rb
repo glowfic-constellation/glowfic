@@ -20,29 +20,33 @@ RSpec.describe "Viewing a tag" do
     # test expectations
     visit tag_path(setting)
 
-    expect(page).to have_selector('.tag-info-box', text: 'Setting: sample setting')
+    aggregate_failures 'Info' do
+      expect(page).to have_selector('.tag-info-box', text: 'Setting: sample setting')
 
-    within(row_for('Owner')) do
-      expect(page).to have_text('setting owner')
+      within(row_for('Owner')) do
+        expect(page).to have_text('setting owner')
+      end
     end
 
     within('.tag-info-box') do
       click_link 'Characters'
     end
 
-    row = find('tr', text: 'Test character')
-    within(row) do
-      expect(page).to have_link('Test character', href: character_path(untemplated_character))
-      expect(page).to have_text('the-test')
-      expect(page).to have_text('Example Person')
-    end
+    aggregate_failures 'Characaters' do
+      row = find('tr', text: 'Test character')
+      within(row) do
+        expect(page).to have_link('Test character', href: character_path(untemplated_character))
+        expect(page).to have_text('the-test')
+        expect(page).to have_text('Example Person')
+      end
 
-    row = find('tr', text: 'Templated character')
-    within(row) do
-      expect(page).to have_link('Templated character', href: character_path(templated_character))
-      expect(page).to have_link('sample template', href: template_path(template))
-    end
+      row = find('tr', text: 'Templated character')
+      within(row) do
+        expect(page).to have_link('Templated character', href: character_path(templated_character))
+        expect(page).to have_link('sample template', href: template_path(template))
+      end
 
-    expect(page).to have_no_selector('tr', text: 'Other character')
+      expect(page).to have_no_selector('tr', text: 'Other character')
+    end
   end
 end

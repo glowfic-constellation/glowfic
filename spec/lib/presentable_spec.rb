@@ -53,7 +53,7 @@ RSpec.describe Presentable do
     end
   end
 
-  it "should use defined as_json even if concern included" do
+  it "should use defined as_json even if concern included", :aggregate_failures do
     expect(ExampleWithoutAfterJson.new.as_json).to eq(3)
     expect(ExampleWithoutBeforeJson.new.as_json).to eq(2)
   end
