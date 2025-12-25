@@ -1,4 +1,4 @@
-FROM ruby:3.4.6
+FROM ruby:3.4.8
 
 WORKDIR /code
 
@@ -14,7 +14,7 @@ RUN apt-get update \
   && apt install -y chromium \
   && apt-get clean
 
-ARG bundler_version=2.6.2
+ARG bundler_version=2.7.2
 
 RUN gem install bundler -v $bundler_version
 
