@@ -23,6 +23,7 @@ gem 'aws-sdk-s3', '~> 1'
 gem 'aws-sdk-ses', '~> 1'
 gem 'barnes' # heroku ruby-specific metrics
 gem 'bootstrap', '~> 5.3' # pin until major version is handled
+gem 'connection_pool', '~> 2.0' # pin until version 3.x is supported by Rails (https://github.com/glowfic-constellation/glowfic/pull/2616)
 gem 'dartsass-sprockets'
 gem 'exception_notification'
 gem 'get_process_mem'
@@ -40,7 +41,7 @@ gem 'nokogiri'
 gem 'pg', '~> 1.6'
 gem 'pg_search'
 gem 'rack-pratchett'
-gem 'rails', '~> 8.0.2'
+gem 'rails', '~> 8.0.4'
 gem "redcarpet", "~> 3.6"
 gem 'redis', '~> 5.4'
 gem 'request_store', '~> 1.7'
