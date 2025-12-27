@@ -50,7 +50,7 @@ class PostImporter < Object
     usernames = dreamwidth_doc.css('.poster span.ljuser b').map(&:text).uniq
     usernames -= ReplyScraper::BASE_ACCOUNTS.keys
     poster_names = dreamwidth_doc.css('.entry-poster span.ljuser b')
-    usernames -= [poster_names.last.text] if poster_names.count > 1
+    usernames -= [poster_names.last.text] if poster_names.many?
     usernames -= Character.where(screenname: usernames).pluck(:screenname)
     dashed = usernames.map { |u| u.tr("_", "-") }
     usernames - Character.where(screenname: dashed).pluck(:screenname).map { |u| u.tr('-', '_') }

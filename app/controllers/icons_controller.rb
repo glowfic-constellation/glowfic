@@ -123,7 +123,7 @@ class IconsController < UploadingController
   end
 
   def destroy
-    gallery = @icon.galleries.first if @icon.galleries.count == 1
+    gallery = @icon.galleries.first if @icon.galleries.one?
     begin
       @icon.destroy!
     rescue ActiveRecord::RecordNotDestroyed => e

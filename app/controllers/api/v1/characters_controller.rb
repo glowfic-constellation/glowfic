@@ -85,7 +85,7 @@ class Api::V1::CharactersController < Api::ApiController
     end
 
     characters = Character.where(id: sections.select(:character_id).distinct.pluck(:character_id))
-    unless characters.count == 1
+    unless characters.one?
       error = { message: 'Character galleries must be from one character' }
       render json: { errors: [error] }, status: :unprocessable_entity and return
     end
