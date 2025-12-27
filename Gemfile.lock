@@ -506,7 +506,7 @@ GEM
     scout_apm (5.7.1)
       parser
     securerandom (0.4.1)
-    seed_dump (3.3.1)
+    seed_dump (3.4.1)
       activerecord (>= 4)
       activesupport (>= 4)
     select2-rails (4.0.13)
@@ -652,7 +652,7 @@ DEPENDENCIES
   rubocop-rspec_rails (~> 2.31.0)
   sanitize
   scout_apm
-  seed_dump (~> 3.2)
+  seed_dump (~> 3.4)
   select2-rails
   selenium-webdriver
   simplecov
