@@ -83,7 +83,6 @@ group :development, :test do
   gem 'byebug'
   gem 'database_cleaner'
   gem 'dotenv'
-  gem 'html-proofer', '< 4'
   gem 'parallel_tests'
   gem 'rake', '~> 13.4'
   gem 'rspec-rails'

@@ -75,9 +75,6 @@ Rails.application.configure do
   # Raise error when a before_action's only/except options reference missing actions.
   config.action_controller.raise_on_missing_callback_actions = true
 
-  # Check html is valid
-  config.middleware.use HTMLProofer::Middleware
-
   # raise an error if assets aren't found
   config.assets.unknown_asset_fallback = false
   config.assets.check_precompiled_asset = false
