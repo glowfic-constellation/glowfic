@@ -41,7 +41,7 @@ gem 'nokogiri'
 gem 'pg', '~> 1.6'
 gem 'pg_search'
 gem 'rack-pratchett'
-gem 'rails', '~> 8.0.4'
+gem 'rails', '~> 8.1.1'
 gem "redcarpet", "~> 3.6"
 gem 'redis', '~> 5.4'
 gem 'request_store', '~> 1.7'
