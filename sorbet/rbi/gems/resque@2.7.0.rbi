@@ -1059,6 +1059,137 @@ class Resque::Failure::Base
   end
 end
 
+# A Failure backend that uses multiple backends
+# delegates all queries to the first backend
+#
+# source://resque//lib/resque/failure/multiple.rb#5
+class Resque::Failure::Multiple < ::Resque::Failure::Base
+  # @return [Multiple] a new instance of Multiple
+  #
+  # source://resque//lib/resque/failure/multiple.rb#16
+  def initialize(*args); end
+
+  # source://resque//lib/resque/failure/multiple.rb#21
+  def save; end
+
+  class << self
+    # Returns a paginated array of failure objects.
+    #
+    # source://resque//lib/resque/failure/multiple.rb#36
+    def all(*args); end
+
+    # Returns the value of attribute classes.
+    #
+    # source://resque//lib/resque/failure/multiple.rb#8
+    def classes; end
+
+    # Sets the attribute classes
+    #
+    # @param value the value to set the attribute classes to.
+    #
+    # source://resque//lib/resque/failure/multiple.rb#8
+    def classes=(_arg0); end
+
+    # Clear all failure objects
+    #
+    # source://resque//lib/resque/failure/multiple.rb#51
+    def clear(*args); end
+
+    # @yield [_self]
+    # @yieldparam _self [Resque::Failure::Multiple] the object that the method was called on
+    #
+    # source://resque//lib/resque/failure/multiple.rb#11
+    def configure; end
+
+    # The number of failures.
+    #
+    # source://resque//lib/resque/failure/multiple.rb#26
+    def count(*args); end
+
+    # Iterate across failed objects
+    #
+    # source://resque//lib/resque/failure/multiple.rb#41
+    def each(*args, &block); end
+
+    # Returns an array of all available failure queues
+    #
+    # source://resque//lib/resque/failure/multiple.rb#31
+    def queues; end
+
+    # source://resque//lib/resque/failure/multiple.rb#67
+    def remove(index, queue = T.unsafe(nil)); end
+
+    # source://resque//lib/resque/failure/multiple.rb#55
+    def requeue(*args); end
+
+    # source://resque//lib/resque/failure/multiple.rb#59
+    def requeue_all; end
+
+    # source://resque//lib/resque/failure/multiple.rb#63
+    def requeue_queue(queue); end
+
+    # A URL where someone can go to view failures.
+    #
+    # source://resque//lib/resque/failure/multiple.rb#46
+    def url; end
+  end
+end
+
+# A Failure backend that stores exceptions in Redis. Very simple but
+# works out of the box, along with support in the Resque web app.
+#
+# source://resque//lib/resque/failure/redis.rb#5
+class Resque::Failure::Redis < ::Resque::Failure::Base
+  # source://resque//lib/resque/failure/redis.rb#7
+  def data_store; end
+
+  # source://resque//lib/resque/failure/redis.rb#121
+  def filter_backtrace(backtrace); end
+
+  # source://resque//lib/resque/failure/redis.rb#15
+  def save; end
+
+  class << self
+    # source://resque//lib/resque/failure/redis.rb#45
+    def all(offset = T.unsafe(nil), limit = T.unsafe(nil), queue = T.unsafe(nil)); end
+
+    # @raise [ArgumentError]
+    #
+    # source://resque//lib/resque/failure/redis.rb#117
+    def check_queue(queue); end
+
+    # source://resque//lib/resque/failure/redis.rb#73
+    def clear(queue = T.unsafe(nil)); end
+
+    # source://resque//lib/resque/failure/redis.rb#29
+    def count(queue = T.unsafe(nil), class_name = T.unsafe(nil)); end
+
+    # source://resque//lib/resque/failure/redis.rb#11
+    def data_store; end
+
+    # source://resque//lib/resque/failure/redis.rb#50
+    def each(offset = T.unsafe(nil), limit = T.unsafe(nil), queue = T.unsafe(nil), class_name = T.unsafe(nil), order = T.unsafe(nil)); end
+
+    # source://resque//lib/resque/failure/redis.rb#41
+    def queues; end
+
+    # source://resque//lib/resque/failure/redis.rb#86
+    def remove(id, queue = T.unsafe(nil)); end
+
+    # source://resque//lib/resque/failure/redis.rb#105
+    def remove_queue(queue); end
+
+    # source://resque//lib/resque/failure/redis.rb#78
+    def requeue(id, queue = T.unsafe(nil)); end
+
+    # source://resque//lib/resque/failure/redis.rb#99
+    def requeue_all; end
+
+    # source://resque//lib/resque/failure/redis.rb#91
+    def requeue_queue(queue); end
+  end
+end
+
 # Methods used by various classes in Resque.
 #
 # source://resque//lib/resque/helpers.rb#13

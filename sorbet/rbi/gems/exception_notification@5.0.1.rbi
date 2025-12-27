@@ -38,6 +38,17 @@ end
 # source://exception_notification//lib/exception_notification/rack.rb#5
 class ExceptionNotification::Rack::CascadePassException < ::RuntimeError; end
 
+# source://exception_notification//lib/exception_notification/resque.rb#6
+class ExceptionNotification::Resque < ::Resque::Failure::Base
+  # source://exception_notification//lib/exception_notification/resque.rb#11
+  def save; end
+
+  class << self
+    # source://exception_notification//lib/exception_notification/resque.rb#7
+    def count; end
+  end
+end
+
 # source://exception_notification//lib/exception_notification/version.rb#4
 ExceptionNotification::VERSION = T.let(T.unsafe(nil), String)
 
