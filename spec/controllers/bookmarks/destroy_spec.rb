@@ -36,7 +36,7 @@ RSpec.describe BookmarksController, 'DELETE destroy' do
     delete :destroy, params: { id: bookmark.id }
     expect(response).to redirect_to(reply_url(reply, anchor: "reply-#{reply.id}"))
     expect(flash[:success]).to eq("Bookmark removed.")
-    expect(Bookmark.find_by_id(bookmark.id)).to be_nil
+    expect(Bookmark.find_by(id: bookmark.id)).to be_nil
   end
 
   it "handles destroy failure" do
