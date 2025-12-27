@@ -35,7 +35,7 @@ class Api::ApiController < ActionController::Base
     yield
   rescue Apipie::ParamMissing, Apipie::ParamInvalid => e
     error_hash = { message: Glowfic::Sanitizers.full(e.message.tr('"', "'")) }
-    render json: { errors: [error_hash] }, status: :unprocessable_entity
+    render json: { errors: [error_hash] }, status: :unprocessable_content
   end
 
   def access_denied

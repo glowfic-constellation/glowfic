@@ -352,14 +352,14 @@ RSpec.describe ApplicationController do
 
     it 'preserves post order with pagination' do
       relation = Post.where(id: default_post_ids)
-      expect(controller.send(:posts_from_relation, relation.order("tagged_at ASC, id ASC")).map(&:id)).to eq(default_post_ids[0..24])
+      expect(controller.send(:posts_from_relation, relation.order(:tagged_at, :id)).map(&:id)).to eq(default_post_ids[0..24])
       expect(controller.send(:posts_from_relation, relation.ordered).map(&:id)).to eq(default_post_ids.reverse[0..24])
     end
 
     it 'preserves post order with pagination disabled' do
       relation = Post.where(id: default_post_ids)
-      expect(controller.send(:posts_from_relation, relation.order("tagged_at ASC, id ASC"), with_pagination: false).ids).to eq(default_post_ids)
-      expect(controller.send(:posts_from_relation, relation.order("tagged_at DESC, id DESC"),
+      expect(controller.send(:posts_from_relation, relation.order(:tagged_at, :id), with_pagination: false).ids).to eq(default_post_ids)
+      expect(controller.send(:posts_from_relation, relation.order(tagged_at: :desc, id: :desc),
         with_pagination: false,).ids).to eq(default_post_ids.reverse)
     end
 

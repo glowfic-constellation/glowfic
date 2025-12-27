@@ -30,7 +30,7 @@ class Api::V1::GalleriesController < Api::ApiController
 
     unless user
       error = { message: "Gallery user could not be found." }
-      render json: { errors: [error] }, status: :unprocessable_entity and return true
+      render json: { errors: [error] }, status: :unprocessable_content and return true
     end
     render json: { name: 'Galleryless', icons: user.galleryless_icons }
   end

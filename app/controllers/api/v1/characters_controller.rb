@@ -62,7 +62,7 @@ class Api::V1::CharactersController < Api::ApiController
 
     @character.assign_attributes(character_params)
     errors += @character.errors.full_messages.map { |msg| { message: msg } } unless @character.valid?
-    render json: { errors: errors }, status: :unprocessable_entity and return unless errors.empty?
+    render json: { errors: errors }, status: :unprocessable_content and return unless errors.empty?
 
     @character.save!
     render json: @character.as_json(include: [:default_icon])
@@ -87,7 +87,7 @@ class Api::V1::CharactersController < Api::ApiController
     characters = Character.where(id: sections.select(:character_id).distinct.pluck(:character_id))
     unless characters.one?
       error = { message: 'Character galleries must be from one character' }
-      render json: { errors: [error] }, status: :unprocessable_entity and return
+      render json: { errors: [error] }, status: :unprocessable_content and return
     end
 
     character = characters.first

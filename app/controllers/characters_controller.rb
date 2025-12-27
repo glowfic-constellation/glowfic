@@ -323,7 +323,7 @@ class CharactersController < ApplicationController
     user = @character.try(:user) || current_user
     @templates = user.templates.ordered
     new_group = faked.new('— Create New Group —', 0)
-    @groups = user.character_groups.order('name asc') + [new_group]
+    @groups = user.character_groups.order(:name) + [new_group]
     use_javascript('characters/editor')
     gon.character_id = @character.try(:id) || ''
     @character.build_template(user: user) if @character.present? && @character.template.nil? && @character.user == current_user

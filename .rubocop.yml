@@ -490,6 +490,10 @@ Rails/EagerEvaluationLogMessage: # new in 2.11
 Rails/EnumSyntax: # new in 2.26
   Enabled: true
 
+Rails/Env: # new in 2.34
+  Enabled: false
+  # we don't use feature flags (yet?)
+
 Rails/EnvironmentVariableAccess: # (new in 2.10)
   Enabled: false
 
@@ -505,6 +509,9 @@ Rails/FilePath:
 Rails/FindById:
   Enabled: true
 
+Rails/FindByOrAssignmentMemoization: # new in 2.33
+  Enabled: true
+
 Rails/FreezeTime: # new in 2.16
   Enabled: true
 
@@ -514,6 +521,9 @@ Rails/HasManyOrHasOneDependent:
 
 Rails/HelperInstanceVariable:
   Enabled: false
+
+Rails/HttpStatusNameConsistency: # new in 2.34
+  Enabled: true
 
 Rails/IgnoredColumnsAssignment: # new in 2.17
   Enabled: true
@@ -545,6 +555,9 @@ Rails/MultipleRoutePaths: # new in 2.29
 Rails/NegateInclude:
   Enabled: true
 
+Rails/OrderArguments: # new in 2.33
+  Enabled: true
+
 Rails/Output:
   Exclude:
     - 'app/services/reply_scraper.rb' # post_scraper.rb (which calls ReplyScraper) is run manually in the command line
@@ -560,6 +573,9 @@ Rails/PluckInWhere:
 # read_attribute(:attr) and self[:attr] are no longer equivalent
 Rails/ReadWriteAttribute:
   Enabled: false
+
+Rails/RedirectBackOrTo: # new in 2.34
+  Enabled: true
 
 Rails/RedundantActiveRecordAllMethod: # new in 2.21
   Enabled: true
