@@ -59,7 +59,7 @@ jobs:
         run: bundle exec rails db:schema:load --trace
       - name: Asset cache
         id: asset-cache
-        uses: actions/cache@v4
+        uses: actions/cache@v5
         with:
           path: |
             public/assets
