@@ -291,7 +291,7 @@ GEM
       timeout
     net-smtp (0.5.1)
       net-protocol
-    newrelic_rpm (9.21.0)
+    newrelic_rpm (9.24.0)
     nilify_blanks (1.4.0)
       activerecord (>= 4.0.0)
       activesupport (>= 4.0.0)
