@@ -1,10 +1,8 @@
 # frozen_string_literal: true
-# typed: false
+# typed: true
 require Rails.root.join('lib', 'memorylogic')
 
 class ApplicationController < ActionController::Base
-  extend T::Sig
-
   include Authentication::Web
   include Memorylogic
 
@@ -46,7 +44,7 @@ class ApplicationController < ActionController::Base
   end
 
   VALID_PAGES = ['last', 'unread']
-  sig { params(allow_special: T::Boolean).returns(Integer) }
+  #: (?allow_special: bool) -> Integer
   def page(allow_special: false)
     return @page if @page
     return (@page = 1) unless params[:page]
@@ -61,7 +59,7 @@ class ApplicationController < ActionController::Base
 
   attr_writer :page
 
-  sig { returns(Integer) }
+  #: -> Integer
   def per_page
     default = 25 # browser.mobile? ? -1 : 25
     per = params[:per_page] || current_user.try(:per_page) || default
@@ -71,7 +69,7 @@ class ApplicationController < ActionController::Base
   end
   helper_method :per_page
 
-  sig { returns(String) }
+  #: -> String
   def page_view
     return @view if @view
     if logged_in?
@@ -82,7 +80,7 @@ class ApplicationController < ActionController::Base
   end
   helper_method :page_view
 
-  sig { returns(T::Boolean) }
+  #: -> bool
   def tos_skippable?
     return true if Rails.env.test? && params[:force_tos].nil?
     return true unless standard_request?
@@ -95,10 +93,16 @@ class ApplicationController < ActionController::Base
   end
   helper_method :tos_skippable?
 
-  T::Sig::WithoutRuntime.sig do
-    params(relation: Post::PrivateRelation, no_tests: T::Boolean, with_pagination: T::Boolean, select: String, max: T::Boolean,
-      with_unread: T::Boolean, show_blocked: T::Boolean,).returns(Post::PrivateRelation)
-  end
+  # @without_runtime
+  #: (
+  #|   Post::PrivateRelation relation,
+  #|   ?no_tests: bool,
+  #|   ?with_pagination: bool,
+  #|   ?select: String,
+  #|   ?max: bool,
+  #|   ?with_unread: bool,
+  #|   ?show_blocked: bool
+  #| ) -> Post::PrivateRelation
   def posts_from_relation(relation, no_tests: true, with_pagination: true, select: '', max: false, with_unread: false, show_blocked: false)
     posts = posts_relation_filter(relation, no_tests: no_tests, show_blocked: show_blocked)
     posts_count = posts.except(:select, :order, :group).count('DISTINCT posts.id')
@@ -109,14 +113,16 @@ class ApplicationController < ActionController::Base
   end
   helper_method :posts_from_relation
 
-  T::Sig::WithoutRuntime.sig { params(posts: Post::PrivateRelation, no_tests: T::Boolean, show_blocked: T::Boolean).returns(Post::PrivateRelation) }
+  # @without_runtime
+  #: (Post::PrivateRelation posts, ?no_tests: bool, ?show_blocked: bool) -> Post::PrivateRelation
   def posts_relation_filter(posts, no_tests: true, show_blocked: false)
     posts = posts.where.not(id: current_user.hidden_posts) if logged_in? && !show_blocked
     posts = posts.no_tests if no_tests
     posts.visible_to(current_user)
   end
 
-  T::Sig::WithoutRuntime.sig { params(relation: Post::PrivateRelation, select: String, max: T::Boolean).returns(Post::PrivateRelation) }
+  # @without_runtime
+  #: (Post::PrivateRelation relation, ?select: String, ?max: bool) -> Post::PrivateRelation
   def posts_list_relation(relation, select: '', max: false)
     select = if max
       <<~SQL.squish
@@ -180,7 +186,7 @@ class ApplicationController < ActionController::Base
   # unread_ids and unread_counts do not necessarily include fully unread posts
   helper_method :unread_ids, :opened_ids, :unread_counts
 
-  sig { params(msg: String).returns(String) }
+  #: (String msg) -> String
   def generate_short(msg)
     short_msg = Glowfic::Sanitizers.full(msg) # strip all tags, replacing appropriately with spaces
     return short_msg if short_msg.length <= 75

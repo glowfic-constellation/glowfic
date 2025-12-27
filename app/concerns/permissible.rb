@@ -1,8 +1,6 @@
 # frozen_string_literal: true
-# typed: false
+# typed: true
 module Permissible
-  extend T::Sig
-
   ADMIN = 1
   MOD = 2
   IMPORTER = 3
@@ -23,7 +21,7 @@ module Permissible
     :create_news,
   ]
 
-  sig { params(permission: Symbol).returns(T::Boolean) }
+  #: (Symbol permission) -> bool
   def has_permission?(permission)
     return false unless role_id
     return true if admin?
@@ -32,27 +30,27 @@ module Permissible
     MOD_PERMS.include?(permission)
   end
 
-  sig { returns(T::Boolean) }
+  #: -> bool
   def admin?
     role_id == ADMIN
   end
 
-  sig { returns(T::Boolean) }
+  #: -> bool
   def mod?
     role_id == MOD
   end
 
-  sig { returns(T::Boolean) }
+  #: -> bool
   def importer?
     role_id == IMPORTER
   end
 
-  sig { returns(T::Boolean) }
+  #: -> bool
   def suspended?
     role_id == SUSPENDED
   end
 
-  sig { returns(T::Boolean) }
+  #: -> bool
   def read_only?
     role_id == READONLY
   end

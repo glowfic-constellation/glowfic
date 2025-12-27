@@ -2,16 +2,15 @@
 module Tapioca
   module Compilers
     class WillPaginate < Tapioca::Dsl::Compiler
-      extend T::Sig
-
       ConstantType = type_member { { fixed: T.class_of(::ActiveRecord::Base) } }
 
-      sig { override.returns(T::Enumerable[Module]) }
+      # @override
+      #: -> Enumerable[Module]
       def self.gather_constants
         ActiveRecord::Base.descendants.reject(&:abstract_class?)
       end
 
-      sig { returns(RBI::Scope) }
+      #: -> RBI::Scope
       def model
         @model ||= T.let(
           root.create_path(constant),
@@ -19,7 +18,7 @@ module Tapioca
         )
       end
 
-      sig { returns(RBI::Scope) }
+      #: -> RBI::Scope
       def common_relation_methods_module
         @common_relation_methods_module ||= T.let(
           model.create_module("CommonRelationMethods"),
@@ -27,7 +26,8 @@ module Tapioca
         )
       end
 
-      sig { override.void }
+      # @override
+      #: -> void
       def decorate
         create_relation_methods
       end
