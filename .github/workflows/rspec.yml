@@ -79,19 +79,19 @@ jobs:
         run: bundle exec rspec spec --format documentation --format html --out rspec-results.html
       - name: Upload MinIO logs
         if: ${{ always() }}
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6
         with:
           name: minio-logs
           path: minio.log
       - name: Upload RSpec logs
         if: ${{ always() }}
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6
         with:
           name: rspec-logs
           path: rspec-results.html
       - name: Upload Coverage files
         if: ${{ always() }}
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6
         with:
           name: coverage
           path: coverage/
