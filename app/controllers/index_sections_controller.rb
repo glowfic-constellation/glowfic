@@ -6,7 +6,7 @@ class IndexSectionsController < ApplicationController
   before_action :require_permission, except: [:new, :create, :show]
 
   def new
-    unless (index = Index.find_by_id(params[:index_id]))
+    unless (index = Index.find_by(id: params[:index_id]))
       flash[:error] = "Index could not be found."
       redirect_to indexes_path and return
     end
@@ -76,7 +76,7 @@ class IndexSectionsController < ApplicationController
   private
 
   def find_model
-    return if (@section = IndexSection.find_by_id(params[:id]))
+    return if (@section = IndexSection.find_by(id: params[:id]))
     flash[:error] = "Index section could not be found."
     redirect_to indexes_path
   end

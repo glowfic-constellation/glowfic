@@ -172,7 +172,7 @@ class RepliesController < WritableController
   private
 
   def find_model
-    @reply = Reply.find_by_id(params[:id])
+    @reply = Reply.find_by(id: params[:id])
 
     unless @reply
       flash[:error] = "Post could not be found."

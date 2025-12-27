@@ -12,7 +12,7 @@ class Api::V1::GalleriesController < Api::ApiController
   def show
     show_galleryless and return if params[:id].to_s == '0'
 
-    unless (gallery = Gallery.find_by_id(params[:id]))
+    unless (gallery = Gallery.find_by(id: params[:id]))
       error = { message: "Gallery could not be found." }
       render json: { errors: [error] }, status: :not_found and return
     end
@@ -23,7 +23,7 @@ class Api::V1::GalleriesController < Api::ApiController
 
   def show_galleryless
     user = if params[:user_id].present?
-      User.active.find_by_id(params[:user_id])
+      User.active.find_by(id: params[:user_id])
     else
       current_user
     end
