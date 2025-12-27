@@ -42,7 +42,7 @@ class Api::V1::PostsController < Api::ApiController
 
     unless author.update(private_note: params[:private_note])
       error = { message: 'Post could not be updated.' }
-      render json: { errors: [error] }, status: :unprocessable_entity
+      render json: { errors: [error] }, status: :unprocessable_content
       return
     end
 
@@ -74,7 +74,7 @@ class Api::V1::PostsController < Api::ApiController
     boards = Board.where(id: posts.select(:board_id).distinct.pluck(:board_id))
     unless boards.count == 1
       error = { message: 'Posts must be from one continuity' }
-      render json: { errors: [error] }, status: :unprocessable_entity and return
+      render json: { errors: [error] }, status: :unprocessable_content and return
     end
 
     board = boards.first
@@ -84,7 +84,7 @@ class Api::V1::PostsController < Api::ApiController
     unless post_section_ids == [section_id] &&
            (section_id.nil? || BoardSection.where(id: section_id, board_id: board.id).exists?)
       error = { message: 'Posts must be from one specified section in the continuity, or no section' }
-      render json: { errors: [error] }, status: :unprocessable_entity and return
+      render json: { errors: [error] }, status: :unprocessable_content and return
     end
 
     Post.transaction do

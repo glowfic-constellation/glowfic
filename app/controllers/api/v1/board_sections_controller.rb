@@ -26,7 +26,7 @@ class Api::V1::BoardSectionsController < Api::ApiController
     boards = Board.where(id: sections.select(:board_id).distinct.pluck(:board_id))
     unless boards.count == 1
       error = { message: 'Sections must be from one continuity' }
-      render json: { errors: [error] }, status: :unprocessable_entity and return
+      render json: { errors: [error] }, status: :unprocessable_content and return
     end
 
     board = boards.first

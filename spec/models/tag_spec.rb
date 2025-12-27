@@ -111,7 +111,7 @@ RSpec.describe Tag do
       tags = create_tags
       fetched = GalleryGroup.where(id: tags.map(&:id)).select(:id).ordered_by_id.with_character_counts
       expect(fetched).to eq(tags)
-      expect(fetched.map { |x| x[:character_count] }).to eq([0, 1, 2])
+      expect(fetched.pluck(:character_count)).to eq([0, 1, 2])
     end
 
     it "works without with_character_counts scope" do

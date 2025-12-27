@@ -202,7 +202,7 @@ RSpec.describe Api::V1::CharactersController do
       get :show, params: { id: character.id }
       expect(response).to have_http_status(200)
       expect(response.parsed_body['galleries'].size).to eq(1)
-      expect(response.parsed_body['galleries'][0]['icons'].map { |i| i['keyword'] }).to eq(['xxx', 'yyy', 'zzz'])
+      expect(response.parsed_body['galleries'][0]['icons'].pluck('keyword')).to eq(['xxx', 'yyy', 'zzz'])
     end
 
     it "has associations when present", :show_in_doc do

@@ -26,7 +26,7 @@ class Api::V1::IndexSectionsController < Api::ApiController
     indexes = Index.where(id: sections.select(:index_id).distinct.pluck(:index_id))
     unless indexes.count == 1
       error = { message: 'Sections must be from one index' }
-      render json: { errors: [error] }, status: :unprocessable_entity and return
+      render json: { errors: [error] }, status: :unprocessable_content and return
     end
 
     index = indexes.first
