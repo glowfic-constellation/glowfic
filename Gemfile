@@ -72,7 +72,7 @@ group :development do
   gem 'rack-mini-profiler'
   gem 'rubocop', '~> 1.77.0', require: false
   gem 'rubocop-capybara', '~> 2.22.1', require: false
-  gem 'rubocop-factory_bot', '~> 2.27.1', require: false
+  gem 'rubocop-factory_bot', '~> 2.28.0', require: false
   gem 'rubocop-performance', '~> 1.26.1', require: false
   gem 'rubocop-rails', '~> 2.34.2', require: false
   gem 'rubocop-rspec', '~> 3.7.0', require: false
