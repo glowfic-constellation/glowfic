@@ -76,6 +76,9 @@ Layout/IndentationWidth:
   Enabled: true
   Width: 2
 
+Layout/LeadingCommentSpace:
+  AllowRBSInlineAnnotation: true
+
 Layout/LineContinuationLeadingSpace: # new in 1.31
   Enabled: true
 
