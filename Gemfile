@@ -87,7 +87,7 @@ group :development, :test do
   gem 'html-proofer', '< 4'
   gem 'rake', '~> 13.3'
   gem 'rspec-rails'
-  gem 'seed_dump', '~> 3.2'
+  gem 'seed_dump', '~> 3.4'
 end
 
 group :test do
