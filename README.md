@@ -115,7 +115,6 @@ You should now be able to execute the server, as before but now with the latest 
 
 We use the following tools to make sure our code is clean and standards-ctompliant:
 
-* [html-proofer](https://github.com/gjtorikian/html-proofer)
 * The [W3 HTML validator](https://validator.w3.org/)
 * [traceroute](https://github.com/amatsuda/traceroute)
 * [rails_best_practices](https://github.com/flyerhzm/rails_best_practices)
