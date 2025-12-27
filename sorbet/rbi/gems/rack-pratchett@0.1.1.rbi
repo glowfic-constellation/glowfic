@@ -6,15 +6,7 @@
 
 
 # source://rack-pratchett//lib/rack/pratchett.rb#1
-module Rack
-  class << self
-    # source://rack/2.2.9/lib/rack/version.rb#26
-    def release; end
-
-    # source://rack/2.2.9/lib/rack/version.rb#19
-    def version; end
-  end
-end
+module Rack; end
 
 # source://rack-pratchett//lib/rack/pratchett.rb#2
 class Rack::Pratchett

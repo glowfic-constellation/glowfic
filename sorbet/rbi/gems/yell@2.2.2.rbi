@@ -7,17 +7,23 @@
 
 # source://yell//lib/core_ext/logger.rb#3
 class Logger
-  # source://yell//lib/core_ext/logger.rb#11
+  # source://yell//lib/core_ext/logger.rb#15
   def add(severity, message = T.unsafe(nil), progname = T.unsafe(nil), &block); end
 
   # source://yell//lib/core_ext/logger.rb#11
   def add_with_yell(severity, message = T.unsafe(nil), progname = T.unsafe(nil), &block); end
 
-  # source://yell//lib/core_ext/logger.rb#5
+  # source://yell//lib/core_ext/logger.rb#14
+  def add_without_yell(severity, message = T.unsafe(nil), progname = T.unsafe(nil)); end
+
+  # source://yell//lib/core_ext/logger.rb#9
   def level=(level); end
 
   # source://yell//lib/core_ext/logger.rb#5
   def level_with_yell=(level); end
+
+  # source://yell//lib/core_ext/logger.rb#8
+  def level_without_yell=(severity); end
 end
 
 # source://yell//lib/yell.rb#22
@@ -388,11 +394,11 @@ class Yell::Adapters::Datefile < ::Yell::Adapters::File
   # Set the amount of logfiles to keep when rolling over.
   # By default, no files will be cleaned up.
   #
+  # @example Do not clean up any files
+  #   keep = 0
   # @example Keep the last 5 logfiles
   #   keep = 5
   #   keep = '10'
-  # @example Do not clean up any files
-  #   keep = 0
   #
   # source://yell//lib/yell/adapters/datefile.rb#39
   def keep; end
@@ -400,11 +406,11 @@ class Yell::Adapters::Datefile < ::Yell::Adapters::File
   # Set the amount of logfiles to keep when rolling over.
   # By default, no files will be cleaned up.
   #
+  # @example Do not clean up any files
+  #   keep = 0
   # @example Keep the last 5 logfiles
   #   keep = 5
   #   keep = '10'
-  # @example Do not clean up any files
-  #   keep = 0
   #
   # source://yell//lib/yell/adapters/datefile.rb#39
   def keep=(_arg0); end
@@ -561,20 +567,20 @@ class Yell::Adapters::Io < ::Yell::Adapters::Base
 
   # Sets colored output on or off (default off)
   #
-  # @example Enable colors
-  #   colors = true
   # @example Disable colors
   #   colors = false
+  # @example Enable colors
+  #   colors = true
   #
   # source://yell//lib/yell/adapters/io.rb#30
   def colors; end
 
   # Sets colored output on or off (default off)
   #
-  # @example Enable colors
-  #   colors = true
   # @example Disable colors
   #   colors = false
+  # @example Enable colors
+  #   colors = true
   #
   # source://yell//lib/yell/adapters/io.rb#30
   def colors=(_arg0); end
@@ -803,12 +809,12 @@ class Yell::Event::Options
 
   # Returns the value of attribute severity.
   #
-  # source://yell//lib/yell/event.rb#19
+  # source://yell//lib/yell/event.rb#31
   def to_i; end
 
   # Returns the value of attribute severity.
   #
-  # source://yell//lib/yell/event.rb#19
+  # source://yell//lib/yell/event.rb#32
   def to_int; end
 end
 
@@ -836,14 +842,14 @@ class Yell::Formatter
   #
   # @example Blank formatter
   #   Formatter.new
-  # @example Formatter with a message pattern
-  #   Formatter.new("%d [%5L] %p : %m")
   # @example Formatter with a message and date pattern
   #   Formatter.new("%d [%5L] %p : %m", "%D %H:%M:%S.%L")
   # @example Formatter with a message modifier
   #   Formatter.new do |f|
   #   f.modify(Hash) { |h| "Hash: #{h.inspect}" }
   #   end
+  # @example Formatter with a message pattern
+  #   Formatter.new("%d [%5L] %p : %m")
   # @return [Formatter] a new instance of Formatter
   #
   # source://yell//lib/yell/formatter.rb#107
@@ -966,6 +972,8 @@ module Yell::Helpers; end
 module Yell::Helpers::Adapter
   # Define an adapter to be used for logging.
   #
+  # @example Set the adapter directly from an adapter instance
+  #   adapter Yell::Adapter::File.new
   # @example Standard adapter
   #   adapter :file
   # @example Standard adapter with filename
@@ -975,8 +983,6 @@ module Yell::Helpers::Adapter
   #   adapter :file, filename: 'developent.log'
   # @example Standard adapter with filename and additional options
   #   adapter :file, 'development.log', level: :warn
-  # @example Set the adapter directly from an adapter instance
-  #   adapter Yell::Adapter::File.new
   # @param type [Symbol] The type of the adapter, may be `:file` or `:datefile` (default `:file`)
   # @raise [Yell::NoSuchAdapter] Will be thrown when the adapter is not defined
   # @return [Yell::Adapter] The instance
@@ -1008,12 +1014,12 @@ end
 
 # source://yell//lib/yell/helpers/formatter.rb#3
 module Yell::Helpers::Formatter
-  # source://yell//lib/yell/helpers/formatter.rb#14
+  # source://yell//lib/yell/helpers/formatter.rb#17
   def format; end
 
   # Set the format for your message.
   #
-  # source://yell//lib/yell/helpers/formatter.rb#6
+  # source://yell//lib/yell/helpers/formatter.rb#12
   def format=(pattern); end
 
   # source://yell//lib/yell/helpers/formatter.rb#14
@@ -1115,12 +1121,12 @@ end
 #
 # You are able to combine those modifiers to your convenience.
 #
-# @example Set from :info to :error (including)
-#   Yell::Level.new(:info).lte(:error)
-# @example Set from :info to :error (excluding)
-#   Yell::Level.new(:info).lt(:error)
 # @example Set at :info only
 #   Yell::Level.new.at(:info)
+# @example Set from :info to :error (excluding)
+#   Yell::Level.new(:info).lt(:error)
+# @example Set from :info to :error (including)
+#   Yell::Level.new(:info).lte(:error)
 #
 # source://yell//lib/yell/level.rb#23
 class Yell::Level
@@ -1130,12 +1136,12 @@ class Yell::Level
   #
   # @example Enable all severities
   #   Yell::Level.new
-  # @example Pass the minimum possible severity
-  #   Yell::Level.new :warn
-  # @example Pass an array to exactly set the level at the given severities
-  #   Yell::Level.new [:info, :error]
   # @example Pass a range to set the level within the severities
   #   Yell::Level.new (:info..:error)
+  # @example Pass an array to exactly set the level at the given severities
+  #   Yell::Level.new [:info, :error]
+  # @example Pass the minimum possible severity
+  #   Yell::Level.new :warn
   # @param severity [Integer, String, Symbol, Array, Range, nil] The severity for the level.
   # @return [Level] a new instance of Level
   #
@@ -1229,7 +1235,7 @@ class Yell::Level
 
   # to_i implements backwards compatibility
   #
-  # source://yell//lib/yell/level.rb#131
+  # source://yell//lib/yell/level.rb#134
   def to_int; end
 
   private
@@ -1311,22 +1317,22 @@ class Yell::Logger
 
   # Initialize a new Logger
   #
-  # @example A standard file logger
-  #   Yell::Logger.new 'development.log'
   # @example A standard datefile logger
   #   Yell::Logger.new :datefile
   #   Yell::Logger.new :datefile, 'development.log'
-  # @example Setting the log level
-  #   Yell::Logger.new level: :warn
-  #
-  #   Yell::Logger.new do |l|
-  #   l.level = :warn
-  #   end
+  # @example A standard file logger
+  #   Yell::Logger.new 'development.log'
   # @example Combined settings
   #   Yell::Logger.new 'development.log', level: :warn
   #
   #   Yell::Logger.new :datefile, 'development.log' do |l|
   #   l.level = :info
+  #   end
+  # @example Setting the log level
+  #   Yell::Logger.new level: :warn
+  #
+  #   Yell::Logger.new do |l|
+  #   l.level = :warn
   #   end
   # @return [Logger] a new instance of Logger
   #
@@ -1343,28 +1349,28 @@ class Yell::Logger
   # source://yell//lib/yell/logger.rb#125
   def close; end
 
-  # source://yell//lib/yell/logger.rb#110
+  # source://yell//lib/yell/logger.rb#108
   def debug(*m, &b); end
 
   # source://yell//lib/yell/logger.rb#108
   def debug?; end
 
-  # source://yell//lib/yell/logger.rb#113
+  # source://yell//lib/yell/logger.rb#108
   def error(*m, &b); end
 
-  # source://yell//lib/yell/logger.rb#111
+  # source://yell//lib/yell/logger.rb#108
   def error?; end
 
-  # source://yell//lib/yell/logger.rb#114
+  # source://yell//lib/yell/logger.rb#108
   def fatal(*m, &b); end
 
-  # source://yell//lib/yell/logger.rb#112
+  # source://yell//lib/yell/logger.rb#108
   def fatal?; end
 
-  # source://yell//lib/yell/logger.rb#111
+  # source://yell//lib/yell/logger.rb#108
   def info(*m, &b); end
 
-  # source://yell//lib/yell/logger.rb#109
+  # source://yell//lib/yell/logger.rb#108
   def info?; end
 
   # Get a pretty string representation of the logger.
@@ -1385,16 +1391,16 @@ class Yell::Logger
   # source://yell//lib/yell/logger.rb#79
   def name=(val); end
 
-  # source://yell//lib/yell/logger.rb#115
+  # source://yell//lib/yell/logger.rb#108
   def unknown(*m, &b); end
 
-  # source://yell//lib/yell/logger.rb#113
+  # source://yell//lib/yell/logger.rb#108
   def unknown?; end
 
-  # source://yell//lib/yell/logger.rb#112
+  # source://yell//lib/yell/logger.rb#108
   def warn(*m, &b); end
 
-  # source://yell//lib/yell/logger.rb#110
+  # source://yell//lib/yell/logger.rb#108
   def warn?; end
 
   # @private
@@ -1439,6 +1445,7 @@ Yell::NoFormat = T.let(T.unsafe(nil), String)
 
 # source://yell//lib/yell/repository.rb#10
 class Yell::Repository
+  include ::Singleton::SingletonInstanceMethods
   include ::Singleton
   extend ::MonitorMixin
   extend ::Singleton::SingletonClassMethods
@@ -1493,7 +1500,10 @@ class Yell::Repository
 
     private
 
+    # source://yell//lib/yell/repository.rb#12
     def allocate; end
+
+    # source://yell//lib/yell/repository.rb#12
     def new(*_arg0); end
   end
 end

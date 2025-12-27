@@ -15,12 +15,7 @@ module JQuery::FileUpload; end
 module JQuery::FileUpload::Rails; end
 
 # source://jquery-fileupload-rails//lib/jquery/fileupload/rails/engine.rb#4
-class JQuery::FileUpload::Rails::Engine < ::Rails::Engine
-  class << self
-    # source://activesupport/7.1.3.3/lib/active_support/callbacks.rb#70
-    def __callbacks; end
-  end
-end
+class JQuery::FileUpload::Rails::Engine < ::Rails::Engine; end
 
 # source://jquery-fileupload-rails//lib/jquery/fileupload/rails/middleware.rb#4
 class JQuery::FileUpload::Rails::Middleware

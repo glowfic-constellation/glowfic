@@ -23,76 +23,6 @@ class Redis
   include ::Redis::Commands::Streams
   include ::Redis::Commands::Strings
   include ::Redis::Commands::Transactions
-
-  # source://redis/5.2.0/lib/redis.rb#63
-  def initialize(options = T.unsafe(nil)); end
-
-  # source://redis/5.2.0/lib/redis.rb#98
-  def _client; end
-
-  # source://redis/5.2.0/lib/redis.rb#88
-  def close; end
-
-  # source://redis/5.2.0/lib/redis.rb#83
-  def connected?; end
-
-  # source://redis/5.2.0/lib/redis.rb#122
-  def connection; end
-
-  # source://redis/5.2.0/lib/redis.rb#88
-  def disconnect!; end
-
-  # source://redis/5.2.0/lib/redis.rb#118
-  def dup; end
-
-  # source://redis/5.2.0/lib/redis.rb#110
-  def id; end
-
-  # source://redis/5.2.0/lib/redis.rb#114
-  def inspect; end
-
-  # source://redis/5.2.0/lib/redis.rb#102
-  def pipelined(exception: T.unsafe(nil)); end
-
-  # source://redis/5.2.0/lib/redis.rb#94
-  def with; end
-
-  # source://redis/5.2.0/lib/redis.rb#78
-  def without_reconnect(&block); end
-
-  private
-
-  # source://redis/5.2.0/lib/redis.rb#164
-  def _subscription(method, timeout, channels, block); end
-
-  # source://redis/5.2.0/lib/redis.rb#134
-  def initialize_client(options); end
-
-  # source://redis/5.2.0/lib/redis.rb#158
-  def send_blocking_command(command, timeout, &block); end
-
-  # source://redis/5.2.0/lib/redis.rb#150
-  def send_command(command, &block); end
-
-  # source://redis/5.2.0/lib/redis.rb#146
-  def synchronize; end
-
-  class << self
-    # source://redis/5.2.0/lib/redis.rb#14
-    def deprecate!(message); end
-
-    # source://redis/5.2.0/lib/redis.rb#12
-    def raise_deprecations; end
-
-    # source://redis/5.2.0/lib/redis.rb#12
-    def raise_deprecations=(_arg0); end
-
-    # source://redis/5.2.0/lib/redis.rb#12
-    def silence_deprecations; end
-
-    # source://redis/5.2.0/lib/redis.rb#12
-    def silence_deprecations=(_arg0); end
-  end
 end
 
 # source://redis-namespace//lib/redis/namespace/version.rb#4
@@ -499,6 +429,7 @@ class Redis::Namespace
   # source://redis-namespace//lib/redis/namespace.rb#374
   def select(*args, **_arg1, &block); end
 
+  # source://redis-namespace//lib/redis/namespace.rb#296
   def self_respond_to?(*_arg0); end
 
   # source://redis-namespace//lib/redis/namespace.rb#394

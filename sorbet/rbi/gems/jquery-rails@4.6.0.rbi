@@ -12,12 +12,7 @@ module Jquery; end
 module Jquery::Rails; end
 
 # source://jquery-rails//lib/jquery/rails/engine.rb#3
-class Jquery::Rails::Engine < ::Rails::Engine
-  class << self
-    # source://activesupport/7.1.3.3/lib/active_support/callbacks.rb#70
-    def __callbacks; end
-  end
-end
+class Jquery::Rails::Engine < ::Rails::Engine; end
 
 # source://jquery-rails//lib/jquery/rails/version.rb#5
 Jquery::Rails::JQUERY_2_VERSION = T.let(T.unsafe(nil), String)

@@ -15,12 +15,7 @@ module Jquery::Ui; end
 module Jquery::Ui::Rails; end
 
 # source://jquery-ui-rails-dox-fork//lib/jquery/ui/rails/engine.rb#4
-class Jquery::Ui::Rails::Engine < ::Rails::Engine
-  class << self
-    # source://activesupport/7.1.3.3/lib/active_support/callbacks.rb#70
-    def __callbacks; end
-  end
-end
+class Jquery::Ui::Rails::Engine < ::Rails::Engine; end
 
 # source://jquery-ui-rails-dox-fork//lib/jquery/ui/rails/version.rb#5
 Jquery::Ui::Rails::JQUERY_UI_VERSION = T.let(T.unsafe(nil), String)

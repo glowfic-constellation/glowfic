@@ -28,7 +28,7 @@ module MultiJson
   # * <tt>:gson</tt> (JRuby only)
   # * <tt>:jr_jackson</tt> (JRuby only)
   #
-  # source://multi_json//lib/multi_json.rb#90
+  # source://multi_json//lib/multi_json.rb#95
   def adapter=(new_adapter); end
 
   # source://multi_json//lib/multi_json.rb#26
@@ -44,7 +44,7 @@ module MultiJson
   # <tt>:symbolize_keys</tt> :: If true, will use symbols instead of strings for the keys.
   # <tt>:adapter</tt> :: If set, the selected adapter will be used for this call.
   #
-  # source://multi_json//lib/multi_json.rb#119
+  # source://multi_json//lib/multi_json.rb#127
   def decode(string, options = T.unsafe(nil)); end
 
   # The default adapter based on what you currently
@@ -60,7 +60,7 @@ module MultiJson
   # if any adapters are already loaded, then checks
   # to see which are installed if none are loaded.
   #
-  # source://multi_json//lib/multi_json.rb#46
+  # source://multi_json//lib/multi_json.rb#67
   def default_engine; end
 
   # source://multi_json//lib/multi_json.rb#18
@@ -76,12 +76,12 @@ module MultiJson
 
   # Encodes a Ruby object as JSON.
   #
-  # source://multi_json//lib/multi_json.rb#138
+  # source://multi_json//lib/multi_json.rb#141
   def encode(object, options = T.unsafe(nil)); end
 
   # Get the current adapter class.
   #
-  # source://multi_json//lib/multi_json.rb#70
+  # source://multi_json//lib/multi_json.rb#77
   def engine; end
 
   # Set the JSON parser utilizing a symbol, string, or class.
@@ -96,7 +96,7 @@ module MultiJson
   # * <tt>:gson</tt> (JRuby only)
   # * <tt>:jr_jackson</tt> (JRuby only)
   #
-  # source://multi_json//lib/multi_json.rb#90
+  # source://multi_json//lib/multi_json.rb#96
   def engine=(new_adapter); end
 
   # Decode a JSON string into Ruby.
@@ -137,7 +137,7 @@ module MultiJson
 
   # Executes passed block using specified adapter.
   #
-  # source://multi_json//lib/multi_json.rb#144
+  # source://multi_json//lib/multi_json.rb#151
   def with_engine(new_adapter); end
 
   private
@@ -151,6 +151,7 @@ MultiJson::ALIASES = T.let(T.unsafe(nil), Hash)
 
 # source://multi_json//lib/multi_json/adapter.rb#5
 class MultiJson::Adapter
+  include ::Singleton::SingletonInstanceMethods
   include ::Singleton
   extend ::MultiJson::Options
   extend ::Singleton::SingletonClassMethods
@@ -167,6 +168,7 @@ class MultiJson::Adapter
 
     private
 
+    # source://multi_json//lib/multi_json/adapter.rb#7
     def allocate; end
 
     # @return [Boolean]
@@ -180,6 +182,7 @@ class MultiJson::Adapter
     # source://multi_json//lib/multi_json/adapter.rb#42
     def cached_load_options(options); end
 
+    # source://multi_json//lib/multi_json/adapter.rb#7
     def new(*_arg0); end
   end
 end
@@ -209,7 +212,7 @@ class MultiJson::Adapters::JsonCommon < ::MultiJson::Adapter
   def load(string, options = T.unsafe(nil)); end
 
   class << self
-    # source://multi_json//lib/multi_json/adapter.rb#14
+    # source://multi_json//lib/multi_json/adapters/json_common.rb#6
     def default_load_options; end
   end
 end

@@ -6,15 +6,7 @@
 
 
 # source://typhoeus//lib/rack/typhoeus/middleware/params_decoder/helper.rb#1
-module Rack
-  class << self
-    # source://rack/2.2.9/lib/rack/version.rb#26
-    def release; end
-
-    # source://rack/2.2.9/lib/rack/version.rb#19
-    def version; end
-  end
-end
+module Rack; end
 
 # source://typhoeus//lib/rack/typhoeus/middleware/params_decoder/helper.rb#2
 module Rack::Typhoeus; end
@@ -26,10 +18,10 @@ module Rack::Typhoeus::Middleware; end
 # the nested params encoded by Typhoeus.
 #
 # @author Dwayne Macgowan
-# @example Require the railtie when using Rails.
-#   require 'typhoeus/railtie'
 # @example Include the middleware for Rack based applications.
 #   use Rack::Typhoeus::Middleware::ParamsDecoder
+# @example Require the railtie when using Rails.
+#   require 'typhoeus/railtie'
 # @example Use the helper directly. Not recommended as b/c the interface might change.
 #   require 'rack/typhoeus/middleware/params_decoder/helper'
 #   include Rack::Typhoeus::Middleware::ParamsDecoder::Helper
@@ -120,15 +112,13 @@ end
 # Faraday relies on {Faraday::Adapter::Typhoeus}
 # since Typhoeus version 0.5.
 #
-# @example Make a request with the shortcut.
-#   response = Typhoeus.get("www.example.com")
-# @example Simplest request.
-#   response = Typhoeus::Request.new("www.example.com").run
-# @example Request with url parameters.
+# @example Create a request and allow follow redirections.
 #   response = Typhoeus::Request.new(
 #   "www.example.com",
-#   params: {a: 1}
+#   followlocation: true
 #   ).run
+# @example Make a request with the shortcut.
+#   response = Typhoeus.get("www.example.com")
 # @example Request with a body.
 #   response = Typhoeus::Request.new(
 #   "www.example.com",
@@ -140,19 +130,21 @@ end
 #   params: {a: 1},
 #   body: {b: 2}
 #   ).run
-# @example Create a request and allow follow redirections.
+# @example Request with url parameters.
 #   response = Typhoeus::Request.new(
 #   "www.example.com",
-#   followlocation: true
+#   params: {a: 1}
 #   ).run
+# @example Simplest request.
+#   response = Typhoeus::Request.new("www.example.com").run
 # @example Use the hydra to do multiple requests.
 #   hydra = Typhoeus::Hydra.new
 #   requests = (0..9).map{ Typhoeus::Request.new("www.example.com") }
 #   requests.each{ |request| hydra.queue(request) }
 #   hydra.run
-# @see Typhoeus::Request
-# @see Typhoeus::Hydra
 # @see Faraday::Adapter::Typhoeus
+# @see Typhoeus::Hydra
+# @see Typhoeus::Request
 # @since 0.5.0
 #
 # source://typhoeus//lib/typhoeus/config.rb#1
@@ -175,12 +167,12 @@ module Typhoeus
 
     # Set the Typhoeus configuration options by passing a block.
     #
+    # @example Set the configuration directly.
+    #   Typhoeus::Config.verbose = true
     # @example Set the configuration options within a block.
     #   Typhoeus.configure do |config|
     #   config.verbose = true
     #   end
-    # @example Set the configuration directly.
-    #   Typhoeus::Config.verbose = true
     # @return [Typhoeus::Config] The configuration.
     # @see Typhoeus::Config
     # @since 0.5.0
@@ -191,13 +183,6 @@ module Typhoeus
 
     # Stub out a specific request.
     #
-    # @example Stub a request and get specified response.
-    #   expected = Typhoeus::Response.new
-    #   Typhoeus.stub("www.example.com").and_return(expected)
-    #
-    #   actual = Typhoeus.get("www.example.com")
-    #   expected == actual
-    #   #=> true
     # @example Stub a request and get a lazily-constructed response containing data from actual widgets that exist in the system when the stubbed request is made.
     #   Typhoeus.stub("www.example.com/widgets") do
     #   actual_widgets = Widget.all
@@ -220,6 +205,13 @@ module Typhoeus
     #   :body => SERIALIZERS[format].serialize(body_obj)
     #   )
     #   end
+    # @example Stub a request and get specified response.
+    #   expected = Typhoeus::Response.new
+    #   Typhoeus.stub("www.example.com").and_return(expected)
+    #
+    #   actual = Typhoeus.get("www.example.com")
+    #   expected == actual
+    #   #=> true
     # @param base_url [String] The url to stub out.
     # @param options [Hash] The options to stub out.
     # @return [Typhoeus::Expectation] The expecatation.
@@ -284,9 +276,9 @@ class Typhoeus::Cache::Redis
   # @example Set Redis as the Typhoeus cache backend
   #   Typhoeus::Config.cache = Typhoeus::Cache::Redis.new
   # @option options
+  # @param options [Hash] Options
   # @param redis [Redis] A connection to Redis. Defaults to `Redis.new`, which uses the
   #   `REDIS_URL` environment variable to connect
-  # @param options [Hash] Options
   # @return [Redis] a new instance of Redis
   #
   # source://typhoeus//lib/typhoeus/cache/redis.rb#15
@@ -302,12 +294,12 @@ end
 # The Typhoeus configuration used to set global
 # options.
 #
+# @example Set the configuration directly.
+#   Typhoeus::Config.verbose = true
 # @example Set the configuration options within a block.
 #   Typhoeus.configure do |config|
 #   config.verbose = true
 #   end
-# @example Set the configuration directly.
-#   Typhoeus::Config.verbose = true
 #
 # source://typhoeus//lib/typhoeus/config.rb#12
 module Typhoeus::Config
@@ -322,10 +314,10 @@ module Typhoeus::Config
   # {Typhoeus.with_connection}.
   #
   # @return [Boolean]
-  # @see Typhoeus::Request::BlockConnection
-  # @see Typhoeus::Hydra::BlockConnection
   # @see Typhoeus#with_connection
   # @see Typhoeus::Errors::NoStub
+  # @see Typhoeus::Hydra::BlockConnection
+  # @see Typhoeus::Request::BlockConnection
   #
   # source://typhoeus//lib/typhoeus/config.rb#29
   def block_connection; end
@@ -339,10 +331,10 @@ module Typhoeus::Config
   # {Typhoeus.with_connection}.
   #
   # @return [Boolean]
-  # @see Typhoeus::Request::BlockConnection
-  # @see Typhoeus::Hydra::BlockConnection
   # @see Typhoeus#with_connection
   # @see Typhoeus::Errors::NoStub
+  # @see Typhoeus::Hydra::BlockConnection
+  # @see Typhoeus::Request::BlockConnection
   #
   # source://typhoeus//lib/typhoeus/config.rb#29
   def block_connection=(_arg0); end
@@ -484,8 +476,8 @@ class Typhoeus::EasyFactory
   # @api private
   # @example Create easy factory.
   #   Typhoeus::Hydra::EasyFactory.new(request, hydra)
-  # @param request [Request] The request to build an easy for.
   # @param hydra [Hydra] The hydra to build an easy for.
+  # @param request [Request] The request to build an easy for.
   # @return [EasyFactory] a new instance of EasyFactory
   #
   # source://typhoeus//lib/typhoeus/easy_factory.rb#58
@@ -619,13 +611,6 @@ class Typhoeus::Errors::TyphoeusError < ::StandardError; end
 # whether they match. If that's the case, the attached
 # responses are returned one by one.
 #
-# @example Stub a request and get specified response.
-#   expected = Typhoeus::Response.new
-#   Typhoeus.stub("www.example.com").and_return(expected)
-#
-#   actual = Typhoeus.get("www.example.com")
-#   expected == actual
-#   #=> true
 # @example Stub a request and get a lazily-constructed response containing data from actual widgets that exist in the system when the stubbed request is made.
 #   Typhoeus.stub("www.example.com/widgets") do
 #   actual_widgets = Widget.all
@@ -648,6 +633,13 @@ class Typhoeus::Errors::TyphoeusError < ::StandardError; end
 #   :body => SERIALIZERS[format].serialize(body_obj)
 #   )
 #   end
+# @example Stub a request and get specified response.
+#   expected = Typhoeus::Response.new
+#   Typhoeus.stub("www.example.com").and_return(expected)
+#
+#   actual = Typhoeus.get("www.example.com")
+#   expected == actual
+#   #=> true
 #
 # source://typhoeus//lib/typhoeus/expectation.rb#41
 class Typhoeus::Expectation
@@ -838,10 +830,10 @@ class Typhoeus::Hydra
   # {http://rubydoc.info/github/typhoeus/ethon/Ethon/Multi#initialize-instance_method Ethon::Multi#initialize}
   # options are also available.
   #
-  # @example Create a hydra.
-  #   Typhoeus::Hydra.new
   # @example Create a hydra with max_concurrency.
   #   Typhoeus::Hydra.new(max_concurrency: 20)
+  # @example Create a hydra.
+  #   Typhoeus::Hydra.new
   # @option options
   # @param options [Hash] The options hash.
   # @return [Hydra] a new instance of Hydra
@@ -1167,15 +1159,13 @@ end
 
 # This class represents a request.
 #
-# @example Make a request with the shortcut.
-#   response = Typhoeus.get("www.example.com")
-# @example Simplest request.
-#   response = Typhoeus::Request.new("www.example.com").run
-# @example Request with url parameters.
+# @example Create a request and allow follow redirections.
 #   response = Typhoeus::Request.new(
 #   "www.example.com",
-#   params: {a: 1}
+#   followlocation: true
 #   ).run
+# @example Make a request with the shortcut.
+#   response = Typhoeus.get("www.example.com")
 # @example Request with a body.
 #   response = Typhoeus::Request.new(
 #   "www.example.com",
@@ -1187,14 +1177,16 @@ end
 #   params: {a: 1},
 #   body: {b: 2}
 #   ).run
-# @example Create a request and allow follow redirections.
+# @example Request with url parameters.
 #   response = Typhoeus::Request.new(
 #   "www.example.com",
-#   followlocation: true
+#   params: {a: 1}
 #   ).run
+# @example Simplest request.
+#   response = Typhoeus::Request.new("www.example.com").run
 # @see Typhoeus::Hydra
-# @see Typhoeus::Response
 # @see Typhoeus::Request::Actions
+# @see Typhoeus::Response
 #
 # source://typhoeus//lib/typhoeus/request/actions.rb#2
 class Typhoeus::Request
@@ -1213,12 +1205,10 @@ class Typhoeus::Request
 
   # Creates a new request.
   #
-  # @example Simplest request.
-  #   response = Typhoeus::Request.new("www.example.com").run
-  # @example Request with url parameters.
+  # @example Create a request and allow follow redirections.
   #   response = Typhoeus::Request.new(
   #   "www.example.com",
-  #   params: {a: 1}
+  #   followlocation: true
   #   ).run
   # @example Request with a body.
   #   response = Typhoeus::Request.new(
@@ -1231,11 +1221,13 @@ class Typhoeus::Request
   #   params: {a: 1},
   #   body: {b: 2}
   #   ).run
-  # @example Create a request and allow follow redirections.
+  # @example Request with url parameters.
   #   response = Typhoeus::Request.new(
   #   "www.example.com",
-  #   followlocation: true
+  #   params: {a: 1}
   #   ).run
+  # @example Simplest request.
+  #   response = Typhoeus::Request.new("www.example.com").run
   # @note See {http://rubydoc.info/github/typhoeus/ethon/Ethon/Easy/Options Ethon::Easy::Options} for more options.
   # @option options
   # @option options
@@ -1243,8 +1235,8 @@ class Typhoeus::Request
   # @param options [options] The options.
   # @return [Typhoeus::Request] The request.
   # @see Typhoeus::Hydra
-  # @see Typhoeus::Response
   # @see Typhoeus::Request::Actions
+  # @see Typhoeus::Response
   #
   # source://typhoeus//lib/typhoeus/request.rb#113
   def initialize(base_url, options = T.unsafe(nil)); end
@@ -1489,8 +1481,8 @@ module Typhoeus::Request::Actions
   # @note See {http://rubydoc.info/github/typhoeus/ethon/Ethon/Easy/Options Ethon::Easy::Options} for more options.
   # @option options
   # @option options
-  # @param options [Hash] a customizable set of options
   # @param base_url [String] The url to request.
+  # @param options [Hash] a customizable set of options
   # @param options [options] The options.
   # @return [Response] The new response.
   #
@@ -1751,9 +1743,9 @@ module Typhoeus::Request::Operations
   # Sets a response, the request on the response
   # and executes the callbacks.
   #
-  # @param response [Typhoeus::Response] The response.
   # @param bypass_memoization [Boolean] Wether to bypass
   #   memoization or not. Decides how the response is set.
+  # @param response [Typhoeus::Response] The response.
   # @return [Typhoeus::Response] The response.
   #
   # source://typhoeus//lib/typhoeus/request/operations.rb#28
@@ -1890,7 +1882,7 @@ class Typhoeus::Response
   #
   # @api private
   #
-  # source://typhoeus//lib/typhoeus/response.rb#54
+  # source://typhoeus//lib/typhoeus/response.rb#57
   def mock?; end
 
   # The provided options, which contain all the
@@ -2042,7 +2034,7 @@ module Typhoeus::Response::Informations
   #   response.appconnect_time
   # @return [Float] The appconnect_time.
   #
-  # source://typhoeus//lib/typhoeus/response/informations.rb#124
+  # source://typhoeus//lib/typhoeus/response/informations.rb#127
   def app_connect_time; end
 
   # Return the time, in seconds, it took from the start
@@ -2065,7 +2057,7 @@ module Typhoeus::Response::Informations
   #   response.response_body
   # @return [String] The response_body.
   #
-  # source://typhoeus//lib/typhoeus/response/informations.rb#36
+  # source://typhoeus//lib/typhoeus/response/informations.rb#39
   def body; end
 
   # Return the last received HTTP, FTP or SMTP response code.
@@ -2077,7 +2069,7 @@ module Typhoeus::Response::Informations
   #   response.response_code
   # @return [Integer] The response_code.
   #
-  # source://typhoeus//lib/typhoeus/response/informations.rb#69
+  # source://typhoeus//lib/typhoeus/response/informations.rb#72
   def code; end
 
   # Return the time, in seconds, it took from the start
@@ -2117,7 +2109,7 @@ module Typhoeus::Response::Informations
   #   response.headers
   # @return [Typhoeus::Header] The response header.
   #
-  # source://typhoeus//lib/typhoeus/response/informations.rb#284
+  # source://typhoeus//lib/typhoeus/response/informations.rb#289
   def headers_hash; end
 
   # Return the available http auth methods.
@@ -2138,7 +2130,7 @@ module Typhoeus::Response::Informations
   #   response.namelookup_time
   # @return [Float] The namelookup_time.
   #
-  # source://typhoeus//lib/typhoeus/response/informations.rb#162
+  # source://typhoeus//lib/typhoeus/response/informations.rb#165
   def name_lookup_time; end
 
   # Return the time, in seconds, it took from the
@@ -2320,7 +2312,7 @@ module Typhoeus::Response::Informations
   #   response.starttransfer_time
   # @return [Float] The starttransfer_time.
   #
-  # source://typhoeus//lib/typhoeus/response/informations.rb#108
+  # source://typhoeus//lib/typhoeus/response/informations.rb#111
   def start_transfer_time; end
 
   # Return the time, in seconds, it took from the start
@@ -2342,7 +2334,7 @@ module Typhoeus::Response::Informations
   #   response.total_time
   # @return [Float] The total_time.
   #
-  # source://typhoeus//lib/typhoeus/response/informations.rb#94
+  # source://typhoeus//lib/typhoeus/response/informations.rb#97
   def time; end
 
   # Return the total time in seconds for the previous

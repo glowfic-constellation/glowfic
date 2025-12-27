@@ -8,15 +8,7 @@
 # can be required by other files to prevent them from having to open and nest Rack and Timeout
 #
 # source://rack-timeout//lib/rack/timeout/support/namespace.rb#2
-module Rack
-  class << self
-    # source://rack/2.2.9/lib/rack/version.rb#26
-    def release; end
-
-    # source://rack/2.2.9/lib/rack/version.rb#19
-    def version; end
-  end
-end
+module Rack; end
 
 # source://rack-timeout//lib/rack/timeout/support/namespace.rb#3
 class Rack::Timeout
@@ -176,7 +168,7 @@ end
 module Rack::Timeout::MonotonicTime
   extend ::Rack::Timeout::MonotonicTime
 
-  # source://rack-timeout//lib/rack/timeout/support/monotonic_time.rb#8
+  # source://rack-timeout//lib/rack/timeout/support/monotonic_time.rb#24
   def fsecs; end
 
   # source://rack-timeout//lib/rack/timeout/support/monotonic_time.rb#12
@@ -224,12 +216,16 @@ class Rack::Timeout::RequestDetails < ::Struct
   # Returns the value of attribute id
   #
   # @return [Object] the current value of id
+  #
+  # source://rack-timeout//lib/rack/timeout/core.rb#27
   def id; end
 
   # Sets the attribute id
   #
   # @param value [Object] the value to set the attribute id to.
   # @return [Object] the newly set value
+  #
+  # source://rack-timeout//lib/rack/timeout/core.rb#27
   def id=(_); end
 
   # helper method used for formatting values in milliseconds
@@ -240,63 +236,92 @@ class Rack::Timeout::RequestDetails < ::Struct
   # Returns the value of attribute service
   #
   # @return [Object] the current value of service
+  #
+  # source://rack-timeout//lib/rack/timeout/core.rb#27
   def service; end
 
   # Sets the attribute service
   #
   # @param value [Object] the value to set the attribute service to.
   # @return [Object] the newly set value
+  #
+  # source://rack-timeout//lib/rack/timeout/core.rb#27
   def service=(_); end
 
   # Returns the value of attribute state
   #
   # @return [Object] the current value of state
+  #
+  # source://rack-timeout//lib/rack/timeout/core.rb#27
   def state; end
 
   # Sets the attribute state
   #
   # @param value [Object] the value to set the attribute state to.
   # @return [Object] the newly set value
+  #
+  # source://rack-timeout//lib/rack/timeout/core.rb#27
   def state=(_); end
 
   # Returns the value of attribute term
   #
   # @return [Object] the current value of term
+  #
+  # source://rack-timeout//lib/rack/timeout/core.rb#27
   def term; end
 
   # Sets the attribute term
   #
   # @param value [Object] the value to set the attribute term to.
   # @return [Object] the newly set value
+  #
+  # source://rack-timeout//lib/rack/timeout/core.rb#27
   def term=(_); end
 
   # Returns the value of attribute timeout
   #
   # @return [Object] the current value of timeout
+  #
+  # source://rack-timeout//lib/rack/timeout/core.rb#27
   def timeout; end
 
   # Sets the attribute timeout
   #
   # @param value [Object] the value to set the attribute timeout to.
   # @return [Object] the newly set value
+  #
+  # source://rack-timeout//lib/rack/timeout/core.rb#27
   def timeout=(_); end
 
   # Returns the value of attribute wait
   #
   # @return [Object] the current value of wait
+  #
+  # source://rack-timeout//lib/rack/timeout/core.rb#27
   def wait; end
 
   # Sets the attribute wait
   #
   # @param value [Object] the value to set the attribute wait to.
   # @return [Object] the newly set value
+  #
+  # source://rack-timeout//lib/rack/timeout/core.rb#27
   def wait=(_); end
 
   class << self
+    # source://rack-timeout//lib/rack/timeout/core.rb#27
     def [](*_arg0); end
+
+    # source://rack-timeout//lib/rack/timeout/core.rb#27
     def inspect; end
+
+    # source://rack-timeout//lib/rack/timeout/core.rb#27
     def keyword_init?; end
+
+    # source://rack-timeout//lib/rack/timeout/core.rb#27
     def members; end
+
+    # source://rack-timeout//lib/rack/timeout/core.rb#27
     def new(*_arg0); end
   end
 end

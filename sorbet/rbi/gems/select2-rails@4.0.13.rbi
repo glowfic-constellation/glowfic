@@ -12,12 +12,7 @@ module Select2; end
 module Select2::Rails; end
 
 # source://select2-rails//lib/select2-rails/engine.rb#3
-class Select2::Rails::Engine < ::Rails::Engine
-  class << self
-    # source://activesupport/7.1.3.3/lib/active_support/callbacks.rb#70
-    def __callbacks; end
-  end
-end
+class Select2::Rails::Engine < ::Rails::Engine; end
 
 # source://select2-rails//lib/select2-rails/version.rb#3
 Select2::Rails::VERSION = T.let(T.unsafe(nil), String)

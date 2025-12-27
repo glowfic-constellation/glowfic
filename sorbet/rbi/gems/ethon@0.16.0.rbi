@@ -36,47 +36,94 @@ module Ethon::Curl
   extend ::Ethon::Curls::Messages
   extend ::Ethon::Curls::Functions
 
+  # source://ethon//lib/ethon/curl.rb#30
   def easy_cleanup(*_arg0); end
+
+  # source://ethon//lib/ethon/curl.rb#30
   def easy_duphandle(*_arg0); end
+
+  # source://ethon//lib/ethon/curl.rb#30
   def easy_escape(*_arg0); end
 
-  # source://ffi/1.17.0/lib/ffi/variadic.rb#61
+  # source://ethon//lib/ethon/curl.rb#30
   def easy_getinfo(*args); end
 
+  # source://ethon//lib/ethon/curl.rb#30
   def easy_init(*_arg0); end
+
+  # source://ethon//lib/ethon/curl.rb#30
   def easy_perform(*_arg0); end
+
+  # source://ethon//lib/ethon/curl.rb#30
   def easy_reset(*_arg0); end
 
-  # source://ffi/1.17.0/lib/ffi/variadic.rb#61
+  # source://ethon//lib/ethon/curl.rb#30
   def easy_setopt(*args); end
 
+  # source://ethon//lib/ethon/curl.rb#30
   def easy_strerror(*_arg0); end
 
-  # source://ffi/1.17.0/lib/ffi/variadic.rb#61
+  # source://ethon//lib/ethon/curl.rb#30
   def formadd(*args); end
 
+  # source://ethon//lib/ethon/curl.rb#30
   def formfree(*_arg0); end
+
+  # source://ethon//lib/ethon/curl.rb#30
   def free(*_arg0); end
+
+  # source://ethon//lib/ethon/curl.rb#30
   def global_cleanup(*_arg0); end
+
+  # source://ethon//lib/ethon/curl.rb#30
   def global_init(*_arg0); end
+
+  # source://ethon//lib/ethon/curl.rb#30
   def multi_add_handle(*_arg0); end
+
+  # source://ethon//lib/ethon/curl.rb#30
   def multi_cleanup(*_arg0); end
+
+  # source://ethon//lib/ethon/curl.rb#30
   def multi_fdset(*_arg0); end
+
+  # source://ethon//lib/ethon/curl.rb#30
   def multi_info_read(*_arg0); end
+
+  # source://ethon//lib/ethon/curl.rb#30
   def multi_init(*_arg0); end
+
+  # source://ethon//lib/ethon/curl.rb#30
   def multi_perform(*_arg0); end
+
+  # source://ethon//lib/ethon/curl.rb#30
   def multi_remove_handle(*_arg0); end
 
-  # source://ffi/1.17.0/lib/ffi/variadic.rb#61
+  # source://ethon//lib/ethon/curl.rb#30
   def multi_setopt(*args); end
 
+  # source://ethon//lib/ethon/curl.rb#30
   def multi_socket_action(*_arg0); end
+
+  # source://ethon//lib/ethon/curl.rb#30
   def multi_strerror(*_arg0); end
+
+  # source://ethon//lib/ethon/curl.rb#30
   def multi_timeout(*_arg0); end
+
+  # source://ethon//lib/ethon/curl.rb#30
   def select(*_arg0); end
+
+  # source://ethon//lib/ethon/curl.rb#30
   def slist_append(*_arg0); end
+
+  # source://ethon//lib/ethon/curl.rb#30
   def slist_free_all(*_arg0); end
+
+  # source://ethon//lib/ethon/curl.rb#30
   def version(*_arg0); end
+
+  # source://ethon//lib/ethon/curl.rb#30
   def version_info(*_arg0); end
 
   class << self
@@ -96,28 +143,46 @@ module Ethon::Curl
     # source://ethon//lib/ethon/curl.rb#78
     def cleanup; end
 
+    # source://ethon//lib/ethon/curl.rb#30
     def easy_cleanup(*_arg0); end
+
+    # source://ethon//lib/ethon/curl.rb#30
     def easy_duphandle(*_arg0); end
+
+    # source://ethon//lib/ethon/curl.rb#30
     def easy_escape(*_arg0); end
 
-    # source://ffi/1.17.0/lib/ffi/variadic.rb#61
+    # source://ethon//lib/ethon/curl.rb#30
     def easy_getinfo(*args); end
 
+    # source://ethon//lib/ethon/curl.rb#30
     def easy_init(*_arg0); end
+
+    # source://ethon//lib/ethon/curl.rb#30
     def easy_perform(*_arg0); end
+
+    # source://ethon//lib/ethon/curl.rb#30
     def easy_reset(*_arg0); end
 
-    # source://ffi/1.17.0/lib/ffi/variadic.rb#61
+    # source://ethon//lib/ethon/curl.rb#30
     def easy_setopt(*args); end
 
+    # source://ethon//lib/ethon/curl.rb#30
     def easy_strerror(*_arg0); end
 
-    # source://ffi/1.17.0/lib/ffi/variadic.rb#61
+    # source://ethon//lib/ethon/curl.rb#30
     def formadd(*args); end
 
+    # source://ethon//lib/ethon/curl.rb#30
     def formfree(*_arg0); end
+
+    # source://ethon//lib/ethon/curl.rb#30
     def free(*_arg0); end
+
+    # source://ethon//lib/ethon/curl.rb#30
     def global_cleanup(*_arg0); end
+
+    # source://ethon//lib/ethon/curl.rb#30
     def global_init(*_arg0); end
 
     # This function sets up the program environment that libcurl needs.
@@ -145,24 +210,52 @@ module Ethon::Curl
     # source://ethon//lib/ethon/curl.rb#58
     def init; end
 
+    # source://ethon//lib/ethon/curl.rb#30
     def multi_add_handle(*_arg0); end
+
+    # source://ethon//lib/ethon/curl.rb#30
     def multi_cleanup(*_arg0); end
+
+    # source://ethon//lib/ethon/curl.rb#30
     def multi_fdset(*_arg0); end
+
+    # source://ethon//lib/ethon/curl.rb#30
     def multi_info_read(*_arg0); end
+
+    # source://ethon//lib/ethon/curl.rb#30
     def multi_init(*_arg0); end
+
+    # source://ethon//lib/ethon/curl.rb#30
     def multi_perform(*_arg0); end
+
+    # source://ethon//lib/ethon/curl.rb#30
     def multi_remove_handle(*_arg0); end
 
-    # source://ffi/1.17.0/lib/ffi/variadic.rb#61
+    # source://ethon//lib/ethon/curl.rb#30
     def multi_setopt(*args); end
 
+    # source://ethon//lib/ethon/curl.rb#30
     def multi_socket_action(*_arg0); end
+
+    # source://ethon//lib/ethon/curl.rb#30
     def multi_strerror(*_arg0); end
+
+    # source://ethon//lib/ethon/curl.rb#30
     def multi_timeout(*_arg0); end
+
+    # source://ethon//lib/ethon/curl.rb#30
     def select(*_arg0); end
+
+    # source://ethon//lib/ethon/curl.rb#30
     def slist_append(*_arg0); end
+
+    # source://ethon//lib/ethon/curl.rb#30
     def slist_free_all(*_arg0); end
+
+    # source://ethon//lib/ethon/curl.rb#30
     def version(*_arg0); end
+
+    # source://ethon//lib/ethon/curl.rb#30
     def version_info(*_arg0); end
 
     # @api private
@@ -505,8 +598,8 @@ module Ethon::Curls::Infos
   #
   # @example Return info.
   #   Curl.get_info_double(:response_code, easy)
-  # @param option [Symbol] The option name.
   # @param handle [::FFI::Pointer] The easy handle.
+  # @param option [Symbol] The option name.
   # @return [Float] The info.
   #
   # source://ethon//lib/ethon/curls/infos.rb#142
@@ -516,8 +609,8 @@ module Ethon::Curls::Infos
   #
   # @example Return info.
   #   Curl.get_info_long(:response_code, easy)
-  # @param option [Symbol] The option name.
   # @param handle [::FFI::Pointer] The easy handle.
+  # @param option [Symbol] The option name.
   # @return [Integer] The info.
   #
   # source://ethon//lib/ethon/curls/infos.rb#125
@@ -527,8 +620,8 @@ module Ethon::Curls::Infos
   #
   # @example Return info.
   #   Curl.get_info_string(:primary_ip, easy)
-  # @param option [Symbol] The option name.
   # @param handle [::FFI::Pointer] The easy handle.
+  # @param option [Symbol] The option name.
   # @return [String] The info.
   #
   # source://ethon//lib/ethon/curls/infos.rb#107
@@ -663,10 +756,10 @@ class Ethon::Easy
   # source://ethon//lib/ethon/easy.rb#218
   def initialize(options = T.unsafe(nil)); end
 
-  # source://ethon//lib/ethon/easy/callbacks.rb#13
+  # source://ethon//lib/ethon/easy.rb#38
   def debug_info; end
 
-  # source://ethon//lib/ethon/easy/callbacks.rb#13
+  # source://ethon//lib/ethon/easy.rb#38
   def debug_info=(_arg0); end
 
   # Clones libcurl session handle. This means that all options that is set in
@@ -707,16 +800,16 @@ class Ethon::Easy
   # source://ethon//lib/ethon/easy.rb#249
   def reset; end
 
-  # source://ethon//lib/ethon/easy/callbacks.rb#13
+  # source://ethon//lib/ethon/easy.rb#38
   def response_body; end
 
-  # source://ethon//lib/ethon/easy/callbacks.rb#13
+  # source://ethon//lib/ethon/easy.rb#38
   def response_body=(_arg0); end
 
-  # source://ethon//lib/ethon/easy/callbacks.rb#13
+  # source://ethon//lib/ethon/easy.rb#38
   def response_headers; end
 
-  # source://ethon//lib/ethon/easy/callbacks.rb#13
+  # source://ethon//lib/ethon/easy.rb#38
   def response_headers=(_arg0); end
 
   # Returns the curl return code.
@@ -1166,9 +1259,16 @@ class Ethon::Easy::DebugInfo
   # source://ethon//lib/ethon/easy/debug_info.rb#26
   def add(type, message); end
 
+  # source://ethon//lib/ethon/easy/debug_info.rb#35
   def data_in; end
+
+  # source://ethon//lib/ethon/easy/debug_info.rb#35
   def data_out; end
+
+  # source://ethon//lib/ethon/easy/debug_info.rb#35
   def header_in; end
+
+  # source://ethon//lib/ethon/easy/debug_info.rb#35
   def header_out; end
 
   # @api private
@@ -1176,8 +1276,13 @@ class Ethon::Easy::DebugInfo
   # source://ethon//lib/ethon/easy/debug_info.rb#30
   def messages_for(type); end
 
+  # source://ethon//lib/ethon/easy/debug_info.rb#35
   def ssl_data_in; end
+
+  # source://ethon//lib/ethon/easy/debug_info.rb#35
   def ssl_data_out; end
+
+  # source://ethon//lib/ethon/easy/debug_info.rb#35
   def text; end
 
   # @api private
@@ -1236,7 +1341,7 @@ module Ethon::Easy::Features
   #   Ethon::Easy.supports_asynch_dns?
   # @return [Boolean] True if supported, else false.
   #
-  # source://ethon//lib/ethon/easy/features.rb#23
+  # source://ethon//lib/ethon/easy/features.rb#27
   def supports_timeout_ms?; end
 
   # Returns true if this curl version supports zlib.
@@ -1271,10 +1376,10 @@ class Ethon::Easy::Form
   # source://ethon//lib/ethon/easy/form.rb#25
   def initialize(easy, params, multipart = T.unsafe(nil)); end
 
-  # source://ethon//lib/ethon/easy/queryable.rb#11
+  # source://ethon//lib/ethon/easy/form.rb#15
   def escape; end
 
-  # source://ethon//lib/ethon/easy/queryable.rb#11
+  # source://ethon//lib/ethon/easy/form.rb#15
   def escape=(_arg0); end
 
   # Return a pointer to the first form element in libcurl.
@@ -1317,10 +1422,10 @@ class Ethon::Easy::Form
   # source://ethon//lib/ethon/easy/form.rb#58
   def multipart?; end
 
-  # source://ethon//lib/ethon/easy/queryable.rb#12
+  # source://ethon//lib/ethon/easy/form.rb#15
   def params_encoding; end
 
-  # source://ethon//lib/ethon/easy/queryable.rb#12
+  # source://ethon//lib/ethon/easy/form.rb#15
   def params_encoding=(_arg0); end
 
   private
@@ -1400,9 +1505,9 @@ module Ethon::Easy::Http
   # @option options
   # @option options
   # @option options
-  # @param url [String] The url.
   # @param action_name [String] The HTTP action name.
   # @param options [Hash] The options hash.
+  # @param url [String] The url.
   # @return [void]
   # @see Ethon::Easy::Options
   #
@@ -1416,9 +1521,9 @@ module Ethon::Easy::Http
   # @example Return the action.
   #   Action.fabricate(:get)
   #   Action.fabricate(:smash)
-  # @param url [String] The url.
   # @param action_name [String] The HTTP action name.
   # @param options [Hash] The option hash.
+  # @param url [String] The url.
   # @return [Easy::Ethon::Actionable] The request instance.
   #
   # source://ethon//lib/ethon/easy/http.rb#56
@@ -1434,8 +1539,8 @@ module Ethon::Easy::Http::Actionable
   #
   # @example Create a new action.
   #   Action.new("www.example.com", {})
-  # @param url [String] The url.
   # @param options [Hash] The options.
+  # @param url [String] The url.
   # @return [Action] A new action.
   #
   # source://ethon//lib/ethon/easy/http/actionable.rb#23
@@ -1708,22 +1813,55 @@ end
 #
 # source://ethon//lib/ethon/easy/informations.rb#8
 module Ethon::Easy::Informations
+  # source://ethon//lib/ethon/easy/informations.rb#99
   def appconnect_time; end
+
+  # source://ethon//lib/ethon/easy/informations.rb#99
   def connect_time; end
+
+  # source://ethon//lib/ethon/easy/informations.rb#99
   def effective_url; end
+
+  # source://ethon//lib/ethon/easy/informations.rb#99
   def httpauth_avail; end
+
+  # source://ethon//lib/ethon/easy/informations.rb#99
   def namelookup_time; end
+
+  # source://ethon//lib/ethon/easy/informations.rb#99
   def pretransfer_time; end
+
+  # source://ethon//lib/ethon/easy/informations.rb#99
   def primary_ip; end
+
+  # source://ethon//lib/ethon/easy/informations.rb#99
   def redirect_count; end
+
+  # source://ethon//lib/ethon/easy/informations.rb#99
   def redirect_time; end
+
+  # source://ethon//lib/ethon/easy/informations.rb#99
   def redirect_url; end
+
+  # source://ethon//lib/ethon/easy/informations.rb#99
   def request_size; end
+
+  # source://ethon//lib/ethon/easy/informations.rb#99
   def response_code; end
+
+  # source://ethon//lib/ethon/easy/informations.rb#99
   def size_download; end
+
+  # source://ethon//lib/ethon/easy/informations.rb#99
   def size_upload; end
+
+  # source://ethon//lib/ethon/easy/informations.rb#99
   def speed_download; end
+
+  # source://ethon//lib/ethon/easy/informations.rb#99
   def speed_upload; end
+
+  # source://ethon//lib/ethon/easy/informations.rb#99
   def starttransfer_time; end
 
   # Returns true if this curl version supports zlib.
@@ -1736,6 +1874,7 @@ module Ethon::Easy::Informations
   # source://ethon//lib/ethon/easy/informations.rb#109
   def supports_zlib?; end
 
+  # source://ethon//lib/ethon/easy/informations.rb#99
   def total_time; end
 end
 
@@ -1752,15 +1891,25 @@ class Ethon::Easy::Mirror
   # source://ethon//lib/ethon/easy/mirror.rb#21
   def initialize(options = T.unsafe(nil)); end
 
+  # source://ethon//lib/ethon/easy/mirror.rb#32
   def appconnect_time; end
+
+  # source://ethon//lib/ethon/easy/mirror.rb#32
   def connect_time; end
+
+  # source://ethon//lib/ethon/easy/mirror.rb#32
   def debug_info; end
+
+  # source://ethon//lib/ethon/easy/mirror.rb#32
   def effective_url; end
+
+  # source://ethon//lib/ethon/easy/mirror.rb#32
   def httpauth_avail; end
 
   # source://ethon//lib/ethon/easy/mirror.rb#25
   def log_informations; end
 
+  # source://ethon//lib/ethon/easy/mirror.rb#32
   def namelookup_time; end
 
   # Returns the value of attribute options.
@@ -1768,27 +1917,57 @@ class Ethon::Easy::Mirror
   # source://ethon//lib/ethon/easy/mirror.rb#5
   def options; end
 
+  # source://ethon//lib/ethon/easy/mirror.rb#32
   def pretransfer_time; end
+
+  # source://ethon//lib/ethon/easy/mirror.rb#32
   def primary_ip; end
+
+  # source://ethon//lib/ethon/easy/mirror.rb#32
   def redirect_count; end
+
+  # source://ethon//lib/ethon/easy/mirror.rb#32
   def redirect_time; end
+
+  # source://ethon//lib/ethon/easy/mirror.rb#32
   def redirect_url; end
+
+  # source://ethon//lib/ethon/easy/mirror.rb#32
   def request_size; end
+
+  # source://ethon//lib/ethon/easy/mirror.rb#32
   def response_body; end
+
+  # source://ethon//lib/ethon/easy/mirror.rb#32
   def response_code; end
+
+  # source://ethon//lib/ethon/easy/mirror.rb#32
   def response_headers; end
+
+  # source://ethon//lib/ethon/easy/mirror.rb#32
   def return_code; end
+
+  # source://ethon//lib/ethon/easy/mirror.rb#32
   def size_download; end
+
+  # source://ethon//lib/ethon/easy/mirror.rb#32
   def size_upload; end
+
+  # source://ethon//lib/ethon/easy/mirror.rb#32
   def speed_download; end
+
+  # source://ethon//lib/ethon/easy/mirror.rb#32
   def speed_upload; end
+
+  # source://ethon//lib/ethon/easy/mirror.rb#32
   def starttransfer_time; end
 
   # Returns the value of attribute options.
   #
-  # source://ethon//lib/ethon/easy/mirror.rb#5
+  # source://ethon//lib/ethon/easy/mirror.rb#6
   def to_hash; end
 
+  # source://ethon//lib/ethon/easy/mirror.rb#32
   def total_time; end
 
   class << self
@@ -2689,16 +2868,16 @@ class Ethon::Easy::Params
   # source://ethon//lib/ethon/easy/params.rb#23
   def initialize(easy, params); end
 
-  # source://ethon//lib/ethon/easy/queryable.rb#11
+  # source://ethon//lib/ethon/easy/params.rb#13
   def escape; end
 
-  # source://ethon//lib/ethon/easy/queryable.rb#11
+  # source://ethon//lib/ethon/easy/params.rb#13
   def escape=(_arg0); end
 
-  # source://ethon//lib/ethon/easy/queryable.rb#12
+  # source://ethon//lib/ethon/easy/params.rb#13
   def params_encoding; end
 
-  # source://ethon//lib/ethon/easy/queryable.rb#12
+  # source://ethon//lib/ethon/easy/params.rb#13
   def params_encoding=(_arg0); end
 end
 
@@ -2996,11 +3175,17 @@ end
 module Ethon::Libc
   extend ::FFI::Library
 
+  # source://ethon//lib/ethon/libc.rb#18
   def free(*_arg0); end
+
+  # source://ethon//lib/ethon/libc.rb#17
   def getdtablesize(*_arg0); end
 
   class << self
+    # source://ethon//lib/ethon/libc.rb#18
     def free(*_arg0); end
+
+    # source://ethon//lib/ethon/libc.rb#17
     def getdtablesize(*_arg0); end
 
     # @api private
@@ -3171,12 +3356,12 @@ module Ethon::Multi::Operations
 
   # Continue execution with an external IO loop.
   #
-  # @example When no sockets are ready yet, or to begin.
-  #   multi.socket_action
   # @example When a socket is readable
   #   multi.socket_action(io_object, [:in])
   # @example When a socket is readable and writable
   #   multi.socket_action(io_object, [:in, :out])
+  # @example When no sockets are ready yet, or to begin.
+  #   multi.socket_action
   # @return [Symbol] The Curl.multi_socket_action return code.
   #
   # source://ethon//lib/ethon/multi/operations.rb#88

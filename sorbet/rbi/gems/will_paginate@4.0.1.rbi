@@ -64,15 +64,7 @@ class Array
   def paginate(options = T.unsafe(nil)); end
 end
 
-module ERB::Escape
-  private
-
-  def html_escape(_arg0); end
-
-  class << self
-    def html_escape(_arg0); end
-  end
-end
+module ERB::Escape; end
 
 # You will paginate!
 #
@@ -156,32 +148,19 @@ end
 
 # source://will_paginate//lib/will_paginate/view_helpers/action_view.rb#99
 class WillPaginate::ActionView::LinkRenderer < ::WillPaginate::ViewHelpers::LinkRenderer
-  # source://will_paginate//lib/will_paginate/view_helpers/link_renderer_base.rb#18
-  def _pagination; end
-
-  def container_attributes; end
-
   protected
 
   # source://will_paginate//lib/will_paginate/view_helpers/action_view.rb#137
-  def _add_current_page_param(url_params, page); end
-
   def add_current_page_param(url_params, page); end
 
   # source://will_paginate//lib/will_paginate/view_helpers/action_view.rb#104
   def default_url_params; end
-
-  def first_page; end
-  def last_page; end
 
   # source://will_paginate//lib/will_paginate/view_helpers/action_view.rb#121
   def merge_get_params(url_params); end
 
   # source://will_paginate//lib/will_paginate/view_helpers/action_view.rb#132
   def merge_optional_params(url_params); end
-
-  def pagination; end
-  def summary; end
 
   # source://will_paginate//lib/will_paginate/view_helpers/action_view.rb#108
   def url(page); end
@@ -229,8 +208,6 @@ class WillPaginate::Collection < ::Array
   #
   # source://will_paginate//lib/will_paginate/collection.rb#55
   def current_page; end
-
-  def klass; end
 
   # Current offset of the paginated collection. If we're on the first page,
   # it is always 0. If we're on the 2nd page and there are 30 entries per page,
@@ -411,25 +388,25 @@ class WillPaginate::PageNumber < ::Numeric
   # source://will_paginate//lib/will_paginate/page_number.rb#14
   def initialize(value, name); end
 
-  # source://forwardable/1.3.3/forwardable.rb#231
+  # source://will_paginate//lib/will_paginate/page_number.rb#30
   def *(*args, **_arg1, &block); end
 
-  # source://forwardable/1.3.3/forwardable.rb#231
+  # source://will_paginate//lib/will_paginate/page_number.rb#30
   def +(*args, **_arg1, &block); end
 
-  # source://forwardable/1.3.3/forwardable.rb#231
+  # source://will_paginate//lib/will_paginate/page_number.rb#30
   def -(*args, **_arg1, &block); end
 
-  # source://forwardable/1.3.3/forwardable.rb#231
+  # source://will_paginate//lib/will_paginate/page_number.rb#30
   def /(*args, **_arg1, &block); end
 
-  # source://forwardable/1.3.3/forwardable.rb#231
+  # source://will_paginate//lib/will_paginate/page_number.rb#30
   def <=>(*args, **_arg1, &block); end
 
-  # source://forwardable/1.3.3/forwardable.rb#231
+  # source://will_paginate//lib/will_paginate/page_number.rb#30
   def ==(*args, **_arg1, &block); end
 
-  # source://forwardable/1.3.3/forwardable.rb#231
+  # source://will_paginate//lib/will_paginate/page_number.rb#30
   def coerce(*args, **_arg1, &block); end
 
   # source://will_paginate//lib/will_paginate/page_number.rb#32
@@ -437,7 +414,7 @@ class WillPaginate::PageNumber < ::Numeric
 
   # @return [Boolean]
   #
-  # source://will_paginate//lib/will_paginate/page_number.rb#40
+  # source://will_paginate//lib/will_paginate/page_number.rb#43
   def is_a?(klass); end
 
   # @return [Boolean]
@@ -448,13 +425,13 @@ class WillPaginate::PageNumber < ::Numeric
   # source://will_paginate//lib/will_paginate/page_number.rb#26
   def to_i; end
 
-  # source://forwardable/1.3.3/forwardable.rb#231
+  # source://will_paginate//lib/will_paginate/page_number.rb#30
   def to_json(*args, **_arg1, &block); end
 
   # source://will_paginate//lib/will_paginate/page_number.rb#36
   def to_offset(per_page); end
 
-  # source://forwardable/1.3.3/forwardable.rb#231
+  # source://will_paginate//lib/will_paginate/page_number.rb#30
   def to_s(*args, **_arg1, &block); end
 end
 

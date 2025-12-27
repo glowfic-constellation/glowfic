@@ -42,7 +42,7 @@ class ApplicationController
     sig { returns(T.untyped) }
     def opened_ids; end
 
-    sig { params(allow_special: T.untyped).returns(T.untyped) }
+    sig { params(allow_special: T::Boolean).returns(::Integer) }
     def page(allow_special: T.unsafe(nil)); end
 
     sig { returns(::String) }

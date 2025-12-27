@@ -11,7 +11,7 @@ module ApiPagination
     # source://api-pagination//lib/api-pagination/configuration.rb#132
     def config; end
 
-    # source://api-pagination//lib/api-pagination/configuration.rb#132
+    # source://api-pagination//lib/api-pagination/configuration.rb#135
     def configuration; end
 
     # @yield [config]
@@ -206,75 +206,7 @@ ApiPagination::Version::MINOR = T.let(T.unsafe(nil), Integer)
 ApiPagination::Version::PATCH = T.let(T.unsafe(nil), Integer)
 
 # source://api-pagination//lib/rails/pagination.rb#1
-module Rails
-  class << self
-    # source://railties/7.1.3.4/lib/rails.rb#42
-    def app_class; end
-
-    # source://railties/7.1.3.4/lib/rails.rb#42
-    def app_class=(_arg0); end
-
-    # source://railties/7.1.3.4/lib/rails.rb#43
-    def application; end
-
-    # source://railties/7.1.3.4/lib/rails.rb#41
-    def application=(_arg0); end
-
-    # source://railties/7.1.3.4/lib/rails.rb#123
-    def autoloaders; end
-
-    # source://railties/7.1.3.4/lib/rails.rb#54
-    def backtrace_cleaner; end
-
-    # source://railties/7.1.3.4/lib/rails.rb#42
-    def cache; end
-
-    # source://railties/7.1.3.4/lib/rails.rb#42
-    def cache=(_arg0); end
-
-    # source://railties/7.1.3.4/lib/rails.rb#50
-    def configuration; end
-
-    # source://railties/7.1.3.4/lib/rails/deprecator.rb#4
-    def deprecator; end
-
-    # source://railties/7.1.3.4/lib/rails.rb#72
-    def env; end
-
-    # source://railties/7.1.3.4/lib/rails.rb#79
-    def env=(environment); end
-
-    # source://railties/7.1.3.4/lib/rails.rb#90
-    def error; end
-
-    # source://railties/7.1.3.4/lib/rails/gem_version.rb#5
-    def gem_version; end
-
-    # source://railties/7.1.3.4/lib/rails.rb#103
-    def groups(*groups); end
-
-    # source://railties/7.1.3.4/lib/rails.rb#47
-    def initialize!(*_arg0, **_arg1, &_arg2); end
-
-    # source://railties/7.1.3.4/lib/rails.rb#47
-    def initialized?(*_arg0, **_arg1, &_arg2); end
-
-    # source://railties/7.1.3.4/lib/rails.rb#42
-    def logger; end
-
-    # source://railties/7.1.3.4/lib/rails.rb#42
-    def logger=(_arg0); end
-
-    # source://railties/7.1.3.4/lib/rails.rb#119
-    def public_path; end
-
-    # source://railties/7.1.3.4/lib/rails.rb#63
-    def root; end
-
-    # source://railties/7.1.3.4/lib/rails/version.rb#7
-    def version; end
-  end
-end
+module Rails; end
 
 # source://api-pagination//lib/rails/pagination.rb#2
 module Rails::Pagination

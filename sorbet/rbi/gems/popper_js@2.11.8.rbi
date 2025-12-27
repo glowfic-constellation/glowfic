@@ -9,12 +9,7 @@
 module PopperJs; end
 
 # source://popper_js//lib/popper_js/engine.rb#4
-class PopperJs::Engine < ::Rails::Engine
-  class << self
-    # source://activesupport/7.1.3.3/lib/active_support/callbacks.rb#70
-    def __callbacks; end
-  end
-end
+class PopperJs::Engine < ::Rails::Engine; end
 
 # source://popper_js//lib/popper_js/version.rb#4
 PopperJs::VERSION = T.let(T.unsafe(nil), String)
