@@ -74,7 +74,7 @@ GEM
       uri (>= 0.13.1)
     addressable (2.8.8)
       public_suffix (>= 2.0.2, < 8.0)
-    api-pagination (6.0.0)
+    api-pagination (7.0.0)
     apipie-rails (1.5.0)
       actionpack (>= 5.0)
       activesupport (>= 5.0)
