@@ -45,7 +45,7 @@ jobs:
 
     steps:
       - uses: actions/checkout@v6
-      - uses: browser-actions/setup-chrome@v1
+      - uses: browser-actions/setup-chrome@v2
       - name: Set up MinIO
         run: |
           wget --show-progress --progress=dot:mega https://dl.min.io/server/minio/release/linux-amd64/minio
