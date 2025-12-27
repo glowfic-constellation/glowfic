@@ -1,0 +1,510 @@
+class Reply < ::ApplicationRecord
+  extend ::_ActiveRecord_Relation_ClassMethods[::Reply, ::Reply::ActiveRecord_Relation, ::Integer]
+
+  module GeneratedAttributeMethods
+    def id: () -> ::Integer
+
+    def id=: (::Integer) -> ::Integer
+
+    def id?: () -> bool
+
+    def id_changed?: () -> bool
+
+    def id_change: () -> [ ::Integer?, ::Integer? ]
+
+    def id_will_change!: () -> void
+
+    def id_was: () -> ::Integer?
+
+    def id_previously_changed?: () -> bool
+
+    def id_previous_change: () -> ::Array[::Integer?]?
+
+    def id_previously_was: () -> ::Integer?
+
+    def id_before_last_save: () -> ::Integer?
+
+    def id_change_to_be_saved: () -> ::Array[::Integer?]?
+
+    def id_in_database: () -> ::Integer?
+
+    def saved_change_to_id: () -> ::Array[::Integer?]?
+
+    def saved_change_to_id?: () -> bool
+
+    def will_save_change_to_id?: () -> bool
+
+    def restore_id!: () -> void
+
+    def clear_id_change: () -> void
+
+    def post_id: () -> ::Integer
+
+    def post_id=: (::Integer) -> ::Integer
+
+    def post_id?: () -> bool
+
+    def post_id_changed?: () -> bool
+
+    def post_id_change: () -> [ ::Integer?, ::Integer? ]
+
+    def post_id_will_change!: () -> void
+
+    def post_id_was: () -> ::Integer?
+
+    def post_id_previously_changed?: () -> bool
+
+    def post_id_previous_change: () -> ::Array[::Integer?]?
+
+    def post_id_previously_was: () -> ::Integer?
+
+    def post_id_before_last_save: () -> ::Integer?
+
+    def post_id_change_to_be_saved: () -> ::Array[::Integer?]?
+
+    def post_id_in_database: () -> ::Integer?
+
+    def saved_change_to_post_id: () -> ::Array[::Integer?]?
+
+    def saved_change_to_post_id?: () -> bool
+
+    def will_save_change_to_post_id?: () -> bool
+
+    def restore_post_id!: () -> void
+
+    def clear_post_id_change: () -> void
+
+    def user_id: () -> ::Integer
+
+    def user_id=: (::Integer) -> ::Integer
+
+    def user_id?: () -> bool
+
+    def user_id_changed?: () -> bool
+
+    def user_id_change: () -> [ ::Integer?, ::Integer? ]
+
+    def user_id_will_change!: () -> void
+
+    def user_id_was: () -> ::Integer?
+
+    def user_id_previously_changed?: () -> bool
+
+    def user_id_previous_change: () -> ::Array[::Integer?]?
+
+    def user_id_previously_was: () -> ::Integer?
+
+    def user_id_before_last_save: () -> ::Integer?
+
+    def user_id_change_to_be_saved: () -> ::Array[::Integer?]?
+
+    def user_id_in_database: () -> ::Integer?
+
+    def saved_change_to_user_id: () -> ::Array[::Integer?]?
+
+    def saved_change_to_user_id?: () -> bool
+
+    def will_save_change_to_user_id?: () -> bool
+
+    def restore_user_id!: () -> void
+
+    def clear_user_id_change: () -> void
+
+    def content: () -> ::String?
+
+    def content=: (::String?) -> ::String?
+
+    def content?: () -> bool
+
+    def content_changed?: () -> bool
+
+    def content_change: () -> [ ::String?, ::String? ]
+
+    def content_will_change!: () -> void
+
+    def content_was: () -> ::String?
+
+    def content_previously_changed?: () -> bool
+
+    def content_previous_change: () -> ::Array[::String?]?
+
+    def content_previously_was: () -> ::String?
+
+    def content_before_last_save: () -> ::String?
+
+    def content_change_to_be_saved: () -> ::Array[::String?]?
+
+    def content_in_database: () -> ::String?
+
+    def saved_change_to_content: () -> ::Array[::String?]?
+
+    def saved_change_to_content?: () -> bool
+
+    def will_save_change_to_content?: () -> bool
+
+    def restore_content!: () -> void
+
+    def clear_content_change: () -> void
+
+    def character_id: () -> ::Integer?
+
+    def character_id=: (::Integer?) -> ::Integer?
+
+    def character_id?: () -> bool
+
+    def character_id_changed?: () -> bool
+
+    def character_id_change: () -> [ ::Integer?, ::Integer? ]
+
+    def character_id_will_change!: () -> void
+
+    def character_id_was: () -> ::Integer?
+
+    def character_id_previously_changed?: () -> bool
+
+    def character_id_previous_change: () -> ::Array[::Integer?]?
+
+    def character_id_previously_was: () -> ::Integer?
+
+    def character_id_before_last_save: () -> ::Integer?
+
+    def character_id_change_to_be_saved: () -> ::Array[::Integer?]?
+
+    def character_id_in_database: () -> ::Integer?
+
+    def saved_change_to_character_id: () -> ::Array[::Integer?]?
+
+    def saved_change_to_character_id?: () -> bool
+
+    def will_save_change_to_character_id?: () -> bool
+
+    def restore_character_id!: () -> void
+
+    def clear_character_id_change: () -> void
+
+    def icon_id: () -> ::Integer?
+
+    def icon_id=: (::Integer?) -> ::Integer?
+
+    def icon_id?: () -> bool
+
+    def icon_id_changed?: () -> bool
+
+    def icon_id_change: () -> [ ::Integer?, ::Integer? ]
+
+    def icon_id_will_change!: () -> void
+
+    def icon_id_was: () -> ::Integer?
+
+    def icon_id_previously_changed?: () -> bool
+
+    def icon_id_previous_change: () -> ::Array[::Integer?]?
+
+    def icon_id_previously_was: () -> ::Integer?
+
+    def icon_id_before_last_save: () -> ::Integer?
+
+    def icon_id_change_to_be_saved: () -> ::Array[::Integer?]?
+
+    def icon_id_in_database: () -> ::Integer?
+
+    def saved_change_to_icon_id: () -> ::Array[::Integer?]?
+
+    def saved_change_to_icon_id?: () -> bool
+
+    def will_save_change_to_icon_id?: () -> bool
+
+    def restore_icon_id!: () -> void
+
+    def clear_icon_id_change: () -> void
+
+    def thread_id: () -> ::Integer?
+
+    def thread_id=: (::Integer?) -> ::Integer?
+
+    def thread_id?: () -> bool
+
+    def thread_id_changed?: () -> bool
+
+    def thread_id_change: () -> [ ::Integer?, ::Integer? ]
+
+    def thread_id_will_change!: () -> void
+
+    def thread_id_was: () -> ::Integer?
+
+    def thread_id_previously_changed?: () -> bool
+
+    def thread_id_previous_change: () -> ::Array[::Integer?]?
+
+    def thread_id_previously_was: () -> ::Integer?
+
+    def thread_id_before_last_save: () -> ::Integer?
+
+    def thread_id_change_to_be_saved: () -> ::Array[::Integer?]?
+
+    def thread_id_in_database: () -> ::Integer?
+
+    def saved_change_to_thread_id: () -> ::Array[::Integer?]?
+
+    def saved_change_to_thread_id?: () -> bool
+
+    def will_save_change_to_thread_id?: () -> bool
+
+    def restore_thread_id!: () -> void
+
+    def clear_thread_id_change: () -> void
+
+    def created_at: () -> ::ActiveSupport::TimeWithZone?
+
+    def created_at=: (::ActiveSupport::TimeWithZone?) -> ::ActiveSupport::TimeWithZone?
+
+    def created_at?: () -> bool
+
+    def created_at_changed?: () -> bool
+
+    def created_at_change: () -> [ ::ActiveSupport::TimeWithZone?, ::ActiveSupport::TimeWithZone? ]
+
+    def created_at_will_change!: () -> void
+
+    def created_at_was: () -> ::ActiveSupport::TimeWithZone?
+
+    def created_at_previously_changed?: () -> bool
+
+    def created_at_previous_change: () -> ::Array[::ActiveSupport::TimeWithZone?]?
+
+    def created_at_previously_was: () -> ::ActiveSupport::TimeWithZone?
+
+    def created_at_before_last_save: () -> ::ActiveSupport::TimeWithZone?
+
+    def created_at_change_to_be_saved: () -> ::Array[::ActiveSupport::TimeWithZone?]?
+
+    def created_at_in_database: () -> ::ActiveSupport::TimeWithZone?
+
+    def saved_change_to_created_at: () -> ::Array[::ActiveSupport::TimeWithZone?]?
+
+    def saved_change_to_created_at?: () -> bool
+
+    def will_save_change_to_created_at?: () -> bool
+
+    def restore_created_at!: () -> void
+
+    def clear_created_at_change: () -> void
+
+    def updated_at: () -> ::ActiveSupport::TimeWithZone?
+
+    def updated_at=: (::ActiveSupport::TimeWithZone?) -> ::ActiveSupport::TimeWithZone?
+
+    def updated_at?: () -> bool
+
+    def updated_at_changed?: () -> bool
+
+    def updated_at_change: () -> [ ::ActiveSupport::TimeWithZone?, ::ActiveSupport::TimeWithZone? ]
+
+    def updated_at_will_change!: () -> void
+
+    def updated_at_was: () -> ::ActiveSupport::TimeWithZone?
+
+    def updated_at_previously_changed?: () -> bool
+
+    def updated_at_previous_change: () -> ::Array[::ActiveSupport::TimeWithZone?]?
+
+    def updated_at_previously_was: () -> ::ActiveSupport::TimeWithZone?
+
+    def updated_at_before_last_save: () -> ::ActiveSupport::TimeWithZone?
+
+    def updated_at_change_to_be_saved: () -> ::Array[::ActiveSupport::TimeWithZone?]?
+
+    def updated_at_in_database: () -> ::ActiveSupport::TimeWithZone?
+
+    def saved_change_to_updated_at: () -> ::Array[::ActiveSupport::TimeWithZone?]?
+
+    def saved_change_to_updated_at?: () -> bool
+
+    def will_save_change_to_updated_at?: () -> bool
+
+    def restore_updated_at!: () -> void
+
+    def clear_updated_at_change: () -> void
+
+    def character_alias_id: () -> ::Integer?
+
+    def character_alias_id=: (::Integer?) -> ::Integer?
+
+    def character_alias_id?: () -> bool
+
+    def character_alias_id_changed?: () -> bool
+
+    def character_alias_id_change: () -> [ ::Integer?, ::Integer? ]
+
+    def character_alias_id_will_change!: () -> void
+
+    def character_alias_id_was: () -> ::Integer?
+
+    def character_alias_id_previously_changed?: () -> bool
+
+    def character_alias_id_previous_change: () -> ::Array[::Integer?]?
+
+    def character_alias_id_previously_was: () -> ::Integer?
+
+    def character_alias_id_before_last_save: () -> ::Integer?
+
+    def character_alias_id_change_to_be_saved: () -> ::Array[::Integer?]?
+
+    def character_alias_id_in_database: () -> ::Integer?
+
+    def saved_change_to_character_alias_id: () -> ::Array[::Integer?]?
+
+    def saved_change_to_character_alias_id?: () -> bool
+
+    def will_save_change_to_character_alias_id?: () -> bool
+
+    def restore_character_alias_id!: () -> void
+
+    def clear_character_alias_id_change: () -> void
+
+    def reply_order: () -> ::Integer?
+
+    def reply_order=: (::Integer?) -> ::Integer?
+
+    def reply_order?: () -> bool
+
+    def reply_order_changed?: () -> bool
+
+    def reply_order_change: () -> [ ::Integer?, ::Integer? ]
+
+    def reply_order_will_change!: () -> void
+
+    def reply_order_was: () -> ::Integer?
+
+    def reply_order_previously_changed?: () -> bool
+
+    def reply_order_previous_change: () -> ::Array[::Integer?]?
+
+    def reply_order_previously_was: () -> ::Integer?
+
+    def reply_order_before_last_save: () -> ::Integer?
+
+    def reply_order_change_to_be_saved: () -> ::Array[::Integer?]?
+
+    def reply_order_in_database: () -> ::Integer?
+
+    def saved_change_to_reply_order: () -> ::Array[::Integer?]?
+
+    def saved_change_to_reply_order?: () -> bool
+
+    def will_save_change_to_reply_order?: () -> bool
+
+    def restore_reply_order!: () -> void
+
+    def clear_reply_order_change: () -> void
+
+    def editor_mode: () -> ::String?
+
+    def editor_mode=: (::String?) -> ::String?
+
+    def editor_mode?: () -> bool
+
+    def editor_mode_changed?: () -> bool
+
+    def editor_mode_change: () -> [ ::String?, ::String? ]
+
+    def editor_mode_will_change!: () -> void
+
+    def editor_mode_was: () -> ::String?
+
+    def editor_mode_previously_changed?: () -> bool
+
+    def editor_mode_previous_change: () -> ::Array[::String?]?
+
+    def editor_mode_previously_was: () -> ::String?
+
+    def editor_mode_before_last_save: () -> ::String?
+
+    def editor_mode_change_to_be_saved: () -> ::Array[::String?]?
+
+    def editor_mode_in_database: () -> ::String?
+
+    def saved_change_to_editor_mode: () -> ::Array[::String?]?
+
+    def saved_change_to_editor_mode?: () -> bool
+
+    def will_save_change_to_editor_mode?: () -> bool
+
+    def restore_editor_mode!: () -> void
+
+    def clear_editor_mode_change: () -> void
+  end
+  include GeneratedAttributeMethods
+  def audits: () -> ::Audited::Audit::ActiveRecord_Associations_CollectionProxy
+  def audits=: (::Audited::Audit::ActiveRecord_Associations_CollectionProxy | ::Array[::Audited::Audit]) -> (::Audited::Audit::ActiveRecord_Associations_CollectionProxy | ::Array[::Audited::Audit])
+  def audit_ids: () -> ::Array[::Integer]
+  def audit_ids=: (::Array[::Integer]) -> ::Array[::Integer]
+  def bookmarks: () -> ::Bookmark::ActiveRecord_Associations_CollectionProxy
+  def bookmarks=: (::Bookmark::ActiveRecord_Associations_CollectionProxy | ::Array[::Bookmark]) -> (::Bookmark::ActiveRecord_Associations_CollectionProxy | ::Array[::Bookmark])
+  def bookmark_ids: () -> ::Array[::Integer]
+  def bookmark_ids=: (::Array[::Integer]) -> ::Array[::Integer]
+  def bookmarking_users: () -> ::User::ActiveRecord_Associations_CollectionProxy
+  def bookmarking_users=: (::User::ActiveRecord_Associations_CollectionProxy | ::Array[::User]) -> (::User::ActiveRecord_Associations_CollectionProxy | ::Array[::User])
+  def bookmarking_user_ids: () -> ::Array[::Integer]
+  def bookmarking_user_ids=: (::Array[::Integer]) -> ::Array[::Integer]
+
+  def character: () -> ::Character?
+  def character=: (::Character?) -> ::Character?
+  def reload_character: () -> ::Character?
+  def build_character: (untyped) -> ::Character
+  def create_character: (untyped) -> ::Character
+  def create_character!: (untyped) -> ::Character
+  def icon: () -> ::Icon?
+  def icon=: (::Icon?) -> ::Icon?
+  def reload_icon: () -> ::Icon?
+  def build_icon: (untyped) -> ::Icon
+  def create_icon: (untyped) -> ::Icon
+  def create_icon!: (untyped) -> ::Icon
+  def user: () -> ::User
+  def user=: (::User?) -> ::User?
+  def reload_user: () -> ::User?
+  def build_user: (untyped) -> ::User
+  def create_user: (untyped) -> ::User
+  def create_user!: (untyped) -> ::User
+  def character_alias: () -> ::CharacterAlias?
+  def character_alias=: (::CharacterAlias?) -> ::CharacterAlias?
+  def reload_character_alias: () -> ::CharacterAlias?
+  def build_character_alias: (untyped) -> ::CharacterAlias
+  def create_character_alias: (untyped) -> ::CharacterAlias
+  def create_character_alias!: (untyped) -> ::CharacterAlias
+  def post: () -> ::Post
+  def post=: (::Post?) -> ::Post?
+  def reload_post: () -> ::Post?
+  def build_post: (untyped) -> ::Post
+  def create_post: (untyped) -> ::Post
+  def create_post!: (untyped) -> ::Post
+  module GeneratedAssociationMethods
+  end
+  include GeneratedAssociationMethods
+
+  def self.ordered: () -> ::Reply::ActiveRecord_Relation
+  def self.ordered_manually: () -> ::Reply::ActiveRecord_Relation
+  def self.visible_to: (untyped user) -> ::Reply::ActiveRecord_Relation
+  def self.bookmark_visible_to: (untyped bookmark_owner, untyped viewing_user) -> ::Reply::ActiveRecord_Relation
+
+  module GeneratedRelationMethods
+    def ordered: () -> ::Reply::ActiveRecord_Relation
+
+    def ordered_manually: () -> ::Reply::ActiveRecord_Relation
+
+    def visible_to: (untyped user) -> ::Reply::ActiveRecord_Relation
+
+    def bookmark_visible_to: (untyped bookmark_owner, untyped viewing_user) -> ::Reply::ActiveRecord_Relation
+  end
+
+  class ActiveRecord_Relation < ::ActiveRecord::Relation
+    include ::Reply::GeneratedRelationMethods
+    include ::_ActiveRecord_Relation[::Reply, ::Integer]
+    include ::Enumerable[::Reply]
+  end
+
+  class ActiveRecord_Associations_CollectionProxy < ::ActiveRecord::Associations::CollectionProxy
+    include ::Reply::GeneratedRelationMethods
+    include ::_ActiveRecord_Relation[::Reply, ::Integer]
+  end
+end

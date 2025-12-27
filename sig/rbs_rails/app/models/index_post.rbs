@@ -1,0 +1,333 @@
+class IndexPost < ::ApplicationRecord
+  extend ::_ActiveRecord_Relation_ClassMethods[::IndexPost, ::IndexPost::ActiveRecord_Relation, ::Integer]
+
+  module GeneratedAttributeMethods
+    def id: () -> ::Integer
+
+    def id=: (::Integer) -> ::Integer
+
+    def id?: () -> bool
+
+    def id_changed?: () -> bool
+
+    def id_change: () -> [ ::Integer?, ::Integer? ]
+
+    def id_will_change!: () -> void
+
+    def id_was: () -> ::Integer?
+
+    def id_previously_changed?: () -> bool
+
+    def id_previous_change: () -> ::Array[::Integer?]?
+
+    def id_previously_was: () -> ::Integer?
+
+    def id_before_last_save: () -> ::Integer?
+
+    def id_change_to_be_saved: () -> ::Array[::Integer?]?
+
+    def id_in_database: () -> ::Integer?
+
+    def saved_change_to_id: () -> ::Array[::Integer?]?
+
+    def saved_change_to_id?: () -> bool
+
+    def will_save_change_to_id?: () -> bool
+
+    def restore_id!: () -> void
+
+    def clear_id_change: () -> void
+
+    def post_id: () -> ::Integer
+
+    def post_id=: (::Integer) -> ::Integer
+
+    def post_id?: () -> bool
+
+    def post_id_changed?: () -> bool
+
+    def post_id_change: () -> [ ::Integer?, ::Integer? ]
+
+    def post_id_will_change!: () -> void
+
+    def post_id_was: () -> ::Integer?
+
+    def post_id_previously_changed?: () -> bool
+
+    def post_id_previous_change: () -> ::Array[::Integer?]?
+
+    def post_id_previously_was: () -> ::Integer?
+
+    def post_id_before_last_save: () -> ::Integer?
+
+    def post_id_change_to_be_saved: () -> ::Array[::Integer?]?
+
+    def post_id_in_database: () -> ::Integer?
+
+    def saved_change_to_post_id: () -> ::Array[::Integer?]?
+
+    def saved_change_to_post_id?: () -> bool
+
+    def will_save_change_to_post_id?: () -> bool
+
+    def restore_post_id!: () -> void
+
+    def clear_post_id_change: () -> void
+
+    def index_id: () -> ::Integer
+
+    def index_id=: (::Integer) -> ::Integer
+
+    def index_id?: () -> bool
+
+    def index_id_changed?: () -> bool
+
+    def index_id_change: () -> [ ::Integer?, ::Integer? ]
+
+    def index_id_will_change!: () -> void
+
+    def index_id_was: () -> ::Integer?
+
+    def index_id_previously_changed?: () -> bool
+
+    def index_id_previous_change: () -> ::Array[::Integer?]?
+
+    def index_id_previously_was: () -> ::Integer?
+
+    def index_id_before_last_save: () -> ::Integer?
+
+    def index_id_change_to_be_saved: () -> ::Array[::Integer?]?
+
+    def index_id_in_database: () -> ::Integer?
+
+    def saved_change_to_index_id: () -> ::Array[::Integer?]?
+
+    def saved_change_to_index_id?: () -> bool
+
+    def will_save_change_to_index_id?: () -> bool
+
+    def restore_index_id!: () -> void
+
+    def clear_index_id_change: () -> void
+
+    def index_section_id: () -> ::Integer?
+
+    def index_section_id=: (::Integer?) -> ::Integer?
+
+    def index_section_id?: () -> bool
+
+    def index_section_id_changed?: () -> bool
+
+    def index_section_id_change: () -> [ ::Integer?, ::Integer? ]
+
+    def index_section_id_will_change!: () -> void
+
+    def index_section_id_was: () -> ::Integer?
+
+    def index_section_id_previously_changed?: () -> bool
+
+    def index_section_id_previous_change: () -> ::Array[::Integer?]?
+
+    def index_section_id_previously_was: () -> ::Integer?
+
+    def index_section_id_before_last_save: () -> ::Integer?
+
+    def index_section_id_change_to_be_saved: () -> ::Array[::Integer?]?
+
+    def index_section_id_in_database: () -> ::Integer?
+
+    def saved_change_to_index_section_id: () -> ::Array[::Integer?]?
+
+    def saved_change_to_index_section_id?: () -> bool
+
+    def will_save_change_to_index_section_id?: () -> bool
+
+    def restore_index_section_id!: () -> void
+
+    def clear_index_section_id_change: () -> void
+
+    def description: () -> ::String?
+
+    def description=: (::String?) -> ::String?
+
+    def description?: () -> bool
+
+    def description_changed?: () -> bool
+
+    def description_change: () -> [ ::String?, ::String? ]
+
+    def description_will_change!: () -> void
+
+    def description_was: () -> ::String?
+
+    def description_previously_changed?: () -> bool
+
+    def description_previous_change: () -> ::Array[::String?]?
+
+    def description_previously_was: () -> ::String?
+
+    def description_before_last_save: () -> ::String?
+
+    def description_change_to_be_saved: () -> ::Array[::String?]?
+
+    def description_in_database: () -> ::String?
+
+    def saved_change_to_description: () -> ::Array[::String?]?
+
+    def saved_change_to_description?: () -> bool
+
+    def will_save_change_to_description?: () -> bool
+
+    def restore_description!: () -> void
+
+    def clear_description_change: () -> void
+
+    def section_order: () -> ::Integer?
+
+    def section_order=: (::Integer?) -> ::Integer?
+
+    def section_order?: () -> bool
+
+    def section_order_changed?: () -> bool
+
+    def section_order_change: () -> [ ::Integer?, ::Integer? ]
+
+    def section_order_will_change!: () -> void
+
+    def section_order_was: () -> ::Integer?
+
+    def section_order_previously_changed?: () -> bool
+
+    def section_order_previous_change: () -> ::Array[::Integer?]?
+
+    def section_order_previously_was: () -> ::Integer?
+
+    def section_order_before_last_save: () -> ::Integer?
+
+    def section_order_change_to_be_saved: () -> ::Array[::Integer?]?
+
+    def section_order_in_database: () -> ::Integer?
+
+    def saved_change_to_section_order: () -> ::Array[::Integer?]?
+
+    def saved_change_to_section_order?: () -> bool
+
+    def will_save_change_to_section_order?: () -> bool
+
+    def restore_section_order!: () -> void
+
+    def clear_section_order_change: () -> void
+
+    def created_at: () -> ::ActiveSupport::TimeWithZone
+
+    def created_at=: (::ActiveSupport::TimeWithZone) -> ::ActiveSupport::TimeWithZone
+
+    def created_at?: () -> bool
+
+    def created_at_changed?: () -> bool
+
+    def created_at_change: () -> [ ::ActiveSupport::TimeWithZone?, ::ActiveSupport::TimeWithZone? ]
+
+    def created_at_will_change!: () -> void
+
+    def created_at_was: () -> ::ActiveSupport::TimeWithZone?
+
+    def created_at_previously_changed?: () -> bool
+
+    def created_at_previous_change: () -> ::Array[::ActiveSupport::TimeWithZone?]?
+
+    def created_at_previously_was: () -> ::ActiveSupport::TimeWithZone?
+
+    def created_at_before_last_save: () -> ::ActiveSupport::TimeWithZone?
+
+    def created_at_change_to_be_saved: () -> ::Array[::ActiveSupport::TimeWithZone?]?
+
+    def created_at_in_database: () -> ::ActiveSupport::TimeWithZone?
+
+    def saved_change_to_created_at: () -> ::Array[::ActiveSupport::TimeWithZone?]?
+
+    def saved_change_to_created_at?: () -> bool
+
+    def will_save_change_to_created_at?: () -> bool
+
+    def restore_created_at!: () -> void
+
+    def clear_created_at_change: () -> void
+
+    def updated_at: () -> ::ActiveSupport::TimeWithZone
+
+    def updated_at=: (::ActiveSupport::TimeWithZone) -> ::ActiveSupport::TimeWithZone
+
+    def updated_at?: () -> bool
+
+    def updated_at_changed?: () -> bool
+
+    def updated_at_change: () -> [ ::ActiveSupport::TimeWithZone?, ::ActiveSupport::TimeWithZone? ]
+
+    def updated_at_will_change!: () -> void
+
+    def updated_at_was: () -> ::ActiveSupport::TimeWithZone?
+
+    def updated_at_previously_changed?: () -> bool
+
+    def updated_at_previous_change: () -> ::Array[::ActiveSupport::TimeWithZone?]?
+
+    def updated_at_previously_was: () -> ::ActiveSupport::TimeWithZone?
+
+    def updated_at_before_last_save: () -> ::ActiveSupport::TimeWithZone?
+
+    def updated_at_change_to_be_saved: () -> ::Array[::ActiveSupport::TimeWithZone?]?
+
+    def updated_at_in_database: () -> ::ActiveSupport::TimeWithZone?
+
+    def saved_change_to_updated_at: () -> ::Array[::ActiveSupport::TimeWithZone?]?
+
+    def saved_change_to_updated_at?: () -> bool
+
+    def will_save_change_to_updated_at?: () -> bool
+
+    def restore_updated_at!: () -> void
+
+    def clear_updated_at_change: () -> void
+  end
+  include GeneratedAttributeMethods
+
+  def post: () -> ::Post
+  def post=: (::Post?) -> ::Post?
+  def reload_post: () -> ::Post?
+  def build_post: (untyped) -> ::Post
+  def create_post: (untyped) -> ::Post
+  def create_post!: (untyped) -> ::Post
+  def index: () -> ::Index
+  def index=: (::Index?) -> ::Index?
+  def reload_index: () -> ::Index?
+  def build_index: (untyped) -> ::Index
+  def create_index: (untyped) -> ::Index
+  def create_index!: (untyped) -> ::Index
+  def index_section: () -> ::IndexSection?
+  def index_section=: (::IndexSection?) -> ::IndexSection?
+  def reload_index_section: () -> ::IndexSection?
+  def build_index_section: (untyped) -> ::IndexSection
+  def create_index_section: (untyped) -> ::IndexSection
+  def create_index_section!: (untyped) -> ::IndexSection
+  module GeneratedAssociationMethods
+  end
+  include GeneratedAssociationMethods
+
+  def self.ordered_in_section: () -> ::IndexPost::ActiveRecord_Relation
+
+  module GeneratedRelationMethods
+    def ordered_in_section: () -> ::IndexPost::ActiveRecord_Relation
+  end
+
+  class ActiveRecord_Relation < ::ActiveRecord::Relation
+    include ::IndexPost::GeneratedRelationMethods
+    include ::_ActiveRecord_Relation[::IndexPost, ::Integer]
+    include ::Enumerable[::IndexPost]
+  end
+
+  class ActiveRecord_Associations_CollectionProxy < ::ActiveRecord::Associations::CollectionProxy
+    include ::IndexPost::GeneratedRelationMethods
+    include ::_ActiveRecord_Relation[::IndexPost, ::Integer]
+  end
+end

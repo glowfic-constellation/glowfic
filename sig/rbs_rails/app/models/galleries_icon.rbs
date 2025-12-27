@@ -1,0 +1,144 @@
+class GalleriesIcon < ::ApplicationRecord
+  extend ::_ActiveRecord_Relation_ClassMethods[::GalleriesIcon, ::GalleriesIcon::ActiveRecord_Relation, ::Integer]
+
+  module GeneratedAttributeMethods
+    def id: () -> ::Integer
+
+    def id=: (::Integer) -> ::Integer
+
+    def id?: () -> bool
+
+    def id_changed?: () -> bool
+
+    def id_change: () -> [ ::Integer?, ::Integer? ]
+
+    def id_will_change!: () -> void
+
+    def id_was: () -> ::Integer?
+
+    def id_previously_changed?: () -> bool
+
+    def id_previous_change: () -> ::Array[::Integer?]?
+
+    def id_previously_was: () -> ::Integer?
+
+    def id_before_last_save: () -> ::Integer?
+
+    def id_change_to_be_saved: () -> ::Array[::Integer?]?
+
+    def id_in_database: () -> ::Integer?
+
+    def saved_change_to_id: () -> ::Array[::Integer?]?
+
+    def saved_change_to_id?: () -> bool
+
+    def will_save_change_to_id?: () -> bool
+
+    def restore_id!: () -> void
+
+    def clear_id_change: () -> void
+
+    def icon_id: () -> ::Integer?
+
+    def icon_id=: (::Integer?) -> ::Integer?
+
+    def icon_id?: () -> bool
+
+    def icon_id_changed?: () -> bool
+
+    def icon_id_change: () -> [ ::Integer?, ::Integer? ]
+
+    def icon_id_will_change!: () -> void
+
+    def icon_id_was: () -> ::Integer?
+
+    def icon_id_previously_changed?: () -> bool
+
+    def icon_id_previous_change: () -> ::Array[::Integer?]?
+
+    def icon_id_previously_was: () -> ::Integer?
+
+    def icon_id_before_last_save: () -> ::Integer?
+
+    def icon_id_change_to_be_saved: () -> ::Array[::Integer?]?
+
+    def icon_id_in_database: () -> ::Integer?
+
+    def saved_change_to_icon_id: () -> ::Array[::Integer?]?
+
+    def saved_change_to_icon_id?: () -> bool
+
+    def will_save_change_to_icon_id?: () -> bool
+
+    def restore_icon_id!: () -> void
+
+    def clear_icon_id_change: () -> void
+
+    def gallery_id: () -> ::Integer?
+
+    def gallery_id=: (::Integer?) -> ::Integer?
+
+    def gallery_id?: () -> bool
+
+    def gallery_id_changed?: () -> bool
+
+    def gallery_id_change: () -> [ ::Integer?, ::Integer? ]
+
+    def gallery_id_will_change!: () -> void
+
+    def gallery_id_was: () -> ::Integer?
+
+    def gallery_id_previously_changed?: () -> bool
+
+    def gallery_id_previous_change: () -> ::Array[::Integer?]?
+
+    def gallery_id_previously_was: () -> ::Integer?
+
+    def gallery_id_before_last_save: () -> ::Integer?
+
+    def gallery_id_change_to_be_saved: () -> ::Array[::Integer?]?
+
+    def gallery_id_in_database: () -> ::Integer?
+
+    def saved_change_to_gallery_id: () -> ::Array[::Integer?]?
+
+    def saved_change_to_gallery_id?: () -> bool
+
+    def will_save_change_to_gallery_id?: () -> bool
+
+    def restore_gallery_id!: () -> void
+
+    def clear_gallery_id_change: () -> void
+  end
+  include GeneratedAttributeMethods
+
+  def icon: () -> ::Icon?
+  def icon=: (::Icon?) -> ::Icon?
+  def reload_icon: () -> ::Icon?
+  def build_icon: (untyped) -> ::Icon
+  def create_icon: (untyped) -> ::Icon
+  def create_icon!: (untyped) -> ::Icon
+  def gallery: () -> ::Gallery
+  def gallery=: (::Gallery?) -> ::Gallery?
+  def reload_gallery: () -> ::Gallery?
+  def build_gallery: (untyped) -> ::Gallery
+  def create_gallery: (untyped) -> ::Gallery
+  def create_gallery!: (untyped) -> ::Gallery
+  module GeneratedAssociationMethods
+  end
+  include GeneratedAssociationMethods
+
+  module GeneratedRelationMethods
+  end
+
+  class ActiveRecord_Relation < ::ActiveRecord::Relation
+    include ::GalleriesIcon::GeneratedRelationMethods
+    include ::_ActiveRecord_Relation[::GalleriesIcon, ::Integer]
+    include ::Enumerable[::GalleriesIcon]
+  end
+
+  class ActiveRecord_Associations_CollectionProxy < ::ActiveRecord::Associations::CollectionProxy
+    include ::GalleriesIcon::GeneratedRelationMethods
+    include ::_ActiveRecord_Relation[::GalleriesIcon, ::Integer]
+  end
+end

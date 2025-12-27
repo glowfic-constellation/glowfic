@@ -1,0 +1,219 @@
+class CharactersGallery < ::ApplicationRecord
+  extend ::_ActiveRecord_Relation_ClassMethods[::CharactersGallery, ::CharactersGallery::ActiveRecord_Relation, ::Integer]
+
+  module GeneratedAttributeMethods
+    def id: () -> ::Integer
+
+    def id=: (::Integer) -> ::Integer
+
+    def id?: () -> bool
+
+    def id_changed?: () -> bool
+
+    def id_change: () -> [ ::Integer?, ::Integer? ]
+
+    def id_will_change!: () -> void
+
+    def id_was: () -> ::Integer?
+
+    def id_previously_changed?: () -> bool
+
+    def id_previous_change: () -> ::Array[::Integer?]?
+
+    def id_previously_was: () -> ::Integer?
+
+    def id_before_last_save: () -> ::Integer?
+
+    def id_change_to_be_saved: () -> ::Array[::Integer?]?
+
+    def id_in_database: () -> ::Integer?
+
+    def saved_change_to_id: () -> ::Array[::Integer?]?
+
+    def saved_change_to_id?: () -> bool
+
+    def will_save_change_to_id?: () -> bool
+
+    def restore_id!: () -> void
+
+    def clear_id_change: () -> void
+
+    def character_id: () -> ::Integer
+
+    def character_id=: (::Integer) -> ::Integer
+
+    def character_id?: () -> bool
+
+    def character_id_changed?: () -> bool
+
+    def character_id_change: () -> [ ::Integer?, ::Integer? ]
+
+    def character_id_will_change!: () -> void
+
+    def character_id_was: () -> ::Integer?
+
+    def character_id_previously_changed?: () -> bool
+
+    def character_id_previous_change: () -> ::Array[::Integer?]?
+
+    def character_id_previously_was: () -> ::Integer?
+
+    def character_id_before_last_save: () -> ::Integer?
+
+    def character_id_change_to_be_saved: () -> ::Array[::Integer?]?
+
+    def character_id_in_database: () -> ::Integer?
+
+    def saved_change_to_character_id: () -> ::Array[::Integer?]?
+
+    def saved_change_to_character_id?: () -> bool
+
+    def will_save_change_to_character_id?: () -> bool
+
+    def restore_character_id!: () -> void
+
+    def clear_character_id_change: () -> void
+
+    def gallery_id: () -> ::Integer
+
+    def gallery_id=: (::Integer) -> ::Integer
+
+    def gallery_id?: () -> bool
+
+    def gallery_id_changed?: () -> bool
+
+    def gallery_id_change: () -> [ ::Integer?, ::Integer? ]
+
+    def gallery_id_will_change!: () -> void
+
+    def gallery_id_was: () -> ::Integer?
+
+    def gallery_id_previously_changed?: () -> bool
+
+    def gallery_id_previous_change: () -> ::Array[::Integer?]?
+
+    def gallery_id_previously_was: () -> ::Integer?
+
+    def gallery_id_before_last_save: () -> ::Integer?
+
+    def gallery_id_change_to_be_saved: () -> ::Array[::Integer?]?
+
+    def gallery_id_in_database: () -> ::Integer?
+
+    def saved_change_to_gallery_id: () -> ::Array[::Integer?]?
+
+    def saved_change_to_gallery_id?: () -> bool
+
+    def will_save_change_to_gallery_id?: () -> bool
+
+    def restore_gallery_id!: () -> void
+
+    def clear_gallery_id_change: () -> void
+
+    def section_order: () -> ::Integer
+
+    def section_order=: (::Integer) -> ::Integer
+
+    def section_order?: () -> bool
+
+    def section_order_changed?: () -> bool
+
+    def section_order_change: () -> [ ::Integer?, ::Integer? ]
+
+    def section_order_will_change!: () -> void
+
+    def section_order_was: () -> ::Integer?
+
+    def section_order_previously_changed?: () -> bool
+
+    def section_order_previous_change: () -> ::Array[::Integer?]?
+
+    def section_order_previously_was: () -> ::Integer?
+
+    def section_order_before_last_save: () -> ::Integer?
+
+    def section_order_change_to_be_saved: () -> ::Array[::Integer?]?
+
+    def section_order_in_database: () -> ::Integer?
+
+    def saved_change_to_section_order: () -> ::Array[::Integer?]?
+
+    def saved_change_to_section_order?: () -> bool
+
+    def will_save_change_to_section_order?: () -> bool
+
+    def restore_section_order!: () -> void
+
+    def clear_section_order_change: () -> void
+
+    def added_by_group: () -> bool?
+
+    def added_by_group=: (bool?) -> bool?
+
+    def added_by_group?: () -> bool
+
+    def added_by_group_changed?: () -> bool
+
+    def added_by_group_change: () -> [ bool?, bool? ]
+
+    def added_by_group_will_change!: () -> void
+
+    def added_by_group_was: () -> bool?
+
+    def added_by_group_previously_changed?: () -> bool
+
+    def added_by_group_previous_change: () -> ::Array[bool?]?
+
+    def added_by_group_previously_was: () -> bool?
+
+    def added_by_group_before_last_save: () -> bool?
+
+    def added_by_group_change_to_be_saved: () -> ::Array[bool?]?
+
+    def added_by_group_in_database: () -> bool?
+
+    def saved_change_to_added_by_group: () -> ::Array[bool?]?
+
+    def saved_change_to_added_by_group?: () -> bool
+
+    def will_save_change_to_added_by_group?: () -> bool
+
+    def restore_added_by_group!: () -> void
+
+    def clear_added_by_group_change: () -> void
+  end
+  include GeneratedAttributeMethods
+
+  def character: () -> ::Character
+  def character=: (::Character?) -> ::Character?
+  def reload_character: () -> ::Character?
+  def build_character: (untyped) -> ::Character
+  def create_character: (untyped) -> ::Character
+  def create_character!: (untyped) -> ::Character
+  def gallery: () -> ::Gallery
+  def gallery=: (::Gallery?) -> ::Gallery?
+  def reload_gallery: () -> ::Gallery?
+  def build_gallery: (untyped) -> ::Gallery
+  def create_gallery: (untyped) -> ::Gallery
+  def create_gallery!: (untyped) -> ::Gallery
+  module GeneratedAssociationMethods
+  end
+  include GeneratedAssociationMethods
+
+  def self.ordered: () -> ::CharactersGallery::ActiveRecord_Relation
+
+  module GeneratedRelationMethods
+    def ordered: () -> ::CharactersGallery::ActiveRecord_Relation
+  end
+
+  class ActiveRecord_Relation < ::ActiveRecord::Relation
+    include ::CharactersGallery::GeneratedRelationMethods
+    include ::_ActiveRecord_Relation[::CharactersGallery, ::Integer]
+    include ::Enumerable[::CharactersGallery]
+  end
+
+  class ActiveRecord_Associations_CollectionProxy < ::ActiveRecord::Associations::CollectionProxy
+    include ::CharactersGallery::GeneratedRelationMethods
+    include ::_ActiveRecord_Relation[::CharactersGallery, ::Integer]
+  end
+end

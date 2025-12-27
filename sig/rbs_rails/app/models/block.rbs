@@ -1,0 +1,331 @@
+class Block < ::ApplicationRecord
+  extend ::_ActiveRecord_Relation_ClassMethods[::Block, ::Block::ActiveRecord_Relation, ::Integer]
+
+  module GeneratedAttributeMethods
+    def id: () -> ::Integer
+
+    def id=: (::Integer) -> ::Integer
+
+    def id?: () -> bool
+
+    def id_changed?: () -> bool
+
+    def id_change: () -> [ ::Integer?, ::Integer? ]
+
+    def id_will_change!: () -> void
+
+    def id_was: () -> ::Integer?
+
+    def id_previously_changed?: () -> bool
+
+    def id_previous_change: () -> ::Array[::Integer?]?
+
+    def id_previously_was: () -> ::Integer?
+
+    def id_before_last_save: () -> ::Integer?
+
+    def id_change_to_be_saved: () -> ::Array[::Integer?]?
+
+    def id_in_database: () -> ::Integer?
+
+    def saved_change_to_id: () -> ::Array[::Integer?]?
+
+    def saved_change_to_id?: () -> bool
+
+    def will_save_change_to_id?: () -> bool
+
+    def restore_id!: () -> void
+
+    def clear_id_change: () -> void
+
+    def blocking_user_id: () -> ::Integer
+
+    def blocking_user_id=: (::Integer) -> ::Integer
+
+    def blocking_user_id?: () -> bool
+
+    def blocking_user_id_changed?: () -> bool
+
+    def blocking_user_id_change: () -> [ ::Integer?, ::Integer? ]
+
+    def blocking_user_id_will_change!: () -> void
+
+    def blocking_user_id_was: () -> ::Integer?
+
+    def blocking_user_id_previously_changed?: () -> bool
+
+    def blocking_user_id_previous_change: () -> ::Array[::Integer?]?
+
+    def blocking_user_id_previously_was: () -> ::Integer?
+
+    def blocking_user_id_before_last_save: () -> ::Integer?
+
+    def blocking_user_id_change_to_be_saved: () -> ::Array[::Integer?]?
+
+    def blocking_user_id_in_database: () -> ::Integer?
+
+    def saved_change_to_blocking_user_id: () -> ::Array[::Integer?]?
+
+    def saved_change_to_blocking_user_id?: () -> bool
+
+    def will_save_change_to_blocking_user_id?: () -> bool
+
+    def restore_blocking_user_id!: () -> void
+
+    def clear_blocking_user_id_change: () -> void
+
+    def blocked_user_id: () -> ::Integer
+
+    def blocked_user_id=: (::Integer) -> ::Integer
+
+    def blocked_user_id?: () -> bool
+
+    def blocked_user_id_changed?: () -> bool
+
+    def blocked_user_id_change: () -> [ ::Integer?, ::Integer? ]
+
+    def blocked_user_id_will_change!: () -> void
+
+    def blocked_user_id_was: () -> ::Integer?
+
+    def blocked_user_id_previously_changed?: () -> bool
+
+    def blocked_user_id_previous_change: () -> ::Array[::Integer?]?
+
+    def blocked_user_id_previously_was: () -> ::Integer?
+
+    def blocked_user_id_before_last_save: () -> ::Integer?
+
+    def blocked_user_id_change_to_be_saved: () -> ::Array[::Integer?]?
+
+    def blocked_user_id_in_database: () -> ::Integer?
+
+    def saved_change_to_blocked_user_id: () -> ::Array[::Integer?]?
+
+    def saved_change_to_blocked_user_id?: () -> bool
+
+    def will_save_change_to_blocked_user_id?: () -> bool
+
+    def restore_blocked_user_id!: () -> void
+
+    def clear_blocked_user_id_change: () -> void
+
+    def block_interactions: () -> bool?
+
+    def block_interactions=: (bool?) -> bool?
+
+    def block_interactions?: () -> bool
+
+    def block_interactions_changed?: () -> bool
+
+    def block_interactions_change: () -> [ bool?, bool? ]
+
+    def block_interactions_will_change!: () -> void
+
+    def block_interactions_was: () -> bool?
+
+    def block_interactions_previously_changed?: () -> bool
+
+    def block_interactions_previous_change: () -> ::Array[bool?]?
+
+    def block_interactions_previously_was: () -> bool?
+
+    def block_interactions_before_last_save: () -> bool?
+
+    def block_interactions_change_to_be_saved: () -> ::Array[bool?]?
+
+    def block_interactions_in_database: () -> bool?
+
+    def saved_change_to_block_interactions: () -> ::Array[bool?]?
+
+    def saved_change_to_block_interactions?: () -> bool
+
+    def will_save_change_to_block_interactions?: () -> bool
+
+    def restore_block_interactions!: () -> void
+
+    def clear_block_interactions_change: () -> void
+
+    def hide_them: () -> ::Integer?
+
+    def hide_them=: (::Integer?) -> ::Integer?
+
+    def hide_them?: () -> bool
+
+    def hide_them_changed?: () -> bool
+
+    def hide_them_change: () -> [ ::Integer?, ::Integer? ]
+
+    def hide_them_will_change!: () -> void
+
+    def hide_them_was: () -> ::Integer?
+
+    def hide_them_previously_changed?: () -> bool
+
+    def hide_them_previous_change: () -> ::Array[::Integer?]?
+
+    def hide_them_previously_was: () -> ::Integer?
+
+    def hide_them_before_last_save: () -> ::Integer?
+
+    def hide_them_change_to_be_saved: () -> ::Array[::Integer?]?
+
+    def hide_them_in_database: () -> ::Integer?
+
+    def saved_change_to_hide_them: () -> ::Array[::Integer?]?
+
+    def saved_change_to_hide_them?: () -> bool
+
+    def will_save_change_to_hide_them?: () -> bool
+
+    def restore_hide_them!: () -> void
+
+    def clear_hide_them_change: () -> void
+
+    def hide_me: () -> ::Integer?
+
+    def hide_me=: (::Integer?) -> ::Integer?
+
+    def hide_me?: () -> bool
+
+    def hide_me_changed?: () -> bool
+
+    def hide_me_change: () -> [ ::Integer?, ::Integer? ]
+
+    def hide_me_will_change!: () -> void
+
+    def hide_me_was: () -> ::Integer?
+
+    def hide_me_previously_changed?: () -> bool
+
+    def hide_me_previous_change: () -> ::Array[::Integer?]?
+
+    def hide_me_previously_was: () -> ::Integer?
+
+    def hide_me_before_last_save: () -> ::Integer?
+
+    def hide_me_change_to_be_saved: () -> ::Array[::Integer?]?
+
+    def hide_me_in_database: () -> ::Integer?
+
+    def saved_change_to_hide_me: () -> ::Array[::Integer?]?
+
+    def saved_change_to_hide_me?: () -> bool
+
+    def will_save_change_to_hide_me?: () -> bool
+
+    def restore_hide_me!: () -> void
+
+    def clear_hide_me_change: () -> void
+
+    def created_at: () -> ::ActiveSupport::TimeWithZone
+
+    def created_at=: (::ActiveSupport::TimeWithZone) -> ::ActiveSupport::TimeWithZone
+
+    def created_at?: () -> bool
+
+    def created_at_changed?: () -> bool
+
+    def created_at_change: () -> [ ::ActiveSupport::TimeWithZone?, ::ActiveSupport::TimeWithZone? ]
+
+    def created_at_will_change!: () -> void
+
+    def created_at_was: () -> ::ActiveSupport::TimeWithZone?
+
+    def created_at_previously_changed?: () -> bool
+
+    def created_at_previous_change: () -> ::Array[::ActiveSupport::TimeWithZone?]?
+
+    def created_at_previously_was: () -> ::ActiveSupport::TimeWithZone?
+
+    def created_at_before_last_save: () -> ::ActiveSupport::TimeWithZone?
+
+    def created_at_change_to_be_saved: () -> ::Array[::ActiveSupport::TimeWithZone?]?
+
+    def created_at_in_database: () -> ::ActiveSupport::TimeWithZone?
+
+    def saved_change_to_created_at: () -> ::Array[::ActiveSupport::TimeWithZone?]?
+
+    def saved_change_to_created_at?: () -> bool
+
+    def will_save_change_to_created_at?: () -> bool
+
+    def restore_created_at!: () -> void
+
+    def clear_created_at_change: () -> void
+
+    def updated_at: () -> ::ActiveSupport::TimeWithZone
+
+    def updated_at=: (::ActiveSupport::TimeWithZone) -> ::ActiveSupport::TimeWithZone
+
+    def updated_at?: () -> bool
+
+    def updated_at_changed?: () -> bool
+
+    def updated_at_change: () -> [ ::ActiveSupport::TimeWithZone?, ::ActiveSupport::TimeWithZone? ]
+
+    def updated_at_will_change!: () -> void
+
+    def updated_at_was: () -> ::ActiveSupport::TimeWithZone?
+
+    def updated_at_previously_changed?: () -> bool
+
+    def updated_at_previous_change: () -> ::Array[::ActiveSupport::TimeWithZone?]?
+
+    def updated_at_previously_was: () -> ::ActiveSupport::TimeWithZone?
+
+    def updated_at_before_last_save: () -> ::ActiveSupport::TimeWithZone?
+
+    def updated_at_change_to_be_saved: () -> ::Array[::ActiveSupport::TimeWithZone?]?
+
+    def updated_at_in_database: () -> ::ActiveSupport::TimeWithZone?
+
+    def saved_change_to_updated_at: () -> ::Array[::ActiveSupport::TimeWithZone?]?
+
+    def saved_change_to_updated_at?: () -> bool
+
+    def will_save_change_to_updated_at?: () -> bool
+
+    def restore_updated_at!: () -> void
+
+    def clear_updated_at_change: () -> void
+  end
+  include GeneratedAttributeMethods
+  def audits: () -> ::Audited::Audit::ActiveRecord_Associations_CollectionProxy
+  def audits=: (::Audited::Audit::ActiveRecord_Associations_CollectionProxy | ::Array[::Audited::Audit]) -> (::Audited::Audit::ActiveRecord_Associations_CollectionProxy | ::Array[::Audited::Audit])
+  def audit_ids: () -> ::Array[::Integer]
+  def audit_ids=: (::Array[::Integer]) -> ::Array[::Integer]
+
+  def blocking_user: () -> ::User
+  def blocking_user=: (::User?) -> ::User?
+  def reload_blocking_user: () -> ::User?
+  def build_blocking_user: (untyped) -> ::User
+  def create_blocking_user: (untyped) -> ::User
+  def create_blocking_user!: (untyped) -> ::User
+  def blocked_user: () -> ::User
+  def blocked_user=: (::User?) -> ::User?
+  def reload_blocked_user: () -> ::User?
+  def build_blocked_user: (untyped) -> ::User
+  def create_blocked_user: (untyped) -> ::User
+  def create_blocked_user!: (untyped) -> ::User
+  module GeneratedAssociationMethods
+  end
+  include GeneratedAssociationMethods
+
+  def self.ordered: () -> ::Block::ActiveRecord_Relation
+
+  module GeneratedRelationMethods
+    def ordered: () -> ::Block::ActiveRecord_Relation
+  end
+
+  class ActiveRecord_Relation < ::ActiveRecord::Relation
+    include ::Block::GeneratedRelationMethods
+    include ::_ActiveRecord_Relation[::Block, ::Integer]
+    include ::Enumerable[::Block]
+  end
+
+  class ActiveRecord_Associations_CollectionProxy < ::ActiveRecord::Associations::CollectionProxy
+    include ::Block::GeneratedRelationMethods
+    include ::_ActiveRecord_Relation[::Block, ::Integer]
+  end
+end

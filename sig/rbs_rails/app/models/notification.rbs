@@ -1,0 +1,372 @@
+class Notification < ::ApplicationRecord
+  extend ::_ActiveRecord_Relation_ClassMethods[::Notification, ::Notification::ActiveRecord_Relation, ::Integer]
+
+  module GeneratedAttributeMethods
+    def id: () -> ::Integer
+
+    def id=: (::Integer) -> ::Integer
+
+    def id?: () -> bool
+
+    def id_changed?: () -> bool
+
+    def id_change: () -> [ ::Integer?, ::Integer? ]
+
+    def id_will_change!: () -> void
+
+    def id_was: () -> ::Integer?
+
+    def id_previously_changed?: () -> bool
+
+    def id_previous_change: () -> ::Array[::Integer?]?
+
+    def id_previously_was: () -> ::Integer?
+
+    def id_before_last_save: () -> ::Integer?
+
+    def id_change_to_be_saved: () -> ::Array[::Integer?]?
+
+    def id_in_database: () -> ::Integer?
+
+    def saved_change_to_id: () -> ::Array[::Integer?]?
+
+    def saved_change_to_id?: () -> bool
+
+    def will_save_change_to_id?: () -> bool
+
+    def restore_id!: () -> void
+
+    def clear_id_change: () -> void
+
+    def user_id: () -> ::Integer
+
+    def user_id=: (::Integer) -> ::Integer
+
+    def user_id?: () -> bool
+
+    def user_id_changed?: () -> bool
+
+    def user_id_change: () -> [ ::Integer?, ::Integer? ]
+
+    def user_id_will_change!: () -> void
+
+    def user_id_was: () -> ::Integer?
+
+    def user_id_previously_changed?: () -> bool
+
+    def user_id_previous_change: () -> ::Array[::Integer?]?
+
+    def user_id_previously_was: () -> ::Integer?
+
+    def user_id_before_last_save: () -> ::Integer?
+
+    def user_id_change_to_be_saved: () -> ::Array[::Integer?]?
+
+    def user_id_in_database: () -> ::Integer?
+
+    def saved_change_to_user_id: () -> ::Array[::Integer?]?
+
+    def saved_change_to_user_id?: () -> bool
+
+    def will_save_change_to_user_id?: () -> bool
+
+    def restore_user_id!: () -> void
+
+    def clear_user_id_change: () -> void
+
+    def post_id: () -> ::Integer?
+
+    def post_id=: (::Integer?) -> ::Integer?
+
+    def post_id?: () -> bool
+
+    def post_id_changed?: () -> bool
+
+    def post_id_change: () -> [ ::Integer?, ::Integer? ]
+
+    def post_id_will_change!: () -> void
+
+    def post_id_was: () -> ::Integer?
+
+    def post_id_previously_changed?: () -> bool
+
+    def post_id_previous_change: () -> ::Array[::Integer?]?
+
+    def post_id_previously_was: () -> ::Integer?
+
+    def post_id_before_last_save: () -> ::Integer?
+
+    def post_id_change_to_be_saved: () -> ::Array[::Integer?]?
+
+    def post_id_in_database: () -> ::Integer?
+
+    def saved_change_to_post_id: () -> ::Array[::Integer?]?
+
+    def saved_change_to_post_id?: () -> bool
+
+    def will_save_change_to_post_id?: () -> bool
+
+    def restore_post_id!: () -> void
+
+    def clear_post_id_change: () -> void
+
+    def unread: () -> bool
+
+    def unread=: (bool) -> bool
+
+    def unread?: () -> bool
+
+    def unread_changed?: () -> bool
+
+    def unread_change: () -> [ bool?, bool? ]
+
+    def unread_will_change!: () -> void
+
+    def unread_was: () -> bool?
+
+    def unread_previously_changed?: () -> bool
+
+    def unread_previous_change: () -> ::Array[bool?]?
+
+    def unread_previously_was: () -> bool?
+
+    def unread_before_last_save: () -> bool?
+
+    def unread_change_to_be_saved: () -> ::Array[bool?]?
+
+    def unread_in_database: () -> bool?
+
+    def saved_change_to_unread: () -> ::Array[bool?]?
+
+    def saved_change_to_unread?: () -> bool
+
+    def will_save_change_to_unread?: () -> bool
+
+    def restore_unread!: () -> void
+
+    def clear_unread_change: () -> void
+
+    def notification_type: () -> ::Integer
+
+    def notification_type=: (::Integer) -> ::Integer
+
+    def notification_type?: () -> bool
+
+    def notification_type_changed?: () -> bool
+
+    def notification_type_change: () -> [ ::Integer?, ::Integer? ]
+
+    def notification_type_will_change!: () -> void
+
+    def notification_type_was: () -> ::Integer?
+
+    def notification_type_previously_changed?: () -> bool
+
+    def notification_type_previous_change: () -> ::Array[::Integer?]?
+
+    def notification_type_previously_was: () -> ::Integer?
+
+    def notification_type_before_last_save: () -> ::Integer?
+
+    def notification_type_change_to_be_saved: () -> ::Array[::Integer?]?
+
+    def notification_type_in_database: () -> ::Integer?
+
+    def saved_change_to_notification_type: () -> ::Array[::Integer?]?
+
+    def saved_change_to_notification_type?: () -> bool
+
+    def will_save_change_to_notification_type?: () -> bool
+
+    def restore_notification_type!: () -> void
+
+    def clear_notification_type_change: () -> void
+
+    def error_msg: () -> ::String?
+
+    def error_msg=: (::String?) -> ::String?
+
+    def error_msg?: () -> bool
+
+    def error_msg_changed?: () -> bool
+
+    def error_msg_change: () -> [ ::String?, ::String? ]
+
+    def error_msg_will_change!: () -> void
+
+    def error_msg_was: () -> ::String?
+
+    def error_msg_previously_changed?: () -> bool
+
+    def error_msg_previous_change: () -> ::Array[::String?]?
+
+    def error_msg_previously_was: () -> ::String?
+
+    def error_msg_before_last_save: () -> ::String?
+
+    def error_msg_change_to_be_saved: () -> ::Array[::String?]?
+
+    def error_msg_in_database: () -> ::String?
+
+    def saved_change_to_error_msg: () -> ::Array[::String?]?
+
+    def saved_change_to_error_msg?: () -> bool
+
+    def will_save_change_to_error_msg?: () -> bool
+
+    def restore_error_msg!: () -> void
+
+    def clear_error_msg_change: () -> void
+
+    def read_at: () -> ::ActiveSupport::TimeWithZone?
+
+    def read_at=: (::ActiveSupport::TimeWithZone?) -> ::ActiveSupport::TimeWithZone?
+
+    def read_at?: () -> bool
+
+    def read_at_changed?: () -> bool
+
+    def read_at_change: () -> [ ::ActiveSupport::TimeWithZone?, ::ActiveSupport::TimeWithZone? ]
+
+    def read_at_will_change!: () -> void
+
+    def read_at_was: () -> ::ActiveSupport::TimeWithZone?
+
+    def read_at_previously_changed?: () -> bool
+
+    def read_at_previous_change: () -> ::Array[::ActiveSupport::TimeWithZone?]?
+
+    def read_at_previously_was: () -> ::ActiveSupport::TimeWithZone?
+
+    def read_at_before_last_save: () -> ::ActiveSupport::TimeWithZone?
+
+    def read_at_change_to_be_saved: () -> ::Array[::ActiveSupport::TimeWithZone?]?
+
+    def read_at_in_database: () -> ::ActiveSupport::TimeWithZone?
+
+    def saved_change_to_read_at: () -> ::Array[::ActiveSupport::TimeWithZone?]?
+
+    def saved_change_to_read_at?: () -> bool
+
+    def will_save_change_to_read_at?: () -> bool
+
+    def restore_read_at!: () -> void
+
+    def clear_read_at_change: () -> void
+
+    def created_at: () -> ::ActiveSupport::TimeWithZone
+
+    def created_at=: (::ActiveSupport::TimeWithZone) -> ::ActiveSupport::TimeWithZone
+
+    def created_at?: () -> bool
+
+    def created_at_changed?: () -> bool
+
+    def created_at_change: () -> [ ::ActiveSupport::TimeWithZone?, ::ActiveSupport::TimeWithZone? ]
+
+    def created_at_will_change!: () -> void
+
+    def created_at_was: () -> ::ActiveSupport::TimeWithZone?
+
+    def created_at_previously_changed?: () -> bool
+
+    def created_at_previous_change: () -> ::Array[::ActiveSupport::TimeWithZone?]?
+
+    def created_at_previously_was: () -> ::ActiveSupport::TimeWithZone?
+
+    def created_at_before_last_save: () -> ::ActiveSupport::TimeWithZone?
+
+    def created_at_change_to_be_saved: () -> ::Array[::ActiveSupport::TimeWithZone?]?
+
+    def created_at_in_database: () -> ::ActiveSupport::TimeWithZone?
+
+    def saved_change_to_created_at: () -> ::Array[::ActiveSupport::TimeWithZone?]?
+
+    def saved_change_to_created_at?: () -> bool
+
+    def will_save_change_to_created_at?: () -> bool
+
+    def restore_created_at!: () -> void
+
+    def clear_created_at_change: () -> void
+
+    def updated_at: () -> ::ActiveSupport::TimeWithZone
+
+    def updated_at=: (::ActiveSupport::TimeWithZone) -> ::ActiveSupport::TimeWithZone
+
+    def updated_at?: () -> bool
+
+    def updated_at_changed?: () -> bool
+
+    def updated_at_change: () -> [ ::ActiveSupport::TimeWithZone?, ::ActiveSupport::TimeWithZone? ]
+
+    def updated_at_will_change!: () -> void
+
+    def updated_at_was: () -> ::ActiveSupport::TimeWithZone?
+
+    def updated_at_previously_changed?: () -> bool
+
+    def updated_at_previous_change: () -> ::Array[::ActiveSupport::TimeWithZone?]?
+
+    def updated_at_previously_was: () -> ::ActiveSupport::TimeWithZone?
+
+    def updated_at_before_last_save: () -> ::ActiveSupport::TimeWithZone?
+
+    def updated_at_change_to_be_saved: () -> ::Array[::ActiveSupport::TimeWithZone?]?
+
+    def updated_at_in_database: () -> ::ActiveSupport::TimeWithZone?
+
+    def saved_change_to_updated_at: () -> ::Array[::ActiveSupport::TimeWithZone?]?
+
+    def saved_change_to_updated_at?: () -> bool
+
+    def will_save_change_to_updated_at?: () -> bool
+
+    def restore_updated_at!: () -> void
+
+    def clear_updated_at_change: () -> void
+  end
+  include GeneratedAttributeMethods
+
+  def user: () -> ::User
+  def user=: (::User?) -> ::User?
+  def reload_user: () -> ::User?
+  def build_user: (untyped) -> ::User
+  def create_user: (untyped) -> ::User
+  def create_user!: (untyped) -> ::User
+  def post: () -> ::Post?
+  def post=: (::Post?) -> ::Post?
+  def reload_post: () -> ::Post?
+  def build_post: (untyped) -> ::Post
+  def create_post: (untyped) -> ::Post
+  def create_post!: (untyped) -> ::Post
+  module GeneratedAssociationMethods
+  end
+  include GeneratedAssociationMethods
+
+  def self.unread: () -> ::Notification::ActiveRecord_Relation
+  def self.ordered: () -> ::Notification::ActiveRecord_Relation
+  def self.visible_to: (untyped user) -> ::Notification::ActiveRecord_Relation
+  def self.not_ignored_by: (untyped user) -> ::Notification::ActiveRecord_Relation
+
+  module GeneratedRelationMethods
+    def unread: () -> ::Notification::ActiveRecord_Relation
+
+    def ordered: () -> ::Notification::ActiveRecord_Relation
+
+    def visible_to: (untyped user) -> ::Notification::ActiveRecord_Relation
+
+    def not_ignored_by: (untyped user) -> ::Notification::ActiveRecord_Relation
+  end
+
+  class ActiveRecord_Relation < ::ActiveRecord::Relation
+    include ::Notification::GeneratedRelationMethods
+    include ::_ActiveRecord_Relation[::Notification, ::Integer]
+    include ::Enumerable[::Notification]
+  end
+
+  class ActiveRecord_Associations_CollectionProxy < ::ActiveRecord::Associations::CollectionProxy
+    include ::Notification::GeneratedRelationMethods
+    include ::_ActiveRecord_Relation[::Notification, ::Integer]
+  end
+end
