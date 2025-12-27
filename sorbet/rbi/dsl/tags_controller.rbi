@@ -17,6 +17,7 @@ class TagsController
     include ::CharacterHelper
     include ::IconHelper
     include ::MailerHelper
+    include ::NotificationHelper
     include ::PostHelper
     include ::ReportsHelper
     include ::TagHelper

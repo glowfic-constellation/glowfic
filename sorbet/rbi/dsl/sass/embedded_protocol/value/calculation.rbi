@@ -8,7 +8,7 @@
 class Sass::EmbeddedProtocol::Value::Calculation < Google::Protobuf::AbstractMessage
   sig do
     params(
-      arguments: T.nilable(T.any(Google::Protobuf::RepeatedField[Sass::EmbeddedProtocol::Value::Calculation::CalculationValue], T::Array[Sass::EmbeddedProtocol::Value::Calculation::CalculationValue])),
+      arguments: T.nilable(T::Array[Sass::EmbeddedProtocol::Value::Calculation::CalculationValue]),
       name: T.nilable(String)
     ).void
   end

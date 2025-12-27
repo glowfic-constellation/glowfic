@@ -8,7 +8,7 @@
 class Sass::EmbeddedProtocol::Value::List < Google::Protobuf::AbstractMessage
   sig do
     params(
-      contents: T.nilable(T.any(Google::Protobuf::RepeatedField[Sass::EmbeddedProtocol::Value], T::Array[Sass::EmbeddedProtocol::Value])),
+      contents: T.nilable(T::Array[Sass::EmbeddedProtocol::Value]),
       has_brackets: T.nilable(T::Boolean),
       separator: T.nilable(T.any(Symbol, Integer))
     ).void

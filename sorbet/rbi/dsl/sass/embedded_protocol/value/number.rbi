@@ -8,8 +8,8 @@
 class Sass::EmbeddedProtocol::Value::Number < Google::Protobuf::AbstractMessage
   sig do
     params(
-      denominators: T.nilable(T.any(Google::Protobuf::RepeatedField[String], T::Array[String])),
-      numerators: T.nilable(T.any(Google::Protobuf::RepeatedField[String], T::Array[String])),
+      denominators: T.nilable(T::Array[String]),
+      numerators: T.nilable(T::Array[String]),
       value: T.nilable(Float)
     ).void
   end

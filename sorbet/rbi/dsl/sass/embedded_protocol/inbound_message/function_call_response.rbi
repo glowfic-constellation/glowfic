@@ -8,7 +8,7 @@
 class Sass::EmbeddedProtocol::InboundMessage::FunctionCallResponse < Google::Protobuf::AbstractMessage
   sig do
     params(
-      accessed_argument_lists: T.nilable(T.any(Google::Protobuf::RepeatedField[Integer], T::Array[Integer])),
+      accessed_argument_lists: T.nilable(T::Array[Integer]),
       error: T.nilable(String),
       id: T.nilable(Integer),
       success: T.nilable(Sass::EmbeddedProtocol::Value)

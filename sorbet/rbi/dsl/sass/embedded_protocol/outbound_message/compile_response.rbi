@@ -9,7 +9,7 @@ class Sass::EmbeddedProtocol::OutboundMessage::CompileResponse < Google::Protobu
   sig do
     params(
       failure: T.nilable(Sass::EmbeddedProtocol::OutboundMessage::CompileResponse::CompileFailure),
-      loaded_urls: T.nilable(T.any(Google::Protobuf::RepeatedField[String], T::Array[String])),
+      loaded_urls: T.nilable(T::Array[String]),
       success: T.nilable(Sass::EmbeddedProtocol::OutboundMessage::CompileResponse::CompileSuccess)
     ).void
   end

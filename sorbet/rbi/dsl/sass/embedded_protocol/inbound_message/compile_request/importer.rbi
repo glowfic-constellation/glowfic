@@ -11,7 +11,7 @@ class Sass::EmbeddedProtocol::InboundMessage::CompileRequest::Importer < Google:
       file_importer_id: T.nilable(Integer),
       importer_id: T.nilable(Integer),
       node_package_importer: T.nilable(Sass::EmbeddedProtocol::NodePackageImporter),
-      non_canonical_scheme: T.nilable(T.any(Google::Protobuf::RepeatedField[String], T::Array[String])),
+      non_canonical_scheme: T.nilable(T::Array[String]),
       path: T.nilable(String)
     ).void
   end

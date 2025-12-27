@@ -6,11 +6,7 @@
 
 
 class Sass::EmbeddedProtocol::Value::Map < Google::Protobuf::AbstractMessage
-  sig do
-    params(
-      entries: T.nilable(T.any(Google::Protobuf::RepeatedField[Sass::EmbeddedProtocol::Value::Map::Entry], T::Array[Sass::EmbeddedProtocol::Value::Map::Entry]))
-    ).void
-  end
+  sig { params(entries: T.nilable(T::Array[Sass::EmbeddedProtocol::Value::Map::Entry])).void }
   def initialize(entries: T.unsafe(nil)); end
 
   sig { void }

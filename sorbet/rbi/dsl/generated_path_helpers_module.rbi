@@ -22,6 +22,12 @@ module GeneratedPathHelpersModule
   def api_v1_boards_path(*args); end
 
   sig { params(args: T.untyped).returns(String) }
+  def api_v1_bookmark_path(*args); end
+
+  sig { params(args: T.untyped).returns(String) }
+  def api_v1_bookmarks_path(*args); end
+
+  sig { params(args: T.untyped).returns(String) }
   def api_v1_character_path(*args); end
 
   sig { params(args: T.untyped).returns(String) }
@@ -64,9 +70,6 @@ module GeneratedPathHelpersModule
   def avatar_icon_path(*args); end
 
   sig { params(args: T.untyped).returns(String) }
-  def aws_rails_action_mailbox_engine_path(*args); end
-
-  sig { params(args: T.untyped).returns(String) }
   def block_path(*args); end
 
   sig { params(args: T.untyped).returns(String) }
@@ -77,6 +80,18 @@ module GeneratedPathHelpersModule
 
   sig { params(args: T.untyped).returns(String) }
   def board_sections_path(*args); end
+
+  sig { params(args: T.untyped).returns(String) }
+  def bookmark_api_v1_reply_path(*args); end
+
+  sig { params(args: T.untyped).returns(String) }
+  def bookmark_path(*args); end
+
+  sig { params(args: T.untyped).returns(String) }
+  def bookmarks_api_v1_user_path(*args); end
+
+  sig { params(args: T.untyped).returns(String) }
+  def bookmarks_path(*args); end
 
   sig { params(args: T.untyped).returns(String) }
   def bugs_path(*args); end
@@ -130,7 +145,13 @@ module GeneratedPathHelpersModule
   def do_replace_icon_path(*args); end
 
   sig { params(args: T.untyped).returns(String) }
-  def do_split_posts_path(*args); end
+  def do_split_post_path(*args); end
+
+  sig { params(args: T.untyped).returns(String) }
+  def draft_path(*args); end
+
+  sig { params(args: T.untyped).returns(String) }
+  def drafts_path(*args); end
 
   sig { params(args: T.untyped).returns(String) }
   def duplicate_character_path(*args); end
@@ -140,6 +161,9 @@ module GeneratedPathHelpersModule
 
   sig { params(args: T.untyped).returns(String) }
   def edit_board_section_path(*args); end
+
+  sig { params(args: T.untyped).returns(String) }
+  def edit_character_alias_path(*args); end
 
   sig { params(args: T.untyped).returns(String) }
   def edit_character_path(*args); end
@@ -241,6 +265,9 @@ module GeneratedPathHelpersModule
   def mark_messages_path(*args); end
 
   sig { params(args: T.untyped).returns(String) }
+  def mark_notifications_path(*args); end
+
+  sig { params(args: T.untyped).returns(String) }
   def mark_posts_path(*args); end
 
   sig { params(args: T.untyped).returns(String) }
@@ -307,6 +334,9 @@ module GeneratedPathHelpersModule
   def news_path(*args); end
 
   sig { params(args: T.untyped).returns(String) }
+  def notifications_path(*args); end
+
+  sig { params(args: T.untyped).returns(String) }
   def output_user_path(*args); end
 
   sig { params(args: T.untyped).returns(String) }
@@ -337,6 +367,9 @@ module GeneratedPathHelpersModule
   def privacy_path(*args); end
 
   sig { params(args: T.untyped).returns(String) }
+  def profile_edit_user_path(*args); end
+
+  sig { params(args: T.untyped).returns(String) }
   def rails_blob_path(*args); end
 
   sig { params(args: T.untyped).returns(String) }
@@ -365,6 +398,9 @@ module GeneratedPathHelpersModule
 
   sig { params(args: T.untyped).returns(String) }
   def rails_disk_service_path(*args); end
+
+  sig { params(args: T.untyped).returns(String) }
+  def rails_info_notes_path(*args); end
 
   sig { params(args: T.untyped).returns(String) }
   def rails_info_path(*args); end
@@ -404,9 +440,6 @@ module GeneratedPathHelpersModule
 
   sig { params(args: T.untyped).returns(String) }
   def rails_service_blob_proxy_path(*args); end
-
-  sig { params(args: T.untyped).returns(String) }
-  def rails_ses_inbound_emails_path(*args); end
 
   sig { params(args: T.untyped).returns(String) }
   def rails_storage_proxy_path(*args); end
@@ -463,6 +496,9 @@ module GeneratedPathHelpersModule
   def s3_delete_api_v1_icons_path(*args); end
 
   sig { params(args: T.untyped).returns(String) }
+  def search_bookmarks_path(*args); end
+
+  sig { params(args: T.untyped).returns(String) }
   def search_characters_path(*args); end
 
   sig { params(args: T.untyped).returns(String) }
@@ -484,7 +520,7 @@ module GeneratedPathHelpersModule
   def search_users_path(*args); end
 
   sig { params(args: T.untyped).returns(String) }
-  def split_posts_path(*args); end
+  def split_post_path(*args); end
 
   sig { params(args: T.untyped).returns(String) }
   def stats_post_path(*args); end

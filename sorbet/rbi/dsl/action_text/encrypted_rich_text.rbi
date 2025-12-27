@@ -21,6 +21,16 @@ class ActionText::EncryptedRichText
   sig { returns(NilClass) }
   def to_ary; end
 
+  class << self
+    sig do
+      params(
+        attributes: T.untyped,
+        block: T.nilable(T.proc.params(object: ::ActionText::EncryptedRichText).void)
+      ).returns(::ActionText::EncryptedRichText)
+    end
+    def new(attributes = nil, &block); end
+  end
+
   module CommonRelationMethods
     sig do
       params(
@@ -32,6 +42,17 @@ class ActionText::EncryptedRichText
     sig { params(column_name: T.any(String, Symbol)).returns(T.any(Integer, Float, BigDecimal)) }
     def average(column_name); end
 
+    sig do
+      params(
+        block: T.nilable(T.proc.params(object: ::ActionText::EncryptedRichText).void)
+      ).returns(::ActionText::EncryptedRichText)
+    end
+    sig do
+      params(
+        attributes: T::Array[T.untyped],
+        block: T.nilable(T.proc.params(object: ::ActionText::EncryptedRichText).void)
+      ).returns(T::Array[::ActionText::EncryptedRichText])
+    end
     sig do
       params(
         attributes: T.untyped,
@@ -54,12 +75,34 @@ class ActionText::EncryptedRichText
 
     sig do
       params(
+        block: T.nilable(T.proc.params(object: ::ActionText::EncryptedRichText).void)
+      ).returns(::ActionText::EncryptedRichText)
+    end
+    sig do
+      params(
+        attributes: T::Array[T.untyped],
+        block: T.nilable(T.proc.params(object: ::ActionText::EncryptedRichText).void)
+      ).returns(T::Array[::ActionText::EncryptedRichText])
+    end
+    sig do
+      params(
         attributes: T.untyped,
         block: T.nilable(T.proc.params(object: ::ActionText::EncryptedRichText).void)
       ).returns(::ActionText::EncryptedRichText)
     end
     def create(attributes = nil, &block); end
 
+    sig do
+      params(
+        block: T.nilable(T.proc.params(object: ::ActionText::EncryptedRichText).void)
+      ).returns(::ActionText::EncryptedRichText)
+    end
+    sig do
+      params(
+        attributes: T::Array[T.untyped],
+        block: T.nilable(T.proc.params(object: ::ActionText::EncryptedRichText).void)
+      ).returns(T::Array[::ActionText::EncryptedRichText])
+    end
     sig do
       params(
         attributes: T.untyped,
@@ -70,6 +113,12 @@ class ActionText::EncryptedRichText
 
     sig do
       params(
+        attributes: T::Array[T.untyped],
+        block: T.nilable(T.proc.params(object: ::ActionText::EncryptedRichText).void)
+      ).returns(T::Array[::ActionText::EncryptedRichText])
+    end
+    sig do
+      params(
         attributes: T.untyped,
         block: T.nilable(T.proc.params(object: ::ActionText::EncryptedRichText).void)
       ).returns(::ActionText::EncryptedRichText)
@@ -78,14 +127,46 @@ class ActionText::EncryptedRichText
 
     sig do
       params(
+        attributes: T::Array[T.untyped],
+        block: T.nilable(T.proc.params(object: ::ActionText::EncryptedRichText).void)
+      ).returns(T::Array[::ActionText::EncryptedRichText])
+    end
+    sig do
+      params(
         attributes: T.untyped,
         block: T.nilable(T.proc.params(object: ::ActionText::EncryptedRichText).void)
       ).returns(::ActionText::EncryptedRichText)
     end
     def create_or_find_by!(attributes, &block); end
 
+    sig do
+      params(
+        records: T.any(::ActionText::EncryptedRichText, Integer, String, T::Enumerable[T.any(::ActionText::EncryptedRichText, Integer, String, T::Enumerable[::ActionText::EncryptedRichText])])
+      ).returns(Integer)
+    end
+    def delete(*records); end
+
+    sig { returns(Integer) }
+    def delete_all; end
+
+    sig { params(args: T.untyped).returns(Integer) }
+    def delete_by(args); end
+
+    sig do
+      params(
+        records: T.any(::ActionText::EncryptedRichText, Integer, String, T::Enumerable[T.any(::ActionText::EncryptedRichText, Integer, String, T::Enumerable[::ActionText::EncryptedRichText])])
+      ).returns(T::Array[::ActionText::EncryptedRichText])
+    end
+    def destroy(*records); end
+
     sig { returns(T::Array[::ActionText::EncryptedRichText]) }
     def destroy_all; end
+
+    sig { returns(T::Array[::ActionText::EncryptedRichText]) }
+    def destroy_all; end
+
+    sig { params(args: T.untyped).returns(T::Array[::ActionText::EncryptedRichText]) }
+    def destroy_by(args); end
 
     sig { params(conditions: T.untyped).returns(T::Boolean) }
     def exists?(conditions = :none); end
@@ -126,6 +207,7 @@ class ActionText::EncryptedRichText
         finish: T.untyped,
         batch_size: Integer,
         error_on_ignore: T.untyped,
+        cursor: T.untyped,
         order: Symbol,
         block: T.proc.params(object: ::ActionText::EncryptedRichText).void
       ).void
@@ -136,10 +218,11 @@ class ActionText::EncryptedRichText
         finish: T.untyped,
         batch_size: Integer,
         error_on_ignore: T.untyped,
+        cursor: T.untyped,
         order: Symbol
       ).returns(T::Enumerator[::ActionText::EncryptedRichText])
     end
-    def find_each(start: nil, finish: nil, batch_size: 1000, error_on_ignore: nil, order: :asc, &block); end
+    def find_each(start: nil, finish: nil, batch_size: 1000, error_on_ignore: nil, cursor: primary_key, order: :asc, &block); end
 
     sig do
       params(
@@ -147,6 +230,7 @@ class ActionText::EncryptedRichText
         finish: T.untyped,
         batch_size: Integer,
         error_on_ignore: T.untyped,
+        cursor: T.untyped,
         order: Symbol,
         block: T.proc.params(object: T::Array[::ActionText::EncryptedRichText]).void
       ).void
@@ -157,11 +241,18 @@ class ActionText::EncryptedRichText
         finish: T.untyped,
         batch_size: Integer,
         error_on_ignore: T.untyped,
+        cursor: T.untyped,
         order: Symbol
       ).returns(T::Enumerator[T::Enumerator[::ActionText::EncryptedRichText]])
     end
-    def find_in_batches(start: nil, finish: nil, batch_size: 1000, error_on_ignore: nil, order: :asc, &block); end
+    def find_in_batches(start: nil, finish: nil, batch_size: 1000, error_on_ignore: nil, cursor: primary_key, order: :asc, &block); end
 
+    sig do
+      params(
+        attributes: T::Array[T.untyped],
+        block: T.nilable(T.proc.params(object: ::ActionText::EncryptedRichText).void)
+      ).returns(T::Array[::ActionText::EncryptedRichText])
+    end
     sig do
       params(
         attributes: T.untyped,
@@ -172,12 +263,24 @@ class ActionText::EncryptedRichText
 
     sig do
       params(
+        attributes: T::Array[T.untyped],
+        block: T.nilable(T.proc.params(object: ::ActionText::EncryptedRichText).void)
+      ).returns(T::Array[::ActionText::EncryptedRichText])
+    end
+    sig do
+      params(
         attributes: T.untyped,
         block: T.nilable(T.proc.params(object: ::ActionText::EncryptedRichText).void)
       ).returns(::ActionText::EncryptedRichText)
     end
     def find_or_create_by!(attributes, &block); end
 
+    sig do
+      params(
+        attributes: T::Array[T.untyped],
+        block: T.nilable(T.proc.params(object: ::ActionText::EncryptedRichText).void)
+      ).returns(T::Array[::ActionText::EncryptedRichText])
+    end
     sig do
       params(
         attributes: T.untyped,
@@ -195,7 +298,7 @@ class ActionText::EncryptedRichText
     sig { params(arg: T.untyped, args: T.untyped).returns(::ActionText::EncryptedRichText) }
     def find_sole_by(arg, *args); end
 
-    sig { params(limit: NilClass).returns(T.nilable(::ActionText::EncryptedRichText)) }
+    sig { returns(T.nilable(::ActionText::EncryptedRichText)) }
     sig { params(limit: Integer).returns(T::Array[::ActionText::EncryptedRichText]) }
     def first(limit = nil); end
 
@@ -224,6 +327,7 @@ class ActionText::EncryptedRichText
         finish: T.untyped,
         load: T.untyped,
         error_on_ignore: T.untyped,
+        cursor: T.untyped,
         order: Symbol,
         use_ranges: T.untyped,
         block: T.proc.params(object: PrivateRelation).void
@@ -236,16 +340,17 @@ class ActionText::EncryptedRichText
         finish: T.untyped,
         load: T.untyped,
         error_on_ignore: T.untyped,
+        cursor: T.untyped,
         order: Symbol,
         use_ranges: T.untyped
       ).returns(::ActiveRecord::Batches::BatchEnumerator)
     end
-    def in_batches(of: 1000, start: nil, finish: nil, load: false, error_on_ignore: nil, order: :asc, use_ranges: nil, &block); end
+    def in_batches(of: 1000, start: nil, finish: nil, load: false, error_on_ignore: nil, cursor: primary_key, order: :asc, use_ranges: nil, &block); end
 
     sig { params(record: T.untyped).returns(T::Boolean) }
     def include?(record); end
 
-    sig { params(limit: NilClass).returns(T.nilable(::ActionText::EncryptedRichText)) }
+    sig { returns(T.nilable(::ActionText::EncryptedRichText)) }
     sig { params(limit: Integer).returns(T::Array[::ActionText::EncryptedRichText]) }
     def last(limit = nil); end
 
@@ -268,6 +373,17 @@ class ActionText::EncryptedRichText
     sig { params(column_name: T.any(String, Symbol)).returns(T.untyped) }
     def minimum(column_name); end
 
+    sig do
+      params(
+        block: T.nilable(T.proc.params(object: ::ActionText::EncryptedRichText).void)
+      ).returns(::ActionText::EncryptedRichText)
+    end
+    sig do
+      params(
+        attributes: T::Array[T.untyped],
+        block: T.nilable(T.proc.params(object: ::ActionText::EncryptedRichText).void)
+      ).returns(T::Array[::ActionText::EncryptedRichText])
+    end
     sig do
       params(
         attributes: T.untyped,
@@ -324,7 +440,7 @@ class ActionText::EncryptedRichText
     end
     def sum(initial_value_or_column = nil, &block); end
 
-    sig { params(limit: NilClass).returns(T.nilable(::ActionText::EncryptedRichText)) }
+    sig { returns(T.nilable(::ActionText::EncryptedRichText)) }
     sig { params(limit: Integer).returns(T::Array[::ActionText::EncryptedRichText]) }
     def take(limit = nil); end
 
@@ -397,6 +513,9 @@ class ActionText::EncryptedRichText
     def annotate(*args, &blk); end
 
     sig { params(args: T.untyped, blk: T.untyped).returns(PrivateAssociationRelation) }
+    def arel_columns(*args, &blk); end
+
+    sig { params(args: T.untyped, blk: T.untyped).returns(PrivateAssociationRelation) }
     def create_with(*args, &blk); end
 
     sig { params(value: T::Boolean).returns(PrivateAssociationRelation) }
@@ -431,40 +550,6 @@ class ActionText::EncryptedRichText
 
     sig { params(args: T.untyped, blk: T.untyped).returns(PrivateAssociationRelation) }
     def includes(*args, &blk); end
-
-    sig do
-      params(
-        attributes: Hash,
-        returning: T.nilable(T.any(T::Array[Symbol], FalseClass)),
-        unique_by: T.nilable(T.any(T::Array[Symbol], Symbol))
-      ).returns(ActiveRecord::Result)
-    end
-    def insert(attributes, returning: nil, unique_by: nil); end
-
-    sig do
-      params(
-        attributes: Hash,
-        returning: T.nilable(T.any(T::Array[Symbol], FalseClass))
-      ).returns(ActiveRecord::Result)
-    end
-    def insert!(attributes, returning: nil); end
-
-    sig do
-      params(
-        attributes: T::Array[Hash],
-        returning: T.nilable(T.any(T::Array[Symbol], FalseClass)),
-        unique_by: T.nilable(T.any(T::Array[Symbol], Symbol))
-      ).returns(ActiveRecord::Result)
-    end
-    def insert_all(attributes, returning: nil, unique_by: nil); end
-
-    sig do
-      params(
-        attributes: T::Array[Hash],
-        returning: T.nilable(T.any(T::Array[Symbol], FalseClass))
-      ).returns(ActiveRecord::Result)
-    end
-    def insert_all!(attributes, returning: nil); end
 
     sig { params(args: T.untyped, blk: T.untyped).returns(PrivateAssociationRelation) }
     def invert_where(*args, &blk); end
@@ -532,7 +617,12 @@ class ActionText::EncryptedRichText
     sig { params(args: T.untyped, blk: T.untyped).returns(PrivateAssociationRelation) }
     def rewhere(*args, &blk); end
 
-    sig { params(args: T.untyped, blk: T.untyped).returns(PrivateAssociationRelation) }
+    sig { params(args: T.untyped).returns(PrivateAssociationRelation) }
+    sig do
+      params(
+        blk: T.proc.params(record: ::ActionText::EncryptedRichText).returns(BasicObject)
+      ).returns(T::Array[::ActionText::EncryptedRichText])
+    end
     def select(*args, &blk); end
 
     sig { params(args: T.untyped, blk: T.untyped).returns(PrivateAssociationRelation) }
@@ -547,32 +637,18 @@ class ActionText::EncryptedRichText
     sig { params(args: T.untyped, blk: T.untyped).returns(PrivateAssociationRelation) }
     def unscope(*args, &blk); end
 
-    sig do
-      params(
-        attributes: Hash,
-        returning: T.nilable(T.any(T::Array[Symbol], FalseClass)),
-        unique_by: T.nilable(T.any(T::Array[Symbol], Symbol))
-      ).returns(ActiveRecord::Result)
-    end
-    def upsert(attributes, returning: nil, unique_by: nil); end
-
-    sig do
-      params(
-        attributes: T::Array[Hash],
-        returning: T.nilable(T.any(T::Array[Symbol], FalseClass)),
-        unique_by: T.nilable(T.any(T::Array[Symbol], Symbol))
-      ).returns(ActiveRecord::Result)
-    end
-    def upsert_all(attributes, returning: nil, unique_by: nil); end
-
-    sig { params(args: T.untyped, blk: T.untyped).returns(PrivateAssociationRelationWhereChain) }
-    def where(*args, &blk); end
+    sig { returns(PrivateAssociationRelationWhereChain) }
+    sig { params(args: T.untyped).returns(PrivateAssociationRelation) }
+    def where(*args); end
 
     sig { params(args: T.untyped, blk: T.untyped).returns(PrivateAssociationRelation) }
     def with(*args, &blk); end
 
     sig { params(args: T.untyped, blk: T.untyped).returns(PrivateAssociationRelation) }
     def with_attached_embeds(*args, &blk); end
+
+    sig { params(args: T.untyped, blk: T.untyped).returns(PrivateAssociationRelation) }
+    def with_recursive(*args, &blk); end
 
     sig { params(args: T.untyped, blk: T.untyped).returns(PrivateAssociationRelation) }
     def without(*args, &blk); end
@@ -587,6 +663,9 @@ class ActionText::EncryptedRichText
 
     sig { params(args: T.untyped, blk: T.untyped).returns(PrivateRelation) }
     def annotate(*args, &blk); end
+
+    sig { params(args: T.untyped, blk: T.untyped).returns(PrivateRelation) }
+    def arel_columns(*args, &blk); end
 
     sig { params(args: T.untyped, blk: T.untyped).returns(PrivateRelation) }
     def create_with(*args, &blk); end
@@ -690,7 +769,12 @@ class ActionText::EncryptedRichText
     sig { params(args: T.untyped, blk: T.untyped).returns(PrivateRelation) }
     def rewhere(*args, &blk); end
 
-    sig { params(args: T.untyped, blk: T.untyped).returns(PrivateRelation) }
+    sig { params(args: T.untyped).returns(PrivateRelation) }
+    sig do
+      params(
+        blk: T.proc.params(record: ::ActionText::EncryptedRichText).returns(BasicObject)
+      ).returns(T::Array[::ActionText::EncryptedRichText])
+    end
     def select(*args, &blk); end
 
     sig { params(args: T.untyped, blk: T.untyped).returns(PrivateRelation) }
@@ -705,14 +789,18 @@ class ActionText::EncryptedRichText
     sig { params(args: T.untyped, blk: T.untyped).returns(PrivateRelation) }
     def unscope(*args, &blk); end
 
-    sig { params(args: T.untyped, blk: T.untyped).returns(PrivateRelationWhereChain) }
-    def where(*args, &blk); end
+    sig { returns(PrivateRelationWhereChain) }
+    sig { params(args: T.untyped).returns(PrivateRelation) }
+    def where(*args); end
 
     sig { params(args: T.untyped, blk: T.untyped).returns(PrivateRelation) }
     def with(*args, &blk); end
 
     sig { params(args: T.untyped, blk: T.untyped).returns(PrivateRelation) }
     def with_attached_embeds(*args, &blk); end
+
+    sig { params(args: T.untyped, blk: T.untyped).returns(PrivateRelation) }
+    def with_recursive(*args, &blk); end
 
     sig { params(args: T.untyped, blk: T.untyped).returns(PrivateRelation) }
     def without(*args, &blk); end
@@ -757,6 +845,9 @@ class ActionText::EncryptedRichText
     sig { params(column_name: T.any(String, Symbol)).returns(T::Hash[T.untyped, T.untyped]) }
     def minimum(column_name); end
 
+    sig { returns(T::Hash[T.untyped, Integer]) }
+    def size; end
+
     sig do
       params(
         column_name: T.nilable(T.any(String, Symbol)),
@@ -766,7 +857,7 @@ class ActionText::EncryptedRichText
     def sum(column_name = nil, &block); end
   end
 
-  class PrivateAssociationRelationWhereChain < PrivateAssociationRelation
+  class PrivateAssociationRelationWhereChain
     Elem = type_member { { fixed: ::ActionText::EncryptedRichText } }
 
     sig { params(args: T.untyped).returns(PrivateAssociationRelation) }
@@ -808,20 +899,6 @@ class ActionText::EncryptedRichText
       ).returns(PrivateCollectionProxy)
     end
     def concat(*records); end
-
-    sig do
-      params(
-        records: T.any(::ActionText::EncryptedRichText, Integer, String, T::Enumerable[T.any(::ActionText::EncryptedRichText, Integer, String, T::Enumerable[::ActionText::EncryptedRichText])])
-      ).returns(T::Array[::ActionText::EncryptedRichText])
-    end
-    def delete(*records); end
-
-    sig do
-      params(
-        records: T.any(::ActionText::EncryptedRichText, Integer, String, T::Enumerable[T.any(::ActionText::EncryptedRichText, Integer, String, T::Enumerable[::ActionText::EncryptedRichText])])
-      ).returns(T::Array[::ActionText::EncryptedRichText])
-    end
-    def destroy(*records); end
 
     sig { returns(T::Array[::ActionText::EncryptedRichText]) }
     def load_target; end
@@ -899,6 +976,9 @@ class ActionText::EncryptedRichText
     sig { params(column_name: T.any(String, Symbol)).returns(T::Hash[T.untyped, T.untyped]) }
     def minimum(column_name); end
 
+    sig { returns(T::Hash[T.untyped, Integer]) }
+    def size; end
+
     sig do
       params(
         column_name: T.nilable(T.any(String, Symbol)),
@@ -908,7 +988,7 @@ class ActionText::EncryptedRichText
     def sum(column_name = nil, &block); end
   end
 
-  class PrivateRelationWhereChain < PrivateRelation
+  class PrivateRelationWhereChain
     Elem = type_member { { fixed: ::ActionText::EncryptedRichText } }
 
     sig { params(args: T.untyped).returns(PrivateRelation) }

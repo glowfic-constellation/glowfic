@@ -10,20 +10,18 @@ class Sass::EmbeddedProtocol::Value < Google::Protobuf::AbstractMessage
     params(
       argument_list: T.nilable(Sass::EmbeddedProtocol::Value::ArgumentList),
       calculation: T.nilable(Sass::EmbeddedProtocol::Value::Calculation),
+      color: T.nilable(Sass::EmbeddedProtocol::Value::Color),
       compiler_function: T.nilable(Sass::EmbeddedProtocol::Value::CompilerFunction),
       compiler_mixin: T.nilable(Sass::EmbeddedProtocol::Value::CompilerMixin),
       host_function: T.nilable(Sass::EmbeddedProtocol::Value::HostFunction),
-      hsl_color: T.nilable(Sass::EmbeddedProtocol::Value::HslColor),
-      hwb_color: T.nilable(Sass::EmbeddedProtocol::Value::HwbColor),
       list: T.nilable(Sass::EmbeddedProtocol::Value::List),
       map: T.nilable(Sass::EmbeddedProtocol::Value::Map),
       number: T.nilable(Sass::EmbeddedProtocol::Value::Number),
-      rgb_color: T.nilable(Sass::EmbeddedProtocol::Value::RgbColor),
       singleton: T.nilable(T.any(Symbol, Integer)),
       string: T.nilable(Sass::EmbeddedProtocol::Value::String)
     ).void
   end
-  def initialize(argument_list: nil, calculation: nil, compiler_function: nil, compiler_mixin: nil, host_function: nil, hsl_color: nil, hwb_color: nil, list: nil, map: nil, number: nil, rgb_color: nil, singleton: nil, string: nil); end
+  def initialize(argument_list: nil, calculation: nil, color: nil, compiler_function: nil, compiler_mixin: nil, host_function: nil, list: nil, map: nil, number: nil, singleton: nil, string: nil); end
 
   sig { returns(T.nilable(Sass::EmbeddedProtocol::Value::ArgumentList)) }
   def argument_list; end
@@ -44,6 +42,9 @@ class Sass::EmbeddedProtocol::Value < Google::Protobuf::AbstractMessage
   def clear_calculation; end
 
   sig { void }
+  def clear_color; end
+
+  sig { void }
   def clear_compiler_function; end
 
   sig { void }
@@ -51,12 +52,6 @@ class Sass::EmbeddedProtocol::Value < Google::Protobuf::AbstractMessage
 
   sig { void }
   def clear_host_function; end
-
-  sig { void }
-  def clear_hsl_color; end
-
-  sig { void }
-  def clear_hwb_color; end
 
   sig { void }
   def clear_list; end
@@ -68,13 +63,16 @@ class Sass::EmbeddedProtocol::Value < Google::Protobuf::AbstractMessage
   def clear_number; end
 
   sig { void }
-  def clear_rgb_color; end
-
-  sig { void }
   def clear_singleton; end
 
   sig { void }
   def clear_string; end
+
+  sig { returns(T.nilable(Sass::EmbeddedProtocol::Value::Color)) }
+  def color; end
+
+  sig { params(value: T.nilable(Sass::EmbeddedProtocol::Value::Color)).void }
+  def color=(value); end
 
   sig { returns(T.nilable(Sass::EmbeddedProtocol::Value::CompilerFunction)) }
   def compiler_function; end
@@ -95,6 +93,9 @@ class Sass::EmbeddedProtocol::Value < Google::Protobuf::AbstractMessage
   def has_calculation?; end
 
   sig { returns(Object) }
+  def has_color?; end
+
+  sig { returns(Object) }
   def has_compiler_function?; end
 
   sig { returns(Object) }
@@ -104,12 +105,6 @@ class Sass::EmbeddedProtocol::Value < Google::Protobuf::AbstractMessage
   def has_host_function?; end
 
   sig { returns(Object) }
-  def has_hsl_color?; end
-
-  sig { returns(Object) }
-  def has_hwb_color?; end
-
-  sig { returns(Object) }
   def has_list?; end
 
   sig { returns(Object) }
@@ -117,9 +112,6 @@ class Sass::EmbeddedProtocol::Value < Google::Protobuf::AbstractMessage
 
   sig { returns(Object) }
   def has_number?; end
-
-  sig { returns(Object) }
-  def has_rgb_color?; end
 
   sig { returns(Object) }
   def has_singleton?; end
@@ -132,18 +124,6 @@ class Sass::EmbeddedProtocol::Value < Google::Protobuf::AbstractMessage
 
   sig { params(value: T.nilable(Sass::EmbeddedProtocol::Value::HostFunction)).void }
   def host_function=(value); end
-
-  sig { returns(T.nilable(Sass::EmbeddedProtocol::Value::HslColor)) }
-  def hsl_color; end
-
-  sig { params(value: T.nilable(Sass::EmbeddedProtocol::Value::HslColor)).void }
-  def hsl_color=(value); end
-
-  sig { returns(T.nilable(Sass::EmbeddedProtocol::Value::HwbColor)) }
-  def hwb_color; end
-
-  sig { params(value: T.nilable(Sass::EmbeddedProtocol::Value::HwbColor)).void }
-  def hwb_color=(value); end
 
   sig { returns(T.nilable(Sass::EmbeddedProtocol::Value::List)) }
   def list; end
@@ -162,12 +142,6 @@ class Sass::EmbeddedProtocol::Value < Google::Protobuf::AbstractMessage
 
   sig { params(value: T.nilable(Sass::EmbeddedProtocol::Value::Number)).void }
   def number=(value); end
-
-  sig { returns(T.nilable(Sass::EmbeddedProtocol::Value::RgbColor)) }
-  def rgb_color; end
-
-  sig { params(value: T.nilable(Sass::EmbeddedProtocol::Value::RgbColor)).void }
-  def rgb_color=(value); end
 
   sig { returns(T.any(Symbol, Integer)) }
   def singleton; end

@@ -20,6 +20,7 @@ class ApplicationController
     include ::CharacterHelper
     include ::IconHelper
     include ::MailerHelper
+    include ::NotificationHelper
     include ::PostHelper
     include ::ReportsHelper
     include ::TagHelper
@@ -41,8 +42,8 @@ class ApplicationController
     sig { returns(T.untyped) }
     def opened_ids; end
 
-    sig { returns(::Integer) }
-    def page; end
+    sig { params(allow_special: T.untyped).returns(T.untyped) }
+    def page(allow_special: T.unsafe(nil)); end
 
     sig { returns(::String) }
     def page_view; end

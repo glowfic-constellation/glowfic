@@ -8,7 +8,7 @@
 class Sass::EmbeddedProtocol::OutboundMessage::FunctionCallRequest < Google::Protobuf::AbstractMessage
   sig do
     params(
-      arguments: T.nilable(T.any(Google::Protobuf::RepeatedField[Sass::EmbeddedProtocol::Value], T::Array[Sass::EmbeddedProtocol::Value])),
+      arguments: T.nilable(T::Array[Sass::EmbeddedProtocol::Value]),
       function_id: T.nilable(Integer),
       id: T.nilable(Integer),
       name: T.nilable(String)

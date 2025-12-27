@@ -8,7 +8,7 @@
 class Sass::EmbeddedProtocol::Value::ArgumentList < Google::Protobuf::AbstractMessage
   sig do
     params(
-      contents: T.nilable(T.any(Google::Protobuf::RepeatedField[Sass::EmbeddedProtocol::Value], T::Array[Sass::EmbeddedProtocol::Value])),
+      contents: T.nilable(T::Array[Sass::EmbeddedProtocol::Value]),
       id: T.nilable(Integer),
       keywords: T.nilable(T.any(Google::Protobuf::Map[String, Sass::EmbeddedProtocol::Value], T::Hash[String, Sass::EmbeddedProtocol::Value])),
       separator: T.nilable(T.any(Symbol, Integer))
