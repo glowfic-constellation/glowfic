@@ -46,7 +46,7 @@ class ApplicationController < ActionController::Base
   end
 
   VALID_PAGES = ['last', 'unread']
-  sig { returns(Integer) }
+  sig { params(allow_special: T::Boolean).returns(Integer) }
   def page(allow_special: false)
     return @page if @page
     return (@page = 1) unless params[:page]
