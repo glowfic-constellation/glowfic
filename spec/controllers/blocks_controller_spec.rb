@@ -293,7 +293,7 @@ RSpec.describe BlocksController do
       login_as(block.blocking_user)
 
       allow(Block).to receive(:find_by).and_call_original
-      allow(Block).to receive(:find_by).with(id: block.id.to_s).and_return(block)
+      allow(Block).to receive(:find_by).with({ id: block.id.to_s }).and_return(block)
       allow(block).to receive(:destroy).and_return(false)
       expect(block).to receive(:destroy)
 

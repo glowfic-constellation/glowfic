@@ -26,7 +26,7 @@ RSpec.describe Api::V1::GalleriesController do
 
     context "with normal gallery id" do
       it "requires valid gallery id", :show_in_doc do
-        expect(Gallery.find_by_id(1)).to be_nil
+        expect(Gallery.find_by(id: 1)).to be_nil
         get :show, params: { id: 1 }
         expect(response).to have_http_status(404)
         expect(response.parsed_body['errors'][0]['message']).to eq("Gallery could not be found.")

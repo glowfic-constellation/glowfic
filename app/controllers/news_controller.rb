@@ -74,7 +74,7 @@ class NewsController < ApplicationController
   private
 
   def find_model
-    return if (@news = News.find_by_id(params[:id]))
+    return if (@news = News.find_by(id: params[:id]))
     flash[:error] = "News post could not be found."
     redirect_to news_index_path
   end

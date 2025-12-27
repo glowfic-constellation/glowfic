@@ -52,7 +52,7 @@ RSpec.describe PostsController, 'GET delete_history' do
     it "only selects more recent restore" do
       id = reply.id
       restore(reply)
-      reply = Reply.find_by_id(id)
+      reply = Reply.find_by(id: id)
       reply.update!(content: 'new content')
       reply.destroy!
       get :delete_history, params: { id: post.id }

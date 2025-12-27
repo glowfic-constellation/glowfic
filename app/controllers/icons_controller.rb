@@ -7,7 +7,7 @@ class IconsController < UploadingController
   before_action :set_s3_url, only: :edit
 
   def delete_multiple
-    gallery = Gallery.find_by_id(params[:gallery_id])
+    gallery = Gallery.find_by(id: params[:gallery_id])
     icon_ids = (params[:marked_ids] || []).map(&:to_i).reject(&:zero?)
     if icon_ids.empty? || (icons = Icon.where(id: icon_ids)).empty?
       flash[:error] = "No icons selected."
@@ -102,7 +102,7 @@ class IconsController < UploadingController
   end
 
   def do_replace
-    unless params[:icon_dropdown].blank? || (new_icon = Icon.find_by_id(params[:icon_dropdown]))
+    unless params[:icon_dropdown].blank? || (new_icon = Icon.find_by(id: params[:icon_dropdown]))
       flash[:error] = "Icon could not be found."
       redirect_to replace_icon_path(@icon) and return
     end
@@ -149,7 +149,7 @@ class IconsController < UploadingController
   private
 
   def find_model
-    return if (@icon = Icon.find_by_id(params[:id]))
+    return if (@icon = Icon.find_by(id: params[:id]))
     flash[:error] = "Icon could not be found."
     if logged_in?
       redirect_to user_galleries_path(current_user)
@@ -167,7 +167,7 @@ class IconsController < UploadingController
   def icon_redirect(gallery)
     if params[:return_to] == 'index'
       redirect_to user_galleries_path(current_user, anchor: "gallery-#{gallery.id}")
-    elsif params[:return_tag].present? && (tag = Tag.find_by_id(params[:return_tag]))
+    elsif params[:return_tag].present? && (tag = Tag.find_by(id: params[:return_tag]))
       redirect_to tag_path(tag, anchor: "gallery-#{gallery.id}")
     elsif gallery
       redirect_to gallery_path(id: gallery.id)

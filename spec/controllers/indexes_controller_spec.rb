@@ -234,7 +234,7 @@ RSpec.describe IndexesController do
       delete :destroy, params: { id: index.id }
       expect(response).to redirect_to(indexes_url)
       expect(flash[:success]).to eq("Index deleted.")
-      expect(Index.find_by_id(index.id)).to be_nil
+      expect(Index.find_by(id: index.id)).to be_nil
     end
 
     it "handles destroy failure" do

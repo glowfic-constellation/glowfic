@@ -64,7 +64,7 @@ class UsersController < ApplicationController
   end
 
   def show
-    unless (@user = User.active.find_by_id(params[:id]))
+    unless (@user = User.active.find_by(id: params[:id]))
       flash[:error] = "User could not be found."
       redirect_to users_path and return
     end

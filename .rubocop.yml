@@ -483,9 +483,6 @@ Rails/DurationArithmetic: # new in 2.13
 
 Rails/DynamicFindBy:
   Enabled: true
-  Whitelist:
-    - find_by_sql
-    - find_by_id
 
 Rails/EagerEvaluationLogMessage: # new in 2.11
   Enabled: true
