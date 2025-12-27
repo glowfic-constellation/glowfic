@@ -327,7 +327,7 @@ GEM
       activerecord (>= 6.1)
       activesupport (>= 6.1)
     popper_js (2.11.8)
-    power_assert (2.0.5)
+    power_assert (3.0.1)
     pp (0.6.3)
       prettyprint
     prettyprint (0.2.0)
@@ -543,7 +543,7 @@ GEM
     temple (0.10.4)
     terser (1.2.6)
       execjs (>= 0.3.0, < 3)
-    test-unit (3.7.0)
+    test-unit (3.7.6)
       power_assert
     thor (1.4.0)
     tilt (2.6.1)
