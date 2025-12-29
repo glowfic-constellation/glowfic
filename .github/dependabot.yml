@@ -15,6 +15,7 @@ updates:
     schedule:
       interval: "daily"
     open-pull-requests-limit: 10
+    dependency-type: "all"
   - package-ecosystem: "docker"
     directory: "/"
     schedule:
