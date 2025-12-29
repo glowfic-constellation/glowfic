@@ -48,6 +48,9 @@ Layout/EmptyLineAfterGuardClause:
 Layout/EmptyLineAfterMagicComment:
   Enabled: false
 
+Layout/EmptyLinesAfterModuleInclusion: # new in 1.79
+  Enabled: true
+
 Layout/EmptyLinesAroundAttributeAccessor:
   Enabled: false
 
@@ -870,6 +873,9 @@ Style/ArrayFirstLast: # new in 1.58
 Style/ArrayIntersect: # new in 1.40
   Enabled: true
 
+Style/ArrayIntersectWithSingleElement: # new in 1.81
+  Enabled: true
+
 Style/AsciiComments:
   Enabled: false
 
@@ -1060,6 +1066,9 @@ Style/MinMaxComparison: # new in 1.42
 
 Style/MixinUsage:
   Exclude: ['bin/*']
+
+Style/ModuleMemberExistenceCheck: # new in 1.82
+  Enabled: true
 
 Style/MultilineInPatternThen: # new in 1.16
   Enabled: true
