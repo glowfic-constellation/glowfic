@@ -6,3 +6,4 @@ class ReuploadIconJob < ApplicationJob
     uploader = Icon::Reuploader.new(Icon.find_by(icon_id))
     uploader.process
   end
+end
