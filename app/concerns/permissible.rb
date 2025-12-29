@@ -1,4 +1,5 @@
 # frozen_string_literal: true
+# typed: true
 module Permissible
   ADMIN = 1
   MOD = 2
@@ -20,6 +21,7 @@ module Permissible
     :create_news,
   ]
 
+  #: (Symbol permission) -> bool
   def has_permission?(permission)
     return false unless role_id
     return true if admin?
@@ -28,22 +30,27 @@ module Permissible
     MOD_PERMS.include?(permission)
   end
 
+  #: -> bool
   def admin?
     role_id == ADMIN
   end
 
+  #: -> bool
   def mod?
     role_id == MOD
   end
 
+  #: -> bool
   def importer?
     role_id == IMPORTER
   end
 
+  #: -> bool
   def suspended?
     role_id == SUSPENDED
   end
 
+  #: -> bool
   def read_only?
     role_id == READONLY
   end

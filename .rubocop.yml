@@ -13,6 +13,7 @@ AllCops:
     - 'db/schema.rb'
     - 'backstop/*'
     - 'vendor/**/*'
+    - 'sorbet/**/*'
 
 plugins:
   - rubocop-capybara
@@ -74,6 +75,9 @@ Layout/HeredocIndentation:
 Layout/IndentationWidth:
   Enabled: true
   Width: 2
+
+Layout/LeadingCommentSpace:
+  AllowRBSInlineAnnotation: true
 
 Layout/LineContinuationLeadingSpace: # new in 1.31
   Enabled: true
