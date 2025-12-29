@@ -11,8 +11,8 @@ RUN echo "Package: nodejs\nPin: origin deb.nodesource.com\nPin-Priority: 600\n\n
 RUN echo "Package: postgresql* libpq-dev\nPin: origin apt.postgresql.org\nPin-Priority: 600\n\nPackage: postgresql* libpq-dev\nPin: origin deb.debian.org\nPin-Priority: -10" > /etc/apt/preferences.d/postgresql
 RUN apt-get update \
   && apt install -y nodejs postgresql-client-16 \
-  && apt install -y chromium \
   && apt-get clean
+RUN npx -y @puppeteer/browsers install chrome@stable --install-deps
 
 ARG bundler_version=2.7.2
 
