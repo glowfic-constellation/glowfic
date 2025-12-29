@@ -37,7 +37,7 @@ This README mostly focuses on how to get started developing this project with Do
 
 #### Setting up the Glowfic site environment
 
-If you haven't already, start by installing [Docker](https://docs.docker.com/install/) and [Docker Compose](https://docs.docker.com/compose/install/).
+If you haven't already, start by installing [Docker](https://docs.docker.com/install/) and [Docker Compose](https://docs.docker.com/compose/install/). If you are on Linux, make sure you have permission to [run Docker as your Linux user](https://docs.docker.com/engine/install/linux-postinstall/#manage-docker-as-a-non-root-user).
 
 Then run `docker compose up` within the glowfic directory.
 This will set up a Postgres server, a Redis server, and a Glowfic app server which can talk to both of them.
