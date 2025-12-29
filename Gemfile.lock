@@ -270,7 +270,7 @@ GEM
       net-pop
       net-smtp
     marcel (1.1.0)
-    matrix (0.4.2)
+    matrix (0.4.3)
     memory_profiler (1.1.0)
     mercenary (0.4.0)
     mini_mime (1.1.5)
