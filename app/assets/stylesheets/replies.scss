@@ -96,6 +96,12 @@
 }
 
 /* Main content headers */
+#post-privacy {
+  float: right;
+  line-height: 24px;
+  margin-right: 2px;
+}
+
 .post-subheader, .post-navheader {
   font-size: $font_size_smallish;
 

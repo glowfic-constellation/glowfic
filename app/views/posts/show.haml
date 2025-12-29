@@ -50,6 +50,7 @@
   %span#post-title= link_to @post.subject, @post
   .view-button#post-menu
     = image_tag menu_img, class: 'icon-view'.freeze, alt: 'Show Menu'
+  #post-privacy= privacy_icon(@post.privacy.to_sym, dark_layout: current_user&.layout_darkmode?)
 #post-menu-holder
   #post-menu-box.hidden
     -# TODO ePub downloader
