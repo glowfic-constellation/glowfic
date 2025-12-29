@@ -473,7 +473,7 @@ GEM
     rubocop-rspec (3.7.0)
       lint_roller (~> 1.1)
       rubocop (~> 1.72, >= 1.72.1)
-    rubocop-rspec_rails (2.31.0)
+    rubocop-rspec_rails (2.32.0)
       lint_roller (~> 1.1)
       rubocop (~> 1.72, >= 1.72.1)
       rubocop-rspec (~> 3.5)
@@ -649,7 +649,7 @@ DEPENDENCIES
   rubocop-performance (~> 1.26.1)
   rubocop-rails (~> 2.34.2)
   rubocop-rspec (~> 3.7.0)
-  rubocop-rspec_rails (~> 2.31.0)
+  rubocop-rspec_rails (~> 2.32.0)
   sanitize
   scout_apm
   seed_dump (~> 3.4)
