@@ -3,7 +3,7 @@ RSpec.describe "Continuities" do
     let(:board) { create(:board, description: 'to display') }
 
     it "loads the board logged out" do
-      board.update(description: '') # for branch testing
+      board.update!(description: '') # for branch testing
       get "/boards/#{board.id}"
       expect(response).to have_http_status(200)
       expect(response).to render_template(:show)
