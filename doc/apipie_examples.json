@@ -1,77 +1,4 @@
 {
-  "board_sections#reorder": [
-    {
-      "verb": "POST",
-      "path": "/api/v1/board_sections/reorder",
-      "versions": [
-        "1.0"
-      ],
-      "query": null,
-      "request_data": {},
-      "response_data": {
-        "errors": [
-          {
-            "message": "You must be logged in to view that page."
-          }
-        ]
-      },
-      "code": "401",
-      "show_in_doc": 1,
-      "recorded": true
-    },
-    {
-      "verb": "POST",
-      "path": "/api/v1/board_sections/reorder",
-      "versions": [
-        "1.0"
-      ],
-      "query": null,
-      "request_data": {
-        "ordered_section_ids": [
-          "3",
-          "1",
-          "4",
-          "2"
-        ]
-      },
-      "response_data": {
-        "section_ids": [
-          3,
-          1,
-          4,
-          2
-        ]
-      },
-      "code": "200",
-      "show_in_doc": 1,
-      "recorded": true
-    },
-    {
-      "verb": "POST",
-      "path": "/api/v1/board_sections/reorder",
-      "versions": [
-        "1.0"
-      ],
-      "query": null,
-      "request_data": {
-        "ordered_section_ids": [
-          "3",
-          "1"
-        ]
-      },
-      "response_data": {
-        "section_ids": [
-          3,
-          1,
-          2,
-          4
-        ]
-      },
-      "code": "200",
-      "show_in_doc": 1,
-      "recorded": true
-    }
-  ],
   "boards#index": [
     {
       "verb": "GET",
@@ -2312,6 +2239,45 @@
       "recorded": true
     }
   ],
+  "subcontinuities#show": [
+    {
+      "verb": "GET",
+      "path": "/api/v1/subcontinuities/0",
+      "versions": [
+        "1.0"
+      ],
+      "query": "",
+      "request_data": null,
+      "response_data": {
+        "errors": [
+          {
+            "message": "Subcontinuity could not be found."
+          }
+        ]
+      },
+      "code": "404",
+      "show_in_doc": 1,
+      "recorded": true
+    },
+    {
+      "verb": "GET",
+      "path": "/api/v1/subcontinuities/1",
+      "versions": [
+        "1.0"
+      ],
+      "query": "",
+      "request_data": null,
+      "response_data": {
+        "id": 1,
+        "name": "TestSection00007",
+        "order": 0,
+        "board_id": 1
+      },
+      "code": "200",
+      "show_in_doc": 1,
+      "recorded": true
+    }
+  ],
   "tags#index": [
     {
       "verb": "GET",
@@ -2876,17 +2842,17 @@
             "section_order": 0,
             "board": {
               "id": 1,
-              "name": "test board 00077"
+              "name": "test board 00078"
             },
             "section": {
               "id": 1,
-              "name": "TestSection00017",
+              "name": "TestSection00018",
               "order": 0
             },
             "authors": [
               {
                 "id": 1,
-                "username": "JohnDoe00272"
+                "username": "JohnDoe00273"
               }
             ],
             "num_replies": 0

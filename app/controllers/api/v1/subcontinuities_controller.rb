@@ -1,10 +1,22 @@
-# frozen_string_literal: true
+# frozen_string_literal: true\
 class Api::V1::SubcontinuitiesController < Api::ApiController
-  before_action :login_required
+  before_action :login_required, only: :reorder
 
   resource_description do
     name 'Subcontinuities'
     description 'Viewing and editing subcontinuities'
+  end
+
+  api :GET, '/subcontinuities/:id', 'Load a single subcontinuity as a JSON resource'
+  error 404, 'Subcontinuity could not be found'
+  param :id, :number, required: true, desc: 'Subcontinuity ID'
+  def show
+    unless (board_section = BoardSection.find_by(id: params[:id]))
+      error = { message: "Subcontinuity could not be found." }
+      render json: { errors: [error] }, status: :not_found and return
+    end
+
+    render json: board_section.as_json.merge(board_id: board_section.board_id)
   end
 
   api :POST, '/subcontinuities/reorder', 'Update the order of subcontinuities. This is an unstable feature, and may be moved or renamed; it should not be trusted.'

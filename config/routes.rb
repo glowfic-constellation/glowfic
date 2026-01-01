@@ -126,7 +126,7 @@ Rails.application.routes.draw do
       resources :boards, only: [:index, :show] do
         member { get :posts }
       end
-      resources :subcontinuities, only: [] do
+      resources :subcontinuities, only: [:show] do
         collection { post :reorder }
       end
       resources :characters, only: [:index, :show, :update] do

@@ -1,4 +1,21 @@
 RSpec.describe Api::V1::SubcontinuitiesController do
+  describe "GET show", :show_in_doc do    
+    it "requires a valid section" do
+      get :show, params: { id: 0 }
+      expect(response).to have_http_status(404)
+      expect(response.parsed_body['errors'][0]['message']).to eq("Subcontinuity could not be found.")
+    end
+
+    it "works", :show_in_doc do
+      board_section = create(:board_section)
+      get :show, params: { id: board_section.id }
+      expect(response).to have_http_status(200)
+      expect(response.parsed_body['id']).to eq(board_section.id)
+      expect(response.parsed_body['name']).to eq(board_section.name)
+      expect(response.parsed_body['board_id']).to eq(board_section.board_id)
+    end
+  end
+
   describe "POST reorder" do
     it "requires login", :show_in_doc do
       post :reorder
