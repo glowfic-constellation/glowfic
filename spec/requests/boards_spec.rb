@@ -1,4 +1,42 @@
 RSpec.describe "Continuities" do
+  describe "show" do
+    let(:board) { create(:board, description: 'to display') }
+
+    it "loads the board logged out" do
+      board.update(description: '') # for branch testing
+      get "/boards/#{board.id}"
+      expect(response).to have_http_status(200)
+      expect(response).to render_template(:show)
+    end
+
+    it "loads the board logged in" do
+      login(board.creator)
+      create(:board_section, board: board, description: 'section display')
+      get "/boards/#{board.id}"
+      expect(response).to have_http_status(200)
+      expect(response).to render_template(:show)
+    end
+
+    it "shows unfavorite" do
+      user = login
+      create(:favorite, user: user, favorite: board)
+      get "/boards/#{board.id}"
+      expect(response).to have_http_status(200)
+      expect(response).to render_template(:show)
+      expect(response.body).to include("Unfavorite")
+    end
+
+    it "includes posts and pagination" do
+      create(:post, board: board, user: board.creator)
+      create_list(:board_section, 25, board: board)
+      section = create(:board_section, board: board)
+      create(:post, section: section, board: board, user: board.creator)
+      get "/boards/#{board.id}?page=2"
+      expect(response).to have_http_status(200)
+      expect(response).to render_template(:show)
+    end
+  end
+
   describe "creation" do
     it "creates a new board and shows on the boards list" do
       login
