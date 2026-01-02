@@ -43,9 +43,7 @@ class Icon::Reuploader < Object
       # for minio and Docker compatibility, replace the guest-compatible "minio" host with the host-compatible "localhost" path
       standard_endpoint = ENV.fetch('MINIO_ENDPOINT', nil)
       replacement_endpoint = ENV.fetch('MINIO_ENDPOINT_EXTERNAL', nil)
-      unless url.include?(standard_endpoint)
-        raise RuntimeError.new("couldn't find minio endpoint in direct post URL: #{standard_endpoint} in #{url}")
-      end
+      raise RuntimeError.new("couldn't find minio endpoint in direct post URL: #{standard_endpoint} in #{url}") unless url.include?(standard_endpoint)
       url = url.sub(standard_endpoint, replacement_endpoint)
     end
 
