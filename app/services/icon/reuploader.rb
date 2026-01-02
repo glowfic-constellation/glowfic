@@ -9,10 +9,8 @@ class Icon::Reuploader < Object
 
   def process
     validate
-    File.open("./tmp/#{@icon.id}", 'w+b') do |f|
-      scrape(f)
-      S3_BUCKET.put_object(key: @key, body: f, acl: 'public-read', content_type: @content_type, cache_control: 'public, max-age=31536000')
-    end
+    stream = scrape
+    object = S3_BUCKET.put_object(key: @key, body: steam, acl: 'public-read', content_type: @content_type, cache_control: 'public, max-age=31536000')
   end
 
   private
@@ -22,7 +20,7 @@ class Icon::Reuploader < Object
 
   def scrape
     sleep 0.25
-    f.write(HTTParty.get(@icon.url).body)
+    StringIO.new(HTTParty.get(@icon.url).body, 'r')
   rescue Net::OpenTimeout => e
     retried += 1
     base_message = "Failed to get #{url}: #{e.message}"
