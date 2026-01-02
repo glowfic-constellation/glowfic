@@ -10,7 +10,7 @@ class Icon::Reuploader < Object
   def process
     validate
     stream = scrape
-    object = S3_BUCKET.put_object(key: @key, body: steam, acl: 'public-read', content_type: @content_type, cache_control: 'public, max-age=31536000')
+    object = S3_BUCKET.put_object(key: @key, body: stream, acl: 'public-read', content_type: @content_type, cache_control: 'public, max-age=31536000')
     update_icon(object)
   end
 
