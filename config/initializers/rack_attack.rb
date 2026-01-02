@@ -7,6 +7,7 @@ safe_ips.each { |ip| Rack::Attack.safelist_ip(ip) }
 
 # block all IPs in RACK_ATTACK_BAD_IP split by comma
 ENV.fetch("RACK_ATTACK_BAD_IP", "").split(",").compact_blank.each { |ip| Rack::Attack.blocklist_ip(ip) }
+# BannedIp.pluck(:ip).each { |ip| Rack::Attack.blocklist_ip(ip) }
 
 # Configure Cache
 url = ENV.fetch("HEROKU_REDIS_TEAL_URL", nil)
@@ -27,7 +28,7 @@ Rack::Attack.throttled_response_retry_after_header = true
 
 # Includes conventional RateLimit-* headers for safe IPs:
 Rack::Attack.throttled_responder = lambda do |req|
-  return [429, {}, ["Throttled\n"]] unless safe_ips.include?(req.ip)
+  return [429, {}, ["Throttled\n"]] unless safe_ips.include?(req.ip) || req.path.starts_with?('/api')
 
   match_data = req.env['rack.attack.match_data']
   now = match_data[:epoch_time]
