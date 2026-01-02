@@ -39,3 +39,8 @@ backstop/reports/*
 
 # Ignore Rails credentials key
 /config/master.key
+
+# Nix development environment
+/.postgres
+/.gems
+dump.rdb
