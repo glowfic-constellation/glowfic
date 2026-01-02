@@ -7,7 +7,6 @@ safe_ips.each { |ip| Rack::Attack.safelist_ip(ip) }
 
 # block all IPs in RACK_ATTACK_BAD_IP split by comma
 ENV.fetch("RACK_ATTACK_BAD_IP", "").split(",").compact_blank.each { |ip| Rack::Attack.blocklist_ip(ip) }
-# BannedIp.pluck(:ip).each { |ip| Rack::Attack.blocklist_ip(ip) }
 
 # Configure Cache
 url = ENV.fetch("HEROKU_REDIS_TEAL_URL", nil)
@@ -26,7 +25,7 @@ end
 # Return to user how many seconds to wait until they can start sending requests again
 Rack::Attack.throttled_response_retry_after_header = true
 
-# Includes conventional RateLimit-* headers for safe IPs:
+# Includes conventional RateLimit-* headers for safe IPs and the API:
 Rack::Attack.throttled_responder = lambda do |req|
   return [429, {}, ["Throttled\n"]] unless safe_ips.include?(req.ip) || req.path.starts_with?('/api')
 
@@ -40,4 +39,17 @@ Rack::Attack.throttled_responder = lambda do |req|
   }
 
   [429, headers, ["Throttled\n"]]
+end
+
+# Lockout IP addresses that are hammering the app.
+Rack::Attack.blocklist('allow2ban bots') do |req|
+  # ban anyone at 5x the rate of our throttle limit per minute
+  Rack::Attack::Allow2Ban.filter(req.ip, maxretry: ENV.fetch("RACK_ATTACK_IP_LIMIT", 25).to_i, findtime: 1.minute, bantime: 1.hour) do
+    true
+  end
+
+  # ban anyone at our throttle limit for the duration of an hour
+  Rack::Attack::Allow2Ban.filter(req.ip, maxretry: ENV.fetch("RACK_ATTACK_IP_LIMIT", 25).to_i * 60, findtime: 1.hour, bantime: 1.day) do
+    true
+  end
 end

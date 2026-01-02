@@ -40,6 +40,7 @@ gem 'nilify_blanks'
 gem 'nokogiri'
 gem 'pg', '~> 1.6'
 gem 'pg_search'
+gem 'rack-attack'
 gem 'rack-pratchett'
 gem 'rails', '~> 8.0.4'
 gem "redcarpet", "~> 3.6"
@@ -58,7 +59,6 @@ gem 'will_paginate'
 
 group :production do
   gem 'puma'
-  gem 'rack-attack'
   gem 'rack-cors'
   gem 'rack-timeout', '>= 0.6.0'
   gem 'resque-heroku-signals'
