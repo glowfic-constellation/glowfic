@@ -3,7 +3,7 @@ class Icon::Reuploader < Object
   def initialize(icon)
     @icon = icon
     filename = File.basename(URI.parse(@icon.url).path)
-    @key = "users/#{current_user.id}/icons/#{filename}"
+    @key = "users/#{icon.user_id}/icons/#{filename}"
     @content_type = validate
   end
 
@@ -11,7 +11,7 @@ class Icon::Reuploader < Object
     validate
     File.open("./tmp/#{@icon.id}", 'w+b') do |f|
       scrape(f)
-      S3_BUCKET.objects.create(@key, f, acl: 'public-read', content_type: @content_type, cache_control: 'public, max-age=31536000')
+      S3_BUCKET.put_object(key: @key, body: f, acl: 'public-read', content_type: @content_type, cache_control: 'public, max-age=31536000')
     end
   end
 
