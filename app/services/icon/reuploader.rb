@@ -11,6 +11,7 @@ class Icon::Reuploader < Object
     validate
     stream = scrape
     object = S3_BUCKET.put_object(key: @key, body: steam, acl: 'public-read', content_type: @content_type, cache_control: 'public, max-age=31536000')
+    update_icon(object)
   end
 
   private
@@ -33,19 +34,22 @@ class Icon::Reuploader < Object
     end
   end
 
-  def s3_setup
-    # mostly copied from Uploading Control set_s3_url
+  def update_icon(object)
+    @icon.s3_key = object.key
+    url = object.public_url
 
-    presign_conf = {}
+    # mostly copied from Uploading Control set_s3_url
     if !Rails.env.production? && ENV.key?('MINIO_ENDPOINT') && ENV.key?('MINIO_ENDPOINT_EXTERNAL')
       # for minio and Docker compatibility, replace the guest-compatible "minio" host with the host-compatible "localhost" path
       standard_endpoint = ENV.fetch('MINIO_ENDPOINT', nil)
       replacement_endpoint = ENV.fetch('MINIO_ENDPOINT_EXTERNAL', nil)
-      bucket_url = S3_BUCKET.url
-      unless bucket_url.include?(standard_endpoint)
-        raise RuntimeError.new("couldn't find minio endpoint in direct post URL: #{standard_endpoint} in #{bucket_url}")
+      unless url.include?(standard_endpoint)
+        raise RuntimeError.new("couldn't find minio endpoint in direct post URL: #{standard_endpoint} in #{url}")
       end
-      presign_conf[:url] = bucket_url.sub(standard_endpoint, replacement_endpoint)
+      url = url.sub(standard_endpoint, replacement_endpoint)
     end
+
+    @icon.url = url
+    @icon.save!
   end
 end
