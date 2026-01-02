@@ -81,18 +81,50 @@ pkgs.mkShell {
     echo "Node: $(node --version)"
     echo "PostgreSQL: $(psql --version)"
     echo ""
-    echo "First-time setup:"
-    echo "  1. bundle install"
-    echo "  2. ./scripts/init-postgres.sh"
-    echo "  3. pg_ctl start -l .postgres/postgres.log"
-    echo "  4. redis-server --daemonize yes"
-    echo "  5. rails db:create db:migrate"
-    echo "  6. RAILS_ENV=test rails db:create db:schema:load"
+
+    # First-time setup detection and auto-run
+    if [ ! -f "$GEM_HOME/bin/rails" ]; then
+      echo "First-time setup detected. Running bundle install..."
+      bundle install
+    fi
+
+    if [ ! -d "$PGDATA" ]; then
+      echo "Initializing PostgreSQL..."
+      ./scripts/init-postgres.sh
+    fi
+
+    # Start PostgreSQL if not running
+    if ! pg_ctl status >/dev/null 2>&1; then
+      echo "Starting PostgreSQL..."
+      pg_ctl start -l .postgres/postgres.log -w
+    fi
+
+    # Start Redis if not running
+    if ! redis-cli ping >/dev/null 2>&1; then
+      echo "Starting Redis..."
+      redis-server --daemonize yes
+    fi
+
+    # Create databases if they don't exist
+    if ! psql -lqt 2>/dev/null | cut -d \| -f 1 | grep -qw glowfic_dev; then
+      echo "Creating development database..."
+      createdb glowfic_dev
+      echo "Running migrations..."
+      bundle exec rails db:migrate
+    fi
+
+    if ! psql -lqt 2>/dev/null | cut -d \| -f 1 | grep -qw glowfic_test; then
+      echo "Creating test database..."
+      createdb glowfic_test
+      echo "Loading test schema..."
+      RAILS_ENV=test bundle exec rails db:schema:load
+    fi
+
     echo ""
-    echo "Daily usage:"
-    echo "  pg_ctl start -l .postgres/postgres.log && redis-server --daemonize yes"
+    echo "Ready! Services running."
     echo "  rails server        # run dev server"
     echo "  bundle exec rspec   # run tests"
+    echo "  pg_ctl stop         # stop PostgreSQL"
     echo ""
   '';
 
