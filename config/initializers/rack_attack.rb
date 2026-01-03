@@ -14,7 +14,9 @@ Rack::Attack.cache.store = ActiveSupport::Cache::MemoryStore.new(url: url, ssl_p
 
 # Throttle all requests by IP (60rpm)
 # Key: "rack::attack:#{Time.now.to_i/:period}:req/ip:#{req.ip}"
-Rack::Attack.throttle('req/ip', limit: ENV.fetch("RACK_ATTACK_IP_LIMIT", 25).to_i, period: 5.minutes, &:ip)
+Rack::Attack.throttle('req/ip', limit: ENV.fetch("RACK_ATTACK_IP_LIMIT", 25).to_i, period: 5.minutes) do |req|
+  req.ip unless req_logged_in?(req)
+end
 
 # Throttle POST requests to /login by IP address to prevent brute force login attacks
 # Key: "rack::attack:#{Time.now.to_i/:period}:logins/ip:#{req.ip}"
@@ -47,7 +49,7 @@ end
 
 # Lockout IP addresses that are hammering the app.
 Rack::Attack.blocklist('allow2ban bots') do |req|
-  return false if req_logged_in?(req)
+  next false if req_logged_in?(req)
 
   # ban anyone at 5x the rate of our throttle limit per minute unless logged in or using API
   Rack::Attack::Allow2Ban.filter("minute:#{req.ip}", maxretry: ENV.fetch("RACK_ATTACK_IP_LIMIT", 25).to_i, findtime: 1.minute, bantime: 1.hour) do
