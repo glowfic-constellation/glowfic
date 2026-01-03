@@ -45,11 +45,11 @@ end
 Rack::Attack.blocklist('allow2ban bots') do |req|
   # ban anyone at 5x the rate of our throttle limit per minute
   Rack::Attack::Allow2Ban.filter(req.ip, maxretry: ENV.fetch("RACK_ATTACK_IP_LIMIT", 25).to_i, findtime: 1.minute, bantime: 1.hour) do
-    true
+    !req.path.starts_with?('/api')
   end
 
   # ban anyone at our throttle limit for the duration of an hour
   Rack::Attack::Allow2Ban.filter(req.ip, maxretry: ENV.fetch("RACK_ATTACK_IP_LIMIT", 25).to_i * 60, findtime: 1.hour, bantime: 1.day) do
-    true
+    !req.path.starts_with?('/api')
   end
 end
