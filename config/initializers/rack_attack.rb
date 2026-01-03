@@ -1,5 +1,5 @@
 # frozen_string_literal: true
-return unless Rails.env.production?
+# return unless Rails.env.production?
 
 # allow all IPs in RACK_ATTACK_SAFE_IP split by comma
 safe_ips = ENV.fetch("RACK_ATTACK_SAFE_IP", "").split(",").compact_blank
@@ -41,15 +41,21 @@ Rack::Attack.throttled_responder = lambda do |req|
   [429, headers, ["Throttled\n"]]
 end
 
+def req_logged_in?(req)
+  req.session[:user_id].present?
+end
+
 # Lockout IP addresses that are hammering the app.
 Rack::Attack.blocklist('allow2ban bots') do |req|
-  # ban anyone at 5x the rate of our throttle limit per minute
-  Rack::Attack::Allow2Ban.filter(req.ip, maxretry: ENV.fetch("RACK_ATTACK_IP_LIMIT", 25).to_i, findtime: 1.minute, bantime: 1.hour) do
+  return false if req_logged_in?(req)
+
+  # ban anyone at 5x the rate of our throttle limit per minute unless logged in or using API
+  Rack::Attack::Allow2Ban.filter("minute:#{req.ip}", maxretry: ENV.fetch("RACK_ATTACK_IP_LIMIT", 25).to_i, findtime: 1.minute, bantime: 1.hour) do
     !req.path.starts_with?('/api')
   end
 
-  # ban anyone at our throttle limit for the duration of an hour
-  Rack::Attack::Allow2Ban.filter(req.ip, maxretry: ENV.fetch("RACK_ATTACK_IP_LIMIT", 25).to_i * 60, findtime: 1.hour, bantime: 1.day) do
+  # ban anyone at our throttle limit for the duration of an hour unless logged in or using API
+  Rack::Attack::Allow2Ban.filter("hour:#{req.ip}", maxretry: ENV.fetch("RACK_ATTACK_IP_LIMIT", 25).to_i * 60, findtime: 1.hour, bantime: 1.day) do
     !req.path.starts_with?('/api')
   end
 end
