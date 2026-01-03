@@ -3,13 +3,14 @@ class Icon::Reuploader < Object
   def initialize(icon)
     @icon = icon
     filename = File.basename(URI.parse(@icon.url).path)
+    filename = @icon.id.to_s if filename.blank?
     @key = "users/#{icon.user_id}/icons/#{filename}"
-    @content_type = validate
+    @content_type = validate(filename)
   end
 
   def process
-    validate
     stream = scrape
+    # can I parse this as an image and check dimensions here?
     object = S3_BUCKET.put_object(key: @key, body: stream, acl: 'public-read', content_type: @content_type, cache_control: 'public, max-age=31536000')
     update_icon(object)
   end
@@ -17,11 +18,14 @@ class Icon::Reuploader < Object
   private
 
   def validate
+    headers = HTTParty.head(@icon.url).headers
+    raise InvalidFileTypeError unless headers.content_type.starts_with?('image/')
+    raise TooLargeFileError unless headers.content_length <= 300_000 # 300kb
   end
 
   def scrape
     sleep 0.25
-    StringIO.new(HTTParty.get(@icon.url).body, 'r')
+    HTTParty.get(@icon.url).body
   rescue Net::OpenTimeout => e
     retried += 1
     base_message = "Failed to get #{url}: #{e.message}"
