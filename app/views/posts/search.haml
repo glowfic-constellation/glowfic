@@ -47,7 +47,7 @@
               %tr
                 %td Ignored
                 %td.padding-5
-                  = check_box_tag :hide_ignored, true, params[:hide_ignored] != '0', { class: 'vmid no-margin', style: 'margin-bottom: 3px;' }
+                  = check_box_tag :hide_ignored, '1', !params.key?(:commit) || params[:hide_ignored].present?, { class: 'vmid no-margin', style: 'margin-bottom: 3px;' }
                   = label_tag :hide_ignored, "Hide ignored posts"
             %tr
               %td.centered{colspan: 2}= submit_tag "Search", class: 'button'

@@ -160,15 +160,15 @@ RSpec.describe PostsController, 'GET search' do
         expect(assigns(:search_results).map(&:id)).to match_array([ignored_post.id, ignored_board_post.id, normal_post.id])
       end
 
-      it "hides ignored posts by default when hide_from_all is enabled" do
+      it "hides ignored posts when checkbox is checked with hide_from_all enabled" do
         viewer.update!(hide_from_all: true)
-        get :search, params: { commit: true }
+        get :search, params: { commit: true, hide_ignored: '1' }
         expect(assigns(:search_results).map(&:id)).to eq([normal_post.id])
       end
 
       it "shows ignored posts when checkbox is unchecked with hide_from_all enabled" do
         viewer.update!(hide_from_all: true)
-        get :search, params: { commit: true, hide_ignored: '0' }
+        get :search, params: { commit: true } # no hide_ignored param = unchecked
         expect(assigns(:search_results).map(&:id)).to match_array([ignored_post.id, ignored_board_post.id, normal_post.id])
       end
     end
