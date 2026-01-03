@@ -311,6 +311,9 @@ class PostsController < WritableController
       post_ids = Reply.where(character_id: params[:character_id]).select(:post_id).distinct.pluck(:post_id)
       @search_results = @search_results.where(character_id: params[:character_id]).or(@search_results.where(id: post_ids))
     end
+    if current_user&.hide_from_all && params[:hide_ignored] != '0'
+      @search_results = @search_results.not_ignored_by(current_user)
+    end
     @search_results = posts_from_relation(@search_results, show_blocked: !!params[:show_blocked], no_tests: no_tests)
   end
 

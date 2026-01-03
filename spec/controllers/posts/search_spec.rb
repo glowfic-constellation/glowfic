@@ -141,5 +141,36 @@ RSpec.describe PostsController, 'GET search' do
     context "when logged in" do
       it_behaves_like "logged in post list"
     end
+
+    context "with hide_from_all" do
+      let(:viewer) { create(:user) }
+      let(:ignored_board) { create(:board) }
+      let!(:ignored_post) { create(:post) }
+      let!(:ignored_board_post) { create(:post, board: ignored_board) }
+      let!(:normal_post) { create(:post) }
+
+      before(:each) do
+        login_as(viewer)
+        ignored_post.ignore(viewer)
+        ignored_board.ignore(viewer)
+      end
+
+      it "does not hide ignored posts when hide_from_all is disabled" do
+        get :search, params: { commit: true }
+        expect(assigns(:search_results).map(&:id)).to match_array([ignored_post.id, ignored_board_post.id, normal_post.id])
+      end
+
+      it "hides ignored posts by default when hide_from_all is enabled" do
+        viewer.update!(hide_from_all: true)
+        get :search, params: { commit: true }
+        expect(assigns(:search_results).map(&:id)).to eq([normal_post.id])
+      end
+
+      it "shows ignored posts when checkbox is unchecked with hide_from_all enabled" do
+        viewer.update!(hide_from_all: true)
+        get :search, params: { commit: true, hide_ignored: '0' }
+        expect(assigns(:search_results).map(&:id)).to match_array([ignored_post.id, ignored_board_post.id, normal_post.id])
+      end
+    end
   end
 end
