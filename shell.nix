@@ -1,3 +1,12 @@
+# Nix development shell for Glowfic
+#
+# Usage:
+#   nix-shell              # Enter the shell manually
+#
+# For direnv users, create a .envrc file with:
+#   echo "use nix" > .envrc
+#   direnv allow
+#
 {
   pkgs ? import (fetchTarball {
     # nixpkgs-unstable - latest for Ruby 3.4.x

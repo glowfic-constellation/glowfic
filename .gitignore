@@ -43,4 +43,5 @@ backstop/reports/*
 # Nix development environment
 /.postgres
 /.gems
+/.envrc
 dump.rdb
