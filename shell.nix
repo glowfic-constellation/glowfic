@@ -39,8 +39,9 @@ pkgs.mkShell {
     pkgs.gnumake
     pkgs.gcc
 
-    # Git
+    # Git and GitHub CLI
     pkgs.git
+    pkgs.gh
   ] ++ pkgs.lib.optionals pkgs.stdenv.isLinux [
     # Chrome/Chromium for system tests (Linux only)
     pkgs.chromium

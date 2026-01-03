@@ -4,6 +4,7 @@ RSpec.describe "Searching posts" do
     login(user)
 
     visit search_posts_path
+    expect(page).to have_button('Search') # page loaded
     expect(page).to have_no_field('hide_ignored')
     expect(page).to have_no_text('Hide ignored posts')
   end
@@ -21,7 +22,7 @@ RSpec.describe "Searching posts" do
   scenario "hide_ignored checkbox filters ignored posts when checked" do
     user = create(:user, hide_from_all: true)
     ignored_post = create(:post, subject: 'Ignored post')
-    normal_post = create(:post, subject: 'Normal post')
+    create(:post, subject: 'Normal post') # not ignored
     ignored_post.ignore(user)
 
     login(user)
