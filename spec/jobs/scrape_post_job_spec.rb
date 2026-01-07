@@ -2,6 +2,7 @@ require Rails.root.join("app", "services", "post_scraper.rb")
 
 RSpec.describe ScrapePostJob do
   include ActiveJob::TestHelper
+
   before(:each) do
     clear_enqueued_jobs
     allow(STDOUT).to receive(:puts).with("Importing thread 'linear b'")

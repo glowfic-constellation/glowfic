@@ -1,5 +1,6 @@
 RSpec.describe NotifyFollowersOfNewPostJob do
   include ActiveJob::TestHelper
+
   before(:each) { clear_enqueued_jobs }
 
   it "does nothing with invalid post id" do

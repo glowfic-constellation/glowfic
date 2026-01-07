@@ -22,6 +22,7 @@ RSpec.describe Presentable do
 
   class ExampleWithoutBeforeJson
     include Presentable
+
     def as_json(_options={})
       2
     end
@@ -29,6 +30,7 @@ RSpec.describe Presentable do
 
   class ExampleWithoutNoJson
     include Presentable
+
     def initialize(**attrs)
       attrs.each do |key, value|
         self.instance_variable_set(:"@#{key}", value)
@@ -48,6 +50,7 @@ RSpec.describe Presentable do
 
   class ExampleWithSuper
     include Presentable
+
     def as_json(_options={})
       super
     end
