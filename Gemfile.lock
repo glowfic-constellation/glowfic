@@ -285,7 +285,7 @@ GEM
       prism (~> 1.5)
     mono_logger (1.1.2)
     multi_json (1.19.1)
-    multi_xml (0.8.0)
+    multi_xml (0.8.1)
       bigdecimal (>= 3.1, < 5)
     mustermann (3.0.4)
       ruby2_keywords (~> 0.0.1)
