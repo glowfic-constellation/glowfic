@@ -1,4 +1,4 @@
-# frozen_string_literal: true\
+# frozen_string_literal: true
 class Api::V1::SubcontinuitiesController < Api::ApiController
   before_action :login_required, only: :reorder
 
