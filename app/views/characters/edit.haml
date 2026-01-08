@@ -29,7 +29,7 @@
           - if @character.user_id == current_user.id
             = link_to edit_character_alias_path(@character, calias) do
               = image_tag "icons/pencil.png", alt: 'Edit'
-            = link_to character_alias_path(@character, calias), method: :delete, confirm: 'Are you sure you want to delete this alias?' do
+            = link_to character_alias_path(@character, calias), method: :delete, data: { confirm: 'Are you sure you want to delete this alias?' } do
               = image_tag "icons/cross.png", alt: 'Delete'
       - if @aliases.empty?
         .centered.alias-row{class: cycle('even', 'odd')} — No aliases yet —
