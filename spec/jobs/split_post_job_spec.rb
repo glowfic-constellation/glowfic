@@ -35,6 +35,7 @@ RSpec.describe SplitPostJob do
       expect(post.subject).to eq(title)
       expect(post.replies.count).to eq(0)
       expect(post.content).to eq(reply.content)
+      expect(post.editor_mode).to eq(reply.editor_mode)
       expect(Reply.find_by(id: reply.id)).not_to be_present
     end
   end
