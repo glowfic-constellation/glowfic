@@ -1,5 +1,5 @@
 RSpec.describe Api::V1::SubcontinuitiesController do
-  describe "GET show", :show_in_doc do    
+  describe "GET show", :show_in_doc do
     it "requires a valid section" do
       get :show, params: { id: 0 }
       expect(response).to have_http_status(404)
