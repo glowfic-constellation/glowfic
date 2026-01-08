@@ -1,5 +1,5 @@
 # frozen_string_literal: true
-class Api::V1::BoardSectionsController < Api::ApiController
+class Api::V1::SubcontinuitiesController < Api::ApiController
   before_action :login_required
 
   resource_description do
@@ -7,7 +7,7 @@ class Api::V1::BoardSectionsController < Api::ApiController
     description 'Viewing and editing subcontinuities'
   end
 
-  api :POST, '/board_sections/reorder', 'Update the order of subcontinuities. This is an unstable feature, and may be moved or renamed; it should not be trusted.'
+  api :POST, '/subcontinuities/reorder', 'Update the order of subcontinuities. This is an unstable feature, and may be moved or renamed; it should not be trusted.'
   error 401, "You must be logged in"
   error 403, "Continuity is not editable by the user"
   error 404, "Section IDs could not be found"

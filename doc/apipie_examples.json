@@ -7,8 +7,7 @@
         "1.0"
       ],
       "query": null,
-      "request_data": {
-      },
+      "request_data": {},
       "response_data": {
         "errors": [
           {
@@ -150,25 +149,25 @@
         "results": [
           {
             "id": 1,
-            "subject": "test subject 1",
+            "subject": "test subject 00000",
+            "description": "",
             "created_at": "2019-01-02T03:04:05.000Z",
+            "tagged_at": "2019-01-02T03:04:05.000Z",
             "status": "active",
             "section_order": 0,
-            "description": "",
-            "tagged_at": "2019-01-02T03:04:05.000Z",
             "board": {
               "id": 1,
-              "name": "test board 11"
+              "name": "test board 00006"
             },
             "section": {
               "id": 1,
-              "name": "TestSection13",
+              "name": "TestSection00002",
               "order": 0
             },
             "authors": [
               {
                 "id": 2,
-                "username": "JohnDoe14"
+                "username": "JohnDoe00011"
               }
             ],
             "num_replies": 0
@@ -210,19 +209,524 @@
       "request_data": null,
       "response_data": {
         "id": 1,
-        "name": "test board 10",
+        "name": "test board 00005",
         "board_sections": [
           {
             "id": 2,
-            "name": "TestSection12",
+            "name": "TestSection00001",
             "order": 0
           },
           {
             "id": 1,
-            "name": "TestSection11",
+            "name": "TestSection00000",
             "order": 1
           }
         ]
+      },
+      "code": "200",
+      "show_in_doc": 1,
+      "recorded": true
+    }
+  ],
+  "bookmarks#create": [
+    {
+      "verb": "POST",
+      "path": "/api/v1/bookmarks",
+      "versions": [
+        "1.0"
+      ],
+      "query": null,
+      "request_data": {},
+      "response_data": {
+        "errors": [
+          {
+            "message": "You must be logged in to view that page."
+          }
+        ]
+      },
+      "code": "401",
+      "show_in_doc": 1,
+      "recorded": true
+    },
+    {
+      "verb": "POST",
+      "path": "/api/v1/bookmarks",
+      "versions": [
+        "1.0"
+      ],
+      "query": null,
+      "request_data": {},
+      "response_data": {
+        "errors": [
+          {
+            "message": "Missing parameter reply_id"
+          }
+        ]
+      },
+      "code": "422",
+      "show_in_doc": 1,
+      "recorded": true
+    },
+    {
+      "verb": "POST",
+      "path": "/api/v1/bookmarks",
+      "versions": [
+        "1.0"
+      ],
+      "query": null,
+      "request_data": {
+        "reply_id": "0"
+      },
+      "response_data": {
+        "errors": [
+          {
+            "message": "Reply could not be found."
+          }
+        ]
+      },
+      "code": "404",
+      "show_in_doc": 1,
+      "recorded": true
+    },
+    {
+      "verb": "POST",
+      "path": "/api/v1/bookmarks",
+      "versions": [
+        "1.0"
+      ],
+      "query": null,
+      "request_data": {
+        "reply_id": "1"
+      },
+      "response_data": {
+        "errors": [
+          {
+            "message": "You do not have permission to perform this action."
+          }
+        ]
+      },
+      "code": "403",
+      "show_in_doc": 1,
+      "recorded": true
+    },
+    {
+      "verb": "POST",
+      "path": "/api/v1/bookmarks",
+      "versions": [
+        "1.0"
+      ],
+      "query": null,
+      "request_data": {
+        "reply_id": "1"
+      },
+      "response_data": {
+        "id": 1,
+        "user_id": 1,
+        "reply_id": 1,
+        "post_id": 1,
+        "name": null,
+        "type": "reply_bookmark",
+        "public": false,
+        "created_at": "2019-12-25T21:34:56.000Z",
+        "updated_at": "2019-12-25T21:34:56.000Z"
+      },
+      "code": "200",
+      "show_in_doc": 1,
+      "recorded": true
+    },
+    {
+      "verb": "POST",
+      "path": "/api/v1/bookmarks",
+      "versions": [
+        "1.0"
+      ],
+      "query": null,
+      "request_data": {
+        "name": "New Bookmark",
+        "reply_id": "1"
+      },
+      "response_data": {
+        "id": 1,
+        "user_id": 1,
+        "reply_id": 1,
+        "post_id": 1,
+        "name": "New Bookmark",
+        "type": "reply_bookmark",
+        "public": false,
+        "created_at": "2019-12-25T21:34:56.000Z",
+        "updated_at": "2019-12-25T21:34:56.000Z"
+      },
+      "code": "200",
+      "show_in_doc": 1,
+      "recorded": true
+    },
+    {
+      "verb": "POST",
+      "path": "/api/v1/bookmarks",
+      "versions": [
+        "1.0"
+      ],
+      "query": null,
+      "request_data": {
+        "public": "true",
+        "reply_id": "1"
+      },
+      "response_data": {
+        "id": 1,
+        "user_id": 1,
+        "reply_id": 1,
+        "post_id": 1,
+        "name": null,
+        "type": "reply_bookmark",
+        "public": true,
+        "created_at": "2019-12-25T21:34:56.000Z",
+        "updated_at": "2019-12-25T21:34:56.000Z"
+      },
+      "code": "200",
+      "show_in_doc": 1,
+      "recorded": true
+    },
+    {
+      "verb": "POST",
+      "path": "/api/v1/bookmarks",
+      "versions": [
+        "1.0"
+      ],
+      "query": null,
+      "request_data": {
+        "name": "New Bookmark",
+        "public": "true",
+        "reply_id": "1"
+      },
+      "response_data": {
+        "id": 1,
+        "user_id": 1,
+        "reply_id": 1,
+        "post_id": 1,
+        "name": "New Bookmark",
+        "type": "reply_bookmark",
+        "public": true,
+        "created_at": "2019-12-25T21:34:56.000Z",
+        "updated_at": "2019-12-25T21:34:56.000Z"
+      },
+      "code": "200",
+      "show_in_doc": 1,
+      "recorded": true
+    },
+    {
+      "verb": "POST",
+      "path": "/api/v1/bookmarks",
+      "versions": [
+        "1.0"
+      ],
+      "query": null,
+      "request_data": {
+        "name": "New Name",
+        "reply_id": "1"
+      },
+      "response_data": {
+        "name": "New Name",
+        "post_id": 1,
+        "user_id": 1,
+        "reply_id": 1,
+        "type": "reply_bookmark",
+        "id": 1,
+        "public": false,
+        "created_at": "2019-12-25T21:34:56.000Z",
+        "updated_at": "2019-12-25T21:34:56.000Z"
+      },
+      "code": "200",
+      "show_in_doc": 1,
+      "recorded": true
+    }
+  ],
+  "bookmarks#destroy": [
+    {
+      "verb": "DELETE",
+      "path": "/api/v1/bookmarks/0",
+      "versions": [
+        "1.0"
+      ],
+      "query": null,
+      "request_data": {},
+      "response_data": {
+        "errors": [
+          {
+            "message": "You must be logged in to view that page."
+          }
+        ]
+      },
+      "code": "401",
+      "show_in_doc": 1,
+      "recorded": true
+    },
+    {
+      "verb": "DELETE",
+      "path": "/api/v1/bookmarks/0",
+      "versions": [
+        "1.0"
+      ],
+      "query": null,
+      "request_data": {},
+      "response_data": {
+        "errors": [
+          {
+            "message": "Bookmark could not be found."
+          }
+        ]
+      },
+      "code": "404",
+      "show_in_doc": 1,
+      "recorded": true
+    },
+    {
+      "verb": "DELETE",
+      "path": "/api/v1/bookmarks/1",
+      "versions": [
+        "1.0"
+      ],
+      "query": null,
+      "request_data": {},
+      "response_data": {
+        "errors": [
+          {
+            "message": "You do not have permission to perform this action."
+          }
+        ]
+      },
+      "code": "403",
+      "show_in_doc": 1,
+      "recorded": true
+    },
+    {
+      "verb": "DELETE",
+      "path": "/api/v1/bookmarks/1",
+      "versions": [
+        "1.0"
+      ],
+      "query": null,
+      "request_data": {},
+      "response_data": {
+        "errors": [
+          {
+            "message": "You do not have permission to perform this action."
+          }
+        ]
+      },
+      "code": "403",
+      "show_in_doc": 1,
+      "recorded": true
+    },
+    {
+      "verb": "DELETE",
+      "path": "/api/v1/bookmarks/1",
+      "versions": [
+        "1.0"
+      ],
+      "query": null,
+      "request_data": {},
+      "response_data": null,
+      "code": "204",
+      "show_in_doc": 1,
+      "recorded": true
+    }
+  ],
+  "bookmarks#update": [
+    {
+      "verb": "PATCH",
+      "path": "/api/v1/bookmarks/0",
+      "versions": [
+        "1.0"
+      ],
+      "query": null,
+      "request_data": {},
+      "response_data": {
+        "errors": [
+          {
+            "message": "You must be logged in to view that page."
+          }
+        ]
+      },
+      "code": "401",
+      "show_in_doc": 1,
+      "recorded": true
+    },
+    {
+      "verb": "PATCH",
+      "path": "/api/v1/bookmarks/0",
+      "versions": [
+        "1.0"
+      ],
+      "query": null,
+      "request_data": {},
+      "response_data": {
+        "errors": [
+          {
+            "message": "Bookmark could not be found."
+          }
+        ]
+      },
+      "code": "404",
+      "show_in_doc": 1,
+      "recorded": true
+    },
+    {
+      "verb": "PATCH",
+      "path": "/api/v1/bookmarks/1",
+      "versions": [
+        "1.0"
+      ],
+      "query": null,
+      "request_data": {},
+      "response_data": {
+        "errors": [
+          {
+            "message": "You do not have permission to perform this action."
+          }
+        ]
+      },
+      "code": "403",
+      "show_in_doc": 1,
+      "recorded": true
+    },
+    {
+      "verb": "PATCH",
+      "path": "/api/v1/bookmarks/1",
+      "versions": [
+        "1.0"
+      ],
+      "query": null,
+      "request_data": {
+        "name": "New"
+      },
+      "response_data": {
+        "errors": [
+          {
+            "message": "You do not have permission to perform this action."
+          }
+        ]
+      },
+      "code": "403",
+      "show_in_doc": 1,
+      "recorded": true
+    },
+    {
+      "verb": "PATCH",
+      "path": "/api/v1/bookmarks/1",
+      "versions": [
+        "1.0"
+      ],
+      "query": null,
+      "request_data": {
+        "name": "New name"
+      },
+      "response_data": {
+        "errors": [
+          {
+            "message": "You do not have permission to perform this action."
+          }
+        ]
+      },
+      "code": "403",
+      "show_in_doc": 1,
+      "recorded": true
+    },
+    {
+      "verb": "PATCH",
+      "path": "/api/v1/bookmarks/1",
+      "versions": [
+        "1.0"
+      ],
+      "query": null,
+      "request_data": {
+        "name": "New name"
+      },
+      "response_data": {
+        "post_id": 1,
+        "reply_id": 1,
+        "user_id": 1,
+        "name": "New name",
+        "type": "reply_bookmark",
+        "id": 1,
+        "public": false,
+        "created_at": "2019-12-25T21:34:56.000Z",
+        "updated_at": "2019-12-25T21:34:56.000Z"
+      },
+      "code": "200",
+      "show_in_doc": 1,
+      "recorded": true
+    },
+    {
+      "verb": "PATCH",
+      "path": "/api/v1/bookmarks/1",
+      "versions": [
+        "1.0"
+      ],
+      "query": null,
+      "request_data": {
+        "name": ""
+      },
+      "response_data": {
+        "post_id": 1,
+        "reply_id": 1,
+        "user_id": 1,
+        "name": "",
+        "type": "reply_bookmark",
+        "id": 1,
+        "public": false,
+        "created_at": "2019-12-25T21:34:56.000Z",
+        "updated_at": "2019-12-25T21:34:56.000Z"
+      },
+      "code": "200",
+      "show_in_doc": 1,
+      "recorded": true
+    },
+    {
+      "verb": "PATCH",
+      "path": "/api/v1/bookmarks/1",
+      "versions": [
+        "1.0"
+      ],
+      "query": null,
+      "request_data": {
+        "public": "true"
+      },
+      "response_data": {
+        "post_id": 1,
+        "reply_id": 1,
+        "user_id": 1,
+        "public": true,
+        "type": "reply_bookmark",
+        "id": 1,
+        "name": "Old name",
+        "created_at": "2019-12-25T21:34:56.000Z",
+        "updated_at": "2019-12-25T21:34:56.000Z"
+      },
+      "code": "200",
+      "show_in_doc": 1,
+      "recorded": true
+    },
+    {
+      "verb": "PATCH",
+      "path": "/api/v1/bookmarks/1",
+      "versions": [
+        "1.0"
+      ],
+      "query": null,
+      "request_data": {
+        "name": "New name",
+        "public": "true"
+      },
+      "response_data": {
+        "post_id": 1,
+        "reply_id": 1,
+        "user_id": 1,
+        "name": "New name",
+        "public": true,
+        "type": "reply_bookmark",
+        "id": 1,
+        "created_at": "2019-12-25T21:34:56.000Z",
+        "updated_at": "2019-12-25T21:34:56.000Z"
       },
       "code": "200",
       "show_in_doc": 1,
@@ -242,9 +746,10 @@
         "results": [
           {
             "id": 1,
-            "name": "test character 1",
+            "name": "test character 00000",
             "screenname": null,
-            "selector_name": "test character 1"
+            "npc": false,
+            "selector_name": "test character 00000"
           }
         ]
       },
@@ -356,8 +861,7 @@
         "1.0"
       ],
       "query": null,
-      "request_data": {
-      },
+      "request_data": {},
       "response_data": {
         "errors": [
           {
@@ -452,38 +956,39 @@
       "request_data": null,
       "response_data": {
         "id": 1,
-        "name": "test character 7",
+        "name": "test character 00006",
         "screenname": null,
+        "npc": false,
         "default_icon": null,
         "aliases": [
           {
             "id": 1,
-            "name": "TestAlias1"
+            "name": "TestAlias00000"
           }
         ],
         "galleries": [
           {
-            "name": "test gallery 1",
+            "name": "test gallery 00000",
             "icons": [
               {
                 "id": 1,
                 "url": "http://www.fakeicon.com",
-                "keyword": "totally fake 1"
+                "keyword": "totally fake 00000"
               },
               {
                 "id": 2,
                 "url": "http://www.fakeicon.com",
-                "keyword": "totally fake 2"
+                "keyword": "totally fake 00001"
               }
             ]
           },
           {
-            "name": "test gallery 2",
+            "name": "test gallery 00001",
             "icons": [
               {
                 "id": 3,
                 "url": "http://www.fakeicon.com",
-                "keyword": "totally fake 3"
+                "keyword": "totally fake 00002"
               }
             ]
           }
@@ -541,19 +1046,18 @@
       "request_data": null,
       "response_data": {
         "id": 1,
-        "name": "test character 10",
+        "name": "test character 00009",
         "screenname": null,
+        "npc": false,
         "alias_id_for_post": 1,
         "default_icon": null,
         "aliases": [
           {
             "id": 1,
-            "name": "TestAlias2"
+            "name": "TestAlias00001"
           }
         ],
-        "galleries": [
-
-        ]
+        "galleries": []
       },
       "code": "200",
       "show_in_doc": 1,
@@ -568,8 +1072,7 @@
         "1.0"
       ],
       "query": null,
-      "request_data": {
-      },
+      "request_data": {},
       "response_data": {
         "errors": [
           {
@@ -588,8 +1091,7 @@
         "1.0"
       ],
       "query": null,
-      "request_data": {
-      },
+      "request_data": {},
       "response_data": {
         "errors": [
           {
@@ -608,8 +1110,7 @@
         "1.0"
       ],
       "query": null,
-      "request_data": {
-      },
+      "request_data": {},
       "response_data": {
         "errors": [
           {
@@ -634,13 +1135,14 @@
         }
       },
       "response_data": {
-        "name": "test character 12",
         "id": 1,
+        "name": "test character 00011",
         "screenname": null,
+        "npc": false,
         "default_icon": {
           "id": 2,
           "url": "http://www.fakeicon.com",
-          "keyword": "totally fake 5"
+          "keyword": "totally fake 00004"
         }
       },
       "code": "200",
@@ -703,9 +1205,7 @@
       "request_data": null,
       "response_data": {
         "name": "Galleryless",
-        "icons": [
-
-        ]
+        "icons": []
       },
       "code": "200",
       "show_in_doc": 1,
@@ -739,12 +1239,12 @@
       "query": "",
       "request_data": null,
       "response_data": {
-        "name": "test gallery 13",
+        "name": "test gallery 00012",
         "icons": [
           {
             "id": 1,
             "url": "http://www.fakeicon.com",
-            "keyword": "totally fake 8"
+            "keyword": "totally fake 00007"
           }
         ]
       },
@@ -761,8 +1261,7 @@
         "1.0"
       ],
       "query": null,
-      "request_data": {
-      },
+      "request_data": {},
       "response_data": {
         "errors": [
           {
@@ -781,8 +1280,7 @@
         "1.0"
       ],
       "query": null,
-      "request_data": {
-      },
+      "request_data": {},
       "response_data": {
         "errors": [
           {
@@ -823,7 +1321,7 @@
       ],
       "query": null,
       "request_data": {
-        "s3_key": "users/1/icons/nonsense-fakeimg-1.png"
+        "s3_key": "users/1/icons/nonsense-fakeimg-00000.png"
       },
       "response_data": {
         "errors": [
@@ -844,10 +1342,9 @@
       ],
       "query": null,
       "request_data": {
-        "s3_key": "users/1/icons/nonsense-fakeimg-2.png"
+        "s3_key": "users/1/icons/nonsense-fakeimg-00001.png"
       },
-      "response_data": {
-      },
+      "response_data": {},
       "code": "200",
       "show_in_doc": 1,
       "recorded": true
@@ -861,8 +1358,7 @@
         "1.0"
       ],
       "query": null,
-      "request_data": {
-      },
+      "request_data": {},
       "response_data": {
         "errors": [
           {
@@ -989,8 +1485,7 @@
         "1.0"
       ],
       "query": null,
-      "request_data": {
-      },
+      "request_data": {},
       "response_data": {
         "errors": [
           {
@@ -1068,7 +1563,7 @@
         "results": [
           {
             "id": 1,
-            "subject": "test subject 26"
+            "subject": "test subject 00041"
           }
         ]
       },
@@ -1105,8 +1600,7 @@
         "1.0"
       ],
       "query": null,
-      "request_data": {
-      },
+      "request_data": {},
       "response_data": {
         "errors": [
           {
@@ -1274,34 +1768,34 @@
       "request_data": null,
       "response_data": {
         "id": 1,
-        "subject": "test subject 28",
+        "subject": "test subject 00043",
+        "description": "",
         "created_at": "2019-12-25T21:34:56.000Z",
+        "tagged_at": "2019-12-25T21:34:56.000Z",
         "status": "active",
         "section_order": 0,
-        "description": "",
-        "tagged_at": "2019-12-25T21:34:56.000Z",
         "board": {
           "id": 1,
-          "name": "test board 40"
+          "name": "test board 00051"
         },
         "section": null,
         "authors": [
           {
             "id": 1,
-            "username": "JohnDoe107"
+            "username": "JohnDoe00176"
           }
         ],
         "num_replies": 0,
         "content": "test content",
         "character": {
           "id": 1,
-          "name": "test character 18",
+          "name": "test character 00017",
           "screenname": null
         },
         "icon": {
           "id": 1,
           "url": "http://www.fakeicon.com",
-          "keyword": "totally fake 11"
+          "keyword": "totally fake 00010"
         }
       },
       "code": "200",
@@ -1317,8 +1811,7 @@
         "1.0"
       ],
       "query": null,
-      "request_data": {
-      },
+      "request_data": {},
       "response_data": {
         "errors": [
           {
@@ -1337,8 +1830,7 @@
         "1.0"
       ],
       "query": null,
-      "request_data": {
-      },
+      "request_data": {},
       "response_data": {
         "errors": [
           {
@@ -1357,8 +1849,7 @@
         "1.0"
       ],
       "query": null,
-      "request_data": {
-      },
+      "request_data": {},
       "response_data": {
         "errors": [
           {
@@ -1377,8 +1868,7 @@
         "1.0"
       ],
       "query": null,
-      "request_data": {
-      },
+      "request_data": {},
       "response_data": {
         "errors": [
           {
@@ -1404,6 +1894,246 @@
         "private_note": "<p>Shiny new note</p>"
       },
       "code": "200",
+      "show_in_doc": 1,
+      "recorded": true
+    },
+    {
+      "verb": "PATCH",
+      "path": "/api/v1/posts/1",
+      "versions": [
+        "1.0"
+      ],
+      "query": null,
+      "request_data": {
+        "private_note": ""
+      },
+      "response_data": {
+        "private_note": ""
+      },
+      "code": "200",
+      "show_in_doc": 1,
+      "recorded": true
+    }
+  ],
+  "replies#bookmark": [
+    {
+      "verb": "GET",
+      "path": "/api/v1/replies/0/bookmark",
+      "versions": [
+        "1.0"
+      ],
+      "query": "",
+      "request_data": null,
+      "response_data": {
+        "errors": [
+          {
+            "message": "Missing parameter user_id"
+          }
+        ]
+      },
+      "code": "422",
+      "show_in_doc": 1,
+      "recorded": true
+    },
+    {
+      "verb": "GET",
+      "path": "/api/v1/replies/0/bookmark",
+      "versions": [
+        "1.0"
+      ],
+      "query": "",
+      "request_data": null,
+      "response_data": {
+        "errors": [
+          {
+            "message": "Reply could not be found."
+          }
+        ]
+      },
+      "code": "404",
+      "show_in_doc": 1,
+      "recorded": true
+    },
+    {
+      "verb": "GET",
+      "path": "/api/v1/replies/1/bookmark",
+      "versions": [
+        "1.0"
+      ],
+      "query": "",
+      "request_data": null,
+      "response_data": {
+        "errors": [
+          {
+            "message": "User could not be found."
+          }
+        ]
+      },
+      "code": "404",
+      "show_in_doc": 1,
+      "recorded": true
+    },
+    {
+      "verb": "GET",
+      "path": "/api/v1/replies/1/bookmark",
+      "versions": [
+        "1.0"
+      ],
+      "query": "",
+      "request_data": null,
+      "response_data": {
+        "errors": [
+          {
+            "message": "You do not have permission to perform this action."
+          }
+        ]
+      },
+      "code": "403",
+      "show_in_doc": 1,
+      "recorded": true
+    },
+    {
+      "verb": "GET",
+      "path": "/api/v1/replies/1/bookmark",
+      "versions": [
+        "1.0"
+      ],
+      "query": "",
+      "request_data": null,
+      "response_data": {
+        "errors": [
+          {
+            "message": "Bookmark could not be found."
+          }
+        ]
+      },
+      "code": "404",
+      "show_in_doc": 1,
+      "recorded": true
+    },
+    {
+      "verb": "GET",
+      "path": "/api/v1/replies/1/bookmark",
+      "versions": [
+        "1.0"
+      ],
+      "query": "",
+      "request_data": null,
+      "response_data": {
+        "errors": [
+          {
+            "message": "Bookmark could not be found."
+          }
+        ]
+      },
+      "code": "404",
+      "show_in_doc": 1,
+      "recorded": true
+    },
+    {
+      "verb": "GET",
+      "path": "/api/v1/replies/1/bookmark",
+      "versions": [
+        "1.0"
+      ],
+      "query": "",
+      "request_data": null,
+      "response_data": {
+        "id": 1,
+        "user_id": 1,
+        "reply_id": 1,
+        "post_id": 1,
+        "name": null,
+        "type": "reply_bookmark",
+        "public": true,
+        "created_at": "2019-12-25T21:34:56.000Z",
+        "updated_at": "2019-12-25T21:34:56.000Z"
+      },
+      "code": "200",
+      "show_in_doc": 1,
+      "recorded": true
+    },
+    {
+      "verb": "GET",
+      "path": "/api/v1/replies/1/bookmark",
+      "versions": [
+        "1.0"
+      ],
+      "query": "",
+      "request_data": null,
+      "response_data": {
+        "errors": [
+          {
+            "message": "You do not have permission to perform this action."
+          }
+        ]
+      },
+      "code": "403",
+      "show_in_doc": 1,
+      "recorded": true
+    },
+    {
+      "verb": "GET",
+      "path": "/api/v1/replies/1/bookmark",
+      "versions": [
+        "1.0"
+      ],
+      "query": "",
+      "request_data": null,
+      "response_data": {
+        "id": 1,
+        "user_id": 1,
+        "reply_id": 1,
+        "post_id": 1,
+        "name": null,
+        "type": "reply_bookmark",
+        "public": false,
+        "created_at": "2019-12-25T21:34:56.000Z",
+        "updated_at": "2019-12-25T21:34:56.000Z"
+      },
+      "code": "200",
+      "show_in_doc": 1,
+      "recorded": true
+    },
+    {
+      "verb": "GET",
+      "path": "/api/v1/replies/1/bookmark",
+      "versions": [
+        "1.0"
+      ],
+      "query": "",
+      "request_data": null,
+      "response_data": {
+        "id": 1,
+        "user_id": 1,
+        "reply_id": 1,
+        "post_id": 1,
+        "name": null,
+        "type": "reply_bookmark",
+        "public": false,
+        "created_at": "2019-12-25T21:34:56.000Z",
+        "updated_at": "2019-12-25T21:34:56.000Z"
+      },
+      "code": "200",
+      "show_in_doc": 1,
+      "recorded": true
+    },
+    {
+      "verb": "GET",
+      "path": "/api/v1/replies/1/bookmark",
+      "versions": [
+        "1.0"
+      ],
+      "query": "",
+      "request_data": null,
+      "response_data": {
+        "errors": [
+          {
+            "message": "Bookmark could not be found."
+          }
+        ]
+      },
+      "code": "404",
       "show_in_doc": 1,
       "recorded": true
     }
@@ -1458,7 +2188,7 @@
       "response_data": [
         {
           "id": 1,
-          "content": "test content 1",
+          "content": "test content 00016",
           "created_at": "2019-12-25T21:34:56.000Z",
           "updated_at": "2019-12-25T21:34:56.000Z",
           "character_name": null,
@@ -1466,12 +2196,12 @@
           "icon": null,
           "user": {
             "id": 1,
-            "username": "JohnDoe144"
+            "username": "JohnDoe00215"
           }
         },
         {
           "id": 2,
-          "content": "test content 2",
+          "content": "test content 00017",
           "created_at": "2019-12-25T21:34:56.000Z",
           "updated_at": "2019-12-25T21:34:56.000Z",
           "character_name": null,
@@ -1479,31 +2209,104 @@
           "icon": null,
           "user": {
             "id": 1,
-            "username": "JohnDoe144"
+            "username": "JohnDoe00215"
           }
         },
         {
           "id": 3,
-          "content": "test content 3",
+          "content": "test content 00018",
           "created_at": "2019-12-25T21:34:56.000Z",
           "updated_at": "2019-12-25T21:34:56.000Z",
-          "character_name": "TestAlias3",
+          "character_name": "TestAlias00002",
           "character": {
             "id": 2,
-            "name": "test character 20",
+            "name": "test character 00019",
             "screenname": null
           },
           "icon": {
             "id": 2,
             "url": "http://www.fakeicon.com",
-            "keyword": "totally fake 13"
+            "keyword": "totally fake 00012"
           },
           "user": {
             "id": 3,
-            "username": "JohnDoe146"
+            "username": "JohnDoe00217"
           }
         }
       ],
+      "code": "200",
+      "show_in_doc": 1,
+      "recorded": true
+    }
+  ],
+  "subcontinuities#reorder": [
+    {
+      "verb": "POST",
+      "path": "/api/v1/subcontinuities/reorder",
+      "versions": [
+        "1.0"
+      ],
+      "query": null,
+      "request_data": {},
+      "response_data": {
+        "errors": [
+          {
+            "message": "You must be logged in to view that page."
+          }
+        ]
+      },
+      "code": "401",
+      "show_in_doc": 1,
+      "recorded": true
+    },
+    {
+      "verb": "POST",
+      "path": "/api/v1/subcontinuities/reorder",
+      "versions": [
+        "1.0"
+      ],
+      "query": null,
+      "request_data": {
+        "ordered_section_ids": [
+          "3",
+          "1",
+          "4",
+          "2"
+        ]
+      },
+      "response_data": {
+        "section_ids": [
+          3,
+          1,
+          4,
+          2
+        ]
+      },
+      "code": "200",
+      "show_in_doc": 1,
+      "recorded": true
+    },
+    {
+      "verb": "POST",
+      "path": "/api/v1/subcontinuities/reorder",
+      "versions": [
+        "1.0"
+      ],
+      "query": null,
+      "request_data": {
+        "ordered_section_ids": [
+          "3",
+          "1"
+        ]
+      },
+      "response_data": {
+        "section_ids": [
+          3,
+          1,
+          2,
+          4
+        ]
+      },
       "code": "200",
       "show_in_doc": 1,
       "recorded": true
@@ -1522,7 +2325,7 @@
         "results": [
           {
             "id": 1,
-            "text": "Tag1"
+            "text": "Tag00000"
           }
         ]
       },
@@ -1542,7 +2345,7 @@
         "results": [
           {
             "id": 1,
-            "text": "Tag2"
+            "text": "Tag00001"
           }
         ]
       },
@@ -1562,7 +2365,7 @@
         "results": [
           {
             "id": 1,
-            "text": "Tag3"
+            "text": "Tag00002"
           }
         ]
       },
@@ -1601,7 +2404,7 @@
       "request_data": null,
       "response_data": {
         "id": 1,
-        "text": "Tag4",
+        "text": "Tag00003",
         "gallery_ids": [
           1,
           2
@@ -1725,7 +2528,232 @@
         "results": [
           {
             "id": 1,
-            "name": "test template 1"
+            "name": "test template 00000"
+          }
+        ]
+      },
+      "code": "200",
+      "show_in_doc": 1,
+      "recorded": true
+    }
+  ],
+  "users#bookmarks": [
+    {
+      "verb": "GET",
+      "path": "/api/v1/users/0/bookmarks",
+      "versions": [
+        "1.0"
+      ],
+      "query": "",
+      "request_data": null,
+      "response_data": {
+        "errors": [
+          {
+            "message": "User could not be found."
+          }
+        ]
+      },
+      "code": "404",
+      "show_in_doc": 1,
+      "recorded": true
+    },
+    {
+      "verb": "GET",
+      "path": "/api/v1/users/1/bookmarks",
+      "versions": [
+        "1.0"
+      ],
+      "query": "",
+      "request_data": null,
+      "response_data": {
+        "bookmarks": []
+      },
+      "code": "200",
+      "show_in_doc": 1,
+      "recorded": true
+    },
+    {
+      "verb": "GET",
+      "path": "/api/v1/users/1/bookmarks",
+      "versions": [
+        "1.0"
+      ],
+      "query": "",
+      "request_data": null,
+      "response_data": {
+        "bookmarks": [
+          {
+            "id": 1,
+            "user_id": 1,
+            "reply_id": 1,
+            "post_id": 1,
+            "name": null,
+            "type": "reply_bookmark",
+            "public": true,
+            "created_at": "2019-12-25T21:34:56.000Z",
+            "updated_at": "2019-12-25T21:34:56.000Z"
+          }
+        ]
+      },
+      "code": "200",
+      "show_in_doc": 1,
+      "recorded": true
+    },
+    {
+      "verb": "GET",
+      "path": "/api/v1/users/1/bookmarks",
+      "versions": [
+        "1.0"
+      ],
+      "query": "",
+      "request_data": null,
+      "response_data": {
+        "bookmarks": [
+          {
+            "id": 1,
+            "user_id": 1,
+            "reply_id": 1,
+            "post_id": 1,
+            "name": null,
+            "type": "reply_bookmark",
+            "public": false,
+            "created_at": "2019-12-25T21:34:56.000Z",
+            "updated_at": "2019-12-25T21:34:56.000Z"
+          }
+        ]
+      },
+      "code": "200",
+      "show_in_doc": 1,
+      "recorded": true
+    },
+    {
+      "verb": "GET",
+      "path": "/api/v1/users/1/bookmarks",
+      "versions": [
+        "1.0"
+      ],
+      "query": "",
+      "request_data": null,
+      "response_data": {
+        "bookmarks": [
+          {
+            "id": 1,
+            "user_id": 1,
+            "reply_id": 1,
+            "post_id": 1,
+            "name": null,
+            "type": "reply_bookmark",
+            "public": false,
+            "created_at": "2019-12-25T21:34:56.000Z",
+            "updated_at": "2019-12-25T21:34:56.000Z"
+          }
+        ]
+      },
+      "code": "200",
+      "show_in_doc": 1,
+      "recorded": true
+    },
+    {
+      "verb": "GET",
+      "path": "/api/v1/users/1/bookmarks",
+      "versions": [
+        "1.0"
+      ],
+      "query": "",
+      "request_data": null,
+      "response_data": {
+        "bookmarks": [
+          {
+            "id": 2,
+            "user_id": 1,
+            "reply_id": 2,
+            "post_id": 2,
+            "name": null,
+            "type": "reply_bookmark",
+            "public": true,
+            "created_at": "2019-12-25T21:34:56.000Z",
+            "updated_at": "2019-12-25T21:34:56.000Z"
+          }
+        ]
+      },
+      "code": "200",
+      "show_in_doc": 1,
+      "recorded": true
+    },
+    {
+      "verb": "GET",
+      "path": "/api/v1/users/1/bookmarks",
+      "versions": [
+        "1.0"
+      ],
+      "query": "",
+      "request_data": null,
+      "response_data": {
+        "bookmarks": [
+          {
+            "id": 2,
+            "user_id": 1,
+            "reply_id": 2,
+            "post_id": 2,
+            "name": null,
+            "type": "reply_bookmark",
+            "public": true,
+            "created_at": "2019-12-25T21:34:56.000Z",
+            "updated_at": "2019-12-25T21:34:56.000Z"
+          }
+        ]
+      },
+      "code": "200",
+      "show_in_doc": 1,
+      "recorded": true
+    },
+    {
+      "verb": "GET",
+      "path": "/api/v1/users/1/bookmarks",
+      "versions": [
+        "1.0"
+      ],
+      "query": "",
+      "request_data": null,
+      "response_data": {
+        "bookmarks": [
+          {
+            "id": 3,
+            "user_id": 1,
+            "reply_id": 3,
+            "post_id": 3,
+            "name": null,
+            "type": "reply_bookmark",
+            "public": false,
+            "created_at": "2019-12-25T21:34:56.000Z",
+            "updated_at": "2019-12-25T21:34:56.000Z"
+          }
+        ]
+      },
+      "code": "200",
+      "show_in_doc": 1,
+      "recorded": true
+    },
+    {
+      "verb": "GET",
+      "path": "/api/v1/users/1/bookmarks",
+      "versions": [
+        "1.0"
+      ],
+      "query": "",
+      "request_data": null,
+      "response_data": {
+        "bookmarks": [
+          {
+            "id": 1,
+            "user_id": 1,
+            "reply_id": 1,
+            "post_id": 1,
+            "name": null,
+            "type": "reply_bookmark",
+            "public": false,
+            "created_at": "2019-12-25T21:34:56.000Z",
+            "updated_at": "2019-12-25T21:34:56.000Z"
           }
         ]
       },
@@ -1748,16 +2776,16 @@
           {
             "id": 1,
             "username": "baa",
-            "created_at": "2019-12-25T21:34:56.000Z",
             "moiety": "123456",
-            "moiety_name": "Test"
+            "moiety_name": "Test",
+            "created_at": "2019-12-25T21:34:56.000Z"
           },
           {
             "id": 5,
             "username": "BAAc",
-            "created_at": "2019-12-25T21:34:56.000Z",
             "moiety": null,
-            "moiety_name": null
+            "moiety_name": null,
+            "created_at": "2019-12-25T21:34:56.000Z"
           }
         ]
       },
@@ -1797,9 +2825,9 @@
           {
             "id": 2,
             "username": "ali",
-            "created_at": "2019-12-25T21:34:56.000Z",
             "moiety": null,
-            "moiety_name": null
+            "moiety_name": null,
+            "created_at": "2019-12-25T21:34:56.000Z"
           }
         ]
       },
@@ -1840,25 +2868,25 @@
         "results": [
           {
             "id": 1,
-            "subject": "test subject 54",
+            "subject": "test subject 00079",
+            "description": "",
             "created_at": "2019-12-25T21:34:56.000Z",
+            "tagged_at": "2019-12-25T21:34:56.000Z",
             "status": "active",
             "section_order": 0,
-            "description": "",
-            "tagged_at": "2019-12-25T21:34:56.000Z",
             "board": {
               "id": 1,
-              "name": "test board 52"
+              "name": "test board 00077"
             },
             "section": {
               "id": 1,
-              "name": "TestSection18",
+              "name": "TestSection00017",
               "order": 0
             },
             "authors": [
               {
                 "id": 1,
-                "username": "JohnDoe163"
+                "username": "JohnDoe00272"
               }
             ],
             "num_replies": 0
