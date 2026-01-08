@@ -1,4 +1,4 @@
-RSpec.describe Api::V1::BoardSectionsController do
+RSpec.describe Api::V1::SubcontinuitiesController do
   describe "POST reorder" do
     it "requires login", :show_in_doc do
       post :reorder
