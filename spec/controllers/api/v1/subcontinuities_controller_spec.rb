@@ -6,7 +6,7 @@ RSpec.describe Api::V1::SubcontinuitiesController do
       expect(response.parsed_body['errors'][0]['message']).to eq("Subcontinuity could not be found.")
     end
 
-    it "works", :show_in_doc do
+    it "works" do
       board_section = create(:board_section)
       get :show, params: { id: board_section.id }
       expect(response).to have_http_status(200)
