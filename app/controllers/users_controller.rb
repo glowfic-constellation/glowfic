@@ -70,7 +70,9 @@ class UsersController < ApplicationController
     end
 
     ids = Post::Author.where(user_id: @user.id, joined: true).pluck(:post_id)
-    @posts = posts_from_relation(Post.where(id: ids).ordered)
+    posts = Post.where(id: ids).ordered
+    posts = posts.not_ignored_by(current_user) if current_user&.hide_from_all
+    @posts = posts_from_relation(posts)
     @page_title = @user.username
     @meta_og = og_data
   end

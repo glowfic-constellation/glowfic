@@ -64,7 +64,11 @@ class CharactersController < ApplicationController
 
   def show
     @page_title = @character.name
-    @posts = posts_from_relation(@character.recent_posts) if params[:view] == 'posts'
+    if params[:view] == 'posts'
+      posts = @character.recent_posts
+      posts = posts.not_ignored_by(current_user) if current_user&.hide_from_all
+      @posts = posts_from_relation(posts)
+    end
     @meta_og = og_data
     use_javascript('characters/show') if @character.user_id == current_user.try(:id)
     response.headers['X-Robots-Tag'] = 'noindex' if params[:view]

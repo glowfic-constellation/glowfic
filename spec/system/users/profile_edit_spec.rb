@@ -64,6 +64,7 @@ RSpec.describe "Editing user profile" do
     within("#edit_user_#{user.id}") { click_button 'Save' }
     expect(find_by_id('user_username').value).to eq("Updated Username")
     visit user_path(user)
+    expect(page).to have_selector('.table-title', text: 'Author Profile') # wait for page to load
     within('.flash.error') do
       find('summary').click
       expect(page).to have_text('warning 1')

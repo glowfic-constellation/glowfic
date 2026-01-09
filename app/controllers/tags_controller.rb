@@ -28,7 +28,9 @@ class TagsController < ApplicationController
     response.headers['X-Robots-Tag'] = 'noindex' if @view
 
     if @view == 'posts'
-      @posts = posts_from_relation(@tag.posts.ordered)
+      posts = @tag.posts.ordered
+      posts = posts.not_ignored_by(current_user) if current_user&.hide_from_all
+      @posts = posts_from_relation(posts)
     elsif @view == 'characters'
       @characters = @tag.characters.includes(:user, :template).ordered.paginate(page: page)
       @show_retired = true # page has no buttons for filters, show retired characters by default

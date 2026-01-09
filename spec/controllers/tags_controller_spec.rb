@@ -281,6 +281,32 @@ RSpec.describe TagsController do
           expect(assigns(:characters)).to be_empty
         end
       end
+
+      context "with hide_from_all" do
+        let(:viewer) { create(:user) }
+        let(:label) { create(:label) }
+        let(:ignored_board) { create(:board) }
+        let!(:ignored_post) { create(:post, labels: [label]) }
+        let!(:ignored_board_post) { create(:post, labels: [label], board: ignored_board) }
+        let!(:normal_post) { create(:post, labels: [label]) }
+
+        before(:each) do
+          login_as(viewer)
+          ignored_post.ignore(viewer)
+          ignored_board.ignore(viewer)
+        end
+
+        it "does not hide ignored posts when hide_from_all is disabled" do
+          get :show, params: { id: label.id, view: 'posts' }
+          expect(assigns(:posts).map(&:id)).to match_array([ignored_post.id, ignored_board_post.id, normal_post.id])
+        end
+
+        it "hides ignored posts when hide_from_all is enabled" do
+          viewer.update!(hide_from_all: true)
+          get :show, params: { id: label.id, view: 'posts' }
+          expect(assigns(:posts).map(&:id)).to eq([normal_post.id])
+        end
+      end
     end
   end
 
