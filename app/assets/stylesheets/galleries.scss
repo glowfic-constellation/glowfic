@@ -73,13 +73,15 @@
 
 .gallery-edit-form {
   width: 100%;
-  grid-template-columns: minmax(min-content, 295px) auto;
+  grid-template-columns: minmax(min-content, 100px) auto;
   .subber { grid-template-columns: auto; }
   .gallery-icons {
     display: flex;
     flex-direction: row;
     gap: 4px;
     align-items: flex-start;
+    .gallery { display: block; }
+    .gallery-icon { display: inline-block; }
   }
 }
 
