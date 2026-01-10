@@ -7,6 +7,7 @@ end
 
 RSpec.describe ApplicationJob do
   include ActiveJob::TestHelper
+
   before(:each) { clear_enqueued_jobs }
 
   it "retries on sigterm" do
