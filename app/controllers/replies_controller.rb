@@ -305,6 +305,13 @@ class RepliesController < WritableController
         num = @unseen_replies.count
         pluraled = num > 1 ? "have been #{num} new replies" : "has been 1 new reply"
         flash.now[:error] = "There #{pluraled} since you last viewed this post."
+
+        # special handling for multi reply to keep the latest reply out of the preview list
+        if @multi_replies.size > 1
+          @multi_replies.delete(new_reply)
+          @multi_replies_params.delete(permitted_params)
+        end
+
         draft = make_draft
         preview_reply(ReplyDraft.reply_from_draft(draft)) and return
       end

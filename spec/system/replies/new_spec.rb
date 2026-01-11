@@ -418,6 +418,29 @@ RSpec.describe "Creating replies" do
         expect(page).to have_selector('.post-content', exact_text: 'new reply 4', count: 1)
         expect(page).to have_no_selector('.flash.error')
       end
+
+      scenario "Unseen warning does not duplicate", :js do
+        create(:reply, post: post, user: user)
+        visit post_path(post)
+
+        # create unseen reply after loading page
+        create(:reply, post: post, user: post.user)
+        expect(post.replies.count).to eq(2)
+
+        within('#post-editor') do
+          fill_in 'reply_content', with: 'new reply 3'
+          click_button "Add More Replies"
+          fill_in 'reply_content', with: 'reply I do not want to duplicate'
+          click_button 'Post All'
+        end
+        expect(page).to have_selector('.flash.error', text: "There has been 1 new reply since you last viewed this post.")
+
+        click_button "Post All"
+        expect(post.replies.count).to eq(4)
+        expect(page).to have_selector('.post-content', exact_text: 'new reply 3', count: 1)
+        expect(page).to have_selector('.post-content', exact_text: 'reply I do not want to duplicate', count: 1)
+        expect(page).to have_no_selector('.flash.error')
+      end
     end
 
     scenario "User tries to reply to locked post" do
