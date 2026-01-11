@@ -404,11 +404,15 @@ RSpec.describe "Creating replies" do
           fill_in 'reply_content', with: 'new reply 3'
           click_button "Add More Replies"
         end
+        within('#post-editor') do
+          fill_in 'reply_content', with: 'new reply 4'
+          click_button "Add More Replies"
+        end
 
         create(:reply, post: post)
 
         within('#post-editor') do
-          fill_in 'reply_content', with: 'new reply 4'
+          fill_in 'reply_content', with: 'new reply 5'
           click_button 'Post All'
         end
         expect(page).to have_selector('.flash.error', text: "There has been 1 new reply since you last viewed this post.")
@@ -416,10 +420,11 @@ RSpec.describe "Creating replies" do
         accept_alert { click_button "Post Previewed" }
         expect(page).to have_selector('.post-content', exact_text: 'new reply 3', count: 1)
         expect(page).to have_selector('.post-content', exact_text: 'new reply 4', count: 1)
+        expect(page).to have_no_selector('.post-content', exact_text: 'new reply 5')
         expect(page).to have_no_selector('.flash.error')
       end
 
-      scenario "Unseen warning does not duplicate", :js do
+      scenario "Unseen warning does not duplicate" do
         create(:reply, post: post, user: user)
         visit post_path(post)
 
