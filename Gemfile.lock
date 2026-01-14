@@ -553,7 +553,7 @@ GEM
     test-unit (3.7.7)
       power_assert
     thor (1.5.0)
-    tilt (2.6.1)
+    tilt (2.7.0)
     timecop (0.9.10)
     timeout (0.6.0)
     tinymce-rails (7.8.0)
