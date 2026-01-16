@@ -15,7 +15,7 @@ class PostPresenter
   private
 
   def min_json(post)
-    post.as_json_without_presenter(only: [:id, :subject])
+    post.as_json_without_presenter(only: [:id, :subject, :tagged_at]).merge({authors: post.joined_authors.ordered, num_replies: post.reply_count})
   end
 
   def includeless_json(post)
