@@ -1490,7 +1490,15 @@
         "results": [
           {
             "id": 1,
-            "subject": "test subject 00041"
+            "subject": "test subject 00041",
+            "tagged_at": "2019-12-25T21:34:56.000Z",
+            "authors": [
+              {
+                "id": 1,
+                "username": "JohnDoe00168"
+              }
+            ],
+            "num_replies": 0
           }
         ]
       },
@@ -1510,7 +1518,15 @@
         "results": [
           {
             "id": 1,
-            "subject": "search"
+            "subject": "search",
+            "tagged_at": "2019-12-25T21:34:56.000Z",
+            "authors": [
+              {
+                "id": 1,
+                "username": "JohnDoe00170"
+              }
+            ],
+            "num_replies": 0
           }
         ]
       },

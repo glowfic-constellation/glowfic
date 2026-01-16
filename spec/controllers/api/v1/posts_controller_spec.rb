@@ -1,12 +1,20 @@
 RSpec.describe Api::V1::PostsController do
   describe "GET index" do
     shared_examples_for "index.parsed_body" do |in_doc|
+      def expect_correct_response(response, post)
+        expect(response['id']).to eq(post.id)
+        expect(response['subject']).to eq(post.subject)
+        expect(response['tagged_at']).to be_the_same_time_as(post.tagged_at)
+        expect(response['authors']).to eq(post.joined_authors.ordered.map { |a| a.as_json.stringify_keys })
+        expect(response['num_replies']).to eq(post.reply_count)
+      end
+
       it "should support no search", show_in_doc: in_doc do
         post = create(:post)
         get :index
         expect(response).to have_http_status(200)
         expect(response.parsed_body).to have_key('results')
-        expect(response.parsed_body['results']).to contain_exactly(post.as_json(min: true).stringify_keys)
+        expect_correct_response(response.parsed_body['results'].first, post)
       end
 
       it "should support search", show_in_doc: in_doc do
@@ -15,7 +23,8 @@ RSpec.describe Api::V1::PostsController do
         get :index, params: { q: 'se' }
         expect(response).to have_http_status(200)
         expect(response.parsed_body).to have_key('results')
-        expect(response.parsed_body['results']).to contain_exactly(post.as_json(min: true).stringify_keys)
+        expect(response.parsed_body['results'].count).to eq(1)
+        expect_correct_response(response.parsed_body['results'].first, post)
       end
 
       it "hides private posts" do
@@ -24,7 +33,8 @@ RSpec.describe Api::V1::PostsController do
         get :index
         expect(response).to have_http_status(200)
         expect(response.parsed_body).to have_key('results')
-        expect(response.parsed_body['results']).to contain_exactly(post.as_json(min: true).stringify_keys)
+        expect(response.parsed_body['results'].count).to eq(1)
+        expect_correct_response(response.parsed_body['results'].first, post)
       end
     end
 
