@@ -3,7 +3,7 @@ RSpec.describe Api::V1::PostsController do
     shared_examples_for "index.parsed_body" do |in_doc|
       it "should support no search", show_in_doc: in_doc do
         post = create(:post)
-        get :index
+        get :index, params: { min: 'true' }
         expect(response).to have_http_status(200)
         expect(response.parsed_body).to have_key('results')
         expect(response.parsed_body['results']).to contain_exactly(post.as_json(min: true).stringify_keys)
@@ -12,19 +12,34 @@ RSpec.describe Api::V1::PostsController do
       it "should support search", show_in_doc: in_doc do
         post = create(:post, subject: 'search')
         create(:post, subject: 'no') # post2
-        get :index, params: { q: 'se' }
+        get :index, params: { q: 'se', min: 'true' }
         expect(response).to have_http_status(200)
         expect(response.parsed_body).to have_key('results')
+        expect(response.parsed_body['results'].count).to eq(1)
         expect(response.parsed_body['results']).to contain_exactly(post.as_json(min: true).stringify_keys)
       end
 
       it "hides private posts" do
         create(:post, privacy: :private)
         post = create(:post)
+        get :index, params: { min: 'true' }
+        expect(response).to have_http_status(200)
+        expect(response.parsed_body).to have_key('results')
+        expect(response.parsed_body['results'].count).to eq(1)
+        expect(response.parsed_body['results']).to contain_exactly(post.as_json(min: true).stringify_keys)
+      end
+
+      it "supports full response", show_in_doc: in_doc do
+        post = create(:post)
         get :index
         expect(response).to have_http_status(200)
         expect(response.parsed_body).to have_key('results')
-        expect(response.parsed_body['results']).to contain_exactly(post.as_json(min: true).stringify_keys)
+        post_response = response.parsed_body['results'].first
+        expect(post_response['id']).to eq(post.id)
+        expect(post_response['subject']).to eq(post.subject)
+        expect(post_response['tagged_at']).to be_the_same_time_as(post.tagged_at)
+        expect(post_response['authors']).to eq(post.joined_authors.ordered.map { |a| a.as_json.stringify_keys })
+        expect(post_response['num_replies']).to eq(post.reply_count)
       end
     end
 
