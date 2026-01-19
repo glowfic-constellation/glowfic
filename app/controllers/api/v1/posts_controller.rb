@@ -9,13 +9,14 @@ class Api::V1::PostsController < Api::ApiController
 
   api :GET, '/posts', 'Load all posts optionally filtered by subject'
   param :q, String, required: false, desc: 'Subject search term'
+  param :min, String, required: false, desc: 'If present, returns only ID and subject per post'
   def index
     queryset = Post.order(Arel.sql('LOWER(subject) asc'))
     queryset = queryset.where('subject ILIKE ?', "%#{params[:q]}%") if params[:q].present?
 
     posts = paginate queryset, per_page: 25
     posts = posts.visible_to(current_user)
-    render json: { results: posts.as_json(min: true) }
+    render json: { results: posts.as_json(min: params[:min].present?) }
   end
 
   api :GET, '/posts/:id', 'Load a single post as a JSON resource'
