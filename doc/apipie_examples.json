@@ -1490,15 +1490,7 @@
         "results": [
           {
             "id": 1,
-            "subject": "test subject 00041",
-            "tagged_at": "2019-12-25T21:34:56.000Z",
-            "authors": [
-              {
-                "id": 1,
-                "username": "JohnDoe00168"
-              }
-            ],
-            "num_replies": 0
+            "subject": "test subject 00041"
           }
         ]
       },
@@ -1518,12 +1510,41 @@
         "results": [
           {
             "id": 1,
-            "subject": "search",
+            "subject": "search"
+          }
+        ]
+      },
+      "code": "200",
+      "show_in_doc": 1,
+      "recorded": true
+    },
+    {
+      "verb": "GET",
+      "path": "/api/v1/posts",
+      "versions": [
+        "1.0"
+      ],
+      "query": "",
+      "request_data": null,
+      "response_data": {
+        "results": [
+          {
+            "id": 1,
+            "subject": "test subject 00042",
+            "description": "",
+            "created_at": "2019-12-25T21:34:56.000Z",
             "tagged_at": "2019-12-25T21:34:56.000Z",
+            "status": "active",
+            "section_order": 0,
+            "board": {
+              "id": 1,
+              "name": "test board 00050"
+            },
+            "section": null,
             "authors": [
               {
                 "id": 1,
-                "username": "JohnDoe00170"
+                "username": "JohnDoe00174"
               }
             ],
             "num_replies": 0
@@ -1711,7 +1732,7 @@
       "request_data": null,
       "response_data": {
         "id": 1,
-        "subject": "test subject 00043",
+        "subject": "test subject 00044",
         "description": "",
         "created_at": "2019-12-25T21:34:56.000Z",
         "tagged_at": "2019-12-25T21:34:56.000Z",
@@ -1719,13 +1740,13 @@
         "section_order": 0,
         "board": {
           "id": 1,
-          "name": "test board 00051"
+          "name": "test board 00052"
         },
         "section": null,
         "authors": [
           {
             "id": 1,
-            "username": "JohnDoe00176"
+            "username": "JohnDoe00178"
           }
         ],
         "num_replies": 0,
@@ -2139,7 +2160,7 @@
           "icon": null,
           "user": {
             "id": 1,
-            "username": "JohnDoe00215"
+            "username": "JohnDoe00217"
           }
         },
         {
@@ -2152,7 +2173,7 @@
           "icon": null,
           "user": {
             "id": 1,
-            "username": "JohnDoe00215"
+            "username": "JohnDoe00217"
           }
         },
         {
@@ -2173,7 +2194,7 @@
           },
           "user": {
             "id": 3,
-            "username": "JohnDoe00217"
+            "username": "JohnDoe00219"
           }
         }
       ],
@@ -2850,7 +2871,7 @@
         "results": [
           {
             "id": 1,
-            "subject": "test subject 00079",
+            "subject": "test subject 00080",
             "description": "",
             "created_at": "2019-12-25T21:34:56.000Z",
             "tagged_at": "2019-12-25T21:34:56.000Z",
@@ -2858,7 +2879,7 @@
             "section_order": 0,
             "board": {
               "id": 1,
-              "name": "test board 00078"
+              "name": "test board 00079"
             },
             "section": {
               "id": 1,
@@ -2868,7 +2889,7 @@
             "authors": [
               {
                 "id": 1,
-                "username": "JohnDoe00273"
+                "username": "JohnDoe00275"
               }
             ],
             "num_replies": 0

@@ -29,7 +29,7 @@ RSpec.describe Api::V1::PostsController do
         expect(response.parsed_body['results']).to contain_exactly(post.as_json(min: true).stringify_keys)
       end
 
-      it "supports full response" do
+      it "supports full response", show_in_doc: in_doc do
         post = create(:post)
         get :index
         expect(response).to have_http_status(200)
