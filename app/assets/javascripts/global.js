@@ -207,6 +207,7 @@ function createTagSelect(tagType, selector, formType, scope) {
 }
 
 function createSelect2(selector, options) {
+  options.dropdownParent = $(selector).parent();
   if (!options.width) { options.width = '100%'; }
   if (options.ajax) addAjaxOptions(options);
   $(selector).select2(options);
