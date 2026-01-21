@@ -33,11 +33,6 @@ class Icon < ApplicationRecord
     s3_key.present?
   end
 
-  def get_errors(index=nil)
-    prefix = index ? "Icon #{index + 1}: " : ''
-    errors.full_messages.map { |m| prefix + m.downcase }
-  end
-
   def self.times_used(icons, user)
     posts = Post.visible_to(user).where(icon_id: icons.map(&:id))
     post_counts = posts.select(:icon_id).group(:icon_id).count
