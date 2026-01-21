@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 source 'https://rubygems.org'
 
-ruby '3.4.8'
+ruby '4.0.0'
 
 gem 'api-pagination'
 gem 'apipie-rails'
@@ -84,7 +84,6 @@ group :development, :test do
   gem 'byebug'
   gem 'database_cleaner'
   gem 'dotenv'
-  gem 'html-proofer', '< 4'
   gem 'rake', '~> 13.3'
   gem 'rspec-rails'
   gem 'seed_dump', '~> 3.4'
