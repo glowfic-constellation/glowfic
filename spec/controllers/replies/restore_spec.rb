@@ -58,7 +58,7 @@ RSpec.describe RepliesController, 'POST restore' do
     post_attributes.each do |key, val|
       expect(new_attributes[key]).to eq(val)
     end
-    expect(reloaded_post.replies.pluck(:reply_order).sort).to eq(0.upto(4).to_a)
+    expect(reloaded_post.replies.pluck(:reply_order).sort).to eq(1.upto(5).to_a)
   end
 
   it "handles first reply deletion" do
@@ -78,7 +78,7 @@ RSpec.describe RepliesController, 'POST restore' do
     post_attributes.each do |key, val|
       expect(new_attributes[key]).to eq(val)
     end
-    expect(reloaded_post.replies.pluck(:reply_order).sort).to eq(0.upto(2).to_a)
+    expect(reloaded_post.replies.pluck(:reply_order).sort).to eq(1.upto(3).to_a)
   end
 
   it "handles last reply deletion" do
@@ -100,7 +100,7 @@ RSpec.describe RepliesController, 'POST restore' do
     end
     expect(reloaded_post.last_user).to eq(deleted_reply.user)
     expect(reloaded_post.last_reply).to eq(deleted_reply)
-    expect(reloaded_post.replies.pluck(:reply_order).sort).to eq(0.upto(2).to_a)
+    expect(reloaded_post.replies.pluck(:reply_order).sort).to eq(1.upto(3).to_a)
   end
 
   it "handles only reply deletion" do
