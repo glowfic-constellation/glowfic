@@ -19,4 +19,9 @@ module SpecRequestHelper
 
     user
   end
+
+  def text_clean(text)
+    text = text.text if text.is_a?(Nokogiri::XML::Element)
+    text.strip.gsub(/[\s\n]+/, " ").strip
+  end
 end

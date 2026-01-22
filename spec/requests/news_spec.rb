@@ -68,4 +68,87 @@ RSpec.describe "News" do
       end
     end
   end
+
+  describe "index" do
+    let!(:news) { create(:news) }
+    let(:body) { response.parsed_body }
+
+    it 'works' do
+      login
+
+      get "/news"
+
+      aggregate_failures do
+        expect(response).to have_http_status(200)
+        expect(response).to render_template(:index)
+        expect(response).to render_template('news/_news')
+
+        expect(body.at_css('.content-header').text.strip).to eq('Site News')
+        expect(body.at_css('.message-content').text).to eq(news.content)
+      end
+    end
+
+    it 'includes create post for mods' do
+      user = create(:mod_user)
+      login(user)
+
+      get "/news"
+
+      aggregate_failures do
+        expect(response).to have_http_status(200)
+        expect(response).to render_template(:index)
+        expect(response).to render_template('news/_news')
+
+        expect(body.at_css('.content-header').text.strip).to eq("Site News\n+ New News Post")
+      end
+    end
+
+    it 'includes create post for admins' do
+      user = create(:admin_user)
+      login(user)
+
+      get "/news"
+
+      aggregate_failures do
+        expect(response).to have_http_status(200)
+        expect(response).to render_template(:index)
+        expect(response).to render_template('news/_news')
+
+        expect(body.at_css('.content-header').text.strip).to eq("Site News\n+ New News Post")
+      end
+    end
+
+    it 'works with many news posts' do
+      news_posts = create_list(:news, 3)
+      login
+
+      get "/news"
+
+      aggregate_failures do
+        expect(response).to have_http_status(200)
+        expect(response).to render_template(:index)
+        expect(response).to render_template('news/_news')
+
+        expect(body.at_css('.content-header').text.strip).to eq('Site News')
+        expect(body.at_css('.message-content').text).to eq(news_posts[2].content)
+        expect(body.at_css('.paginator .normal-pagination').text.strip).to eq('< Newer 1 2 3 4 Older >')
+      end
+    end
+
+    it 'works with no news posts' do
+      news.destroy!
+      login
+
+      get "/news"
+
+      aggregate_failures do
+        expect(response).to have_http_status(200)
+        expect(response).to render_template(:index)
+        expect(response).not_to render_template('news/_news')
+
+        expect(body.at_css('.content-header').text.strip).to eq('Site News')
+        expect(body.css('.message-content')).to be_empty
+      end
+    end
+  end
 end
