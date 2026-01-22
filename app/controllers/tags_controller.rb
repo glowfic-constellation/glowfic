@@ -14,7 +14,7 @@ class TagsController < ApplicationController
     @post_counts = @post_counts.group('post_tags.tag_id').count
     @view = params[:view]
     @page_title = @view.present? ? @view.titlecase.pluralize : 'Tags'
-    @tag_options = (Tag::TYPES - ['GalleryGroup']).sort.reverse.index_by(&:titlecase)
+    @tag_options = (Tag::TYPES - ['GalleryGroup', 'AccessCircle']).sort.reverse.index_by(&:titlecase)
     use_javascript('tags/index')
   rescue InvalidTagType => e
     flash[:error] = e.api_error
@@ -93,9 +93,17 @@ class TagsController < ApplicationController
   private
 
   def find_model
-    return if (@tag = Tag.find_by(id: params[:id]))
-    flash[:error] = "Tag could not be found."
-    redirect_to tags_path
+    unless (@tag = Tag.find_by_id(params[:id]))
+      flash[:error] = "Tag could not be found."
+      redirect_to tags_path and return
+    end
+    return unless @tag.is_a?(AccessCircle)
+    if @tag.visible_to?(current_user)
+      redirect_to @tag
+    else
+      flash[:error] = "Tag could not be found."
+      redirect_to tags_path
+    end
   end
 
   def require_permission
