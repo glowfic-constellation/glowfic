@@ -66,6 +66,13 @@ class ApplicationController < ActionController::Base
   end
   helper_method :per_page
 
+  def icons_per_page
+    default = 100
+    per = params[:per_page].present? ? params[:per_page].to_i : default
+    per = default if per <= 0 || per > default
+    @per_page = per || @per_page || default
+  end
+
   def page_view
     return @view if @view
     if logged_in?
