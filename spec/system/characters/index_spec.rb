@@ -207,10 +207,10 @@ RSpec.describe "Listing characters" do
 
   context "with character groups" do
     def grouped_sample(group)
-      template = create(:template, user: user, name: 'grouped template')
+      template = create(:template, user: user, name: 'grouped template', character_group: group)
       [
         with_template(
-          [{ name: 'character group character 1', character_group: group }],
+          [{ name: 'character group character 1' }],
           template,
         ),
         without_template([
