@@ -30,7 +30,7 @@ RSpec.describe Api::V1::BoardsController do
       expect(response).to have_http_status(422)
     end
 
-    it "raises error on invalid page", :show_in_doc do
+    it "raises error on invalid user", :show_in_doc do
       get :index, params: { user_id: 'b' }
       expect(response).to have_http_status(422)
     end

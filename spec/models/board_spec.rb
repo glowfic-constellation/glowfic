@@ -136,7 +136,7 @@ RSpec.describe Board do
   end
 
   describe "#as_json" do
-    let(:board) { create(:board) }
+    let(:board) { create(:board, description: 'desc exists') }
 
     shared_examples 'sections' do
       it "works with no sections" do
@@ -146,7 +146,7 @@ RSpec.describe Board do
 
     context "with include sections" do
       let(:options) { { include: [:board_sections] } }
-      let(:json) { { id: board.id, name: board.name, board_sections: board.board_sections.ordered } }
+      let(:json) { { id: board.id, name: board.name, description: board.description, board_sections: board.board_sections.ordered } }
 
       it_behaves_like 'sections'
 
@@ -159,7 +159,7 @@ RSpec.describe Board do
 
     context "without include sections" do
       let(:options) { {} }
-      let(:json) { { id: board.id, name: board.name } }
+      let(:json) { { id: board.id, name: board.name, description: board.description, } }
 
       it_behaves_like 'sections'
 
