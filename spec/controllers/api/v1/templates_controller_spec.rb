@@ -53,7 +53,7 @@ RSpec.describe Api::V1::TemplatesController do
     end
 
     it "includes dropdown text when prompted", :show_in_doc do
-      template = create(:template, name: 'Template Dropdown')
+      create(:template, name: 'Template Dropdown')
       get :index, params: { dropdown: 'true' }
       expect(response.parsed_body['results'].count).to eq(1)
       expect(response.parsed_body['results'].first['dropdown']).to be_present
