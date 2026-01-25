@@ -10,7 +10,8 @@ class Api::V1::TemplatesController < Api::ApiController
   param :user_id, :number, required: false, desc: 'ID of the template user (optional)'
   error 422, "Invalid parameters provided"
   def index
-    queryset = Template.where("name ILIKE ?", params[:q].to_s + '%').ordered
+    queryset = Template.all
+    queryset = queryset.where("name ILIKE ?", params[:q].to_s + '%').ordered if params[:q].present?
 
     if params[:user_id].present?
       return unless find_object(User, param: :user_id, status: :unprocessable_entity)
