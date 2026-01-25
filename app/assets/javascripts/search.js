@@ -76,9 +76,10 @@ $(document).ready(function() {
         const data = queryTransform(params);
         const authorId = $("#author_id").val();
         if (authorId !== '' && typeof authorId !== 'undefined') { data.user_id = authorId; }
+        data.dropdown = 'true';
         return data;
       },
-      processResults: processTotal('name'),
+      processResults: processTotal('dropdown'),
     },
     placeholder: '— Choose Template —',
     allowClear: true,

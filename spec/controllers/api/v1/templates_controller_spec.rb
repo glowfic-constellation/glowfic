@@ -16,6 +16,7 @@ RSpec.describe Api::V1::TemplatesController do
       get :index
       expect(response).to have_http_status(200)
       expect(response.parsed_body['results'].count).to eq(8)
+      expect(response.parsed_body['results'].first['dropdown']).not_to be_present
     end
 
     it "works logged out", :show_in_doc do
@@ -23,6 +24,7 @@ RSpec.describe Api::V1::TemplatesController do
       get :index, params: { q: 'b' }
       expect(response).to have_http_status(200)
       expect(response.parsed_body['results'].count).to eq(2)
+      expect(response.parsed_body['results'].first['dropdown']).not_to be_present
     end
 
     it "raises error on invalid page", :show_in_doc do
@@ -48,6 +50,13 @@ RSpec.describe Api::V1::TemplatesController do
 
       get :index, params: { user_id: template.user_id }
       expect(response.parsed_body['results'].count).to eq(1)
+    end
+
+    it "includes dropdown text when prompted", :show_in_doc do
+      template = create(:template, name: 'Template Dropdown')
+      get :index, params: { dropdown: 'true' }
+      expect(response.parsed_body['results'].count).to eq(1)
+      expect(response.parsed_body['results'].first['dropdown']).to be_present
     end
   end
 end
