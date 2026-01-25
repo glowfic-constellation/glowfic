@@ -5,13 +5,13 @@
     Currently, to contact the Constellation for help or to report a violation of our
     = succeed ',' do
       = link_to 'Terms of Service', tos_path
-    you may visit us in the #constellation channel of the
+    you may visit us in the #constellation channel of our
     - if (discord_link = ENV.fetch('DISCORD_LINK_GLOWFIC', nil))
-      = link_to "Glowfic Community Discord", discord_link, target: '_blank', rel: 'noopener'
+      = link_to "community social Discord", discord_link, target: '_blank', rel: 'noopener'
     - else
-      Glowfic Community Discord
-    or the #general channel of the
-    = link_to "Constellation Discord", Glowfic::DISCORD_LINK_CONSTELLATION, target: '_blank', rel: 'noopener'
+      community social Discord
+    or the #general channel of our
+    = link_to "website feedback Discord", Glowfic::DISCORD_LINK_CONSTELLATION, target: '_blank', rel: 'noopener'
     or email us at
     = succeed '.' do
       = link_to 'glowfic.constellation@gmail.com', 'mailto:glowfic.constellation@gmail.com'
