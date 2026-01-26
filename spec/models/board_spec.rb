@@ -159,7 +159,7 @@ RSpec.describe Board do
 
     context "without include sections" do
       let(:options) { {} }
-      let(:json) { { id: board.id, name: board.name, description: board.description, } }
+      let(:json) { { id: board.id, name: board.name, description: board.description } }
 
       it_behaves_like 'sections'
 
