@@ -12,11 +12,13 @@
         "results": [
           {
             "id": 1,
-            "name": "baa"
+            "name": "baa",
+            "description": null
           },
           {
             "id": 5,
-            "name": "BAAc"
+            "name": "BAAc",
+            "description": null
           }
         ]
       },
@@ -40,6 +42,46 @@
         ]
       },
       "code": "422",
+      "show_in_doc": 1,
+      "recorded": true
+    },
+    {
+      "verb": "GET",
+      "path": "/api/v1/users/b/boards",
+      "versions": [
+        "1.0"
+      ],
+      "query": "",
+      "request_data": null,
+      "response_data": {
+        "errors": [
+          {
+            "message": "Invalid parameter 'user_id' value 'b': Must be a number."
+          }
+        ]
+      },
+      "code": "422",
+      "show_in_doc": 1,
+      "recorded": true
+    },
+    {
+      "verb": "GET",
+      "path": "/api/v1/users/2/boards",
+      "versions": [
+        "1.0"
+      ],
+      "query": "",
+      "request_data": null,
+      "response_data": {
+        "results": [
+          {
+            "id": 2,
+            "name": "mine",
+            "description": null
+          }
+        ]
+      },
+      "code": "200",
       "show_in_doc": 1,
       "recorded": true
     }
@@ -84,7 +126,8 @@
             "section_order": 0,
             "board": {
               "id": 1,
-              "name": "test board 00006"
+              "name": "test board 00006",
+              "description": null
             },
             "section": {
               "id": 1,
@@ -94,7 +137,7 @@
             "authors": [
               {
                 "id": 2,
-                "username": "JohnDoe00011"
+                "username": "JohnDoe00013"
               }
             ],
             "num_replies": 0
@@ -137,6 +180,7 @@
       "response_data": {
         "id": 1,
         "name": "test board 00005",
+        "description": null,
         "board_sections": [
           {
             "id": 2,
@@ -1538,13 +1582,14 @@
             "section_order": 0,
             "board": {
               "id": 1,
-              "name": "test board 00050"
+              "name": "test board 00050",
+              "description": null
             },
             "section": null,
             "authors": [
               {
                 "id": 1,
-                "username": "JohnDoe00174"
+                "username": "JohnDoe00176"
               }
             ],
             "num_replies": 0
@@ -1740,13 +1785,14 @@
         "section_order": 0,
         "board": {
           "id": 1,
-          "name": "test board 00052"
+          "name": "test board 00052",
+          "description": null
         },
         "section": null,
         "authors": [
           {
             "id": 1,
-            "username": "JohnDoe00178"
+            "username": "JohnDoe00180"
           }
         ],
         "num_replies": 0,
@@ -2160,7 +2206,7 @@
           "icon": null,
           "user": {
             "id": 1,
-            "username": "JohnDoe00217"
+            "username": "JohnDoe00219"
           }
         },
         {
@@ -2173,7 +2219,7 @@
           "icon": null,
           "user": {
             "id": 1,
-            "username": "JohnDoe00217"
+            "username": "JohnDoe00219"
           }
         },
         {
@@ -2194,7 +2240,7 @@
           },
           "user": {
             "id": 3,
-            "username": "JohnDoe00219"
+            "username": "JohnDoe00221"
           }
         }
       ],
@@ -2879,7 +2925,8 @@
             "section_order": 0,
             "board": {
               "id": 1,
-              "name": "test board 00079"
+              "name": "test board 00079",
+              "description": null
             },
             "section": {
               "id": 1,
@@ -2889,7 +2936,7 @@
             "authors": [
               {
                 "id": 1,
-                "username": "JohnDoe00275"
+                "username": "JohnDoe00277"
               }
             ],
             "num_replies": 0
