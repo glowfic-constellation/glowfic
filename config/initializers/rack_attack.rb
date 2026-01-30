@@ -2,8 +2,8 @@
 return unless Rails.env.production?
 
 # allow all IPs in RACK_ATTACK_SAFE_IP split by comma
-safe_ips = ENV.fetch("RACK_ATTACK_SAFE_IP", "").split(",").compact_blank
-safe_ips.each { |ip| Rack::Attack.safelist_ip(ip) }
+$safe_ips = ENV.fetch("RACK_ATTACK_SAFE_IP", "").split(",").compact_blank
+$safe_ips.each { |ip| Rack::Attack.safelist_ip(ip) }
 
 # block all IPs in RACK_ATTACK_BAD_IP split by comma
 ENV.fetch("RACK_ATTACK_BAD_IP", "").split(",").compact_blank.each { |ip| Rack::Attack.blocklist_ip(ip) }
@@ -29,7 +29,7 @@ Rack::Attack.throttled_response_retry_after_header = true
 
 # Includes conventional RateLimit-* headers for safe IPs and the API:
 Rack::Attack.throttled_responder = lambda do |req|
-  return [429, {}, ["Throttled\n"]] unless safe_ips.include?(req.ip) || req.path.starts_with?('/api')
+  return [429, {}, ["Throttled\n"]] unless $safe_ips.include?(req.ip) || req.path.starts_with?('/api')
 
   match_data = req.env['rack.attack.match_data']
   now = match_data[:epoch_time]
