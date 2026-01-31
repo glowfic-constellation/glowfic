@@ -1,5 +1,5 @@
 # frozen_string_literal: true
-return unless Rails.env.production?
+$safe_ips = [] and return unless Rails.env.production?
 
 # allow all IPs in RACK_ATTACK_SAFE_IP split by comma
 $safe_ips = ENV.fetch("RACK_ATTACK_SAFE_IP", "").split(",").compact_blank
