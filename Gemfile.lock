@@ -181,6 +181,9 @@ GEM
     ffi (1.17.3-x86_64-darwin)
     ffi (1.17.3-x86_64-linux-gnu)
     ffi (1.17.3-x86_64-linux-musl)
+    geocoder (1.8.6)
+      base64 (>= 0.1.0)
+      csv (>= 3.0.0)
     get_process_mem (1.0.0)
       bigdecimal (>= 2.0)
       ffi (~> 1.0)
@@ -617,6 +620,7 @@ DEPENDENCIES
   dotenv
   exception_notification
   factory_bot_rails
+  geocoder
   get_process_mem
   gon (~> 6.6)
   haml-rails

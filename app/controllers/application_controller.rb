@@ -7,6 +7,7 @@ class ApplicationController < ActionController::Base
 
   rescue_from ActionController::InvalidAuthenticityToken, with: :handle_invalid_token
 
+  before_action :check_country
   before_action :check_tos
   before_action :check_permanent_user
   before_action :show_password_warning
@@ -182,6 +183,11 @@ class ApplicationController < ActionController::Base
   end
 
   private
+
+  def check_country
+    return if $safe_ips.include?(request.ip)
+    render plain: "Access denied from your location.", status: :forbidden if request.location&.country_code == 'CN'
+  end
 
   def check_forced_logout
     return unless logged_in?
