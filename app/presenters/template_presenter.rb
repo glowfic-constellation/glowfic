@@ -7,6 +7,10 @@ class TemplatePresenter
   end
 
   def as_json(options={})
-    template.as_json_without_presenter({ only: [:id, :name] }.reverse_merge(options))
+    template_json = template.as_json_without_presenter({ only: [:id, :name] }.reverse_merge(options))
+    return template_json unless options[:dropdown]
+    template_json.merge({
+      dropdown: "#{template.name} (#{template.user.username})",
+    })
   end
 end

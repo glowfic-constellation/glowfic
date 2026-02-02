@@ -8,6 +8,7 @@ class Api::V1::TemplatesController < Api::ApiController
   param :q, String, required: false, desc: "Query string"
   param :page, :number, required: false, desc: 'Page in results (25 per page)'
   param :user_id, :number, required: false, desc: 'ID of the template user (optional)'
+  param :dropdown, String, required: false, desc: 'If present, includes display text for a template dropdown'
   error 422, "Invalid parameters provided"
   def index
     queryset = Template.where("name ILIKE ?", params[:q].to_s + '%').ordered
@@ -18,6 +19,6 @@ class Api::V1::TemplatesController < Api::ApiController
     end
 
     templates = paginate queryset, per_page: 25
-    render json: { results: templates }
+    render json: { results: templates.as_json({ dropdown: params[:dropdown].present? }) }
   end
 end
