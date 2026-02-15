@@ -18,7 +18,7 @@ class Api::ApiController < ActionController::Base
   protected
 
   def oauth_or_jwt
-    @current_user ||= current_token&.user
+    @current_user ||= oauth_token_user
   end
 
   def check_token
@@ -62,5 +62,13 @@ class Api::ApiController < ActionController::Base
     return 25 if per < 1
     return 100 if per > 100
     per
+  end
+
+  private
+
+  def oauth_token_user
+    token_value = request.headers['Authorization'].to_s.split(' ').last
+    return unless token_value.present?
+    OauthToken.find_by(token: token_value, invalidated_at: nil)&.user
   end
 end
