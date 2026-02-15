@@ -1,7 +1,7 @@
 class CreateFlatPosts < ActiveRecord::Migration[4.2]
   def up
     create_table :flat_posts do |t|
-      t.integer :post_id, :null => false
+      t.integer :post_id, null: false
       t.text :content
       t.timestamps null: true
     end
