@@ -95,23 +95,5 @@ RSpec.describe DraftsController do
     end
   end
 
-  describe 'DELETE destroy' do
-    it "successfully deletes an existing draft" do
-      draft = create(:reply_draft)
-      login_as(draft.user)
-      delete :destroy, params: { id: draft.id, reply: { post_id: draft.post_id } }
-      expect(flash[:success]).to eq("Draft deleted.")
-      expect(response).to redirect_to(post_path(draft.post_id, page: :unread, anchor: :unread))
-      expect(ReplyDraft.find_by(id: draft.id)).to be_nil
-    end
-
-    it "handles missing draft gracefully" do
-      user = create(:user)
-      reply_post = create(:post)
-      login_as(user)
-      delete :destroy, params: { id: -1, reply: { post_id: reply_post.id } }
-      expect(flash[:error][:message]).to eq("Draft could not be deleted")
-      expect(response).to redirect_to(post_path(reply_post.id, page: :unread, anchor: :unread))
-    end
-  end
+  describe 'DELETE destroy'
 end

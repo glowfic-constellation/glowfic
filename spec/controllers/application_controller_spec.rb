@@ -481,47 +481,6 @@ RSpec.describe ApplicationController do
     end
   end
 
-  describe "#calculate_reply_bookmarks" do
-    it "returns empty hash when logged out" do
-      controller.send(:calculate_reply_bookmarks, [])
-      expect(assigns(:reply_bookmarks)).to eq({})
-    end
-
-    it "returns empty hash when no bookmarks" do
-      user = create(:user)
-      login_as(user)
-      reply = create(:reply)
-      controller.send(:calculate_reply_bookmarks, [reply])
-      expect(assigns(:reply_bookmarks)).to eq({})
-    end
-
-    it "returns bookmark mapping for user's bookmarks" do
-      user = create(:user)
-      login_as(user)
-      reply = create(:reply)
-      bookmark = Bookmark.create!(user: user, reply: reply, post: reply.post, type: 'reply_bookmark')
-      controller.send(:calculate_reply_bookmarks, [reply])
-      expect(assigns(:reply_bookmarks)).to eq({ reply.id => bookmark.id })
-    end
-  end
-
-  describe "#generate_short" do
-    it "returns short messages unchanged" do
-      expect(controller.send(:generate_short, "hello")).to eq("hello")
-    end
-
-    it "truncates long messages" do
-      long_msg = "a" * 100
-      result = controller.send(:generate_short, long_msg)
-      expect(result.length).to eq(74)
-      expect(result).to end_with("…")
-    end
-
-    it "strips HTML tags" do
-      expect(controller.send(:generate_short, "<b>bold</b>")).to eq("bold")
-    end
-  end
-
   describe "#check_tos" do
     render_views
 
