@@ -1,5 +1,6 @@
 module OAuthControllerSpecHelper
   include ActiveJob::TestHelper
+
   def login_as_application_owner
     @user = create(:user)
     login_as(@user)
