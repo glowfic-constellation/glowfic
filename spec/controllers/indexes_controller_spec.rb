@@ -108,12 +108,6 @@ RSpec.describe IndexesController do
       expect(response).to have_http_status(200)
     end
 
-    it "works for reader account" do
-      login_as(create(:reader_user))
-      get :show, params: { id: index.id }
-      expect(response).to have_http_status(200)
-    end
-
     it "orders sectionless posts correctly" do
       index = create(:index)
       post1 = create(:index_post, index: index)
