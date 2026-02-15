@@ -11,7 +11,7 @@ class Api::V1::PostsController < Api::ApiController
   param :q, String, required: false, desc: 'Subject search term'
   param :min, String, required: false, desc: 'If present, returns only ID and subject per post'
   def index
-    queryset = Post.order(Arel.sql('LOWER(subject) asc')).visible_to(current_user)
+    queryset = Post.order(Arel.sql('LOWER(subject) asc'))
     queryset = queryset.where('subject ILIKE ?', "%#{params[:q]}%") if params[:q].present?
 
     posts = paginate queryset, per_page: 25
@@ -24,7 +24,6 @@ class Api::V1::PostsController < Api::ApiController
   error 403, "Post is not visible to the user"
   error 404, "Post not found"
   def show
-    fresh_when(@post, template: false)
     render json: @post.as_json(include: [:character, :icon, :content])
   end
 
@@ -93,14 +92,14 @@ class Api::V1::PostsController < Api::ApiController
       posts = posts.sort_by { |post| post_ids.index(post.id) }
       posts.each_with_index do |post, index|
         next if post.section_order == index
-        post.update!(section_order: index)
+        post.update(section_order: index)
       end
 
       other_posts = Post.where(board_id: board.id, section_id: section_id).where.not(id: post_ids).ordered_in_section
       other_posts.each_with_index do |post, i|
         index = i + posts_count
         next if post.section_order == index
-        post.update!(section_order: index)
+        post.update(section_order: index)
       end
     end
 
