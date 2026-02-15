@@ -1,7 +1,7 @@
 class OauthController < ApplicationController
   before_action :login_required, only: [:authorize, :revoke]
   before_action :authenticate_token, only: [:test_request, :invalidate]
-  skip_before_action :verify_authenticity_token, only: [:invalidate, :test_request, :token] # codeql[rb/csrf-protection-disabled] OAuth token endpoints receive external API requests, not browser forms
+  skip_before_action :verify_authenticity_token, only: [:invalidate, :test_request, :token]
 
   def token
     @client_application = ClientApplication.find_by! key: params[:client_id]
