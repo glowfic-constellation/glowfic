@@ -522,6 +522,70 @@ RSpec.describe RepliesController, 'POST create' do
     expect(reply.reply_order).to eq(1)
   end
 
+  context "multi-reply" do
+    it "discards multi-reply for new post" do
+      user = create(:user)
+      reply_post = create(:post, user: user)
+      login_as(user)
+      reply_post.mark_read(user)
+
+      post :create, params: {
+        button_discard_multi_reply: true,
+        reply: { post_id: reply_post.id, content: 'discarded' },
+      }
+      expect(flash[:success]).to eq("Replies discarded.")
+      expect(response).to redirect_to(post_path(reply_post.id, page: :unread, anchor: :unread))
+    end
+
+    it "adds a reply to the multi-reply list" do
+      user = create(:user)
+      reply_post = create(:post, user: user)
+      login_as(user)
+      reply_post.mark_read(user)
+
+      post :create, params: {
+        button_add_more: true,
+        reply: { post_id: reply_post.id, content: 'first reply', editor_mode: 'html' },
+      }
+      expect(response).to render_template(:preview)
+      expect(assigns(:adding_to_multi_reply)).to be true
+    end
+
+    it "submits previewed multi-reply" do
+      user = create(:user)
+      reply_post = create(:post, user: user)
+      login_as(user)
+      reply_post.mark_read(user)
+
+      multi_replies = [{ post_id: reply_post.id, content: 'multi reply 1', editor_mode: 'html' }].to_json
+      expect {
+        post :create, params: {
+          button_submit_previewed_multi_reply: true,
+          reply: { post_id: reply_post.id, content: 'multi reply 2', editor_mode: 'html' },
+          multi_replies_json: multi_replies,
+        }
+      }.to change { Reply.count }.by(2)
+      expect(flash[:success]).to eq("Replies posted.")
+    end
+
+    it "submits single previewed multi-reply" do
+      user = create(:user)
+      reply_post = create(:post, user: user)
+      login_as(user)
+      reply_post.mark_read(user)
+
+      multi_replies = [{ post_id: reply_post.id, content: 'only reply', editor_mode: 'html' }].to_json
+      expect {
+        post :create, params: {
+          button_submit_previewed_multi_reply: true,
+          reply: { post_id: reply_post.id },
+          multi_replies_json: multi_replies,
+        }
+      }.to change { Reply.count }.by(1)
+      expect(flash[:success]).to eq("Reply posted.")
+    end
+  end
+
   it "sets reply_order correctly with multiple existing replies" do
     reply_post = create(:post)
     login_as(reply_post.user)
