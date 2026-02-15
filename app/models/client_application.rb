@@ -18,18 +18,10 @@ class ClientApplication < ApplicationRecord
 
   attr_accessor :token_callback_url
 
-  def oauth_server
-    @oauth_server ||= OAuth::Server.new("http://your.site")
-  end
-
-  def credentials
-    @oauth_client ||= OAuth::Consumer.new(key, secret)
-  end
-
   protected
 
   def generate_keys
-    self.key = OAuth::Helper.generate_key(40)[0, 40]
-    self.secret = OAuth::Helper.generate_key(40)[0, 40]
+    self.key = SecureRandom.hex(20)
+    self.secret = SecureRandom.hex(20)
   end
 end

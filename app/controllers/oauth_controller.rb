@@ -1,7 +1,6 @@
 class OauthController < ApplicationController
   before_action :login_required, only: [:authorize, :revoke]
-  oauthenticate only: [:test_request]
-  oauthenticate strategies: :token, interactive: false, only: [:invalidate]
+  before_action :authenticate_token, only: [:test_request, :invalidate]
   skip_before_action :verify_authenticity_token, only: [:invalidate, :test_request, :token]
 
   def token
@@ -44,7 +43,7 @@ class OauthController < ApplicationController
 
   # Invalidate current token
   def invalidate
-    current_token.invalidate!
+    @current_token.invalidate!
     head status: 410
   end
 
@@ -95,5 +94,13 @@ class OauthController < ApplicationController
 
   def oauth2_error(error="invalid_grant")
     render json: { error: error }.to_json, status: :bad_request
+  end
+
+  private
+
+  def authenticate_token
+    token_value = request.headers['Authorization'].to_s.split(' ').last
+    @current_token = OauthToken.find_by(token: token_value, invalidated_at: nil) if token_value.present?
+    head :unauthorized unless @current_token
   end
 end

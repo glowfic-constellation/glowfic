@@ -1,9 +1,7 @@
 require "#{File.dirname(__FILE__)}/../spec_helper"
-require 'oauth/helper'
 RSpec.describe OauthNonce do
-  include OAuth::Helper
   before(:each) do
-    @oauth_nonce = OauthNonce.remember(generate_key, Time.now.to_i)
+    @oauth_nonce = OauthNonce.remember(SecureRandom.hex, Time.now.to_i)
   end
 
   it "should be valid" do

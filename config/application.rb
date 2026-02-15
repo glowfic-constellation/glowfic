@@ -1,6 +1,5 @@
 # frozen_string_literal: true
 require_relative 'boot'
-require 'oauth/rack/oauth_filter'
 
 require 'rails/all'
 
@@ -81,7 +80,6 @@ module Glowfic
     config.action_view.sanitized_allowed_attributes = %w(href src width height alt cite datetime title class name xml:lang abbr style target)
     config.middleware.use Rack::Pratchett
     config.middleware.use Rack::Deflater
-    config.middleware.use OAuth::Rack::OAuthFilter
 
     # redis-rails does not support cache versioning
     config.active_record.cache_versioning = false

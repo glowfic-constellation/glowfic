@@ -14,9 +14,9 @@
         %td= link_to token.client_application.name, token.client_application.url
         %td= token.authorized_at
         %td
-          = form_with :url => url_for(:controller => 'oauth', :action => 'revoke'), local: true do |form|
-            = form.hidden_field 'client_application[name]', :value => token.client_application.name.to_s
-            = form.hidden_field 'token', :value => token.token
+          = form_with url: url_for(controller: 'oauth', action: 'revoke'), local: true do |form|
+            = form.hidden_field 'client_application[name]', value: token.client_application.name.to_s
+            = form.hidden_field 'token', value: token.token
             = form.submit "Revoke!"
 
 %h3 Application Developers
@@ -31,9 +31,9 @@
 
   - @client_applications.each do |client|
     %div
-      = link_to client.name, :action => :show, :id => client.id
+      = link_to client.name, action: :show, id: client.id
       = link_to 'Edit', edit_oauth_client_path(client)
-      = link_to 'Delete', oauth_client_path(client), :confirm => "Are you sure?", :method => :delete
+      = link_to 'Delete', oauth_client_path(client), confirm: "Are you sure?", method: :delete
 %br
 %h3
-  = link_to "Register your application", :action => :new
+  = link_to "Register your application", action: :new

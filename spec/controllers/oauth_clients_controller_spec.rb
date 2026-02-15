@@ -1,6 +1,5 @@
 require "#{File.dirname(__FILE__)}/../spec_helper"
 require "#{File.dirname(__FILE__)}/../helpers/oauth_controller_spec_helper.rb"
-require 'oauth/client/action_controller_request'
 
 RSpec.describe OauthClientsController do
   include OAuthControllerSpecHelper
