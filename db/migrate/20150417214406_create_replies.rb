@@ -1,9 +1,9 @@
 class CreateReplies < ActiveRecord::Migration[4.2]
   def change
     create_table :replies do |t|
-      t.integer :post_id, null: false
-      t.integer :user_id, null: false
-      t.text :content, null: false
+      t.integer :post_id, :null => false
+      t.integer :user_id, :null => false
+      t.text :content, :null => false
       t.integer :character_id
       t.integer :icon_id
       t.integer :thread_id

@@ -14,7 +14,7 @@ module Presents
   def as_json(options={})
     return super(options.except(:without_presenter)) if options[:without_presenter]
     begin
-      presenter = "#{self.class.name}Presenter".constantize
+      presenter = (self.class.name + "Presenter").constantize
     rescue NameError
       super
     else

@@ -5,7 +5,7 @@ RSpec.describe ScrapePostJob do
 
   before(:each) do
     clear_enqueued_jobs
-    allow($stdout).to receive(:puts).with("Importing thread 'linear b'")
+    allow(STDOUT).to receive(:puts).with("Importing thread 'linear b'")
   end
 
   it "creates the correct objects" do
