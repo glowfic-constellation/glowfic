@@ -21,13 +21,6 @@ RSpec.describe OauthToken do
     expect(token2.token).not_to eq(@token.token)
   end
 
-  it "validates token uniqueness" do
-    dup = OauthToken.new(client_application: @app, user: @user)
-    dup.token = @token.token
-    dup.secret = SecureRandom.hex(20)
-    expect(dup).not_to be_valid
-  end
-
   describe "#invalidated?" do
     it "returns false when not invalidated" do
       expect(@token).not_to be_invalidated

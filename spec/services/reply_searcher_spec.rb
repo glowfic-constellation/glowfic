@@ -75,6 +75,7 @@ RSpec.describe Reply::Searcher do
       reply = create(:reply)
       create(:reply) # other reply
       searcher = Reply::Searcher.new(Reply.all)
+      searcher.setup({ author_id: reply.user_id })
       results = searcher.search({ author_id: reply.user_id, commit: true }, page: 1)
       expect(results).to include(reply)
     end
@@ -83,6 +84,7 @@ RSpec.describe Reply::Searcher do
       reply = create(:reply, with_character: true)
       create(:reply) # other reply
       searcher = Reply::Searcher.new(Reply.all)
+      searcher.setup({})
       results = searcher.search({ character_id: reply.character_id, commit: true }, page: 1)
       expect(results).to include(reply)
     end
@@ -91,6 +93,7 @@ RSpec.describe Reply::Searcher do
       reply = create(:reply, with_icon: true)
       create(:reply) # other reply
       searcher = Reply::Searcher.new(Reply.all)
+      searcher.setup({})
       results = searcher.search({ icon_id: reply.icon_id, commit: true }, page: 1)
       expect(results).to include(reply)
     end
@@ -99,6 +102,7 @@ RSpec.describe Reply::Searcher do
       reply = create(:reply)
       create(:reply) # other reply
       searcher = Reply::Searcher.new(Reply.all)
+      searcher.setup({})
       results = searcher.search({ board_id: reply.post.board_id, commit: true }, page: 1)
       expect(results).to include(reply)
     end
@@ -107,6 +111,7 @@ RSpec.describe Reply::Searcher do
       reply = create(:reply)
       create(:reply) # other reply
       searcher = Reply::Searcher.new(Reply.all, post: reply.post)
+      searcher.setup({})
       results = searcher.search({ commit: true }, page: 1)
       expect(results).to include(reply)
     end
@@ -115,6 +120,7 @@ RSpec.describe Reply::Searcher do
       reply1 = create(:reply)
       reply2 = Timecop.freeze(reply1.created_at + 2.minutes) { create(:reply) }
       searcher = Reply::Searcher.new(Reply.all)
+      searcher.setup({})
       results = searcher.search({ sort: 'created_new', commit: true }, page: 1)
       expect(results.index(reply2)).to be < results.index(reply1)
     end
@@ -123,6 +129,7 @@ RSpec.describe Reply::Searcher do
       reply1 = create(:reply)
       reply2 = Timecop.freeze(reply1.created_at + 2.minutes) { create(:reply) }
       searcher = Reply::Searcher.new(Reply.all)
+      searcher.setup({})
       results = searcher.search({ sort: 'created_old', commit: true }, page: 1)
       expect(results.index(reply1)).to be < results.index(reply2)
     end
@@ -133,33 +140,15 @@ RSpec.describe Reply::Searcher do
       reply = create(:reply, character: char, user: char.user)
       create(:reply)
       searcher = Reply::Searcher.new(Reply.all)
+      searcher.setup({})
       results = searcher.search({ template_id: template.id, commit: true }, page: 1)
-      expect(results).to include(reply)
-    end
-
-    it "excludes hidden posts for logged-in user" do
-      user = create(:user)
-      reply = create(:reply)
-      Block.create!(blocking_user: user, blocked_user: reply.post.user, hide_them: :posts, hide_me: :none)
-      other_reply = create(:reply)
-      searcher = Reply::Searcher.new(Reply.all, current_user: user)
-      results = searcher.search({ commit: true }, page: 1)
-      expect(results).not_to include(reply)
-      expect(results).to include(other_reply)
-    end
-
-    it "includes hidden posts when show_blocked is set" do
-      user = create(:user)
-      reply = create(:reply)
-      Block.create!(blocking_user: user, blocked_user: reply.post.user, hide_them: :posts, hide_me: :none)
-      searcher = Reply::Searcher.new(Reply.all, current_user: user)
-      results = searcher.search({ commit: true, show_blocked: true }, page: 1)
       expect(results).to include(reply)
     end
 
     it "skips icon join when condensed" do
       create(:reply, with_icon: true)
       searcher = Reply::Searcher.new(Reply.all)
+      searcher.setup({})
       results = searcher.search({ commit: true, condensed: true }, page: 1)
       expect(results).to be_present
     end

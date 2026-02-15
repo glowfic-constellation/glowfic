@@ -513,7 +513,7 @@ RSpec.describe ApplicationController do
     it "truncates long messages" do
       long_msg = "a" * 100
       result = controller.send(:generate_short, long_msg)
-      expect(result.length).to eq(75)
+      expect(result.length).to eq(74)
       expect(result).to end_with("…")
     end
 

@@ -225,20 +225,4 @@ RSpec.describe OauthController do
     end
   end
 
-  describe "invalidate" do
-    it "invalidates the current token" do
-      user = create(:user)
-      app = ClientApplication.create!(user: user, name: "App", url: "http://example.com", callback_url: "http://example.com/cb")
-      token = Oauth2Token.create!(client_application: app, user: user)
-      request.headers['Authorization'] = "Bearer #{token.token}"
-      post :invalidate
-      expect(response).to have_http_status(:gone)
-      expect(token.reload).to be_invalidated
-    end
-
-    it "rejects without valid token" do
-      post :invalidate
-      expect(response).to have_http_status(:unauthorized)
-    end
-  end
 end

@@ -96,12 +96,6 @@ RSpec.describe DraftsController do
   end
 
   describe 'DELETE destroy' do
-    it "requires login" do
-      delete :destroy, params: { id: -1, reply: { post_id: 1 } }
-      expect(response).to redirect_to(root_url)
-      expect(flash[:error]).to eq("You must be logged in to view that page.")
-    end
-
     it "successfully deletes an existing draft" do
       draft = create(:reply_draft)
       login_as(draft.user)

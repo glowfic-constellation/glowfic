@@ -25,7 +25,7 @@ class OauthController < ApplicationController
   def authorize
     if request.post?
       @authorizer = ProviderAuthorizer.new current_user, user_authorizes_token?, params
-      redirect_to @authorizer.redirect_uri
+      redirect_to @authorizer.redirect_uri, allow_other_host: true
     else
       @client_application = ClientApplication.find_by! key: params[:client_id]
       render action: "oauth2_authorize"

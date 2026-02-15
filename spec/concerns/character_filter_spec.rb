@@ -1,6 +1,6 @@
 RSpec.describe CharacterFilter do
   # Test through CharactersController which includes CharacterFilter
-  describe CharactersController do
+  describe CharactersController, type: :controller do
     describe "#character_split" do
       it "defaults to template for logged-out users" do
         get :index

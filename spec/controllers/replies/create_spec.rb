@@ -557,11 +557,14 @@ RSpec.describe RepliesController, 'POST create' do
       login_as(user)
       reply_post.mark_read(user)
 
-      multi_replies = [{ post_id: reply_post.id, content: 'multi reply 1', editor_mode: 'html' }].to_json
+      multi_replies = [
+        { post_id: reply_post.id, content: 'multi reply 1', editor_mode: 'html' },
+        { post_id: reply_post.id, content: 'multi reply 2', editor_mode: 'html' },
+      ].to_json
       expect {
         post :create, params: {
           button_submit_previewed_multi_reply: true,
-          reply: { post_id: reply_post.id, content: 'multi reply 2', editor_mode: 'html' },
+          reply: { post_id: reply_post.id },
           multi_replies_json: multi_replies,
         }
       }.to change { Reply.count }.by(2)
