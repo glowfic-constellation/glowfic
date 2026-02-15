@@ -1,7 +1,7 @@
 class OauthController < ApplicationController
   before_action :login_required, only: [:authorize, :revoke]
   before_action :authenticate_token, only: [:test_request, :invalidate]
-  skip_before_action :verify_authenticity_token, only: [:invalidate, :test_request, :token]
+  protect_from_forgery with: :exception, unless: -> { api_request? }
 
   def token
     @client_application = ClientApplication.find_by! key: params[:client_id]
@@ -102,5 +102,9 @@ class OauthController < ApplicationController
     token_value = request.headers['Authorization'].to_s.split(' ').last
     @current_token = OauthToken.find_by(token: token_value, invalidated_at: nil) if token_value.present?
     head :unauthorized unless @current_token
+  end
+
+  def api_request?
+    request.headers['Authorization'].present? || params[:client_id].present?
   end
 end
