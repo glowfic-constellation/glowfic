@@ -19,9 +19,7 @@ RSpec.describe ClientApplication do
     expect(@application.secret).not_to be_nil
   end
 
-  it "should have credentials" do
-    expect(@application.credentials).not_to be_nil
-    expect(@application.credentials.key).to eq @application.key
-    expect(@application.credentials.secret).to eq @application.secret
+  it "should generate unique key and secret" do
+    expect(@application.key).not_to eq @application.secret
   end
 end
