@@ -1,0 +1,179 @@
+@import 'variables';
+@import 'monochrome_selectors_mixin';
+@import 'dark_selectors_mixin';
+@import 'dark_themes_selectors_mixin';
+
+// Auto-light/dark-only icon utility classes
+.auto-light-only { display: inline; }
+.auto-dark-only { display: none; }
+
+// ---- Light mode: Monochrome ----
+$bg_color_header_top: #757575;
+$bg_color_header_middle: #4A4A4A;
+
+$bg_color_page: #E0E0E0;
+
+$font_color_link: #6F6F6F;
+$font_color_link_visited: #484848;
+
+$bg_color_flash_success: $colors_gallery;
+$bg_color_flash_breadcrumbs: #ADADAD;
+
+$bg_color_sub: $colors_silver_darker;
+$bg_color_subber: #ADADAD;
+$bg_color_ender: #ADADAD;
+
+$bg_color_navheader: $colors_silver_darker;
+
+$bg_color_expander: #A0A0A0;
+
+$bg_color_post_icon: $colors_silver_darker;
+$bg_color_icon_selector: $colors_silver_darker;
+
+$bg_color_post_character: #929292;
+$bg_color_post_screenname: #A5A5A5;
+$bg_color_post_author: $colors_silver_again;
+
+$font_color_paginate_link_visited: #3A3A3A;
+$bg_color_paginate_current_page: #616161;
+
+$bg_color_icon: $colors_silver_darker;
+$bg_color_icon_credit: $colors_silver_darker;
+$border_color_icon_editor: #ADADAD;
+$bg_color_icon_editor: $colors_silver_darker;
+
+$font_color_tag_item: #575757;
+$font_color_tag_item_gallery: #575757;
+
+$bg_color_linkbox_new: #5A5A5A;
+$bg_color_linkbox_edit: $colors_comet;
+$bg_color_linkbox_favorite: $colors_comet;
+$bg_color_linkbox_delete: $colors_rock;
+$bg_color_linkbox_dismiss: $colors_rock;
+
+$bg_color_badge: #E5D8AF;
+
+@media (prefers-color-scheme: light) {
+  @include monochrome-selectors;
+}
+
+// ---- Dark mode: Dark Monochrome ----
+$bg_color_page: #2A2A2A;
+$font_color_page: $colors_silver_again;
+$font_color_content: $colors_silver_again;
+
+$bg_color_header_top: #505050;
+$bg_color_header_middle: #333333;
+$bg_color_header_bottom: #4A4A4A;
+$font_color_header_link: #CCCCCC;
+
+$font_color_link: #909090;
+$font_color_link_visited: #808080;
+$font_color_link_hover: #C0C0C0;
+
+$bg_color_flash_success: #404040;
+$font_color_flash_success: $colors_silver_again;
+$bg_color_flash_error: #4A3030;
+$bg_color_flash_breadcrumbs: #3A3A3A;
+$font_color_flash_breadcrumbs: $colors_alto;
+$font_color_flash_link: $colors_alto;
+$font_color_flash_hover: $colors_silver_again;
+
+$bg_color_spacer_alt: #383838;
+$bg_color_search_box: #383838;
+$font_color_search_box: $colors_silver_again;
+
+$bg_color_descriptions: #4A4A4A;
+
+$bg_color_head: #3A3A3A;
+$font_color_head: #C0C0C0;
+
+$bg_color_sub: #333333;
+$font_color_sub: #C0C0C0;
+
+$bg_color_subber: #3A3A3A;
+$font_color_subber: $colors_alto;
+
+$bg_color_ender: #3A3A3A;
+$font_color_ender: $colors_alto;
+
+$bg_color_even: #363636;
+$bg_color_odd: #404040;
+
+$bg_color_post_description: #505050;
+$font_color_post_description: $colors_silver_again;
+$bg_color_navheader: #4A4A4A;
+
+$bg_color_selectionpopup: #4A4A4A;
+$bg_color_expander: #555555;
+
+$bg_color_post_icon: #505050;
+$bg_color_icon_selector: #505050;
+$font_color_icon_selector: #111111;
+
+$bg_color_post_character: #4A4A4A;
+$bg_color_post_screenname: #444444;
+$bg_color_post_author: #3E3E3E;
+$font_color_post_info: $colors_silver_again;
+$font_color_post_screenname: $colors_silver_again;
+
+$font_color_paginate: #C0C0C0;
+$font_color_paginate_link_visited: #808080;
+$bg_color_paginate_current_page: #555555;
+
+$font_color_post_menu: $colors_silver_again;
+
+$bg_color_icon: #505050;
+$bg_color_icon_credit: #505050;
+$border_color_icon_editor: #3A3A3A;
+$bg_color_icon_editor: #505050;
+
+$bg_color_tag_item: #555555;
+$font_color_tag_item: $colors_alto;
+$font_color_tag_item_gallery: $colors_alto;
+
+$font_color_linkbox: $colors_alto;
+
+$bg_color_linkbox_new: #555555;
+$bg_color_linkbox_edit: #4A4A5A;
+$bg_color_linkbox_favorite: #4A4A5A;
+$bg_color_linkbox_delete: #503636;
+$bg_color_linkbox_dismiss: #503636;
+
+$bg_color_viewbutton: #555555;
+$bg_color_viewbutton_selected: #666666;
+$font_color_viewbutton: $colors_alto;
+
+$bg_color_reply_content: #606060;
+$font_color_reply_content: #CCCCCC;
+
+$bg_color_popup_header: #252525;
+$font_color_popup_header: #C0C0C0;
+$border_color_popup_header: #202020;
+$bg_color_popup_content: #2E2E2E;
+$font_color_popup_content: $colors_silver_again;
+$border_color_popup: #404040;
+$bg_color_popup_button: #333333;
+$border_color_popup_button: #444444;
+$font_color_popup_link: #909090;
+
+$font_color_input: $colors_silver_again;
+$bg_color_input: #4A4A4A;
+$bg_color_input_disabled: #353535;
+$border_color_input: #606060;
+$font_color_input_placeholder: #808080;
+$bg_color_mce_panel: #383838;
+$bg_color_select2_highlight: #555555;
+$bg_color_select2_selected: #404040;
+$bg_color_select2_search: $bg_color_select2_highlight;
+
+$bg_color_badge: #E5D8AF;
+$font_color_badge: $colors_cinnamon;
+
+@media (prefers-color-scheme: dark) {
+  @include dark-selectors;
+  @include dark-themes-selectors;
+
+  .auto-light-only { display: none; }
+  .auto-dark-only { display: inline; }
+}
