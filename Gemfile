@@ -54,7 +54,7 @@ gem 'sprockets'
 gem 'sprockets-rails'
 gem 'terser'
 gem 'test-unit', '~> 3.7' # required by Heroku for production console
-gem 'tinymce-rails', '~> 7.8' # when upgrading, bump cache_suffix in app/assets/javascripts/writable.js
+gem 'tinymce-rails', '~> 8.3' # when upgrading, bump cache_suffix in app/assets/javascripts/writable.js
 gem 'will_paginate'
 
 group :production do
