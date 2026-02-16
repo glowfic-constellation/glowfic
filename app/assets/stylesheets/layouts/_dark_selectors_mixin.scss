@@ -140,7 +140,7 @@
 
   #post-menu-box { color: $font_color_post_menu; }
 
-  table { border-color: #555555; } // TODO: what does this style
+  table { border-color: #555555; } // stylelint-disable-line scale-unlimited/declaration-strict-value -- TODO: what does this style
 
   /* - icons */
   .replace-icon, .icons-box { background-color: $bg_color_icon; }
