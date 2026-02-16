@@ -42,6 +42,12 @@ module ApplicationHelper
     'icons/bullet_go_strong.png'
   end
 
+  def auto_image_tag(light_src, dark_src, **attrs)
+    light_class = [attrs[:class], 'auto-light-only'].flatten.compact.join(' ')
+    dark_class = [attrs[:class], 'auto-dark-only'].flatten.compact.join(' ')
+    image_tag(light_src, **attrs.merge(class: light_class)) + image_tag(dark_src, **attrs.merge(class: dark_class))
+  end
+
   def path_for(obj, path)
     send (path + '_path') % obj.class.to_s.downcase, obj
   end
@@ -74,6 +80,12 @@ module ApplicationHelper
       'Starry Light' => 'starrylight',
       Monochrome: 'monochrome',
       'Milky River' => 'river',
+      'Default (Auto)' => 'auto_default',
+      'Starry (Auto)' => 'auto_starry',
+      'Starry Light (Auto)' => 'auto_starrylight',
+      'Monochrome (Auto)' => 'auto_monochrome',
+      'Milky River (Auto)' => 'auto_river',
+      'Iconless (Auto)' => 'auto_iconless',
     }
     options_for_select(layouts, default)
   end

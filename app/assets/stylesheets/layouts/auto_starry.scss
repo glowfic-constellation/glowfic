@@ -1,0 +1,150 @@
+@import 'starry_default_variables';
+@import 'variables';
+@import 'starry_default_selectors_mixin';
+@import 'dark_themes_selectors_mixin';
+
+// Auto-light/dark-only icon utility classes
+.auto-light-only { display: inline; }
+.auto-dark-only { display: none; }
+
+// ---- Light mode: Starry ----
+// Starry light variable overrides (from starry.scss)
+$bg_color_page: #6C697C;
+
+$bg_color_spacer_alt: $colors_bunting_brighter;
+$bg_color_search_box: $colors_bunting_brighter;
+
+$bg_color_flash_error: $colors_manatee_lighter;
+$bg_color_flash_success: $colors_manatee_lighter;
+$bg_color_flash_breadcrumbs: $colors_bunting_brighter;
+
+$bg_color_head: $colors_ebony;
+$bg_color_sub: $colors_bunting_brighter;
+$bg_color_ender: $colors_ebony;
+
+$bg_color_navheader: $colors_bunting_brighter;
+
+$font_color_post_menu: $colors_black;
+
+$bg_color_expander: $colors_manatee_lighter;
+
+$bg_color_post_icon: $colors_ebony;
+
+$bg_color_post_character: $colors_gunpowder;
+$bg_color_post_screenname: $colors_gunpowder;
+$bg_color_post_author: $colors_ebony;
+
+$bg_color_icon: $colors_alto_darker;
+$bg_color_icon_credit: $colors_alto_darker;
+$bg_color_icon_editor: $colors_alto_darker;
+
+$bg_color_tag_item: #2C2C5D;
+
+$bg_color_linkbox_subber: #66608B;
+
+@media (prefers-color-scheme: light) {
+  @include starry-default-selectors;
+
+  // Starry-specific inline rules
+  #post-menu-box { color: $font_color_post_menu; }
+  .time-loaded { color: $colors_alto_brighter; }
+  #character-icon-selector { color: $colors_alto_brighter; }
+  .tag-item { color: $font_color_tag_item; }
+  #character-selector { font-weight: normal; }
+
+  #footer {
+    background-color: $bg_color_header_middle;
+    color: $font_color_header_link;
+    a { color: $font_color_header_link; }
+    a:hover { color: $font_color_header_link_hover; }
+  }
+}
+
+// ---- Dark mode: Starry Dark ----
+// Reset to starry_default_variables defaults, then apply starrydark overrides
+$bg_color_page: #211E2F;
+$font_color_page: $colors_alto_brighter;
+
+$bg_color_spacer_alt: $colors_bigstone;
+$bg_color_search_box: $colors_bigstone;
+
+$font_color_link: $colors_logan;
+$font_color_link_visited: $colors_santasgrey;
+
+$bg_color_flash_error: $colors_gunpowder;
+$bg_color_flash_success: $colors_gunpowder;
+$bg_color_flash_breadcrumbs: $colors_bigstone;
+
+$bg_color_head: $colors_blackcurrant_blacker;
+$bg_color_sub: $colors_bigstone;
+$bg_color_ender: $colors_blackcurrant_blacker;
+
+$bg_color_even: #31323B;
+$bg_color_odd: $colors_shark;
+
+$bg_color_navheader: $colors_bigstone;
+
+$bg_color_post_menu: #191919;
+$bg_color_menu_link_hover: #252525;
+$font_color_post_menu: $colors_alto_brighter;
+
+$bg_color_expander: $colors_shark;
+
+$bg_color_post_icon: $colors_blackcurrant_redder;
+$font_color_icon_dropdown: #111111;
+
+$bg_color_post_character: $colors_bunting_darker;
+$bg_color_post_screenname: $colors_bunting_darker;
+$bg_color_post_author: $colors_blackcurrant_redder;
+
+$border_color_icon_selected: #B9BBEB;
+$bg_color_icon: $colors_shark;
+$bg_color_icon_credit: $colors_shark;
+$bg_color_icon_editor: $colors_shark;
+
+$font_color_tag_item: $colors_logan;
+$font_color_tag_item_gallery: $colors_logan;
+$bg_color_tag_item: #241F4E;
+$bg_color_tag_item_even: #24252D;
+$bg_color_tag_item_odd: #1A1A22;
+
+$bg_color_linkbox_subber: #5C5778;
+
+// Starrydark popup/input overrides
+$bg_color_popup_header: #0D0B1E;
+$font_color_popup_header: #EEEEEE;
+$border_color_popup_header: #28225D;
+$bg_color_popup_content: #211E2F;
+$font_color_popup_content: #DADADA;
+$border_color_popup: #444444;
+
+$font_color_input: #DADADA;
+$bg_color_input: #4D4B5B;
+$bg_color_input_disabled: #42404F;
+$border_color_input: #625F73;
+$font_color_input_placeholder: #8884A0;
+$bg_color_mce_panel: #3B394A;
+$bg_color_select2_highlight: #5B586B;
+$bg_color_select2_selected: #3F3D4C;
+$bg_color_select2_search: $bg_color_select2_highlight;
+
+@media (prefers-color-scheme: dark) {
+  @include starry-default-selectors;
+  @include dark-themes-selectors;
+
+  // Starrydark-specific inline rules
+  .flash.success, .flash.error { color: $colors_alto_brighter; }
+  body, .even, .odd, .post-post, .post-reply, .profile, #post-editor { color: $font_color_page; }
+  #post-menu-box { color: $font_color_post_menu; }
+  .selector-popup { font-weight: normal; }
+  #current-icon-dropdown { color: $font_color_icon_dropdown; }
+  .selected-icon { border-color: $border_color_icon_selected; }
+  #character-icon-selector, .time-loaded { color: $font_color_page; }
+
+  .even .tag-item { background-color: $bg_color_tag_item_even; }
+  .odd .tag-item { background-color: $bg_color_tag_item_odd; }
+  .tag-item { color: $font_color_tag_item; }
+
+  .auto-light-only { display: none; }
+  .auto-dark-only { display: inline; }
+}

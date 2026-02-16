@@ -17,7 +17,10 @@
         %span#name= writable.name
         - klass = ['selector-popup-button']
         - klass << 'hidden' unless writable.character.try(:aliases).present?
-        = image_tag swap_icon_url, id: 'swap-alias', alt: 'Choose Alias', title: 'Choose Alias', class: klass
+        - if current_user.layout_auto?
+          = auto_image_tag 'icons/swap.png', 'icons/swapgray.png', id: 'swap-alias', alt: 'Choose Alias', title: 'Choose Alias', class: klass
+        - else
+          = image_tag swap_icon_url, id: 'swap-alias', alt: 'Choose Alias', title: 'Choose Alias', class: klass
         #alias-selector.selector-popup
           %h4 Choose Alias
           = select_tag :character_alias, options_from_collection_for_select(writable.character.try(:aliases).to_a, :id, :name, writable.character_alias_id), prompt: writable.character.try(:name), class: 'chosen-select'
@@ -26,7 +29,10 @@
       .post-author
         = writable.user.username
         - if current_user.characters.present?
-          = image_tag swap_icon_url, id: 'swap-character', alt: 'Choose Character', title: 'Choose Character', class: 'selector-popup-button'
+          - if current_user.layout_auto?
+            = auto_image_tag 'icons/swap.png', 'icons/swapgray.png', id: 'swap-character', alt: 'Choose Character', title: 'Choose Character', class: 'selector-popup-button'
+          - else
+            = image_tag swap_icon_url, id: 'swap-character', alt: 'Choose Character', title: 'Choose Character', class: 'selector-popup-button'
           #character-selector.selector-popup
             #swap-character-character
               %h4 Choose Character
