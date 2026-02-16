@@ -57,10 +57,11 @@ RSpec.describe OauthClientsController do
       expect(response).to render_template('show')
     end
 
-    it "should fail to render if client_application is invalid" do
+    it "should redirect if client_application is invalid" do
       @user.client_applications[0].delete
-      expect { do_get }.to raise_error(ActiveRecord::RecordNotFound)
-      expect(flash[:error]).to eq("Wrong application id")
+      do_get
+      expect(flash[:error]).to eq("Application could not be found.")
+      expect(response).to redirect_to(oauth_clients_path)
     end
   end
 
