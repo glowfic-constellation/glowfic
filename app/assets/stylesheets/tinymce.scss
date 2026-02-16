@@ -30,4 +30,26 @@ body {
       background-color: calculate-transparent-color(#4D4D4D, #3E3E3E, 0.12);
     }
   }
+
+  &.layout_auto_default, &.layout_auto_monochrome, &.layout_auto_river, &.layout_auto_iconless {
+    @media (prefers-color-scheme: dark) {
+      background-color: #4D4D4D;
+      color: #DADADA;
+
+      blockquote {
+        background-color: calculate-transparent-color(#4D4D4D, #3E3E3E, 0.12);
+      }
+    }
+  }
+
+  &.layout_auto_starry, &.layout_auto_starrylight {
+    @media (prefers-color-scheme: dark) {
+      background-color: #4D4B5B;
+      color: #DADADA;
+
+      blockquote {
+        background-color: calculate-transparent-color(#4D4B5B, #31323B, 0.12);
+      }
+    }
+  }
 }

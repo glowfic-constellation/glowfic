@@ -1,0 +1,206 @@
+// stylelint-disable scss/no-duplicate-dollar-variables
+@import 'variables';
+@import 'river_selectors_mixin';
+@import 'dark_selectors_mixin';
+@import 'dark_themes_selectors_mixin';
+
+// Auto-light/dark-only icon utility classes
+.auto-light-only { display: inline; }
+.auto-dark-only { display: none; }
+
+// ---- Light mode: River ----
+$bg_color_page: #E0E0E0;
+
+$bg_color_header_top: #434D73;
+$bg_color_header_middle: #212135;
+$bg_color_header_bottom: #ADB5B9;
+
+$font_color_link: #3F5970;
+$font_color_link_visited: #284150;
+
+$bg_color_flash_success: $colors_gallery;
+$bg_color_flash_breadcrumbs: #A3A8A9;
+
+$bg_color_sub: $colors_silver_darker;
+$bg_color_subber: #B9B6AD;
+$bg_color_ender: #A3A8A9;
+
+$bg_color_even: #F3F3F3;
+$bg_color_odd: #E8E8E8;
+$bg_color_content_border: #AAAAAA;
+
+$font_color_reply_footer: #717171;
+
+$bg_color_navheader: $colors_silver_darker;
+
+$font_color_paginate_link_visited: #3A3A3A;
+$bg_color_paginate_current_page: #718EB9;
+
+$bg_color_expander: #A4B0BD;
+
+$bg_color_post_icon: $colors_hit_gray;
+$bg_color_icon_selector: $colors_hit_gray;
+
+$bg_color_post_character: #929292;
+$bg_color_post_screenname: #A5A5A5;
+$bg_color_post_author: $colors_silver_again;
+$font_color_post_info: #B3D3FF;
+
+$bg_color_icon: $colors_hit_gray;
+$bg_color_icon_credit: $colors_hit_gray;
+$border_color_icon_editor: #B9B6AD;
+$bg_color_icon_editor: $colors_hit_gray;
+
+$font_color_tag_item: #3E526F;
+$font_color_tag_item_gallery: #3E526F;
+$bg_color_tag_item: #D0CEC8;
+
+$bg_color_linkbox_new: #3F5370;
+$bg_color_linkbox_edit: $colors_comet;
+$bg_color_linkbox_favorite: $colors_comet;
+$bg_color_linkbox_delete: $colors_rock;
+$bg_color_linkbox_dismiss: $colors_rock;
+
+@media (prefers-color-scheme: light) {
+  @include river-selectors;
+}
+
+// ---- Dark mode: Dark River ----
+$bg_color_page: #1E2030;
+$font_color_page: #B0B8C8;
+$font_color_content: #B0B8C8;
+
+$bg_color_header_top: #2A3050;
+$bg_color_header_middle: #161828;
+$bg_color_header_bottom: #3A4060;
+$font_color_header_link: #C0C8D8;
+
+$font_color_link: #6080A0;
+$font_color_link_visited: #5070A0;
+$font_color_link_hover: #B0C0D8;
+
+$bg_color_flash_success: #2A3040;
+$font_color_flash_success: #B0B8C8;
+$bg_color_flash_error: #402838;
+$bg_color_flash_breadcrumbs: #282A3A;
+$font_color_flash_breadcrumbs: #C0C8D8;
+$font_color_flash_link: #C0C8D8;
+$font_color_flash_hover: #B0B8C8;
+
+$bg_color_spacer_alt: #252838;
+$bg_color_search_box: #252838;
+$font_color_search_box: #B0B8C8;
+
+$bg_color_descriptions: #353850;
+
+$bg_color_head: #2A2E48;
+$font_color_head: #B0B8D0;
+
+$bg_color_sub: #232540;
+$font_color_sub: #B0B8C8;
+
+$bg_color_subber: #2E3048;
+$font_color_subber: #C0C8D8;
+
+$bg_color_ender: #2E3048;
+$font_color_ender: #C0C8D8;
+
+$bg_color_even: #282A3E;
+$bg_color_odd: #303248;
+$bg_color_content_border: #3A3E58;
+
+$font_color_reply_footer: #808898;
+
+$bg_color_post_description: #3A3E58;
+$font_color_post_description: #B0B8C8;
+$bg_color_navheader: #353850;
+
+$bg_color_selectionpopup: #353850;
+$bg_color_expander: #404868;
+
+$bg_color_post_icon: #353850;
+$bg_color_icon_selector: #353850;
+$font_color_icon_selector: #111111;
+
+$bg_color_post_character: #3A3E58;
+$bg_color_post_screenname: #333658;
+$bg_color_post_author: #2E3050;
+$font_color_post_info: #90A0C0;
+$font_color_post_screenname: #90A0C0;
+
+$font_color_paginate: #B0B8C8;
+$font_color_paginate_link_visited: #607090;
+$bg_color_paginate_current_page: #404880;
+
+$font_color_post_menu: #B0B8C8;
+
+$bg_color_icon: #353850;
+$bg_color_icon_credit: #353850;
+$border_color_icon_editor: #2E3048;
+$bg_color_icon_editor: #353850;
+
+$bg_color_tag_item: #3A3E60;
+$font_color_tag_item: #90A0C0;
+$font_color_tag_item_gallery: #90A0C0;
+
+$font_color_linkbox: #C0C8D8;
+
+$bg_color_linkbox_new: #3A4070;
+$bg_color_linkbox_edit: #404060;
+$bg_color_linkbox_favorite: #404060;
+$bg_color_linkbox_delete: #503040;
+$bg_color_linkbox_dismiss: #503040;
+
+$bg_color_viewbutton: #404868;
+$bg_color_viewbutton_selected: #505878;
+$font_color_viewbutton: #C0C8D8;
+
+$bg_color_reply_content: #404868;
+$font_color_reply_content: #C0C8D8;
+
+$bg_color_popup_header: #1A1C30;
+$font_color_popup_header: #B0B8D0;
+$border_color_popup_header: #151828;
+$bg_color_popup_content: #222438;
+$font_color_popup_content: #B0B8C8;
+$border_color_popup: #3A3E58;
+$bg_color_popup_button: #282A40;
+$border_color_popup_button: #3A3E58;
+$font_color_popup_link: #6080A0;
+
+$font_color_input: #B0B8C8;
+$bg_color_input: #353850;
+$bg_color_input_disabled: #282A3E;
+$border_color_input: #4A5070;
+$font_color_input_placeholder: #707888;
+$bg_color_mce_panel: #2A2E48;
+$bg_color_select2_highlight: #404868;
+$bg_color_select2_selected: #333650;
+$bg_color_select2_search: $bg_color_select2_highlight;
+
+$bg_color_badge: $colors_golden;
+$font_color_badge: $colors_cinnamon;
+
+@media (prefers-color-scheme: dark) {
+  @include dark-selectors;
+  @include dark-themes-selectors;
+
+  // River-specific dark overrides
+  #content .odd, #content .even, .post-post, .post-reply, .profile, #post-editor {
+    // stylelint-disable declaration-no-important
+    background-color: $bg_color_even !important;
+    border-top: solid 1px $bg_color_content_border;
+    blockquote { background-color: calculate-transparent-color($bg_color_even, $bg_color_odd, 0.2) !important; }
+    // stylelint-enable declaration-no-important
+  }
+
+  .post-edit-box img {
+    width: 1em;
+    height: 1em;
+  }
+
+  .post-footer { color: $font_color_reply_footer; }
+
+  .auto-light-only { display: none; }
+  .auto-dark-only { display: inline; }
+}

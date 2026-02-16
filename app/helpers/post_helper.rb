@@ -56,20 +56,23 @@ module PostHelper
     private: ['Private', 'lock', 'lock'],
   }
 
-  def privacy_state(privacy, dark_layout: false)
+  def privacy_state(privacy, dark_layout: false, auto_layout: false)
     privacy = privacy.to_sym
-    privacy_icon(privacy, dark_layout: dark_layout, alt: false) + ' ' + PRIVACY_MAP[privacy][0]
+    privacy_icon(privacy, dark_layout: dark_layout, auto_layout: auto_layout, alt: false) + ' ' + PRIVACY_MAP[privacy][0]
   end
 
-  def privacy_icon(privacy, dark_layout: false, alt: true)
+  def privacy_icon(privacy, dark_layout: false, auto_layout: false, alt: true)
     name, icon, icon_dark = PRIVACY_MAP[privacy]
     text = alt ? name : ''
+    if auto_layout && icon != icon_dark
+      return auto_image_tag("icons/#{icon}.png", "icons/#{icon_dark}.png", class: 'vmid', title: name, alt: text)
+    end
     img = dark_layout ? icon_dark : icon
     image_tag("icons/#{img}.png", class: 'vmid', title: name, alt: text)
   end
 
   def menu_img
-    return 'icons/menu.png' unless current_user.try(:layout).to_s.start_with?('starry')
+    return 'icons/menu.png' unless current_user.try(:layout).to_s.start_with?('starry') || current_user.try(:layout).to_s.start_with?('auto_starry')
     'icons/menugray.png'
   end
 

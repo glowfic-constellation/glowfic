@@ -93,7 +93,12 @@ class User < ApplicationRecord
 
   def layout_darkmode?
     return false unless layout
-    layout.include?('dark')
+    layout.include?('dark') || layout.start_with?('auto_')
+  end
+
+  def layout_auto?
+    return false unless layout
+    layout.start_with?('auto_')
   end
 
   def archive
