@@ -155,6 +155,19 @@ ActiveRecord::Schema[8.0].define(version: 2024_12_24_202900) do
     t.index ["gallery_id"], name: "index_characters_galleries_on_gallery_id"
   end
 
+  create_table "client_applications", force: :cascade do |t|
+    t.string "name"
+    t.string "url"
+    t.string "support_url"
+    t.string "callback_url"
+    t.string "key", limit: 40
+    t.string "secret", limit: 40
+    t.integer "user_id"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["key"], name: "index_client_applications_on_key", unique: true
+  end
+
   create_table "favorites", id: :serial, force: :cascade do |t|
     t.integer "user_id", null: false
     t.integer "favorite_id", null: false
@@ -291,6 +304,31 @@ ActiveRecord::Schema[8.0].define(version: 2024_12_24_202900) do
     t.datetime "created_at", precision: nil, null: false
     t.datetime "updated_at", precision: nil, null: false
     t.index ["user_id"], name: "index_notifications_on_user_id"
+  end
+
+  create_table "oauth_nonces", force: :cascade do |t|
+    t.string "nonce"
+    t.integer "timestamp"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["nonce", "timestamp"], name: "index_oauth_nonces_on_nonce_and_timestamp", unique: true
+  end
+
+  create_table "oauth_tokens", force: :cascade do |t|
+    t.integer "user_id"
+    t.string "type", limit: 20
+    t.integer "client_application_id"
+    t.string "token", limit: 40
+    t.string "secret", limit: 40
+    t.string "callback_url"
+    t.string "verifier", limit: 20
+    t.string "scope"
+    t.datetime "authorized_at"
+    t.datetime "invalidated_at"
+    t.datetime "expires_at"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["token"], name: "index_oauth_tokens_on_token", unique: true
   end
 
   create_table "password_resets", id: :serial, force: :cascade do |t|

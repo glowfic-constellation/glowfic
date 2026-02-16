@@ -1,0 +1,110 @@
+class OauthController < ApplicationController
+  before_action :login_required, only: [:authorize, :revoke]
+  before_action :authenticate_token, only: [:test_request, :invalidate]
+  protect_from_forgery with: :exception, unless: -> { api_request? }
+
+  def token
+    @client_application = ClientApplication.find_by! key: params[:client_id]
+    if @client_application.secret != params[:client_secret]
+      oauth2_error "invalid_client"
+      return
+    end
+    # older drafts used none for client_credentials
+    params[:grant_type] = 'client_credentials' if params[:grant_type] == 'none'
+    if ["authorization_code", "password", "client_credentials"].include?(params[:grant_type])
+      send "oauth2_token_#{params[:grant_type].underscore}"
+    else
+      oauth2_error "unsupported_grant_type"
+    end
+  end
+
+  def test_request
+    render plain: "Success\n"
+  end
+
+  def authorize
+    if request.post?
+      @authorizer = ProviderAuthorizer.new current_user, user_authorizes_token?, params
+      redirect_to @authorizer.redirect_uri, allow_other_host: true
+    else
+      @client_application = ClientApplication.find_by! key: params[:client_id]
+      render action: "oauth2_authorize"
+    end
+  end
+
+  def revoke
+    @token = current_user.tokens.find_by token: params[:token]
+    if @token
+      @token.invalidate!
+      flash[:notice] = "You've revoked the token for #{@token.client_application.name}"
+    end
+    redirect_to oauth_clients_url
+  end
+
+  # Invalidate current token
+  def invalidate
+    @current_token.invalidate!
+    head status: 410
+  end
+
+  protected
+
+  # http://tools.ietf.org/html/draft-ietf-oauth-v2-22#section-4.1.1
+  def oauth2_token_authorization_code
+    @verification_code = @client_application.oauth2_verifiers.find_by token: params[:code]
+    unless @verification_code
+      oauth2_error
+      return
+    end
+    if @verification_code.redirect_url != params[:redirect_uri]
+      oauth2_error
+      return
+    end
+    @token = @verification_code.exchange!
+    render json: @token
+  end
+
+  # http://tools.ietf.org/html/draft-ietf-oauth-v2-22#section-4.1.2
+  def oauth2_token_password
+    @user = authenticate_user(params[:username], params[:password])
+    unless @user
+      oauth2_error
+      return
+    end
+    @token = Oauth2Token.create! client_application: @client_application, user: @user, scope: params[:scope]
+    render json: @token
+  end
+
+  # should authenticate and return a user if valid password. Override in your own controller
+  def authenticate_user(username, password)
+    Authentication.new.authenticate(username, password)
+  end
+
+  # autonomous authorization which creates a token for client_applications user
+  def oauth2_token_client_credentials
+    @token = Oauth2Token.create! client_application: @client_application, user: @client_application.user, scope: params[:scope]
+    render json: @token
+  end
+
+  # Override this to match your authorization page form
+  # It currently expects a checkbox called authorize
+  def user_authorizes_token?
+    params[:authorize] == '1'
+  end
+
+  def oauth2_error(error="invalid_grant")
+    render json: { error: error }.to_json, status: :bad_request
+  end
+
+  private
+
+  def authenticate_token
+    token_value = request.headers['Authorization'].to_s.split(' ').last
+    @current_token = OauthToken.find_by(token: token_value, invalidated_at: nil) if token_value.present?
+    head :unauthorized unless @current_token
+  end
+
+  def api_request?
+    request.headers['Authorization'].present? || params[:client_id].present?
+  end
+end

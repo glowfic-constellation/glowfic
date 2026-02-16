@@ -1,0 +1,59 @@
+class OauthClientsController < ApplicationController
+  before_action :login_required
+  before_action :find_client_application, only: [:show, :edit, :update, :destroy]
+
+  def index
+    @client_applications = current_user.client_applications
+    @tokens = current_user.tokens.authorized
+  end
+
+  def new
+    @client_application = ClientApplication.new
+  end
+
+  def create
+    @client_application = current_user.client_applications.build(user_params)
+    if @client_application.save
+      flash[:notice] = "Registered the information successfully"
+      redirect_to oauth_client_path(@client_application)
+    else
+      render :new
+    end
+  end
+
+  def show
+  end
+
+  def edit
+  end
+
+  def update
+    if @client_application.update(user_params)
+      flash[:notice] = "Updated the client information successfully"
+      redirect_to oauth_client_path(@client_application)
+    else
+      render :edit
+    end
+  end
+
+  def destroy
+    @client_application.destroy!
+    flash[:notice] = "Destroyed the client application registration"
+    redirect_to oauth_clients_path
+  rescue StandardError
+    flash[:error] = "Failed to destroy the client application"
+    redirect_to oauth_clients_path
+  end
+
+  private
+
+  def user_params
+    params.fetch(:client_application, {}).permit(:name, :callback_url, :support_url, :url)
+  end
+
+  def find_client_application
+    return if (@client_application = current_user.client_applications.find_by(id: params[:id]))
+    flash[:error] = "Application could not be found."
+    redirect_to oauth_clients_path
+  end
+end

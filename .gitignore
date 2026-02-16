@@ -19,6 +19,7 @@
 
 .sass-cache/*
 *~
+*.swp
 
 # Ignore env files
 */**/.ruby-version
