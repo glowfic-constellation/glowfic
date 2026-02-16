@@ -1,10 +1,10 @@
 class OauthClientsController < ApplicationController
   before_action :login_required
-  before_action :get_client_application, only: [:show, :edit, :update, :destroy]
+  before_action :find_client_application, only: [:show, :edit, :update, :destroy]
 
   def index
-    @client_applications = @current_user.client_applications
-    @tokens = @current_user.tokens.where('oauth_tokens.invalidated_at is null and oauth_tokens.authorized_at is not null')
+    @client_applications = current_user.client_applications
+    @tokens = current_user.tokens.authorized
   end
 
   def new
@@ -12,17 +12,13 @@ class OauthClientsController < ApplicationController
   end
 
   def create
-    @client_application = @current_user.client_applications.build(user_params)
+    @client_application = current_user.client_applications.build(user_params)
     if @client_application.save
       flash[:notice] = "Registered the information successfully"
-      redirect_to action: :show, id: @client_application.id
+      redirect_to oauth_client_path(@client_application)
     else
       render :new
     end
-  end
-
-  def user_params
-    params.fetch(:client_application, {}).permit(:name, :callback_url, :support_url, :url)
   end
 
   def show
@@ -34,7 +30,7 @@ class OauthClientsController < ApplicationController
   def update
     if @client_application.update(user_params)
       flash[:notice] = "Updated the client information successfully"
-      redirect_to action: :show, id: @client_application.id
+      redirect_to oauth_client_path(@client_application)
     else
       render :edit
     end
@@ -43,15 +39,21 @@ class OauthClientsController < ApplicationController
   def destroy
     @client_application.destroy!
     flash[:notice] = "Destroyed the client application registration"
-    redirect_to action: :index
+    redirect_to oauth_clients_path
+  rescue StandardError
+    flash[:error] = "Failed to destroy the client application"
+    redirect_to oauth_clients_path
   end
 
   private
 
-  def get_client_application
-    @client_application = @current_user.client_applications.find_by_id(params[:id])
-    return if @client_application
-    flash.now[:error] = "Wrong application id"
-    raise ActiveRecord::RecordNotFound
+  def user_params
+    params.fetch(:client_application, {}).permit(:name, :callback_url, :support_url, :url)
+  end
+
+  def find_client_application
+    return if (@client_application = current_user.client_applications.find_by(id: params[:id]))
+    flash[:error] = "Application could not be found."
+    redirect_to oauth_clients_path
   end
 end

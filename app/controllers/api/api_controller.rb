@@ -3,7 +3,6 @@ class Api::ApiController < ActionController::Base
   include Rails::Pagination
   include Authentication::Api
 
-  before_action :oauth_or_jwt
   protect_from_forgery with: :null_session
   before_action :check_token
   around_action :set_timezone
@@ -16,10 +15,6 @@ class Api::ApiController < ActionController::Base
   end
 
   protected
-
-  def oauth_or_jwt
-    @current_user ||= oauth_token_user
-  end
 
   def check_token
     # checks for invalid tokens in a before to prevent double renders
@@ -64,11 +59,4 @@ class Api::ApiController < ActionController::Base
     per
   end
 
-  private
-
-  def oauth_token_user
-    token_value = request.headers['Authorization'].to_s.split(' ').last
-    return unless token_value.present?
-    OauthToken.find_by(token: token_value, invalidated_at: nil)&.user
-  end
 end
