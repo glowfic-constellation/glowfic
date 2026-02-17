@@ -281,6 +281,10 @@ td, .table-list li { font-size: $font_size_small; }
   .link-box { font-size: $font_size_smallish; }
 }
 
+th.sub a.current-sort {
+  font-weight: bold;
+}
+
 .check-all-box {
   /* The .sub or .subber that has the "check all" checkbox */
   width: 30px;

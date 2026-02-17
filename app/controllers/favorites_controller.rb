@@ -18,7 +18,16 @@ class FavoritesController < ApplicationController
 
     @posts = Post.where(id: author_posts).or(Post.where(id: post_favorites)).or(Post.where(board_id: board_favorites))
     @posts = @posts.not_ignored_by(current_user) if current_user&.hide_from_all
-    @posts = posts_from_relation(@posts.ordered, with_unread: true)
+
+    @sort = params[:sort] if params[:sort] == 'unread'
+    if @sort == 'unread'
+      ordered = @posts.with_unread_count(current_user).order(Arel.sql('unread_count DESC'), tagged_at: :desc)
+    else
+      ordered = @posts.ordered
+    end
+    @posts = posts_from_relation(ordered, with_unread: true)
+    @paginate_params = { sort: @sort }.compact if @sort
+
     @hide_quicklinks = true
   end
 

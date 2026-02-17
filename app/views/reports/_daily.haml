@@ -35,7 +35,11 @@
         %th.subber Authors
         %th.subber.width-70 Replies
         %th.subber.width-70 Today
-        %th.subber.width-70= link_to 'Updated', url_for(day: params[:day], sort: 'updated')
+        %th.subber.width-70
+          = link_to 'Updated', url_for(day: params[:day], sort: 'updated')
+          - if logged_in?
+            |
+            = link_to 'Unread', url_for(day: params[:day], sort: 'unread')
   - if @posts.present?
     %tbody
       - @posts.each do |post|
