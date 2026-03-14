@@ -295,8 +295,18 @@ class PostsController < WritableController
       if params[:abbrev].present?
         search = params[:subject].chars.join('% ')
         @search_results = @search_results.where('subject ILIKE ?', "%#{search}%")
+      elsif params[:exact].present?
+        @search_results = @search_results.where('subject ILIKE ?', "%#{params[:subject]}%")
       else
-        @search_results = @search_results.search(params[:subject]).where('subject ILIKE ?', "%#{params[:subject]}%")
+        pruned = detect_pruned_words(params[:subject])
+        if pruned[:all_pruned]
+          @search_results = @search_results.where('subject ILIKE ?', "%#{params[:subject]}%")
+          @pruned_words = pruned[:pruned_words]
+          @all_pruned = true
+        else
+          @search_results = @search_results.search(params[:subject]).where('subject ILIKE ?', "%#{params[:subject]}%")
+          @pruned_words = pruned[:pruned_words] if pruned[:pruned_words].any?
+        end
       end
     end
     @search_results = @search_results.complete if params[:completed].present?
@@ -357,6 +367,28 @@ class PostsController < WritableController
   end
 
   private
+
+  # Postgres's built-in english tsearch dictionary (tsearch_data/english.stop).
+  # Comparing against this static list avoids round-tripping to the DB once
+  # per input word — a long search string would otherwise trigger N queries
+  # in series (per code review feedback).
+  POSTGRES_ENGLISH_STOP_WORDS = Set.new(%w[
+    i me my myself we our ours ourselves you your yours yourself yourselves
+    he him his himself she her hers herself it its itself they them their
+    theirs themselves what which who whom this that these those am is are
+    was were be been being have has had having do does did doing a an the
+    and but if or because as until while of at by for with about against
+    between into through during before after above below to from up down in
+    out on off over under again further then once here there when where why
+    how all any both each few more most other some such no nor not only own
+    same so than too very s t can will just don should now
+  ]).freeze
+
+  def detect_pruned_words(query)
+    words = query.split(/\s+/).reject(&:blank?)
+    pruned_words = words.select { |word| POSTGRES_ENGLISH_STOP_WORDS.include?(word.downcase) }
+    { pruned_words: pruned_words, all_pruned: pruned_words.length == words.length && words.any? }
+  end
 
   def preview
     @post ||= Post.new(user: current_user)
