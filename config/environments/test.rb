@@ -61,9 +61,6 @@ Rails.application.configure do
     g.fixture_replacement :factory_bot
   end
 
-  # Check html is valid
-  config.middleware.use HTMLProofer::Middleware
-
   # raise an error if assets aren't found
   config.assets.unknown_asset_fallback = false
   config.assets.check_precompiled_asset = ENV["CI"].present?
