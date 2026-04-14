@@ -1,9 +1,6 @@
 # frozen_string_literal: true
-require Rails.root.join('lib', 'memorylogic')
-
 class ApplicationController < ActionController::Base
   include Authentication::Web
-  include Memorylogic
 
   rescue_from ActionController::InvalidAuthenticityToken, with: :handle_invalid_token
 
