@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2024_12_24_202900) do
+ActiveRecord::Schema[8.0].define(version: 2026_04_30_000000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "citext"
   enable_extension "pg_catalog.plpgsql"
@@ -501,6 +501,7 @@ ActiveRecord::Schema[8.0].define(version: 2024_12_24_202900) do
     t.boolean "public_bookmarks", default: false
     t.boolean "default_hide_edit_delete_buttons", default: false
     t.boolean "default_hide_add_bookmark_button", default: false
+    t.boolean "moiety_colors_unread", default: false
     t.index ["email"], name: "index_users_on_email", unique: true
     t.index ["username"], name: "index_users_on_username", unique: true
   end
