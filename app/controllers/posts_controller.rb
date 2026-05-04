@@ -126,6 +126,7 @@ class PostsController < WritableController
 
     @permitted_authors -= [current_user]
     return unless @post.board&.authors_locked?
+    return if @post.board.mega?
 
     @author_ids = @post.board.writer_ids - [current_user.id]
     @authors_from_board = true
