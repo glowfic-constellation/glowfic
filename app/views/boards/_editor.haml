@@ -20,6 +20,11 @@
     = f.check_box :authors_locked, checked: @board.authors_locked
     = f.label :authors_locked, 'Only allow authors to create new posts in this continuity'
 %div
+  .sub= f.label :mega, 'Mega?'
+  .even.checkbox-field
+    = f.check_box :mega, checked: @board.mega
+    = f.label :mega, 'Mark this as a large continuity with many authors'
+%div
   .sub.vtop Description
   .odd= f.text_area :description
 .form-table-ender= submit_tag "Save", class: 'button'
