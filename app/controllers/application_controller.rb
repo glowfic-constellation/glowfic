@@ -111,29 +111,30 @@ class ApplicationController < ActionController::Base
     select = if max
       <<~SQL.squish
         posts.*,
-        max(boards.name) as board_name,
+        max(main_boards.name) as board_name,
         max(users.username) as last_user_name,
         bool_or(users.deleted) as last_user_deleted,
-        max(board_sections.name) as section_name
+        max(main_sections.name) as section_name
         #{select}
       SQL
     else
       <<~SQL.squish
         posts.*,
-        boards.name as board_name,
+        main_boards.name as board_name,
         users.username as last_user_name,
         users.deleted as last_user_deleted,
-        board_sections.name as section_name
+        main_sections.name as section_name
         #{select}
       SQL
     end
 
     relation
       .select(select)
-      .joins(:board)
-      .left_joins(:section)
+      .joins("INNER JOIN post_boards main_pbs ON main_pbs.post_id = posts.id AND main_pbs.is_main = TRUE")
+      .joins("INNER JOIN boards main_boards ON main_boards.id = main_pbs.board_id")
+      .joins("LEFT JOIN board_sections main_sections ON main_sections.id = main_pbs.section_id")
       .joins(:last_user)
-      .includes(:authors)
+      .includes(:authors, main_post_board: [:board, :section])
       .with_has_content_warnings
       .with_reply_count
   end

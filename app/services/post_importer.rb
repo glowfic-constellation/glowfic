@@ -30,7 +30,7 @@ class PostImporter < Object
 
   def validate_duplicate!(board_id)
     subject = dreamwidth_doc.at_css('.entry .entry-title').text.strip
-    subj_post = Post.where(subject: subject, board_id: board_id).first
+    subj_post = Post.joins(:post_boards).where(subject: subject, post_boards: { board_id: board_id, is_main: true }).first
     return unless subj_post
     raise AlreadyImported.new("This thread has already been imported! " + ScrapePostJob.view_post(subj_post.id))
   end

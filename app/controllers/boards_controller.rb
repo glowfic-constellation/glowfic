@@ -57,7 +57,7 @@ class BoardsController < ApplicationController
     @page_title = @board.name
     @board_sections = @board.board_sections.ordered
     @board_sections = @board_sections.paginate(per_page: 25, page: page)
-    board_posts = @board.posts.where(section_id: nil)
+    board_posts = @board.posts.where(post_boards: { section_id: nil })
     if @board.ordered?
       board_posts = board_posts.ordered_in_section
     else
@@ -72,7 +72,12 @@ class BoardsController < ApplicationController
     @page_title = 'Edit Continuity: ' + @board.name
     use_javascript('boards/edit')
     @board_sections = @board.board_sections.ordered
-    @unsectioned_posts = @board.posts.where(section_id: nil).visible_to(current_user).ordered_in_section if @board.ordered?
+    return unless @board.ordered?
+    @unsectioned_posts = @board.posts
+      .where(post_boards: { section_id: nil })
+      .visible_to(current_user)
+      .select('posts.*, post_boards.section_order as section_order')
+      .ordered_in_section
   end
 
   def update
@@ -177,7 +182,8 @@ class BoardsController < ApplicationController
   def boards_from_relation(relation)
     sql = <<~SQL.squish
       boards.*,
-      (SELECT MAX(tagged_at) FROM posts WHERE posts.board_id = boards.id) AS tagged_at
+      (SELECT MAX(tagged_at) FROM posts INNER JOIN post_boards ON post_boards.post_id = posts.id
+       WHERE post_boards.board_id = boards.id AND post_boards.is_main = TRUE) AS tagged_at
     SQL
     relation
       .ordered

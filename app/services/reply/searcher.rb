@@ -65,12 +65,12 @@ class Reply::Searcher < Generic::Searcher
   def filter_parents(board_id, exclude_board_ids=nil)
     if @post
       @search_results = @search_results.where(post_id: @post.id)
-    else
+    elsif board_id.present? || exclude_board_ids.present?
       # Subqueries instead of pluck+IN so PG can use a hash/index join on
       # board_id rather than serializing a thousands-long id list and
       # falling off the index. Has caused statement_timeout in production.
-      @search_results = @search_results.where(post_id: Post.where(board_id: board_id).select(:id)) if board_id.present?
-      @search_results = @search_results.where.not(post_id: Post.where(board_id: exclude_board_ids).select(:id)) if exclude_board_ids.present?
+      @search_results = @search_results.where(post_id: PostBoard.where(board_id: board_id).select(:post_id)) if board_id.present?
+      @search_results = @search_results.where.not(post_id: PostBoard.where(board_id: exclude_board_ids).select(:post_id)) if exclude_board_ids.present?
     end
   end
 

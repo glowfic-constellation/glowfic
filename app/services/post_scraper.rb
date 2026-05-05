@@ -108,8 +108,9 @@ class PostScraper < Object
 
     # detect already imported
     # skip if it's a threaded import, unless a subject was given manually
-    if (@subject || !@threaded_import) && (subj_post = Post.find_by(subject: subject, board_id: @board_id))
-      raise AlreadyImportedError.new("This thread has already been imported", subj_post.id)
+    if @subject || !@threaded_import
+      subj_post = Post.joins(:post_boards).where(subject: subject, post_boards: { board_id: @board_id, is_main: true }).first
+      raise AlreadyImportedError.new("This thread has already been imported", subj_post.id) if subj_post
     end
 
     scraper = ReplyScraper.new(@post, console: @console_import)

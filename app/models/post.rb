@@ -1,7 +1,6 @@
 # frozen_string_literal: true
 class Post < ApplicationRecord
   include Concealable
-  include Orderable
   include Owable
   include PgSearch::Model
   include Post::Status
@@ -9,8 +8,12 @@ class Post < ApplicationRecord
   include Viewable
   include Writable
 
-  belongs_to :board, inverse_of: :posts, optional: false
-  belongs_to :section, class_name: 'BoardSection', inverse_of: :posts, optional: true
+  has_many :post_boards, inverse_of: :post, dependent: :destroy, autosave: true, validate: false
+  has_many :boards, through: :post_boards
+  has_one :main_post_board, -> { where(is_main: true) }, class_name: 'PostBoard',
+    inverse_of: :post, autosave: true, validate: false, dependent: false # Destroyed via has_many :post_boards
+  has_one :board, through: :main_post_board, source: :board
+  has_one :section, through: :main_post_board, source: :section
   belongs_to :last_user, class_name: 'User', inverse_of: false, optional: false
   belongs_to :last_reply, class_name: 'Reply', inverse_of: false, optional: true
   has_one :flat_post, dependent: :destroy
@@ -43,7 +46,7 @@ class Post < ApplicationRecord
 
   validates :subject, presence: true, length: { maximum: 255 }
   validates :description, length: { maximum: 255 }
-  validate :valid_board, :valid_board_section
+  validate :validate_main_post_board
 
   before_validation :set_last_user, on: :create
   before_create :build_initial_flat_post, :set_timestamps
@@ -51,7 +54,7 @@ class Post < ApplicationRecord
   after_commit :notify_followers, on: :create
   after_commit :invalidate_caches, on: :update
 
-  NON_EDITED_ATTRS = %w(id created_at updated_at edited_at tagged_at last_user_id last_reply_id section_order)
+  NON_EDITED_ATTRS = %w(id created_at updated_at edited_at tagged_at last_user_id last_reply_id)
   NON_TAGGED_ATTRS = %w(icon_id character_alias_id character_id)
   audited except: NON_EDITED_ATTRS, update_with_comment_only: false
   has_associated_audits
@@ -67,13 +70,15 @@ class Post < ApplicationRecord
 
   scope :ordered, -> { order(tagged_at: :desc).order(Arel.sql('lower(subject) asc'), id: :asc) }
 
-  scope :ordered_in_section, -> { order(section_order: :asc) }
+  scope :ordered_in_section, -> { order('post_boards.section_order ASC') }
 
   scope :ordered_by_id, -> { order(id: :asc) }
 
   scope :ordered_by_index, -> { order('index_posts.section_order asc') }
 
-  scope :no_tests, -> { where.not(board_id: Board::ID_SITETESTING) }
+  scope :no_tests, -> {
+    where.not(id: PostBoard.where(board_id: Board::ID_SITETESTING, is_main: true).select(:post_id))
+  }
 
   # rubocop:disable Style/TrailingCommaInArguments
   scope :with_has_content_warnings, -> {
@@ -114,7 +119,8 @@ class Post < ApplicationRecord
 
   scope :not_ignored_by, ->(user) {
     joins("LEFT JOIN post_views ON post_views.post_id = posts.id AND post_views.user_id = #{user.id}")
-      .joins("LEFT JOIN board_views on board_views.board_id = posts.board_id AND board_views.user_id = #{user.id}")
+      .joins("LEFT JOIN post_boards ON post_boards.post_id = posts.id AND post_boards.is_main = TRUE")
+      .joins("LEFT JOIN board_views ON board_views.board_id = post_boards.board_id AND board_views.user_id = #{user.id}")
       .where(post_views: { ignored: [nil, false] })
       .where(board_views: { ignored: [nil, false] })
   }
@@ -291,12 +297,65 @@ class Post < ApplicationRecord
     NotifyFollowersOfNewPostJob.perform_later(self.id, user.id)
   end
 
+  def board_id
+    return read_attribute(:board_id) if has_attribute?(:board_id)
+    main_post_board&.board_id
+  end
+
+  def section_id
+    return read_attribute(:section_id) if has_attribute?(:section_id)
+    main_post_board&.section_id
+  end
+
+  def section_order
+    return read_attribute(:section_order) if has_attribute?(:section_order)
+    main_post_board&.section_order
+  end
+
+  # has_one :through reads via DB query, which returns nil for unpersisted posts
+  # because post_id isn't set yet. Fall through to the in-memory main_post_board.
+  def board
+    return main_post_board&.board unless persisted?
+    super
+  end
+
+  def section
+    return main_post_board&.section unless persisted?
+    super
+  end
+
+  delegate :board=, to: :ensure_main_post_board
+
+  delegate :board_id=, to: :ensure_main_post_board
+
+  delegate :section=, to: :ensure_main_post_board
+
+  delegate :section_id=, to: :ensure_main_post_board
+
+  delegate :section_order=, to: :ensure_main_post_board
+
+  # board_id, section_id, and section_order have moved from posts to post_boards;
+  # redirect raw column writes so callers that skip callbacks still find them.
+  POST_BOARD_DELEGATED_COLUMNS = %i[board_id section_id section_order].freeze
+
+  def update_columns(attributes)
+    delegated = attributes.slice(*POST_BOARD_DELEGATED_COLUMNS)
+    remaining = attributes.except(*POST_BOARD_DELEGATED_COLUMNS)
+    main_post_board.update_columns(delegated) if delegated.any? && main_post_board # rubocop:disable Rails/SkipsModelValidations
+    return true if remaining.empty?
+    super(remaining)
+  end
+
   def prev_post(user)
-    adjacent_posts_for(user) { |relation| relation.reverse_order.find_by('section_order < ?', self.section_order) }
+    adjacent_posts_for(user) do |relation|
+      relation.reverse_order.where('post_boards.section_order < ?', section_order).first
+    end
   end
 
   def next_post(user)
-    adjacent_posts_for(user) { |relation| relation.find_by('section_order > ?', self.section_order) }
+    adjacent_posts_for(user) do |relation|
+      relation.where('post_boards.section_order > ?', section_order).first
+    end
   end
 
   private
@@ -311,23 +370,36 @@ class Post < ApplicationRecord
     cached + uncached
   end
 
+  def ensure_main_post_board
+    return main_post_board if main_post_board && !main_post_board.marked_for_destruction?
+    in_memory = post_boards.target.detect { |x| x.is_main && !x.marked_for_destruction? } if post_boards.loaded?
+    return in_memory if in_memory
+    pb = post_boards.build(is_main: true)
+    association(:main_post_board).target = pb
+    pb
+  end
+
+  def validate_main_post_board
+    pb = main_post_board || post_boards.detect { |x| x.is_main && !x.marked_for_destruction? }
+    if pb.nil? || pb.marked_for_destruction? || (pb.board_id.blank? && pb.board.blank?)
+      errors.add(:board, "must exist")
+      return
+    end
+    return if pb.valid?
+    pb.errors.each do |error|
+      next if error.attribute == :board && error.message == "must exist" # already handled above
+      errors.add(error.attribute, error.message)
+    end
+  end
+
   def adjacent_posts_for(user)
-    return unless board.ordered?
-    return unless section || board.board_sections.empty?
-    yield Post.where(board_id: self.board_id, section_id: self.section_id).visible_to(user).ordered_in_section
-  end
-
-  def valid_board
-    return unless board_id.present?
-    return unless new_record? || board_id_changed?
-    return if board.open_to?(user)
-    errors.add(:board, "is invalid – you must be able to write in it")
-  end
-
-  def valid_board_section
-    return unless section.present?
-    return if section.board_id == board_id
-    errors.add(:section, "must be in the post's board")
+    pb = main_post_board
+    return unless pb&.board&.ordered?
+    return unless pb.section_id || pb.board.board_sections.empty?
+    yield Post.joins(:post_boards)
+      .where(post_boards: { board_id: pb.board_id, section_id: pb.section_id, is_main: true })
+      .visible_to(user)
+      .ordered_in_section
   end
 
   def set_last_user
@@ -349,10 +421,6 @@ class Post < ApplicationRecord
 
   def skip_tagged
     (changed_attributes.keys - NON_TAGGED_ATTRS - NON_EDITED_ATTRS).empty?
-  end
-
-  def ordered_attributes
-    [:section_id, :board_id]
   end
 
   def build_initial_flat_post
