@@ -17,7 +17,7 @@
         %span#name= writable.name
         - klass = ['selector-popup-button']
         - klass << 'hidden' unless writable.character.try(:aliases).present?
-        - if current_user.layout_auto?
+        - if current_user.layout_auto? && !current_user.layout.to_s.start_with?('starry')
           = auto_image_tag 'icons/swap.png', 'icons/swapgray.png', id: 'swap-alias', alt: 'Choose Alias', title: 'Choose Alias', class: klass
         - else
           = image_tag swap_icon_url, id: 'swap-alias', alt: 'Choose Alias', title: 'Choose Alias', class: klass
@@ -29,7 +29,7 @@
       .post-author
         = writable.user.username
         - if current_user.characters.present?
-          - if current_user.layout_auto?
+          - if current_user.layout_auto? && !current_user.layout.to_s.start_with?('starry')
             = auto_image_tag 'icons/swap.png', 'icons/swapgray.png', id: 'swap-character', alt: 'Choose Character', title: 'Choose Character', class: 'selector-popup-button'
           - else
             = image_tag swap_icon_url, id: 'swap-character', alt: 'Choose Character', title: 'Choose Character', class: 'selector-popup-button'

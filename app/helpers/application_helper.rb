@@ -80,12 +80,6 @@ module ApplicationHelper
       'Starry Light' => 'starrylight',
       Monochrome: 'monochrome',
       'Milky River' => 'river',
-      'Default (Auto)' => 'auto_default',
-      'Starry (Auto)' => 'auto_starry',
-      'Starry Light (Auto)' => 'auto_starrylight',
-      'Monochrome (Auto)' => 'auto_monochrome',
-      'Milky River (Auto)' => 'auto_river',
-      'Iconless (Auto)' => 'auto_iconless',
     }
     options_for_select(layouts, default)
   end

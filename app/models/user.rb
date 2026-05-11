@@ -91,14 +91,14 @@ class User < ApplicationRecord
     super || 'icon'
   end
 
+  EXPLICIT_DARK_LAYOUTS = %w(dark starrydark).freeze
+
   def layout_darkmode?
-    return false unless layout
-    layout.include?('dark') || layout.start_with?('auto_')
+    EXPLICIT_DARK_LAYOUTS.include?(layout)
   end
 
   def layout_auto?
-    return false unless layout
-    layout.start_with?('auto_')
+    !layout_darkmode?
   end
 
   def archive

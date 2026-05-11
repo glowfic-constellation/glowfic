@@ -72,7 +72,7 @@ module PostHelper
   end
 
   def menu_img
-    return 'icons/menu.png' unless current_user.try(:layout).to_s.start_with?('starry') || current_user.try(:layout).to_s.start_with?('auto_starry')
+    return 'icons/menu.png' unless current_user.try(:layout).to_s.start_with?('starry')
     'icons/menugray.png'
   end
 

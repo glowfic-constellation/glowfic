@@ -1,12 +1,12 @@
+// stylelint-disable scss/no-duplicate-dollar-variables
 @import 'variables';
 @import 'dark_selectors_mixin';
 @import 'dark_themes_selectors_mixin';
 
-// Auto-light/dark-only icon utility classes
 .auto-light-only { display: inline; }
 .auto-dark-only { display: none; }
 
-// Dark variable overrides (from dark.scss)
+// ---- Dark mode ----
 $bg_color_page: #212121;
 $font_color_page: $colors_silver_chalice;
 $font_color_content: $colors_silver_chalice;
