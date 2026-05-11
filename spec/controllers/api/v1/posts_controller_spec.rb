@@ -340,6 +340,20 @@ RSpec.describe Api::V1::PostsController do
         expect(visible2.reload.section_order).to eq(1)
         expect(visible1.reload.section_order).to eq(2)
       end
+
+      it "omits posts not visible to the editor from the response" do
+        coauthor = create(:user)
+        board = create(:board, writers: [coauthor])
+        visible1 = create(:post, board: board, user: board.creator)
+        hidden = create(:post, board: board, user: board.creator, privacy: :private)
+        visible2 = create(:post, board: board, user: board.creator)
+
+        api_login_as(coauthor)
+        post :reorder, params: { ordered_post_ids: [visible2.id, visible1.id] }
+        expect(response).to have_http_status(200)
+        expect(response.parsed_body['post_ids']).to eq([visible2.id, visible1.id])
+        expect(response.parsed_body['post_ids']).not_to include(hidden.id)
+      end
     end
 
     context "with section_id" do

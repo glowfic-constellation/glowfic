@@ -132,7 +132,7 @@ class Api::V1::PostsController < Api::ApiController
       end
     end
 
-    posts = Post.where(board_id: board.id, section_id: section_id)
+    posts = Post.where(board_id: board.id, section_id: section_id).visible_to(current_user)
     render json: { post_ids: posts.ordered_in_section.pluck(:id) }
   end
 
