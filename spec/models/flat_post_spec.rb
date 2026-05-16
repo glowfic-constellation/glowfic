@@ -91,4 +91,36 @@ RSpec.describe FlatPost do
       expect(flat_post.body).to be_nil
     end
   end
+
+  describe "#stream_body_to" do
+    let(:post) { create(:post) }
+    let(:flat_post) { post.flat_post }
+    let(:io) { StringIO.new }
+
+    it "writes the content column straight to the IO when present" do
+      flat_post.update_columns(content: '<p>inline</p>', s3_key: nil) # rubocop:disable Rails/SkipsModelValidations
+      expect(S3_BUCKET).not_to receive(:object)
+      flat_post.stream_body_to(io)
+      expect(io.string).to eq('<p>inline</p>')
+    end
+
+    it "streams chunks from S3 when only s3_key is set" do
+      flat_post.update_columns(content: nil, s3_key: 'flat_posts/42.html') # rubocop:disable Rails/SkipsModelValidations
+      s3_object = double('Aws::S3::Object')
+      expect(S3_BUCKET).to receive(:object).with('flat_posts/42.html').and_return(s3_object)
+      expect(s3_object).to receive(:get) do |&block|
+        block.call('<p>chunk one </p>')
+        block.call('<p>chunk two</p>')
+      end
+
+      flat_post.stream_body_to(io)
+      expect(io.string).to eq('<p>chunk one </p><p>chunk two</p>')
+    end
+
+    it "writes nothing when neither is set" do
+      flat_post.update_columns(content: nil, s3_key: nil) # rubocop:disable Rails/SkipsModelValidations
+      flat_post.stream_body_to(io)
+      expect(io.string).to eq('')
+    end
+  end
 end

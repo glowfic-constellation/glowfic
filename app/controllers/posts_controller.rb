@@ -1,6 +1,12 @@
 # frozen_string_literal: true
 class PostsController < WritableController
+  include ActionController::Live
   include Taggable
+
+  # Marker rendered into the flat view template that the streaming path
+  # splits the chrome on, replacing it with the actual reply body written
+  # straight to the response stream.
+  FLAT_BODY_PLACEHOLDER = "\u{2603}__GLOWFIC_FLAT_BODY__\u{2603}"
 
   before_action :login_required, except: [:index, :show, :history, :warnings, :search, :stats]
   before_action :readonly_forbidden, only: [:owed]
@@ -157,8 +163,7 @@ class PostsController < WritableController
 
   def show
     if params[:view] == 'flat'
-      response.headers['X-Robots-Tag'] = 'noindex'
-      render :flat, layout: false
+      stream_flat_view
       return
     end
     show_post
@@ -357,6 +362,25 @@ class PostsController < WritableController
   end
 
   private
+
+  # Renders the flat view chrome via the normal template, then writes the
+  # body content directly into the response stream — avoiding loading the
+  # entire (potentially-large) flat body into a Ruby string just to inline
+  # it into the haml output buffer. Peak controller memory is O(chrome) +
+  # O(chunk_size) for S3-backed flat posts.
+  def stream_flat_view
+    response.headers['X-Robots-Tag'] = 'noindex'
+    response.headers['Content-Type'] = 'text/html; charset=utf-8'
+    chrome = render_to_string(template: 'posts/flat', layout: false)
+    prefix, suffix = chrome.split(FLAT_BODY_PLACEHOLDER, 2)
+    response.stream.write(prefix)
+    @post.flat_post&.stream_body_to(response.stream)
+    response.stream.write(suffix) if suffix
+  rescue ActionController::Live::ClientDisconnected, IOError
+    # client went away mid-stream — nothing more to do
+  ensure
+    response.stream.close
+  end
 
   def preview
     @post ||= Post.new(user: current_user)
