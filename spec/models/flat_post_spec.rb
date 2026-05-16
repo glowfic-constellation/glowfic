@@ -65,4 +65,30 @@ RSpec.describe FlatPost do
       expect(GenerateFlatPostJob).to have_been_enqueued.with(post.id).on_queue('high')
     end
   end
+
+  describe "#body" do
+    let(:post) { create(:post) }
+    let(:flat_post) { post.flat_post }
+
+    it "prefers the content column when present" do
+      flat_post.update_columns(content: '<p>inline</p>', s3_key: 'flat_posts/whatever.html') # rubocop:disable Rails/SkipsModelValidations
+      expect(S3_BUCKET).not_to receive(:object)
+      expect(flat_post.body).to eq('<p>inline</p>')
+    end
+
+    it "fetches from S3 when only the s3_key is set" do
+      flat_post.update_columns(content: nil, s3_key: 'flat_posts/42.html') # rubocop:disable Rails/SkipsModelValidations
+      s3_object = double('Aws::S3::Object')
+      s3_response = double('Aws::S3::Types::GetObjectOutput', body: StringIO.new('<p>from s3</p>'))
+      expect(S3_BUCKET).to receive(:object).with('flat_posts/42.html').and_return(s3_object)
+      expect(s3_object).to receive(:get).and_return(s3_response)
+
+      expect(flat_post.body).to eq('<p>from s3</p>')
+    end
+
+    it "returns nil when neither is set" do
+      flat_post.update_columns(content: nil, s3_key: nil) # rubocop:disable Rails/SkipsModelValidations
+      expect(flat_post.body).to be_nil
+    end
+  end
 end
