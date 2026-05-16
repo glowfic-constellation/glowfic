@@ -9,8 +9,12 @@ $safe_ips.each { |ip| Rack::Attack.safelist_ip(ip) }
 ENV.fetch("RACK_ATTACK_BAD_IP", "").split(",").compact_blank.each { |ip| Rack::Attack.blocklist_ip(ip) }
 
 # Configure Cache
+# Rack::Attack stores its throttle/blocklist counters here. This needs to be
+# a backend that's shared across every Puma worker on every dyno; otherwise
+# each worker keeps its own in-process counter and the configured limit is
+# multiplied by `WEB_CONCURRENCY * dyno_count`.
 url = ENV.fetch("HEROKU_REDIS_TEAL_URL", nil)
-Rack::Attack.cache.store = ActiveSupport::Cache::MemoryStore.new(url: url, ssl_params: { verify_mode: OpenSSL::SSL::VERIFY_NONE }) if url
+Rack::Attack.cache.store = ActiveSupport::Cache::RedisCacheStore.new(url: url, ssl_params: { verify_mode: OpenSSL::SSL::VERIFY_NONE }) if url
 
 # Throttle all requests by IP (60rpm)
 # Key: "rack::attack:#{Time.now.to_i/:period}:req/ip:#{req.ip}"
