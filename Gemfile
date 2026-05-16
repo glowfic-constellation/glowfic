@@ -27,7 +27,6 @@ gem 'connection_pool', '~> 2.0' # pin until version 3.x is supported by Rails (h
 gem 'dartsass-sprockets'
 gem 'exception_notification'
 gem 'geocoder'
-gem 'get_process_mem'
 gem 'gon', '~> 6.6'
 gem 'haml-rails'
 gem 'httparty'
