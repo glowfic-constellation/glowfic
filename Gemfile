@@ -18,7 +18,6 @@ gem 'apipie-rails'
 gem 'audited', '~> 5.8.0'
 
 gem 'aws-actionmailer-ses', '~> 1'
-gem 'aws-sdk-rails', '~> 5'
 gem 'aws-sdk-s3', '~> 1'
 gem 'aws-sdk-ses', '~> 1'
 gem 'barnes' # heroku ruby-specific metrics

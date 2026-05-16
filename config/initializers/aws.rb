@@ -5,6 +5,7 @@ bucket_name = ENV.fetch('S3_BUCKET_NAME', 'glowfic-dev')
 Aws.config.update({
   region: 'us-east-1',
   credentials: Aws::Credentials.new(access_key_id, secret_access_key),
+  logger: Rails.logger,
 })
 
 s3_config = {}
