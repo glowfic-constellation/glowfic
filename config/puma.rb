@@ -39,9 +39,30 @@ environment ENV.fetch("RAILS_ENV", "development")
 # We default to 2 to guarantee our fork hooks run.
 workers ENV.fetch("WEB_CONCURRENCY", 2)
 
-# Report statsd metrics for Heroku monitoring.
-require 'barnes'
+# Boot the Rails app once in the master process so worker forks share its
+# memory pages via copy-on-write. The Linux kernel keeps unmodified pages
+# shared between parent and child, so the full Rails framework footprint
+# (gem code, parsed class trees, etc.) is paid for once per dyno instead
+# of once per worker. Without this, each Puma worker independently loads
+# Rails and runs ~270 MB resident, which is what pushes Standard-1X dynos
+# into R14 at WEB_CONCURRENCY=2.
+preload_app!
+
+# Drop any connections the master may have opened (Redis namespace,
+# ActiveRecord pool) before workers fork. Sharing a live socket between
+# forked processes corrupts both ends; closing here forces each worker to
+# reconnect lazily on first use.
 before_fork do
+  ActiveRecord::Base.connection_handler.clear_active_connections! if defined?(ActiveRecord::Base)
+  $redis&.close
+end
+
+# Per-worker setup. Barnes reports GC / process stats from a background
+# thread, which doesn't survive `fork`, so it has to start in each worker
+# rather than in the master. Active Record reconnects automatically on
+# first query in Rails 7+, so no explicit `establish_connection` is needed.
+require 'barnes'
+on_worker_boot do
   Barnes.start
 end
 
