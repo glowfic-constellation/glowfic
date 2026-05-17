@@ -45,8 +45,9 @@ asns:
     name: OVH SAS
   - asn: 24940
     name: Hetzner Online
-  - asn: 63949
-    name: Linode / Akamai Cloud
+  # AS63949 Linode / Akamai Cloud is intentionally NOT blocked — glowfic-
+  # adjacent legitimate traffic (dev/staging, sanctioned API consumers)
+  # lives there.
   - asn: 20473
     name: Vultr / Choopa
   - asn: 51167
