@@ -48,13 +48,35 @@ workers ENV.fetch("WEB_CONCURRENCY", 2)
 # into R14 at WEB_CONCURRENCY=2.
 preload_app!
 
-# Drop any connections the master may have opened (Redis namespace,
-# ActiveRecord pool) before workers fork. Sharing a live socket between
-# forked processes corrupts both ends; closing here forces each worker to
-# reconnect lazily on first use.
+# Drop any connections the master may have opened before workers fork.
+# Sharing a live socket between forked processes corrupts both ends;
+# closing here forces each worker to reconnect lazily on first use.
+#
+# Three Redis clients reach into prod:
+#   1. $redis (config/initializers/redis.rb) wraps REDIS_URL via
+#      Redis::Namespace and is handed to Resque.redis=. Eagerly built at
+#      app boot, so always live in the master.
+#   2. Rails.cache (config/environments/production.rb) is a
+#      RedisCacheStore pointed at REDIS_CACHE_URL.
+#   3. Rack::Attack.cache.store (config/initializers/rack_attack.rb) is
+#      another RedisCacheStore pointed at HEROKU_REDIS_TEAL_URL.
+#
+# (2) and (3) hold ConnectionPools whose connections only open on first
+# read/write. With preload_app! the master itself never serves a request
+# so those pools should be empty — but defensively drain them in case
+# any initializer pokes at the cache during boot.
 before_fork do
   ActiveRecord::Base.connection_handler.clear_active_connections! if defined?(ActiveRecord::Base)
   $redis&.close
+  [Rails.cache, (defined?(Rack::Attack) ? Rack::Attack.cache.store : nil)].compact.each do |store|
+    next unless store.respond_to?(:redis)
+    pool_or_client = store.redis
+    if pool_or_client.respond_to?(:shutdown)
+      pool_or_client.shutdown(&:close)
+    elsif pool_or_client.respond_to?(:close)
+      pool_or_client.close
+    end
+  end
 end
 
 # Per-worker setup. Barnes reports GC / process stats from a background
