@@ -103,10 +103,11 @@
         .sub= f.label :default_access_circle_ids, 'Default access circles'
         %div{class: cycle('even', 'odd')}
           .details Circles pre-selected on new access-list posts. You can override the selection per post.
-          = f.collection_select(:default_access_circle_ids,
-            AccessCircle.where(user: current_user).ordered_by_name,
-            :id, :name, { selected: current_user.default_access_circle_ids, include_blank: true },
-            { multiple: true })
+          - default_circle_options = AccessCircle.attachable_by(current_user).includes(:user).map do |c|
+            - label = c.user_id == current_user.id ? c.name : "#{c.name} (#{c.user.username})"
+            - [label, c.id]
+          = f.select(:default_access_circle_ids, options_for_select(default_circle_options, current_user.default_access_circle_ids),
+            { include_blank: true }, { multiple: true })
       %div
         .sub= f.label :default_viewer_ids, 'Default viewers'
         %div{class: cycle('even', 'odd')}

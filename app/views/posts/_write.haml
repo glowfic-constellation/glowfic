@@ -49,8 +49,11 @@
     = f.select :privacy, options_from_collection_for_select(post_privacy_settings.to_a, :second, :first, post.privacy)
     #access_list
       = f.label :circle_ids, '&#8627; Which circles can view this post?'.html_safe
-      = f.collection_select(:access_circle_ids, AccessCircle.where(user: current_user).ordered_by_name,
-        :id, :name, { selected: @circle_ids.nil? ? post.access_circle_ids : @circle_ids }, { multiple: true })
+      - circle_options = AccessCircle.attachable_by(current_user).includes(:user).map do |c|
+        - label = c.user_id == current_user.id ? c.name : "#{c.name} (#{c.user.username})"
+        - [label, c.id]
+      = f.select(:access_circle_ids, options_for_select(circle_options, @circle_ids.nil? ? post.access_circle_ids : @circle_ids),
+        {}, { multiple: true })
       %br
       = f.label :viewer_ids, '&#8627; Which users can view this post?'.html_safe
       = f.collection_select(:viewer_ids, User.active.where.not(id: post.user_id).ordered,

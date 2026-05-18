@@ -101,6 +101,24 @@ RSpec.describe AccessCircle do
     end
   end
 
+  describe '.attachable_by' do
+    let(:user) { create(:user) }
+    let(:other) { create(:user) }
+
+    it 'returns nothing for a nil user' do
+      create(:access_circle, user: other, owned: false)
+      expect(AccessCircle.attachable_by(nil)).to be_empty
+    end
+
+    it 'includes the user own circles' do
+      mine_private = create(:access_circle, user: user, owned: true)
+      mine_public = create(:access_circle, user: user, owned: false)
+      _theirs_private = create(:access_circle, user: other, owned: true)
+      theirs_public = create(:access_circle, user: other, owned: false)
+      expect(AccessCircle.attachable_by(user)).to contain_exactly(mine_private, mine_public, theirs_public)
+    end
+  end
+
   describe 'leavable_by?' do
     let(:owner) { create(:user) }
     let(:member) { create(:user) }

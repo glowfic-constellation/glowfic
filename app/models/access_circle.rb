@@ -7,6 +7,10 @@ class AccessCircle < Tag
   validates :name, uniqueness: { scope: [:type, :user] }
 
   scope :visible, -> { where(owned: false) }
+  scope :attachable_by, ->(user) {
+    return none unless user
+    where(user: user).or(visible).ordered_by_name
+  }
 
   def visible_to?(user)
     return false if user.nil?

@@ -141,7 +141,7 @@ class PostsController < WritableController
     @post.settings = process_tags(Setting, obj_param: :post, id_param: :setting_ids)
     @post.content_warnings = process_tags(ContentWarning, obj_param: :post, id_param: :content_warning_ids)
     @post.labels = process_tags(Label, obj_param: :post, id_param: :label_ids)
-    @post.access_circles = process_tags(AccessCircle, obj_param: :post, id_param: :access_circle_ids)
+    @post.access_circles = attachable_access_circles
     process_npc(@post, permitted_character_params)
 
     begin
@@ -226,7 +226,7 @@ class PostsController < WritableController
     settings = process_tags(Setting, obj_param: :post, id_param: :setting_ids)
     warnings = process_tags(ContentWarning, obj_param: :post, id_param: :content_warning_ids)
     labels = process_tags(Label, obj_param: :post, id_param: :label_ids)
-    circles = process_tags(AccessCircle, obj_param: :post, id_param: :access_circle_ids)
+    circles = attachable_access_circles
 
     is_author = @post.author_ids.include?(current_user.id)
     if current_user.id != @post.user_id && @post.audit_comment.blank? && !is_author
@@ -548,5 +548,11 @@ class PostsController < WritableController
       :threaded,
     ]
     params.permit(allowed_params)
+  end
+
+  def attachable_access_circles
+    ids = params.fetch(:post, {}).fetch(:access_circle_ids, []).compact_blank
+    return [] if ids.empty?
+    AccessCircle.attachable_by(current_user).where(id: ids).to_a
   end
 end
