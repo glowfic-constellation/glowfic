@@ -561,9 +561,9 @@ RSpec.describe ApplicationController do
 
     it "saves reply to a draft if present" do
       user = create(:user)
-      session[:user_id] = user.id
       target_post = create(:post)
       content = "in-progress reply content"
+      login_as(user)
 
       post :create, params: { reply: { post_id: target_post.id, content: content } }
       expect(flash[:error]).to include("Oops, looks like your session expired!")
