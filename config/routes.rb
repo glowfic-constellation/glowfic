@@ -112,7 +112,12 @@ Rails.application.routes.draw do
     collection { get :search }
   end
   resources :tags, except: [:new, :create]
-  resources :access_circles
+  resources :access_circles do
+    member do
+      post :join
+      post :leave
+    end
+  end
 
   # Indexes
   resources :indexes

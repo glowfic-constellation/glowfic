@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 class AccessCirclesController < ApplicationController
   before_action :login_required
-  before_action :find_model, only: [:show, :edit, :update, :destroy]
+  before_action :find_model, only: [:show, :edit, :update, :destroy, :join, :leave]
   before_action :find_user, only: [:index]
   before_action :require_create_permission, only: [:new, :create]
   before_action :require_edit_permission, only: [:edit, :update]
@@ -93,6 +93,28 @@ class AccessCirclesController < ApplicationController
     end
   end
 
+  def join
+    unless @circle.joinable_by?(current_user)
+      flash[:error] = "You can't join this access circle."
+      redirect_to(@circle) and return
+    end
+
+    Tag::UserTag.find_or_create_by!(user: current_user, tag: @circle)
+    flash[:success] = "You joined #{@circle.name}."
+    redirect_to @circle
+  end
+
+  def leave
+    unless @circle.leavable_by?(current_user)
+      flash[:error] = "You aren't a member of this access circle."
+      redirect_to(@circle) and return
+    end
+
+    Tag::UserTag.where(user: current_user, tag: @circle).destroy_all
+    flash[:success] = "You left #{@circle.name}."
+    redirect_to @circle
+  end
+
   def destroy
     begin
       @circle.destroy!
@@ -155,7 +177,7 @@ class AccessCirclesController < ApplicationController
   end
 
   def permitted_params
-    permitted = [:name, :description, :owned]
+    permitted = [:name, :description, :owned, :joinable]
     params.fetch(:access_circle, {}).permit(permitted)
   end
 end
