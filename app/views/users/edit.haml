@@ -107,6 +107,14 @@
             AccessCircle.where(user: current_user).ordered_by_name,
             :id, :name, { selected: current_user.default_access_circle_ids, include_blank: true },
             { multiple: true })
+      %div
+        .sub= f.label :default_viewer_ids, 'Default viewers'
+        %div{class: cycle('even', 'odd')}
+          .details Individual users pre-selected as viewers on new access-list posts. You can override the selection per post.
+          = f.collection_select(:default_viewer_ids,
+            User.active.where.not(id: current_user.id).ordered,
+            :id, :username, { selected: current_user.default_viewer_ids, include_blank: true },
+            { multiple: true })
     .form-table-ender= submit_tag "Save", class: 'button'
 
 %br

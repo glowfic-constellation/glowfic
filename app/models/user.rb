@@ -38,6 +38,9 @@ class User < ApplicationRecord
   has_many :user_default_access_circles, inverse_of: :user, dependent: :destroy
   has_many :default_access_circles, through: :user_default_access_circles, source: :access_circle
 
+  has_many :user_default_viewers, inverse_of: :user, dependent: :destroy
+  has_many :default_viewers, through: :user_default_viewers, source: :viewer
+
   has_many :bookmarks, inverse_of: :user, dependent: :destroy
   has_many :bookmarked_replies, through: :bookmarks, source: :reply, dependent: :destroy
   has_many :bookmarked_posts, -> { ordered }, through: :bookmarks, source: :post, dependent: :destroy

@@ -123,6 +123,7 @@ class PostsController < WritableController
     @post.section_id = params[:section_id]
     @post.icon_id = (current_user.active_character ? current_user.active_character.default_icon.try(:id) : current_user.avatar_id)
     @post.access_circle_ids = current_user.default_access_circle_ids
+    @post.viewer_ids = current_user.default_viewer_ids
     @page_title = 'New Post'
 
     @permitted_authors -= [current_user]
