@@ -41,7 +41,7 @@ function reportMissingReplyPostId(form, action, evt, postIdInput) {
   body.append("response_body", JSON.stringify({
     action: action,
     submitter: evt.submitter ? evt.submitter.name : null,
-    post_id_field_exists: !!postIdInput,
+    post_id_field_exists: postIdInput !== null,
     field_names: Array.from(new FormData(form).keys()),
   }));
   const token = document.querySelector('meta[name="csrf-token"]');
@@ -51,7 +51,8 @@ function reportMissingReplyPostId(form, action, evt, postIdInput) {
   // is intentionally unobserved; a network failure on the beacon should not
   // block or surface anywhere.
   if (window.fetch) {
-    void fetch("/bugs", { method: "POST", body: body, keepalive: true, credentials: "same-origin" });
+    const _beacon = fetch("/bugs", { method: "POST", body: body, keepalive: true, credentials: "same-origin" });
+    _beacon.then(null, function(err) { return err; });
   } else {
     $.post("/bugs", body);
   }
