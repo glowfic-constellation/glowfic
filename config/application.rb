@@ -84,6 +84,9 @@ module Glowfic
     config.action_view.sanitized_allowed_attributes = %w(href src width height alt cite datetime title class name xml:lang abbr style target)
     config.middleware.use Rack::Pratchett
     config.middleware.use Rack::Deflater
+    # Sheds anonymous traffic with deep queue wait so logged-in users keep
+    # getting served during saturation. See app/middleware/anon_load_shed.rb.
+    config.middleware.use 'AnonLoadShed'
 
     # redis-rails does not support cache versioning
     config.active_record.cache_versioning = false
