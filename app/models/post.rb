@@ -32,8 +32,8 @@ class Post < ApplicationRecord
   has_many :settings, -> { ordered_by_post_tag }, through: :post_tags, source: :setting, dependent: :destroy
   has_many :content_warnings, -> { ordered_by_post_tag }, through: :post_tags, source: :content_warning,
     after_add: :reset_warnings, dependent: :destroy
-  has_many :access_circles, through: :post_tags, source: :access_circle, dependent: :destroy
-  has_many :circle_viewers, through: :access_circles, source: :user, dependent: :destroy
+  has_many :access_circles, through: :post_tags, source: :access_circle
+  has_many :circle_viewers, through: :access_circles, source: :user
 
   has_many :index_posts, inverse_of: :post, dependent: :destroy
   has_many :indexes, inverse_of: :posts, through: :index_posts, dependent: :destroy
@@ -130,7 +130,9 @@ class Post < ApplicationRecord
     return true if privacy_registered? || user.admin?
     return true if privacy_full_accounts? && !user.read_only?
     return user.id == user_id if privacy_private?
-    (post_viewers.pluck(:user_id) + [user_id]).include?(user.id)
+    return true if user.id == user_id
+    return true if post_viewers.where(user_id: user.id).exists?
+    access_circles.joins(:user_tags).where(user_tags: { user_id: user.id }).exists?
   end
 
   def self.posts_fulllocked?(user)

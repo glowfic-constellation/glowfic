@@ -20,8 +20,12 @@ class AccessCirclesController < ApplicationController
       @user.username + "'s Access Circles"
     end
 
-    @circles = @public ? AccessCircle.visible : AccessCircle.where(user: @user)
-    @circles.ordered_by_name.paginate(page: page)
+    circles = @public ? AccessCircle.visible : AccessCircle.where(user: @user)
+    @circles = circles.ordered_by_name.paginate(page: page)
+
+    circle_ids = @circles.map(&:id)
+    @post_counts = PostTag.where(tag_id: circle_ids).group(:tag_id).count
+    @user_counts = Tag::UserTag.where(tag_id: circle_ids).group(:tag_id).count
   end
 
   def new
@@ -151,7 +155,7 @@ class AccessCirclesController < ApplicationController
   end
 
   def permitted_params
-    permitted = [:name, :description]
+    permitted = [:name, :description, :owned]
     params.fetch(:access_circle, {}).permit(permitted)
   end
 end

@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 class AccessCircle < Tag
   has_many :user_tags, class_name: 'Tag::UserTag', foreign_key: :tag_id, dependent: :destroy, inverse_of: :tag
-  has_many :users, through: :user_tags, dependent: :destroy
+  has_many :users, through: :user_tags
 
   validates :name, uniqueness: { scope: [:type, :user] }
 
