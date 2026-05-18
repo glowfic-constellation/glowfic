@@ -30,3 +30,7 @@
       %tr
         %td.continuity-spacer{colspan: 7}
       = render partial: 'posts/list_item', collection: @sectionless, as: :post, locals: { index: @index }
+  - if @sectionless.respond_to?(:total_pages) && @sectionless.total_pages > 1
+    %tfoot
+      %tr
+        %td{colspan: 7}= render 'posts/paginator', paginated: @sectionless
