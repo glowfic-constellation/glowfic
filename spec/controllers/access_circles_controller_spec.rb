@@ -469,4 +469,58 @@ RSpec.describe AccessCirclesController do
       expect(Rails.cache.exist?(PostViewer.cache_string_for(user.id))).to be(true)
     end
   end
+
+  describe "POST join" do
+    let(:joinable) { create(:access_circle, user: user, owned: false, joinable: true) }
+
+    it "requires login" do
+      post :join, params: { id: joinable.id }
+      expect(response).to redirect_to(root_url)
+    end
+
+    it "rejects circles that aren't joinable" do
+      private_circle = create(:access_circle, user: user, owned: true, joinable: false)
+      login_as(unrelated)
+      post :join, params: { id: private_circle.id }
+      expect(flash[:error]).to eq("Access circle could not be found.")
+    end
+
+    it "rejects when joinable flag is false" do
+      joinable.update!(joinable: false)
+      login_as(unrelated)
+      post :join, params: { id: joinable.id }
+      expect(flash[:error]).to eq("You can't join this access circle.")
+    end
+
+    it "adds the user" do
+      login_as(unrelated)
+      expect { post :join, params: { id: joinable.id } }.to change { Tag::UserTag.count }.by(1)
+      expect(flash[:success]).to eq("You joined #{joinable.name}.")
+      expect(joinable.reload.users).to include(unrelated)
+    end
+
+    it "is idempotent" do
+      Tag::UserTag.create!(user: unrelated, tag: joinable)
+      login_as(unrelated)
+      post :join, params: { id: joinable.id }
+      expect(flash[:error]).to eq("You can't join this access circle.")
+    end
+  end
+
+  describe "POST leave" do
+    let(:joinable) { create(:access_circle, user: user, owned: false, joinable: true) }
+
+    it "rejects non-members" do
+      login_as(unrelated)
+      post :leave, params: { id: joinable.id }
+      expect(flash[:error]).to eq("You aren't a member of this access circle.")
+    end
+
+    it "removes the user" do
+      Tag::UserTag.create!(user: unrelated, tag: joinable)
+      login_as(unrelated)
+      expect { post :leave, params: { id: joinable.id } }.to change { Tag::UserTag.count }.by(-1)
+      expect(flash[:success]).to eq("You left #{joinable.name}.")
+    end
+  end
 end

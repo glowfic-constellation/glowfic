@@ -71,4 +71,52 @@ RSpec.describe AccessCircle do
       end
     end
   end
+
+  describe 'joinable_by?' do
+    let(:owner) { create(:user) }
+    let(:other) { create(:user) }
+    let(:circle) { create(:access_circle, user: owner, owned: false, joinable: true) }
+
+    it 'is false when not joinable' do
+      circle.update!(joinable: false)
+      expect(circle.joinable_by?(other)).to eq(false)
+    end
+
+    it 'is false for the owner' do
+      expect(circle.joinable_by?(owner)).to eq(false)
+    end
+
+    it 'is false when the circle is private' do
+      circle.update!(owned: true)
+      expect(circle.joinable_by?(other)).to eq(false)
+    end
+
+    it 'is false for users that are already members' do
+      Tag::UserTag.create!(user: other, tag: circle)
+      expect(circle.joinable_by?(other.reload)).to eq(false)
+    end
+
+    it 'is true for an outsider on a joinable public circle' do
+      expect(circle.joinable_by?(other)).to eq(true)
+    end
+  end
+
+  describe 'leavable_by?' do
+    let(:owner) { create(:user) }
+    let(:member) { create(:user) }
+    let(:circle) { create(:access_circle, user: owner, owned: false, joinable: true) }
+
+    it 'is false for non-members' do
+      expect(circle.leavable_by?(member)).to eq(false)
+    end
+
+    it 'is false for the owner' do
+      expect(circle.leavable_by?(owner)).to eq(false)
+    end
+
+    it 'is true for a member' do
+      Tag::UserTag.create!(user: member, tag: circle)
+      expect(circle.leavable_by?(member.reload)).to eq(true)
+    end
+  end
 end
