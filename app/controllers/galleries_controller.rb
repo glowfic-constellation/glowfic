@@ -106,7 +106,7 @@ class GalleriesController < UploadingController
       render :edit
     else
       flash[:success] = "Gallery updated."
-      redirect_to edit_gallery_path(@gallery)
+      redirect_to edit_gallery_path(@gallery, page: params[:page])
     end
   end
 
