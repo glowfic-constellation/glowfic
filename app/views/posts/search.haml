@@ -30,6 +30,10 @@
             %tr
               %td= label_tag :setting_id, 'Setting'
               %td= select_tag :setting_id, options_from_collection_for_select(@setting || [], :id, :name, params[:setting_id]), { prompt: '— Choose Setting —' }
+            - if logged_in?
+              %tr
+                %td= label_tag :access_circle_id, 'Access Circle'
+                %td= select_tag :access_circle_id, options_from_collection_for_select(@access_circle || [], :id, :name, params[:access_circle_id]), { prompt: '— Choose Access Circle —' }
             %tr
               %td= label_tag :subject, 'Subject'
               %td= text_field_tag :subject, params[:subject], style: 'width: 100%; margin: 5px 0px;'

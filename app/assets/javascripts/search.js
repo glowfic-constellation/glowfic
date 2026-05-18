@@ -14,6 +14,20 @@ $(document).ready(function() {
     allowClear: true,
   });
 
+  createSelect2('#access_circle_id', {
+    ajax: {
+      url: '/api/v1/tags',
+      data: function(params) {
+        const data = queryTransform(params);
+        data.t = 'AccessCircle';
+        return data;
+      },
+      processResults: processTotal(),
+    },
+    placeholder: '— Choose Access Circle —',
+    allowClear: true,
+  });
+
   createSelect2('#character_id', {
     ajax: {
       url: '/api/v1/characters',

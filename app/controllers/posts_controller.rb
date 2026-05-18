@@ -283,6 +283,7 @@ class PostsController < WritableController
     @setting = Setting.where(id: params[:setting_id]) if params[:setting_id].present?
     @character = Character.where(id: params[:character_id]) if params[:character_id].present?
     @user = User.active.full.where(id: params[:author_id]).ordered if params[:author_id].present?
+    @access_circle = AccessCircle.attachable_by(current_user).where(id: params[:access_circle_id]) if params[:access_circle_id].present?
 
     no_tests = true
     if params[:board_id].present?
@@ -296,6 +297,10 @@ class PostsController < WritableController
     @search_results = Post.ordered
     @search_results = @search_results.where(board_id: params[:board_id]) if params[:board_id].present?
     @search_results = @search_results.where(id: Setting.find(params[:setting_id]).post_tags.pluck(:post_id)) if params[:setting_id].present?
+    if params[:access_circle_id].present?
+      circle = AccessCircle.attachable_by(current_user).find_by(id: params[:access_circle_id])
+      @search_results = circle ? @search_results.where(id: circle.post_tags.pluck(:post_id)) : @search_results.none
+    end
     if params[:subject].present?
       if params[:abbrev].present?
         search = params[:subject].chars.join('% ')
