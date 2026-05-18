@@ -172,11 +172,9 @@ RSpec.describe PostsController, 'GET show' do
       expect(response.body).to include('Join Thread')
     end
 
-    it "flat view renders HAML properly" do
+    it "redirects view=flat to the dedicated flat-post route" do
       get :show, params: { id: post.id, view: 'flat' }
-      expect(response.status).to eq(200)
-      expect(response.body).to include(post.subject)
-      expect(response.body).not_to include('header-right')
+      expect(response).to redirect_to(flat_post_path(post))
     end
 
     it "displays quick switch properly" do
