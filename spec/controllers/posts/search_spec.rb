@@ -158,13 +158,16 @@ RSpec.describe PostsController, 'GET search' do
       it "includes posts with new replies since last read" do
         user = create(:user)
         login_as(user)
+        now = Time.zone.now
 
-        post_with_new = create(:post)
-        post_with_new.mark_read(user, at_time: post_with_new.tagged_at)
-        create(:reply, post: post_with_new) # creates new activity after mark_read
+        # Use Timecop so the SQL's date_trunc('second', read_at) < date_trunc('second', tagged_at)
+        # actually sees distinct seconds — otherwise post and reply land in the same second.
+        post_with_new = Timecop.freeze(now) { create(:post) }
+        Timecop.freeze(now + 1.second) { post_with_new.mark_read(user, at_time: post_with_new.tagged_at) }
+        Timecop.freeze(now + 3.seconds) { create(:reply, post: post_with_new) }
 
-        fully_read = create(:post)
-        fully_read.mark_read(user, at_time: fully_read.tagged_at)
+        fully_read = Timecop.freeze(now) { create(:post) }
+        Timecop.freeze(now + 1.second) { fully_read.mark_read(user, at_time: fully_read.tagged_at) }
 
         get :search, params: { commit: true, unread: true }
         expect(assigns(:search_results)).to match_array([post_with_new])
