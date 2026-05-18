@@ -558,7 +558,7 @@ RSpec.describe PostsController, 'POST create' do
     circle_viewers = User.where(id: create_list(:user, 3).map(&:id))
     unrelated = create(:user)
     all = User.where(id: [user.id, coauthor.id, viewer.id, circle_viewers.ids, unrelated.id].flatten)
-    circle = create(:access_circle, users: circle_viewers)
+    circle = create(:access_circle, user: user, users: circle_viewers)
 
     all.each(&:visible_posts)
     all.each { |u| expect(Rails.cache.exist?(PostViewer.cache_string_for(u.id))).to eq(true) }

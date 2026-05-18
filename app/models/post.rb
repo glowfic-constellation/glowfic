@@ -32,7 +32,7 @@ class Post < ApplicationRecord
   has_many :settings, -> { ordered_by_post_tag }, through: :post_tags, source: :setting, dependent: :destroy
   has_many :content_warnings, -> { ordered_by_post_tag }, through: :post_tags, source: :content_warning,
     after_add: :reset_warnings, dependent: :destroy
-  has_many :access_circles, through: :post_tags, source: :access_circle
+  has_many :access_circles, through: :post_tags, source: :access_circle, dependent: :destroy
   has_many :circle_viewers, through: :access_circles, source: :user
 
   has_many :index_posts, inverse_of: :post, dependent: :destroy

@@ -944,9 +944,9 @@ RSpec.describe PostsController, 'PUT update' do
       ].flatten
 
       all = User.where(id: all)
-      circle1 = create(:access_circle, users: old_circle_viewers + shared_circle_viewers)
-      circle2 = create(:access_circle, users: new_circle_viewers + shared_circle_viewers)
-      circle3 = create(:access_circle, users: retained_circle_viewers)
+      circle1 = create(:access_circle, user: user, users: old_circle_viewers + shared_circle_viewers)
+      circle2 = create(:access_circle, user: user, users: new_circle_viewers + shared_circle_viewers)
+      circle3 = create(:access_circle, user: user, users: retained_circle_viewers)
       post = create(:post,
         user: user,
         authors: [coauthor],
