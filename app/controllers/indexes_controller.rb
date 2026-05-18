@@ -40,9 +40,16 @@ class IndexesController < ApplicationController
     end
 
     @page_title = @index.name.to_s
-    @sectionless = @index.posts.where(index_posts: { index_section_id: nil })
-    @sectionless = @sectionless.ordered_by_index
     dbselect = ', index_posts.description as index_description, index_posts.id as index_post_id'
+    @sectionless = @index.posts.where(index_posts: { index_section_id: nil }).ordered_by_index
+
+    if params[:view] == 'flat'
+      response.headers['X-Robots-Tag'] = 'noindex'
+      @sectionless = posts_from_relation(@sectionless, with_pagination: false, select: dbselect)
+      render :flat, layout: false
+      return
+    end
+
     @sectionless = posts_from_relation(@sectionless, select: dbselect)
   end
 
