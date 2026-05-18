@@ -78,7 +78,11 @@ module Glowfic
 
     config.action_view.sanitized_allowed_tags = Glowfic::ALLOWED_TAGS
     config.action_view.sanitized_allowed_attributes = %w(href src width height alt cite datetime title class name xml:lang abbr style target)
-    config.middleware.use Rack::Pratchett
+    # Insert before ActionDispatch::SSL so the X-Clacks-Overhead header rides
+    # on the HTTP→HTTPS redirect produced by `config.force_ssl = true` (see
+    # glowfic-constellation/glowfic#1346 — Sir Pratchett deserves a header
+    # on every response, even short-circuit redirects).
+    config.middleware.insert_before ActionDispatch::SSL, Rack::Pratchett
     config.middleware.use Rack::Deflater
 
     # redis-rails does not support cache versioning
