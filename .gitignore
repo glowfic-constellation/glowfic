@@ -19,6 +19,7 @@
 
 .sass-cache/*
 *~
+*.swp
 
 # Ignore env files
 */**/.ruby-version
@@ -45,3 +46,4 @@ backstop/reports/*
 /.gems
 /.envrc
 dump.rdb
+.claude/

@@ -120,6 +120,18 @@ Rails.application.routes.draw do
   # Blocks
   resources :blocks, except: [:show]
 
+  # OAuth2 provider
+  resources :oauth_clients
+  namespace :oauth do
+    get :test_request
+    post :revoke
+    post :token
+    get :access_token
+    post :authorize
+    get :authorize
+    get '', to: 'oauth#index', as: :oauth
+  end
+
   # API
   namespace :api do
     namespace :v1 do
