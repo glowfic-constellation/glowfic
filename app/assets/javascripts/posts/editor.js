@@ -47,15 +47,15 @@ function reportMissingReplyPostId(form, action, evt, postIdInput) {
   const token = document.querySelector('meta[name="csrf-token"]');
   if (token) body.append("authenticity_token", token.getAttribute("content"));
   // keepalive lets the request complete after the form's own POST kicks off
-  // navigation; jQuery $.post is the fallback for old browsers.
+  // navigation; jQuery $.post is the fallback for old browsers. The promise
+  // is intentionally unobserved; a network failure on the beacon should not
+  // block or surface anywhere.
   if (window.fetch) {
-    fetch("/bugs", { method: "POST", body: body, keepalive: true, credentials: "same-origin" }).catch(noop);
+    void fetch("/bugs", { method: "POST", body: body, keepalive: true, credentials: "same-origin" });
   } else {
     $.post("/bugs", body);
   }
 }
-
-function noop() {}
 
 function setupMetadataEditor() {
   // Adding Select2 UI to relevant selects
