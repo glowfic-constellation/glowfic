@@ -62,6 +62,9 @@
       .checkbox-field{class: cycle('even', 'odd')}
         = f.check_box :hide_hiatused_tags_owed
         = f.label :hide_hiatused_tags_owed, "Hide hiatused threads"
+        %br
+        = f.check_box :replies_owed_indicator
+        = f.label :replies_owed_indicator, "Show count in top menu bar"
     %div
       .sub Daily Report
       .checkbox-field{class: cycle('even', 'odd')}

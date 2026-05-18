@@ -122,4 +122,21 @@ module ApplicationHelper
     return '(deleted user)'.html_safe if deleted
     link_to username, user_path(user_id)
   end
+
+  # Count of posts the user owes a reply to. Mirrors the logic in
+  # PostsController#owed but returns just the count; used to render the
+  # badge next to the "Replies Owed" nav link when the user has opted
+  # into the indicator.
+  def replies_owed_count(user)
+    return 0 unless user
+    ids = Post::Author.where(user_id: user.id, can_owe: true).group(:post_id).pluck(:post_id)
+    drafts = ReplyDraft.where(post_id: ids, user: user).pluck(:post_id)
+    solo = Post::Author.where(post_id: ids).group(:post_id).having('count(post_id) < 2').pluck(:post_id)
+    posts = Post.where(id: ids)
+      .where.not(last_user: user)
+      .or(Post.where(id: (drafts + solo).uniq))
+      .where.not(status: [:complete, :abandoned])
+    posts = posts.where.not(status: :hiatus).where('tagged_at > ?', 1.month.ago) if user.hide_hiatused_tags_owed?
+    posts.count
+  end
 end

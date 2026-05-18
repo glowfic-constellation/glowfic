@@ -123,7 +123,12 @@
             - if logged_in?
               %li= link_to 'Unread', unread_posts_path
               - unless current_user.read_only?
-                %li= link_to 'Replies Owed', owed_posts_path
+                %li
+                  = link_to 'Replies Owed', owed_posts_path
+                  - if current_user.replies_owed_indicator
+                    - owed_count = replies_owed_count(current_user)
+                    - if owed_count > 0
+                      %span.badge.badge-primary= owed_count
             %li= link_to 'Tags', tags_path
             - day = DailyReport.unread_date_for(current_user)
             - daybadge = DailyReport.badge_for(day)

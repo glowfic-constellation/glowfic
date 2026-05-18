@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2024_12_24_202900) do
+ActiveRecord::Schema[8.0].define(version: 2026_05_18_010000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "citext"
   enable_extension "pg_catalog.plpgsql"
@@ -489,6 +489,7 @@ ActiveRecord::Schema[8.0].define(version: 2024_12_24_202900) do
     t.boolean "visible_unread", default: false
     t.boolean "show_user_in_switcher", default: true
     t.boolean "ignore_unread_daily_report", default: false
+    t.boolean "replies_owed_indicator", default: false, null: false
     t.boolean "favorite_notifications", default: true
     t.string "default_character_split", default: "template"
     t.integer "role_id"
