@@ -26,37 +26,36 @@ function setupReplyFormDiagnostic() {
   if (!/\/replies(\/|$|\?)/.test(action)) return;
 
   form.addEventListener("submit", function(evt) {
-    const postId = form.querySelector('input[name="reply[post_id]"]');
-    if (postId && postId.value && postId.value.length > 0) return;
-
-    const submitter = evt.submitter ? evt.submitter.name : null;
-    const fieldNames = Array.from(new FormData(form).keys());
-    const body = new FormData();
-    body.append("response_status", "client_warning");
-    body.append("response_text", "reply_form_missing_post_id");
-    body.append("response_body", JSON.stringify({
-      action: action,
-      submitter: submitter,
-      post_id_field_exists: !!postId,
-      post_id_value_empty: postId ? postId.value === "" : null,
-      field_names: fieldNames,
-      url: window.location.href,
-      userAgent: navigator.userAgent,
-    }));
-    const token = document.querySelector('meta[name="csrf-token"]');
-    if (token) body.append("authenticity_token", token.getAttribute("content"));
-    // keepalive lets the request complete after the form's own POST kicks
-    // off navigation; jQuery $.post is the fallback for old browsers.
-    if (window.fetch) {
-      fetch("/bugs", { method: "POST", body: body, keepalive: true, credentials: "same-origin" })
-        .catch(function() {});
-    } else {
-      $.post("/bugs", body);
-    }
+    const postIdInput = form.querySelector('input[name="reply[post_id]"]');
+    if (postIdInput && postIdInput.value) return;
+    reportMissingReplyPostId(form, action, evt, postIdInput);
     // Don't preventDefault — let the broken submit go through so the
     // server-side log captures the same event and we can correlate.
   });
 }
+
+function reportMissingReplyPostId(form, action, evt, postIdInput) {
+  const body = new FormData();
+  body.append("response_status", "client_warning");
+  body.append("response_text", "reply_form_missing_post_id");
+  body.append("response_body", JSON.stringify({
+    action: action,
+    submitter: evt.submitter ? evt.submitter.name : null,
+    post_id_field_exists: !!postIdInput,
+    field_names: Array.from(new FormData(form).keys()),
+  }));
+  const token = document.querySelector('meta[name="csrf-token"]');
+  if (token) body.append("authenticity_token", token.getAttribute("content"));
+  // keepalive lets the request complete after the form's own POST kicks off
+  // navigation; jQuery $.post is the fallback for old browsers.
+  if (window.fetch) {
+    fetch("/bugs", { method: "POST", body: body, keepalive: true, credentials: "same-origin" }).catch(noop);
+  } else {
+    $.post("/bugs", body);
+  }
+}
+
+function noop() {}
 
 function setupMetadataEditor() {
   // Adding Select2 UI to relevant selects
