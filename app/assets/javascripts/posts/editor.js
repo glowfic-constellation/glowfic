@@ -35,10 +35,10 @@ function setupMetadataEditor() {
     placeholder: 'Choose user(s) to view this post'
   });
 
-  createSelect2('#post_circle_ids', {
+  createSelect2('#post_access_circle_ids', {
     width: '200px',
     minimumResultsForSearch: 20,
-    placeholder: 'Choose circles(s) to view this post'
+    placeholder: 'Choose circle(s) to view this post'
   });
 
   createSelect2('#post_unjoined_author_ids', {
