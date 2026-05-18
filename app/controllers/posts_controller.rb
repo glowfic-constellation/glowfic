@@ -366,12 +366,7 @@ class PostsController < WritableController
     redirect_to post_path(@post)
   end
 
-  private
-
   # Postgres's built-in english tsearch dictionary (tsearch_data/english.stop).
-  # Comparing against this static list avoids round-tripping to the DB once
-  # per input word — a long search string would otherwise trigger N queries
-  # in series (per code review feedback).
   POSTGRES_ENGLISH_STOP_WORDS = Set.new(%w[
     i me my myself we our ours ourselves you your yours yourself yourselves
     he him his himself she her hers herself it its itself they them their
@@ -384,8 +379,10 @@ class PostsController < WritableController
     same so than too very s t can will just don should now
   ]).freeze
 
+  private
+
   def detect_pruned_words(query)
-    words = query.split(/\s+/).reject(&:blank?)
+    words = query.split(/\s+/).compact_blank
     pruned_words = words.select { |word| POSTGRES_ENGLISH_STOP_WORDS.include?(word.downcase) }
     { pruned_words: pruned_words, all_pruned: pruned_words.length == words.length && words.any? }
   end
