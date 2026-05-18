@@ -76,6 +76,15 @@ class GalleriesController < UploadingController
     @page_title = 'Edit Gallery: ' + @gallery.name
     use_javascript('galleries/uploader')
     use_javascript('galleries/edit')
+    # Default per_page is 25 site-wide. Most galleries are small enough to
+    # fit comfortably and the form is more useful when whole; pick a higher
+    # threshold (100) so only the truly big galleries get paginated. The
+    # bimodal 6.3s p99 we were seeing on this action came from galleries
+    # with 200-500 icons.
+    @editable_galleries_icons = @gallery.galleries_icons
+      .joins(:icon)
+      .order(Arel.sql('LOWER(keyword)'))
+      .paginate(page: page, per_page: 100)
   end
 
   def update
