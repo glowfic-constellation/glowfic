@@ -59,9 +59,11 @@ class RepliesController < WritableController
       if editing_multi_reply?
         # Editing multi reply, going to redirect back to the reply I'm editing
         redirect_to reply_path(@reply, anchor: "reply-#{@reply.id}")
-      else
+      elsif (post_id = params.dig(:reply, :post_id)).present?
         # Posting a new multi reply, go back to unread
-        redirect_to post_path(params[:reply][:post_id], page: :unread, anchor: :unread)
+        redirect_to post_path(post_id, page: :unread, anchor: :unread)
+      else
+        redirect_to posts_path
       end
       return
     end
@@ -223,7 +225,11 @@ class RepliesController < WritableController
 
   def add_to_multi_reply(reply, reply_params)
     # Adding a new reply to a multi reply
-    post_id = params[:reply][:post_id]
+    post_id = params.dig(:reply, :post_id)
+    unless post_id.present?
+      flash[:error] = "Could not add reply: post is missing from the request."
+      redirect_to(posts_path) and return
+    end
     ReplyDraft.draft_for(post_id, current_user.id)&.destroy!
 
     # Save NPC
