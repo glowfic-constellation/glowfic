@@ -2,6 +2,7 @@
 class AccessCircle < Tag
   has_many :user_tags, class_name: 'Tag::UserTag', foreign_key: :tag_id, dependent: :destroy, inverse_of: :tag
   has_many :users, through: :user_tags
+  has_many :user_default_access_circles, foreign_key: :tag_id, dependent: :destroy, inverse_of: :access_circle
 
   validates :name, uniqueness: { scope: [:type, :user] }
 
