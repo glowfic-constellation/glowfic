@@ -36,6 +36,10 @@
     - else
       = submit_tag (post.new_record? ? 'Post' : 'Save'), class: 'button', id: 'submit_button', data: { disable_with: 'Saving...' }
       = submit_tag "Preview", class: 'button', id: 'preview_button', name: 'button_preview', data: { disable_with: 'Previewing...' }
+      - unless post.new_record?
+        %label.vmid{title: "A minor edit will not update the post's last-updated time or bump it in recently-updated listings."}
+          = check_box_tag :minor, '1', false, class: 'vmid'
+          Minor edit
 
   .subber Metadata
   .even
