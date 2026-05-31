@@ -1,0 +1,47 @@
+name: Refresh ASN CIDRs
+
+# Refreshes config/blocked_asn_cidrs.yml from the ASNs in config/blocked_asns.yml
+# by querying RIPEstat for their currently-announced prefixes. Runs on the first
+# of every month (early UTC) and is also manually dispatchable. If the resulting
+# YAML differs from what's checked in, opens a pull request with the diff.
+
+on:
+  schedule:
+    - cron: '0 6 1 * *'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  refresh:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          bundler-cache: true
+
+      - name: Refresh CIDRs
+        run: bundle exec rake asn:refresh
+
+      - name: Open pull request if CIDRs changed
+        uses: peter-evans/create-pull-request@v6
+        with:
+          commit-message: "chore: refresh blocked ASN CIDRs"
+          title: "Refresh blocked ASN CIDRs"
+          body: |
+            Automated monthly refresh of `config/blocked_asn_cidrs.yml` from the
+            ASNs in `config/blocked_asns.yml` via RIPEstat.
+
+            If this PR is large, it's usually because one or more of the blocked
+            ASNs announced new prefixes (or stopped announcing old ones). Review
+            the diff before merging, especially for any unexpected new prefixes.
+
+            Triggered by `.github/workflows/refresh-asn-cidrs.yml`.
+          branch: chore/refresh-blocked-asn-cidrs
+          delete-branch: true
+          labels: dependencies

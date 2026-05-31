@@ -51,6 +51,17 @@ def req_logged_in?(req)
   req.session[:user_id].present?
 end
 
+# Block requests from hosting / cloud-provider ASNs whose IP space carries
+# effectively zero legitimate end-user traffic to glowfic (see
+# config/blocked_asns.yml and config/blocked_asn_cidrs.yml). Logged-in users
+# and explicitly safelisted IPs are exempt. This catches distributed scrapers
+# that rotate across many cloud IPs in the same ASN — a class of abuse the
+# per-IP throttle can't address.
+Rack::Attack.blocklist('bad_asn') do |req|
+  next false if req_logged_in?(req)
+  AsnBlocker.block?(req.ip)
+end
+
 # Lockout IP addresses that are hammering the app.
 Rack::Attack.blocklist('allow2ban bots') do |req|
   next false if req_logged_in?(req)
