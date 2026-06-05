@@ -1,5 +1,3 @@
-version: "3.7"
-
 x-env: &env
   REDIS_URL: redis://redis
   GLOWFIC_DATABASE_HOST: postgres

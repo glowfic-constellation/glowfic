@@ -48,6 +48,9 @@ Layout/EmptyLineAfterGuardClause:
 Layout/EmptyLineAfterMagicComment:
   Enabled: false
 
+Layout/EmptyLinesAfterModuleInclusion: # new in 1.79
+  Enabled: true
+
 Layout/EmptyLinesAroundAttributeAccessor:
   Enabled: false
 
@@ -267,10 +270,16 @@ Lint/UnmodifiedReduceAccumulator: # (new in 1.1)
 Lint/UselessConstantScoping: # new in 1.72
   Enabled: true
 
+Lint/UselessDefaultValueArgument: # new in 1.76
+  Enabled: true
+
 Lint/UselessDefined: # new in 1.69
   Enabled: true
 
 Lint/UselessNumericOperation: # new in 1.66
+  Enabled: true
+
+Lint/UselessOr: # new in 1.76
   Enabled: true
 
 Lint/UselessRescue: # new in 1.43
@@ -329,7 +338,10 @@ Naming/MethodParameterName:
     - js
     - id
 
-Naming/PredicateName:
+Naming/PredicateMethod: # new in 1.76
+  Enabled: false
+
+Naming/PredicatePrefix:
   Enabled: false
 
 Naming/VariableNumber:
@@ -474,15 +486,16 @@ Rails/DurationArithmetic: # new in 2.13
 
 Rails/DynamicFindBy:
   Enabled: true
-  Whitelist:
-    - find_by_sql
-    - find_by_id
 
 Rails/EagerEvaluationLogMessage: # new in 2.11
   Enabled: true
 
 Rails/EnumSyntax: # new in 2.26
   Enabled: true
+
+Rails/Env: # new in 2.34
+  Enabled: false
+  # we don't use feature flags (yet?)
 
 Rails/EnvironmentVariableAccess: # (new in 2.10)
   Enabled: false
@@ -499,6 +512,9 @@ Rails/FilePath:
 Rails/FindById:
   Enabled: true
 
+Rails/FindByOrAssignmentMemoization: # new in 2.33
+  Enabled: true
+
 Rails/FreezeTime: # new in 2.16
   Enabled: true
 
@@ -508,6 +524,9 @@ Rails/HasManyOrHasOneDependent:
 
 Rails/HelperInstanceVariable:
   Enabled: false
+
+Rails/HttpStatusNameConsistency: # new in 2.34
+  Enabled: true
 
 Rails/IgnoredColumnsAssignment: # new in 2.17
   Enabled: true
@@ -539,6 +558,9 @@ Rails/MultipleRoutePaths: # new in 2.29
 Rails/NegateInclude:
   Enabled: true
 
+Rails/OrderArguments: # new in 2.33
+  Enabled: true
+
 Rails/Output:
   Exclude:
     - 'app/services/reply_scraper.rb' # post_scraper.rb (which calls ReplyScraper) is run manually in the command line
@@ -554,6 +576,9 @@ Rails/PluckInWhere:
 # read_attribute(:attr) and self[:attr] are no longer equivalent
 Rails/ReadWriteAttribute:
   Enabled: false
+
+Rails/RedirectBackOrTo: # new in 2.34
+  Enabled: true
 
 Rails/RedundantActiveRecordAllMethod: # new in 2.21
   Enabled: true
@@ -848,6 +873,9 @@ Style/ArrayFirstLast: # new in 1.58
 Style/ArrayIntersect: # new in 1.40
   Enabled: true
 
+Style/ArrayIntersectWithSingleElement: # new in 1.81
+  Enabled: true
+
 Style/AsciiComments:
   Enabled: false
 
@@ -870,6 +898,9 @@ Style/ClassEqualityComparison:
   Enabled: false
 
 Style/CollectionCompact: # (new in 1.2)
+  Enabled: true
+
+Style/CollectionQuerying: # new in 1.77
   Enabled: true
 
 Style/CombinableDefined: # new in 1.68
@@ -913,6 +944,9 @@ Style/EmptyHeredoc: # new in 1.32
 
 Style/EmptyMethod:
   Enabled: false
+
+Style/EmptyStringInsideInterpolation: # new in 1.76
+  Enabled: true
 
 Style/EndlessMethod: # (new in 1.8)
   Enabled: true
@@ -966,7 +1000,7 @@ Style/GlobalStdStream:
   Enabled: false
 
 Style/GlobalVars:
-  AllowedVariables: ['$redis']
+  AllowedVariables: ['$redis','$safe_ips']
 
 Style/HashAsLastArrayItem:
   Enabled: false
@@ -1033,6 +1067,9 @@ Style/MinMaxComparison: # new in 1.42
 Style/MixinUsage:
   Exclude: ['bin/*']
 
+Style/ModuleMemberExistenceCheck: # new in 1.82
+  Enabled: true
+
 Style/MultilineInPatternThen: # new in 1.16
   Enabled: true
 
@@ -1086,6 +1123,9 @@ Style/RaiseArgs:
   Enabled: false
 
 Style/RedundantArrayConstructor: # new in 1.52
+  Enabled: true
+
+Style/RedundantArrayFlatten: # new in 1.76
   Enabled: true
 
 Style/RedundantArgument: # (new in 1.4)

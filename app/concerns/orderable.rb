@@ -7,7 +7,7 @@ module Orderable
     after_save :reorder_others_after
     after_destroy :reorder_others_before
 
-    scope :ordered_manually, -> { order('section_order asc') } unless respond_to?(:ordered_manually)
+    scope :ordered_manually, -> { order(:section_order) } unless respond_to?(:ordered_manually)
 
     def order
       section_order
@@ -25,7 +25,7 @@ module Orderable
       # Posts and BoardSections are ordered conditional on their board; all indexes are ordered
       if has_attribute?(:board_id)
         board_checking_id = is_after ? board_id_before_last_save : board_id_was
-        board_checking = Board.find_by_id(board_checking_id) || board
+        board_checking = Board.find_by(id: board_checking_id) || board
         return unless board_checking.ordered?
       end
 

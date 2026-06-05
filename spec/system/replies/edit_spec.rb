@@ -272,7 +272,7 @@ RSpec.describe "Editing replies" do
         expect(switcher_chars.size).to eq(4)
 
         expected_ids = ["", char3.id.to_s, char2.id.to_s, char1.id.to_s]
-        actual_ids = switcher_chars.map { |img| img[:'data-character-id'] }
+        actual_ids = switcher_chars.pluck(:'data-character-id')
 
         expect(actual_ids).to eq(expected_ids)
 
@@ -303,7 +303,7 @@ RSpec.describe "Editing replies" do
           expect(switcher_chars.size).to eq(4)
 
           expected_ids = ["", char1.id.to_s, char3.id.to_s, char2.id.to_s]
-          actual_ids = switcher_chars.map { |img| img[:'data-character-id'] }
+          actual_ids = switcher_chars.pluck(:'data-character-id')
 
           expect(actual_ids).to eq(expected_ids)
 
@@ -335,7 +335,7 @@ RSpec.describe "Editing replies" do
           expect(switcher_chars.size).to eq(5)
 
           expected_ids = ["", char4.id.to_s, char1.id.to_s, char3.id.to_s, char2.id.to_s]
-          actual_ids = switcher_chars.map { |img| img[:'data-character-id'] }
+          actual_ids = switcher_chars.pluck(:'data-character-id')
 
           expect(actual_ids).to eq(expected_ids)
 

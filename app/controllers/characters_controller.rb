@@ -17,7 +17,7 @@ class CharactersController < ApplicationController
     end
 
     @user = if params[:user_id].present?
-      User.active.full.find_by_id(params[:user_id])
+      User.active.full.find_by(id: params[:user_id])
     else
       current_user
     end
@@ -64,7 +64,11 @@ class CharactersController < ApplicationController
 
   def show
     @page_title = @character.name
-    @posts = posts_from_relation(@character.recent_posts) if params[:view] == 'posts'
+    if params[:view] == 'posts'
+      posts = @character.recent_posts
+      posts = posts.not_ignored_by(current_user) if current_user&.hide_from_all
+      @posts = posts_from_relation(posts)
+    end
     @meta_og = og_data
     use_javascript('characters/show') if @character.user_id == current_user.try(:id)
     response.headers['X-Robots-Tag'] = 'noindex' if params[:view]
@@ -193,7 +197,7 @@ class CharactersController < ApplicationController
   end
 
   def do_replace
-    unless params[:icon_dropdown].blank? || (new_char = Character.find_by_id(params[:icon_dropdown]))
+    unless params[:icon_dropdown].blank? || (new_char = Character.find_by(id: params[:icon_dropdown]))
       flash[:error] = "Character could not be found."
       redirect_to replace_character_path(@character) and return
     end
@@ -205,7 +209,7 @@ class CharactersController < ApplicationController
 
     orig_alias = nil
     if params[:orig_alias].present? && params[:orig_alias] != 'all'
-      orig_alias = CharacterAlias.find_by_id(params[:orig_alias])
+      orig_alias = CharacterAlias.find_by(id: params[:orig_alias])
       unless orig_alias && orig_alias.character_id == @character.id
         flash[:error] = "Invalid old alias."
         redirect_to replace_character_path(@character) and return
@@ -214,7 +218,7 @@ class CharactersController < ApplicationController
 
     new_alias_id = nil
     if params[:alias_dropdown].present?
-      new_alias = CharacterAlias.find_by_id(params[:alias_dropdown])
+      new_alias = CharacterAlias.find_by(id: params[:alias_dropdown])
       unless new_alias && new_alias.character_id == new_char.try(:id)
         flash[:error] = "Invalid new alias."
         redirect_to replace_character_path(@character) and return
@@ -292,7 +296,7 @@ class CharactersController < ApplicationController
   private
 
   def find_model
-    return if (@character = Character.find_by_id(params[:id]))
+    return if (@character = Character.find_by(id: params[:id]))
     flash[:error] = "Character could not be found."
     if logged_in?
       redirect_to user_characters_path(current_user)
@@ -303,7 +307,7 @@ class CharactersController < ApplicationController
 
   def find_group
     return unless params[:group_id].present?
-    @group = CharacterGroup.find_by_id(params[:group_id])
+    @group = CharacterGroup.find_by(id: params[:group_id])
   end
 
   def require_create_permission
@@ -323,7 +327,7 @@ class CharactersController < ApplicationController
     user = @character.try(:user) || current_user
     @templates = user.templates.ordered
     new_group = faked.new('— Create New Group —', 0)
-    @groups = user.character_groups.order('name asc') + [new_group]
+    @groups = user.character_groups.order(:name) + [new_group]
     use_javascript('characters/editor')
     gon.character_id = @character.try(:id) || ''
     @character.build_template(user: user) if @character.present? && @character.template.nil? && @character.user == current_user

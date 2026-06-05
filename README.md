@@ -37,7 +37,7 @@ This README mostly focuses on how to get started developing this project with Do
 
 #### Setting up the Glowfic site environment
 
-If you haven't already, start by installing [Docker](https://docs.docker.com/install/) and [Docker Compose](https://docs.docker.com/compose/install/).
+If you haven't already, start by installing [Docker](https://docs.docker.com/install/) and [Docker Compose](https://docs.docker.com/compose/install/). If you are on Linux, make sure you have permission to [run Docker as your Linux user](https://docs.docker.com/engine/install/linux-postinstall/#manage-docker-as-a-non-root-user).
 
 Then run `docker compose up` within the glowfic directory.
 This will set up a Postgres server, a Redis server, and a Glowfic app server which can talk to both of them.
@@ -173,3 +173,5 @@ bin-docker/backstop approve $LAYOUT
 
 We make use of the [famfamfam silk](https://github.com/legacy-icons/famfamfam-silk) pack of icons, which is licensed under a Creative Commons Attribution license, including some icons that have been modified from the originals.
 These can be found in various locations, including in the dropdown menu in posts.
+
+We use the free [IPinfo Lite](https://ipinfo.io/lite) API to power our anti-bot geolocation system.

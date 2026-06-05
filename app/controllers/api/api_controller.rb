@@ -35,7 +35,7 @@ class Api::ApiController < ActionController::Base
     yield
   rescue Apipie::ParamMissing, Apipie::ParamInvalid => e
     error_hash = { message: Glowfic::Sanitizers.full(e.message.tr('"', "'")) }
-    render json: { errors: [error_hash] }, status: :unprocessable_entity
+    render json: { errors: [error_hash] }, status: :unprocessable_content
   end
 
   def access_denied
@@ -44,7 +44,7 @@ class Api::ApiController < ActionController::Base
   end
 
   def find_object(klass, param: :id, status: :not_found)
-    object = klass.find_by_id(params[param])
+    object = klass.find_by(id: params[param])
     unless object
       error = { message: klass.to_s + " could not be found." }
       render json: { errors: [error] }, status: status and return

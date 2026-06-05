@@ -135,7 +135,7 @@ class GalleriesController < UploadingController
   private
 
   def find_model
-    return true if (@gallery = Gallery.find_by_id(params[:id]))
+    return true if (@gallery = Gallery.find_by(id: params[:id]))
     flash[:error] = "Gallery could not be found."
     redirect_to(logged_in? ? user_galleries_path(current_user) : root_path)
     false
@@ -161,7 +161,7 @@ class GalleriesController < UploadingController
 
   def find_user
     if params[:user_id].present?
-      unless (@user = User.active.full.find_by_id(params[:user_id]))
+      unless (@user = User.active.full.find_by(id: params[:user_id]))
         flash[:error] = 'User could not be found.'
         redirect_to root_path
       end
@@ -253,7 +253,7 @@ class GalleriesController < UploadingController
   end
 
   def permitted_params
-    params.fetch(:gallery, {}).permit(
+    permitted = params.fetch(:gallery, {}).permit(
       :name,
       galleries_icons_attributes: [
         :id,
@@ -262,6 +262,10 @@ class GalleriesController < UploadingController
       ],
       icon_ids: [],
     )
+    if permitted[:icon_ids].present?
+      permitted[:icon_ids] = Icon.where(id: permitted[:icon_ids], user_id: current_user.id).pluck(:id)
+    end
+    permitted
   end
 
   def icon_params(paramset)

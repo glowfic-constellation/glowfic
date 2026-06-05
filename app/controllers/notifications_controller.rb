@@ -6,7 +6,7 @@ class NotificationsController < ApplicationController
     @page_title = "Notifications"
     @notifications = current_user.notifications.visible_to(current_user).ordered
     @notifications = @notifications.not_ignored_by(current_user) if current_user&.hide_from_all
-    @notifications = @notifications.order("created_at ASC").paginate(page: page)
+    @notifications = @notifications.order(:created_at).paginate(page: page)
 
     post_ids = @notifications.map(&:post_id).compact_blank
     @posts = posts_from_relation(Post.where(id: post_ids), with_pagination: false).index_by(&:id)

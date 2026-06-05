@@ -7,6 +7,15 @@ class GalleriesIcon < ApplicationRecord
   after_create :set_has_gallery
   after_destroy :unset_has_gallery
   validates :gallery, uniqueness: { scope: :icon }
+  validate :icon_belongs_to_gallery_user
+
+  private
+
+  def icon_belongs_to_gallery_user
+    return unless icon && gallery
+    return if icon.user_id == gallery.user_id
+    errors.add(:icon, "must belong to the gallery owner")
+  end
 
   def unset_has_gallery
     return if icon.galleries.present?

@@ -14,12 +14,13 @@
       %div
         .sub.vtop Icons
         .gallery-icons{class: cycle('even', 'odd')}
-          - current_user.galleryless_icons.each do |icon|
-            = label_tag "gallery_icon_ids_#{icon.id}" do
-              .gallery-icon
-                = icon_tag icon, id: icon.id, pointer: true
-                %br>
-                %span.icon-keyword= icon.keyword
-                - box_selected = params[:gallery].try(:[], :icon_ids).try(:include?, icon.id.to_s)
-                .select-button= check_box_tag "gallery[icon_ids][]", icon.id, box_selected, id: "gallery_icon_ids_#{icon.id}"
+          .gallery
+            - current_user.galleryless_icons.each do |icon|
+              = label_tag "gallery_icon_ids_#{icon.id}" do
+                .gallery-icon
+                  = icon_tag icon, id: icon.id, pointer: true
+                  %br>
+                  %span.icon-keyword= icon.keyword
+                  - box_selected = params[:gallery].try(:[], :icon_ids).try(:include?, icon.id.to_s)
+                  .select-button= check_box_tag "gallery[icon_ids][]", icon.id, box_selected, id: "gallery_icon_ids_#{icon.id}"
     .form-table-ender= submit_tag "Create", class: 'button'

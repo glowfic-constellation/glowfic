@@ -9,13 +9,14 @@ class Api::V1::PostsController < Api::ApiController
 
   api :GET, '/posts', 'Load all posts optionally filtered by subject'
   param :q, String, required: false, desc: 'Subject search term'
+  param :min, String, required: false, desc: 'If present, returns only ID and subject per post'
   def index
     queryset = Post.order(Arel.sql('LOWER(subject) asc'))
     queryset = queryset.where('subject ILIKE ?', "%#{params[:q]}%") if params[:q].present?
 
     posts = paginate queryset, per_page: 25
     posts = posts.visible_to(current_user)
-    render json: { results: posts.as_json(min: true) }
+    render json: { results: posts.as_json(min: params[:min].present?) }
   end
 
   api :GET, '/posts/:id', 'Load a single post as a JSON resource'
@@ -42,7 +43,7 @@ class Api::V1::PostsController < Api::ApiController
 
     unless author.update(private_note: params[:private_note])
       error = { message: 'Post could not be updated.' }
-      render json: { errors: [error] }, status: :unprocessable_entity
+      render json: { errors: [error] }, status: :unprocessable_content
       return
     end
 
@@ -72,9 +73,9 @@ class Api::V1::PostsController < Api::ApiController
     end
 
     boards = Board.where(id: posts.select(:board_id).distinct.pluck(:board_id))
-    unless boards.count == 1
+    unless boards.one?
       error = { message: 'Posts must be from one continuity' }
-      render json: { errors: [error] }, status: :unprocessable_entity and return
+      render json: { errors: [error] }, status: :unprocessable_content and return
     end
 
     board = boards.first
@@ -84,7 +85,7 @@ class Api::V1::PostsController < Api::ApiController
     unless post_section_ids == [section_id] &&
            (section_id.nil? || BoardSection.where(id: section_id, board_id: board.id).exists?)
       error = { message: 'Posts must be from one specified section in the continuity, or no section' }
-      render json: { errors: [error] }, status: :unprocessable_entity and return
+      render json: { errors: [error] }, status: :unprocessable_content and return
     end
 
     Post.transaction do

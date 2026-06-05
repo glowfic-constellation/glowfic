@@ -45,7 +45,7 @@ RSpec.describe RepliesController, 'DELETE destroy' do
     delete :destroy, params: { id: reply.id }
     expect(response).to redirect_to(post_url(reply.post, page: 1))
     expect(flash[:success]).to eq("Reply deleted.")
-    expect(Reply.find_by_id(reply.id)).to be_nil
+    expect(Reply.find_by(id: reply.id)).to be_nil
   end
 
   it "succeeds for admin user" do
@@ -54,7 +54,7 @@ RSpec.describe RepliesController, 'DELETE destroy' do
     delete :destroy, params: { id: reply.id }
     expect(response).to redirect_to(post_url(reply.post, page: 1))
     expect(flash[:success]).to eq("Reply deleted.")
-    expect(Reply.find_by_id(reply.id)).to be_nil
+    expect(Reply.find_by(id: reply.id)).to be_nil
   end
 
   it "respects per_page when redirecting" do

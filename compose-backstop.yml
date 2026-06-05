@@ -1,5 +1,3 @@
-version: "3.7"
-
 services:
   backstop:
     image: backstopjs/backstopjs:5.4.4

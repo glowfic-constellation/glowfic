@@ -8,7 +8,6 @@
   %p
     Join our community on:
   %ul
-    %li= link_to "Alicorn's forum", 'http://alicorn.elcenia.com/board/index.php', target: '_blank', rel: 'noopener'
     - if (discord_link = ENV.fetch('DISCORD_LINK_GLOWFIC', nil))
-      %li= link_to "Glowfic Community Discord", discord_link, target: '_blank', rel: 'noopener'
-    %li= link_to "Constellation Discord", Glowfic::DISCORD_LINK_CONSTELLATION, target: '_blank', rel: 'noopener'
+      %li= link_to "Our community social Discord", discord_link, target: '_blank', rel: 'noopener'
+    %li= link_to "Our website feedback Discord", Glowfic::DISCORD_LINK_CONSTELLATION, target: '_blank', rel: 'noopener'

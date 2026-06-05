@@ -1,13 +1,25 @@
 # frozen_string_literal: true
-class Api::V1::BoardSectionsController < Api::ApiController
-  before_action :login_required
+class Api::V1::SubcontinuitiesController < Api::ApiController
+  before_action :login_required, only: :reorder
 
   resource_description do
     name 'Subcontinuities'
     description 'Viewing and editing subcontinuities'
   end
 
-  api :POST, '/board_sections/reorder', 'Update the order of subcontinuities. This is an unstable feature, and may be moved or renamed; it should not be trusted.'
+  api :GET, '/subcontinuities/:id', 'Load a single subcontinuity as a JSON resource'
+  error 404, 'Subcontinuity could not be found'
+  param :id, :number, required: true, desc: 'Subcontinuity ID'
+  def show
+    unless (board_section = BoardSection.find_by(id: params[:id]))
+      error = { message: "Subcontinuity could not be found." }
+      render json: { errors: [error] }, status: :not_found and return
+    end
+
+    render json: board_section.as_json.merge(board_id: board_section.board_id)
+  end
+
+  api :POST, '/subcontinuities/reorder', 'Update the order of subcontinuities. This is an unstable feature, and may be moved or renamed; it should not be trusted.'
   error 401, "You must be logged in"
   error 403, "Continuity is not editable by the user"
   error 404, "Section IDs could not be found"
@@ -24,9 +36,9 @@ class Api::V1::BoardSectionsController < Api::ApiController
     end
 
     boards = Board.where(id: sections.select(:board_id).distinct.pluck(:board_id))
-    unless boards.count == 1
+    unless boards.one?
       error = { message: 'Sections must be from one continuity' }
-      render json: { errors: [error] }, status: :unprocessable_entity and return
+      render json: { errors: [error] }, status: :unprocessable_content and return
     end
 
     board = boards.first

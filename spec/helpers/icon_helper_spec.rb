@@ -76,7 +76,7 @@ RSpec.describe IconHelper do
 
     it "returns icons if character has icons" do
       icons = ['icon 1', 'icon 2', 'icon 3'].map { |k| create(:icon, keyword: k, user: user) }
-      character.galleries << create(:gallery, icons: icons)
+      character.galleries << create(:gallery, user: user, icons: icons)
       post.character = character
       post.icon = icons[0]
       icons = Icon.where(id: icons.map(&:id)).ordered

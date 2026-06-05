@@ -98,7 +98,7 @@ def clean(file, expand=false)
 end
 
 MODELS.each do |model|
-  next if model.count == 0
+  next if model.none?
   puts "#{model.count} #{model.name.titleize.pluralize(model.count)}"
   file = dump(model)
   expand = true if [Character, Post, Reply, Audited::Audit].include?(model)

@@ -37,7 +37,7 @@ RSpec.describe Api::V1::BookmarksController do
       post :create, params: { reply_id: reply.id }
       expect(response).to have_http_status(200)
 
-      bookmark = Bookmark.find_by_id(response.parsed_body['id'])
+      bookmark = Bookmark.find_by(id: response.parsed_body['id'])
       expect(bookmark.reply).to eq(reply)
       expect(bookmark.post).to eq(reply.post)
       expect(bookmark.user).to eq(user)
@@ -53,7 +53,7 @@ RSpec.describe Api::V1::BookmarksController do
       post :create, params: { reply_id: reply.id, name: "New Bookmark" }
       expect(response).to have_http_status(200)
 
-      bookmark = Bookmark.find_by_id(response.parsed_body['id'])
+      bookmark = Bookmark.find_by(id: response.parsed_body['id'])
       expect(bookmark.reply).to eq(reply)
       expect(bookmark.post).to eq(reply.post)
       expect(bookmark.name).to eq("New Bookmark")
@@ -67,7 +67,7 @@ RSpec.describe Api::V1::BookmarksController do
       post :create, params: { reply_id: reply.id, public: true }
       expect(response).to have_http_status(200)
 
-      bookmark = Bookmark.find_by_id(response.parsed_body['id'])
+      bookmark = Bookmark.find_by(id: response.parsed_body['id'])
       expect(bookmark.reply).to eq(reply)
       expect(bookmark.post).to eq(reply.post)
       expect(bookmark.name).to be_nil
@@ -81,7 +81,7 @@ RSpec.describe Api::V1::BookmarksController do
       post :create, params: { reply_id: reply.id, name: "New Bookmark", public: true }
       expect(response).to have_http_status(200)
 
-      bookmark = Bookmark.find_by_id(response.parsed_body['id'])
+      bookmark = Bookmark.find_by(id: response.parsed_body['id'])
       expect(bookmark.reply).to eq(reply)
       expect(bookmark.post).to eq(reply.post)
       expect(bookmark.name).to eq("New Bookmark")
@@ -97,7 +97,7 @@ RSpec.describe Api::V1::BookmarksController do
       post :create, params: { reply_id: bookmark.reply.id, name: "New Name" }
       expect(response).to have_http_status(200)
 
-      expect(Bookmark.find_by_id(bookmark.id).name).to eq("New Name")
+      expect(Bookmark.find_by(id: bookmark.id).name).to eq("New Name")
     end
 
     it "handles failed saves" do
@@ -293,7 +293,7 @@ RSpec.describe Api::V1::BookmarksController do
 
       expect(response).to have_http_status(204)
       expect(response.parsed_body).to eq("")
-      expect(Bookmark.find_by_id(bookmark.id)).to be_nil
+      expect(Bookmark.find_by(id: bookmark.id)).to be_nil
     end
   end
 end

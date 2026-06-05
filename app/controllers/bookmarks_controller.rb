@@ -10,7 +10,7 @@ class BookmarksController < ApplicationController
     use_javascript('search')
     use_javascript('bookmarks/rename')
     return unless params[:commit].present?
-    return unless (@user = User.find_by_id(params[:user_id]))
+    return unless (@user = User.find_by(id: params[:user_id]))
 
     response.headers['X-Robots-Tag'] = 'noindex'
     @search_results = @user.bookmarked_replies.bookmark_visible_to(@user, current_user)
@@ -46,7 +46,7 @@ class BookmarksController < ApplicationController
       return redirect_to posts_path
     end
 
-    @reply = Reply.find_by_id(params[:at_id])
+    @reply = Reply.find_by(id: params[:at_id])
     unless @reply
       flash[:error] = "Reply not found."
       return redirect_to posts_path
@@ -78,7 +78,7 @@ class BookmarksController < ApplicationController
   private
 
   def bookmark_ownership_required
-    @bookmark = Bookmark.find_by_id(params[:id])
+    @bookmark = Bookmark.find_by(id: params[:id])
     unless @bookmark&.visible_to?(current_user)
       flash[:error] = "Bookmark could not be found."
       redirect_to posts_path and return

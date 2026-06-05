@@ -19,7 +19,7 @@ class Api::V1::IconsController < Api::ApiController
 
     if Icon.where(s3_key: params[:s3_key]).exists?
       error = { message: "Only unused icons can be deleted." }
-      render json: { errors: [error] }, status: :unprocessable_entity and return
+      render json: { errors: [error] }, status: :unprocessable_content and return
     end
 
     S3_BUCKET.delete_objects(delete: { objects: [{ key: params[:s3_key] }], quiet: true })

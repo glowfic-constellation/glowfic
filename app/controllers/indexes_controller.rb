@@ -8,7 +8,7 @@ class IndexesController < ApplicationController
 
   def index
     @page_title = "Indexes"
-    @indexes = Index.order('id asc').paginate(page: page)
+    @indexes = Index.order(:id).paginate(page: page)
   end
 
   def new
@@ -77,7 +77,7 @@ class IndexesController < ApplicationController
   private
 
   def find_model
-    return if (@index = Index.find_by_id(params[:id]))
+    return if (@index = Index.find_by(id: params[:id]))
     flash[:error] = "Index could not be found."
     redirect_to indexes_path
   end

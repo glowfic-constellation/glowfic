@@ -172,7 +172,7 @@ class RepliesController < WritableController
   private
 
   def find_model
-    @reply = Reply.find_by_id(params[:id])
+    @reply = Reply.find_by(id: params[:id])
 
     unless @reply
       flash[:error] = "Post could not be found."
@@ -289,7 +289,7 @@ class RepliesController < WritableController
         if last_by_user.present? && last_by_user.attributes.slice(*match_attrs) == first_reply.attributes.slice(*match_attrs)
           flash.now[:error] = "This looks like a duplicate. Did you attempt to post this twice? Please resubmit if this was intentional."
           @allow_dupe = true
-          if most_recent_unseen_reply.nil? || (most_recent_unseen_reply.id == last_by_user.id && @unseen_replies.count == 1)
+          if most_recent_unseen_reply.nil? || (most_recent_unseen_reply.id == last_by_user.id && @unseen_replies.one?)
             preview_reply(first_reply)
           else
             draft = make_draft(false)
@@ -305,6 +305,11 @@ class RepliesController < WritableController
         num = @unseen_replies.count
         pluraled = num > 1 ? "have been #{num} new replies" : "has been 1 new reply"
         flash.now[:error] = "There #{pluraled} since you last viewed this post."
+
+        # special handling to keep the latest reply out of the preview list
+        @multi_replies.delete(new_reply)
+        @multi_replies_params.delete(permitted_params)
+
         draft = make_draft
         preview_reply(ReplyDraft.reply_from_draft(draft)) and return
       end

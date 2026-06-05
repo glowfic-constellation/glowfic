@@ -10,7 +10,7 @@
   &raquo;
   %b Edit Alias
 
-= form_for @alias, url: character_aliases_path(@character), method: :post do |f|
+= form_for @alias, url: character_alias_path(@character, @alias), method: :put do |f|
   .form-table#alias-editor
     .editor-title= "Edit Alias"
     = render 'editor', f: f

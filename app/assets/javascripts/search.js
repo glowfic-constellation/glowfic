@@ -49,6 +49,11 @@ $(document).ready(function() {
   createSelect2('#post_id', {
     ajax: {
       url: '/api/v1/posts',
+      data: function(params) {
+        const data = queryTransform(params);
+        data.min = 'true';
+        return data;
+      },
       processResults: processTotal('subject'),
     },
     placeholder: '— Choose Post —',
@@ -71,9 +76,10 @@ $(document).ready(function() {
         const data = queryTransform(params);
         const authorId = $("#author_id").val();
         if (authorId !== '' && typeof authorId !== 'undefined') { data.user_id = authorId; }
+        data.dropdown = 'true';
         return data;
       },
-      processResults: processTotal('name'),
+      processResults: processTotal('dropdown'),
     },
     placeholder: '— Choose Template —',
     allowClear: true,

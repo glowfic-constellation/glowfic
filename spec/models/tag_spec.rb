@@ -13,7 +13,7 @@ RSpec.describe Tag do
 
       good_tag.merge_with(bad_tag)
 
-      expect(Tag.find_by_id(bad_tag.id)).to be_nil
+      expect(Tag.find_by(id: bad_tag.id)).to be_nil
       expect(bad_tag.posts.count).to eq(0)
       expect(good_tag.posts.count).to eq(5)
     end
@@ -30,7 +30,7 @@ RSpec.describe Tag do
 
       good_tag.merge_with(bad_tag)
 
-      expect(ContentWarning.find_by_id(bad_tag.id)).to be_nil
+      expect(ContentWarning.find_by(id: bad_tag.id)).to be_nil
       expect(bad_tag.users.count).to eq(0)
       expect(good_tag.users.count).to eq(5)
     end
@@ -111,7 +111,7 @@ RSpec.describe Tag do
       tags = create_tags
       fetched = GalleryGroup.where(id: tags.map(&:id)).select(:id).ordered_by_id.with_character_counts
       expect(fetched).to eq(tags)
-      expect(fetched.map { |x| x[:character_count] }).to eq([0, 1, 2])
+      expect(fetched.map { |x| x[:character_count] }).to eq([0, 1, 2]) # rubocop:disable Rails/Pluck
     end
 
     it "works without with_character_counts scope" do

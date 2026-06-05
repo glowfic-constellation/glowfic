@@ -22,7 +22,7 @@ class Api::V1::BookmarksController < Api::ApiController
     bookmark = Bookmark.where(user: current_user, reply: reply, type: "reply_bookmark").first_or_initialize
     unless bookmark.update(params.permit(:name, :public).merge(post_id: reply.post_id))
       error = { message: 'Bookmark could not be created.' }
-      render json: { errors: [error] }, status: :unprocessable_entity
+      render json: { errors: [error] }, status: :unprocessable_content
       return
     end
 
@@ -40,7 +40,7 @@ class Api::V1::BookmarksController < Api::ApiController
   def update
     unless @bookmark.update(params.permit(:name, :public))
       error = { message: 'Bookmark could not be updated.' }
-      render json: { errors: [error] }, status: :unprocessable_entity
+      render json: { errors: [error] }, status: :unprocessable_content
       return
     end
 
@@ -56,7 +56,7 @@ class Api::V1::BookmarksController < Api::ApiController
   def destroy
     unless @bookmark.destroy
       error = { message: 'Bookmark could not be removed.' }
-      render json: { errors: [error] }, status: :unprocessable_entity
+      render json: { errors: [error] }, status: :unprocessable_content
       return
     end
 

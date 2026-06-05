@@ -268,6 +268,32 @@ RSpec.describe UsersController do
       expect(meta_og[:image][:width]).to eq('75')
       expect(meta_og[:image][:width]).to eq('75')
     end
+
+    context "with hide_from_all" do
+      let(:author) { create(:user) }
+      let(:viewer) { create(:user) }
+      let(:ignored_board) { create(:board) }
+      let!(:ignored_post) { create(:post, user: author) }
+      let!(:ignored_board_post) { create(:post, user: author, board: ignored_board) }
+      let!(:normal_post) { create(:post, user: author) }
+
+      before(:each) do
+        login_as(viewer)
+        ignored_post.ignore(viewer)
+        ignored_board.ignore(viewer)
+      end
+
+      it "does not hide ignored posts when hide_from_all is disabled" do
+        get :show, params: { id: author.id }
+        expect(assigns(:posts).map(&:id)).to match_array([ignored_post.id, ignored_board_post.id, normal_post.id])
+      end
+
+      it "hides ignored posts when hide_from_all is enabled" do
+        viewer.update!(hide_from_all: true)
+        get :show, params: { id: author.id }
+        expect(assigns(:posts).map(&:id)).to eq([normal_post.id])
+      end
+    end
   end
 
   describe "GET edit" do
@@ -603,8 +629,8 @@ RSpec.describe UsersController do
       allow(ENV).to receive(:[]).with('ACCOUNT_SECRET').and_return('chocolate')
       user = create(:user, role_id: Permissible::READONLY)
 
-      allow(User).to receive(:find_by_id).and_call_original
-      allow(User).to receive(:find_by_id).with(user.id).and_return(user)
+      allow(User).to receive(:find_by).and_call_original
+      allow(User).to receive(:find_by).with({ id: user.id }).and_return(user)
       allow(user).to receive(:update).and_return(false)
       expect(user).to receive(:update)
 

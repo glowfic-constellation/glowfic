@@ -485,7 +485,7 @@ RSpec.describe BoardsController do
       post.reload
       expect(post.board_id).to eq(Board::ID_SANDBOX)
       expect(post.section).to be_nil
-      expect(BoardSection.find_by_id(section.id)).to be_nil
+      expect(BoardSection.find_by(id: section.id)).to be_nil
     end
 
     it "handles destroy failure" do
