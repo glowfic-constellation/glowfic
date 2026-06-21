@@ -303,13 +303,14 @@ RSpec.describe ApplicationHelper do
       expect(reader_tag).to include('color: red')
       expect(reader_tag).not_to include('color: red !important') # reader gets sanitized CSS
       expect(reader_tag).to include('display: block !important') # safety overrides always appended
+      expect(reader_tag).to include(':root:root .post-container') # scoped for specificity
     end
 
     it "neutralises a </style> breakout in raw CSS" do
-      skin = create(:skin, user: owner, css: ".a::after { content: 'x'; } /* </style><script> */")
+      skin = create(:skin, user: owner, css: '.a::after { content: "x</style><script>x"; }')
       tag = helper.skin_style_tag(skin, viewer: owner)
-      expect(tag).not_to include('</script')
-      expect(tag).to include('<\\/')
+      expect(tag).to include('<\\/style>')   # the </style> inside the CSS was neutralised
+      expect(tag).not_to include('x</style>') # so the raw breakout sequence is gone
     end
   end
 end

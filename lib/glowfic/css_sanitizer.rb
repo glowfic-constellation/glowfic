@@ -103,6 +103,81 @@ class Glowfic::CssSanitizer
     sanitizer.dangerous?
   end
 
+  # Prefix every style-rule selector with `scope` (a descendant prefix such as
+  # ":root:root") so an injected skin out-ranks the application's own theming
+  # rules — many of which use :nth-child or #id selectors that a bare ".x" skin
+  # selector cannot beat — without relying on !important, which the sanitizer
+  # strips for non-owners. Keyframe selectors (from/to/percent) are never scoped.
+  # Falls back to returning the input unchanged if it cannot be parsed.
+  def self.scope(css, scope)
+    render_scoped(Crass.parse(css.to_s), scope)
+  rescue StandardError, SystemStackError
+    css.to_s
+  end
+
+  def self.render_scoped(nodes, scope)
+    Array(nodes).filter_map { |node| scope_node(node, scope) }.join("\n")
+  end
+  private_class_method :render_scoped
+
+  def self.scope_node(node, scope)
+    case node[:node]
+      when :style_rule then scope_style_rule(node, scope)
+      when :at_rule    then scope_at_rule(node, scope)
+    end
+  end
+  private_class_method :scope_node
+
+  def self.scope_style_rule(node, scope)
+    selector = node.dig(:selector, :value).to_s.strip
+    return if selector.empty?
+
+    scoped = split_selector_list(selector).map { |part| "#{scope} #{part}" }.join(', ')
+    body = Crass::Parser.stringify(node[:children]).strip
+    "#{scoped} {\n#{body}\n}"
+  end
+  private_class_method :scope_style_rule
+
+  def self.scope_at_rule(node, scope)
+    name = node[:name].to_s.downcase
+    prelude = Crass::Parser.stringify(node[:prelude]).strip
+    return "@#{name} #{prelude};" if node[:block].nil?
+
+    inner =
+      if KEYFRAMES_AT_RULES.include?(name)
+        Crass::Parser.stringify(node[:block]).strip # keyframe selectors must stay literal
+      else
+        render_scoped(Crass.parse(Crass::Parser.stringify(node[:block])), scope)
+      end
+    "@#{name} #{prelude} {\n#{inner}\n}"
+  end
+  private_class_method :scope_at_rule
+
+  # Split a selector list on top-level commas only (commas inside () or [] are
+  # part of :not()/:is()/attribute selectors and must not split the list).
+  def self.split_selector_list(selector)
+    parts = []
+    buffer = +''
+    depth = 0
+    selector.each_char do |char|
+      case char
+        when '(', '[' then depth += 1; buffer << char
+        when ')', ']' then depth -= 1 if depth > 0; buffer << char
+        when ','
+          if depth.zero?
+            parts << buffer
+            buffer = +''
+          else
+            buffer << char
+          end
+        else buffer << char
+      end
+    end
+    parts << buffer
+    parts.map(&:strip).reject(&:empty?)
+  end
+  private_class_method :split_selector_list
+
   def initialize(css)
     # Comments are dropped from the output anyway, and stripping them up front
     # also sidesteps a stack-overflow in the parser on pathological runs of

@@ -184,4 +184,41 @@ RSpec.describe Glowfic::CssSanitizer do
       expect(sanitize('.a { color: red; }')).to eq('')
     end
   end
+
+  describe ".scope" do
+    def scope(css)
+      Glowfic::CssSanitizer.scope(css, ':root:root')
+    end
+
+    it "prefixes each style-rule selector with the scope" do
+      expect(scope('.post-container { color: red; }')).to include(':root:root .post-container {')
+    end
+
+    it "scopes every selector in a comma-separated list" do
+      result = scope('.a, .b { color: red; }')
+      expect(result).to include(':root:root .a')
+      expect(result).to include(':root:root .b')
+    end
+
+    it "does not split on commas nested inside :not()/attribute selectors" do
+      result = scope(':not(.a, .b) { color: red; }')
+      expect(result).to include(':root:root :not(.a, .b)')
+      expect(result.scan(':root:root').length).to eq(1)
+    end
+
+    it "scopes rules inside @media but leaves keyframe selectors literal" do
+      media = scope('@media (max-width: 600px) { .a { color: red; } }')
+      expect(media).to include(':root:root .a')
+
+      frames = scope('@keyframes spin { from { opacity: 0; } to { opacity: 1; } }')
+      expect(frames).to include('@keyframes spin')
+      expect(frames).not_to include(':root:root from')
+      expect(frames).to include('from')
+    end
+
+    it "returns the input unchanged when it cannot be parsed" do
+      allow(Crass).to receive(:parse).and_raise(StandardError)
+      expect(scope('.a { color: red; }')).to eq('.a { color: red; }')
+    end
+  end
 end
