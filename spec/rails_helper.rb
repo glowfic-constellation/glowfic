@@ -53,7 +53,13 @@ RSpec.configure do |config|
     # 2. Redis — e.g. GenerateFlatPostJob.enqueue takes a 30-minute Redis lock and
     #    only releases it when the job performs; in tests jobs are enqueued but not
     #    performed, so the lock would leak and silently no-op a later enqueue.
-    $redis&.flushdb
+    #    Clear only this worker's namespace (NOT flushdb — parallel workers share
+    #    the Redis server) and the cache (rate-limit buckets etc.).
+    if $redis
+      keys = $redis.keys('*')
+      $redis.del(*keys) unless keys.empty?
+    end
+    Rails.cache.clear
   end
 
   # RSpec Rails can automatically mix in different behaviours to your tests

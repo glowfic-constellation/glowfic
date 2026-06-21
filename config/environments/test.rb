@@ -32,7 +32,12 @@ Rails.application.configure do
   # Show full error reports.
   config.consider_all_requests_local = true
   config.action_controller.perform_caching = false
-  config.cache_store = :redis_cache_store, { url: ENV.fetch('REDIS_URL', nil) }
+  # Namespace the cache per parallel_tests worker so workers (which share one
+  # Redis server) don't read/clobber each other's cache or rate-limit counters.
+  # Always namespaced so Rails.cache.clear scopes to the namespace rather than
+  # flushing the whole server.
+  cache_namespace = "glowfic-cache:w#{ENV['TEST_ENV_NUMBER'].presence || '1'}"
+  config.cache_store = :redis_cache_store, { url: ENV.fetch('REDIS_URL', nil), namespace: cache_namespace }
 
   # Render exception templates for rescuable exceptions and raise for other exceptions.
   config.action_dispatch.show_exceptions = :rescuable
