@@ -27,7 +27,10 @@ module Glowfic::BuiltinSkins
   # css_loader: callable slug -> css string (injectable for tests)
   # Returns the number of skins created.
   def seed!(owner: default_owner, css_loader: method(:compiled_css), logger: nil)
-    raise 'No owner available to own the built-in skins' unless owner
+    unless owner
+      logger&.call('No user available to own the built-in skins yet; skipping.')
+      return 0
+    end
 
     created = 0
     LAYOUTS.each do |slug, name|
