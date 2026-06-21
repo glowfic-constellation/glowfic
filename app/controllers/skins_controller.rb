@@ -1,9 +1,10 @@
 # frozen_string_literal: true
 class SkinsController < ApplicationController
   before_action :login_required, except: [:index, :show, :gallery]
-  before_action :find_model, only: [:show, :edit, :update, :destroy, :use, :fork]
+  before_action :find_model, only: [:show, :edit, :update, :destroy, :use, :fork, :approve, :reject]
   before_action :require_visible, only: [:show, :use, :fork]
   before_action :require_edit_permission, only: [:edit, :update, :destroy]
+  before_action :require_approval_permission, only: [:review, :approve, :reject]
 
   def index
     @user = params[:user_id] ? User.find_by(id: params[:user_id]) : current_user
@@ -93,6 +94,23 @@ class SkinsController < ApplicationController
     end
   end
 
+  def review
+    @page_title = 'Skins Awaiting Review'
+    @skins = Skin.pending_review.ordered.paginate(page: page, per_page: 25)
+  end
+
+  def approve
+    @skin.approve!(current_user)
+    flash[:success] = "Approved the “#{@skin.name}” skin."
+    redirect_to @skin
+  end
+
+  def reject
+    @skin.reject!
+    flash[:success] = "Rejected the “#{@skin.name}” skin; it has been unlisted."
+    redirect_to @skin
+  end
+
   private
 
   def permitted_params
@@ -115,5 +133,11 @@ class SkinsController < ApplicationController
     return if @skin.editable_by?(current_user)
     flash[:error] = 'You do not have permission to edit that skin.'
     redirect_to skin_path(@skin)
+  end
+
+  def require_approval_permission
+    return if current_user&.has_permission?(:approve_skins)
+    flash[:error] = 'You do not have permission to review skins.'
+    redirect_to skins_path
   end
 end

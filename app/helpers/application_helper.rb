@@ -21,13 +21,14 @@ module ApplicationHelper
     }
   CSS
 
-  # Builds the <style> tag for a sanitized skin, or nil. The CSS is already
-  # sanitized (allowlisted properties, no scripts); the extra gsub neutralises
-  # any "</..." so a `content` string cannot close the <style> element.
-  def skin_style_tag(skin)
+  # Builds the <style> tag a viewer should get for a skin, or nil. css_for picks
+  # the tier: the owner and approved skins get raw CSS, everyone else gets the
+  # stripped safe version. The gsub neutralises any "</..." so even raw CSS
+  # cannot break out of the <style> element into markup/script.
+  def skin_style_tag(skin, viewer: current_user)
     return if skin.nil?
 
-    css = skin.sanitized_css.to_s
+    css = skin.css_for(viewer)
     return if css.blank?
 
     payload = "#{css}\n#{SKIN_SAFETY_OVERRIDES}".gsub('</', '<\/')

@@ -107,6 +107,49 @@ RSpec.describe SkinsController do
     end
   end
 
+  describe "moderation" do
+    let(:dangerous_css) { '.post-container { color: red !important; }' }
+
+    it "requires approve permission for the review queue" do
+      login
+      get :review
+      expect(response).to redirect_to(skins_path)
+    end
+
+    it "lists pending dangerous public skins for mods" do
+      pending = create(:skin, public: true, css: dangerous_css)
+      login_as(create(:mod_user))
+      get :review
+      expect(response.status).to eq(200)
+      expect(assigns(:skins)).to eq([pending])
+    end
+
+    it "lets a mod approve a skin so readers get the raw CSS" do
+      skin = create(:skin, public: true, css: dangerous_css)
+      mod = create(:mod_user)
+      login_as(mod)
+      post :approve, params: { id: skin.id }
+      expect(skin.reload.approved?).to be(true)
+      expect(skin.approved_by).to eq(mod)
+    end
+
+    it "does not let a non-mod approve" do
+      skin = create(:skin, public: true, css: dangerous_css)
+      login
+      post :approve, params: { id: skin.id }
+      expect(skin.reload.approved?).to be(false)
+    end
+
+    it "lets a mod reject (and unlist) a skin" do
+      skin = create(:skin, public: true, css: dangerous_css)
+      login_as(create(:mod_user))
+      post :reject, params: { id: skin.id }
+      skin.reload
+      expect(skin.approved?).to be(false)
+      expect(skin.public).to be(false)
+    end
+  end
+
   context "with render_views" do
     render_views
 

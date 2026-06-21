@@ -94,12 +94,22 @@ class Glowfic::CssSanitizer
     new(css).sanitized
   end
 
+  # Whether the CSS asks for anything the safe tier strips for security reasons
+  # (external resources, fixed/sticky positioning, !important, script vectors).
+  # Used to route a skin to mod review before it can affect other readers.
+  def self.dangerous?(css)
+    sanitizer = new(css)
+    sanitizer.sanitized
+    sanitizer.dangerous?
+  end
+
   def initialize(css)
     # Comments are dropped from the output anyway, and stripping them up front
     # also sidesteps a stack-overflow in the parser on pathological runs of
     # consecutive comments.
     text = css.to_s.gsub(/\/\*.*?\*\//m, ' ')
     @css = text.byteslice(0, MAX_LENGTH).to_s
+    @dangerous = false
   end
 
   def sanitized
@@ -109,6 +119,12 @@ class Glowfic::CssSanitizer
   rescue StandardError, SystemStackError
     # Never let malformed or pathological input bubble up as a usable stylesheet.
     ''
+  end
+
+  # True if sanitizing dropped or defused a security-relevant construct. Only set
+  # after #sanitized has run. Unsupported-but-harmless properties do not count.
+  def dangerous?
+    @dangerous
   end
 
   private
@@ -138,10 +154,15 @@ class Glowfic::CssSanitizer
   def render_at_rule(node)
     name = node[:name].to_s.downcase
     prelude = Crass::Parser.stringify(node[:prelude]).strip
+
+    # @import / @font-face pull in external resources; flag and drop them.
+    # (@import has no block, so this must run before the block check below.)
+    @dangerous = true if %w[import font-face].include?(name)
+
     return if node[:block].nil?
     return if dangerous_value?(prelude)
 
-    # everything else (@import, @font-face, @charset, @namespace, @page, ...) is dropped
+    # everything else (@charset, @namespace, @page, ...) is dropped
     return unless ALLOWED_AT_RULES.include?(name) || KEYFRAMES_AT_RULES.include?(name)
 
     inner = render_nodes(Crass.parse(Crass::Parser.stringify(node[:block])))
@@ -163,15 +184,25 @@ class Glowfic::CssSanitizer
     name = decl[:name].to_s.strip.downcase
     value = decl[:value].to_s.strip
     return if name.empty? || value.empty?
-    return unless property_allowed?(name)
-    return if dangerous_value?(value)
+    return unless property_allowed?(name) # unsupported, but not dangerous
+    if dangerous_value?(value)
+      @dangerous = true
+      return
+    end
     # Angle brackets are never needed in a declaration value, and allowing them
     # (e.g. content: "</style><script>...") would let a skin break out of the
     # inline <style> element it is injected into.
-    return if value.match?(/[<>]/)
-    return if name == 'position' && value.match?(/\b(?:fixed|sticky)\b/i)
+    if value.match?(/[<>]/)
+      @dangerous = true
+      return
+    end
+    if name == 'position' && value.match?(/\b(?:fixed|sticky)\b/i)
+      @dangerous = true
+      return
+    end
 
-    # `!important` is intentionally not re-emitted.
+    # `!important` is intentionally not re-emitted (but is flagged as dangerous).
+    @dangerous = true if decl[:important]
     "#{name}: #{value}"
   end
 

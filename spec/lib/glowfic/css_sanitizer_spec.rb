@@ -112,6 +112,24 @@ RSpec.describe Glowfic::CssSanitizer do
     end
   end
 
+  describe ".dangerous?" do
+    it "is false for plain safe CSS" do
+      expect(Glowfic::CssSanitizer.dangerous?('.a { color: red; padding: 4px; }')).to be(false)
+    end
+
+    it "is false for merely unsupported (but harmless) properties" do
+      expect(Glowfic::CssSanitizer.dangerous?('.a { nonsense-prop: 5; }')).to be(false)
+    end
+
+    it "is true for !important, external url, fixed positioning, @import and @font-face" do
+      expect(Glowfic::CssSanitizer.dangerous?('.a { color: red !important; }')).to be(true)
+      expect(Glowfic::CssSanitizer.dangerous?('.a { background: url(https://e/x); }')).to be(true)
+      expect(Glowfic::CssSanitizer.dangerous?('.a { position: fixed; }')).to be(true)
+      expect(Glowfic::CssSanitizer.dangerous?('@import url(https://e/x);')).to be(true)
+      expect(Glowfic::CssSanitizer.dangerous?("@font-face { font-family: x; src: url(https://e/f); }")).to be(true)
+    end
+  end
+
   describe "robustness" do
     it "enforces a maximum length" do
       huge = '.a { color: red; }' + ('/* pad */' * 200_000)

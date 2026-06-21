@@ -17,8 +17,11 @@
       %div{class: cycle('even', 'odd')}
         = f.text_area :css, id: 'skin_css', rows: 20, placeholder: '.post-container { background-color: #222; }'
         .details
-          Custom CSS applies to the whole page. For safety it is sanitized before
-          use: external resources, scripts, fixed/sticky positioning and
+          Custom CSS applies to the whole page. It always works in full on your
+          own browsing. Advanced CSS (external resources, fixed/sticky
+          positioning,
           %code !important
-          are stripped, and content warnings always stay visible.
+          , etc.) is sanitized for other readers and must be approved by a
+          moderator before it can be shared publicly or take full effect on a
+          post you recommend it on. Scripts and markup are never allowed.
     .form-table-ender= f.submit @skin.persisted? ? 'Update' : 'Create', class: 'button'

@@ -29,10 +29,54 @@ RSpec.describe Skin do
   end
 
   describe "scopes" do
-    it ".listed returns only public skins" do
-      public_skin = create(:skin, public: true)
+    it ".listed surfaces safe and approved public skins but hides pending dangerous ones" do
+      safe = create(:skin, public: true, css: '.a { color: red; }')
+      pending = create(:skin, public: true, css: '.a { color: red !important; }')
+      approved = create(:skin, public: true, css: '.a { color: blue !important; }')
+      approved.approve!(create(:mod_user))
       create(:skin, public: false)
-      expect(Skin.listed).to eq([public_skin])
+
+      expect(Skin.listed).to match_array([safe, approved])
+      expect(Skin.pending_review).to eq([pending])
+    end
+  end
+
+  describe "versioning and approval" do
+    it "is audited" do
+      skin = create(:skin)
+      expect { skin.update!(name: 'Renamed') }.to change { skin.audits.count }.by(1)
+    end
+
+    it "flags dangerous CSS (and caches it for scopes)" do
+      expect(build(:skin, css: '.a { color: red; }').dangerous?).to be(false)
+      expect(build(:skin, css: '.a { position: fixed; }').dangerous?).to be(true)
+      expect(create(:skin, css: '.a { position: fixed; }').dangerous).to be(true)
+    end
+
+    it "serves raw CSS to the owner but the safe version to others until approved" do
+      owner = create(:user)
+      reader = create(:user)
+      skin = create(:skin, user: owner, css: '.a { color: red !important; }')
+
+      expect(skin.css_for(owner)).to include('!important')
+      expect(skin.css_for(reader)).not_to include('!important')
+
+      skin.approve!(create(:mod_user))
+      expect(skin.css_for(reader)).to include('!important')
+    end
+
+    it "lapses approval when the CSS changes" do
+      skin = create(:skin, css: '.a { color: red !important; }')
+      skin.approve!(create(:mod_user))
+      expect(skin.approved?).to be(true)
+
+      skin.update!(css: '.a { color: blue !important; }')
+      expect(skin.approved?).to be(false)
+      expect(skin.reload.approved_at).to be_nil
+    end
+
+    it "allows publishing safe CSS without review" do
+      expect(build(:skin, public: true, css: '.a { color: red; }')).to be_valid
     end
   end
 end

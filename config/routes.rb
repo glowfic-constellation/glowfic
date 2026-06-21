@@ -114,8 +114,13 @@ Rails.application.routes.draw do
     member do
       post :use
       post :fork
+      post :approve
+      post :reject
     end
-    collection { get :gallery }
+    collection do
+      get :gallery
+      get :review
+    end
   end
   delete '/skins/use' => 'skins#clear', as: :clear_skin
   resources :tags, except: [:new, :create]

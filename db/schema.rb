@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2026_06_21_030000) do
+ActiveRecord::Schema[8.0].define(version: 2026_06_21_040000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "citext"
   enable_extension "pg_catalog.plpgsql"
@@ -434,6 +434,10 @@ ActiveRecord::Schema[8.0].define(version: 2026_06_21_030000) do
     t.boolean "public", default: false, null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.datetime "approved_at"
+    t.integer "approved_by_id"
+    t.string "approved_digest"
+    t.boolean "dangerous", default: false, null: false
     t.index ["public"], name: "index_skins_on_public"
     t.index ["user_id"], name: "index_skins_on_user_id"
   end

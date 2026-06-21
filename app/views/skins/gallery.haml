@@ -5,6 +5,9 @@
     %tr
       %th.table-title{colspan: 4}
         = @page_title
+        - if current_user&.has_permission?(:approve_skins)
+          = link_to review_skins_path do
+            .link-box.action-new Review queue
         - if logged_in?
           = link_to skins_path do
             .link-box.action-new Your Skins
