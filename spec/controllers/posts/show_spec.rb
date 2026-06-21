@@ -185,6 +185,27 @@ RSpec.describe PostsController, 'GET show' do
       expect(response.status).to eq(200)
     end
 
+    it "injects a post's recommended skin and lets the reader toggle it off" do
+      skin = create(:skin, user: post.user, name: 'Recommended', css: '.post-container { background-color: #abcdef; }')
+      post.update!(skin: skin)
+
+      get :show, params: { id: post.id }
+      expect(response.status).to eq(200)
+      expect(response.body).to include('#abcdef')
+      expect(response.body).to include('recommended reading skin')
+
+      get :show, params: { id: post.id, skin: 'off' }
+      expect(response.body).not_to include('#abcdef')
+    end
+
+    it "honors the reader's global opt-out of recommended skins" do
+      skin = create(:skin, user: post.user, css: '.post-container { background-color: #abcdef; }')
+      post.update!(skin: skin)
+      login_as(create(:user, hide_skins: true))
+      get :show, params: { id: post.id }
+      expect(response.body).not_to include('#abcdef')
+    end
+
     it "alternates reply icon sides and only opts in via the user setting" do
       create(:reply, post: post, with_icon: true, with_character: true)
 

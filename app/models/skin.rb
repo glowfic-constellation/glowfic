@@ -15,4 +15,20 @@ class Skin < ApplicationRecord
   def sanitize_css
     self.sanitized_css = Glowfic::CssSanitizer.call(css)
   end
+
+  def editable_by?(user)
+    return false unless user
+    user_id == user.id
+  end
+
+  def visible_to?(user)
+    return true if public
+    return false unless user
+    user_id == user.id
+  end
+
+  # A copy another user can keep and tweak as their own private skin.
+  def fork_for(user)
+    Skin.new(user: user, name: "#{name} (copy)", description: description, css: css)
+  end
 end

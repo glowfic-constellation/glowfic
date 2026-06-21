@@ -36,6 +36,7 @@ class User < ApplicationRecord
   has_many :content_warnings, -> { ordered_by_user_tag }, through: :user_tags, source: :content_warning, dependent: :destroy
 
   has_many :skins, inverse_of: :user, dependent: :destroy
+  belongs_to :active_skin, class_name: 'Skin', foreign_key: :skin_id, inverse_of: false, optional: true
 
   has_many :bookmarks, inverse_of: :user, dependent: :destroy
   has_many :bookmarked_replies, through: :bookmarks, source: :reply, dependent: :destroy

@@ -1,0 +1,35 @@
+%span.time-loaded= pretty_time(DateTime.now.in_time_zone)
+
+%table
+  %thead
+    %tr
+      %th.table-title{colspan: 4}
+        = @page_title
+        - if logged_in?
+          = link_to skins_path do
+            .link-box.action-new Your Skins
+    %tr
+      %th.sub Name
+      %th.sub By
+      %th.sub
+      %th.sub
+  %tbody
+    - @skins.each do |skin|
+      - klass = cycle('even', 'odd')
+      %tr
+        %td.padding-5{class: klass}= link_to skin.name, skin_path(skin)
+        %td.padding-5{class: klass}= user_link(skin.user)
+        %td.padding-5{class: klass}
+          - if logged_in?
+            - if current_user.skin_id == skin.id
+              = link_to 'In use — turn off', clear_skin_path, method: :delete
+            - else
+              = link_to 'Use', use_skin_path(skin), method: :post
+        %td.padding-5{class: klass}
+          - if logged_in?
+            = link_to 'Copy to mine', fork_skin_path(skin), method: :post
+    - if @skins.empty?
+      %tr
+        %td.centered.padding-10.no-posts{ class: cycle('even', 'odd'), colspan: 4 } — No public skins yet —
+
+= render 'posts/paginator', paginated: @skins, no_per: true

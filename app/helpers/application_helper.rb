@@ -2,6 +2,38 @@
 module ApplicationHelper
   TIME_FORMAT = '%b %d, %Y %l:%M %p'
 
+  # Appended after every injected skin. Skins have `!important` stripped by the
+  # sanitizer, so these always win: critical chrome (content warnings, flashes,
+  # the ToS gate) stays visible and un-overlaid no matter what a skin tries.
+  SKIN_SAFETY_OVERRIDES = <<~CSS
+    .flash, .flash.error, .flash-margin, #tos {
+      display: block !important;
+      visibility: visible !important;
+      opacity: 1 !important;
+      position: static !important;
+      height: auto !important;
+      max-height: none !important;
+      overflow: visible !important;
+      transform: none !important;
+      clip: auto !important;
+      clip-path: none !important;
+      pointer-events: auto !important;
+    }
+  CSS
+
+  # Builds the <style> tag for a sanitized skin, or nil. The CSS is already
+  # sanitized (allowlisted properties, no scripts); the extra gsub neutralises
+  # any "</..." so a `content` string cannot close the <style> element.
+  def skin_style_tag(skin)
+    return if skin.nil?
+
+    css = skin.sanitized_css.to_s
+    return if css.blank?
+
+    payload = "#{css}\n#{SKIN_SAFETY_OVERRIDES}".gsub('</', '<\/')
+    tag.style(payload.html_safe, type: 'text/css')
+  end
+
   def loading_tag(**args)
     klass = 'vmid loading-icon'
     klass += ' ' + args[:class] if args[:class]

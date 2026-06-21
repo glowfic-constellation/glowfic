@@ -165,6 +165,10 @@ class Glowfic::CssSanitizer
     return if name.empty? || value.empty?
     return unless property_allowed?(name)
     return if dangerous_value?(value)
+    # Angle brackets are never needed in a declaration value, and allowing them
+    # (e.g. content: "</style><script>...") would let a skin break out of the
+    # inline <style> element it is injected into.
+    return if value.match?(/[<>]/)
     return if name == 'position' && value.match?(/\b(?:fixed|sticky)\b/i)
 
     # `!important` is intentionally not re-emitted.

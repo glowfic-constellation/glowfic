@@ -110,6 +110,14 @@ Rails.application.routes.draw do
   resources :bookmarks, only: [:create, :destroy] do
     collection { get :search }
   end
+  resources :skins do
+    member do
+      post :use
+      post :fork
+    end
+    collection { get :gallery }
+  end
+  delete '/skins/use' => 'skins#clear', as: :clear_skin
   resources :tags, except: [:new, :create]
 
   # Indexes

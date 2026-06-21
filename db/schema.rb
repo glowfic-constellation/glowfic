@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2026_06_21_010000) do
+ActiveRecord::Schema[8.0].define(version: 2026_06_21_030000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "citext"
   enable_extension "pg_catalog.plpgsql"
@@ -369,12 +369,14 @@ ActiveRecord::Schema[8.0].define(version: 2026_06_21_010000) do
     t.boolean "authors_locked", default: false
     t.integer "character_alias_id"
     t.string "editor_mode"
+    t.integer "skin_id"
     t.index "to_tsvector('english'::regconfig, COALESCE((subject)::text, ''::text))", name: "idx_fts_post_subject", using: :gin
     t.index "to_tsvector('english'::regconfig, COALESCE(content, ''::text))", name: "idx_fts_post_content", using: :gin
     t.index ["board_id"], name: "index_posts_on_board_id"
     t.index ["character_id"], name: "index_posts_on_character_id"
     t.index ["created_at"], name: "index_posts_on_created_at"
     t.index ["icon_id"], name: "index_posts_on_icon_id"
+    t.index ["skin_id"], name: "index_posts_on_skin_id"
     t.index ["tagged_at"], name: "index_posts_on_tagged_at"
     t.index ["user_id"], name: "index_posts_on_user_id"
   end
@@ -515,7 +517,10 @@ ActiveRecord::Schema[8.0].define(version: 2026_06_21_010000) do
     t.boolean "default_hide_edit_delete_buttons", default: false
     t.boolean "default_hide_add_bookmark_button", default: false
     t.boolean "alternating_icons", default: false
+    t.integer "skin_id"
+    t.boolean "hide_skins", default: false
     t.index ["email"], name: "index_users_on_email", unique: true
+    t.index ["skin_id"], name: "index_users_on_skin_id"
     t.index ["username"], name: "index_users_on_username", unique: true
   end
 end

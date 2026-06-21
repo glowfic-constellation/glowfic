@@ -93,6 +93,13 @@ RSpec.describe Glowfic::CssSanitizer do
       expect(sanitize('.a { -moz-binding: url(x.xml); }')).not_to include('binding')
       expect(sanitize('.a { behavior: url(x.htc); }')).not_to include('behavior')
     end
+
+    it "drops declaration values containing angle brackets (style-tag breakout)" do
+      result = sanitize('.a { content: "</style><script>alert(1)</script>"; color: red; }')
+      expect(result).not_to include('<')
+      expect(result).not_to include('script')
+      expect(result).to include('color: red')
+    end
   end
 
   describe "dropping unknown / unsafe properties" do

@@ -274,6 +274,8 @@ class UsersController < ApplicationController
       :default_hide_edit_delete_buttons,
       :default_hide_add_bookmark_button,
       :alternating_icons,
+      :skin_id,
+      :hide_skins,
     )
   end
 
