@@ -45,6 +45,10 @@ jobs:
       MINIO_ENDPOINT_EXTERNAL: http://localhost:9000/
       # Run the suite across this many parallel_tests workers (ubuntu-latest = 4 vCPUs).
       PARALLEL_TEST_PROCESSORS: 4
+      # The runner is CPU-bound but has ~8 GB free RAM, so enable YJIT: it trades
+      # memory for noticeably less CPU per Ruby operation, which is exactly what a
+      # saturated-CPU/idle-memory box wants.
+      RUBYOPT: "--yjit"
 
     steps:
       - uses: actions/checkout@v6
