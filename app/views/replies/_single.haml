@@ -6,7 +6,11 @@
   - write = 'post-reply'.freeze
 - else
   - write = ''.freeze
-.post-container{class: [write, (reply == @unread && current_user.try(:visible_unread?)) ? 'reply-highlighted' : '']}
+-# For the opt-in "alternating icons" layout: alternate which side the icon
+-# sits on so rapid back-and-forth dialogue is easier to follow. The opening
+-# post (rendered without a collection counter) always keeps its icon on the left.
+- icon_side = (defined?(reply_counter) && reply_counter.odd?) ? 'icon-right'.freeze : 'icon-left'.freeze
+.post-container{class: [write, icon_side, (reply == @unread && current_user.try(:visible_unread?)) ? 'reply-highlighted' : '']}
   - if reply.is_a?(Reply) && reply.id.present?
     %a.noheight{id: "reply-#{reply.id}"}= " "
   - if reply == @unread

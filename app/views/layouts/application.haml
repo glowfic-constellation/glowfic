@@ -53,7 +53,7 @@
 
     = include_gon
     = javascript_include_tag 'application_deferred'.freeze, defer: :defer
-  %body
+  %body{class: current_user.try(:alternating_icons) ? 'alternating-icons' : nil}
     #holder
       #header
         - if logged_in?

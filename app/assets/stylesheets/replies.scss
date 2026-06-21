@@ -575,3 +575,84 @@ div.post-subheader { width: 100%; }
 @media (max-width: 850px) {
   .bookmark-editor-fields, .bookmark-editor-buttons { display: block; margin-right: 0; }
 }
+
+/* ---------------------------------------------------------------------------
+ * Alternating icon layout (opt-in via the "Alternating icons" account setting)
+ *
+ * Goal: make fast-paced 1-2 sentence dialogue much less scroll-y without
+ * removing the icons. The icon + character/author info becomes a small floated
+ * block that the reply text flows around in an "L" shape (beside the icon, then
+ * wrapping underneath it for longer replies). Consecutive replies alternate the
+ * icon between the left and right edges (.icon-left / .icon-right) so it's easy
+ * to track who is speaking in a rapid back-and-forth.
+ * ------------------------------------------------------------------------- */
+.alternating-icons {
+  // Tighten the breathing room around each reply.
+  #content > .post-container .padding-10 { padding: 6px 8px; }
+
+  // Compact info column: a small icon with the name/author labels stacked under it.
+  .post-info-box {
+    width: 88px;
+    margin-right: 8px;
+    margin-bottom: 4px;
+    font-size: $font_size_smaller;
+  }
+
+  .post-icon {
+    height: auto;
+
+    img, div {
+      margin: 4px;
+      width: 72px;
+      height: 72px;
+    }
+
+    img {
+      margin-bottom: 4px;
+      object-fit: contain;
+    }
+  }
+
+  .post-character, .post-screenname, .post-author { padding: 2px 4px; }
+
+  // The icon block is much narrower now, so quotes/lists don't need the big
+  // indent that was there to clear the old 150px sidebar.
+  .post-content {
+    blockquote { margin-left: 1em; margin-right: 1em; }
+    ul, ol { padding-left: 20px; }
+  }
+
+  // Mirror everything for replies whose icon sits on the right edge.
+  .icon-right {
+    .post-info-box {
+      float: right;
+      margin-left: 8px;
+      margin-right: 0;
+    }
+
+    .post-edit-box {
+      float: left;
+      margin-left: 0;
+      margin-right: 8px;
+    }
+  }
+}
+
+/* On narrow screens keep the alternating sides but let the icon and labels sit
+ * side-by-side so a short reply stays a single compact row. */
+@media (max-width: 600px) {
+  .alternating-icons {
+    .post-info-box {
+      float: left;
+      width: auto;
+      display: block;
+    }
+
+    .icon-right .post-info-box { float: right; }
+
+    .post-info-text {
+      float: none;
+      margin-right: 0;
+    }
+  }
+}
