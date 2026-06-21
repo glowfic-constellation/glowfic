@@ -1,26 +1,18 @@
 RSpec.describe SkinsController do
   describe "GET index" do
-    it "requires login when no user is given" do
+    it "requires login" do
       get :index
       expect(response).to redirect_to(root_url)
     end
 
-    it "shows your own skins" do
+    it "shows only your own skins" do
       user = create(:user)
-      create(:skin, user: user, name: 'Mine')
+      mine = create(:skin, user: user, name: 'Mine')
+      create(:skin, name: 'Someone else')
       login_as(user)
       get :index
       expect(response.status).to eq(200)
-      expect(assigns(:skins)).to be_present
-    end
-
-    it "shows only public skins of another user" do
-      other = create(:user)
-      pub = create(:skin, user: other, public: true)
-      create(:skin, user: other, public: false)
-      get :index, params: { user_id: other.id }
-      expect(response.status).to eq(200)
-      expect(assigns(:skins)).to eq([pub])
+      expect(assigns(:skins)).to eq([mine])
     end
   end
 

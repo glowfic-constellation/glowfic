@@ -120,9 +120,9 @@ Rails.application.routes.draw do
     collection do
       get :gallery
       get :review
+      delete :clear
     end
   end
-  delete '/skins/use' => 'skins#clear', as: :clear_skin
   resources :tags, except: [:new, :create]
 
   # Indexes

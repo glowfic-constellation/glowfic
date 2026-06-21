@@ -1,7 +1,5 @@
 %span.time-loaded= pretty_time(DateTime.now.in_time_zone)
 
-- own = @user == current_user
-
 %table
   %thead
     %tr
@@ -9,9 +7,8 @@
         = @page_title
         = link_to gallery_skins_path do
           .link-box.action-new Gallery
-        - if own
-          = link_to new_skin_path do
-            .link-box.action-new + New Skin
+        = link_to new_skin_path do
+          .link-box.action-new + New Skin
     %tr
       %th.sub Name
       %th.sub Shared
@@ -22,18 +19,23 @@
       - klass = cycle('even', 'odd')
       %tr
         %td.padding-5{class: klass}= link_to skin.name, skin_path(skin)
-        %td.padding-5{class: klass}= skin.public? ? 'Public' : 'Private'
         %td.padding-5{class: klass}
-          - if current_user&.skin_id == skin.id
-            = link_to 'In use — turn off', clear_skin_path, method: :delete
+          - if !skin.public?
+            Private
+          - elsif skin.pending_review?
+            Public (pending review)
+          - else
+            Public
+        %td.padding-5{class: klass}
+          - if current_user.skin_id == skin.id
+            = link_to 'In use — turn off', clear_skins_path, method: :delete
           - else
             = link_to 'Use', use_skin_path(skin), method: :post
         %td.width-70.right-align{class: klass}
-          - if own
-            = link_to edit_skin_path(skin) do
-              = image_tag "icons/pencil.png", alt: 'Edit', title: 'Edit'
-            = link_to skin_path(skin), method: :delete, data: { confirm: "Are you sure you want to delete the “#{skin.name}” skin?" } do
-              = image_tag "icons/cross.png", alt: 'Delete', title: 'Delete'
+          = link_to edit_skin_path(skin) do
+            = image_tag "icons/pencil.png", alt: 'Edit', title: 'Edit'
+          = link_to skin_path(skin), method: :delete, data: { confirm: "Are you sure you want to delete the “#{skin.name}” skin?" } do
+            = image_tag "icons/cross.png", alt: 'Delete', title: 'Delete'
           &nbsp;
     - if @skins.empty?
       %tr

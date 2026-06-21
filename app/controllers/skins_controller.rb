@@ -1,20 +1,14 @@
 # frozen_string_literal: true
 class SkinsController < ApplicationController
-  before_action :login_required, except: [:index, :show, :gallery]
+  before_action :login_required, except: [:show, :gallery]
   before_action :find_model, only: [:show, :edit, :update, :destroy, :use, :fork, :approve, :reject]
   before_action :require_visible, only: [:show, :use, :fork]
   before_action :require_edit_permission, only: [:edit, :update, :destroy]
   before_action :require_approval_permission, only: [:review, :approve, :reject]
 
   def index
-    @user = params[:user_id] ? User.find_by(id: params[:user_id]) : current_user
-    return login_required unless @user
-
-    own = @user == current_user
-    @page_title = own ? 'Your Skins' : "#{@user.username}'s Skins"
-    skins = @user.skins.ordered
-    skins = skins.listed unless own
-    @skins = skins.paginate(page: page, per_page: 25)
+    @page_title = 'Your Skins'
+    @skins = current_user.skins.ordered.paginate(page: page, per_page: 25)
   end
 
   def gallery

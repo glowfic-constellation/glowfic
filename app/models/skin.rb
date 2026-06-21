@@ -14,8 +14,12 @@ class Skin < ApplicationRecord
   # Public skins safe to surface in the gallery: either harmless, or an approved
   # dangerous skin (approved_at is only set while it still matches the CSS).
   scope :listed, -> { where(public: true).where('NOT dangerous OR approved_at IS NOT NULL') }
-  # Public dangerous skins still waiting on a moderator.
-  scope :pending_review, -> { where(public: true, dangerous: true, approved_at: nil) }
+  # Dangerous, unapproved skins that affect other readers (shared publicly or
+  # set as a post's recommended skin) and so are waiting on a moderator.
+  scope :pending_review, lambda {
+    where(dangerous: true, approved_at: nil)
+      .where('skins.public OR skins.id IN (?)', Post.where.not(skin_id: nil).select(:skin_id))
+  }
 
   def editable_by?(user)
     return false unless user
@@ -37,10 +41,12 @@ class Skin < ApplicationRecord
     Digest::SHA256.hexdigest(css.to_s)
   end
 
-  # Does the CSS want anything the safe tier strips for security reasons?
-  # Computed live so it is correct on unsaved records too; the cached `dangerous`
-  # column (set in recompute_derived) mirrors it for SQL scopes.
+  # Does the CSS want anything the safe tier strips for security reasons? Uses
+  # the cached `dangerous` column for saved, unchanged records (set in
+  # recompute_derived); computes live otherwise so it is correct before save.
   def dangerous?
+    return self[:dangerous] if persisted? && !css_changed?
+
     Glowfic::CssSanitizer.dangerous?(css)
   end
 

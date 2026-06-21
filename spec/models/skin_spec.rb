@@ -39,6 +39,12 @@ RSpec.describe Skin do
       expect(Skin.listed).to match_array([safe, approved])
       expect(Skin.pending_review).to eq([pending])
     end
+
+    it ".pending_review also includes a private skin recommended on a post" do
+      recommended = create(:skin, public: false, css: '.a { color: red !important; }')
+      create(:post, skin: recommended)
+      expect(Skin.pending_review).to include(recommended)
+    end
   end
 
   describe "versioning and approval" do

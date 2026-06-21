@@ -25,7 +25,7 @@
         %td.padding-5{class: klass}
           - if logged_in?
             - if current_user.skin_id == skin.id
-              = link_to 'In use — turn off', clear_skin_path, method: :delete
+              = link_to 'In use — turn off', clear_skins_path, method: :delete
             - else
               = link_to 'Use', use_skin_path(skin), method: :post
         %td.padding-5{class: klass}
