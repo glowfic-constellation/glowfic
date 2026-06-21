@@ -553,6 +553,7 @@ GEM
     temple (0.10.4)
     terser (1.2.6)
       execjs (>= 0.3.0, < 3)
+    test-prof (1.6.1)
     test-unit (3.7.7)
       power_assert
     thor (1.5.0)
@@ -669,6 +670,7 @@ DEPENDENCIES
   sprockets
   sprockets-rails
   terser
+  test-prof
   test-unit (~> 3.7)
   timecop
   tinymce-rails (~> 7.8)
