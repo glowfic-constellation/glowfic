@@ -216,6 +216,18 @@ RSpec.describe Glowfic::CssSanitizer do
       expect(frames).to include('from')
     end
 
+    it "preserves a block-less at-rule and scopes following rules" do
+      result = scope('@import url(x.css); .a { color: red; }')
+      expect(result).to include('@import url(x.css);')
+      expect(result).to include(':root:root .a')
+    end
+
+    it "does not split on a comma inside an attribute selector" do
+      result = scope('a[data-x="a,b"] { color: red; }')
+      expect(result).to include(':root:root a[data-x="a,b"]')
+      expect(result.scan(':root:root').length).to eq(1)
+    end
+
     it "returns the input unchanged when it cannot be parsed" do
       allow(Crass).to receive(:parse).and_raise(StandardError)
       expect(scope('.a { color: red; }')).to eq('.a { color: red; }')
