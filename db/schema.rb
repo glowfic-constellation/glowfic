@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2026_06_21_000000) do
+ActiveRecord::Schema[8.0].define(version: 2026_06_21_010000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "citext"
   enable_extension "pg_catalog.plpgsql"
@@ -421,6 +421,19 @@ ActiveRecord::Schema[8.0].define(version: 2026_06_21_000000) do
     t.datetime "created_at", precision: nil
     t.datetime "updated_at", precision: nil
     t.index ["user_id"], name: "index_report_views_on_user_id"
+  end
+
+  create_table "skins", force: :cascade do |t|
+    t.integer "user_id", null: false
+    t.string "name", null: false
+    t.text "description"
+    t.text "css"
+    t.text "sanitized_css"
+    t.boolean "public", default: false, null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["public"], name: "index_skins_on_public"
+    t.index ["user_id"], name: "index_skins_on_user_id"
   end
 
   create_table "tag_tags", id: :serial, force: :cascade do |t|

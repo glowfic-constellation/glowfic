@@ -159,6 +159,14 @@ FactoryBot.define do
     type { "reply_bookmark" }
   end
 
+  factory :skin do
+    user
+    sequence :name, ordered_numbers do |n|
+      "test skin #{n}"
+    end
+    css { '.post-container { background-color: #222; }' }
+  end
+
   factory :character do
     transient do
       with_default_icon { false }
