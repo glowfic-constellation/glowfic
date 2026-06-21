@@ -16,7 +16,11 @@ class Reply < ApplicationRecord
   has_many :bookmarks, inverse_of: :reply, dependent: :destroy
   has_many :bookmarking_users, -> { ordered }, through: :bookmarks, source: :user, dependent: :destroy
 
-  after_create :notify_other_authors, :destroy_draft, :update_active_char, :set_last_reply, :update_post, :update_post_authors
+  after_create :notify_other_authors, :destroy_draft, :set_last_reply, :update_post, :update_post_authors
+  # Updating the author's "active character" is a convenience side effect that
+  # nothing reads synchronously; run it after commit so it doesn't add a write
+  # inside every reply insert (and never fires for a rolled-back reply).
+  after_create_commit :update_active_char
   after_update :update_post
   after_destroy :set_previous_reply_to_last, :remove_post_author, :update_flat_post
   after_save :update_flat_post
