@@ -60,6 +60,11 @@ RSpec.configure do |config|
       $redis.del(*keys) unless keys.empty?
     end
     Rails.cache.clear
+
+    # 3. Auditing is disabled by default (see spec_helper). Specs that flip it on
+    #    inline can leak the flag if they raise before flipping it back, which then
+    #    corrupts audit counts in later specs. Reset to the default before each one.
+    [Post, Reply, Character, Block].each { |klass| klass.auditing_enabled = false }
   end
 
   # RSpec Rails can automatically mix in different behaviours to your tests
