@@ -38,9 +38,35 @@ RSpec.describe SkinsController do
       expect(skin.sanitized_css).to include('color: red')
       expect(skin.sanitized_css).not_to include('!important')
     end
+
+    it "re-renders the form when the skin is invalid" do
+      login
+      expect {
+        post :create, params: { skin: { name: '', css: '.a { color: red; }' } }
+      }.not_to change { Skin.count }
+      expect(response).to render_template(:new)
+    end
+  end
+
+  describe "GET show" do
+    it "redirects when the skin cannot be found" do
+      login
+      get :show, params: { id: -1 }
+      expect(response).to redirect_to(skins_path)
+      expect(flash[:error]).to be_present
+    end
   end
 
   describe "PUT update" do
+    it "re-renders the form when the update is invalid" do
+      user = create(:user)
+      skin = create(:skin, user: user, name: 'Keep')
+      login_as(user)
+      put :update, params: { id: skin.id, skin: { name: '' } }
+      expect(response).to render_template(:edit)
+      expect(skin.reload.name).to eq('Keep')
+    end
+
     it "requires edit permission" do
       skin = create(:skin)
       login
@@ -63,6 +89,16 @@ RSpec.describe SkinsController do
       skin = create(:skin, user: user)
       login_as(user)
       expect { delete :destroy, params: { id: skin.id } }.to change { Skin.count }.by(-1)
+    end
+
+    it "reports an error and keeps the skin when destruction fails" do
+      user = create(:user)
+      skin = create(:skin, user: user)
+      login_as(user)
+      allow_any_instance_of(Skin).to receive(:destroy!).and_raise(ActiveRecord::RecordNotDestroyed.new('nope', skin))
+      expect { delete :destroy, params: { id: skin.id } }.not_to change { Skin.count }
+      expect(response).to redirect_to(skins_path)
+      expect(flash[:error]).to be_present
     end
   end
 
@@ -96,6 +132,16 @@ RSpec.describe SkinsController do
       login_as(user)
       expect { post :fork, params: { id: skin.id } }.to change { user.skins.count }.by(1)
       expect(user.skins.last.name).to eq('Original (copy)')
+    end
+
+    it "reports an error when the copy cannot be saved" do
+      skin = create(:skin, public: true)
+      user = create(:user)
+      login_as(user)
+      allow_any_instance_of(Skin).to receive(:save).and_return(false)
+      expect { post :fork, params: { id: skin.id } }.not_to change { Skin.count }
+      expect(response).to redirect_to(skin_path(skin))
+      expect(flash[:error]).to be_present
     end
   end
 

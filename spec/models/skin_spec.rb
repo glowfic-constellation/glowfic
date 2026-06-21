@@ -28,6 +28,26 @@ RSpec.describe Skin do
     expect(skin.errors.attribute_names).to include(:css)
   end
 
+  describe "permissions" do
+    let(:owner) { create(:user) }
+
+    it "is only editable by its owner" do
+      skin = create(:skin, user: owner)
+      expect(skin.editable_by?(owner)).to be(true)
+      expect(skin.editable_by?(create(:user))).to be(false)
+      expect(skin.editable_by?(nil)).to be(false)
+    end
+
+    it "is visible to anyone when public, otherwise only its owner" do
+      public_skin = create(:skin, user: owner, public: true)
+      private_skin = create(:skin, user: owner, public: false)
+      expect(public_skin.visible_to?(nil)).to be(true)
+      expect(private_skin.visible_to?(nil)).to be(false)
+      expect(private_skin.visible_to?(create(:user))).to be(false)
+      expect(private_skin.visible_to?(owner)).to be(true)
+    end
+  end
+
   describe "scopes" do
     it ".listed surfaces safe and approved public skins but hides pending dangerous ones" do
       safe = create(:skin, public: true, css: '.a { color: red; }')

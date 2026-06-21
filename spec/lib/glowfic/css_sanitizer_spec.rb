@@ -140,4 +140,48 @@ RSpec.describe Glowfic::CssSanitizer do
       expect(sanitize('.a { color: ; } } garbage {{{')).to be_a(String)
     end
   end
+
+  describe "additional dangerous vectors" do
+    it "drops values containing a javascript: URI" do
+      expect(sanitize('.a { background-image: url(javascript:alert(1)); color: red; }')).not_to include('javascript')
+      expect(Glowfic::CssSanitizer.dangerous?('.a { background-image: url(javascript:alert(1)); }')).to be(true)
+    end
+
+    it "drops a rule whose selector itself smuggles a dangerous value" do
+      expect(sanitize('a[href*="javascript:"] { color: red; }')).not_to include('javascript')
+    end
+
+    it "drops disallowed at-rules while keeping a following safe rule" do
+      result = sanitize('@charset "utf-8"; @namespace url(http://example.com); .a { color: red; }')
+      expect(result).to include('color: red')
+      expect(result).not_to include('namespace')
+      expect(result).not_to include('charset')
+    end
+
+    it "ignores declarations with an empty name or value" do
+      expect(sanitize('.a { : red; color: ; padding: 4px; }')).to include('padding: 4px')
+    end
+
+    it "flags -moz-binding and behavior smuggled in an allowed property value" do
+      expect(Glowfic::CssSanitizer.dangerous?('.a { content: "-moz-binding"; }')).to be(true)
+      expect(Glowfic::CssSanitizer.dangerous?('.a { content: "behavior: x"; }')).to be(true)
+    end
+
+    it "drops an at-rule with a dangerous prelude" do
+      expect(sanitize('@supports (background: url(http://evil.example/x)) { .a { color: red; } }')).not_to include('color: red')
+    end
+
+    it "drops a disallowed at-rule that has a block" do
+      expect(sanitize('@page { margin: 0; } .a { color: red; }')).not_to include('margin')
+    end
+
+    it "drops an allowed at-rule whose body sanitizes to nothing" do
+      expect(sanitize('@media screen { .a { nonsense-prop: 1; } }')).to eq('')
+    end
+
+    it "yields an empty string if the parser blows up" do
+      allow(Crass).to receive(:parse).and_raise(StandardError)
+      expect(sanitize('.a { color: red; }')).to eq('')
+    end
+  end
 end
