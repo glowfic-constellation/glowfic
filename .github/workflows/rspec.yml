@@ -105,7 +105,7 @@ jobs:
         run: |
           bundle exec parallel_rspec spec \
             --runtime-log tmp/parallel_runtime_rspec.log \
-            -o '--format progress'
+            -o '--format progress --require rspec/github --format RSpec::Github::Formatter'
       - name: Merge coverage and enforce threshold
         # only when the suite passed: a failed worker doesn't flush its coverage,
         # which would make the merged total look (misleadingly) too low

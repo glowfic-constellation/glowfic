@@ -438,6 +438,8 @@ GEM
     rspec-expectations (3.13.5)
       diff-lcs (>= 1.2.0, < 2.0)
       rspec-support (~> 3.13.0)
+    rspec-github (3.0.0)
+      rspec-core (~> 3.0)
     rspec-mocks (3.13.7)
       diff-lcs (>= 1.2.0, < 2.0)
       rspec-support (~> 3.13.0)
@@ -653,6 +655,7 @@ DEPENDENCIES
   request_store (~> 1.7)
   resque
   resque-heroku-signals
+  rspec-github
   rspec-rails
   rubocop (~> 1.82.1)
   rubocop-capybara (~> 2.22.1)

@@ -95,6 +95,7 @@ group :test do
   gem 'capybara'
   gem 'factory_bot_rails'
   gem 'rails-controller-testing'
+  gem 'rspec-github', require: false
   gem 'selenium-webdriver'
   gem 'simplecov'
   gem 'timecop'
