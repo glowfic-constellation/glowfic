@@ -588,71 +588,73 @@ div.post-subheader { width: 100%; }
  * ------------------------------------------------------------------------- */
 .alternating-icons {
   // Tighten the breathing room around each reply.
-  #content > .post-container .padding-10 { padding: 6px 8px; }
+  #content > .post-container .padding-10 { padding: 4px 8px; }
 
-  // Compact info column: a small icon with the name/author labels stacked under it.
+  // The info "chip": a small icon sitting *next to* a compact name/author
+  // column (not stacked beneath it), so the whole floated block is only about
+  // as tall as the icon. A one-line reply then collapses to roughly icon
+  // height instead of icon + three stacked label bars + footer.
   .post-info-box {
-    width: 88px;
-    margin-right: 8px;
-    margin-bottom: 4px;
+    float: left;
+    width: auto;
+    max-width: 45%;
+    margin: 0 8px 2px 0;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    text-align: left;
     font-size: $font_size_smaller;
   }
 
   .post-icon {
     height: auto;
+    background: none;
+    flex: 0 0 auto;
 
     img, div {
-      margin: 4px;
-      width: 72px;
-      height: 72px;
-    }
-
-    img {
-      margin-bottom: 4px;
+      width: 44px;
+      height: 44px;
+      margin: 0;
       object-fit: contain;
     }
   }
 
-  .post-character, .post-screenname, .post-author { padding: 2px 4px; }
+  .post-info-text { min-width: 0; }
+
+  .post-character, .post-screenname, .post-author {
+    padding: 1px 4px;
+    line-height: 1.2;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
 
   // The icon block is much narrower now, so quotes/lists don't need the big
   // indent that was there to clear the old 150px sidebar.
   .post-content {
     blockquote { margin-left: 1em; margin-right: 1em; }
     ul, ol { padding-left: 20px; }
+
+    p:first-child { margin-top: 0; }
+  }
+
+  // Keep the timestamp but make it tiny so it barely adds height.
+  .post-footer {
+    .right-align { font-size: $font_size_smaller; }
+    .padding-5 { padding: 1px 4px; }
   }
 
   // Mirror everything for replies whose icon sits on the right edge.
   .icon-right {
     .post-info-box {
       float: right;
-      margin-left: 8px;
-      margin-right: 0;
+      flex-direction: row-reverse;
+      margin: 0 0 2px 8px;
     }
 
     .post-edit-box {
       float: left;
-      margin-left: 0;
-      margin-right: 8px;
-    }
-  }
-}
-
-/* On narrow screens keep the alternating sides but let the icon and labels sit
- * side-by-side so a short reply stays a single compact row. */
-@media (max-width: 600px) {
-  .alternating-icons {
-    .post-info-box {
-      float: left;
-      width: auto;
-      display: block;
-    }
-
-    .icon-right .post-info-box { float: right; }
-
-    .post-info-text {
-      float: none;
-      margin-right: 0;
+      margin: 0 8px 0 0;
     }
   }
 }
