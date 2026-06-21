@@ -94,9 +94,18 @@ jobs:
         # runtime once the cached log exists; the first run falls back to file
         # size and writes the log for next time.
         run: |
+          echo "runner: nproc=$(nproc) mem=$(free -m | awk '/Mem:/{print $2"MB"}')"
+          # TEMP: sample CPU/mem saturation during the test run
+          vmstat 5 > /tmp/vmstat.log 2>&1 &
+          VM=$!
           bundle exec parallel_rspec spec \
             --runtime-log tmp/parallel_runtime_rspec.log \
             -o '--format progress'
+          RC=$?
+          kill $VM 2>/dev/null || true
+          echo "===== vmstat: r=runqueue b=blocked | free/cache KB | us=user sy=sys id=idle wa=iowait ====="
+          cat /tmp/vmstat.log
+          exit $RC
       - name: Merge coverage and enforce threshold
         # only when the suite passed: a failed worker doesn't flush its coverage,
         # which would make the merged total look (misleadingly) too low
