@@ -13,7 +13,7 @@ class SkinsController < ApplicationController
 
   def gallery
     @page_title = 'Skin Gallery'
-    @skins = Skin.listed.ordered.paginate(page: page, per_page: 25)
+    @skins = Skin.listed.ordered.includes(:user).paginate(page: page, per_page: 25)
   end
 
   def new
@@ -90,7 +90,7 @@ class SkinsController < ApplicationController
 
   def review
     @page_title = 'Skins Awaiting Review'
-    @skins = Skin.pending_review.ordered.paginate(page: page, per_page: 25)
+    @skins = Skin.pending_review.ordered.includes(:user).paginate(page: page, per_page: 25)
   end
 
   def approve
