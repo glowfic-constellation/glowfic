@@ -318,6 +318,8 @@ GEM
     nokogiri (1.19.3-x86_64-linux-musl)
       racc (~> 1.4)
     parallel (1.27.0)
+    parallel_tests (5.7.0)
+      parallel
     parser (3.3.10.0)
       ast (~> 2.4.1)
       racc
@@ -633,6 +635,7 @@ DEPENDENCIES
   newrelic_rpm
   nilify_blanks
   nokogiri
+  parallel_tests
   pg (~> 1.6)
   pg_search
   puma

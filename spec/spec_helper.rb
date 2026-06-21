@@ -30,6 +30,16 @@ unless ENV.fetch('SKIP_COVERAGE', false) || ENV.fetch('APIPIE_RECORD', false) ||
     end
   end
 
+  # Under parallel_tests each worker only runs a slice of the suite, so it must
+  # write its results to a distinct file (collated later by `rake coverage:report`)
+  # and must NOT enforce the threshold on its own partial coverage.
+  parallel_worker = ENV['TEST_ENV_NUMBER'] if ENV.key?('TEST_ENV_NUMBER')
+  if parallel_worker
+    worker_id = parallel_worker.empty? ? '1' : parallel_worker
+    SimpleCov.coverage_dir("coverage/parallel/#{worker_id}")
+    SimpleCov.command_name("rspec_#{worker_id}")
+  end
+
   SimpleCov.start 'rails' do
     add_group("Controllers") { |src| src.filename.include?('app/controllers') and src.filename.exclude?('app/controllers/api') }
     add_group "Presenters", "app/presenters"
@@ -49,7 +59,7 @@ unless ENV.fetch('SKIP_COVERAGE', false) || ENV.fetch('APIPIE_RECORD', false) ||
       end
     end
     enable_coverage :branch
-    minimum_coverage line: 95.2, branch: 88.1
+    minimum_coverage line: 95.2, branch: 88.1 unless parallel_worker
     enable_coverage_for_eval
   end
 end
@@ -160,6 +170,10 @@ RSpec.configure do |config|
     user.destroy!
   end
 
+  # Zero out CSS animations/transitions in feature specs so Capybara never waits
+  # on them to settle — faster and far less flaky.
+  Capybara.disable_animation = true
+
   config.before(:each, type: :system) do
     driven_by :rack_test
   end
@@ -170,6 +184,14 @@ RSpec.configure do |config|
       options.add_argument('--disable-dev-shm-usage')
       options.add_argument("--user-data-dir=#{ENV['CHROMEDRIVER_CONFIG']}") if ENV['CHROMEDRIVER_CONFIG']
       options.add_argument('--window-size=1366,768')
+      # Trim browser overhead that does nothing for headless CI runs.
+      options.add_argument('--disable-gpu')
+      options.add_argument('--disable-extensions')
+      options.add_argument('--disable-background-networking')
+      options.add_argument('--disable-renderer-backgrounding')
+      options.add_argument('--disable-backgrounding-occluded-windows')
+      options.add_argument('--disable-features=Translate,BackForwardCache')
+      options.add_argument('--mute-audio')
     end
   end
 
