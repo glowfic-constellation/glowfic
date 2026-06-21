@@ -35,6 +35,27 @@ RSpec.configure do |config|
   # instead of true.
   config.use_transactional_fixtures = true
 
+  # Isolate cross-example state that ActiveRecord's transaction rollback does NOT
+  # cover, so specs don't depend on what ran before them. This was masked by the
+  # old fixed single-process order; parallel_tests regroups files per worker and
+  # surfaces it.
+  config.before(:each) do
+    # 1. ActiveJob :test adapter — clear queued/performed jobs and the perform
+    #    flags so job expectations (have_been_enqueued) start clean.
+    adapter = ActiveJob::Base.queue_adapter
+    if adapter.is_a?(ActiveJob::QueueAdapters::TestAdapter)
+      adapter.enqueued_jobs.clear
+      adapter.performed_jobs.clear
+      adapter.perform_enqueued_jobs = false
+      adapter.perform_enqueued_at_jobs = false
+    end
+
+    # 2. Redis — e.g. GenerateFlatPostJob.enqueue takes a 30-minute Redis lock and
+    #    only releases it when the job performs; in tests jobs are enqueued but not
+    #    performed, so the lock would leak and silently no-op a later enqueue.
+    $redis&.flushdb
+  end
+
   # RSpec Rails can automatically mix in different behaviours to your tests
   # based on their file location, for example enabling you to call `get` and
   # `post` in specs under `spec/controllers`.

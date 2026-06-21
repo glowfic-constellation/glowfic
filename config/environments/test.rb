@@ -8,6 +8,13 @@ require "active_support/core_ext/integer/time"
 Rails.application.configure do
   # Settings specified here will take precedence over those in config/application.rb.
 
+  # Use the ActiveJob test adapter for every spec so job expectations
+  # (have_been_enqueued, etc.) work regardless of which specs ran first. Without
+  # this the adapter is only switched to :test ad hoc by specs that include
+  # ActiveJob::TestHelper, which left job assertions order-dependent — invisible
+  # in a fixed single-process order, but broken once parallel_tests regroups files.
+  config.active_job.queue_adapter = :test
+
   # While tests run files are not watched, reloading is not necessary.
   config.enable_reloading = false
 

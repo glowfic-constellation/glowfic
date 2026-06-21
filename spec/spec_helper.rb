@@ -171,7 +171,7 @@ RSpec.configure do |config|
   end
 
   # Zero out CSS animations/transitions in feature specs so Capybara never waits
-  # on them to settle — faster and far less flaky.
+  # on them to settle — a small reliability win for JS specs.
   Capybara.disable_animation = true
 
   config.before(:each, type: :system) do
@@ -184,14 +184,6 @@ RSpec.configure do |config|
       options.add_argument('--disable-dev-shm-usage')
       options.add_argument("--user-data-dir=#{ENV['CHROMEDRIVER_CONFIG']}") if ENV['CHROMEDRIVER_CONFIG']
       options.add_argument('--window-size=1366,768')
-      # Trim browser overhead that does nothing for headless CI runs.
-      options.add_argument('--disable-gpu')
-      options.add_argument('--disable-extensions')
-      options.add_argument('--disable-background-networking')
-      options.add_argument('--disable-renderer-backgrounding')
-      options.add_argument('--disable-backgrounding-occluded-windows')
-      options.add_argument('--disable-features=Translate,BackForwardCache')
-      options.add_argument('--mute-audio')
     end
   end
 
