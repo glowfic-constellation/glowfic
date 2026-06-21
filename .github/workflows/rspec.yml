@@ -28,12 +28,13 @@ jobs:
           PGPASSWORD: postgres
           PGDATABASE: glowfic_test
         ports: ["5432:5432"]
-        options: --health-cmd pg_isready --health-interval 10s --health-timeout 5s --health-retries 5
+        # short health interval so "ready" is detected in ~2s instead of ~10s
+        options: --health-cmd pg_isready --health-interval 2s --health-timeout 3s --health-retries 15
       redis:
         # reference: https://docs.github.com/en/actions/guides/creating-redis-service-containers#running-jobs-in-containers
         image: redis:7.2
         ports: ["6379:6379"]
-        options: --health-cmd "redis-cli ping" --health-interval 10s --health-timeout 5s --health-retries 5
+        options: --health-cmd "redis-cli ping" --health-interval 2s --health-timeout 3s --health-retries 15
 
     env:
       GLOWFIC_DATABASE_USER: postgres
@@ -67,7 +68,15 @@ jobs:
         with:
           bundler-cache: true  # runs bundle install (with version based on Gemfile.lock) and automatically caches result
       - name: Set up parallel test databases
-        run: bundle exec rake parallel:create parallel:load_schema
+        # Load the schema once (one Rails boot), then template-copy it to the
+        # other workers' databases — much faster than booting Rails per worker.
+        env:
+          PGPASSWORD: postgres
+        run: |
+          bundle exec rails db:schema:load --trace
+          for n in $(seq 2 "$PARALLEL_TEST_PROCESSORS"); do
+            createdb -h localhost -U postgres -T glowfic_test "glowfic_test${n}"
+          done
       - name: Asset cache
         id: asset-cache
         uses: actions/cache@v5
@@ -94,18 +103,9 @@ jobs:
         # runtime once the cached log exists; the first run falls back to file
         # size and writes the log for next time.
         run: |
-          echo "runner: nproc=$(nproc) mem=$(free -m | awk '/Mem:/{print $2"MB"}')"
-          # TEMP: sample CPU/mem saturation during the test run
-          vmstat 5 > /tmp/vmstat.log 2>&1 &
-          VM=$!
           bundle exec parallel_rspec spec \
             --runtime-log tmp/parallel_runtime_rspec.log \
             -o '--format progress'
-          RC=$?
-          kill $VM 2>/dev/null || true
-          echo "===== vmstat: r=runqueue b=blocked | free/cache KB | us=user sy=sys id=idle wa=iowait ====="
-          cat /tmp/vmstat.log
-          exit $RC
       - name: Merge coverage and enforce threshold
         # only when the suite passed: a failed worker doesn't flush its coverage,
         # which would make the merged total look (misleadingly) too low
