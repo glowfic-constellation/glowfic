@@ -45,12 +45,6 @@ jobs:
       MINIO_ENDPOINT_EXTERNAL: http://localhost:9000/
       # Run the suite across this many parallel_tests workers (ubuntu-latest = 4 vCPUs).
       PARALLEL_TEST_PROCESSORS: 4
-      # Runner has ~8GB RAM idle; let GC run less often (bigger malloc budgets)
-      # to trade some of that memory for fewer collections. EXPERIMENT.
-      RUBY_GC_MALLOC_LIMIT: 67108864
-      RUBY_GC_MALLOC_LIMIT_MAX: 134217728
-      RUBY_GC_OLDMALLOC_LIMIT: 67108864
-      RUBY_GC_OLDMALLOC_LIMIT_MAX: 134217728
 
     steps:
       - uses: actions/checkout@v6
