@@ -5,47 +5,44 @@
  * post body (clamped between MIN and CAP). Short, rapid-fire replies get a
  * small icon so the exchange stays dense; long replies keep a full-size icon.
  *
- * We size to the post's *own* content height rather than the distance to the
- * next same-side reply (jbeshir's gutter approach): the icon here lives in a
- * floated info chip, so an icon taller than its body would inflate the post and
- * feed back into the layout. Capping at the body height keeps it stable.
+ * We size to the post's own content height rather than the distance to the next
+ * same-side reply (jbeshir's gutter approach): the icon here lives in a floated
+ * info chip, so an icon taller than its body would inflate the post and feed
+ * back into the layout. Capping at the body height keeps it stable.
  */
-(function() {
-  'use strict';
+$(document).ready(function() {
+  if (!document.body.classList.contains('alternating-icons')) return;
 
-  var MIN = 28;  // never shrink an icon below this (stays recognizable)
-  var CAP = 96;  // never grow past this (matches the non-alternating icon size)
+  const MIN = 28; // never shrink an icon below this (stays recognizable)
+  const CAP = 96; // never grow past this (matches the non-alternating icon size)
 
-  function clamp(min, value, max) {
+  const clamp = function(min, value, max) {
     return Math.min(max, Math.max(min, value));
-  }
+  };
 
-  function sizeIcons() {
-    if (!document.body.classList.contains('alternating-icons')) return;
+  const sizeIcons = function() {
+    const posts = document.querySelectorAll('#content .post-container');
+    Array.from(posts).forEach(function(post) {
+      const icon = post.querySelector('.post-icon img, .post-icon div');
+      const content = post.querySelector('.post-content');
+      if (!icon || !content) return;
 
-    var posts = document.querySelectorAll('#content .post-container');
-    for (var i = 0; i < posts.length; i++) {
-      var post = posts[i];
-      var icon = post.querySelector('.post-icon img, .post-icon div');
-      var content = post.querySelector('.post-content');
-      if (!icon || !content) continue;
-
-      var size = clamp(MIN, content.offsetHeight, CAP);
+      const size = clamp(MIN, content.offsetHeight, CAP);
       icon.style.width = size + 'px';
       icon.style.height = size + 'px';
-    }
-  }
+    });
+  };
 
-  function debounce(fn, wait) {
-    var timer = null;
+  const debounce = function(fn, wait) {
+    let timer = null;
     return function() {
       if (timer) clearTimeout(timer);
       timer = setTimeout(fn, wait);
     };
-  }
+  };
 
-  $(document).ready(sizeIcons);
+  sizeIcons();
   // Webfonts/images can land after ready and change body heights; recompute.
   $(window).on('load', sizeIcons);
   $(window).on('resize', debounce(sizeIcons, 150));
-})();
+});
