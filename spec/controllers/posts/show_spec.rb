@@ -240,7 +240,7 @@ RSpec.describe PostsController, 'GET show' do
     end
 
     it "renders the manual bookmark highlight and favicon" do
-      reader = create(:user, manual_unread: true)
+      reader = create(:user, manual_unread: true, visible_unread: true)
       reader.update!(layout: nil)
       post.mark_read(reader, at_time: post.created_at)
       expect(post.first_unread_for(reader)).to eq(reply)
@@ -250,6 +250,20 @@ RSpec.describe PostsController, 'GET show' do
 
       expect(response.status).to eq(200)
       expect(response.body).to include('reply-bookmarked')
+      expect(response.body).to include('favicon-bookmark')
+    end
+
+    it "shows the bookmark favicon but no highlight when visible_unread is off" do
+      reader = create(:user, manual_unread: true, visible_unread: false)
+      reader.update!(layout: nil)
+      post.mark_read(reader, at_time: post.created_at)
+      expect(post.first_unread_for(reader)).to eq(reply)
+      login_as(reader)
+
+      get :show, params: { id: post.id }
+
+      expect(response.status).to eq(200)
+      expect(response.body).not_to include('reply-bookmarked')
       expect(response.body).to include('favicon-bookmark')
     end
 

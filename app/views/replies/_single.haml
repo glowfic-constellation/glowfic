@@ -7,8 +7,8 @@
 - else
   - write = ''.freeze
 - highlight_class = ''
-- if reply == @unread && current_user
-  - highlight_class = current_user.manual_unread? ? 'reply-bookmarked' : (current_user.visible_unread? ? 'reply-highlighted' : '')
+- if reply == @unread && current_user.try(:visible_unread?)
+  - highlight_class = current_user.manual_unread? ? 'reply-bookmarked' : 'reply-highlighted'
 .post-container{class: [write, highlight_class]}
   - if reply.is_a?(Reply) && reply.id.present?
     %a.noheight{id: "reply-#{reply.id}"}= " "
