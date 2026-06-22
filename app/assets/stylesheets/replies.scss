@@ -556,6 +556,13 @@ div.post-subheader { width: 100%; }
 
 .reply-highlighted { border: 1px $border_color_unread_reply solid; }
 
+/* Manual bookmark ("keep my place") marker – visually distinct at a glance from the unread outline */
+.reply-bookmarked {
+  border-left: 5px solid $border_color_bookmark_reply;
+  /* inset shadow tints the whole reply regardless of the alternating row background's specificity */
+  box-shadow: inset 0 0 0 9999px $bg_color_bookmark_reply;
+}
+
 /* History page */
 .history-header { width: 170px; }
 

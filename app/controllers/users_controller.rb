@@ -264,6 +264,7 @@ class UsersController < ApplicationController
       :time_display,
       :unread_opened,
       :visible_unread,
+      :manual_unread,
       :hide_from_all,
       :hide_warnings,
       :hide_hiatused_tags_owed,

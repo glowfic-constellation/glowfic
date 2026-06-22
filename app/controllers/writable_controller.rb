@@ -59,7 +59,7 @@ class WritableController < ApplicationController
       end
     elsif cur_page == 'last'
       self.page = cur_page = @post.replies.paginate(per_page: per, page: 1).total_pages
-    elsif cur_page == 'unread'
+    elsif cur_page == 'unread' || (logged_in? && current_user.manual_unread? && params[:page].blank?)
       if logged_in?
         @unread = @post.first_unread_for(current_user) if logged_in?
         if @unread.nil?
@@ -132,7 +132,20 @@ class WritableController < ApplicationController
         @draft = ReplyDraft.draft_for(@post.id, current_user.id)
       end
 
-      @post.mark_read(current_user, at_time: @post.read_time_for(@replies))
+      if current_user.manual_unread?
+        # In manual mode the unread marker is a deliberate bookmark: it must not
+        # auto-advance as the user reads. We still create the initial view record
+        # the first time the post is opened so unread tracking has a baseline.
+        already_viewed = @post.views.where(user_id: current_user.id).exists?
+        @post.mark_read(current_user, at_time: @post.read_time_for(@replies)) unless already_viewed
+
+        # Highlight the bookmarked reply wherever it falls on the current page, and
+        # flag the page so the layout can show a distinct favicon for bookmarked threads.
+        @unread ||= @post.first_unread_for(current_user)
+        @bookmark_favicon = @unread.present?
+      else
+        @post.mark_read(current_user, at_time: @post.read_time_for(@replies))
+      end
     end
 
     if display_warnings?

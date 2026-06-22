@@ -501,6 +501,7 @@ ActiveRecord::Schema[8.0].define(version: 2024_12_24_202900) do
     t.boolean "public_bookmarks", default: false
     t.boolean "default_hide_edit_delete_buttons", default: false
     t.boolean "default_hide_add_bookmark_button", default: false
+    t.boolean "manual_unread", default: false
     t.index ["email"], name: "index_users_on_email", unique: true
     t.index ["username"], name: "index_users_on_username", unique: true
   end

@@ -8,6 +8,11 @@ $(document).ready(function() {
   if (window.location.hash === "#unread" && unreadElem.length > 0)
     shouldScrollToUnread = Math.abs(unreadElem.offset().top - $(window).scrollTop()) < 50;
 
+  // Manual "keep my place" bookmark: the page should load anchored at the marker even
+  // without a #unread hash, since the user always wants to land on their saved spot.
+  if (unreadElem.length > 0 && unreadElem.data("autoscroll"))
+    shouldScrollToUnread = true;
+
   $(".post-expander:not(.post-editor-expander)").click(function() {
     $(this).children(".info").remove();
     $(this).get(0).outerHTML = $(this).children('.hidden').html();

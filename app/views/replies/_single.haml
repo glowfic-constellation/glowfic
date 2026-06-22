@@ -6,12 +6,15 @@
   - write = 'post-reply'.freeze
 - else
   - write = ''.freeze
-.post-container{class: [write, (reply == @unread && current_user.try(:visible_unread?)) ? 'reply-highlighted' : '']}
+- highlight_class = ''
+- if reply == @unread && current_user
+  - highlight_class = current_user.manual_unread? ? 'reply-bookmarked' : (current_user.visible_unread? ? 'reply-highlighted' : '')
+.post-container{class: [write, highlight_class]}
   - if reply.is_a?(Reply) && reply.id.present?
     %a.noheight{id: "reply-#{reply.id}"}= " "
   - if reply == @unread
     .unread-marker-container
-      %a#unread.unread-marker First unread marker
+      %a#unread.unread-marker{class: ('bookmark-marker' if current_user.try(:manual_unread?)), data: ({ autoscroll: true } if current_user.try(:manual_unread?))}= current_user.try(:manual_unread?) ? 'Bookmark' : 'First unread marker'
   .padding-10
     .post-info-box
       - if reply.icon_id && reply.keyword
