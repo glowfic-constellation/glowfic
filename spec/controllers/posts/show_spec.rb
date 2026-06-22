@@ -197,7 +197,7 @@ RSpec.describe PostsController, 'GET show' do
       expect(response).to have_http_status(200)
       expect(response.media_type).to eq('application/rss+xml')
 
-      doc = Nokogiri::XML(response.body) { |config| config.strict }
+      doc = Nokogiri::XML(response.body, &:strict)
       expect(doc.errors).to be_empty
       expect(doc.at_xpath('/rss/channel/title').text).to eq('a feed thread')
       items = doc.xpath('/rss/channel/item')
@@ -210,6 +210,41 @@ RSpec.describe PostsController, 'GET show' do
       get :show, params: { id: post.id, format: :rss }
       expect(response).to redirect_to(continuities_url)
       expect(flash[:error]).to eq("You do not have permission to view this post.")
+    end
+
+    it "supports conditional GET with an ETag" do
+      get :show, params: { id: post.id, format: :rss }
+      expect(response).to have_http_status(200)
+      expect(response.etag).to be_present
+
+      request.headers['If-None-Match'] = response.etag
+      get :show, params: { id: post.id, format: :rss }
+      expect(response).to have_http_status(304)
+    end
+
+    it "re-renders when the thread changes" do
+      get :show, params: { id: post.id, format: :rss }
+      etag = response.etag
+
+      request.headers['If-None-Match'] = etag
+      create(:reply, post: post)
+      get :show, params: { id: post.id, format: :rss }
+      expect(response).to have_http_status(200)
+      expect(response.etag).not_to eq(etag)
+    end
+
+    it "marks public feeds cacheable by shared caches" do
+      get :show, params: { id: post.id, format: :rss }
+      expect(response.headers['Cache-Control']).to include('public')
+      expect(response.headers['Cache-Control']).to include('max-age')
+    end
+
+    it "keeps non-public feeds private" do
+      hidden = create(:post, privacy: :registered)
+      reader = create(:user)
+      get :show, params: { id: hidden.id, format: :rss, rss_token: reader.rss_token }
+      expect(response).to have_http_status(200)
+      expect(response.headers['Cache-Control']).to include('private')
     end
 
     it "shows the newest items first and includes the opening post last" do

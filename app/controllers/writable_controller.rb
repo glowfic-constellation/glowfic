@@ -174,6 +174,14 @@ class WritableController < ApplicationController
     @feed_items = replies
     @feed_items << @post if replies.size < RSS_ITEM_LIMIT
 
+    # Feed readers poll on a fixed interval, so support conditional GET: the ETag (built
+    # from each item's cache version) and Last-Modified let unchanged feeds return 304
+    # without re-rendering, and a short max-age lets a CDN/proxy absorb repeat polls. Only
+    # publicly-visible threads may be stored in shared caches.
+    is_public = @post.privacy_public?
+    expires_in(15.minutes, public: is_public)
+    return unless stale?(etag: @feed_items, last_modified: @feed_items.map(&:last_updated).max, public: is_public)
+
     render 'posts/show', formats: [:rss], layout: false
   end
 
