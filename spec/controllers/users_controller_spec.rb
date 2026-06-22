@@ -651,6 +651,33 @@ RSpec.describe UsersController do
     end
   end
 
+  describe "POST reset_rss_token" do
+    it "requires login" do
+      post :reset_rss_token, params: { id: -1 }
+      expect(response).to redirect_to(root_url)
+      expect(flash[:error]).to eq("You must be logged in to view that page.")
+    end
+
+    it "requires own user" do
+      user = create(:user)
+      login
+      post :reset_rss_token, params: { id: user.id }
+      expect(response).to redirect_to(continuities_url)
+      expect(flash[:error]).to eq("You do not have permission to modify this account.")
+    end
+
+    it "rotates the token" do
+      user = create(:user)
+      old_token = user.rss_token
+      login_as(user)
+      post :reset_rss_token, params: { id: user.id }
+      expect(response).to redirect_to(edit_user_url(user))
+      expect(flash[:success]).to eq("Your RSS feed token has been reset. Existing feed links will no longer work.")
+      expect(user.reload.rss_token).to be_present
+      expect(user.rss_token).not_to eq(old_token)
+    end
+  end
+
   describe "GET search" do
     it "works logged in" do
       login

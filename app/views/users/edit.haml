@@ -123,3 +123,10 @@
         .sub= label_tag :secret
         .even= text_field_tag :secret, params[:secret], placeholder: "Secret word - ask around the community"
       .form-table-ender= submit_tag "Save", class: 'button'
+%br
+= form_tag reset_rss_token_user_path(current_user), method: :post, id: 'reset_rss_token_form' do
+  .form-table#reset-rss-token
+    .editor-title RSS Feed Token
+    %div
+      .even Your RSS subscription links contain a private token. Resetting it revokes all existing feed links; you will need to resubscribe in your feed reader.
+    .form-table-ender= submit_tag "Reset RSS Token", class: 'button', data: { confirm: 'Reset your RSS feed token? Existing feed links will stop working.' }
