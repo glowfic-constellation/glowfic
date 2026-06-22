@@ -12,6 +12,10 @@
     - if @meta_canonical.present?
       %link{rel: 'canonical', href: @meta_canonical}
 
+    / RSS feed autodiscovery
+    - if @feed_url.present?
+      %link{rel: 'alternate', type: 'application/rss+xml', title: @feed_title, href: @feed_url}
+
     / OpenGraph embed data
     - if @meta_og.present?
       :ruby

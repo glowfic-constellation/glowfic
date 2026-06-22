@@ -1,5 +1,17 @@
 # frozen_string_literal: true
 class WritableController < ApplicationController
+  # number of most recent messages (the opening post plus replies) shown in a thread's RSS feed
+  RSS_ITEM_LIMIT = 25
+
+  # columns required to render a reply (or the opening post) without N+1 queries on
+  # its character, icon, alias and user
+  REPLY_DISPLAY_COLUMNS = <<~SQL.squish.freeze
+    replies.*, characters.name, characters.screenname,
+    icons.keyword, icons.url,
+    users.username, users.deleted as user_deleted,
+    character_aliases.name as alias
+  SQL
+
   protected
 
   def build_template_groups(user=nil)
@@ -77,17 +89,10 @@ class WritableController < ApplicationController
       self.page = cur_page = cur_page.to_i
     end
 
-    select = <<~SQL.squish
-      replies.*, characters.name, characters.screenname,
-      icons.keyword, icons.url,
-      users.username, users.deleted as user_deleted,
-      character_aliases.name as alias
-    SQL
-
     reply_count = @replies.count
 
     @replies = @replies
-      .select(select)
+      .select(REPLY_DISPLAY_COLUMNS)
       .joins(:user)
       .left_outer_joins(:character)
       .left_outer_joins(:icon)
@@ -110,6 +115,13 @@ class WritableController < ApplicationController
     canon_params[:per_page] = per unless per == 25
     canon_params[:page] = cur_page unless cur_page == 1
     @meta_canonical = post_url(@post, canon_params)
+
+    # RSS feed autodiscovery for the thread. Logged-in users get a tokenised URL so the
+    # feed keeps working in a reader for threads that aren't publicly visible.
+    feed_params = { format: :rss }
+    feed_params[:rss_token] = current_user.rss_token! if logged_in?
+    @feed_url = post_url(@post, feed_params)
+    @feed_title = "#{@post.subject} – Glowfic Constellation"
 
     # show <meta property="og:..." content="..."> – for embed data
     @meta_og = og_data_for_post(@post, page: self.page, total_pages: @replies.total_pages, per_page: per)
@@ -143,6 +155,34 @@ class WritableController < ApplicationController
     end
 
     render 'posts/show'
+  end
+
+  # Renders a thread's most recent activity as an RSS feed: the newest replies first,
+  # followed by the opening post once every reply fits within the item limit.
+  def show_post_rss
+    replies = @post.replies
+      .select(REPLY_DISPLAY_COLUMNS)
+      .joins(:user)
+      .left_outer_joins(:character)
+      .left_outer_joins(:icon)
+      .left_outer_joins(:character_alias)
+      .ordered
+      .reverse_order
+      .limit(RSS_ITEM_LIMIT)
+      .to_a
+
+    @feed_items = replies
+    @feed_items << @post if replies.size < RSS_ITEM_LIMIT
+
+    # Feed readers poll on a fixed interval, so support conditional GET: the ETag (built
+    # from each item's cache version) and Last-Modified let unchanged feeds return 304
+    # without re-rendering, and a short max-age lets a CDN/proxy absorb repeat polls. Only
+    # publicly-visible threads may be stored in shared caches.
+    is_public = @post.privacy_public?
+    expires_in(15.minutes, public: is_public)
+    return unless stale?(etag: @feed_items, last_modified: @feed_items.map(&:last_updated).max, public: is_public)
+
+    render 'posts/show', formats: [:rss], layout: false
   end
 
   def display_warnings?

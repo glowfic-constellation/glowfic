@@ -161,7 +161,11 @@ class PostsController < WritableController
       render :flat, layout: false
       return
     end
-    show_post
+
+    respond_to do |format|
+      format.html { show_post }
+      format.rss { show_post_rss }
+    end
   end
 
   def history
@@ -473,7 +477,7 @@ class PostsController < WritableController
       redirect_to continuities_path and return
     end
 
-    unless @post.visible_to?(current_user)
+    unless @post.visible_to?(feed_user)
       flash[:error] = "You do not have permission to view this post."
       redirect_to continuities_path and return
     end
