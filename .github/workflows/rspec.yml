@@ -49,11 +49,6 @@ jobs:
     steps:
       - uses: actions/checkout@v6
       - uses: browser-actions/setup-chrome@v2
-        with:
-          # Install a matching chromedriver onto PATH once, so each parallel
-          # worker reuses it instead of having Selenium Manager download/resolve
-          # it on the first :js spec (which was adding ~10s to one spec per worker).
-          install-chromedriver: true
       - name: Cache MinIO binary
         id: minio-cache
         uses: actions/cache@v5
@@ -72,6 +67,21 @@ jobs:
         uses: ruby/setup-ruby@v1
         with:
           bundler-cache: true  # runs bundle install (with version based on Gemfile.lock) and automatically caches result
+      - name: Cache Selenium chromedriver
+        uses: actions/cache@v5
+        with:
+          path: ~/.cache/selenium
+          key: ${{ runner.os }}-selenium-${{ hashFiles('Gemfile.lock') }}
+          restore-keys: ${{ runner.os }}-selenium-
+      - name: Warm up chromedriver
+        # Resolve+download the chromedriver that matches the installed Chrome ONCE
+        # (Selenium Manager caches it under ~/.cache/selenium), so the parallel
+        # workers reuse it instead of each downloading on their first :js spec.
+        run: |
+          bundle exec ruby -e "require 'selenium/webdriver'; \
+            o = Selenium::WebDriver::Chrome::Options.new; \
+            %w[--headless=new --no-sandbox --disable-dev-shm-usage].each { |a| o.add_argument(a) }; \
+            d = Selenium::WebDriver.for(:chrome, options: o); d.quit"
       - name: Set up parallel test databases
         # Load the schema once (one Rails boot), then template-copy it to the
         # other workers' databases — much faster than booting Rails per worker.
