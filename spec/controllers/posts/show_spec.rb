@@ -186,6 +186,50 @@ RSpec.describe PostsController, 'GET show' do
     end
   end
 
+  context "RSS feed" do
+    render_views
+
+    let!(:post) { create(:post, subject: 'a feed thread', description: 'a thread description') }
+    let!(:reply) { create(:reply, post: post, content: 'a reply body') }
+
+    it "renders an RSS feed without requiring login" do
+      get :show, params: { id: post.id, format: :rss }
+      expect(response).to have_http_status(200)
+      expect(response.media_type).to eq('application/rss+xml')
+      expect(response.body).to include('<rss')
+      expect(response.body).to include('<title>a feed thread</title>')
+      expect(response.body).to include('a reply body')
+    end
+
+    it "requires permission" do
+      post.update!(privacy: :private)
+      get :show, params: { id: post.id, format: :rss }
+      expect(response).to redirect_to(continuities_url)
+      expect(flash[:error]).to eq("You do not have permission to view this post.")
+    end
+
+    it "shows the newest items first and includes the opening post last" do
+      get :show, params: { id: post.id, format: :rss }
+      items = assigns(:feed_items)
+      expect(items.first).to eq(reply)
+      expect(items.last).to eq(post)
+    end
+
+    it "limits the number of items and drops the opening post when full" do
+      create_list(:reply, WritableController::RSS_ITEM_LIMIT + 2, post: post)
+      get :show, params: { id: post.id, format: :rss }
+      items = assigns(:feed_items)
+      expect(items.size).to eq(WritableController::RSS_ITEM_LIMIT)
+      expect(items).not_to include(post)
+    end
+
+    it "advertises the feed for autodiscovery on the HTML thread page" do
+      get :show, params: { id: post.id }
+      expect(response.body).to include('application/rss+xml')
+      expect(response.body).to include(post_url(post, format: :rss))
+    end
+  end
+
   context "with at_id" do
     let(:post) { create(:post) }
     let(:second_last_reply) { post.replies.ordered.last(2).first }

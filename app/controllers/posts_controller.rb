@@ -161,7 +161,11 @@ class PostsController < WritableController
       render :flat, layout: false
       return
     end
-    show_post
+
+    respond_to do |format|
+      format.html { show_post }
+      format.rss { show_post_rss }
+    end
   end
 
   def history

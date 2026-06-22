@@ -1,5 +1,17 @@
 # frozen_string_literal: true
 class WritableController < ApplicationController
+  # number of most recent messages (the opening post plus replies) shown in a thread's RSS feed
+  RSS_ITEM_LIMIT = 25
+
+  # columns required to render a reply (or the opening post) without N+1 queries on
+  # its character, icon, alias and user
+  REPLY_DISPLAY_COLUMNS = <<~SQL.squish.freeze
+    replies.*, characters.name, characters.screenname,
+    icons.keyword, icons.url,
+    users.username, users.deleted as user_deleted,
+    character_aliases.name as alias
+  SQL
+
   protected
 
   def build_template_groups(user=nil)
@@ -77,17 +89,10 @@ class WritableController < ApplicationController
       self.page = cur_page = cur_page.to_i
     end
 
-    select = <<~SQL.squish
-      replies.*, characters.name, characters.screenname,
-      icons.keyword, icons.url,
-      users.username, users.deleted as user_deleted,
-      character_aliases.name as alias
-    SQL
-
     reply_count = @replies.count
 
     @replies = @replies
-      .select(select)
+      .select(REPLY_DISPLAY_COLUMNS)
       .joins(:user)
       .left_outer_joins(:character)
       .left_outer_joins(:icon)
@@ -110,6 +115,10 @@ class WritableController < ApplicationController
     canon_params[:per_page] = per unless per == 25
     canon_params[:page] = cur_page unless cur_page == 1
     @meta_canonical = post_url(@post, canon_params)
+
+    # RSS feed autodiscovery for the thread
+    @feed_url = post_url(@post, format: :rss)
+    @feed_title = "#{@post.subject} – Glowfic Constellation"
 
     # show <meta property="og:..." content="..."> – for embed data
     @meta_og = og_data_for_post(@post, page: self.page, total_pages: @replies.total_pages, per_page: per)
@@ -143,6 +152,26 @@ class WritableController < ApplicationController
     end
 
     render 'posts/show'
+  end
+
+  # Renders a thread's most recent activity as an RSS feed: the newest replies first,
+  # followed by the opening post once every reply fits within the item limit.
+  def show_post_rss
+    replies = @post.replies
+      .select(REPLY_DISPLAY_COLUMNS)
+      .joins(:user)
+      .left_outer_joins(:character)
+      .left_outer_joins(:icon)
+      .left_outer_joins(:character_alias)
+      .ordered
+      .reverse_order
+      .limit(RSS_ITEM_LIMIT)
+      .to_a
+
+    @feed_items = replies
+    @feed_items << @post if replies.size < RSS_ITEM_LIMIT
+
+    render 'posts/show', formats: [:rss], layout: false
   end
 
   def display_warnings?
