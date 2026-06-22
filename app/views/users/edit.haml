@@ -54,7 +54,9 @@
         = f.check_box :unread_opened
         = f.label :unread_opened, "Display opened threads only"
         = f.check_box :visible_unread
-        = f.label :visible_unread, "Outline when jumping to unread"
+        = f.label :visible_unread, "Highlight the unread marker (outline when jumping to unread, or your bookmark in manual mode)"
+        = f.check_box :manual_unread
+        = f.label :manual_unread, "Keep my place manually (don't auto-advance the unread marker; jump to it via the unread link)"
         = f.check_box :hide_from_all
         = f.label :hide_from_all, "Hide hidden posts from recently updated and other post lists"
     %div

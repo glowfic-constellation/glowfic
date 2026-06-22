@@ -79,6 +79,73 @@ RSpec.describe PostsController, 'GET show' do
     end
   end
 
+  context "manual unread mode" do
+    let(:user) { create(:user, manual_unread: true) }
+
+    before(:each) { login_as(user) }
+
+    it "records the initial view but does not auto-advance the marker on later views" do
+      create_list(:reply, 3, post: post)
+      get :show, params: { id: post.id }
+      last_read = post.reload.last_read(user)
+      expect(last_read).not_to be_nil
+
+      Timecop.freeze(last_read + 1.second) do
+        new_reply = create(:reply, post: post)
+        get :show, params: { id: post.id }
+        # marker stays put: read_at is unchanged and the new reply is still unread
+        expect(post.reload.last_read(user).to_i).to eq(last_read.to_i)
+        expect(post.first_unread_for(user)).to eq(new_reply)
+      end
+    end
+
+    it "does not auto-jump on a plain load but still flags the marker and favicon" do
+      replies = create_list(:reply, 5, post: post)
+      post.mark_read(user, at_time: replies[1].created_at)
+      expect(post.first_unread_for(user)).to eq(replies[2])
+
+      get :show, params: { id: post.id, per_page: 1 }
+
+      # plain load stays on page 1 (jumping to the marker requires the unread navigation)
+      expect(assigns(:page)).to eq(1)
+      expect(assigns(:unread)).to eq(replies[2])
+      expect(assigns(:bookmark_favicon)).to be true
+    end
+
+    it "lands on the marker page when navigating to unread" do
+      replies = create_list(:reply, 5, post: post)
+      post.mark_read(user, at_time: replies[1].created_at)
+      expect(post.first_unread_for(user)).to eq(replies[2])
+
+      get :show, params: { id: post.id, per_page: 1, page: 'unread' }
+
+      expect(assigns(:unread)).to eq(replies[2])
+      expect(assigns(:page)).to eq(replies[2].post_page(1))
+      expect(assigns(:bookmark_favicon)).to be true
+    end
+
+    it "highlights the marker even when an explicit page is requested" do
+      replies = create_list(:reply, 5, post: post)
+      post.mark_read(user, at_time: replies[2].created_at)
+      expect(post.first_unread_for(user)).to eq(replies[3])
+
+      get :show, params: { id: post.id, per_page: 1, page: replies[3].post_page(1) }
+
+      expect(assigns(:unread)).to eq(replies[3])
+      expect(assigns(:bookmark_favicon)).to be true
+    end
+
+    it "uses the default favicon when the thread is fully read" do
+      create_list(:reply, 3, post: post)
+      post.mark_read(user)
+
+      get :show, params: { id: post.id }
+
+      expect(assigns(:unread)).to be_nil
+      expect(assigns(:bookmark_favicon)).to be_falsey
+    end
+  end
+
   context "invalid pages" do
     it "handles invalid pages" do
       get :show, params: { id: post.id, page: 'invalid' }
@@ -170,6 +237,34 @@ RSpec.describe PostsController, 'GET show' do
       get :show, params: { id: post.id }
       expect(response.status).to eq(200)
       expect(response.body).to include('Join Thread')
+    end
+
+    it "renders the manual bookmark highlight and favicon" do
+      reader = create(:user, manual_unread: true, visible_unread: true)
+      reader.update!(layout: nil)
+      post.mark_read(reader, at_time: post.created_at)
+      expect(post.first_unread_for(reader)).to eq(reply)
+      login_as(reader)
+
+      get :show, params: { id: post.id }
+
+      expect(response.status).to eq(200)
+      expect(response.body).to include('reply-bookmarked')
+      expect(response.body).to include('favicon-bookmark')
+    end
+
+    it "shows the bookmark favicon but no highlight when visible_unread is off" do
+      reader = create(:user, manual_unread: true, visible_unread: false)
+      reader.update!(layout: nil)
+      post.mark_read(reader, at_time: post.created_at)
+      expect(post.first_unread_for(reader)).to eq(reply)
+      login_as(reader)
+
+      get :show, params: { id: post.id }
+
+      expect(response.status).to eq(200)
+      expect(response.body).not_to include('reply-bookmarked')
+      expect(response.body).to include('favicon-bookmark')
     end
 
     it "flat view renders HAML properly" do

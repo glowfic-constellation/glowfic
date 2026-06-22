@@ -230,6 +230,10 @@ $bg_color_post_author_narrow: $colors_brown !default; // these are flipped from 
 
 $border_color_unread_reply: #FF0000 !default;
 
+// Manual "keep my place" bookmark marker – deliberately distinct from the red unread outline
+$border_color_bookmark_reply: #E8A317 !default; // amber accent
+$bg_color_bookmark_reply: rgba(232, 163, 23, 0.16) !default; // translucent amber tint, layers over any theme background
+
 $font_color_paginate: $colors_blacker !default;
 $font_color_paginate_link: $colors_lightgrey !default;
 $bg_color_paginate_link_hover: $colors_greybrown !default;
