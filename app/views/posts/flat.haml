@@ -54,4 +54,4 @@
               - if @post.created_at.to_i != @post.last_updated.to_i
                 = precede ' | Updated ' do
                   %span.post-updated=pretty_time(@post.last_updated, format: ApplicationHelper::TIME_FORMAT)
-      .flat-post-replies= @post.flat_post.content.try(:html_safe)
+      .flat-post-replies= FlatPostsController::FLAT_BODY_PLACEHOLDER.html_safe

@@ -22,6 +22,16 @@ RSpec.describe GenerateFlatPostJob do
   end
 
   describe "#perform" do
+    let(:fake_s3_object) do
+      object = double('Aws::S3::Object')
+      allow(object).to receive(:upload_stream) do |_opts, &block|
+        block.call(StringIO.new) if block
+      end
+      object
+    end
+
+    before(:each) { allow(S3_BUCKET).to receive(:object).and_return(fake_s3_object) }
+
     it "does nothing with invalid post id" do
       expect($redis).not_to receive(:set)
       GenerateFlatPostJob.perform_now(-1)
@@ -42,18 +52,62 @@ RSpec.describe GenerateFlatPostJob do
       expect($redis.get(GenerateFlatPostJob.lock_key(2))).to be_nil
     end
 
-    it "regenerates content" do
-      post = create(:post)
-      expect(post.flat_post.content).to be_nil
+    context "for a non-public post" do
+      it "regenerates content into the database" do
+        post = create(:post, privacy: :registered)
+        create(:reply, post: post)
+        post.flat_post.update_columns(content: nil, s3_key: nil) # rubocop:disable Rails/SkipsModelValidations
 
-      GenerateFlatPostJob.perform_now(post.id)
+        GenerateFlatPostJob.perform_now(post.id)
 
-      expect(post.flat_post.reload.content).not_to be_nil
-      expect($redis.get(GenerateFlatPostJob.lock_key(post.id))).to be_nil
+        expect(post.flat_post.reload.content).not_to be_nil
+        expect(post.flat_post.s3_key).to be_nil
+        expect($redis.get(GenerateFlatPostJob.lock_key(post.id))).to be_nil
+      end
+
+      it "does not write to S3" do
+        post = create(:post, privacy: :private)
+        expect(S3_BUCKET).not_to receive(:object)
+
+        GenerateFlatPostJob.perform_now(post.id)
+      end
+    end
+
+    context "for a public post" do
+      it "streams the rendered HTML to S3 and stores the key" do
+        post = create(:post, privacy: :public)
+        create(:reply, post: post, content: 'reply body')
+
+        captured = +''
+        allow(fake_s3_object).to receive(:upload_stream) do |opts, &block|
+          expect(opts[:content_type]).to eq('text/html; charset=utf-8')
+          stream = double('stream')
+          allow(stream).to receive(:write) { |chunk| captured << chunk }
+          block.call(stream)
+        end
+
+        expected_key = GenerateFlatPostJob.s3_key_for(post.id)
+        expect(S3_BUCKET).to receive(:object).with(expected_key).and_return(fake_s3_object)
+
+        GenerateFlatPostJob.perform_now(post.id)
+
+        expect(post.flat_post.reload.s3_key).to eq(expected_key)
+        expect(post.flat_post.content).to be_nil
+        expect(captured).to include('reply body')
+      end
+
+      it "clears any legacy content column after streaming" do
+        post = create(:post, privacy: :public)
+        post.flat_post.update_columns(content: 'legacy', s3_key: nil) # rubocop:disable Rails/SkipsModelValidations
+
+        GenerateFlatPostJob.perform_now(post.id)
+
+        expect(post.flat_post.reload.content).to be_nil
+      end
     end
 
     it "unsets key even if error is raised" do
-      post = create(:post)
+      post = create(:post, privacy: :private)
       flat = post.flat_post
       $redis.set(GenerateFlatPostJob.lock_key(post.id), true)
 
@@ -78,7 +132,7 @@ RSpec.describe GenerateFlatPostJob do
     end
 
     it "retries if resque is terminated" do
-      post = create(:post)
+      post = create(:post, privacy: :private)
       flat = post.flat_post
       $redis.set(GenerateFlatPostJob.lock_key(post.id), true)
       exc = Resque::TermException.new("SIGTERM")
@@ -96,7 +150,7 @@ RSpec.describe GenerateFlatPostJob do
     end
 
     it "builds a FlatPost object if one does not exist" do
-      post = create(:post)
+      post = create(:post, privacy: :private)
       expect(post.flat_post).not_to be_nil
       post.flat_post.destroy!
 

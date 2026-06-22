@@ -89,6 +89,7 @@ Rails.application.routes.draw do
       post :warnings
       get :split
       post :do_split
+      get :flat, to: 'flat_posts#show'
     end
     collection do
       post :mark

@@ -157,8 +157,7 @@ class PostsController < WritableController
 
   def show
     if params[:view] == 'flat'
-      response.headers['X-Robots-Tag'] = 'noindex'
-      render :flat, layout: false
+      redirect_to flat_post_path(@post)
       return
     end
     show_post
