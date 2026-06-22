@@ -44,7 +44,7 @@ jobs:
       MINIO_ENDPOINT: http://localhost:9000/
       MINIO_ENDPOINT_EXTERNAL: http://localhost:9000/
       # Run the suite across this many parallel_tests workers (ubuntu-latest = 4 vCPUs).
-      PARALLEL_TEST_PROCESSORS: 8
+      PARALLEL_TEST_PROCESSORS: 4
 
     steps:
       - uses: actions/checkout@v6
