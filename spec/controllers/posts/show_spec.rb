@@ -218,10 +218,12 @@ RSpec.describe PostsController, 'GET show' do
       login_as(create(:user, alternating_icons: false))
       get :show, params: { id: post.id }
       expect(response.body).not_to include('class="alternating-icons"')
+      expect(assigns(:javascripts)).not_to include('posts/alternating_icons')
 
       login_as(create(:user, alternating_icons: true))
       get :show, params: { id: post.id }
       expect(response.body).to include('alternating-icons')
+      expect(assigns(:javascripts)).to include('posts/alternating_icons')
     end
   end
 
