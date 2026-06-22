@@ -49,6 +49,11 @@ jobs:
     steps:
       - uses: actions/checkout@v6
       - uses: browser-actions/setup-chrome@v2
+        with:
+          # Install a matching chromedriver onto PATH once, so each parallel
+          # worker reuses it instead of having Selenium Manager download/resolve
+          # it on the first :js spec (which was adding ~10s to one spec per worker).
+          install-chromedriver: true
       - name: Cache MinIO binary
         id: minio-cache
         uses: actions/cache@v5
