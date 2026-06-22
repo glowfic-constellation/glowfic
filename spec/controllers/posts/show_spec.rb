@@ -99,12 +99,25 @@ RSpec.describe PostsController, 'GET show' do
       end
     end
 
-    it "loads anchored at the marker and flags the bookmark favicon" do
+    it "does not auto-jump on a plain load but still flags the marker and favicon" do
       replies = create_list(:reply, 5, post: post)
       post.mark_read(user, at_time: replies[1].created_at)
       expect(post.first_unread_for(user)).to eq(replies[2])
 
       get :show, params: { id: post.id, per_page: 1 }
+
+      # plain load stays on page 1 (jumping to the marker requires the unread navigation)
+      expect(assigns(:page)).to eq(1)
+      expect(assigns(:unread)).to eq(replies[2])
+      expect(assigns(:bookmark_favicon)).to be true
+    end
+
+    it "lands on the marker page when navigating to unread" do
+      replies = create_list(:reply, 5, post: post)
+      post.mark_read(user, at_time: replies[1].created_at)
+      expect(post.first_unread_for(user)).to eq(replies[2])
+
+      get :show, params: { id: post.id, per_page: 1, page: 'unread' }
 
       expect(assigns(:unread)).to eq(replies[2])
       expect(assigns(:page)).to eq(replies[2].post_page(1))
@@ -238,7 +251,6 @@ RSpec.describe PostsController, 'GET show' do
       expect(response.status).to eq(200)
       expect(response.body).to include('reply-bookmarked')
       expect(response.body).to include('favicon-bookmark')
-      expect(response.body).to include('data-autoscroll')
     end
 
     it "flat view renders HAML properly" do

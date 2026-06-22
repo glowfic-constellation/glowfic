@@ -14,7 +14,7 @@
     %a.noheight{id: "reply-#{reply.id}"}= " "
   - if reply == @unread
     .unread-marker-container
-      %a#unread.unread-marker{class: ('bookmark-marker' if current_user.try(:manual_unread?)), data: ({ autoscroll: true } if current_user.try(:manual_unread?))}= current_user.try(:manual_unread?) ? 'Bookmark' : 'First unread marker'
+      %a#unread.unread-marker= current_user.try(:manual_unread?) ? 'Bookmark' : 'First unread marker'
   .padding-10
     .post-info-box
       - if reply.icon_id && reply.keyword
