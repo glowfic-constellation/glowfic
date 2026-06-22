@@ -10,10 +10,16 @@ module Authentication::Api
     end
 
     def current_user
-      @current_user ||= user_from_token
+      @current_user ||= oauth_token_user || user_from_token
     end
 
     private
+
+    def oauth_token_user
+      token_value = request.headers['Authorization'].to_s.split(' ').last
+      return unless token_value.present?
+      OauthToken.find_by(token: token_value, invalidated_at: nil)&.user
+    end
 
     def user_from_token
       user_id = decoded_api_token[:user_id]
