@@ -17,6 +17,7 @@ Rails.application.routes.draw do
     resources :characters, only: :index
     resources :galleries, only: [:index, :show]
     resources :boards, only: :index
+    resources :access_circles, only: :index
     collection do
       get :search
     end
@@ -111,6 +112,12 @@ Rails.application.routes.draw do
     collection { get :search }
   end
   resources :tags, except: [:new, :create]
+  resources :access_circles do
+    member do
+      post :join
+      post :leave
+    end
+  end
 
   # Indexes
   resources :indexes

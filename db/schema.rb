@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2024_12_24_202900) do
+ActiveRecord::Schema[8.0].define(version: 2026_05_17_220700) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "citext"
   enable_extension "pg_catalog.plpgsql"
@@ -441,6 +441,7 @@ ActiveRecord::Schema[8.0].define(version: 2024_12_24_202900) do
     t.string "type"
     t.text "description"
     t.boolean "owned", default: false
+    t.boolean "joinable", default: false, null: false
     t.index ["name"], name: "index_tags_on_name"
     t.index ["type"], name: "index_tags_on_type"
   end
@@ -453,6 +454,24 @@ ActiveRecord::Schema[8.0].define(version: 2024_12_24_202900) do
     t.text "description"
     t.boolean "retired", default: false
     t.index ["user_id"], name: "index_templates_on_user_id"
+  end
+
+  create_table "user_default_access_circles", force: :cascade do |t|
+    t.integer "user_id", null: false
+    t.integer "tag_id", null: false
+    t.datetime "created_at"
+    t.datetime "updated_at"
+    t.index ["user_id", "tag_id"], name: "index_user_default_access_circles_on_user_id_and_tag_id", unique: true
+    t.index ["user_id"], name: "index_user_default_access_circles_on_user_id"
+  end
+
+  create_table "user_default_viewers", force: :cascade do |t|
+    t.integer "user_id", null: false
+    t.integer "viewer_id", null: false
+    t.datetime "created_at"
+    t.datetime "updated_at"
+    t.index ["user_id", "viewer_id"], name: "index_user_default_viewers_on_user_id_and_viewer_id", unique: true
+    t.index ["user_id"], name: "index_user_default_viewers_on_user_id"
   end
 
   create_table "user_tags", force: :cascade do |t|

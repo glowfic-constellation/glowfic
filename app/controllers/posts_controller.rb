@@ -122,6 +122,8 @@ class PostsController < WritableController
     @post.board_id = params[:board_id]
     @post.section_id = params[:section_id]
     @post.icon_id = (current_user.active_character ? current_user.active_character.default_icon.try(:id) : current_user.avatar_id)
+    @post.access_circle_ids = current_user.default_access_circle_ids
+    @post.viewer_ids = current_user.default_viewer_ids
     @page_title = 'New Post'
 
     @permitted_authors -= [current_user]
@@ -139,6 +141,7 @@ class PostsController < WritableController
     @post.settings = process_tags(Setting, obj_param: :post, id_param: :setting_ids)
     @post.content_warnings = process_tags(ContentWarning, obj_param: :post, id_param: :content_warning_ids)
     @post.labels = process_tags(Label, obj_param: :post, id_param: :label_ids)
+    @post.access_circles = attachable_access_circles
     process_npc(@post, permitted_character_params)
 
     begin
@@ -223,6 +226,7 @@ class PostsController < WritableController
     settings = process_tags(Setting, obj_param: :post, id_param: :setting_ids)
     warnings = process_tags(ContentWarning, obj_param: :post, id_param: :content_warning_ids)
     labels = process_tags(Label, obj_param: :post, id_param: :label_ids)
+    circles = attachable_access_circles
 
     is_author = @post.author_ids.include?(current_user.id)
     if current_user.id != @post.user_id && @post.audit_comment.blank? && !is_author
@@ -236,6 +240,7 @@ class PostsController < WritableController
         @post.settings = settings
         @post.content_warnings = warnings
         @post.labels = labels
+        @post.access_circles = circles
         process_npc(@post, permitted_character_params)
         @post.save!
         @post.author_for(current_user)&.update!(private_note: @post.private_note) if is_author
@@ -278,6 +283,7 @@ class PostsController < WritableController
     @setting = Setting.where(id: params[:setting_id]) if params[:setting_id].present?
     @character = Character.where(id: params[:character_id]) if params[:character_id].present?
     @user = User.active.full.where(id: params[:author_id]).ordered if params[:author_id].present?
+    @access_circle = AccessCircle.attachable_by(current_user).where(id: params[:access_circle_id]) if params[:access_circle_id].present?
 
     no_tests = true
     if params[:board_id].present?
@@ -291,6 +297,10 @@ class PostsController < WritableController
     @search_results = Post.ordered
     @search_results = @search_results.where(board_id: params[:board_id]) if params[:board_id].present?
     @search_results = @search_results.where(id: Setting.find(params[:setting_id]).post_tags.pluck(:post_id)) if params[:setting_id].present?
+    if params[:access_circle_id].present?
+      circle = AccessCircle.attachable_by(current_user).find_by(id: params[:access_circle_id])
+      @search_results = circle ? @search_results.where(id: circle.post_tags.pluck(:post_id)) : @search_results.none
+    end
     if params[:subject].present?
       if params[:abbrev].present?
         search = params[:subject].chars.join('% ')
@@ -367,6 +377,7 @@ class PostsController < WritableController
 
     @author_ids = params.fetch(:post, {}).fetch(:unjoined_author_ids, [])
     @viewer_ids = params.fetch(:post, {}).fetch(:viewer_ids, [])
+    @circle_ids = params.fetch(:post, {}).fetch(:access_circle_ids, [])
     @settings = process_tags(Setting, obj_param: :post, id_param: :setting_ids)
     @content_warnings = process_tags(ContentWarning, obj_param: :post, id_param: :content_warning_ids)
     @labels = process_tags(Label, obj_param: :post, id_param: :label_ids)
@@ -542,5 +553,11 @@ class PostsController < WritableController
       :threaded,
     ]
     params.permit(allowed_params)
+  end
+
+  def attachable_access_circles
+    ids = params.fetch(:post, {}).fetch(:access_circle_ids, []).compact_blank
+    return [] if ids.empty?
+    AccessCircle.attachable_by(current_user).where(id: ids).to_a
   end
 end

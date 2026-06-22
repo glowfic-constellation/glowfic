@@ -18,6 +18,7 @@ module Permissible
     # :delete_tags,
     # :edit_continuities
     :create_news,
+    :view_access_circles,
   ]
 
   def has_permission?(permission)

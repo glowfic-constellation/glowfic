@@ -98,6 +98,24 @@
           = f.label :default_hide_edit_delete_buttons, 'Hide "Edit" and "Delete" buttons'
         = f.check_box :default_hide_add_bookmark_button
         = f.label :default_hide_add_bookmark_button, 'Hide "Add Bookmark" button'
+    - unless current_user.read_only?
+      %div
+        .sub= f.label :default_access_circle_ids, 'Default access circles'
+        %div{class: cycle('even', 'odd')}
+          .details Circles pre-selected on new access-list posts. You can override the selection per post.
+          - default_circle_options = AccessCircle.attachable_by(current_user).includes(:user).map do |c|
+            - label = c.user_id == current_user.id ? c.name : "#{c.name} (#{c.user.username})"
+            - [label, c.id]
+          = f.select(:default_access_circle_ids, options_for_select(default_circle_options, current_user.default_access_circle_ids),
+            { include_blank: true }, { multiple: true })
+      %div
+        .sub= f.label :default_viewer_ids, 'Default viewers'
+        %div{class: cycle('even', 'odd')}
+          .details Individual users pre-selected as viewers on new access-list posts. You can override the selection per post.
+          = f.collection_select(:default_viewer_ids,
+            User.active.where.not(id: current_user.id).ordered,
+            :id, :username, { selected: current_user.default_viewer_ids, include_blank: true },
+            { multiple: true })
     .form-table-ender= submit_tag "Save", class: 'button'
 
 %br

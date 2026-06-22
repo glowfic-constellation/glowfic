@@ -570,6 +570,23 @@ RSpec.describe Post do
         expect(post.reload).to be_visible_to(user)
       end
 
+      it "is visible to member of an access circle on the post" do
+        user = create(:user)
+        circle = create(:access_circle, user: post.user)
+        Tag::UserTag.create!(user: user, tag: circle)
+        post.access_circles << circle
+        expect(post.reload).to be_visible_to(user)
+      end
+
+      it "is not visible to member of a different circle" do
+        user = create(:user)
+        member_circle = create(:access_circle, user: post.user)
+        attached_circle = create(:access_circle, user: post.user)
+        Tag::UserTag.create!(user: user, tag: member_circle)
+        post.access_circles << attached_circle
+        expect(post.reload).not_to be_visible_to(user)
+      end
+
       it "is not visible to author" do # TODO seems wrong
         reply = create(:reply, post: post)
         expect(post).not_to be_visible_to(reply.user)

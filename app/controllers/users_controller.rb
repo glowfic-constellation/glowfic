@@ -273,6 +273,8 @@ class UsersController < ApplicationController
       :show_user_in_switcher,
       :default_hide_edit_delete_buttons,
       :default_hide_add_bookmark_button,
+      default_access_circle_ids: [],
+      default_viewer_ids: [],
     )
   end
 

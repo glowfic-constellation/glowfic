@@ -35,8 +35,12 @@
       %td{class: cycle('odd', 'even')}
         = privacy_state(@post.privacy, dark_layout: current_user&.layout_darkmode?)
         - if @post.privacy_access_list?
-          \-
-          = safe_join(@post.post_viewers.map(&:user).map { |u| user_link(u) }, ', ')
+          - viewer_links = @post.post_viewers.map(&:user).map { |u| user_link(u) }
+          - circle_links = @post.access_circles.map { |c| link_to(c.name, c) }
+          - audience_links = viewer_links + circle_links
+          - if audience_links.any?
+            \-
+            = safe_join(audience_links, ', ')
     %tr
       %th.sub.width-150 Authors
       %td{class: cycle('odd', 'even')}

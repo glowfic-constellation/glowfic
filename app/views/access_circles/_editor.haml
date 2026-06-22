@@ -1,0 +1,32 @@
+-# locals: ( f: )
+
+%tbody
+  %tr
+    %th.sub= f.label :name
+    %td{class: cycle('even', 'odd')}
+      = f.text_field :name, placeholder: "Circle Name", class: 'text'
+  %tr
+    %th.sub= f.label :user, 'Owner'
+    %td{class: cycle('even', 'odd')}
+      = user_link(f.object.user)
+  %tr
+    %th.sub= f.label :owned, 'Private?'
+    %td{class: cycle('even', 'odd')}
+      = f.check_box :owned, class: 'vmid width-15'
+      = f.label :owned, 'Only show this circle to me and admins (uncheck to make it browsable by other users)'
+  %tr
+    %th.sub= f.label :joinable, 'Joinable?'
+    %td{class: cycle('even', 'odd')}
+      = f.check_box :joinable, class: 'vmid width-15'
+      = f.label :joinable, "Let other users add themselves to this circle (no effect if the circle is private)"
+  %tr
+    %th.sub= f.label :user_ids, 'Users'
+    %td{class: cycle('even', 'odd')}
+      = f.collection_select(:user_ids, User.where.not(id: current_user.id).ordered,
+        :id, :username, { selected: @user_ids.nil? ? f.object.user_ids : @user_ids }, { multiple: true })
+    %tr
+      %th.sub.vtop= f.label :description
+      %td{class: cycle('even', 'odd')}= f.text_area :description, placeholder: 'Description', cols: 35
+%tfoot
+  %tr
+    %th.form-table-ender{colspan: 2}= submit_tag "Save", class: 'button'

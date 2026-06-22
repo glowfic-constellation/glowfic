@@ -26,6 +26,11 @@ class Api::V1::TagsController < Api::ApiController
 
     queryset = queryset.where.not(id: params[:tag_id]) if type == Setting && params[:tag_id].present?
 
+    # only expose access circles the requester can actually see / attach
+    if type == AccessCircle
+      queryset = queryset.where(id: AccessCircle.attachable_by(current_user).select(:id))
+    end
+
     tags = paginate queryset, per_page: 25
     render json: { results: tags }
   end
