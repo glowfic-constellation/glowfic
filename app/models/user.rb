@@ -60,6 +60,9 @@ class User < ApplicationRecord
   after_update :update_flat_posts
   after_save :clear_password
 
+  # secret token used to authenticate read-only RSS feed access without a login session
+  has_secure_token :rss_token
+
   scope :ordered, -> { order(username: :asc) }
   scope :active, -> { where(deleted: false) }
   scope :full, -> { where.not(role_id: Permissible::READONLY).or(where(role_id: nil)) }
@@ -69,6 +72,12 @@ class User < ApplicationRecord
   def authenticate(password)
     return crypted == crypted_password(password) if salt_uuid.present?
     crypted == old_crypted_password(password)
+  end
+
+  # returns the user's RSS token, generating and persisting one if it is somehow missing
+  def rss_token!
+    regenerate_rss_token if rss_token.blank?
+    rss_token
   end
 
   def gon_attributes

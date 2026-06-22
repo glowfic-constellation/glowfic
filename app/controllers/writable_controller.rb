@@ -116,8 +116,11 @@ class WritableController < ApplicationController
     canon_params[:page] = cur_page unless cur_page == 1
     @meta_canonical = post_url(@post, canon_params)
 
-    # RSS feed autodiscovery for the thread
-    @feed_url = post_url(@post, format: :rss)
+    # RSS feed autodiscovery for the thread. Logged-in users get a tokenised URL so the
+    # feed keeps working in a reader for threads that aren't publicly visible.
+    feed_params = { format: :rss }
+    feed_params[:rss_token] = current_user.rss_token! if logged_in?
+    @feed_url = post_url(@post, feed_params)
     @feed_title = "#{@post.subject} – Glowfic Constellation"
 
     # show <meta property="og:..." content="..."> – for embed data

@@ -75,7 +75,7 @@
       %div
         = image_tag "icons/magnifier.png".freeze, alt: ''
         Search Post
-    = link_to post_path(@post, format: :rss), rel: 'nofollow'.freeze do
+    = link_to @feed_url, rel: 'nofollow'.freeze do
       %div
         = image_tag "icons/world.png".freeze, alt: ''
         Subscribe (RSS)

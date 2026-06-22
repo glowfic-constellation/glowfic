@@ -192,12 +192,16 @@ RSpec.describe PostsController, 'GET show' do
     let!(:post) { create(:post, subject: 'a feed thread', description: 'a thread description') }
     let!(:reply) { create(:reply, post: post, content: 'a reply body') }
 
-    it "renders an RSS feed without requiring login" do
+    it "renders a well-formed RSS feed without requiring login" do
       get :show, params: { id: post.id, format: :rss }
       expect(response).to have_http_status(200)
       expect(response.media_type).to eq('application/rss+xml')
-      expect(response.body).to include('<rss')
-      expect(response.body).to include('<title>a feed thread</title>')
+
+      doc = Nokogiri::XML(response.body) { |config| config.strict }
+      expect(doc.errors).to be_empty
+      expect(doc.at_xpath('/rss/channel/title').text).to eq('a feed thread')
+      items = doc.xpath('/rss/channel/item')
+      expect(items.size).to eq(2) # the reply and the opening post
       expect(response.body).to include('a reply body')
     end
 
@@ -227,6 +231,48 @@ RSpec.describe PostsController, 'GET show' do
       get :show, params: { id: post.id }
       expect(response.body).to include('application/rss+xml')
       expect(response.body).to include(post_url(post, format: :rss))
+    end
+
+    it "includes the subscriber's token in the feed URL when logged in" do
+      viewer = create(:user)
+      login_as(viewer)
+      get :show, params: { id: post.id }
+      expect(response.body).to include("rss_token=#{viewer.rss_token}")
+    end
+
+    context "token authentication" do
+      let(:reader) { create(:user) }
+      let!(:hidden_post) { create(:post, privacy: :registered, subject: 'members only thread') }
+
+      it "lets a logged-out reader use a valid rss_token to read a non-public thread" do
+        get :show, params: { id: hidden_post.id, format: :rss, rss_token: reader.rss_token }
+        expect(response).to have_http_status(200)
+        expect(response.body).to include('members only thread')
+      end
+
+      it "denies a non-public thread when no token is given" do
+        get :show, params: { id: hidden_post.id, format: :rss }
+        expect(response).to redirect_to(continuities_url)
+        expect(flash[:error]).to eq("You do not have permission to view this post.")
+      end
+
+      it "denies an invalid rss_token" do
+        get :show, params: { id: hidden_post.id, format: :rss, rss_token: 'not-a-real-token' }
+        expect(response).to redirect_to(continuities_url)
+      end
+
+      it "ignores the token for a suspended user" do
+        reader.update!(role_id: Permissible::SUSPENDED)
+        get :show, params: { id: hidden_post.id, format: :rss, rss_token: reader.rss_token }
+        expect(response).to redirect_to(continuities_url)
+      end
+
+      it "does not grant HTML access via rss_token" do
+        private_post = create(:post, privacy: :private)
+        get :show, params: { id: private_post.id, rss_token: reader.rss_token }
+        expect(response).to redirect_to(continuities_url)
+        expect(flash[:error]).to eq("You do not have permission to view this post.")
+      end
     end
   end
 
