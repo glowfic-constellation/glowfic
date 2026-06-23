@@ -1,6 +1,5 @@
 # frozen_string_literal: true
 class CharactersController < ApplicationController
-  include Taggable
   include CharacterFilter
 
   before_action :login_required, except: [:index, :show, :facecasts, :search]
@@ -43,13 +42,10 @@ class CharactersController < ApplicationController
 
   def create
     @character = Character.new(user: current_user)
-    @character.assign_attributes(permitted_params)
-    @character.settings = process_tags(Setting, obj_param: :character, id_param: :setting_ids)
-    @character.gallery_groups = process_tags(GalleryGroup, obj_param: :character, id_param: :gallery_group_ids)
-    build_template
+    creater = Character::Saver.new(@character, user: current_user, params: params)
 
     begin
-      @character.save!
+      creater.create!
     rescue ActiveRecord::RecordInvalid => e
       render_errors(@character, action: 'created', now: true, err: e)
 
@@ -85,15 +81,10 @@ class CharactersController < ApplicationController
       render :edit and return
     end
 
-    begin
-      Character.transaction do
-        @character.assign_attributes(permitted_params)
-        build_template
+    updater = Character::Saver.new(@character, user: current_user, params: params)
 
-        @character.settings = process_tags(Setting, obj_param: :character, id_param: :setting_ids)
-        @character.gallery_groups = process_tags(GalleryGroup, obj_param: :character, id_param: :gallery_group_ids)
-        @character.save!
-      end
+    begin
+      updater.update!
     rescue ActiveRecord::RecordInvalid => e
       render_errors(@character, action: 'updated', now: true, err: e)
 
@@ -338,13 +329,6 @@ class CharactersController < ApplicationController
     gon.gallery_groups = groups.map { |group| group.as_json(include: [:gallery_ids], user_id: user.id) }
   end
 
-  def build_template
-    return unless params[:new_template].present?
-    return unless @character.user == current_user
-    @character.build_template unless @character.template
-    @character.template.user = current_user
-  end
-
   def og_data
     # User >> Template >> Character | screenname
     # Nickname(s): a, b. Settings: c, d
@@ -385,26 +369,5 @@ class CharactersController < ApplicationController
       }
     end
     data
-  end
-
-  def permitted_params
-    permitted = [
-      :name,
-      :nickname,
-      :screenname,
-      :template_id,
-      :pb,
-      :description,
-      :audit_comment,
-      :retired,
-      :npc,
-      :cluster,
-      ungrouped_gallery_ids: [],
-    ]
-    if @character.user == current_user
-      permitted.last[:template_attributes] = [:name, :id]
-      permitted.insert(0, :default_icon_id)
-    end
-    params.fetch(:character, {}).permit(permitted)
   end
 end
