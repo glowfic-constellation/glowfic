@@ -54,6 +54,21 @@ RSpec.describe "Adding icons to a gallery" do
     skip "not yet implemented: requires more complex capybara interaction with forms"
   end
 
+  scenario "Rejecting SVG uploads", :js do
+    login(user)
+    visit gallery_path(gallery)
+    click_link '+ Add Icons'
+
+    expect(page).to have_selector('.content-header', text: 'Add New Icons to Gallery')
+
+    svg = Rails.root.join('spec/support/fixtures/icon.svg')
+    message = accept_alert { attach_file('icon_files', svg) }
+    expect(message).to include('.svg files are not supported')
+
+    # the upload is aborted client-side, so nothing is saved
+    expect(gallery.icons).to be_empty
+  end
+
   scenario "Adding existing icons", :js do
     login(user)
     create(:icon, user: user, keyword: "test icon 1")
