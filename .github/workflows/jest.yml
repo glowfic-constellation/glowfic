@@ -31,7 +31,7 @@ concurrency:
 
 jobs:
   test:
-    name: jest suite
+    name: javascript test suite
     runs-on: ubuntu-latest
 
     steps:
