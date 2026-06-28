@@ -265,4 +265,17 @@ RSpec.describe ApplicationHelper do
       expect(helper.loading_tag(id: 'loading-5')).to eq(expected)
     end
   end
+
+  describe "#layout_options" do
+    it "offers the Pesterchum hypercompact layouts" do
+      html = helper.layout_options
+      expect(html).to include('value="pesterchum"')
+      expect(html).to include('value="pesterchummemo"')
+    end
+
+    it "marks the user's chosen layout as selected" do
+      html = helper.layout_options('pesterchummemo')
+      expect(html).to include('<option selected="selected" value="pesterchummemo">')
+    end
+  end
 end
