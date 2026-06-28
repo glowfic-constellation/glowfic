@@ -48,6 +48,12 @@
               %td.padding-5
                 = check_box_tag :completed, true, params[:completed].present?, { class: 'vmid no-margin', style: 'margin-bottom: 3px;' }
                 = label_tag :completed, "Completed Only"
+            - if logged_in?
+              %tr
+                %td Unread
+                %td.padding-5
+                  = check_box_tag :unread, true, params[:unread].present?, { class: 'vmid no-margin', style: 'margin-bottom: 3px;' }
+                  = label_tag :unread, "Unread Only"
             - if current_user&.hide_from_all
               %tr
                 %td Ignored
@@ -76,9 +82,11 @@
                 %th.sub Continuity
                 %th.sub Authors
                 %th.sub Replies
+                - if @show_unread
+                  %th.sub Unread
                 %th.sub Last Updated
             %tbody
-              = render partial: 'posts/list_item', collection: @search_results, as: :post
+              = render partial: 'posts/list_item', collection: @search_results, as: :post, locals: { show_unread_count: !!@show_unread }
 
   - if @search_results && @search_results.total_pages > 1
     %tfoot

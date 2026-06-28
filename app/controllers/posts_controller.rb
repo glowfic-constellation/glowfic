@@ -288,6 +288,8 @@ class PostsController < WritableController
 
     return unless params[:commit].present?
 
+    @show_unread = params[:unread].present? && logged_in?
+
     response.headers['X-Robots-Tag'] = 'noindex'
     @search_results = Post.ordered
     @search_results = @search_results.where(board_id: params[:board_id]) if params[:board_id].present?
@@ -322,8 +324,26 @@ class PostsController < WritableController
       post_ids = Reply.where(character_id: params[:character_id]).select(:post_id).distinct.pluck(:post_id)
       @search_results = @search_results.where(character_id: params[:character_id]).or(@search_results.where(id: post_ids))
     end
-    @search_results = @search_results.not_ignored_by(current_user) if current_user&.hide_from_all && params[:hide_ignored].present?
-    @search_results = posts_from_relation(@search_results, show_blocked: !!params[:show_blocked], no_tests: no_tests)
+    if @show_unread
+      @search_results = @search_results.not_ignored_by(current_user)
+
+      # post view does not exist and (board view does not exist or post has updated since board view read_at)
+      no_post_view = @search_results.where(post_views: { id: nil })
+      updated_since_board_read = no_post_view.where(board_views: { read_at: nil })
+        .or(no_post_view.where("date_trunc('second', board_views.read_at) < date_trunc('second', posts.tagged_at)"))
+      no_post_view = no_post_view.where(board_views: { user_id: nil }).or(updated_since_board_read)
+
+      # post view exists and post has updated since post view read_at
+      with_post_view = @search_results.where.not(post_views: { id: nil })
+      with_post_view = with_post_view.where(post_views: { read_at: nil })
+        .or(with_post_view.where("date_trunc('second', post_views.read_at) < date_trunc('second', posts.tagged_at)"))
+
+      @search_results = with_post_view.or(no_post_view)
+    elsif current_user&.hide_from_all && params[:hide_ignored].present?
+      @search_results = @search_results.not_ignored_by(current_user)
+    end
+
+    @search_results = posts_from_relation(@search_results, show_blocked: !!params[:show_blocked], no_tests: no_tests, with_unread: @show_unread)
   end
 
   def warnings

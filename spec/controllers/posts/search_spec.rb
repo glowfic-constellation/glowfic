@@ -134,6 +134,72 @@ RSpec.describe PostsController, 'GET search' do
       expect(assigns(:search_results)).to eq([posts[1], posts[2], posts[3], posts[0]])
     end
 
+    context "filters by unread" do
+      it "ignores unread param when logged out" do
+        create_list(:post, 2)
+        get :search, params: { commit: true, unread: true }
+        expect(assigns(:search_results)).to match_array(Post.all)
+        expect(assigns(:show_unread)).not_to be_truthy
+      end
+
+      it "returns only unread posts when logged in" do
+        user = create(:user)
+        login_as(user)
+
+        unread_post = create(:post) # never viewed
+        read_post = create(:post)
+        read_post.mark_read(user, at_time: read_post.tagged_at)
+
+        get :search, params: { commit: true, unread: true }
+        expect(assigns(:search_results)).to match_array([unread_post])
+        expect(assigns(:show_unread)).to eq(true)
+      end
+
+      it "includes posts with new replies since last read" do
+        user = create(:user)
+        login_as(user)
+        now = Time.zone.now
+
+        # Use Timecop so the SQL's date_trunc('second', read_at) < date_trunc('second', tagged_at)
+        # actually sees distinct seconds — otherwise post and reply land in the same second.
+        post_with_new = Timecop.freeze(now) { create(:post) }
+        Timecop.freeze(now + 1.second) { post_with_new.mark_read(user, at_time: post_with_new.tagged_at) }
+        Timecop.freeze(now + 3.seconds) { create(:reply, post: post_with_new) }
+
+        fully_read = Timecop.freeze(now) { create(:post) }
+        Timecop.freeze(now + 1.second) { fully_read.mark_read(user, at_time: fully_read.tagged_at) }
+
+        get :search, params: { commit: true, unread: true }
+        expect(assigns(:search_results)).to match_array([post_with_new])
+      end
+
+      it "excludes ignored posts" do
+        user = create(:user)
+        login_as(user)
+
+        ignored_post = create(:post)
+        ignored_post.ignore(user)
+
+        unread_post = create(:post)
+
+        get :search, params: { commit: true, unread: true }
+        expect(assigns(:search_results)).to match_array([unread_post])
+      end
+
+      it "combines with other search filters" do
+        user = create(:user)
+        login_as(user)
+        board = create(:board)
+
+        unread_in_board = create(:post, board: board)
+        create(:post, board: board).tap { |p| p.mark_read(user, at_time: p.tagged_at) } # read in board
+        create(:post) # unread but different board
+
+        get :search, params: { commit: true, unread: true, board_id: board.id }
+        expect(assigns(:search_results)).to match_array([unread_in_board])
+      end
+    end
+
     context "when logged out" do
       it_behaves_like "logged out post list"
     end
