@@ -279,38 +279,24 @@ RSpec.describe ApplicationHelper do
     end
   end
 
-  describe "#skin_style_tag" do
+  describe "#skin_link_tag" do
     let(:owner) { create(:user) }
 
     it "returns nil when there is no skin" do
-      expect(helper.skin_style_tag(nil, viewer: nil)).to be_nil
+      expect(helper.skin_link_tag(nil)).to be_nil
     end
 
-    it "returns nil when the skin produces no CSS" do
+    it "returns nil when the skin has no CSS" do
       skin = create(:skin, user: owner, css: '   ')
-      expect(helper.skin_style_tag(skin, viewer: owner)).to be_nil
+      expect(helper.skin_link_tag(skin)).to be_nil
     end
 
-    it "renders a style tag with the viewer's CSS tier" do
-      skin = create(:skin, user: owner, css: '.post-container { color: red !important; }')
-      reader = create(:user)
-
-      owner_tag = helper.skin_style_tag(skin, viewer: owner)
-      expect(owner_tag).to include('<style')
-      expect(owner_tag).to include('!important') # owner gets raw CSS
-
-      reader_tag = helper.skin_style_tag(skin, viewer: reader)
-      expect(reader_tag).to include('color: red')
-      expect(reader_tag).not_to include('color: red !important') # reader gets sanitized CSS
-      expect(reader_tag).to include('display: block !important') # safety overrides always appended
-      expect(reader_tag).to include(':root:root .post-container') # scoped for specificity
-    end
-
-    it "neutralises a </style> breakout in raw CSS" do
-      skin = create(:skin, user: owner, css: '.a::after { content: "x</style><script>x"; }')
-      tag = helper.skin_style_tag(skin, viewer: owner)
-      expect(tag).to include('<\\/style>')   # the </style> inside the CSS was neutralised
-      expect(tag).not_to include('x</style>') # so the raw breakout sequence is gone
+    it "links the skin's stylesheet endpoint" do
+      skin = create(:skin, user: owner, css: '.post-container { color: red; }')
+      link = helper.skin_link_tag(skin)
+      expect(link).to include('<link')
+      expect(link).to include('rel="stylesheet"')
+      expect(link).to include(css_skin_path(skin))
     end
   end
 end

@@ -40,7 +40,7 @@
       = stylesheet_link_tag "layouts/#{current_user.layout}"
     / User's own active skin, applied site-wide to their browsing
     - if current_user&.active_skin
-      = skin_style_tag(current_user.active_skin)
+      = skin_link_tag(current_user.active_skin)
     = yield :head_skin
 
     / Favicons

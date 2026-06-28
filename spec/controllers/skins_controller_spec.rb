@@ -57,6 +57,43 @@ RSpec.describe SkinsController do
     end
   end
 
+  describe "GET css" do
+    let(:owner) { create(:user) }
+
+    it "serves the stylesheet as text/css" do
+      skin = create(:skin, user: owner, public: true, css: '.post-container { color: red; }')
+      get :css, params: { id: skin.id }
+      expect(response).to have_http_status(200)
+      expect(response.media_type).to eq('text/css')
+      expect(response.body).to include(':root:root .post-container')
+      expect(response.body).to include('display: block !important') # safety overrides
+    end
+
+    it "serves the sanitized tier to anonymous readers and raw to the owner" do
+      skin = create(:skin, user: owner, public: true, css: '.a { color: red !important; }')
+
+      get :css, params: { id: skin.id }
+      expect(response.body).to include('color: red')
+      expect(response.body).not_to include('color: red !important') # skin rule sanitized
+
+      login_as(owner)
+      get :css, params: { id: skin.id }
+      expect(response.body).to include('color: red !important') # owner gets raw
+    end
+
+    it "404s for a private skin a stranger cannot reach" do
+      skin = create(:skin, user: owner, public: false)
+      login
+      get :css, params: { id: skin.id }
+      expect(response).to have_http_status(404)
+    end
+
+    it "404s when the skin does not exist" do
+      get :css, params: { id: -1 }
+      expect(response).to have_http_status(404)
+    end
+  end
+
   describe "PUT update" do
     it "re-renders the form when the update is invalid" do
       user = create(:user)

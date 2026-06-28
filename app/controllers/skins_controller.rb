@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 class SkinsController < ApplicationController
-  before_action :login_required, except: [:show, :gallery]
+  before_action :login_required, except: [:show, :gallery, :css]
   before_action :find_model, only: [:show, :edit, :update, :destroy, :use, :fork, :approve, :reject]
   before_action :require_visible, only: [:show, :use, :fork]
   before_action :require_edit_permission, only: [:edit, :update, :destroy]
@@ -37,6 +37,20 @@ class SkinsController < ApplicationController
 
   def show
     @page_title = @skin.name
+  end
+
+  # Serves a skin as a standalone stylesheet (referenced via <link> in the
+  # layout) rather than inlining it into every page's <style>. Keeps the skin
+  # CSS out of the HTML (no markup-escaping needed) and lets the browser cache
+  # it across page loads. Tier and content vary per viewer, so cache privately.
+  def css
+    skin = Skin.find_by(id: params[:id])
+    return head(:not_found) unless skin&.viewable_as_stylesheet_by?(current_user)
+
+    response.headers['X-Content-Type-Options'] = 'nosniff'
+    return unless stale?(etag: [skin, skin.trusted_for?(current_user)], public: false)
+
+    render plain: skin.stylesheet_for(current_user), content_type: 'text/css'
   end
 
   def edit

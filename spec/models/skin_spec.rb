@@ -105,4 +105,46 @@ RSpec.describe Skin do
       expect(build(:skin, public: true, css: '.a { color: red; }')).to be_valid
     end
   end
+
+  describe "#stylesheet_for" do
+    let(:owner) { create(:user) }
+
+    it "scopes the viewer's CSS tier and appends the safety overrides" do
+      skin = create(:skin, user: owner, css: '.post-container { color: red !important; }')
+      reader = create(:user)
+
+      owner_css = skin.stylesheet_for(owner)
+      expect(owner_css).to include(':root:root .post-container') # scoped
+      expect(owner_css).to include('color: red !important') # owner gets raw
+      expect(owner_css).to include('display: block !important') # safety overrides
+
+      reader_css = skin.stylesheet_for(reader)
+      expect(reader_css).to include('color: red')
+      expect(reader_css).not_to include('color: red !important') # reader gets sanitized
+    end
+
+    it "is blank when the skin has no usable CSS" do
+      expect(create(:skin, user: owner, css: '   ').stylesheet_for(owner)).to eq('')
+    end
+  end
+
+  describe "#viewable_as_stylesheet_by?" do
+    let(:owner) { create(:user) }
+
+    it "follows normal visibility for public/own skins" do
+      expect(create(:skin, public: true).viewable_as_stylesheet_by?(nil)).to be(true)
+      expect(create(:skin, user: owner, public: false).viewable_as_stylesheet_by?(owner)).to be(true)
+    end
+
+    it "is false for a private skin a stranger has no path to" do
+      skin = create(:skin, user: owner, public: false)
+      expect(skin.viewable_as_stylesheet_by?(create(:user))).to be(false)
+    end
+
+    it "is true for a private skin once it is recommended on a post" do
+      skin = create(:skin, user: owner, public: false)
+      create(:post, user: owner, skin: skin)
+      expect(skin.viewable_as_stylesheet_by?(create(:user))).to be(true)
+    end
+  end
 end

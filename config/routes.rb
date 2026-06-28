@@ -112,6 +112,7 @@ Rails.application.routes.draw do
   end
   resources :skins do
     member do
+      get :css
       post :use
       post :fork
       post :approve

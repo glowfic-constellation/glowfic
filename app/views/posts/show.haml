@@ -7,7 +7,7 @@
 - show_skin = @post.skin && params[:skin] != 'off' && (params[:skin] == 'on' || !current_user.try(:hide_skins))
 - if show_skin
   - content_for :head_skin do
-    = skin_style_tag(@post.skin)
+    = skin_link_tag(@post.skin)
 - if @post.skin
   .flash.breadcrumbs
     - if show_skin

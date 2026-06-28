@@ -2,61 +2,15 @@
 module ApplicationHelper
   TIME_FORMAT = '%b %d, %Y %l:%M %p'
 
-  # Injected skins are scoped under this descendant prefix to lift their
-  # specificity above the app's own theming rules (which lean on :nth-child / #id
-  # selectors). ":root" matches the <html> element, so the prefix never changes
-  # which elements a selector matches. The safety overrides below share the same
-  # prefix, so they keep beating the skin on ties via source order.
-  SKIN_SCOPE = ':root:root'
+  # Links a skin's stylesheet (served by SkinsController#css), or nil. Serving
+  # the skin as a standalone text/css file instead of an inline <style> keeps
+  # user CSS out of the page markup entirely (no breakout to escape against) and
+  # lets the browser cache it across page loads. The controller picks the tier
+  # (raw for owner/approved, sanitized otherwise) and scopes it for the viewer.
+  def skin_link_tag(skin)
+    return if skin.nil? || skin.css.blank?
 
-  # Appended after every injected skin. Skins have `!important` stripped by the
-  # sanitizer, so these always win: critical chrome (content warnings, flashes,
-  # the ToS gate) stays visible and un-overlaid no matter what a skin tries.
-  #
-  # The property list is the set of ways CSS can hide, shrink-to-nothing, move
-  # off-screen, or de-interact an element, each pinned to its "no-op" value:
-  #   * hide:    display, visibility, opacity
-  #   * collapse: height, max-height, overflow
-  #   * move/transform: position, transform AND the independent transform
-  #     properties (scale/rotate/translate, which bypass `transform: none`)
-  #   * clip away: clip, clip-path
-  #   * obscure: filter (e.g. opacity()/blur())
-  #   * disable: pointer-events
-  SKIN_SAFETY_OVERRIDES = <<~CSS
-    #{SKIN_SCOPE} .flash, #{SKIN_SCOPE} .flash.error, #{SKIN_SCOPE} .flash-margin, #{SKIN_SCOPE} #tos {
-      display: block !important;
-      visibility: visible !important;
-      opacity: 1 !important;
-      position: static !important;
-      height: auto !important;
-      max-height: none !important;
-      overflow: visible !important;
-      transform: none !important;
-      scale: none !important;
-      rotate: none !important;
-      translate: none !important;
-      filter: none !important;
-      clip: auto !important;
-      clip-path: none !important;
-      pointer-events: auto !important;
-    }
-  CSS
-
-  # Builds the <style> tag a viewer should get for a skin, or nil. css_for picks
-  # the tier: the owner and approved skins get raw CSS, everyone else gets the
-  # stripped safe version. Selectors are scoped under SKIN_SCOPE so the skin
-  # reliably out-ranks the app's defaults without needing !important. The gsub
-  # neutralises any "</..." so even raw CSS cannot break out of the <style>
-  # element into markup/script.
-  def skin_style_tag(skin, viewer: current_user)
-    return if skin.nil?
-
-    css = skin.css_for(viewer)
-    return if css.blank?
-
-    scoped = Glowfic::CssSanitizer.scope(css, SKIN_SCOPE)
-    payload = "#{scoped}\n#{SKIN_SAFETY_OVERRIDES}".gsub('</', '<\/')
-    tag.style(payload.html_safe, type: 'text/css')
+    tag.link(rel: 'stylesheet', type: 'text/css', href: css_skin_path(skin))
   end
 
   def loading_tag(**args)
