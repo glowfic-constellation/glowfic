@@ -1,27 +1,10 @@
 name: jest
 
 on:
-  # Only run when JS-relevant files change. NB: if `jest` is ever made a
-  # required status check, replace this with an always-run job that internally
-  # skips the work (e.g. dorny/paths-filter), since a path-filtered required
-  # check never reports on unrelated PRs and would block them. merge_group does
-  # not support `paths`, so it always runs (correct for the merge queue).
   push:
     branches: [ main ]
-    paths:
-      - '**/*.js'
-      - '.nvmrc'
-      - 'package.json'
-      - 'package-lock.json'
-      - '.github/workflows/jest.yml'
   pull_request:
     branches: [ main ]
-    paths:
-      - '**/*.js'
-      - '.nvmrc'
-      - 'package.json'
-      - 'package-lock.json'
-      - '.github/workflows/jest.yml'
   merge_group:
 
 # Cancel an in-progress run when a newer commit is pushed to the same PR/branch.
