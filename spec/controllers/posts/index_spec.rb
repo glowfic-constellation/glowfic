@@ -69,7 +69,7 @@ RSpec.describe PostsController, 'GET index' do
 
     context "with ignored posts" do
       let(:user) { create(:user) }
-      let!(:posts) { create_list(:post, 3) }
+      let_it_be(:posts) { create_list(:post, 3) }
       let(:ignored_post) { create(:post) }
       let(:ignored_board) { create(:board) }
       let(:ignored_board_post) { create(:post, board: ignored_board) }

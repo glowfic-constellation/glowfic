@@ -318,6 +318,8 @@ GEM
     nokogiri (1.19.4-x86_64-linux-musl)
       racc (~> 1.4)
     parallel (1.27.0)
+    parallel_tests (5.7.0)
+      parallel
     parser (3.3.10.0)
       ast (~> 2.4.1)
       racc
@@ -436,6 +438,8 @@ GEM
     rspec-expectations (3.13.5)
       diff-lcs (>= 1.2.0, < 2.0)
       rspec-support (~> 3.13.0)
+    rspec-github (3.0.0)
+      rspec-core (~> 3.0)
     rspec-mocks (3.13.7)
       diff-lcs (>= 1.2.0, < 2.0)
       rspec-support (~> 3.13.0)
@@ -551,6 +555,7 @@ GEM
     temple (0.10.4)
     terser (1.2.6)
       execjs (>= 0.3.0, < 3)
+    test-prof (1.6.1)
     test-unit (3.7.7)
       power_assert
     thor (1.5.0)
@@ -633,6 +638,7 @@ DEPENDENCIES
   newrelic_rpm
   nilify_blanks
   nokogiri
+  parallel_tests
   pg (~> 1.6)
   pg_search
   puma
@@ -649,6 +655,7 @@ DEPENDENCIES
   request_store (~> 1.7)
   resque
   resque-heroku-signals
+  rspec-github
   rspec-rails
   rubocop (~> 1.82.1)
   rubocop-capybara (~> 2.22.1)
@@ -666,6 +673,7 @@ DEPENDENCIES
   sprockets
   sprockets-rails
   terser
+  test-prof
   test-unit (~> 3.7)
   timecop
   tinymce-rails (~> 7.8)

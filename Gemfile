@@ -84,15 +84,18 @@ group :development, :test do
   gem 'database_cleaner'
   gem 'dotenv'
   gem 'html-proofer', '< 4'
+  gem 'parallel_tests'
   gem 'rake', '~> 13.3'
   gem 'rspec-rails'
   gem 'seed_dump', '~> 3.4'
+  gem 'test-prof'
 end
 
 group :test do
   gem 'capybara'
   gem 'factory_bot_rails'
   gem 'rails-controller-testing'
+  gem 'rspec-github', require: false
   gem 'selenium-webdriver'
   gem 'simplecov'
   gem 'timecop'

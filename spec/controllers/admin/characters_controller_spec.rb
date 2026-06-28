@@ -32,11 +32,17 @@ RSpec.describe Admin::CharactersController do
   end
 
   describe "POST #do_relocate" do
-    let!(:old_user) { create(:user) }
-    let!(:new_user) { create(:user) }
-    let!(:characters) { Character.where(id: create_list(:character, 10, user: old_user).map(&:id)) }
-    let!(:posts) { Post.where(id: characters.map { |c| create(:post, user: old_user, character: c).id }) }
-    let!(:replies) { Reply.where(id: characters.map { |c| create_list(:reply, 2, character: c, user: old_user).map(&:id) }.flatten) }
+    # Records are built once (let_it_be); the relations are per-example `let`s so
+    # each example queries fresh objects (examples here mutate characters, and a
+    # shared memoized relation would leak those mutations via its in-memory cache).
+    let_it_be(:old_user, reload: true) { create(:user) }
+    let_it_be(:new_user, reload: true) { create(:user) }
+    let_it_be(:character_records) { create_list(:character, 10, user: old_user) }
+    let_it_be(:post_records) { character_records.map { |c| create(:post, user: old_user, character: c) } }
+    let_it_be(:reply_records) { character_records.flat_map { |c| create_list(:reply, 2, character: c, user: old_user) } }
+    let(:characters) { Character.where(id: character_records.map(&:id)) }
+    let(:posts) { Post.where(id: post_records.map(&:id)) }
+    let(:replies) { Reply.where(id: reply_records.map(&:id)) }
     let(:character_ids) { characters.map(&:id).join(', ') }
 
     it "requires login" do

@@ -14,7 +14,9 @@ development:
 # Do not set this db to the same as development or production.
 test: &test
   <<: *default
-  database: glowfic_test
+  # parallel_tests gives each worker its own database (glowfic_test, glowfic_test2, ...)
+  # via TEST_ENV_NUMBER (blank for the first worker).
+  database: glowfic_test<%= ENV['TEST_ENV_NUMBER'] %>
 
 production:
   <<: *default
