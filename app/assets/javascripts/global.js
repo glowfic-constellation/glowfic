@@ -243,3 +243,10 @@ $.authenticatedAjax = function(options) {
   if (gon.logged_in) options.headers = {'Authorization': 'Bearer '+gon.api_token};
   return $.ajax(options);
 };
+
+// Sprockets has no CommonJS `module`, so this block is a no-op in the browser;
+// it only exposes pure helpers to Jest for unit testing.
+/* global module */
+if (typeof module !== 'undefined' && module.exports) {
+  module.exports = { addParameter, queryTransform, processResults };
+}
