@@ -1,10 +1,10 @@
 import '@testing-library/jest-dom';
+const { loadGlobals } = require('./support/sprockets');
 
-const { queryTransform } = require('../../app/assets/javascripts/global');
+const { queryTransform } = loadGlobals('app/assets/javascripts/global.js', ['queryTransform']);
 
 describe('queryTransform', () => {
   it('maps a select2 query into the API params the backend expects', () => {
-    const result = queryTransform({ term: 'pixie', page: 2 });
-    expect(result).toEqual({ q: 'pixie', page: 2 });
+    expect(queryTransform({ term: 'pixie', page: 2 })).toEqual({ q: 'pixie', page: 2 });
   });
 });
