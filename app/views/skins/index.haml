@@ -1,0 +1,44 @@
+%span.time-loaded= pretty_time(DateTime.now.in_time_zone)
+
+%table
+  %thead
+    %tr
+      %th.table-title{colspan: 4}
+        = @page_title
+        = link_to gallery_skins_path do
+          .link-box.action-new Gallery
+        = link_to new_skin_path do
+          .link-box.action-new + New Skin
+    %tr
+      %th.sub Name
+      %th.sub Shared
+      %th.sub Active
+      %th.sub
+  %tbody
+    - @skins.each do |skin|
+      - klass = cycle('even', 'odd')
+      %tr
+        %td.padding-5{class: klass}= link_to skin.name, skin_path(skin)
+        %td.padding-5{class: klass}
+          - if !skin.public?
+            Private
+          - elsif skin.pending_review?
+            Public (pending review)
+          - else
+            Public
+        %td.padding-5{class: klass}
+          - if current_user.skin_id == skin.id
+            = link_to 'In use — turn off', clear_skins_path, method: :delete
+          - else
+            = link_to 'Use', use_skin_path(skin), method: :post
+        %td.width-70.right-align{class: klass}
+          = link_to edit_skin_path(skin) do
+            = image_tag "icons/pencil.png", alt: 'Edit', title: 'Edit'
+          = link_to skin_path(skin), method: :delete, data: { confirm: "Are you sure you want to delete the “#{skin.name}” skin?" } do
+            = image_tag "icons/cross.png", alt: 'Delete', title: 'Delete'
+          &nbsp;
+    - if @skins.empty?
+      %tr
+        %td.centered.padding-10.no-posts{ class: cycle('even', 'odd'), colspan: 4 } — No skins yet —
+
+= render 'posts/paginator', paginated: @skins, no_per: true

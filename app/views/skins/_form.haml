@@ -1,0 +1,27 @@
+= form_for @skin do |f|
+  .form-table
+    .editor-title= @skin.persisted? ? 'Edit Skin' : 'New Skin'
+    %div
+      .sub= f.label :name
+      %div{class: cycle('even', 'odd')}= f.text_field :name, placeholder: 'Skin name'
+    %div
+      .sub= f.label :description
+      %div{class: cycle('even', 'odd')}= f.text_field :description, placeholder: 'Optional description'
+    %div
+      .sub Sharing
+      .checkbox-field{class: cycle('even', 'odd')}
+        = f.check_box :public
+        = f.label :public, 'List this skin publicly in the gallery'
+    %div
+      .sub= f.label :css, 'CSS'
+      %div{class: cycle('even', 'odd')}
+        = f.text_area :css, id: 'skin_css', rows: 20, placeholder: '.post-container { background-color: #222; }'
+        .details
+          Custom CSS applies to the whole page. It always works in full on your
+          own browsing. Advanced CSS (external resources, fixed/sticky
+          positioning,
+          %code !important
+          , etc.) is sanitized for other readers and must be approved by a
+          moderator before it can be shared publicly or take full effect on a
+          post you recommend it on. Scripts and markup are never allowed.
+    .form-table-ender= f.submit @skin.persisted? ? 'Update' : 'Create', class: 'button'

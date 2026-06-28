@@ -98,6 +98,16 @@
           = f.label :default_hide_edit_delete_buttons, 'Hide "Edit" and "Delete" buttons'
         = f.check_box :default_hide_add_bookmark_button
         = f.label :default_hide_add_bookmark_button, 'Hide "Add Bookmark" button'
+    %div
+      .sub Reply layout
+      .checkbox-field{class: cycle('even', 'odd')}
+        = f.check_box :alternating_icons
+        = f.label :alternating_icons, "Alternating icons (compact, icons alternate left/right)"
+    %div
+      .sub Skins
+      .checkbox-field{class: cycle('even', 'odd')}
+        = f.check_box :hide_skins
+        = f.label :hide_skins, "Don't apply posts' recommended skins"
     .form-table-ender= submit_tag "Save", class: 'button'
 
 %br

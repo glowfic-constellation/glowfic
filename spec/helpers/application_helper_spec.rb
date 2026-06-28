@@ -265,4 +265,52 @@ RSpec.describe ApplicationHelper do
       expect(helper.loading_tag(id: 'loading-5')).to eq(expected)
     end
   end
+
+  describe "#layout_options" do
+    it "offers the Pesterchum hypercompact layouts" do
+      html = helper.layout_options
+      expect(html).to include('value="pesterchum"')
+      expect(html).to include('value="pesterchummemo"')
+    end
+
+    it "marks the user's chosen layout as selected" do
+      html = helper.layout_options('pesterchummemo')
+      expect(html).to include('<option selected="selected" value="pesterchummemo">')
+    end
+  end
+
+  describe "#skin_style_tag" do
+    let(:owner) { create(:user) }
+
+    it "returns nil when there is no skin" do
+      expect(helper.skin_style_tag(nil, viewer: nil)).to be_nil
+    end
+
+    it "returns nil when the skin produces no CSS" do
+      skin = create(:skin, user: owner, css: '   ')
+      expect(helper.skin_style_tag(skin, viewer: owner)).to be_nil
+    end
+
+    it "renders a style tag with the viewer's CSS tier" do
+      skin = create(:skin, user: owner, css: '.post-container { color: red !important; }')
+      reader = create(:user)
+
+      owner_tag = helper.skin_style_tag(skin, viewer: owner)
+      expect(owner_tag).to include('<style')
+      expect(owner_tag).to include('!important') # owner gets raw CSS
+
+      reader_tag = helper.skin_style_tag(skin, viewer: reader)
+      expect(reader_tag).to include('color: red')
+      expect(reader_tag).not_to include('color: red !important') # reader gets sanitized CSS
+      expect(reader_tag).to include('display: block !important') # safety overrides always appended
+      expect(reader_tag).to include(':root:root .post-container') # scoped for specificity
+    end
+
+    it "neutralises a </style> breakout in raw CSS" do
+      skin = create(:skin, user: owner, css: '.a::after { content: "x</style><script>x"; }')
+      tag = helper.skin_style_tag(skin, viewer: owner)
+      expect(tag).to include('<\\/style>')   # the </style> inside the CSS was neutralised
+      expect(tag).not_to include('x</style>') # so the raw breakout sequence is gone
+    end
+  end
 end

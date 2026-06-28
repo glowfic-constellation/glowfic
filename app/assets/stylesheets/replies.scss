@@ -575,3 +575,86 @@ div.post-subheader { width: 100%; }
 @media (max-width: 850px) {
   .bookmark-editor-fields, .bookmark-editor-buttons { display: block; margin-right: 0; }
 }
+
+/* ---------------------------------------------------------------------------
+ * Alternating icon layout (opt-in via the "Alternating icons" account setting)
+ *
+ * Goal: make fast-paced 1-2 sentence dialogue much less scroll-y without
+ * removing the icons. The icon + character/author info becomes a small floated
+ * block that the reply text flows around in an "L" shape (beside the icon, then
+ * wrapping underneath it for longer replies). Consecutive replies alternate the
+ * icon between the left and right edges (.icon-left / .icon-right) so it's easy
+ * to track who is speaking in a rapid back-and-forth.
+ * ------------------------------------------------------------------------- */
+.alternating-icons {
+  // Tighten the breathing room around each reply.
+  #content > .post-container .padding-10 { padding: 4px 8px; }
+
+  // The info "chip": a small icon sitting *next to* a compact name/author
+  // column (not stacked beneath it), so the whole floated block is only about
+  // as tall as the icon. A one-line reply then collapses to roughly icon
+  // height instead of icon + three stacked label bars + footer.
+  .post-info-box {
+    float: left;
+    width: auto;
+    max-width: 45%;
+    margin: 0 8px 2px 0;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    text-align: left;
+    font-size: $font_size_smaller;
+  }
+
+  .post-icon {
+    height: auto;
+    background: none;
+    flex: 0 0 auto;
+
+    img, div {
+      width: 44px;
+      height: 44px;
+      margin: 0;
+      object-fit: contain;
+    }
+  }
+
+  .post-info-text { min-width: 0; }
+
+  .post-character, .post-screenname, .post-author {
+    padding: 1px 4px;
+    line-height: 1.2;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  // The icon block is much narrower now, so quotes/lists don't need the big
+  // indent that was there to clear the old 150px sidebar.
+  .post-content {
+    blockquote { margin-left: 1em; margin-right: 1em; }
+    ul, ol { padding-left: 20px; }
+
+    p:first-child { margin-top: 0; }
+  }
+
+  // Keep the timestamp but make it tiny so it barely adds height.
+  .post-footer {
+    .right-align { font-size: $font_size_smaller; }
+    .padding-5 { padding: 1px 4px; }
+  }
+
+  // Mirror everything for replies whose icon sits on the right edge.
+  .icon-right {
+    .post-info-box {
+      float: right;
+      flex-direction: row-reverse;
+      margin: 0 0 2px 8px;
+    }
+
+    .post-edit-box {
+      float: left;
+      margin: 0 8px 0 0;
+    }
+  }
+}
