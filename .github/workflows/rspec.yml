@@ -51,7 +51,7 @@ jobs:
       - uses: browser-actions/setup-chrome@v2
       - name: Cache MinIO binary
         id: minio-cache
-        uses: actions/cache@v5
+        uses: actions/cache@v6
         with:
           path: minio
           # bump the suffix to force a refresh of the cached binary
@@ -68,7 +68,7 @@ jobs:
         with:
           bundler-cache: true  # runs bundle install (with version based on Gemfile.lock) and automatically caches result
       - name: Cache Selenium chromedriver
-        uses: actions/cache@v5
+        uses: actions/cache@v6
         with:
           path: ~/.cache/selenium
           key: ${{ runner.os }}-selenium-${{ hashFiles('Gemfile.lock') }}
@@ -94,7 +94,7 @@ jobs:
           done
       - name: Asset cache
         id: asset-cache
-        uses: actions/cache@v5
+        uses: actions/cache@v6
         with:
           path: |
             public/assets
@@ -107,7 +107,7 @@ jobs:
         run: RAILS_ENV=test bundle exec rake assets:precompile
       - name: Cache parallel runtime log
         # lets parallel_tests balance workers by recorded per-file runtime
-        uses: actions/cache@v5
+        uses: actions/cache@v6
         with:
           path: tmp/parallel_runtime_rspec.log
           key: ${{ runner.os }}-parallel-runtime-${{ github.run_id }}
