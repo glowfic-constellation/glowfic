@@ -36,14 +36,14 @@ class BlocksController < ApplicationController
   end
 
   def edit
-    @page_title = 'Edit Block: ' + @block.blocked_user.username
+    @page_title = "Edit Block: #{@block.blocked_user.username}"
   end
 
   def update
     unless @block.update(permitted_params)
       render_errors(@block, action: 'updated', now: true)
       editor_setup
-      @page_title = 'Edit Block: ' + @block.blocked_user.username
+      @page_title = "Edit Block: #{@block.blocked_user.username}"
       render :edit and return
     end
 
