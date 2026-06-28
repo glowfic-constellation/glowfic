@@ -433,6 +433,7 @@ RSpec.describe BoardsController do
           coauthor_ids: [user2.id],
           cameo_ids: [user3.id],
           authors_locked: true,
+          mega: true,
         },
       }
       expect(response).to redirect_to(continuity_url(board))
@@ -443,6 +444,7 @@ RSpec.describe BoardsController do
       expect(board.writers).to match_array([user, user2])
       expect(board.cameos).to match_array([user3])
       expect(board.authors_locked).to eq(true)
+      expect(board.mega).to eq(true)
     end
   end
 
