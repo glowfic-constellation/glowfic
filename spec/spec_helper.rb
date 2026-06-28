@@ -59,6 +59,7 @@ unless ENV.fetch('SKIP_COVERAGE', false) || ENV.fetch('APIPIE_RECORD', false) ||
       end
     end
     enable_coverage :branch
+    # NB: keep in sync with lib/tasks/coverage.rake minimum_coverage
     minimum_coverage line: 95.2, branch: 88.1 unless parallel_worker
     enable_coverage_for_eval
   end

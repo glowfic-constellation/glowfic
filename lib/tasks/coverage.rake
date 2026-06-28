@@ -13,6 +13,7 @@ namespace :coverage do
     # single-process run uses (see spec/spec_helper.rb). Exits non-zero if below.
     SimpleCov.collate(result_files, 'rails') do
       enable_coverage :branch
+      # NB: keep in sync with spec/spec_helper.rb minimum_coverage
       minimum_coverage line: 95.2, branch: 88.1
     end
   end
