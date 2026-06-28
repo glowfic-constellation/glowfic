@@ -12,6 +12,16 @@ module ApplicationHelper
   # Appended after every injected skin. Skins have `!important` stripped by the
   # sanitizer, so these always win: critical chrome (content warnings, flashes,
   # the ToS gate) stays visible and un-overlaid no matter what a skin tries.
+  #
+  # The property list is the set of ways CSS can hide, shrink-to-nothing, move
+  # off-screen, or de-interact an element, each pinned to its "no-op" value:
+  #   * hide:    display, visibility, opacity
+  #   * collapse: height, max-height, overflow
+  #   * move/transform: position, transform AND the independent transform
+  #     properties (scale/rotate/translate, which bypass `transform: none`)
+  #   * clip away: clip, clip-path
+  #   * obscure: filter (e.g. opacity()/blur())
+  #   * disable: pointer-events
   SKIN_SAFETY_OVERRIDES = <<~CSS
     #{SKIN_SCOPE} .flash, #{SKIN_SCOPE} .flash.error, #{SKIN_SCOPE} .flash-margin, #{SKIN_SCOPE} #tos {
       display: block !important;
@@ -22,6 +32,10 @@ module ApplicationHelper
       max-height: none !important;
       overflow: visible !important;
       transform: none !important;
+      scale: none !important;
+      rotate: none !important;
+      translate: none !important;
+      filter: none !important;
       clip: auto !important;
       clip-path: none !important;
       pointer-events: auto !important;

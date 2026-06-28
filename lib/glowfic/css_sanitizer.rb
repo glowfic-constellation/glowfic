@@ -10,9 +10,12 @@
 #     always win a specificity battle with its own trailing safety overrides
 #     (e.g. keeping content warnings visible).
 #   * External resources are blocked: `@import`, `@font-face`, and any `url(...)`
-#     that is not a `data:` URI are dropped. This neutralises CSS-based tracking
-#     and the attribute-selector exfiltration attack, which both rely on an
-#     outbound request.
+#     that is not a `data:` URI are dropped. We already allow image hotlinking
+#     elsewhere, so this isn't about coarse "did someone load the page" tracking
+#     — it's about the finer-grained exfiltration CSS uniquely enables: an
+#     attribute-selector + background-url that fires a request keyed on page
+#     content, and `@media`/value-conditional requests that leak viewport and
+#     device characteristics. Keeping skins self-contained closes those.
 #   * Clickjacking primitives are blocked: `position: fixed` / `position: sticky`
 #     and legacy script vectors (`expression()`, `-moz-binding`, `behavior`).
 #   * Only safe at-rules are kept (`@media`, `@supports`, `@keyframes`).
@@ -29,7 +32,15 @@ class Glowfic::CssSanitizer
   VENDOR_PREFIX = /\A-(?:webkit|moz|ms|o)-/
 
   # Allowlist of CSS properties (vendor prefixes are stripped before lookup).
-  # Deliberately broad enough for real theming but free of script/resource
+  # Provenance: started from the visual/layout property groups in the MDN CSS
+  # properties reference (color/background, box model, border/outline, font/text,
+  # list, positioning, fl/grid, overflow, transform/transition/animation, table,
+  # misc), then removed every property whose *value* can load a resource or run
+  # script — those are gated by `dangerous_value?` regardless — and the ones that
+  # are escape hatches on their own (e.g. `position` values are still
+  # value-checked for fixed/sticky). Anything not listed is dropped as
+  # unsupported (harmless), so growing this list is the safe way to add theming
+  # power. Deliberately broad enough for real theming but free of script/resource
   # loading and navigation-style escape hatches.
   ALLOWED_PROPERTIES = Set.new(%w[
     color opacity visibility display box-sizing
@@ -108,11 +119,13 @@ class Glowfic::CssSanitizer
   # rules — many of which use :nth-child or #id selectors that a bare ".x" skin
   # selector cannot beat — without relying on !important, which the sanitizer
   # strips for non-owners. Keyframe selectors (from/to/percent) are never scoped.
-  # Falls back to returning the input unchanged if it cannot be parsed.
+  # Fails closed: if the (already-sanitized) CSS cannot be parsed/scoped, drop
+  # the skin entirely rather than emitting it unscoped, where it would no longer
+  # be reliably out-ranked by the app's safety overrides.
   def self.scope(css, scope)
     render_scoped(Crass.parse(css.to_s), scope)
   rescue StandardError, SystemStackError
-    css.to_s
+    ''
   end
 
   def self.render_scoped(nodes, scope)
@@ -217,7 +230,11 @@ class Glowfic::CssSanitizer
 
   def render_style_rule(node)
     selector = node.dig(:selector, :value).to_s.strip
-    return if selector.empty? || dangerous_value?(selector)
+    return if selector.empty?
+    if dangerous_value?(selector)
+      @dangerous = true
+      return
+    end
 
     declarations = sanitize_declarations(node[:children])
     return if declarations.empty?
@@ -235,7 +252,10 @@ class Glowfic::CssSanitizer
     @dangerous = true if %w[import font-face].include?(name)
 
     return if node[:block].nil?
-    return if dangerous_value?(prelude)
+    if dangerous_value?(prelude)
+      @dangerous = true
+      return
+    end
 
     # everything else (@charset, @namespace, @page, ...) is dropped
     return unless ALLOWED_AT_RULES.include?(name) || KEYFRAMES_AT_RULES.include?(name)

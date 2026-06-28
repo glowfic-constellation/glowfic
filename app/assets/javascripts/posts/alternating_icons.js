@@ -27,6 +27,10 @@ $(document).ready(function() {
       const content = post.querySelector('.post-content');
       if (!icon || !content) return;
 
+      // Square box, sized to the body height. Non-square icons are not
+      // distorted: replies.scss sets object-fit: contain on these icons, so a
+      // non-square image is letterboxed inside the square box — the same way
+      // glowfic presents icons everywhere else.
       const size = clamp(MIN, content.offsetHeight, CAP);
       icon.style.width = size + 'px';
       icon.style.height = size + 'px';

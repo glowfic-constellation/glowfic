@@ -128,6 +128,14 @@ RSpec.describe Glowfic::CssSanitizer do
       expect(Glowfic::CssSanitizer.dangerous?('@import url(https://e/x);')).to be(true)
       expect(Glowfic::CssSanitizer.dangerous?("@font-face { font-family: x; src: url(https://e/f); }")).to be(true)
     end
+
+    it "is true when a rule is dropped for a dangerous selector" do
+      expect(Glowfic::CssSanitizer.dangerous?('a[href*="javascript:"] { color: red; }')).to be(true)
+    end
+
+    it "is true when an at-rule is dropped for a dangerous prelude" do
+      expect(Glowfic::CssSanitizer.dangerous?('@media (min-width: url(https://e/x)) { .a { color: red; } }')).to be(true)
+    end
   end
 
   describe "robustness" do
@@ -228,9 +236,9 @@ RSpec.describe Glowfic::CssSanitizer do
       expect(result.scan(':root:root').length).to eq(1)
     end
 
-    it "returns the input unchanged when it cannot be parsed" do
+    it "fails closed (drops the skin) when it cannot be parsed" do
       allow(Crass).to receive(:parse).and_raise(StandardError)
-      expect(scope('.a { color: red; }')).to eq('.a { color: red; }')
+      expect(scope('.a { color: red; }')).to eq('')
     end
   end
 end
