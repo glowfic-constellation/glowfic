@@ -1,0 +1,9 @@
+{
+  "name": "Glowfic Constellation",
+  "description": "A collaborative roleplaying platform inspired by Project Lawful.",
+  "repository": "https://github.com/glowfic-constellation/glowfic",
+  "buildpacks": [
+    { "url": "https://github.com/gaffneyc/heroku-buildpack-jemalloc" },
+    { "url": "heroku/ruby" }
+  ]
+}
