@@ -49,6 +49,14 @@ unless ENV.fetch("RAILS_ENV", "development") == "test"
   end
 end
 
+# Each clustered worker is forked from the master, so re-establish its own
+# Active Record connections on boot rather than inheriting the master's.
+# Belt-and-suspenders against stale connections after a DB maintenance event
+# (mirrors what config/initializers/resque.rb does on fork).
+on_worker_boot do
+  ActiveRecord::Base.establish_connection if defined?(ActiveRecord::Base)
+end
+
 # Allow puma to be restarted by `bin/rails restart` command.
 plugin :tmp_restart
 
