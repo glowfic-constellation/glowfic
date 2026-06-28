@@ -65,8 +65,10 @@ class Reply::Searcher < Generic::Searcher
     if @post
       @search_results = @search_results.where(post_id: @post.id)
     elsif board_id.present?
-      post_ids = Post.where(board_id: board_id).pluck(:id)
-      @search_results = @search_results.where(post_id: post_ids)
+      # Subquery instead of pluck+IN so PG can use a hash/index join on
+      # board_id rather than serializing a thousands-long id list and
+      # falling off the index. Has caused statement_timeout in production.
+      @search_results = @search_results.where(post_id: Post.where(board_id: board_id).select(:id))
     end
   end
 

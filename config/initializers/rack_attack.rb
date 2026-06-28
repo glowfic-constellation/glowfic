@@ -9,13 +9,34 @@ $safe_ips.each { |ip| Rack::Attack.safelist_ip(ip) }
 ENV.fetch("RACK_ATTACK_BAD_IP", "").split(",").compact_blank.each { |ip| Rack::Attack.blocklist_ip(ip) }
 
 # Configure Cache
+# Rack::Attack stores its throttle/blocklist counters here. This needs to be
+# a backend that's shared across every Puma worker on every dyno; otherwise
+# each worker keeps its own in-process counter and the configured limit is
+# multiplied by `WEB_CONCURRENCY * dyno_count`.
 url = ENV.fetch("HEROKU_REDIS_TEAL_URL", nil)
-Rack::Attack.cache.store = ActiveSupport::Cache::MemoryStore.new(url: url, ssl_params: { verify_mode: OpenSSL::SSL::VERIFY_NONE }) if url
+Rack::Attack.cache.store = ActiveSupport::Cache::RedisCacheStore.new(url: url, ssl_params: { verify_mode: OpenSSL::SSL::VERIFY_NONE }) if url
 
-# Throttle all requests by IP (60rpm)
+# Read-only API GETs power the search forms' autocomplete dropdowns (select2).
+# A single search interaction fans out into many of these requests - one per
+# dropdown opened and one per keystroke - which is fundamentally different from
+# normal page browsing (~1 request per navigation). They get their own, more
+# generous bucket below so a search doesn't exhaust the general per-IP limit.
+def autocomplete_api_request?(req)
+  req.get? && req.path.start_with?('/api/v1/')
+end
+
+# Throttle all requests by IP
 # Key: "rack::attack:#{Time.now.to_i/:period}:req/ip:#{req.ip}"
+# Autocomplete API GETs are excluded here and counted under 'api/ip' instead.
 Rack::Attack.throttle('req/ip', limit: ENV.fetch("RACK_ATTACK_IP_LIMIT", 25).to_i, period: 5.minutes) do |req|
-  req.ip unless req_logged_in?(req)
+  req.ip if !req_logged_in?(req) && !autocomplete_api_request?(req)
+end
+
+# Throttle the read-only autocomplete API GETs by IP, with a higher limit since
+# a single search legitimately generates many of them.
+# Key: "rack::attack:#{Time.now.to_i/:period}:api/ip:#{req.ip}"
+Rack::Attack.throttle('api/ip', limit: ENV.fetch("RACK_ATTACK_API_LIMIT", 150).to_i, period: 5.minutes) do |req|
+  req.ip if !req_logged_in?(req) && autocomplete_api_request?(req)
 end
 
 # Throttle POST requests to /login by IP address to prevent brute force login attacks

@@ -239,7 +239,7 @@ class PostsController < WritableController
         @post.labels = labels
         process_npc(@post, permitted_character_params)
         @post.save!
-        @post.author_for(current_user).update!(private_note: @post.private_note) if is_author
+        @post.author_for(current_user)&.update!(private_note: @post.private_note) if is_author
       end
     rescue ActiveRecord::RecordInvalid => e
       render_errors(@post, action: 'updated', now: true, err: e)
