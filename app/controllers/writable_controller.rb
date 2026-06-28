@@ -116,7 +116,6 @@ class WritableController < ApplicationController
     @meta_og[:url] = @meta_canonical
 
     use_javascript('posts/show')
-    use_javascript('posts/alternating_icons') if current_user.try(:alternating_icons)
     if logged_in?
       use_javascript('posts/editor')
       setup_layout_gon

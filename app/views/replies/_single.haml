@@ -1,4 +1,4 @@
--# locals: ( reply:, hide_footer: false, hide_post_edit_box: false, split_ui: false, reply_counter: 0 )
+-# locals: ( reply:, hide_footer: false, hide_post_edit_box: false, split_ui: false )
 
 - if reply.is_a?(Post)
   - write = 'post-post'.freeze
@@ -6,12 +6,7 @@
   - write = 'post-reply'.freeze
 - else
   - write = ''.freeze
--# For the opt-in "alternating icons" layout: alternate which side the icon
--# sits on so rapid back-and-forth dialogue is easier to follow. reply_counter is
--# supplied automatically when rendered as a collection; it defaults to 0 for the
--# opening post and other one-off renders, which keeps their icon on the left.
-- icon_side = reply_counter.odd? ? 'icon-right'.freeze : 'icon-left'.freeze
-.post-container{class: [write, icon_side, (reply == @unread && current_user.try(:visible_unread?)) ? 'reply-highlighted' : '']}
+.post-container{class: [write, (reply == @unread && current_user.try(:visible_unread?)) ? 'reply-highlighted' : '']}
   - if reply.is_a?(Reply) && reply.id.present?
     %a.noheight{id: "reply-#{reply.id}"}= " "
   - if reply == @unread

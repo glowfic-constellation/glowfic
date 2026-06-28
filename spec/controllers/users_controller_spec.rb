@@ -403,7 +403,6 @@ RSpec.describe UsersController do
         favorite_notifications: false,
         show_user_in_switcher: false,
         default_character_split: 'none',
-        alternating_icons: true,
       }
 
       # ensure new values are different, so test tests correct things

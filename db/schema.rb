@@ -520,7 +520,6 @@ ActiveRecord::Schema[8.0].define(version: 2026_06_21_040000) do
     t.boolean "public_bookmarks", default: false
     t.boolean "default_hide_edit_delete_buttons", default: false
     t.boolean "default_hide_add_bookmark_button", default: false
-    t.boolean "alternating_icons", default: false
     t.integer "skin_id"
     t.boolean "hide_skins", default: false
     t.index ["email"], name: "index_users_on_email", unique: true

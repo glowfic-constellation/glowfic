@@ -85,8 +85,6 @@ module ApplicationHelper
       'Starry Light' => 'starrylight',
       Monochrome: 'monochrome',
       'Milky River' => 'river',
-      Pesterchum: 'pesterchum',
-      'Pesterchum Memo' => 'pesterchummemo',
     }
     options_for_select(layouts, default)
   end

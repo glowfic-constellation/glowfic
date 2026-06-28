@@ -206,25 +206,6 @@ RSpec.describe PostsController, 'GET show' do
       expect(response.body).not_to include(css_skin_path(skin))
     end
 
-    it "alternates reply icon sides and only opts in via the user setting" do
-      create(:reply, post: post, with_icon: true, with_character: true)
-
-      get :show, params: { id: post.id }
-      expect(response.status).to eq(200)
-      # parity classes are always emitted (deterministic, so they stay cache-safe)
-      expect(response.body).to include('icon-left')
-      expect(response.body).to include('icon-right')
-
-      login_as(create(:user, alternating_icons: false))
-      get :show, params: { id: post.id }
-      expect(response.body).not_to include('class="alternating-icons"')
-      expect(assigns(:javascripts)).not_to include('posts/alternating_icons')
-
-      login_as(create(:user, alternating_icons: true))
-      get :show, params: { id: post.id }
-      expect(response.body).to include('alternating-icons')
-      expect(assigns(:javascripts)).to include('posts/alternating_icons')
-    end
   end
 
   context "with at_id" do
