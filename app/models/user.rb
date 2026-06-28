@@ -108,7 +108,10 @@ class User < ApplicationRecord
 
   def visible_posts
     Rails.cache.fetch(PostViewer.cache_string_for(self.id), expires_in: 1.month) do
-      PostViewer.where(user: self).pluck(:post_id)
+      viewer_post_ids = PostViewer.where(user: self).pluck(:post_id)
+      circle_ids = user_tags.pluck(:tag_id)
+      circle_post_ids = PostTag.where(tag_id: circle_ids).select(:post_id).distinct.pluck(:post_id)
+      (viewer_post_ids + circle_post_ids).uniq
     end
   end
 
