@@ -27,6 +27,7 @@ class AnonLoadShed
 
   def call(env)
     return @app.call(env) if logged_in?(env)
+    return @app.call(env) if login_request?(env)
     waited = wait_seconds(env)
     return @app.call(env) if waited.nil? || waited < WAIT_THRESHOLD_SECONDS
     [
@@ -41,6 +42,15 @@ class AnonLoadShed
   def logged_in?(env)
     session = env['rack.session']
     session && session[:user_id].present?
+  end
+
+  # A logged-out user has no way to become prioritized except by logging in, so
+  # genuine login traffic must never be shed: let /login (both the form and the
+  # POST) wait in the long queue instead. Spamming this path to dodge the shed
+  # is bounded by the rack-attack throttle on POST /login, and our threat model
+  # is scraping rather than login floods.
+  def login_request?(env)
+    env['PATH_INFO'] == '/login'
   end
 
   # rack-timeout populates env['rack.timeout.info'].wait with the seconds
