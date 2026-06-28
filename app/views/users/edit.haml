@@ -57,6 +57,8 @@
         = f.label :visible_unread, "Outline when jumping to unread"
         = f.check_box :hide_from_all
         = f.label :hide_from_all, "Hide hidden posts from recently updated and other post lists"
+        = f.check_box :moiety_colors_unread
+        = f.label :moiety_colors_unread, "Show moiety colors on author names"
     %div
       .sub Replies Owed
       .checkbox-field{class: cycle('even', 'odd')}
