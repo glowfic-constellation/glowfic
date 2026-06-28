@@ -92,6 +92,20 @@ class Post < ApplicationRecord
     select('(SELECT COUNT(*) FROM replies WHERE replies.post_id = posts.id) AS reply_count')
   }
 
+  scope :with_unread_count, ->(user) {
+    select(<<~SQL.squish)
+      COALESCE((
+        SELECT COUNT(*)
+        FROM replies
+        LEFT JOIN post_views AS pv_unread
+          ON replies.post_id = pv_unread.post_id
+          AND pv_unread.user_id = #{user.id}
+        WHERE replies.post_id = posts.id
+        AND (pv_unread.read_at IS NULL OR replies.created_at > pv_unread.read_at)
+      ), 0) AS unread_count
+    SQL
+  }
+
   scope :visible_to, ->(user) {
     if posts_fulllocked?(user)
       where('false')

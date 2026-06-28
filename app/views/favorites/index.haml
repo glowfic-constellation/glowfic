@@ -33,4 +33,6 @@
           %td.centered.no-posts.odd{colspan: 2} — No favorites yet —
 
 - else
-  = render 'posts/list', posts: @posts, show_unread_count: true
+  = render 'posts/list', posts: @posts, show_unread_count: true,
+    sort_url: ->(s) { favorites_path(sort: s) },
+    current_sort: @sort

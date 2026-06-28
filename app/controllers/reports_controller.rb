@@ -22,6 +22,11 @@ class ReportsController < ApplicationController
       @new_today = params[:new_today].present?
       @posts = DailyReport.new(@day).posts(sort, @new_today)
       @posts = @posts.not_ignored_by(current_user) if current_user&.hide_from_all
+      if params[:sort] == 'unread' && logged_in?
+        @posts = @posts.with_unread_count(current_user)
+          .reorder(Arel.sql('unread_count DESC'), Arel.sql('first_updated_at DESC'))
+        @paginate_params = { id: @report_type, day: params[:day], sort: 'unread', new_today: params[:new_today] }.compact
+      end
       @posts = posts_from_relation(@posts, max: !@new_today)
     else
       @posts = Post.where(tagged_at: 1.month.ago.all_month)
