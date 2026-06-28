@@ -59,9 +59,12 @@ class RepliesController < WritableController
       if editing_multi_reply?
         # Editing multi reply, going to redirect back to the reply I'm editing
         redirect_to reply_path(@reply, anchor: "reply-#{@reply.id}")
-      else
+      elsif (post_id = params.dig(:reply, :post_id)).present?
         # Posting a new multi reply, go back to unread
-        redirect_to post_path(params[:reply][:post_id], page: :unread, anchor: :unread)
+        redirect_to post_path(post_id, page: :unread, anchor: :unread)
+      else
+        log_missing_reply_params('discard_multi_reply')
+        redirect_to posts_path
       end
       return
     end
@@ -200,6 +203,28 @@ class RepliesController < WritableController
     redirect_to post_path(@reply.post)
   end
 
+  # Diagnostic for the NoMethodError-on-nil-params[:reply] case in NR.
+  # The form_for builder always emits reply[post_id] as a hidden field, so a
+  # well-formed browser submit shouldn't be able to lose it. Capture the
+  # request shape so we can tell whether the body arrived empty (proxy /
+  # extension stripped it), arrived non-empty but parsed without :reply
+  # (parser bug or hand-crafted POST), or never had it (UI flow we missed).
+  def log_missing_reply_params(button)
+    Rails.logger.warn(
+      "replies#create missing reply params (button=#{button}) " \
+      "diagnostic=#{ {
+        content_length: request.content_length,
+        content_type: request.content_type,
+        param_keys: params.keys.map(&:to_s),
+        button_keys: params.keys.map(&:to_s).grep(/^button_/),
+        user_agent: request.user_agent,
+        referer: request.referer,
+        user_id: current_user&.id,
+        request_id: request.uuid,
+      }.to_json }",
+    )
+  end
+
   def get_multi_replies
     # Get the multi replies stored in the page JSON
     @multi_replies_params = JSON.parse(params.fetch(:multi_replies_json, "[]")).map do |reply_json|
@@ -223,7 +248,12 @@ class RepliesController < WritableController
 
   def add_to_multi_reply(reply, reply_params)
     # Adding a new reply to a multi reply
-    post_id = params[:reply][:post_id]
+    post_id = params.dig(:reply, :post_id)
+    unless post_id.present?
+      log_missing_reply_params('add_to_multi_reply')
+      flash[:error] = "Could not add reply: post is missing from the request."
+      redirect_to(posts_path) and return
+    end
     ReplyDraft.draft_for(post_id, current_user.id)&.destroy!
 
     # Save NPC
