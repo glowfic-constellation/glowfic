@@ -513,7 +513,7 @@ GEM
       google-protobuf (~> 4.31)
     sassc (2.4.0)
       ffi (~> 1.9)
-    sassc-embedded (1.80.8)
+    sassc-embedded (1.80.9)
       sass-embedded (~> 1.80)
     scout_apm (6.0.2)
       parser
