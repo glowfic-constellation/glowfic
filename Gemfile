@@ -85,7 +85,7 @@ group :development, :test do
   gem 'dotenv'
   gem 'html-proofer', '< 4'
   gem 'parallel_tests'
-  gem 'rake', '~> 13.3'
+  gem 'rake', '~> 13.4'
   gem 'rspec-rails'
   gem 'seed_dump', '~> 3.4'
   gem 'test-prof'
