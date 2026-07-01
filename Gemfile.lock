@@ -111,9 +111,10 @@ GEM
       aws-sigv4 (~> 1.5)
     aws-sigv4 (1.12.1)
       aws-eventstream (~> 1, >= 1.0.2)
-    barnes (0.0.9)
-      multi_json (~> 1)
-      statsd-ruby (~> 1.1)
+    barnes (1.0.1)
+      json
+      logger
+      ostruct
     base64 (0.3.0)
     benchmark (0.5.0)
     bigdecimal (4.1.2)
@@ -282,7 +283,7 @@ GEM
       drb (~> 2.0)
       prism (~> 1.5)
     mono_logger (1.1.2)
-    multi_json (1.19.1)
+    multi_json (1.21.1)
     multi_xml (0.8.1)
       bigdecimal (>= 3.1, < 5)
     mustermann (3.0.4)
@@ -317,6 +318,7 @@ GEM
       racc (~> 1.4)
     nokogiri (1.19.4-x86_64-linux-musl)
       racc (~> 1.4)
+    ostruct (0.6.3)
     parallel (1.28.0)
     parallel_tests (5.7.0)
       parallel
@@ -549,7 +551,6 @@ GEM
       actionpack (>= 6.1)
       activesupport (>= 6.1)
       sprockets (>= 3.0.0)
-    statsd-ruby (1.5.0)
     stringio (3.2.0)
     sysexits (1.2.0)
     temple (0.10.4)
