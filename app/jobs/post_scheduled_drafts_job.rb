@@ -6,7 +6,10 @@ class PostScheduledDraftsJob < ApplicationJob
   queue_as :high
 
   def perform
-    ReplyDraft.due_for_posting.find_each do |draft|
+    # Promote in scheduled order (id as a stable tiebreaker) so that when several
+    # drafts on the same post come due in one tick, the earlier-scheduled tag lands
+    # first. NB: we can't use find_each here, as it forces primary-key ordering.
+    ReplyDraft.due_for_posting.order(:scheduled_at, :id).each do |draft|
       begin
         draft.post_as_reply!
       rescue ActiveRecord::RecordInvalid => e

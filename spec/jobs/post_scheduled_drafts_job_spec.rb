@@ -15,6 +15,23 @@ RSpec.describe PostScheduledDraftsJob do
     end
   end
 
+  it "posts drafts due in the same tick in scheduled order, not creation order" do
+    shared_post = create(:post)
+    author_a = create(:user)
+    author_b = create(:user)
+
+    # author_b's draft is created FIRST (lower id) but scheduled LATER
+    later = create(:reply_draft, post: shared_post, user: author_b, content: 'second', scheduled_at: 2.days.from_now + 1.hour)
+    earlier = create(:reply_draft, post: shared_post, user: author_a, content: 'first', scheduled_at: 2.days.from_now)
+    expect(later.id).to be < earlier.id
+
+    Timecop.travel(3.days.from_now) { PostScheduledDraftsJob.perform_now }
+
+    replies = shared_post.replies.ordered
+    expect(replies.map(&:content)).to eq(['first', 'second'])
+    expect(replies.map(&:reply_order)).to eq([0, 1])
+  end
+
   it "leaves plain drafts untouched" do
     draft = create(:reply_draft)
     expect { PostScheduledDraftsJob.perform_now }.not_to change { Reply.count }
