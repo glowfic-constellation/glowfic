@@ -190,10 +190,11 @@ class WritableController < ApplicationController
   end
 
   def make_draft(show_message=true)
+    draft_params = permitted_params(nil, [:scheduled_at])
     if (draft = ReplyDraft.draft_for(params[:reply][:post_id], current_user.id))
-      draft.assign_attributes(permitted_params)
+      draft.assign_attributes(draft_params)
     else
-      draft = ReplyDraft.new(permitted_params)
+      draft = ReplyDraft.new(draft_params)
       draft.user = current_user
     end
     process_npc(draft, permitted_character_params)
@@ -205,7 +206,7 @@ class WritableController < ApplicationController
       render_errors(draft, action: 'saved', class_name: 'Draft', err: e)
     else
       if show_message
-        msg = "Draft saved."
+        msg = draft.scheduled? ? "Draft saved and queued to post #{draft.scheduled_at.strftime('%b %-d, %Y at %-l:%M %p')}." : "Draft saved."
         msg += " Your new NPC character has also been persisted!" if new_npc
         flash[:success] = msg
       end

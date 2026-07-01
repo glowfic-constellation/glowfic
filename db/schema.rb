@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2024_12_24_202900) do
+ActiveRecord::Schema[8.0].define(version: 2026_07_01_000000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "citext"
   enable_extension "pg_catalog.plpgsql"
@@ -412,7 +412,9 @@ ActiveRecord::Schema[8.0].define(version: 2024_12_24_202900) do
     t.datetime "updated_at", precision: nil
     t.integer "character_alias_id"
     t.string "editor_mode"
+    t.datetime "scheduled_at"
     t.index ["post_id", "user_id"], name: "index_reply_drafts_on_post_id_and_user_id"
+    t.index ["scheduled_at"], name: "index_reply_drafts_on_scheduled_at"
   end
 
   create_table "report_views", id: :serial, force: :cascade do |t|
