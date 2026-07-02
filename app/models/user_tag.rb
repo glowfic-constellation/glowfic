@@ -15,4 +15,3 @@ class UserTag < ApplicationRecord
     Rails.cache.delete(PostViewer.cache_string_for(user_id))
   end
 end
-end
