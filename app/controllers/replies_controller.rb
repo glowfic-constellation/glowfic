@@ -190,7 +190,7 @@ class RepliesController < WritableController
     @page_title = @post.subject
   end
 
-  # Skips auto-advancing the read position when the permalinked page doesn't contain the reader's actual read/unread boundary.
+  # Only skips auto-advancing when the permalink jumps ahead of the unread boundary; mark_read's own regression guard already covers the reverse case.
   def check_permalink_read_position
     @permalink_reply = @reply
     cur_page = params[:page].to_i
@@ -204,11 +204,10 @@ class RepliesController < WritableController
     else
       unread.post_page(per_page)
     end
-    return if unread_page == cur_page # loaded our latest unread page: nothing skipped
-    return if unread_page == cur_page + 1 # loaded the page we just finished reading: not meaningfully "going back"
+    return unless unread_page < cur_page
 
     @skip_read_marking = true
-    @permalink_read_direction = unread_page < cur_page ? :earlier : :later
+    @permalink_jumped_ahead = true
   end
 
   def require_create_permission

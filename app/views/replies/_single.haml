@@ -9,8 +9,8 @@
 .post-container{class: [write, (reply == @unread && current_user.try(:visible_unread?)) ? 'reply-highlighted' : '']}
   - if reply.is_a?(Reply) && reply.id.present?
     %a.noheight{id: "reply-#{reply.id}"}= " "
-  - if reply == @permalink_reply && @permalink_read_direction.present?
-    = render 'replies/permalink_read_notice', reply: reply, post: @post, direction: @permalink_read_direction
+  - if reply == @permalink_reply && @permalink_jumped_ahead
+    = render 'replies/permalink_read_notice', reply: reply, post: @post
   - if reply == @unread
     .unread-marker-container
       %a#unread.unread-marker First unread marker

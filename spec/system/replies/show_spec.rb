@@ -30,18 +30,16 @@ RSpec.describe "Reply permalinks" do
     expect(post.reload.first_unread_for(user)).to eq(target)
   end
 
-  scenario "Permalink to a reply the reader has already read past" do
-    Timecop.freeze(replies.last.created_at + 30.seconds) { post.mark_read(user) }
+  scenario "Permalink to a reply the reader has already read past shows no notice" do
+    read_time = replies.last.created_at + 30.seconds
+    Timecop.freeze(read_time) { post.mark_read(user) }
     target = replies[1]
 
     visit reply_path(target, anchor: "reply-#{target.id}", per_page: 5)
 
-    within(".post-container:has(#reply-#{target.id})") do
-      expect(page).to have_selector('.permalink-read-notice', text: 'You have already read further in this thread than this page')
-      expect(page).to have_link('Go to previous position')
-      expect(page).to have_no_link('Mark read here')
-    end
-    expect(post.reload.last_read(user)).to be_the_same_time_as(replies.last.created_at + 30.seconds)
+    expect(page).to have_selector('.content-header', text: post.subject)
+    expect(page).to have_no_selector('.permalink-read-notice')
+    expect(post.reload.last_read(user)).to be_the_same_time_as(read_time)
   end
 
   scenario "Permalink matching the reader's position shows no notice" do

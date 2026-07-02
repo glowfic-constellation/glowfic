@@ -72,35 +72,37 @@ RSpec.describe RepliesController, 'GET show' do
 
     before(:each) { login_as(user) }
 
-    it "leaves read position untouched and flags 'earlier' when the thread has never been read" do
+    it "leaves read position untouched when the thread has never been read" do
       target = replies[10] # page 3 of 3 with per_page: 5
 
       get :show, params: { id: target.id, per_page: 5 }
 
       expect(response).to have_http_status(200)
       expect(assigns(:permalink_reply)).to eq(target)
-      expect(assigns(:permalink_read_direction)).to eq(:earlier)
+      expect(assigns(:permalink_jumped_ahead)).to eq(true)
       expect(Post::View.where(post: post, user: user)).not_to exist
     end
 
-    it "leaves read position untouched and flags 'earlier' when partially read" do
-      Timecop.freeze(replies[2].created_at + 30.seconds) { post.mark_read(user) }
+    it "leaves read position untouched when partially read and permalink is ahead" do
+      read_time = replies[2].created_at + 30.seconds
+      Timecop.freeze(read_time) { post.mark_read(user) }
       target = replies[10] # page 3, ahead of the unread boundary on page 1
 
       get :show, params: { id: target.id, per_page: 5 }
 
-      expect(assigns(:permalink_read_direction)).to eq(:earlier)
-      expect(post.reload.last_read(user)).to be_the_same_time_as(replies[2].created_at + 30.seconds)
+      expect(assigns(:permalink_jumped_ahead)).to eq(true)
+      expect(post.reload.last_read(user)).to be_the_same_time_as(read_time)
     end
 
-    it "leaves read position untouched and flags 'later' when fully read" do
-      Timecop.freeze(replies.last.created_at + 30.seconds) { post.mark_read(user) }
+    it "shows no warning and updates read position normally when the permalink is behind the fully-read boundary" do
+      read_time = replies.last.created_at + 30.seconds
+      Timecop.freeze(read_time) { post.mark_read(user) }
       target = replies[1] # page 1, behind the fully-read boundary on page 3
 
       get :show, params: { id: target.id, per_page: 5 }
 
-      expect(assigns(:permalink_read_direction)).to eq(:later)
-      expect(post.reload.last_read(user)).to be_the_same_time_as(replies.last.created_at + 30.seconds)
+      expect(assigns(:permalink_jumped_ahead)).to be_nil
+      expect(post.reload.last_read(user)).to be_the_same_time_as(read_time)
     end
 
     it "updates read position normally when the permalink matches the unread position" do
@@ -108,7 +110,7 @@ RSpec.describe RepliesController, 'GET show' do
 
       get :show, params: { id: target.id, per_page: 5 }
 
-      expect(assigns(:permalink_read_direction)).to be_nil
+      expect(assigns(:permalink_jumped_ahead)).to be_nil
       expect(post.reload.last_read(user)).not_to be_nil
     end
 
@@ -118,7 +120,7 @@ RSpec.describe RepliesController, 'GET show' do
 
       get :show, params: { id: target.id, per_page: 5 }
 
-      expect(assigns(:permalink_read_direction)).to be_nil
+      expect(assigns(:permalink_jumped_ahead)).to be_nil
       expect(post.reload.last_read(user)).to be_the_same_time_as(replies[9].created_at)
     end
 
@@ -128,7 +130,7 @@ RSpec.describe RepliesController, 'GET show' do
 
       get :show, params: { id: target.id, per_page: 5 }
 
-      expect(assigns(:permalink_read_direction)).to be_nil
+      expect(assigns(:permalink_jumped_ahead)).to be_nil
     end
   end
 end
