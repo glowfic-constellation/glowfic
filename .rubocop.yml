@@ -733,6 +733,9 @@ RSpec/LeakyConstantDeclaration:
   Exclude:
     - 'spec/lib/presentable_spec.rb'
 
+RSpec/LeakyLocalVariable: # new in 3.8
+  Enabled: true
+
 RSpec/MatchArray:
   Enabled: false
 
