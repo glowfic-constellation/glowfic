@@ -96,10 +96,6 @@ class Tag < ApplicationRecord
       Tag::SettingTag.where(tag_id: other_tag.id).update_all(tag_id: self.id)
       Tag::SettingTag.where(tagged_id: other_tag.id).update_all(tagged_id: self.id)
 
-      user_tags = Tag::UserTag.where(tag_id: other_tag.id)
-      user_tags.where(user_id: user_tags.select(:user_id).distinct.pluck(:user_id)).delete_all
-      user_tags.update_all(tag_id: self.id)
-
       other_tag.destroy!
       # rubocop:enable Rails/SkipsModelValidations
     end
