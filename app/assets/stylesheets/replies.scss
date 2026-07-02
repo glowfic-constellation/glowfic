@@ -563,9 +563,19 @@ div.post-subheader { width: 100%; }
   .permalink-read-notice-message img { margin-right: 5px; }
 
   .permalink-read-notice-actions {
+    align-items: center;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
     margin-top: 8px;
 
-    .link-box { margin-left: 10px; }
+    .link-box {
+      font-size: $font_size_smallish;
+      height: auto;
+      line-height: 1;
+      margin-left: 0;
+      padding: 6px 12px;
+    }
   }
 }
 
