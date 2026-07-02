@@ -111,5 +111,24 @@ RSpec.describe RepliesController, 'GET show' do
       expect(assigns(:permalink_read_direction)).to be_nil
       expect(post.reload.last_read(user)).not_to be_nil
     end
+
+    it "shows no warning for a permalink on the page the reader just finished reading" do
+      Timecop.freeze(replies[9].created_at) { post.mark_read(user) }
+      target = replies[7] # page 2, the page that was just fully read
+
+      get :show, params: { id: target.id, per_page: 5 }
+
+      expect(assigns(:permalink_read_direction)).to be_nil
+      expect(post.reload.last_read(user)).to be_the_same_time_as(replies[9].created_at)
+    end
+
+    it "shows no warning for a permalink on the page right after the one the reader just finished" do
+      Timecop.freeze(replies[9].created_at) { post.mark_read(user) }
+      target = replies[10] # page 3, the very next (first unread) page
+
+      get :show, params: { id: target.id, per_page: 5 }
+
+      expect(assigns(:permalink_read_direction)).to be_nil
+    end
   end
 end
