@@ -560,7 +560,13 @@ div.post-subheader { width: 100%; }
 .permalink-read-notice {
   margin-bottom: 10px;
 
-  .link-box { margin-left: 10px; }
+  .permalink-read-notice-message img { margin-right: 5px; }
+
+  .permalink-read-notice-actions {
+    margin-top: 8px;
+
+    .link-box { margin-left: 10px; }
+  }
 }
 
 /* History page */

@@ -1,13 +1,16 @@
 -# locals: ( reply:, post:, direction: )
 
-.permalink-read-notice.flash.error
+.permalink-read-notice.flash.success
   = link_to '#' do
     = image_tag 'icons/cross.png'.freeze, class: 'float-right flash-dismiss'.freeze, alt: 'Dismiss'
-  - if direction == :earlier
-    Your reading position on this thread is earlier than this page, so it has not been updated.
+  .permalink-read-notice-message
+    = image_tag 'icons/eye.png'.freeze, class: 'vmid'.freeze, alt: ''
+    - if direction == :earlier
+      Your reading position on this thread is earlier than this page, so it has not been updated.
+    - else
+      You have already read further in this thread than this page.
+  .permalink-read-notice-actions
     = link_to '(Go to your reading position)', unread_path(post)
-    = link_to post_path(post, unread: true, at_id: reply.id), method: :put do
-      .link-box.action-edit Mark as read up to here
-  - else
-    You have already read further in this thread than this page.
-    = link_to '(Go to your reading position)', unread_path(post)
+    - if direction == :earlier
+      = link_to post_path(post, unread: true, at_id: reply.id), method: :put do
+        .link-box.action-edit Mark as read up to here
