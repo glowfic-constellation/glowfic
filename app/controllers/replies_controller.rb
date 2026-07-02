@@ -204,7 +204,8 @@ class RepliesController < WritableController
     else
       unread.post_page(per_page)
     end
-    return if unread_page == cur_page
+    return if unread_page == cur_page # loaded our latest unread page: nothing skipped
+    return if unread_page == cur_page + 1 # loaded the page we just finished reading: not meaningfully "going back"
 
     @skip_read_marking = true
     @permalink_read_direction = unread_page < cur_page ? :earlier : :later
