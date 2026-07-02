@@ -84,6 +84,8 @@ class RepliesController < WritableController
     @page_title = @post.subject
     params[:page] ||= @reply.post_page(per_page)
 
+    check_permalink_read_position if logged_in?
+
     show_post(params[:page])
   end
 
@@ -186,6 +188,26 @@ class RepliesController < WritableController
     end
 
     @page_title = @post.subject
+  end
+
+  # Skips auto-advancing the read position when the permalinked page doesn't contain the reader's actual read/unread boundary.
+  def check_permalink_read_position
+    @permalink_reply = @reply
+    cur_page = params[:page].to_i
+    return unless cur_page > 0
+
+    unread = @post.first_unread_for(current_user)
+    unread_page = if unread.nil?
+      @post.replies.paginate(per_page: per_page, page: 1).total_pages
+    elsif unread.is_a?(Post)
+      1
+    else
+      unread.post_page(per_page)
+    end
+    return if unread_page == cur_page
+
+    @skip_read_marking = true
+    @permalink_read_direction = unread_page < cur_page ? :earlier : :later
   end
 
   def require_create_permission

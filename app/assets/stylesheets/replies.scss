@@ -556,6 +556,13 @@ div.post-subheader { width: 100%; }
 
 .reply-highlighted { border: 1px $border_color_unread_reply solid; }
 
+/* Reply permalink read-position notice */
+.permalink-read-notice {
+  margin-bottom: 10px;
+
+  .link-box { margin-left: 10px; }
+}
+
 /* History page */
 .history-header { width: 170px; }
 
