@@ -14,17 +14,17 @@ RSpec.describe "Reply permalinks" do
 
     within(".post-container:has(#reply-#{target.id})") do
       expect(page).to have_selector('.permalink-read-notice', text: 'Your reading position on this thread is earlier than this page')
-      expect(page).to have_link('(Go to your reading position)')
-      expect(page).to have_link('Mark as read up to here')
+      expect(page).to have_link('Go to previous position')
+      expect(page).to have_link('Mark read here')
     end
     expect(post.reload.first_unread_for(user)).to eq(post) # still fully unread, untouched
   end
 
-  scenario "Clicking 'Mark as read up to here' updates the reading position", :js do
+  scenario "Clicking 'Mark read here' updates the reading position", :js do
     target = replies[10]
 
     visit reply_path(target, anchor: "reply-#{target.id}", per_page: 5)
-    click_link 'Mark as read up to here'
+    click_link 'Mark read here'
 
     expect(page).to have_selector('.table-title', text: 'Unread Posts')
     expect(post.reload.first_unread_for(user)).to eq(target)
@@ -38,8 +38,8 @@ RSpec.describe "Reply permalinks" do
 
     within(".post-container:has(#reply-#{target.id})") do
       expect(page).to have_selector('.permalink-read-notice', text: 'You have already read further in this thread than this page')
-      expect(page).to have_link('(Go to your reading position)')
-      expect(page).to have_no_link('Mark as read up to here')
+      expect(page).to have_link('Go to previous position')
+      expect(page).to have_no_link('Mark read here')
     end
     expect(post.reload.last_read(user)).to be_the_same_time_as(replies.last.created_at + 30.seconds)
   end
