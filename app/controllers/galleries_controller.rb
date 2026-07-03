@@ -253,7 +253,7 @@ class GalleriesController < UploadingController
   end
 
   def permitted_params
-    params.fetch(:gallery, {}).permit(
+    permitted = params.fetch(:gallery, {}).permit(
       :name,
       galleries_icons_attributes: [
         :id,
@@ -262,6 +262,10 @@ class GalleriesController < UploadingController
       ],
       icon_ids: [],
     )
+    if permitted[:icon_ids].present?
+      permitted[:icon_ids] = Icon.where(id: permitted[:icon_ids], user_id: current_user.id).pluck(:id)
+    end
+    permitted
   end
 
   def icon_params(paramset)

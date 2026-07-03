@@ -367,6 +367,17 @@ RSpec.describe BoardsController do
       expect(assigns(:board_sections)).to eq(sections.reverse)
       expect(assigns(:unsectioned_posts)).to eq(posts)
     end
+
+    it "excludes posts not visible to the editor" do
+      coauthor = create(:user)
+      board = create(:board, writers: [coauthor])
+      visible_post = create(:post, board: board, user: board.creator)
+      private_post = create(:post, board: board, user: coauthor, privacy: :private)
+      login_as(board.creator)
+      get :edit, params: { id: board.id }
+      expect(assigns(:unsectioned_posts)).to eq([visible_post])
+      expect(assigns(:unsectioned_posts)).not_to include(private_post)
+    end
   end
 
   describe "PUT update" do
@@ -422,6 +433,7 @@ RSpec.describe BoardsController do
           coauthor_ids: [user2.id],
           cameo_ids: [user3.id],
           authors_locked: true,
+          mega: true,
         },
       }
       expect(response).to redirect_to(continuity_url(board))
@@ -432,6 +444,7 @@ RSpec.describe BoardsController do
       expect(board.writers).to match_array([user, user2])
       expect(board.cameos).to match_array([user3])
       expect(board.authors_locked).to eq(true)
+      expect(board.mega).to eq(true)
     end
   end
 

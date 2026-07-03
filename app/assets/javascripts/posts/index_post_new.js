@@ -3,7 +3,11 @@ $(document).ready(function() {
   createSelect2('#index_post_post_id', {
     ajax: {
       url: '/api/v1/posts',
-      data: function(params) { return queryTransform(params); },
+      data: function(params) {
+        const data = queryTransform(params);
+        data.min = 'true';
+        return data;
+      },
       processResults: function(data, params) {
         const total = this._request.getResponseHeader('Total');
         return processResults(data, params, total, 'subject');

@@ -18,7 +18,6 @@ gem 'apipie-rails'
 gem 'audited', '~> 5.8.0'
 
 gem 'aws-actionmailer-ses', '~> 1'
-gem 'aws-sdk-rails', '~> 5'
 gem 'aws-sdk-s3', '~> 1'
 gem 'aws-sdk-ses', '~> 1'
 gem 'barnes' # heroku ruby-specific metrics
@@ -26,14 +25,14 @@ gem 'bootstrap', '~> 5.3' # pin until major version is handled
 gem 'connection_pool', '~> 2.0' # pin until version 3.x is supported by Rails (https://github.com/glowfic-constellation/glowfic/pull/2616)
 gem 'dartsass-sprockets'
 gem 'exception_notification'
-gem 'get_process_mem'
+gem 'geocoder'
 gem 'gon', '~> 6.6'
 gem 'haml-rails'
 gem 'httparty'
 gem 'jquery-fileupload-rails'
 gem 'jquery-rails', '~> 4.6'
 gem 'jquery-ui-rails-dox-fork', require: 'jquery-ui-rails'
-gem 'json', '~> 2.18'
+gem 'json', '~> 2.19'
 gem 'jwt'
 gem 'newrelic_rpm'
 gem 'nilify_blanks'
@@ -65,16 +64,16 @@ group :production do
 end
 
 group :development do
-  gem "brakeman", '~> 7.1.2', require: false
-  gem 'haml_lint', '~> 0.68.0', require: false
+  gem "brakeman", '~> 8.0.5', require: false
+  gem 'haml_lint', '~> 0.74.0', require: false
   gem 'listen'
   gem 'memory_profiler'
   gem 'rack-mini-profiler'
-  gem 'rubocop', '~> 1.77.0', require: false
+  gem 'rubocop', '~> 1.82.1', require: false
   gem 'rubocop-capybara', '~> 2.22.1', require: false
   gem 'rubocop-factory_bot', '~> 2.28.0', require: false
   gem 'rubocop-performance', '~> 1.26.1', require: false
-  gem 'rubocop-rails', '~> 2.34.2', require: false
+  gem 'rubocop-rails', '~> 2.34.3', require: false
   gem 'rubocop-rspec', '~> 3.7.0', require: false
   gem 'rubocop-rspec_rails', '~> 2.32.0', require: false
   gem 'traceroute'
@@ -85,15 +84,18 @@ group :development, :test do
   gem 'database_cleaner'
   gem 'dotenv'
   gem 'html-proofer', '< 4'
-  gem 'rake', '~> 13.3'
+  gem 'parallel_tests'
+  gem 'rake', '~> 13.4'
   gem 'rspec-rails'
   gem 'seed_dump', '~> 3.4'
+  gem 'test-prof'
 end
 
 group :test do
   gem 'capybara'
   gem 'factory_bot_rails'
   gem 'rails-controller-testing'
+  gem 'rspec-github', require: false
   gem 'selenium-webdriver'
   gem 'simplecov'
   gem 'timecop'

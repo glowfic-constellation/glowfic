@@ -183,6 +183,7 @@ div.post-subheader { width: 100%; }
 #content > .post-container, .flat-post-replies .post-container {
   padding: 0;
   overflow: auto;
+  break-inside: avoid;
 }
 
 .post-edit-box {

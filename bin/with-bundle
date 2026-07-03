@@ -1,6 +1,47 @@
 #!/usr/bin/env bash
 set -eu
-if ! bundle check > /dev/null; then
+
+# Prefer rbenv-managed Ruby if available so the Gemfile-pinned version is used
+# without requiring the caller to have already activated rbenv.
+if [ -d /opt/rbenv/shims ] && [[ ":$PATH:" != *":/opt/rbenv/shims:"* ]]; then
+  export PATH="/opt/rbenv/shims:$PATH"
+fi
+
+bundle_check_output=$(bundle check 2>&1) || bundle_check_status=$?
+bundle_check_status=${bundle_check_status:-0}
+
+if [ "$bundle_check_status" -ne 0 ]; then
+  if echo "$bundle_check_output" | grep -q "Your Ruby version is .* but your Gemfile specified"; then
+    required_ruby=$(grep -E "^ruby ['\"]" Gemfile 2>/dev/null | head -1 | sed -E "s/.*['\"]([0-9.]+)['\"].*/\\1/")
+    cat >&2 <<EOF
+$bundle_check_output
+
+This project pins Ruby ${required_ruby:-(see Gemfile)} (also recorded in .ruby-version).
+The active Ruby is the wrong version, so bundler refuses to continue.
+
+If you are Claude Code on a sandbox where rbenv is installed but the pinned
+Ruby is missing, install it with:
+
+  rbenv install \$(cat .ruby-version)
+
+then re-run this script. The rbenv shims directory (/opt/rbenv/shims) is
+automatically prepended to PATH by this script when present, so once the
+version is installed no further setup is needed.
+
+If cache.ruby-lang.org is blocked in your sandbox, fetch the source tarball
+from https://github.com/ruby/ruby/archive/refs/tags/v\${required_ruby//./_}.tar.gz
+(github.com is typically allowlisted), run ./autogen.sh && ./configure
+--prefix=/opt/rbenv/versions/\$(cat .ruby-version) --enable-shared
+--disable-install-doc && make -j\$(nproc) && make install. The bundled-gems
+download step inside 'make install' uses tool/downloader.rb, which forces its
+own CA bundle from lib/rubygems/ssl_certs/rubygems.org/*.pem; on sandboxes
+that intercept TLS you must copy the egress CA there first (e.g. cp
+/usr/local/share/ca-certificates/egress-gateway-ca-*.crt
+lib/rubygems/ssl_certs/rubygems.org/) or the gem fetch fails with
+"self-signed certificate in certificate chain".
+EOF
+    exit 1
+  fi
   echo "Bundle gems changed, updating from Gemfile.lock!"
   BUNDLE_FROZEN=true bundle install || { echo "Gemfile doesn't match Gemfile.lock, exiting - please run bundle install to force an update."; exit 1; }
 fi

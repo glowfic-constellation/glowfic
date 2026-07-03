@@ -39,10 +39,22 @@ environment ENV.fetch("RAILS_ENV", "development")
 # We default to 2 to guarantee our fork hooks run.
 workers ENV.fetch("WEB_CONCURRENCY", 2)
 
-# Report statsd metrics for Heroku monitoring.
-require 'barnes'
-before_fork do
-  Barnes.start
+# Report statsd metrics for Heroku monitoring. Only register the fork hook when
+# not running tests: Capybara boots Puma in single (workerless) mode, where
+# registering before_fork just prints a warning since it never runs.
+unless ENV.fetch("RAILS_ENV", "development") == "test"
+  require 'barnes'
+  before_fork do
+    Barnes.start
+  end
+end
+
+# Each clustered worker is forked from the master, so re-establish its own
+# Active Record connections on boot rather than inheriting the master's.
+# Belt-and-suspenders against stale connections after a DB maintenance event
+# (mirrors what config/initializers/resque.rb does on fork).
+on_worker_boot do
+  ActiveRecord::Base.establish_connection if defined?(ActiveRecord::Base)
 end
 
 # Allow puma to be restarted by `bin/rails restart` command.

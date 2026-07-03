@@ -35,7 +35,7 @@ RSpec.describe SessionsController do
         allow(ENV).to receive(:fetch).with('DISCORD_LINK_GLOWFIC', nil).and_return(nil)
         get :index
         expect(response).to have_http_status(200)
-        expect(response.body).not_to include('Glowfic Community Discord')
+        expect(response.body).not_to include('community social Discord')
         expect(controller.gon.logged_in).not_to eq(true)
       end
 
@@ -43,7 +43,7 @@ RSpec.describe SessionsController do
         allow(ENV).to receive(:fetch).with('DISCORD_LINK_GLOWFIC', nil).and_return('https://discord.gg/fakeinvite')
         get :index
         expect(response).to have_http_status(200)
-        expect(response.body).to include('Glowfic Community Discord')
+        expect(response.body).to include('community social Discord')
         expect(response.body).to include('discord.gg')
         expect(controller.gon.logged_in).not_to eq(true)
       end
@@ -53,7 +53,7 @@ RSpec.describe SessionsController do
         login
         get :index
         expect(response).to have_http_status(200)
-        expect(response.body).to include('Glowfic Community Discord')
+        expect(response.body).to include('community social Discord')
         expect(response.body).to include('discord.gg')
         expect(controller.gon.logged_in).to eq(true)
       end

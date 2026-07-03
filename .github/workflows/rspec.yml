@@ -28,12 +28,13 @@ jobs:
           PGPASSWORD: postgres
           PGDATABASE: glowfic_test
         ports: ["5432:5432"]
-        options: --health-cmd pg_isready --health-interval 10s --health-timeout 5s --health-retries 5
+        # short health interval so "ready" is detected in ~2s instead of ~10s
+        options: --health-cmd pg_isready --health-interval 2s --health-timeout 3s --health-retries 15
       redis:
         # reference: https://docs.github.com/en/actions/guides/creating-redis-service-containers#running-jobs-in-containers
         image: redis:7.2
         ports: ["6379:6379"]
-        options: --health-cmd "redis-cli ping" --health-interval 10s --health-timeout 5s --health-retries 5
+        options: --health-cmd "redis-cli ping" --health-interval 2s --health-timeout 3s --health-retries 15
 
     env:
       GLOWFIC_DATABASE_USER: postgres
@@ -42,24 +43,58 @@ jobs:
       RAILS_ENV: test
       MINIO_ENDPOINT: http://localhost:9000/
       MINIO_ENDPOINT_EXTERNAL: http://localhost:9000/
+      # Run the suite across this many parallel_tests workers (ubuntu-latest = 4 vCPUs).
+      PARALLEL_TEST_PROCESSORS: 4
 
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
       - uses: browser-actions/setup-chrome@v2
+      - name: Cache MinIO binary
+        id: minio-cache
+        uses: actions/cache@v6
+        with:
+          path: minio
+          # bump the suffix to force a refresh of the cached binary
+          key: ${{ runner.os }}-minio-v1
       - name: Set up MinIO
         run: |
-          wget --show-progress --progress=dot:mega https://dl.min.io/server/minio/release/linux-amd64/minio
-          chmod +x minio
+          if [ ! -x ./minio ]; then
+            wget --show-progress --progress=dot:mega https://dl.min.io/server/minio/release/linux-amd64/minio
+            chmod +x minio
+          fi
           MINIO_ROOT_USER=glowfic_minio MINIO_ROOT_PASSWORD=glowfic_minio ./minio server ./minio-data 2>&1 > minio.log &
       - name: Set up Ruby
         uses: ruby/setup-ruby@v1
         with:
           bundler-cache: true  # runs bundle install (with version based on Gemfile.lock) and automatically caches result
-      - name: Load database schema
-        run: bundle exec rails db:schema:load --trace
+      - name: Cache Selenium chromedriver
+        uses: actions/cache@v6
+        with:
+          path: ~/.cache/selenium
+          key: ${{ runner.os }}-selenium-${{ hashFiles('Gemfile.lock') }}
+          restore-keys: ${{ runner.os }}-selenium-
+      - name: Warm up chromedriver
+        # Resolve+download the chromedriver that matches the installed Chrome ONCE
+        # (Selenium Manager caches it under ~/.cache/selenium), so the parallel
+        # workers reuse it instead of each downloading on their first :js spec.
+        run: |
+          bundle exec ruby -e "require 'selenium/webdriver'; \
+            o = Selenium::WebDriver::Chrome::Options.new; \
+            %w[--headless=new --no-sandbox --disable-dev-shm-usage].each { |a| o.add_argument(a) }; \
+            d = Selenium::WebDriver.for(:chrome, options: o); d.quit"
+      - name: Set up parallel test databases
+        # Load the schema once (one Rails boot), then template-copy it to the
+        # other workers' databases — much faster than booting Rails per worker.
+        env:
+          PGPASSWORD: postgres
+        run: |
+          bundle exec rails db:schema:load --trace
+          for n in $(seq 2 "$PARALLEL_TEST_PROCESSORS"); do
+            createdb -h localhost -U postgres -T glowfic_test "glowfic_test${n}"
+          done
       - name: Asset cache
         id: asset-cache
-        uses: actions/cache@v5
+        uses: actions/cache@v6
         with:
           path: |
             public/assets
@@ -70,28 +105,35 @@ jobs:
       - name: Precompile assets
         # for faster server bootup for Capybara tests
         run: RAILS_ENV=test bundle exec rake assets:precompile
-      - name: Run rspec tests and report coverage
-        # uses: paambaati/codeclimate-action@v9.0.0
-        # with:
-        #  coverageCommand: bundle exec rspec spec --format documentation --format html --out rspec-results.html
-        # env:
-        #   CC_TEST_REPORTER_ID: a3ae0fa6dd28afe102a694b98ced6bb567577524d44571589c4ed1a68f8cda2d
-        run: bundle exec rspec spec --format documentation --format html --out rspec-results.html
+      - name: Cache parallel runtime log
+        # lets parallel_tests balance workers by recorded per-file runtime
+        uses: actions/cache@v6
+        with:
+          path: tmp/parallel_runtime_rspec.log
+          key: ${{ runner.os }}-parallel-runtime-${{ github.run_id }}
+          restore-keys:
+            ${{ runner.os }}-parallel-runtime-
+      - name: Run rspec tests in parallel
+        # --runtime-log lets parallel_tests balance workers by recorded per-file
+        # runtime once the cached log exists; the first run falls back to file
+        # size and writes the log for next time.
+        run: |
+          bundle exec parallel_rspec spec \
+            --runtime-log tmp/parallel_runtime_rspec.log \
+            -o '--format progress --require rspec/github --format RSpec::Github::Formatter'
+      - name: Merge coverage and enforce threshold
+        # only when the suite passed: a failed worker doesn't flush its coverage,
+        # which would make the merged total look (misleadingly) too low
+        run: bundle exec rake coverage:report
       - name: Upload MinIO logs
         if: ${{ always() }}
-        uses: actions/upload-artifact@v6
+        uses: actions/upload-artifact@v7
         with:
           name: minio-logs
           path: minio.log
-      - name: Upload RSpec logs
-        if: ${{ always() }}
-        uses: actions/upload-artifact@v6
-        with:
-          name: rspec-logs
-          path: rspec-results.html
       - name: Upload Coverage files
         if: ${{ always() }}
-        uses: actions/upload-artifact@v6
+        uses: actions/upload-artifact@v7
         with:
           name: coverage
           path: coverage/

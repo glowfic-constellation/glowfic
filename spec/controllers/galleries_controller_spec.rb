@@ -152,6 +152,15 @@ RSpec.describe GalleriesController do
       expect(gallery.gallery_groups).to match_array([group])
     end
 
+    it "does not associate icons belonging to other users" do
+      user = create(:user)
+      other_user = create(:user)
+      other_icon = create(:icon, user: other_user)
+      login_as(user)
+      post :create, params: { gallery: { name: 'Test Gallery', icon_ids: [other_icon.id] } }
+      expect(Gallery.last.icons).to be_empty
+    end
+
     it "creates new gallery groups" do
       existing_name = create(:gallery_group)
       existing_case = create(:gallery_group)
@@ -285,7 +294,7 @@ RSpec.describe GalleriesController do
       it "calculates OpenGraph meta" do
         user = create(:user, username: 'user')
         gallery = create(:gallery, name: 'gallery', user: user)
-        create_list(:icon, 16, gallery_ids: [gallery.id])
+        create_list(:icon, 16, user: user, gallery_ids: [gallery.id])
         get :show, params: { id: gallery.id }
 
         meta_og = assigns(:meta_og)
@@ -302,7 +311,7 @@ RSpec.describe GalleriesController do
           user: user,
           gallery_groups: [create(:gallery_group, name: "Tag 1"), create(:gallery_group, name: "Tag 2")],
         )
-        create_list(:icon, 16, gallery_ids: [gallery.id])
+        create_list(:icon, 16, user: user, gallery_ids: [gallery.id])
         get :show, params: { id: gallery.id }
 
         meta_og = assigns(:meta_og)
@@ -552,6 +561,34 @@ RSpec.describe GalleriesController do
       expect(Icon.find_by(id: icon.id)).to be_nil
     end
 
+    it "does not associate icons belonging to other users via icon_ids" do
+      user = create(:user)
+      gallery = create(:gallery, user: user)
+      other_user = create(:user)
+      other_icon = create(:icon, user: other_user)
+      login_as(user)
+
+      put :update, params: { id: gallery.id, gallery: { icon_ids: [other_icon.id] } }
+      expect(gallery.reload.icons).to be_empty
+    end
+
+    it "does not allow modifying icons belonging to other users via nested attributes" do
+      user = create(:user)
+      gallery = create(:gallery, user: user)
+      other_user = create(:user)
+      other_icon = create(:icon, user: other_user)
+      original_url = other_icon.url
+      login_as(user)
+
+      # Attempt to associate and modify in one request
+      put :update, params: {
+        id: gallery.id,
+        gallery: { icon_ids: [other_icon.id] },
+      }
+      expect(gallery.reload.icons).not_to include(other_icon)
+      expect(other_icon.reload.url).to eq(original_url)
+    end
+
     it "creates new gallery groups" do
       existing_name = create(:gallery_group)
       existing_case = create(:gallery_group)
@@ -720,6 +757,9 @@ RSpec.describe GalleriesController do
     it "makes sure devs set up their S3 bucket correctly" do
       fake_bucket = instance_double(Aws::S3::Bucket, url: "http://fake-url.example.com/my-bucket")
       stub_const("S3_BUCKET", fake_bucket)
+      allow(ENV).to receive(:key?).and_call_original
+      allow(ENV).to receive(:key?).with("MINIO_ENDPOINT").and_return(true)
+      allow(ENV).to receive(:key?).with("MINIO_ENDPOINT_EXTERNAL").and_return(true)
       allow(ENV).to receive(:fetch).with("MINIO_ENDPOINT", nil).and_return("http://invalid-url.example.com/")
       allow(ENV).to receive(:fetch).with("MINIO_ENDPOINT_EXTERNAL", nil).and_return("http://updated-url.example.com/")
       login
@@ -729,6 +769,9 @@ RSpec.describe GalleriesController do
     it "works with Docker minio mapping for devs" do
       fake_bucket = instance_double(Aws::S3::Bucket, url: "http://old-url.example.com/my-bucket")
       stub_const("S3_BUCKET", fake_bucket)
+      allow(ENV).to receive(:key?).and_call_original
+      allow(ENV).to receive(:key?).with("MINIO_ENDPOINT").and_return(true)
+      allow(ENV).to receive(:key?).with("MINIO_ENDPOINT_EXTERNAL").and_return(true)
       allow(ENV).to receive(:fetch).with("MINIO_ENDPOINT", nil).and_return("http://old-url.example.com/")
       allow(ENV).to receive(:fetch).with("MINIO_ENDPOINT_EXTERNAL", nil).and_return("http://updated-url.example.com/")
       expect(fake_bucket).to receive(:presigned_post).with(hash_including(url: "http://updated-url.example.com/my-bucket"))

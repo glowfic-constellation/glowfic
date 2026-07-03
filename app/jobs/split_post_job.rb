@@ -2,7 +2,7 @@
 class SplitPostJob < ApplicationJob
   queue_as :low
 
-  REPLY_ATTRS = [:character_id, :icon_id, :character_alias_id, :user_id, :content, :created_at, :updated_at].map(&:to_s)
+  REPLY_ATTRS = [:character_id, :icon_id, :character_alias_id, :user_id, :content, :created_at, :updated_at, :editor_mode].map(&:to_s)
   POST_ATTRS = [:board_id, :section_id, :privacy, :status, :authors_locked].map(&:to_s)
   POST_ASSOCS = [:setting_ids, :label_ids, :content_warning_ids].map(&:to_s) # Associations aren't attributes so they're handled separately
 

@@ -3,7 +3,7 @@ RSpec.describe Api::V1::PostsController do
     shared_examples_for "index.parsed_body" do |in_doc|
       it "should support no search", show_in_doc: in_doc do
         post = create(:post)
-        get :index
+        get :index, params: { min: 'true' }
         expect(response).to have_http_status(200)
         expect(response.parsed_body).to have_key('results')
         expect(response.parsed_body['results']).to contain_exactly(post.as_json(min: true).stringify_keys)
@@ -12,19 +12,34 @@ RSpec.describe Api::V1::PostsController do
       it "should support search", show_in_doc: in_doc do
         post = create(:post, subject: 'search')
         create(:post, subject: 'no') # post2
-        get :index, params: { q: 'se' }
+        get :index, params: { q: 'se', min: 'true' }
         expect(response).to have_http_status(200)
         expect(response.parsed_body).to have_key('results')
+        expect(response.parsed_body['results'].count).to eq(1)
         expect(response.parsed_body['results']).to contain_exactly(post.as_json(min: true).stringify_keys)
       end
 
       it "hides private posts" do
         create(:post, privacy: :private)
         post = create(:post)
+        get :index, params: { min: 'true' }
+        expect(response).to have_http_status(200)
+        expect(response.parsed_body).to have_key('results')
+        expect(response.parsed_body['results'].count).to eq(1)
+        expect(response.parsed_body['results']).to contain_exactly(post.as_json(min: true).stringify_keys)
+      end
+
+      it "supports full response", show_in_doc: in_doc do
+        post = create(:post)
         get :index
         expect(response).to have_http_status(200)
         expect(response.parsed_body).to have_key('results')
-        expect(response.parsed_body['results']).to contain_exactly(post.as_json(min: true).stringify_keys)
+        post_response = response.parsed_body['results'].first
+        expect(post_response['id']).to eq(post.id)
+        expect(post_response['subject']).to eq(post.subject)
+        expect(post_response['tagged_at']).to be_the_same_time_as(post.tagged_at)
+        expect(post_response['authors']).to eq(post.joined_authors.ordered.map { |a| a.as_json.stringify_keys })
+        expect(post_response['num_replies']).to eq(post.reply_count)
       end
     end
 
@@ -284,6 +299,61 @@ RSpec.describe Api::V1::PostsController do
         expect(board_post4.reload.section_order).to eq(3)
         expect(board_post5.reload.section_order).to eq(0)
       end
+
+      it "keeps posts hidden from the editor anchored to their predecessor" do
+        coauthor = create(:user)
+        board = create(:board, writers: [coauthor])
+        visible1 = create(:post, board: board, user: board.creator)
+        hidden = create(:post, board: board, user: board.creator, privacy: :private)
+        visible2 = create(:post, board: board, user: board.creator)
+
+        expect(visible1.reload.section_order).to eq(0)
+        expect(hidden.reload.section_order).to eq(1)
+        expect(visible2.reload.section_order).to eq(2)
+
+        api_login_as(coauthor)
+        post :reorder, params: { ordered_post_ids: [visible2.id, visible1.id] }
+        expect(response).to have_http_status(200)
+
+        # hidden was after visible1 → stays after visible1 in the new order
+        expect(visible2.reload.section_order).to eq(0)
+        expect(visible1.reload.section_order).to eq(1)
+        expect(hidden.reload.section_order).to eq(2)
+      end
+
+      it "keeps a leading hidden post at the start" do
+        coauthor = create(:user)
+        board = create(:board, writers: [coauthor])
+        hidden = create(:post, board: board, user: board.creator, privacy: :private)
+        visible1 = create(:post, board: board, user: board.creator)
+        visible2 = create(:post, board: board, user: board.creator)
+
+        expect(hidden.reload.section_order).to eq(0)
+        expect(visible1.reload.section_order).to eq(1)
+        expect(visible2.reload.section_order).to eq(2)
+
+        api_login_as(coauthor)
+        post :reorder, params: { ordered_post_ids: [visible2.id, visible1.id] }
+        expect(response).to have_http_status(200)
+
+        expect(hidden.reload.section_order).to eq(0)
+        expect(visible2.reload.section_order).to eq(1)
+        expect(visible1.reload.section_order).to eq(2)
+      end
+
+      it "omits posts not visible to the editor from the response" do
+        coauthor = create(:user)
+        board = create(:board, writers: [coauthor])
+        visible1 = create(:post, board: board, user: board.creator)
+        hidden = create(:post, board: board, user: board.creator, privacy: :private)
+        visible2 = create(:post, board: board, user: board.creator)
+
+        api_login_as(coauthor)
+        post :reorder, params: { ordered_post_ids: [visible2.id, visible1.id] }
+        expect(response).to have_http_status(200)
+        expect(response.parsed_body['post_ids']).to eq([visible2.id, visible1.id])
+        expect(response.parsed_body['post_ids']).not_to include(hidden.id)
+      end
     end
 
     context "with section_id" do
@@ -460,6 +530,27 @@ RSpec.describe Api::V1::PostsController do
         expect(board_post3.reload.section_order).to eq(0)
         expect(board_post4.reload.section_order).to eq(3)
         expect(board_post5.reload.section_order).to eq(0)
+      end
+
+      it "keeps posts hidden from the editor anchored to their predecessor in the section" do
+        coauthor = create(:user)
+        board = create(:board, writers: [coauthor])
+        section = create(:board_section, board: board)
+        visible1 = create(:post, board: board, section: section, user: board.creator)
+        hidden = create(:post, board: board, section: section, user: board.creator, privacy: :private)
+        visible2 = create(:post, board: board, section: section, user: board.creator)
+
+        expect(visible1.reload.section_order).to eq(0)
+        expect(hidden.reload.section_order).to eq(1)
+        expect(visible2.reload.section_order).to eq(2)
+
+        api_login_as(coauthor)
+        post :reorder, params: { ordered_post_ids: [visible2.id, visible1.id], section_id: section.id }
+        expect(response).to have_http_status(200)
+
+        expect(visible2.reload.section_order).to eq(0)
+        expect(visible1.reload.section_order).to eq(1)
+        expect(hidden.reload.section_order).to eq(2)
       end
     end
   end
