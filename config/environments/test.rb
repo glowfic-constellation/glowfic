@@ -8,8 +8,19 @@ require "active_support/core_ext/integer/time"
 Rails.application.configure do
   # Settings specified here will take precedence over those in config/application.rb.
 
+  # Use the ActiveJob test adapter for every spec so job expectations
+  # (have_been_enqueued, etc.) work regardless of which specs ran first. Without
+  # this the adapter is only switched to :test ad hoc by specs that include
+  # ActiveJob::TestHelper, which left job assertions order-dependent — invisible
+  # in a fixed single-process order, but broken once parallel_tests regroups files.
+  config.active_job.queue_adapter = :test
+
   # While tests run files are not watched, reloading is not necessary.
   config.enable_reloading = false
+
+  # Tests don't read the logs; silencing SQL/info logging skips formatting and
+  # writing ~70k lines/run — it shows up as a few % of every record creation.
+  config.log_level = :error
 
   # Eager loading loads your entire application. When running a single test locally,
   # this is usually not necessary, and can slow down your test suite. However, it's
@@ -25,7 +36,12 @@ Rails.application.configure do
   # Show full error reports.
   config.consider_all_requests_local = true
   config.action_controller.perform_caching = false
-  config.cache_store = :redis_cache_store, { url: ENV.fetch('REDIS_URL', nil) }
+  # Namespace the cache per parallel_tests worker so workers (which share one
+  # Redis server) don't read/clobber each other's cache or rate-limit counters.
+  # Always namespaced so Rails.cache.clear scopes to the namespace rather than
+  # flushing the whole server.
+  cache_namespace = "glowfic-cache:w#{ENV['TEST_ENV_NUMBER'].presence || '1'}"
+  config.cache_store = :redis_cache_store, { url: ENV.fetch('REDIS_URL', nil), namespace: cache_namespace }
 
   # Render exception templates for rescuable exceptions and raise for other exceptions.
   config.action_dispatch.show_exceptions = :rescuable

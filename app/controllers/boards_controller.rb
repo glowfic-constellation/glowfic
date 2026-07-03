@@ -72,7 +72,7 @@ class BoardsController < ApplicationController
     @page_title = 'Edit Continuity: ' + @board.name
     use_javascript('boards/edit')
     @board_sections = @board.board_sections.ordered
-    @unsectioned_posts = @board.posts.where(section_id: nil).ordered_in_section if @board.ordered?
+    @unsectioned_posts = @board.posts.where(section_id: nil).visible_to(current_user).ordered_in_section if @board.ordered?
   end
 
   def update
@@ -202,6 +202,6 @@ class BoardsController < ApplicationController
   end
 
   def permitted_params
-    params.fetch(:board, {}).permit(:name, :description, :authors_locked, coauthor_ids: [], cameo_ids: [])
+    params.fetch(:board, {}).permit(:name, :description, :authors_locked, :mega, coauthor_ids: [], cameo_ids: [])
   end
 end
