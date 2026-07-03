@@ -38,6 +38,10 @@
     = stylesheet_link_tag 'application'
     - if current_user.try(:layout).present?
       = stylesheet_link_tag "layouts/#{current_user.layout}"
+    / User's own active skin, applied site-wide to their browsing
+    - if current_user&.active_skin
+      = skin_link_tag(current_user.active_skin)
+    = yield :head_skin
 
     / Favicons
     %meta{name: "apple-mobile-web-app-title", content: "Glowfic Constellation"}
@@ -94,6 +98,7 @@
                         %span.badge.badge-primary= unread_notif_count
                   %li= link_to "Characters", user_characters_path(current_user)
                   %li= link_to "Galleries", user_galleries_path(current_user)
+                  %li= link_to "Skins", skins_path
                 %li= link_to 'Favorites', favorites_path
                 - unless current_user.read_only?
                   %li= link_to "Post", new_post_path

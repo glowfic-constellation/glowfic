@@ -265,4 +265,25 @@ RSpec.describe ApplicationHelper do
       expect(helper.loading_tag(id: 'loading-5')).to eq(expected)
     end
   end
+
+  describe "#skin_link_tag" do
+    let(:owner) { create(:user) }
+
+    it "returns nil when there is no skin" do
+      expect(helper.skin_link_tag(nil)).to be_nil
+    end
+
+    it "returns nil when the skin has no CSS" do
+      skin = create(:skin, user: owner, css: '   ')
+      expect(helper.skin_link_tag(skin)).to be_nil
+    end
+
+    it "links the skin's stylesheet endpoint" do
+      skin = create(:skin, user: owner, css: '.post-container { color: red; }')
+      link = helper.skin_link_tag(skin)
+      expect(link).to include('<link')
+      expect(link).to include('rel="stylesheet"')
+      expect(link).to include(css_skin_path(skin))
+    end
+  end
 end

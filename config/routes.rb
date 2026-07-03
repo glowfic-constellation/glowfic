@@ -110,6 +110,20 @@ Rails.application.routes.draw do
   resources :bookmarks, only: [:create, :destroy] do
     collection { get :search }
   end
+  resources :skins do
+    member do
+      get :css
+      post :use
+      post :fork
+      post :approve
+      post :reject
+    end
+    collection do
+      get :gallery
+      get :review
+      delete :clear
+    end
+  end
   resources :tags, except: [:new, :create]
 
   # Indexes

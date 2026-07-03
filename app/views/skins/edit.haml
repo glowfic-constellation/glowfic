@@ -1,0 +1,8 @@
+- content_for :breadcrumbs do
+  = link_to 'Skins', skins_path
+  &raquo;
+  = link_to @skin.name, skin_path(@skin)
+  &raquo;
+  %b Edit
+
+= render 'form'

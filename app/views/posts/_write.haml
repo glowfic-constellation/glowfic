@@ -77,6 +77,10 @@
     %br
     = f.label :label_ids, 'Labels:'
     = tag_select(post, f, :labels)
+    - if current_user.skins.exists?
+      %br
+      = f.label :skin_id, 'Recommended skin:'
+      = f.select :skin_id, options_from_collection_for_select(current_user.skins.ordered, :id, :name, post.skin_id), include_blank: '— None —'
 
   - if !post.persisted? || post.author_ids.include?(current_user.id)
     #post-notes.subber Notes

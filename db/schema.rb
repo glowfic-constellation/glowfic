@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2026_05_04_215359) do
+ActiveRecord::Schema[8.0].define(version: 2026_06_21_040000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "citext"
   enable_extension "pg_catalog.plpgsql"
@@ -370,12 +370,14 @@ ActiveRecord::Schema[8.0].define(version: 2026_05_04_215359) do
     t.boolean "authors_locked", default: false
     t.integer "character_alias_id"
     t.string "editor_mode"
+    t.integer "skin_id"
     t.index "to_tsvector('english'::regconfig, COALESCE((subject)::text, ''::text))", name: "idx_fts_post_subject", using: :gin
     t.index "to_tsvector('english'::regconfig, COALESCE(content, ''::text))", name: "idx_fts_post_content", using: :gin
     t.index ["board_id"], name: "index_posts_on_board_id"
     t.index ["character_id"], name: "index_posts_on_character_id"
     t.index ["created_at"], name: "index_posts_on_created_at"
     t.index ["icon_id"], name: "index_posts_on_icon_id"
+    t.index ["skin_id"], name: "index_posts_on_skin_id"
     t.index ["tagged_at"], name: "index_posts_on_tagged_at"
     t.index ["user_id"], name: "index_posts_on_user_id"
   end
@@ -422,6 +424,23 @@ ActiveRecord::Schema[8.0].define(version: 2026_05_04_215359) do
     t.datetime "created_at", precision: nil
     t.datetime "updated_at", precision: nil
     t.index ["user_id"], name: "index_report_views_on_user_id"
+  end
+
+  create_table "skins", force: :cascade do |t|
+    t.integer "user_id", null: false
+    t.string "name", null: false
+    t.text "description"
+    t.text "css"
+    t.text "sanitized_css"
+    t.boolean "public", default: false, null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.datetime "approved_at"
+    t.integer "approved_by_id"
+    t.string "approved_digest"
+    t.boolean "dangerous", default: false, null: false
+    t.index ["public"], name: "index_skins_on_public"
+    t.index ["user_id"], name: "index_skins_on_user_id"
   end
 
   create_table "tag_tags", id: :serial, force: :cascade do |t|
@@ -502,7 +521,10 @@ ActiveRecord::Schema[8.0].define(version: 2026_05_04_215359) do
     t.boolean "public_bookmarks", default: false
     t.boolean "default_hide_edit_delete_buttons", default: false
     t.boolean "default_hide_add_bookmark_button", default: false
+    t.integer "skin_id"
+    t.boolean "hide_skins", default: false
     t.index ["email"], name: "index_users_on_email", unique: true
+    t.index ["skin_id"], name: "index_users_on_skin_id"
     t.index ["username"], name: "index_users_on_username", unique: true
   end
 end

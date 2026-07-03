@@ -1,0 +1,56 @@
+- content_for :breadcrumbs do
+  = link_to 'Skins', skins_path
+  &raquo;
+  %b= @skin.name
+
+%span.time-loaded= pretty_time(DateTime.now.in_time_zone)
+
+- can_approve = current_user&.has_permission?(:approve_skins)
+
+%table
+  %thead
+    %tr
+      %th.table-title{colspan: 2}
+        = @skin.name
+        - if @skin.editable_by?(current_user)
+          = link_to edit_skin_path(@skin) do
+            .link-box.action-new Edit
+  %tbody
+    %tr
+      %th.sub.width-150 By
+      %td.padding-5= user_link(@skin.user)
+    %tr
+      %th.sub.width-150 Shared
+      %td.padding-5= @skin.public? ? 'Public' : 'Private'
+    %tr
+      %th.sub.width-150 Status
+      %td.padding-5
+        - if !@skin.dangerous?
+          Safe — no review needed
+        - elsif @skin.approved?
+          Approved by #{@skin.approved_by ? @skin.approved_by.username : 'a moderator'} (serves raw CSS to readers)
+        - else
+          Uses advanced CSS — pending moderator review. Readers see the sanitized version until it is approved.
+    - if @skin.description.present?
+      %tr
+        %th.sub.width-150 Description
+        %td.padding-5= @skin.description
+    %tr
+      %th.sub.width-150 CSS
+      %td.padding-5
+        %pre.skin-css= @skin.css
+
+- if can_approve && @skin.dangerous?
+  .centered.padding-10
+    - unless @skin.approved?
+      = link_to 'Approve (serve raw CSS)', approve_skin_path(@skin), method: :post, class: 'button', data: { confirm: 'This will serve this skin\'s raw, unsanitized CSS to every reader it reaches. Only approve if you fully trust it.' }
+    = link_to 'Reject / unlist', reject_skin_path(@skin), method: :post, class: 'button'
+
+- if logged_in?
+  .centered.padding-10
+    - if current_user.skin_id == @skin.id
+      = link_to 'Turn off', clear_skins_path, method: :delete, class: 'button'
+    - else
+      = link_to 'Use this skin', use_skin_path(@skin), method: :post, class: 'button'
+    - unless @skin.editable_by?(current_user)
+      = link_to 'Copy to my skins', fork_skin_path(@skin), method: :post, class: 'button'

@@ -2,6 +2,17 @@
 module ApplicationHelper
   TIME_FORMAT = '%b %d, %Y %l:%M %p'
 
+  # Links a skin's stylesheet (served by SkinsController#css), or nil. Serving
+  # the skin as a standalone text/css file instead of an inline <style> keeps
+  # user CSS out of the page markup entirely (no breakout to escape against) and
+  # lets the browser cache it across page loads. The controller picks the tier
+  # (raw for owner/approved, sanitized otherwise) and scopes it for the viewer.
+  def skin_link_tag(skin)
+    return if skin.nil? || skin.css.blank?
+
+    tag.link(rel: 'stylesheet', type: 'text/css', href: css_skin_path(skin))
+  end
+
   def loading_tag(**args)
     klass = 'vmid loading-icon'
     klass += ' ' + args[:class] if args[:class]

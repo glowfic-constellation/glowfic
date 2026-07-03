@@ -2,6 +2,21 @@
 
 %span.time-loaded= pretty_time(DateTime.now.in_time_zone)
 
+-# Post's recommended skin: shown to readers unless they have opted out globally
+-# or toggled it off for this view (skin=on overrides a global opt-out).
+- show_skin = @post.skin && params[:skin] != 'off' && (params[:skin] == 'on' || !current_user.try(:hide_skins))
+- if show_skin
+  - content_for :head_skin do
+    = skin_link_tag(@post.skin)
+- if @post.skin
+  .flash.breadcrumbs
+    - if show_skin
+      This post is using its recommended reading skin (#{@post.skin.name}).
+      = link_to 'Turn off', post_path(@post, page: page, per_page: per_page, skin: 'off')
+    - else
+      This post recommends a reading skin.
+      = link_to 'Use it', post_path(@post, page: page, per_page: per_page, skin: 'on')
+
 - split_ui = params[:split_ui] == 'true' && @post.metadata_editable_by?(current_user)
 - if split_ui
   - content_for :flashes do

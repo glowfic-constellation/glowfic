@@ -1,0 +1,23 @@
+%span.time-loaded= pretty_time(DateTime.now.in_time_zone)
+
+%table
+  %thead
+    %tr
+      %th.table-title{colspan: 3}= @page_title
+    %tr
+      %th.sub Name
+      %th.sub By
+      %th.sub
+  %tbody
+    - @skins.each do |skin|
+      - klass = cycle('even', 'odd')
+      %tr
+        %td.padding-5{class: klass}= link_to skin.name, skin_path(skin)
+        %td.padding-5{class: klass}= user_link(skin.user)
+        %td.padding-5.right-align{class: klass}
+          = link_to 'Review', skin_path(skin)
+    - if @skins.empty?
+      %tr
+        %td.centered.padding-10.no-posts{ class: cycle('even', 'odd'), colspan: 3 } — Nothing awaiting review —
+
+= render 'posts/paginator', paginated: @skins, no_per: true
