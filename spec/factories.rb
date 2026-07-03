@@ -111,7 +111,10 @@ FactoryBot.define do
 
   factory :icon do
     user
-    url { "http://www.fakeicon.com" }
+    sequence :url, ordered_numbers do |n|
+      "https://www.fakeicon.com/icons/#{n}.png"
+    end
+
     sequence :keyword, ordered_numbers do |n|
       "totally fake #{n}"
     end
