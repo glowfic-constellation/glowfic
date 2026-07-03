@@ -284,12 +284,14 @@ class PostsController < WritableController
       @board = Board.where(id: params[:board_id])
       no_tests = false # skip default board_id filter if we have a board_id (allows searching Site testing)
     end
+    @exclude_boards = Board.where(id: params[:exclude_board_ids]) if params[:exclude_board_ids].present?
 
     return unless params[:commit].present?
 
     response.headers['X-Robots-Tag'] = 'noindex'
     @search_results = Post.ordered
     @search_results = @search_results.where(board_id: params[:board_id]) if params[:board_id].present?
+    @search_results = @search_results.where.not(board_id: params[:exclude_board_ids]) if params[:exclude_board_ids].present?
     @search_results = @search_results.where(id: Setting.find(params[:setting_id]).post_tags.pluck(:post_id)) if params[:setting_id].present?
     if params[:subject].present?
       if params[:abbrev].present?

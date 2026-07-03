@@ -657,6 +657,21 @@ RSpec.describe BoardsController do
         expect(assigns(:search_results)).to match_array(boards)
       end
 
+      it "excludes continuities from board search" do
+        board1 = create(:board, name: 'keep this')
+        board2 = create(:board, name: 'exclude this')
+        get :search, params: { commit: true, exclude_board_ids: [board2.id] }
+        expect(assigns(:search_results)).to match_array([board1])
+      end
+
+      it "combines exclusion with name filter" do
+        board1 = create(:board, name: 'alpha stars')
+        board2 = create(:board, name: 'beta stars')
+        create(:board, name: 'unrelated')
+        get :search, params: { commit: true, name: 'stars', exclude_board_ids: [board2.id] }
+        expect(assigns(:search_results)).to match_array([board1])
+      end
+
       it "orders boards by name" do
         ['baa', 'aab', 'aba'].each { |name| create(:board, name: name) }
         get :search, params: { commit: 'Search', name: 'b' }

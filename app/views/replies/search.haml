@@ -23,6 +23,11 @@
                 - else
                   = select_tag :board_id, options_from_collection_for_select(@boards || [], :id, :name, params[:board_id]),
                     { class: 'chosen-select', prompt: '— Choose Continuity —' }
+            - unless @post
+              %tr
+                %td= label_tag :exclude_board_ids, 'Exclude Continuity'
+                %td= select_tag :exclude_board_ids, options_from_collection_for_select(@exclude_boards || [], :id, :name, params[:exclude_board_ids]),
+                  { class: 'chosen-select', prompt: '— Choose Continuity —', multiple: true, name: 'exclude_board_ids[]' }
             %tr
               %td= label_tag :author_id, 'Author'
               %td= select_tag :author_id, options_from_collection_for_select(@users || [], :id, :username, params[:author_id]),
