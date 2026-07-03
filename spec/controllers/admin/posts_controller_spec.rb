@@ -32,7 +32,7 @@ RSpec.describe Admin::PostsController do
   end
 
   describe "POST #do_regenerate" do
-    before(:each) { create_list(:post, 10) }
+    let_it_be(:regen_posts) { create_list(:post, 10) }
 
     it "requires login" do
       post :do_regenerate

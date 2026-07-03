@@ -83,5 +83,13 @@ RSpec.describe PostsController, 'GET new' do
       expect(assigns(:post).board).to eq(board)
       expect(assigns(:author_ids)).to match_array([coauthor.id])
     end
+
+    it "defaults authors to be current user in closed megacontinuities" do
+      login_as(user)
+      board = create(:board, authors_locked: true, mega: true)
+      get :new, params: { board_id: board.id }
+      expect(assigns(:post).board).to eq(board)
+      expect(assigns(:author_ids)).to eq([])
+    end
   end
 end

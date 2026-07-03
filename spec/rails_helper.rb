@@ -5,6 +5,7 @@ require File.expand_path('../config/environment', __dir__)
 # Prevent database truncation if the environment is production
 abort("The Rails environment is running in production mode!") if Rails.env.production?
 require 'rspec/rails'
+require 'test_prof/recipes/rspec/let_it_be' # `let_it_be` builds shared setup once per group
 # Add additional requires below this line. Rails is not loaded until this point!
 
 # Requires supporting ruby files with custom matchers and macros, etc, in
@@ -34,6 +35,38 @@ RSpec.configure do |config|
   # examples within a transaction, remove the following line or assign false
   # instead of true.
   config.use_transactional_fixtures = true
+
+  # Isolate cross-example state that ActiveRecord's transaction rollback does NOT
+  # cover, so specs don't depend on what ran before them. This was masked by the
+  # old fixed single-process order; parallel_tests regroups files per worker and
+  # surfaces it.
+  config.before(:each) do
+    # 1. ActiveJob :test adapter — clear queued/performed jobs and the perform
+    #    flags so job expectations (have_been_enqueued) start clean.
+    adapter = ActiveJob::Base.queue_adapter
+    if adapter.is_a?(ActiveJob::QueueAdapters::TestAdapter)
+      adapter.enqueued_jobs.clear
+      adapter.performed_jobs.clear
+      adapter.perform_enqueued_jobs = false
+      adapter.perform_enqueued_at_jobs = false
+    end
+
+    # 2. Redis — e.g. GenerateFlatPostJob.enqueue takes a 30-minute Redis lock and
+    #    only releases it when the job performs; in tests jobs are enqueued but not
+    #    performed, so the lock would leak and silently no-op a later enqueue.
+    #    Clear only this worker's namespace (NOT flushdb — parallel workers share
+    #    the Redis server) and the cache (rate-limit buckets etc.).
+    if $redis
+      keys = $redis.keys('*')
+      $redis.del(*keys) unless keys.empty?
+    end
+    Rails.cache.clear
+
+    # 3. Auditing is disabled by default (see spec_helper). Specs that flip it on
+    #    inline can leak the flag if they raise before flipping it back, which then
+    #    corrupts audit counts in later specs. Reset to the default before each one.
+    [Post, Reply, Character, Block].each { |klass| klass.auditing_enabled = false }
+  end
 
   # RSpec Rails can automatically mix in different behaviours to your tests
   # based on their file location, for example enabling you to call `get` and

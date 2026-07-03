@@ -18,7 +18,6 @@ gem 'apipie-rails'
 gem 'audited', '~> 5.8.0'
 
 gem 'aws-actionmailer-ses', '~> 1'
-gem 'aws-sdk-rails', '~> 5'
 gem 'aws-sdk-s3', '~> 1'
 gem 'aws-sdk-ses', '~> 1'
 gem 'barnes' # heroku ruby-specific metrics
@@ -27,7 +26,6 @@ gem 'connection_pool', '~> 2.0' # pin until version 3.x is supported by Rails (h
 gem 'dartsass-sprockets'
 gem 'exception_notification'
 gem 'geocoder'
-gem 'get_process_mem'
 gem 'gon', '~> 6.6'
 gem 'haml-rails'
 gem 'httparty'
@@ -66,8 +64,8 @@ group :production do
 end
 
 group :development do
-  gem "brakeman", '~> 7.1.2', require: false
-  gem 'haml_lint', '~> 0.68.0', require: false
+  gem "brakeman", '~> 8.0.5', require: false
+  gem 'haml_lint', '~> 0.74.0', require: false
   gem 'listen'
   gem 'memory_profiler'
   gem 'rack-mini-profiler'
@@ -86,15 +84,18 @@ group :development, :test do
   gem 'database_cleaner'
   gem 'dotenv'
   gem 'html-proofer', '< 4'
-  gem 'rake', '~> 13.3'
+  gem 'parallel_tests'
+  gem 'rake', '~> 13.4'
   gem 'rspec-rails'
   gem 'seed_dump', '~> 3.4'
+  gem 'test-prof'
 end
 
 group :test do
   gem 'capybara'
   gem 'factory_bot_rails'
   gem 'rails-controller-testing'
+  gem 'rspec-github', require: false
   gem 'selenium-webdriver'
   gem 'simplecov'
   gem 'timecop'

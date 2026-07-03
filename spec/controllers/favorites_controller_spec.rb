@@ -19,12 +19,12 @@ RSpec.describe FavoritesController do
     end
 
     context "it only shows favorites" do
-      let!(:user) { create(:user) }
-      let!(:user_post) { create(:post, user: user) }
-      let!(:post) { create(:post) }
-      let!(:board) { create(:board, creator: user) }
-      let!(:board_post) { create(:post, board: board) }
-      let!(:board_user_post) { create(:post, board: board, user: user) }
+      let_it_be(:user) { create(:user) }
+      let_it_be(:user_post) { create(:post, user: user) }
+      let_it_be(:post) { create(:post) }
+      let_it_be(:board) { create(:board, creator: user) }
+      let_it_be(:board_post) { create(:post, board: board) }
+      let_it_be(:board_user_post) { create(:post, board: board, user: user) }
 
       it "shows user's post when user is favorited" do
         favorite = create(:favorite, favorite: user)
