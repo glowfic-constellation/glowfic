@@ -29,8 +29,13 @@ if ENV.key?('MINIO_ENDPOINT')
       }],
     }.to_json
 
-    client.create_bucket(bucket: bucket_name)
-    client.put_bucket_policy(bucket: bucket_name, policy: public_read_policy)
+    begin
+      client.create_bucket(bucket: bucket_name)
+      client.put_bucket_policy(bucket: bucket_name, policy: public_read_policy)
+    rescue Aws::S3::Errors::BucketAlreadyOwnedByYou, Aws::S3::Errors::BucketAlreadyExists
+      # Another process (e.g. a parallel_tests worker or a sibling Puma worker)
+      # created the bucket between our head_bucket check and here — that's fine.
+    end
   end
 end
 

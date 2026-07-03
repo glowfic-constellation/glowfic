@@ -63,6 +63,10 @@ module Glowfic
     # use newer 7.1 cache format
     config.active_support.cache_format_version = 7.1
 
+    # Opt into the Rails 8.1 behaviour now to silence the deprecation warning;
+    # `to_time` keeps the receiver's full timezone rather than just its offset.
+    config.active_support.to_time_preserves_timezone = :zone
+
     # Please, add to the `ignore` list any other `lib` subdirectories that do
     # not contain `.rb` files, or that should not be reloaded or eager loaded.
     # Common ones are `templates`, `generators`, or `middleware`, for example.

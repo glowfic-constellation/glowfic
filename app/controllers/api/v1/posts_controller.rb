@@ -89,21 +89,50 @@ class Api::V1::PostsController < Api::ApiController
     end
 
     Post.transaction do
-      posts = posts.sort_by { |post| post_ids.index(post.id) }
-      posts.each_with_index do |post, index|
-        next if post.section_order == index
-        post.update(section_order: index)
+      section_scope = Post.where(board_id: board.id, section_id: section_id)
+      all_section_posts = section_scope.ordered_in_section.to_a
+      visible_to_user_ids = section_scope.visible_to(current_user).pluck(:id).to_set
+      post_id_set = post_ids.to_set
+
+      # Posts the editor can't read get anchored to the post in their request that preceded
+      # them in the original ordering, so a private post placed between two visible ones
+      # stays attached to its predecessor instead of being shoved to the bottom. Posts the
+      # editor can read but omitted from the request (the documented "subset reorder" case)
+      # still get appended at the end.
+      anchors = {}
+      visible_omitted = []
+      anchor_id = :start
+      all_section_posts.each do |post|
+        if post_id_set.include?(post.id)
+          anchor_id = post.id
+        elsif visible_to_user_ids.include?(post.id)
+          visible_omitted << post
+        else
+          anchors[post.id] = anchor_id
+        end
       end
 
-      other_posts = Post.where(board_id: board.id, section_id: section_id).where.not(id: post_ids).ordered_in_section
-      other_posts.each_with_index do |post, i|
-        index = i + posts_count
+      anchored_by = Hash.new { |h, k| h[k] = [] }
+      all_section_posts.each do |post|
+        anchored_by[anchors[post.id]] << post if anchors.key?(post.id)
+      end
+
+      ordered_visible = posts.sort_by { |post| post_ids.index(post.id) }
+
+      new_order = anchored_by[:start].dup
+      ordered_visible.each do |post|
+        new_order << post
+        new_order.concat(anchored_by[post.id])
+      end
+      new_order.concat(visible_omitted)
+
+      new_order.each_with_index do |post, index|
         next if post.section_order == index
         post.update(section_order: index)
       end
     end
 
-    posts = Post.where(board_id: board.id, section_id: section_id)
+    posts = Post.where(board_id: board.id, section_id: section_id).visible_to(current_user)
     render json: { post_ids: posts.ordered_in_section.pluck(:id) }
   end
 

@@ -86,6 +86,7 @@ ActiveRecord::Schema[8.0].define(version: 2026_06_21_040000) do
     t.text "description"
     t.boolean "pinned", default: false
     t.boolean "authors_locked", default: true
+    t.boolean "mega", default: false
   end
 
   create_table "bookmarks", force: :cascade do |t|

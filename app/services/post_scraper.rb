@@ -1,5 +1,9 @@
 # frozen_string_literal: true
 class PostScraper < Object
+  # Politeness delay between scrape requests; pointless in tests (HTTP is stubbed),
+  # where it just burned ~0.25s per request.
+  THROTTLE_SECONDS = Rails.env.test? ? 0 : 0.25
+
   attr_reader :url
 
   def initialize(url, board_id: Board::ID_SANDBOX, section_id: nil, status: :complete, threaded: false, console: false, subject: nil)
@@ -47,7 +51,7 @@ class PostScraper < Object
     retried = 0
 
     begin
-      sleep 0.25
+      sleep THROTTLE_SECONDS
       data = HTTParty.get(url).body
     rescue Net::OpenTimeout => e
       retried += 1

@@ -40,6 +40,7 @@ class BoardSectionsController < ApplicationController
     @page_title = 'Edit ' + @board_section.name
     use_javascript('board_sections')
     gon.section_id = @board_section.id
+    @posts = @board_section.posts.visible_to(current_user).ordered_in_section
   end
 
   def update

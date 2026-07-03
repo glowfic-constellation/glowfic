@@ -195,6 +195,18 @@ RSpec.describe BoardSectionsController do
       expect(assigns(:page_title)).to eq("Edit #{section.name}")
       expect(assigns(:board_section)).to eq(section)
     end
+
+    it "excludes posts not visible to the editor" do
+      coauthor = create(:user)
+      board = create(:board, writers: [coauthor])
+      section = create(:board_section, board: board)
+      visible_post = create(:post, board: board, section: section, user: board.creator)
+      private_post = create(:post, board: board, section: section, user: coauthor, privacy: :private)
+      login_as(board.creator)
+      get :edit, params: { id: section.id }
+      expect(assigns(:posts)).to eq([visible_post])
+      expect(assigns(:posts)).not_to include(private_post)
+    end
   end
 
   describe "PUT update" do

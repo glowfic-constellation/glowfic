@@ -14,11 +14,20 @@ development:
 # Do not set this db to the same as development or production.
 test: &test
   <<: *default
-  database: glowfic_test
+  # parallel_tests gives each worker its own database (glowfic_test, glowfic_test2, ...)
+  # via TEST_ENV_NUMBER (blank for the first worker).
+  database: glowfic_test<%= ENV['TEST_ENV_NUMBER'] %>
 
 production:
   <<: *default
   database: db/production.sqlite3
   pool: <%= ENV["DB_POOL"] || ENV['RAILS_MAX_THREADS'] || 5 %>
+  # Prune dead connections from the pool so a DB maintenance/failover event
+  # doesn't leave stale sockets to be handed out until they're next used.
+  reaping_frequency: <%= ENV["DB_REAPING_FREQUENCY"] || 10 %>
+  # Fail fast against a dead/changed endpoint instead of hanging on connect
+  # or waiting the full default for a pool checkout.
+  connect_timeout: <%= ENV["DB_CONNECT_TIMEOUT"] || 5 %>
+  checkout_timeout: <%= ENV["DB_CHECKOUT_TIMEOUT"] || 5 %>
   variables:
     statement_timeout: <%= ENV["STATEMENT_TIMEOUT"] %>
