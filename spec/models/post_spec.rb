@@ -559,14 +559,20 @@ RSpec.describe Post do
 
     context "list" do
       let(:post) { create(:post, privacy: :access_list) }
+      let(:user) { create(:user) }
 
       it "is visible to poster" do
         expect(post).to be_visible_to(post.user)
       end
 
       it "is visible to list user" do
-        user = create(:user)
         post.viewers << user
+        expect(post.reload).to be_visible_to(user)
+      end
+
+      it "is visible to circle user" do
+        circle = create(:access_circle, users: [user])
+        post.access_circles << circle
         expect(post.reload).to be_visible_to(user)
       end
 
@@ -1085,9 +1091,11 @@ RSpec.describe Post do
       end
 
       it "shows access-listed posts with access" do
-        post = create(:post, privacy: :access_list)
-        PostViewer.create!(post: post, user: user)
-        expect(Post.visible_to(user)).to eq([post])
+        post = create(:post, privacy: :access_list, viewers: [user])
+        circle = create(:access_circle, users: [user])
+        post2 = create(:post, privacy: :access_list, access_circles: [circle])
+
+        expect(Post.visible_to(user)).to eq([post, post2])
       end
 
       it "does not show other access-listed posts" do

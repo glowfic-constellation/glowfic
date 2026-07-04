@@ -30,17 +30,6 @@ RSpec.describe AccessCirclesController do
         expect(response).to redirect_to(root_url)
       end
 
-      it "works" do
-        circles = create_list(:access_circle, 2, user: user)
-        create_list(:access_circle, 3)
-        get :index, params: { user_id: user.id }
-        expect(flash[:error]).not_to be_present
-        expect(response.status).to eq(200)
-        expect(assigns(:user)).to eq(user)
-        expect(assigns(:page_title)).to eq("Your Access Circles")
-        expect(assigns(:circles).ids).to match_array(circles.map(&:id))
-      end
-
       it "works on other user for admin" do
         circles = create_list(:access_circle, 2, user: user2)
         create_list(:access_circle, 2, user: user)
@@ -52,19 +41,38 @@ RSpec.describe AccessCirclesController do
         expect(assigns(:page_title)).to eq("#{user2.username}'s Access Circles")
         expect(assigns(:circles).ids).to match_array(circles.map(&:id))
       end
+
+      context "with views" do
+        render_views
+
+        it "works" do
+          circles = create_list(:access_circle, 2, user: user)
+          create_list(:access_circle, 3)
+          get :index, params: { user_id: user.id }
+          expect(flash[:error]).not_to be_present
+          expect(response.status).to eq(200)
+          expect(assigns(:user)).to eq(user)
+          expect(assigns(:page_title)).to eq("Your Access Circles")
+          expect(assigns(:circles).ids).to match_array(circles.map(&:id))
+        end
+      end
     end
 
     context "without user" do
-      it "works" do
-        circles = create_list(:access_circle, 3, owned: false)
-        create_list(:access_circle, 3, owned: true)
-        create(:access_circle, user: user, owned: true)
-        login_as(user)
-        get :index
-        expect(response.status).to eq(200)
-        expect(assigns(:public)).to eq(true)
-        expect(assigns(:page_title)).to eq("Public Access Circles")
-        expect(assigns(:circles).ids).to match_array(circles.map(&:id))
+      context "with views" do
+        render_views
+
+        it "works" do
+          circles = create_list(:access_circle, 3, owned: false)
+          create_list(:access_circle, 3, owned: true)
+          create(:access_circle, user: user, owned: true)
+          login_as(user)
+          get :index
+          expect(response.status).to eq(200)
+          expect(assigns(:public)).to eq(true)
+          expect(assigns(:page_title)).to eq("Public Access Circles")
+          expect(assigns(:circles).ids).to match_array(circles.map(&:id))
+        end
       end
     end
   end
@@ -135,16 +143,16 @@ RSpec.describe AccessCirclesController do
         expect(assigns(:circle).description).to eq(description)
         expect(assigns(:circle).user_ids).to eq(users.ids)
       end
-    end
 
-    it "works" do
-      login_as(user)
-      post :create, params: { id: circle.id, access_circle: { name: 'test name', description: description, user_ids: users.ids } }
-      expect(response.status).to redirect_to(assigns(:circle))
-      expect(flash[:success]).to eq('Access circle saved successfully.')
-      expect(assigns(:circle).name).to eq('test name')
-      expect(assigns(:circle).description).to eq(description)
-      expect(assigns(:circle).user_ids).to eq(users.ids)
+      it "works" do
+        login_as(user)
+        post :create, params: { id: circle.id, access_circle: { name: 'test name', description: description, user_ids: users.ids } }
+        expect(response.status).to redirect_to(assigns(:circle))
+        expect(flash[:success]).to eq('Access circle saved successfully.')
+        expect(assigns(:circle).name).to eq('test name')
+        expect(assigns(:circle).description).to eq(description)
+        expect(assigns(:circle).user_ids).to eq(users.ids)
+      end
     end
 
     it "ignores invalid user_ids" do
@@ -338,19 +346,19 @@ RSpec.describe AccessCirclesController do
         expect(assigns(:circle).description).to eq(description)
         expect(assigns(:circle).user_ids).to eq(users.ids)
       end
-    end
 
-    it "works" do
-      circle.update!(description: 'old description', user_ids: [create(:user).id])
-      login_as(user)
-      put :update, params: { id: circle.id, access_circle: { name: 'new name', description: description, user_ids: users.ids } }
-      expect(response.status).to redirect_to(circle)
-      expect(flash[:success]).to eq('Access circle saved successfully.')
+      it "works" do
+        circle.update!(description: 'old description', user_ids: [create(:user).id])
+        login_as(user)
+        put :update, params: { id: circle.id, access_circle: { name: 'new name', description: description, user_ids: users.ids } }
+        expect(response.status).to redirect_to(circle)
+        expect(flash[:success]).to eq('Access circle saved successfully.')
 
-      circle.reload
-      expect(circle.name).to eq('new name')
-      expect(circle.description).to eq(description)
-      expect(circle.user_ids).to eq(users.ids)
+        circle.reload
+        expect(circle.name).to eq('new name')
+        expect(circle.description).to eq(description)
+        expect(circle.user_ids).to eq(users.ids)
+      end
     end
 
     it "ignores invalid user_ids" do
