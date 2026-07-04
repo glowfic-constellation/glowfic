@@ -763,38 +763,13 @@ RSpec/SubjectDeclaration:
 
 ################## Capybara ####################################
 
-Capybara/FindAllFirst: # new in 2.22
-  Enabled: true
-
-Capybara/MatchStyle: # new in 2.17
-  Enabled: true
-
-Capybara/NegationMatcher: # new in 2.14
-  Enabled: true
-  EnforcedStyle: have_no
-
-Capybara/NegationMatcherAfterVisit: # new in 2.22
-  Enabled: true
-
-Capybara/RedundantWithinFind: # new in 2.20
-  Enabled: true
-
-Capybara/SpecificActions: # new in 2.14
-  Enabled: true
-
-Capybara/SpecificFinders: # new in 2.13
-  Enabled: true
-
-Capybara/SpecificMatcher: # new in 2.12
-  Enabled: true
-
 ################## Capybara/RSpec ##############################
 
-Capybara/RSpec/HaveSelector: # new in 2.19
+Capybara/RSpec/HaveSelector:
   Enabled: false
 
-Capybara/RSpec/PredicateMatcher: # new in 2.19
-  Enabled: true
+Capybara/RSpec/NegationMatcher:
+  EnforcedStyle: have_no
 
 ################## FactoryBot ##################################
 
