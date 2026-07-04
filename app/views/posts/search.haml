@@ -61,11 +61,11 @@
           %p.search-notice
             - if @all_pruned
               All search terms were too common for full-text search
-              = "(#{@pruned_words.map { |w| "\"#{w}\"" }.join(', ')})."
+              (#{@pruned_words.map { |w| "\"#{w}\"" }.join(', ')}).
               Falling back to exact string matching.
             - else
               Some search terms were too common for full-text search and were ignored:
-              = "#{@pruned_words.map { |w| "\"#{w}\"" }.join(', ')}."
+              #{@pruned_words.map { |w| "\"#{w}\"" }.join(', ')}.
               Use "Exact string match" to search for the full phrase.
         - if @search_results.present?
           %table

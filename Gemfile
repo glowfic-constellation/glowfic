@@ -65,16 +65,16 @@ end
 
 group :development do
   gem "brakeman", '~> 8.0.5', require: false
-  gem 'haml_lint', '~> 0.68.0', require: false
+  gem 'haml_lint', '~> 0.74.0', require: false
   gem 'listen'
   gem 'memory_profiler'
   gem 'rack-mini-profiler'
-  gem 'rubocop', '~> 1.82.1', require: false
-  gem 'rubocop-capybara', '~> 2.22.1', require: false
+  gem 'rubocop', '~> 1.88.1', require: false
+  gem 'rubocop-capybara', '~> 3.0.0', require: false
   gem 'rubocop-factory_bot', '~> 2.28.0', require: false
   gem 'rubocop-performance', '~> 1.26.1', require: false
   gem 'rubocop-rails', '~> 2.34.3', require: false
-  gem 'rubocop-rspec', '~> 3.7.0', require: false
+  gem 'rubocop-rspec', '~> 3.9.0', require: false
   gem 'rubocop-rspec_rails', '~> 2.32.0', require: false
   gem 'traceroute'
 end
@@ -85,7 +85,7 @@ group :development, :test do
   gem 'dotenv'
   gem 'html-proofer', '< 4'
   gem 'parallel_tests'
-  gem 'rake', '~> 13.3'
+  gem 'rake', '~> 13.4'
   gem 'rspec-rails'
   gem 'seed_dump', '~> 3.4'
   gem 'test-prof'

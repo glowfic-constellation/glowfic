@@ -125,6 +125,13 @@ jobs:
         # only when the suite passed: a failed worker doesn't flush its coverage,
         # which would make the merged total look (misleadingly) too low
         run: bundle exec rake coverage:report
+      - name: Upload Capybara failure screenshots
+        if: failure()
+        uses: actions/upload-artifact@v7
+        with:
+          name: capybara-failure-screenshots
+          path: tmp/capybara/
+          if-no-files-found: ignore
       - name: Upload MinIO logs
         if: ${{ always() }}
         uses: actions/upload-artifact@v7
