@@ -63,6 +63,10 @@ module Glowfic
     # use newer 7.1 cache format
     config.active_support.cache_format_version = 7.1
 
+    # Opt into the Rails 8.1 behaviour now to silence the deprecation warning;
+    # `to_time` keeps the receiver's full timezone rather than just its offset.
+    config.active_support.to_time_preserves_timezone = :zone
+
     # Please, add to the `ignore` list any other `lib` subdirectories that do
     # not contain `.rb` files, or that should not be reloaded or eager loaded.
     # Common ones are `templates`, `generators`, or `middleware`, for example.
@@ -80,10 +84,6 @@ module Glowfic
     config.action_view.sanitized_allowed_attributes = %w(href src width height alt cite datetime title class name xml:lang abbr style target)
     config.middleware.use Rack::Pratchett
     config.middleware.use Rack::Deflater
-
-    # redis-rails does not support cache versioning
-    config.active_record.cache_versioning = false
-    config.active_record.collection_cache_versioning = false
 
     # Setting enables YJIT as of Ruby 3.3, to bring sizeable performance improvements. We are
     # deploying to a memory constrained environment so we set this to `false`.

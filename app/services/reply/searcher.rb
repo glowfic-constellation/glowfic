@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 class Reply::Searcher < Generic::Searcher
-  attr_reader :users, :characters, :templates, :boards
+  attr_reader :users, :characters, :templates, :boards, :exclude_boards
 
   def initialize(search=Reply.unscoped, current_user: nil, post: nil)
     @current_user = current_user
@@ -20,6 +20,7 @@ class Reply::Searcher < Generic::Searcher
       @characters = Character.where(id: params[:character_id]) if params[:character_id].present?
       @templates = Template.ordered.limit(25)
       @boards = Board.where(id: params[:board_id]) if params[:board_id].present?
+      @exclude_boards = Board.where(id: params[:exclude_board_ids]) if params[:exclude_board_ids].present?
     end
   end
 
@@ -30,7 +31,7 @@ class Reply::Searcher < Generic::Searcher
 
     search_content(params[:subj_content]) if params[:subj_content].present?
     sort_results(params[:sort], params[:subject_content].present?)
-    filter_parents(params[:board_id])
+    filter_parents(params[:board_id], params[:exclude_board_ids])
     filter_characters(params[:template_id], params[:author_id])
     construct_query(params, page)
 
@@ -61,12 +62,15 @@ class Reply::Searcher < Generic::Searcher
     end
   end
 
-  def filter_parents(board_id)
+  def filter_parents(board_id, exclude_board_ids=nil)
     if @post
       @search_results = @search_results.where(post_id: @post.id)
-    elsif board_id.present?
-      post_ids = Post.where(board_id: board_id).pluck(:id)
-      @search_results = @search_results.where(post_id: post_ids)
+    else
+      # Subqueries instead of pluck+IN so PG can use a hash/index join on
+      # board_id rather than serializing a thousands-long id list and
+      # falling off the index. Has caused statement_timeout in production.
+      @search_results = @search_results.where(post_id: Post.where(board_id: board_id).select(:id)) if board_id.present?
+      @search_results = @search_results.where.not(post_id: Post.where(board_id: exclude_board_ids).select(:id)) if exclude_board_ids.present?
     end
   end
 

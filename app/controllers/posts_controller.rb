@@ -126,6 +126,7 @@ class PostsController < WritableController
 
     @permitted_authors -= [current_user]
     return unless @post.board&.authors_locked?
+    return if @post.board.mega?
 
     @author_ids = @post.board.writer_ids - [current_user.id]
     @authors_from_board = true
@@ -238,7 +239,7 @@ class PostsController < WritableController
         @post.labels = labels
         process_npc(@post, permitted_character_params)
         @post.save!
-        @post.author_for(current_user).update!(private_note: @post.private_note) if is_author
+        @post.author_for(current_user)&.update!(private_note: @post.private_note) if is_author
       end
     rescue ActiveRecord::RecordInvalid => e
       render_errors(@post, action: 'updated', now: true, err: e)
@@ -284,19 +285,31 @@ class PostsController < WritableController
       @board = Board.where(id: params[:board_id])
       no_tests = false # skip default board_id filter if we have a board_id (allows searching Site testing)
     end
+    @exclude_boards = Board.where(id: params[:exclude_board_ids]) if params[:exclude_board_ids].present?
 
     return unless params[:commit].present?
 
     response.headers['X-Robots-Tag'] = 'noindex'
     @search_results = Post.ordered
     @search_results = @search_results.where(board_id: params[:board_id]) if params[:board_id].present?
+    @search_results = @search_results.where.not(board_id: params[:exclude_board_ids]) if params[:exclude_board_ids].present?
     @search_results = @search_results.where(id: Setting.find(params[:setting_id]).post_tags.pluck(:post_id)) if params[:setting_id].present?
     if params[:subject].present?
       if params[:abbrev].present?
         search = params[:subject].chars.join('% ')
         @search_results = @search_results.where('subject ILIKE ?', "%#{search}%")
+      elsif params[:exact].present?
+        @search_results = @search_results.where('subject ILIKE ?', "%#{params[:subject]}%")
       else
-        @search_results = @search_results.search(params[:subject]).where('subject ILIKE ?', "%#{params[:subject]}%")
+        pruned = detect_pruned_words(params[:subject])
+        if pruned[:all_pruned]
+          @search_results = @search_results.where('subject ILIKE ?', "%#{params[:subject]}%")
+          @pruned_words = pruned[:pruned_words]
+          @all_pruned = true
+        else
+          @search_results = @search_results.search(params[:subject]).where('subject ILIKE ?', "%#{params[:subject]}%")
+          @pruned_words = pruned[:pruned_words] if pruned[:pruned_words].any?
+        end
       end
     end
     @search_results = @search_results.complete if params[:completed].present?
@@ -356,7 +369,26 @@ class PostsController < WritableController
     redirect_to post_path(@post)
   end
 
+  # Postgres's built-in english tsearch dictionary (tsearch_data/english.stop).
+  POSTGRES_ENGLISH_STOP_WORDS = Set.new(%w[
+    i me my myself we our ours ourselves you your yours yourself yourselves
+    he him his himself she her hers herself it its itself they them their
+    theirs themselves what which who whom this that these those am is are
+    was were be been being have has had having do does did doing a an the
+    and but if or because as until while of at by for with about against
+    between into through during before after above below to from up down in
+    out on off over under again further then once here there when where why
+    how all any both each few more most other some such no nor not only own
+    same so than too very s t can will just don should now
+  ]).freeze
+
   private
+
+  def detect_pruned_words(query)
+    words = query.split(/\s+/).compact_blank
+    pruned_words = words.select { |word| POSTGRES_ENGLISH_STOP_WORDS.include?(word.downcase) }
+    { pruned_words: pruned_words, all_pruned: pruned_words.length == words.length && words.any? }
+  end
 
   def preview
     @post ||= Post.new(user: current_user)

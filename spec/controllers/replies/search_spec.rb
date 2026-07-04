@@ -180,6 +180,21 @@ RSpec.describe RepliesController, 'GET search' do
       expect(assigns(:search_results)).to match_array([filtered_reply])
     end
 
+    it "excludes continuity from reply search" do
+      included_post = create(:post, num_replies: 1)
+      excluded_post = create(:post, num_replies: 1)
+      included_reply = included_post.replies.last
+      get :search, params: { commit: true, exclude_board_ids: [excluded_post.board_id] }
+      expect(assigns(:search_results)).to match_array([included_reply])
+    end
+
+    it "does not apply exclude when scoped to a specific post" do
+      post = create(:post, num_replies: 1)
+      reply = post.replies.last
+      get :search, params: { commit: true, post_id: post.id, exclude_board_ids: [post.board_id] }
+      expect(assigns(:search_results)).to match_array([reply])
+    end
+
     it "filters by template" do
       character = create(:template_character)
       templateless_char = create(:character)

@@ -6,6 +6,7 @@ class Board::Searcher < Object
 
   def search(params)
     search_authors(params[:author_id]) if params[:author_id].present?
+    @search_results = @search_results.where.not(id: params[:exclude_board_ids]) if params[:exclude_board_ids].present?
     if params[:name].present?
       if params[:abbrev].present?
         search_acronym(params[:name])

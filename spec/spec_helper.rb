@@ -30,6 +30,16 @@ unless ENV.fetch('SKIP_COVERAGE', false) || ENV.fetch('APIPIE_RECORD', false) ||
     end
   end
 
+  # Under parallel_tests each worker only runs a slice of the suite, so it must
+  # write its results to a distinct file (collated later by `rake coverage:report`)
+  # and must NOT enforce the threshold on its own partial coverage.
+  parallel_worker = ENV['TEST_ENV_NUMBER'] if ENV.key?('TEST_ENV_NUMBER')
+  if parallel_worker
+    worker_id = parallel_worker.empty? ? '1' : parallel_worker
+    SimpleCov.coverage_dir("coverage/parallel/#{worker_id}")
+    SimpleCov.command_name("rspec_#{worker_id}")
+  end
+
   SimpleCov.start 'rails' do
     add_group("Controllers") { |src| src.filename.include?('app/controllers') and src.filename.exclude?('app/controllers/api') }
     add_group "Presenters", "app/presenters"
@@ -49,7 +59,8 @@ unless ENV.fetch('SKIP_COVERAGE', false) || ENV.fetch('APIPIE_RECORD', false) ||
       end
     end
     enable_coverage :branch
-    minimum_coverage line: 95.2, branch: 88.1
+    # NB: keep in sync with lib/tasks/coverage.rake minimum_coverage
+    minimum_coverage line: 95.2, branch: 88.1 unless parallel_worker
     enable_coverage_for_eval
   end
 end
@@ -159,6 +170,10 @@ RSpec.configure do |config|
     end
     user.destroy!
   end
+
+  # Zero out CSS animations/transitions in feature specs so Capybara never waits
+  # on them to settle — a small reliability win for JS specs.
+  Capybara.disable_animation = true
 
   config.before(:each, type: :system) do
     driven_by :rack_test

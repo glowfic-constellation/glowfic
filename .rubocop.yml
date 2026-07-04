@@ -152,6 +152,9 @@ Lint/ConstantReassignment: # new in 1.70
 Lint/CopDirectiveSyntax: # new in 1.72
   Enabled: true
 
+Lint/DataDefineOverride: # new in 1.85
+  Enabled: true
+
 Lint/DeprecatedConstants: # (new in 1.8)
   Enabled: true
 
@@ -265,6 +268,9 @@ Lint/UnexpectedBlockArity: # (new in 1.5)
   Enabled: true
 
 Lint/UnmodifiedReduceAccumulator: # (new in 1.1)
+  Enabled: true
+
+Lint/UnreachablePatternBranch: # new in 1.85
   Enabled: true
 
 Lint/UselessConstantScoping: # new in 1.72
@@ -727,6 +733,9 @@ RSpec/LeakyConstantDeclaration:
   Exclude:
     - 'spec/lib/presentable_spec.rb'
 
+RSpec/LeakyLocalVariable: # new in 3.8
+  Enabled: true
+
 RSpec/MatchArray:
   Enabled: false
 
@@ -763,38 +772,13 @@ RSpec/SubjectDeclaration:
 
 ################## Capybara ####################################
 
-Capybara/FindAllFirst: # new in 2.22
-  Enabled: true
-
-Capybara/MatchStyle: # new in 2.17
-  Enabled: true
-
-Capybara/NegationMatcher: # new in 2.14
-  Enabled: true
-  EnforcedStyle: have_no
-
-Capybara/NegationMatcherAfterVisit: # new in 2.22
-  Enabled: true
-
-Capybara/RedundantWithinFind: # new in 2.20
-  Enabled: true
-
-Capybara/SpecificActions: # new in 2.14
-  Enabled: true
-
-Capybara/SpecificFinders: # new in 2.13
-  Enabled: true
-
-Capybara/SpecificMatcher: # new in 2.12
-  Enabled: true
-
 ################## Capybara/RSpec ##############################
 
-Capybara/RSpec/HaveSelector: # new in 2.19
+Capybara/RSpec/HaveSelector:
   Enabled: false
 
-Capybara/RSpec/PredicateMatcher: # new in 2.19
-  Enabled: true
+Capybara/RSpec/NegationMatcher:
+  EnforcedStyle: have_no
 
 ################## FactoryBot ##################################
 
@@ -939,6 +923,9 @@ Style/DocumentDynamicEvalDefinition: # (new in 1.1)
 Style/DoubleNegation:
   Enabled: false
 
+Style/EmptyClassDefinition: # new in 1.84
+  Enabled: true
+
 Style/EmptyHeredoc: # new in 1.32
   Enabled: true
 
@@ -973,6 +960,9 @@ Style/FileEmpty: # new in 1.48
 Style/FileNull: # new in 1.69
   Enabled: false
   # we don't use /dev/null
+
+Style/FileOpen: # new in 1.85
+  Enabled: true
 
 Style/FileRead: # new in 1.24
   Enabled: true
@@ -1055,6 +1045,9 @@ Style/MapIntoArray: # new in 1.63
   Enabled: false
   # unsafe, and we don't tend to make this mistake
 
+Style/MapJoin: # new in 1.85
+  Enabled: true
+
 Style/MapToHash: # new in 1.24
   Enabled: true
 
@@ -1079,6 +1072,9 @@ Style/MutableConstant:
 Style/NegatedIfElseCondition: # (new in 1.2)
   Enabled: true
 
+Style/NegativeArrayIndex: # new in 1.84
+  Enabled: true
+
 Style/NestedFileDirname: # new in 1.26
   Enabled: true
 
@@ -1100,6 +1096,12 @@ Style/NumericPredicate:
 Style/ObjectThen: # new in 1.28
   Enabled: true
 
+Style/OneClassPerFile: # new in 1.85
+  Enabled: true
+  Exclude:
+    - 'app/concerns/presentable.rb'
+    - 'app/services/**/*'
+
 Style/OpenStructUse: # new in 1.23
   Enabled: true
 
@@ -1109,8 +1111,14 @@ Style/OperatorMethodCall: # new in 1.37
 Style/OptionalBooleanParameter:
   Enabled: false
 
+Style/PartitionInsteadOfDoubleSelect: # new in 1.85
+  Enabled: true
+
 Style/PercentLiteralDelimiters:
   Enabled: false
+
+Style/PredicateWithKind: # new in 1.85
+  Enabled: true
 
 Style/Proc:
   Enabled: false
@@ -1121,6 +1129,9 @@ Style/QuotedSymbols: # new in 1.16
 
 Style/RaiseArgs:
   Enabled: false
+
+Style/ReduceToHash: # new in 1.85
+  Enabled: true
 
 Style/RedundantArrayConstructor: # new in 1.52
   Enabled: true
@@ -1167,6 +1178,9 @@ Style/RedundantInterpolationUnfreeze: # new in 1.66
 Style/RedundantLineContinuation: # new in 1.49
   Enabled: true
 
+Style/RedundantMinMaxBy: # new in 1.85
+  Enabled: true
+
 Style/RedundantRegexpArgument: # new in 1.53
   Enabled: true
 
@@ -1186,10 +1200,19 @@ Style/RegexpLiteral:
   EnforcedStyle: 'slashes'
   AllowInnerSlashes: true
 
+Style/ReverseFind: # new in 1.84
+  Enabled: true
+
 Style/ReturnNilInPredicateMethodDefinition: # new in 1.53
   Enabled: true
 
 Style/SafeNavigationChainLength: # new in 1.68
+  Enabled: true
+
+Style/SelectByKind: # new in 1.85
+  Enabled: true
+
+Style/SelectByRange: # new in 1.85
   Enabled: true
 
 Style/SelectByRegexp: # new in 1.22
@@ -1226,6 +1249,9 @@ Style/SwapValues: # (new in 1.1)
 Style/SymbolArray:
   Enabled: false
   EnforcedStyle: 'brackets'
+
+Style/TallyMethod: # new in 1.85
+  Enabled: true
 
 Style/TernaryParentheses:
   Enabled: false

@@ -20,6 +20,10 @@
               %td= select_tag :board_id, options_from_collection_for_select(@board || [], :id, :name, params[:board_id]),
                 { class: 'chosen-select', prompt: '— Choose Continuity —' }
             %tr
+              %td= label_tag :exclude_board_ids, 'Exclude Continuity'
+              %td= select_tag :exclude_board_ids, options_from_collection_for_select(@exclude_boards || [], :id, :name, params[:exclude_board_ids]),
+                { class: 'chosen-select', prompt: '— Choose Continuity —', multiple: true, name: 'exclude_board_ids[]' }
+            %tr
               %td= label_tag :author_id, 'Author'
               %td= select_tag :author_id, options_from_collection_for_select(@user || [], :id, :username, params[:author_id]),
                 { class: 'chosen-select', prompt: '— Choose Author —', multiple: true }
@@ -39,6 +43,11 @@
                 = check_box_tag :abbrev, true, params[:abbrev].present?, { class: 'vmid no-margin', style: 'margin-bottom: 3px;' }
                 = label_tag :abbrev, 'Search for acronym'
             %tr
+              %td Exact
+              %td.padding-5
+                = check_box_tag :exact, true, params[:exact].present?, { class: 'vmid no-margin', style: 'margin-bottom: 3px;' }
+                = label_tag :exact, 'Exact string match'
+            %tr
               %td Completed
               %td.padding-5
                 = check_box_tag :completed, true, params[:completed].present?, { class: 'vmid no-margin', style: 'margin-bottom: 3px;' }
@@ -52,6 +61,16 @@
             %tr
               %td.centered{colspan: 2}= submit_tag "Search", class: 'button'
       %td.vtop#search_results
+        - if @pruned_words.present?
+          %p.search-notice
+            - if @all_pruned
+              All search terms were too common for full-text search
+              (#{@pruned_words.map { |w| "\"#{w}\"" }.join(', ')}).
+              Falling back to exact string matching.
+            - else
+              Some search terms were too common for full-text search and were ignored:
+              #{@pruned_words.map { |w| "\"#{w}\"" }.join(', ')}.
+              Use "Exact string match" to search for the full phrase.
         - if @search_results.present?
           %table
             %thead

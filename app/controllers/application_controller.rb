@@ -88,7 +88,12 @@ class ApplicationController < ActionController::Base
 
   def posts_from_relation(relation, no_tests: true, with_pagination: true, select: '', max: false, with_unread: false, show_blocked: false)
     posts = posts_relation_filter(relation, no_tests: no_tests, show_blocked: show_blocked)
-    posts_count = posts.except(:select, :order, :group).count('DISTINCT posts.id')
+    # DISTINCT only matters when the incoming relation has joins that could
+    # multiply post rows. The bare relation only adds where-clauses, so for
+    # the common case (boards/show, posts/index, owed, hidden) we can skip
+    # the DISTINCT and use a plain COUNT, which PG can answer from the index.
+    count_target = (posts.joins_values + posts.left_outer_joins_values).any? ? 'DISTINCT posts.id' : :all
+    posts_count = posts.except(:select, :order, :group).count(count_target)
     posts = posts_list_relation(posts, select: select, max: max)
     posts = posts.paginate(page: page, total_entries: posts_count) if with_pagination
     calculate_view_status(posts, with_unread: with_unread) if logged_in?
