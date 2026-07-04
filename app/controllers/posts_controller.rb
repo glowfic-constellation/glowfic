@@ -63,7 +63,15 @@ class PostsController < WritableController
       .or(with_post_view.where("date_trunc('second', post_views.read_at) < date_trunc('second', posts.tagged_at)"))
 
     @posts = with_post_view.or(no_post_view)
-    @posts = posts_from_relation(@posts.ordered, with_unread: true, show_blocked: !!params[:show_blocked])
+
+    @sort = params[:sort] if params[:sort] == 'unread'
+    if @sort == 'unread'
+      ordered = @posts.with_unread_count(current_user).order(Arel.sql('unread_count DESC'), tagged_at: :desc)
+    else
+      ordered = @posts.ordered
+    end
+    @posts = posts_from_relation(ordered, with_unread: true, show_blocked: !!params[:show_blocked])
+    @paginate_params = { sort: @sort, started: @started || nil }.compact if @sort
 
     @hide_quicklinks = true
     @page_title = @started ? 'Opened Threads' : 'Unread Threads'

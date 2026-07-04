@@ -51,7 +51,10 @@
   %td.width-70.post-replies.vtop{class: klass}= link_to replies_count, stats_post_path(post)
   - if logged_in? && show_unread_count
     %td.width-70.vtop{class: klass}
-      - if @opened_ids.include?(post.id) && unread_ids.include?(post.id)
+      - if post.has_attribute?(:unread_count)
+        - count = post.unread_count
+        = count > 0 ? count : '-'
+      - elsif @opened_ids.include?(post.id) && unread_ids.include?(post.id)
         = @unread_counts.fetch(post.id, 0)
       - else
         \-

@@ -1,10 +1,10 @@
--# locals: ( posts:, table_class: '', hide_continuity: false, show_unread_count: false, check_box_name: nil )
+-# locals: ( posts:, table_class: '', hide_continuity: false, show_unread_count: false, check_box_name: nil, sort_url: nil, current_sort: nil )
 
 - col_count = 5
 - col_count += 1 unless hide_continuity # Include continuity name
 - col_count += 1 if show_unread_count # Include # Unread
 - col_count += 1 if check_box_name # Include form check box tags
-- post_args = local_assigns.except(:posts, :list, :table_class)
+- post_args = local_assigns.except(:posts, :list, :table_class, :sort_url, :current_sort)
 
 %span.time-loaded= pretty_time(DateTime.now.in_time_zone)
 
@@ -25,8 +25,16 @@
       %th.sub Authors
       %th.sub Replies
       - if show_unread_count
-        %th.sub Unread
-      %th.sub Last Updated
+        %th.sub
+          - if sort_url
+            = link_to 'Unread', sort_url.call('unread'), class: ('current-sort' if current_sort == 'unread')
+          - else
+            Unread
+      %th.sub
+        - if sort_url
+          = link_to 'Last Updated', sort_url.call(nil), class: ('current-sort' unless current_sort.present?)
+        - else
+          Last Updated
       - if check_box_name
         %th.sub.check-all-box
           - unless posts.empty?

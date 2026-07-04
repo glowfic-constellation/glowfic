@@ -14,7 +14,9 @@
         Opened Threads &raquo;
 
 = form_tag mark_posts_path, method: :post do
-  = render 'posts/list', posts: @posts, show_unread_count: true, check_box_name: 'marked_ids[]'
+  = render 'posts/list', posts: @posts, show_unread_count: true, check_box_name: 'marked_ids[]',
+    sort_url: ->(s) { unread_posts_path(sort: s, started: @started || nil) },
+    current_sort: @sort
   - unless @posts.empty?
     %table
       %tr
