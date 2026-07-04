@@ -1,14 +1,6 @@
 RSpec.describe DailyReport do
   describe "#posts" do
-    default_zone = Time.zone
-    {
-      # 2017-11-05 10:00, clock goes back in Eastern
-      "without timezone" => [default_zone, [2017, 11, 5, 10, 0]],
-      # 2017-10-29 10:00, clock goes back in GMT/BST
-      "with timezone"    => ["Europe/London", [2017, 10, 29, 10, 0]],
-    }.each do |name, data|
-      zone = data.first
-      dst_day_params = data.last
+    shared_examples "good timezone behavior" do |name, zone, dst_day_params|
       context name do
         around(:each) do |example|
           Time.use_zone(zone) do
@@ -55,6 +47,16 @@ RSpec.describe DailyReport do
           expect(DailyReport.new(time).posts).to match_array(shown_posts)
         end
       end
+    end
+
+    default_zone = Time.zone
+    {
+      # 2017-11-05 10:00, clock goes back in Eastern
+      "without timezone" => [default_zone, [2017, 11, 5, 10, 0]],
+      # 2017-10-29 10:00, clock goes back in GMT/BST
+      "with timezone"    => ["Europe/London", [2017, 10, 29, 10, 0]],
+    }.each do |name, data|
+      it_behaves_like 'good timezone behavior', name, data.first, data.last
     end
 
     it "does not multiply reply_count" do

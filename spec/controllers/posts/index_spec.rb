@@ -68,8 +68,9 @@ RSpec.describe PostsController, 'GET index' do
     it_behaves_like "logged in post list"
 
     context "with ignored posts" do
+      let_it_be(:posts) { create_list(:post, 3) }
+
       let(:user) { create(:user) }
-      let!(:posts) { create_list(:post, 3) }
       let(:ignored_post) { create(:post) }
       let(:ignored_board) { create(:board) }
       let(:ignored_board_post) { create(:post, board: ignored_board) }
