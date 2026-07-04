@@ -35,7 +35,3 @@ Rails/SaveBang:
     - 'app/models/tag.rb'
     - 'app/services/report.rb'
     - 'config/initializers/aws.rb'
-
-RSpec/LeakyLocalVariable:
-  Exclude:
-    - 'spec/models/daily_report_spec.rb'
