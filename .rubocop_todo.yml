@@ -19,11 +19,11 @@ Rails/SaveBang:
   Exclude:
     - 'app/concerns/owable.rb'
     - 'app/concerns/viewable.rb'
-    - 'app/controllers/api/v1/board_sections_controller.rb'
     - 'app/controllers/api/v1/characters_controller.rb'
     - 'app/controllers/api/v1/index_posts_controller.rb'
     - 'app/controllers/api/v1/index_sections_controller.rb'
     - 'app/controllers/api/v1/posts_controller.rb'
+    - 'app/controllers/api/v1/subcontinuities_controller.rb'
     - 'app/controllers/icons_controller.rb'
     - 'app/controllers/messages_controller.rb'
     - 'app/models/block.rb'
