@@ -18,17 +18,10 @@
 unless ENV.fetch('SKIP_COVERAGE', false) || ENV.fetch('APIPIE_RECORD', false) || RSpec.configuration.files_to_run.count <= 1
   require 'simplecov'
 
-  # skip warning for HAML compiled file length when close enough (within 2 lines difference)
-  # tends to be due to small compilation differences; hopefully a future HAML version improves it
-  # https://github.com/simplecov-ruby/simplecov/blob/v0.22.0/lib/simplecov/source_file.rb#L251
-  module SimpleCov # rubocop:disable Style/ClassAndModuleChildren
-    class SourceFile
-      def coverage_exceeding_source_warn
-        return if filename.end_with?('.haml') && coverage_data['lines'].size <= src.size + 2
-        warn "Warning: coverage data provided by Coverage [#{coverage_data['lines'].size}] exceeds number of lines in #{filename} [#{src.size}]"
-      end
-    end
-  end
+  # simplecov 1.0.0.rc5 dropped the small-line-count-diff HAML warning mechanism
+  # entirely (LineBuilder now just iterates the source lines and ignores any
+  # extra Coverage entries), so the 0.22.0 monkeypatch that used to suppress it
+  # is no longer needed.
 
   # Under parallel_tests each worker only runs a slice of the suite, so it must
   # write its results to a distinct file (collated later by `rake coverage:report`)
@@ -38,20 +31,22 @@ unless ENV.fetch('SKIP_COVERAGE', false) || ENV.fetch('APIPIE_RECORD', false) ||
     worker_id = parallel_worker.empty? ? '1' : parallel_worker
     SimpleCov.coverage_dir("coverage/parallel/#{worker_id}")
     SimpleCov.command_name("rspec_#{worker_id}")
+    # `rake coverage:report` owns merging/formatting/thresholds across workers, not this process
+    SimpleCov.finalize_merge false
   end
 
   SimpleCov.start 'rails' do
-    add_group("Controllers") { |src| src.filename.include?('app/controllers') and src.filename.exclude?('app/controllers/api') }
-    add_group "Presenters", "app/presenters"
-    add_group "Concerns", "app/concerns"
-    add_group "API", "app/controllers/api"
-    add_group "Services", "app/services"
-    add_group "Exceptions", "app/exceptions"
-    add_group "Views", "app/views"
+    group("Controllers") { |src| src.filename.include?('app/controllers') and src.filename.exclude?('app/controllers/api') }
+    group "Presenters", "app/presenters"
+    group "Concerns", "app/concerns"
+    group "API", "app/controllers/api"
+    group "Services", "app/services"
+    group "Exceptions", "app/exceptions"
+    group "Views", "app/views"
     SimpleCov.groups.delete('Channels')
     changed_files = `git status --untracked=all --porcelain`
     unless changed_files.empty?
-      add_group 'Changed' do |source_file|
+      group 'Changed' do |source_file|
         changed_files.split("\n").detect do |status_and_filename|
           _, filename = status_and_filename.split(' ', 2)
           source_file.filename.ends_with?(filename)
@@ -61,7 +56,7 @@ unless ENV.fetch('SKIP_COVERAGE', false) || ENV.fetch('APIPIE_RECORD', false) ||
     enable_coverage :branch
     # NB: keep in sync with lib/tasks/coverage.rake minimum_coverage
     minimum_coverage line: 95.2, branch: 88.1 unless parallel_worker
-    enable_coverage_for_eval
+    enable_coverage :eval
   end
 end
 
