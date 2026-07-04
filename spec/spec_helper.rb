@@ -23,17 +23,11 @@ unless ENV.fetch('SKIP_COVERAGE', false) || ENV.fetch('APIPIE_RECORD', false) ||
   # extra Coverage entries), so the 0.22.0 monkeypatch that used to suppress it
   # is no longer needed.
 
-  # Under parallel_tests each worker only runs a slice of the suite, so it must
-  # write its results to a distinct file (collated later by `rake coverage:report`)
-  # and must NOT enforce the threshold on its own partial coverage.
-  parallel_worker = ENV['TEST_ENV_NUMBER'] if ENV.key?('TEST_ENV_NUMBER')
-  if parallel_worker
-    worker_id = parallel_worker.empty? ? '1' : parallel_worker
-    SimpleCov.coverage_dir("coverage/parallel/#{worker_id}")
-    SimpleCov.command_name("rspec_#{worker_id}")
-    # `rake coverage:report` owns merging/formatting/thresholds across workers, not this process
-    SimpleCov.finalize_merge false
-  end
+  # EXPERIMENT: rc5 has native parallel_tests support (auto-detected via
+  # TEST_ENV_NUMBER + PARALLEL_PID_FILE) - it picks the first worker to wait for
+  # siblings, merge their shared coverage_dir resultsets, format the report, and
+  # enforce minimum_coverage, all in-process. No custom coverage_dir/command_name/
+  # finalize_merge, and no separate rake task, needed.
 
   SimpleCov.start 'rails' do
     group("Controllers") { |src| src.filename.include?('app/controllers') and src.filename.exclude?('app/controllers/api') }
@@ -54,8 +48,7 @@ unless ENV.fetch('SKIP_COVERAGE', false) || ENV.fetch('APIPIE_RECORD', false) ||
       end
     end
     enable_coverage :branch
-    # NB: keep in sync with lib/tasks/coverage.rake minimum_coverage
-    minimum_coverage line: 95.2, branch: 88.1 unless parallel_worker
+    minimum_coverage line: 95.2, branch: 88.1
     enable_coverage :eval
   end
 end
