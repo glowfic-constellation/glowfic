@@ -100,7 +100,7 @@ RSpec.describe "Creating replies" do
 
         find_by_id('current-icon-holder').click
         expect(page).to have_text("icons of the <strong>")
-        find(:xpath, "//*[contains(@class,'gallery-icon')][contains(text(),'<strong> icon')]//img").click
+        within('.gallery-icon', text: "<strong> icon") { find('img').click }
 
         click_button "HTML"
 
