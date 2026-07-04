@@ -32,6 +32,7 @@ class RepliesController < WritableController
     @characters = searcher.characters
     @templates = searcher.templates
     @boards = searcher.boards
+    @exclude_boards = searcher.exclude_boards
 
     return unless params[:commit].present?
 
