@@ -21,10 +21,12 @@ class AccessCirclesController < ApplicationController
     end
 
     @circles = @public ? AccessCircle.visible : AccessCircle.where(user: @user)
-    @circles.ordered_by_name.paginate(page: page)
+    @circles = @circles.ordered_by_name.paginate(page: page)
 
-    joins = @circles.left_outer_joins(post_tags: :post).merge(Post.visible_to(current_user))
-    @post_counts = joins.group('post_tags.tag_id').count
+    visible_posts = @circles.joins(:posts).merge(Post.visible_to(current_user)).pluck('posts.id')
+    sql = AccessCircle.send(:sanitize_sql_array, ['LEFT JOIN post_tags ON post_tags.tag_id = tags.id AND post_tags.post_id IN (?)', visible_posts])
+
+    @post_counts = @circles.joins(sql).group('post_tags.tag_id').count
     @user_counts = @circles.left_outer_joins(:user_tags).group(:tag_id).count
   end
 
