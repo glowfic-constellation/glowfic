@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 namespace :rspec_summary do
-  desc 'Summarize failed examples from parallel_tests JSON output into a GitHub Actions job summary'
+  desc 'Summarize failed examples from parallel_tests JSON output into the CI log and job summary'
   task :report do # rubocop:disable Rails/RakeEnvironment -- doesn't need application code
     require 'json'
 
@@ -15,6 +15,20 @@ namespace :rspec_summary do
     rescue JSON::ParserError => e
       warn "Skipping unparseable rspec result file #{path}: #{e.message}"
       []
+    end
+
+    # Fold each failure into its own `::group::` in this step's own log. The
+    # $GITHUB_STEP_SUMMARY markdown below only shows up on the run's separate
+    # "Summary" page, not on the job's log page -- groups show up right here,
+    # expanded by default, so failures are visible without leaving the log view.
+    if ENV['GITHUB_ACTIONS']
+      failures.each do |example|
+        puts "::group::FAILED #{example['file_path']}:#{example['line_number']} - #{example['full_description']}"
+        puts example.dig('exception', 'message').to_s.strip
+        puts
+        puts Array(example.dig('exception', 'backtrace')).join("\n")
+        puts '::endgroup::'
+      end
     end
 
     summary_path = ENV.fetch('GITHUB_STEP_SUMMARY', nil)

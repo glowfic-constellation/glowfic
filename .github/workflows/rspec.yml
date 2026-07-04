@@ -118,8 +118,12 @@ jobs:
         # runtime once the cached log exists; the first run falls back to file
         # size and writes the log for next time. Each worker also writes its own
         # JSON results file (named by its $TEST_ENV_NUMBER) so a failed run can be
-        # summarized in the job summary instead of scrolling interleaved logs.
+        # summarized below instead of scrolling interleaved logs. The whole thing
+        # runs inside a ::group:: fold so the interleaved worker output collapses
+        # out of the way, leaving the failure groups from the next step visible.
         run: |
+          echo "::group::Running $PARALLEL_TEST_PROCESSORS parallel rspec workers"
+          trap 'echo "::endgroup::"' EXIT
           mkdir -p tmp/rspec_output
           bundle exec parallel_rspec spec \
             --runtime-log tmp/parallel_runtime_rspec.log \
