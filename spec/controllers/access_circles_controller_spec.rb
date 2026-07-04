@@ -46,14 +46,18 @@ RSpec.describe AccessCirclesController do
         render_views
 
         it "works" do
-          circles = create_list(:access_circle, 2, user: user)
+          circles = create_list(:access_circle, 2, user: user, user_ids: create_list(:user, 3).map(&:id))
           create_list(:access_circle, 3)
+          create_list(:post, 2, user: user, access_circles: [circles[0]])
+          create(:post, privacy: :private, access_circles: [circles[1]])
           get :index, params: { user_id: user.id }
           expect(flash[:error]).not_to be_present
           expect(response.status).to eq(200)
           expect(assigns(:user)).to eq(user)
           expect(assigns(:page_title)).to eq("Your Access Circles")
           expect(assigns(:circles).ids).to match_array(circles.map(&:id))
+          expect(assigns(:user_counts)).to match_hash(circles.to_h { |circle| [circle.id, 3] })
+          expect(assigns(:post_counts)).to match_hash({ circles[0].id => 2, circles[1].id => 0 })
         end
       end
     end
@@ -63,15 +67,27 @@ RSpec.describe AccessCirclesController do
         render_views
 
         it "works" do
-          circles = create_list(:access_circle, 3, owned: false)
+          circles = create_list(:access_circle, 3, owned: false, user_ids: create_list(:user, 2).map(&:id))
           create_list(:access_circle, 3, owned: true)
           create(:access_circle, user: user, owned: true)
+
+          circle[2].users << user
+          create(:post, privacy: :access_list, access_circles: [circle[1], circle[2]])
+          create(:post, privacy: :access_list, viewers: [user], access_circles: [circle[1]])
+          create(:post, privacy: :access_list, access_circles: [circle[0]])
+
           login_as(user)
           get :index
           expect(response.status).to eq(200)
           expect(assigns(:public)).to eq(true)
           expect(assigns(:page_title)).to eq("Public Access Circles")
           expect(assigns(:circles).ids).to match_array(circles.map(&:id))
+          expect(assigns(:user_counts)).to match_hash(circles.to_h { |circle| [circle.id, 2] })
+          expect(assigns(:post_counts)).to match_hash({
+            circles[0].id => 0,
+            circles[1].id => 2,
+            circles[2].id => 1,
+          })
         end
       end
     end

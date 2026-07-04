@@ -130,7 +130,8 @@ class Post < ApplicationRecord
     return true if privacy_registered? || user.admin?
     return true if privacy_full_accounts? && !user.read_only?
     return user.id == user_id if privacy_private?
-    (post_viewers.pluck(:user_id) + [user_id]).include?(user.id)
+    circle_viewer_ids = access_circles.joins(:user_tags).pluck('user_tags.user_id')
+    (post_viewers.pluck(:user_id) + circle_viewer_ids + [user_id]).include?(user.id)
   end
 
   def self.posts_fulllocked?(user)
