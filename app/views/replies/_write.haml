@@ -35,6 +35,9 @@
         = submit_tag "Preview", class: 'button', id: 'preview_button', name: 'button_preview', data: { disable_with: 'Previewing...' }
         - if reply.new_record?
           = submit_tag "Save Draft", class: 'button', id: 'draft_button', name: 'button_draft', formaction: drafts_path, data: { disable_with: 'Drafting...' }
+          %span#schedule_draft{title: 'Optionally queue this draft to be posted automatically at a future time, like a Tumblr queue. Save Draft to store the time. Leave blank to keep it a plain draft.'}
+            = label_tag 'reply_scheduled_at', 'Queue for:', class: 'vmid'
+            = datetime_field_tag 'reply[scheduled_at]', @draft&.scheduled_at&.strftime('%Y-%m-%dT%H:%M'), id: 'reply_scheduled_at', class: 'vmid'
         - if @draft.present?
           = button_tag "Delete Draft", class: 'button', id: 'delete_draft_button', name: '_method', value: 'delete', formaction: draft_path(@draft), data: { disable_with: 'Deleting...', confirm: "Delete draft?" }
       - else
