@@ -25,9 +25,21 @@ RSpec.describe "Reply permalinks" do
 
     visit reply_path(target, anchor: "reply-#{target.id}", per_page: 5)
     click_link 'Mark read here'
+    page.accept_confirm
 
     expect(page).to have_selector('.table-title', text: 'Unread Posts')
     expect(post.reload.first_unread_for(user)).to eq(target)
+  end
+
+  scenario "Dismissing the 'Mark read here' confirm leaves the reading position unchanged", :js do
+    target = replies[10]
+
+    visit reply_path(target, anchor: "reply-#{target.id}", per_page: 5)
+    click_link 'Mark read here'
+    page.dismiss_confirm
+
+    expect(page).to have_selector('.permalink-read-notice')
+    expect(post.reload.first_unread_for(user)).to eq(post) # still fully unread, untouched
   end
 
   scenario "Permalink to a reply the reader has already read past shows no notice" do

@@ -206,7 +206,6 @@ class RepliesController < WritableController
     end
     return unless unread_page < cur_page
 
-    @skip_read_marking = true
     @permalink_jumped_ahead = true
   end
 
