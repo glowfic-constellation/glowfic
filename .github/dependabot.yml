@@ -14,7 +14,9 @@ updates:
   - package-ecosystem: "bundler"
     directory: "/"
     schedule:
-      interval: "daily"
+      interval: "cron"
+      cronjob: "0 12 * * *"
+      timezone: "America/New_York"
     open-pull-requests-limit: 10
   - package-ecosystem: "docker"
     directory: "/"
