@@ -71,10 +71,10 @@ RSpec.describe AccessCirclesController do
           create_list(:access_circle, 3, owned: true)
           create(:access_circle, user: user, owned: true)
 
-          circle[2].users << user
-          create(:post, privacy: :access_list, access_circles: [circle[1], circle[2]])
-          create(:post, privacy: :access_list, viewers: [user], access_circles: [circle[1]])
-          create(:post, privacy: :access_list, access_circles: [circle[0]])
+          circles[2].users << user
+          create(:post, privacy: :access_list, access_circles: [circles[1], circles[2]])
+          create(:post, privacy: :access_list, viewers: [user], access_circles: [circles[1]])
+          create(:post, privacy: :access_list, access_circles: [circles[0]])
 
           login_as(user)
           get :index
@@ -82,7 +82,11 @@ RSpec.describe AccessCirclesController do
           expect(assigns(:public)).to eq(true)
           expect(assigns(:page_title)).to eq("Public Access Circles")
           expect(assigns(:circles).ids).to match_array(circles.map(&:id))
-          expect(assigns(:user_counts)).to match_hash(circles.to_h { |circle| [circle.id, 2] })
+          expect(assigns(:user_counts)).to match_hash({
+            circles[0].id => 2,
+            circles[1].id => 2,
+            circles[2].id => 3,
+          })
           expect(assigns(:post_counts)).to match_hash({
             circles[0].id => 0,
             circles[1].id => 2,
