@@ -562,7 +562,7 @@ GEM
       power_assert
     thor (1.5.0)
     tilt (2.7.0)
-    timecop (0.9.10)
+    timecop (0.9.11)
     timeout (0.6.1)
     tinymce-rails (7.8.0)
       railties (>= 3.1.1)
