@@ -518,7 +518,7 @@ GEM
       ffi (~> 1.9)
     sassc-embedded (1.80.9)
       sass-embedded (~> 1.80)
-    scout_apm (6.0.2)
+    scout_apm (6.2.0)
       parser
     securerandom (0.4.1)
     seed_dump (3.4.2)
