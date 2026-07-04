@@ -1,23 +1,25 @@
 # rubocop:disable all
 class Gon
-  module Base
-    class << self
-      private
+  # reverts gon 7.0's switch from request_store to ActiveSupport::CurrentAttributes
+  # (https://github.com/gazay/gon/pull/167) for the same reason as config/initializers/audited.rb:
+  # ActionController::TestCase wraps each simulated request in Rails.application.executor, whose
+  # to_complete callback resets *all* CurrentAttributes classes - wiping gon's data before controller
+  # specs can assert on `controller.gon.*` after the action runs.
+  class Current
+    def self.gon
+      RequestStore.store[:gon]
+    end
 
-      # replacing https://github.com/gazay/gon/blob/v6.4.0/lib/gon/base.rb#L45
-      # forcing mutable string
-      def formatted_data(_o)
-        script = +''
-        before, after = render_wrap(_o)
-        script << before
+    def self.gon=(value)
+      RequestStore.store[:gon] = value
+    end
 
-        script << gon_variables(_o.global_root).
-                    map { |key, val| render_variable(_o, key, val) }.join
-        script << (render_watch(_o) || '')
+    def self.gon_keys_cache
+      RequestStore.store[:gon_keys_cache]
+    end
 
-        script << after
-        script
-      end
+    def self.gon_keys_cache=(value)
+      RequestStore.store[:gon_keys_cache] = value
     end
   end
 end
