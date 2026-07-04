@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2026_05_04_215359) do
+ActiveRecord::Schema[8.0].define(version: 2026_05_16_180000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "citext"
   enable_extension "pg_catalog.plpgsql"
@@ -392,6 +392,7 @@ ActiveRecord::Schema[8.0].define(version: 2026_05_04_215359) do
     t.integer "character_alias_id"
     t.integer "reply_order"
     t.string "editor_mode"
+    t.integer "word_count"
     t.index "to_tsvector('english'::regconfig, COALESCE(content, ''::text))", name: "idx_fts_reply_content", using: :gin
     t.index ["character_id"], name: "index_replies_on_character_id"
     t.index ["created_at"], name: "index_replies_on_created_at"
