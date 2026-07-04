@@ -18,16 +18,8 @@
 unless ENV.fetch('SKIP_COVERAGE', false) || ENV.fetch('APIPIE_RECORD', false) || RSpec.configuration.files_to_run.count <= 1
   require 'simplecov'
 
-  # simplecov 1.0.0.rc5 dropped the small-line-count-diff HAML warning mechanism
-  # entirely (LineBuilder now just iterates the source lines and ignores any
-  # extra Coverage entries), so the 0.22.0 monkeypatch that used to suppress it
-  # is no longer needed.
-
-  # EXPERIMENT: rc5 has native parallel_tests support (auto-detected via
-  # TEST_ENV_NUMBER + PARALLEL_PID_FILE) - it picks the first worker to wait for
-  # siblings, merge their shared coverage_dir resultsets, format the report, and
-  # enforce minimum_coverage, all in-process. No custom coverage_dir/command_name/
-  # finalize_merge, and no separate rake task, needed.
+  # simplecov >= 1.0 auto-detects parallel_tests and has the first worker
+  # merge/format/enforce minimum_coverage in-process at exit.
 
   SimpleCov.start 'rails' do
     group("Controllers") { |src| src.filename.include?('app/controllers') and src.filename.exclude?('app/controllers/api') }
