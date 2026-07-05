@@ -248,5 +248,30 @@ RSpec.describe Reply do
         expect(reply.name).to eq(calias.name)
       end
     end
+
+    describe "#word_count" do
+      it "caches the word count on save" do
+        reply = create(:reply, content: 'one two three four five')
+        expect(reply.read_attribute(:word_count)).to eq(5)
+        expect(reply.word_count).to eq(5)
+      end
+
+      it "strips HTML before counting" do
+        reply = create(:reply, content: '<strong>one</strong> two three')
+        expect(reply.read_attribute(:word_count)).to eq(3)
+      end
+
+      it "recomputes when content changes" do
+        reply = create(:reply, content: 'one two')
+        reply.update!(content: 'one two three four')
+        expect(reply.read_attribute(:word_count)).to eq(4)
+      end
+
+      it "returns the cached value rather than recomputing" do
+        reply = create(:reply, content: 'one two three')
+        reply.update_columns(word_count: 999) # rubocop:disable Rails/SkipsModelValidations
+        expect(reply.word_count).to eq(999)
+      end
+    end
   end
 end

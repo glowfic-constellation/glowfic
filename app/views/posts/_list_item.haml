@@ -1,4 +1,4 @@
--# locals: ( post:, index: nil, hide_continuity: false, show_unread_count: false, check_box_name: nil, check_box_padding: false, klass: cycle('even', 'odd') )
+-# locals: ( post:, index: nil, hide_continuity: false, show_unread_count: false, check_box_name: nil, check_box_padding: false, colored: false, klass: cycle('even', 'odd') )
 
 %tr
   - replies_count = post.reply_count
@@ -47,7 +47,7 @@
         = post.board_name
         - if post.section_name.present?
           %span.post-section= post.section_name
-  %td.post-authors.vtop{class: klass}= author_links(post)
+  %td.post-authors.vtop{class: klass}= author_links(post, colored: colored)
   %td.width-70.post-replies.vtop{class: klass}= link_to replies_count, stats_post_path(post)
   - if logged_in? && show_unread_count
     %td.width-70.vtop{class: klass}

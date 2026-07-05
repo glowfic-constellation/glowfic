@@ -69,6 +69,15 @@ $(document).ready(function() {
     allowClear: true,
   });
 
+  createSelect2('#exclude_board_ids', {
+    ajax: {
+      url: '/api/v1/boards',
+      processResults: processTotal('name'),
+    },
+    placeholder: '— Choose Continuity —',
+    allowClear: true,
+  });
+
   createSelect2('#template_id', {
     ajax: {
       url: '/api/v1/templates',

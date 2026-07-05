@@ -41,6 +41,43 @@ RSpec.describe PostsController, 'GET search' do
       expect(assigns(:search_results)).to match_array(posts)
     end
 
+    it "excludes a single continuity" do
+      board = create(:board)
+      excluded_board = create(:board)
+      post = create(:post, board: board)
+      create(:post, board: excluded_board)
+      get :search, params: { commit: true, exclude_board_ids: [excluded_board.id] }
+      expect(assigns(:search_results)).to match_array([post])
+    end
+
+    it "excludes multiple continuities" do
+      board = create(:board)
+      excluded1 = create(:board)
+      excluded2 = create(:board)
+      post = create(:post, board: board)
+      create(:post, board: excluded1)
+      create(:post, board: excluded2)
+      get :search, params: { commit: true, exclude_board_ids: [excluded1.id, excluded2.id] }
+      expect(assigns(:search_results)).to match_array([post])
+    end
+
+    it "combines board_id and exclude_board_ids filters" do
+      board = create(:board)
+      excluded_board = create(:board)
+      other_board = create(:board)
+      post = create(:post, board: board)
+      create(:post, board: excluded_board)
+      create(:post, board: other_board)
+      get :search, params: { commit: true, board_id: board.id, exclude_board_ids: [excluded_board.id] }
+      expect(assigns(:search_results)).to match_array([post])
+    end
+
+    it "handles empty exclude list" do
+      posts = create_list(:post, 2)
+      get :search, params: { commit: true, exclude_board_ids: [] }
+      expect(assigns(:search_results)).to match_array(posts)
+    end
+
     it "filters by setting" do
       setting = create(:setting)
       post = create(:post, settings: [setting])

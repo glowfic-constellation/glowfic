@@ -269,6 +269,7 @@ class UsersController < ApplicationController
       :hide_hiatused_tags_owed,
       :public_bookmarks,
       :ignore_unread_daily_report,
+      :moiety_colors_unread,
       :favorite_notifications,
       :show_user_in_switcher,
       :default_hide_edit_delete_buttons,

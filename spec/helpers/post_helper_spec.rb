@@ -207,7 +207,9 @@ RSpec.describe PostHelper do
     end
 
     it "returns false if id not in list" do
-      expect(method(post, [1, 2])).to eq(false)
+      # Use IDs the post can't possibly have so the test doesn't flake when
+      # the Postgres sequence happens to start a run at 1 or 2.
+      expect(method(post, [post.id + 1, post.id + 2])).to eq(false)
     end
   end
 

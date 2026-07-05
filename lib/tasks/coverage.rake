@@ -1,11 +1,11 @@
 # frozen_string_literal: true
 namespace :coverage do
   desc 'Merge parallel_tests SimpleCov results and enforce the coverage threshold'
-  task :report do
+  task :report do # rubocop:disable Rails/RakeEnvironment -- doesn't need application code
     require 'simplecov'
 
     result_files = Dir['coverage/parallel/*/.resultset.json']
-    if result_files.empty?
+    if result_files.empty? # rubocop:disable Style/IfUnlessModifier
       abort 'No parallel coverage results found under coverage/parallel/*. Did the test run write coverage?'
     end
 
