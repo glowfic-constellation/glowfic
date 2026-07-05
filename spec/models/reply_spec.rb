@@ -269,7 +269,7 @@ RSpec.describe Reply do
 
       it "returns the cached value rather than recomputing" do
         reply = create(:reply, content: 'one two three')
-        reply.update_columns(word_count: 999)
+        reply.update_columns(word_count: 999) # rubocop:disable Rails/SkipsModelValidations
         expect(reply.word_count).to eq(999)
       end
     end

@@ -61,7 +61,7 @@ RSpec.describe "Adding icons to a gallery" do
 
     expect(page).to have_selector('.content-header', text: 'Add New Icons to Gallery')
 
-    svg = Rails.root.join('spec/support/fixtures/icon.svg')
+    svg = Rails.root.join('spec', 'support', 'fixtures', 'icon.svg')
     message = accept_alert { attach_file('icon_files', svg) }
     expect(message).to include('.svg files are not supported')
 

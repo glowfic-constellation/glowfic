@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 namespace :replies do
   desc "Backfill the cached word_count column on replies that don't yet have one"
   task backfill_word_count: :environment do
@@ -10,7 +12,7 @@ namespace :replies do
     scope.select(:id, :content).find_in_batches(batch_size: 1000) do |batch|
       batch.each do |reply|
         words = reply.content.nil? ? 0 : sanitizer.sanitize(reply.content).split.size
-        Reply.where(id: reply.id).update_all(word_count: words)
+        Reply.where(id: reply.id).update_all(word_count: words) # rubocop:disable Rails/SkipsModelValidations
       end
       done += batch.size
       puts "  #{done} / #{total}"
