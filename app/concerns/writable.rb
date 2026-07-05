@@ -33,7 +33,7 @@ module Writable
     end
 
     def word_count
-      if has_attribute?(:word_count) && !read_attribute(:word_count).nil?
+      if has_attribute?(:word_count) && !read_attribute(:word_count).nil? # rubocop:disable Style/IfUnlessModifier
         return read_attribute(:word_count)
       end
       computed_word_count
