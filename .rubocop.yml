@@ -705,6 +705,9 @@ RSpec/DescribeMethod:
     - 'spec/controllers/replies/*'
     - 'spec/controllers/bookmarks/*'
 
+RSpec/DiscardedMatcher: # new in 3.10
+  Enabled: true
+
 RSpec/EmptyOutput:
   Enabled: false # we don't use the output matcher
 
@@ -738,6 +741,9 @@ RSpec/LeakyLocalVariable: # new in 3.8
 
 RSpec/MatchArray:
   Enabled: false
+
+RSpec/MatchWithSimpleRegex: # new in 3.10
+  Enabled: true
 
 RSpec/MessageSpies:
   EnforcedStyle: receive
