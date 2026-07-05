@@ -25,7 +25,9 @@ def autocomplete_api_request?(req)
   req.get? && req.path.start_with?('/api/v1/')
 end
 
-# Throttle all requests by IP
+# Throttle anonymous, non-autocomplete traffic by IP. Tight ceiling here is the
+# steady-state defence against scrapers — combined with the cluster-wide cache
+# store this limit actually enforces fleet-wide (rather than per-worker).
 # Key: "rack::attack:#{Time.now.to_i/:period}:req/ip:#{req.ip}"
 # Autocomplete API GETs are excluded here and counted under 'api/ip' instead.
 Rack::Attack.throttle('req/ip', limit: ENV.fetch("RACK_ATTACK_IP_LIMIT", 25).to_i, period: 5.minutes) do |req|
@@ -37,6 +39,16 @@ end
 # Key: "rack::attack:#{Time.now.to_i/:period}:api/ip:#{req.ip}"
 Rack::Attack.throttle('api/ip', limit: ENV.fetch("RACK_ATTACK_API_LIMIT", 150).to_i, period: 5.minutes) do |req|
   req.ip if !req_logged_in?(req) && autocomplete_api_request?(req)
+end
+
+# Logged-in users get a much higher ceiling, keyed on user_id rather than IP,
+# so multiple users behind a shared NAT (corporate proxy, mobile carrier,
+# household) don't fight each other for the IP-based quota.
+# Key: "rack::attack:#{Time.now.to_i/:period}:user:#{user_id}"
+Rack::Attack.throttle('user', limit: ENV.fetch("RACK_ATTACK_USER_LIMIT", 1000).to_i, period: 5.minutes) do |req|
+  if (uid = req.session[:user_id])
+    "user:#{uid}"
+  end
 end
 
 # Throttle POST requests to /login by IP address to prevent brute force login attacks
