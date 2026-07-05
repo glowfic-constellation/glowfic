@@ -21,7 +21,7 @@ jobs:
           skip_install: true
           use_bundler: true
           rubocop_flags: --config ./.rubocop.yml
-          fail_level: warning
+          fail_level: error
           reporter: github-pr-review
   brakeman:
     name: brakeman
@@ -32,15 +32,13 @@ jobs:
         with:
           bundler-cache: true
       - run: bundle exec brakeman -v
-      - uses: reviewdog/action-setup@v1
       - name: brakeman
-        env:
-          REVIEWDOG_GITHUB_API_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: |
-          bundle exec brakeman --quiet --format tabs | reviewdog \
-          -f=brakeman -name="brakeman" \
-          -reporter="github-pr-review" \
-          -fail-level=warning
+        uses: reviewdog/action-brakeman@v2
+        with:
+          brakeman_version: gemfile
+          use_bundler: true
+          fail_level: error
+          reporter: github-pr-review
   haml_lint:
     name: haml-lint
     runs-on: ubuntu-latest
@@ -58,7 +56,7 @@ jobs:
           bundle exec haml-lint app/views | reviewdog \
           -f=haml-lint -name="haml-lint" \
           -reporter="github-pr-review" \
-          -fail-level=warning
+          -fail-level=error
   eslint:
     name: eslint
     runs-on: ubuntu-latest
@@ -70,7 +68,7 @@ jobs:
       - uses: reviewdog/action-eslint@v1
         with:
           eslint_flags: 'app/assets/javascripts'
-          fail_level: warning
+          fail_level: error
           reporter: github-pr-review
   stylelint:
     name: stylelint
@@ -88,6 +86,6 @@ jobs:
       - uses: reviewdog/action-stylelint@v1
         with:
           github_token: ${{ secrets.github_token }}
-          fail_level: warning
+          fail_level: error
           reporter: github-pr-review
           stylelint_input: 'app/assets/stylesheets/**/*.scss'
