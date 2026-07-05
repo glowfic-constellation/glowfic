@@ -1,12 +1,12 @@
 RSpec.describe AnonLoadShed do
   let(:downstream) { ->(_env) { [200, {}, ['ok']] } }
-  let(:middleware) { described_class.new(downstream) }
+  let(:middleware) { AnonLoadShed.new(downstream) }
 
   def env(wait: nil, user_id: nil, path: '/posts')
     {
       'rack.timeout.info' => wait && Struct.new(:wait).new(wait),
-      'rack.session' => { user_id: user_id },
-      'PATH_INFO' => path,
+      'rack.session'      => { user_id: user_id },
+      'PATH_INFO'         => path,
     }
   end
 
@@ -30,17 +30,17 @@ RSpec.describe AnonLoadShed do
   end
 
   it "still passes through anonymous users right at the threshold boundary" do
-    status, _, _ = middleware.call(env(wait: AnonLoadShed::WAIT_THRESHOLD_SECONDS - 0.1))
+    status, = middleware.call(env(wait: AnonLoadShed::WAIT_THRESHOLD_SECONDS - 0.1))
     expect(status).to eq(200)
   end
 
   it "sheds anonymous users just above the threshold" do
-    status, _, _ = middleware.call(env(wait: AnonLoadShed::WAIT_THRESHOLD_SECONDS + 0.1))
+    status, = middleware.call(env(wait: AnonLoadShed::WAIT_THRESHOLD_SECONDS + 0.1))
     expect(status).to eq(503)
   end
 
   it "never sheds login requests, so logged-out users can still log in under load" do
-    status, _, _ = middleware.call(env(wait: 30.0, path: '/login'))
+    status, = middleware.call(env(wait: 30.0, path: '/login'))
     expect(status).to eq(200)
   end
 end
