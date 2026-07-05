@@ -38,7 +38,7 @@ RSpec.describe "Character" do
       expect(response).to render_template(:show)
       expect(response).to have_http_status(200)
 
-      body = Nokogiri::HTML5::Document.parse(response.body)
+      body = response.parsed_body
       expect(body.at_css("meta[property='og:url']")[:content]).to eq(character_url(character))
       expect(body.at_css("meta[property='og:title']")[:content]).to eq('John Doe » Alice | player_one')
       expect(body.at_css("meta[property='og:description']")[:content]).to eq("Alice is a character")
@@ -53,7 +53,7 @@ RSpec.describe "Character" do
       expect(response).to render_template(:show)
       expect(response).to have_http_status(200)
 
-      body = Nokogiri::HTML5::Document.parse(response.body)
+      body = response.parsed_body
       expect(body.at_css("meta[property='og:url']")[:content]).to eq(character_url(expanded_character))
       expect(body.at_css("meta[property='og:title']")[:content]).to eq('John Doe » A » Alice | player_one')
       desc = "Nicknames: Lis, Alicia. Settings: Infosec, Wander\nAlice is a character\n2 posts"
@@ -65,7 +65,7 @@ RSpec.describe "Character" do
 
     it "calculates OpenGraph meta for NPC character" do
       get "/characters/#{npc_character.id}"
-      body = Nokogiri::HTML5::Document.parse(response.body)
+      body = response.parsed_body
       expect(body.at_css("meta[property='og:title']")[:content]).to eq('John Doe » John')
       expect(body.at_css("meta[property='og:description']")[:content]).to eq("Original post: first thread")
     end
@@ -111,8 +111,8 @@ RSpec.describe "Character" do
       aggregate_failures do
         expect(response).to have_http_status(200)
         expect(response).to render_template(:facecasts)
-        page = Nokogiri::HTML5::Document.parse(response.body)
-        entries = page.css("tbody tr")
+
+        entries = response.parsed_body.css("tbody tr")
         expect(entries.count).to eq(3)
         expect(entries[0].text).to match(/Gal Gadot.*Character.*Aisha.*Jane Doe/m)
         expect(entries[1].text).to match(/Sebastian Stan.*Character.*Alex.*John Doe/m)
