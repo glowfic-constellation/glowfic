@@ -14,22 +14,10 @@ updates:
   - package-ecosystem: "bundler"
     directory: "/"
     schedule:
-      interval: "daily"
+      interval: "cron"
+      cronjob: "0 12 * * *"
+      timezone: "America/New_York"
     open-pull-requests-limit: 10
-  - package-ecosystem: "bundler"
-    directory: "/"
-    schedule:
-      interval: "monthly"
-    groups:
-      transitive-updates:
-        patterns:
-          - "*"
-        update-types:
-          - patch
-          - minor
-    allow:
-      - dependency-name: "*"
-        dependency-type: "indirect"
   - package-ecosystem: "docker"
     directory: "/"
     schedule:

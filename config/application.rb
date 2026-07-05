@@ -85,10 +85,6 @@ module Glowfic
     config.middleware.use Rack::Pratchett
     config.middleware.use Rack::Deflater
 
-    # redis-rails does not support cache versioning
-    config.active_record.cache_versioning = false
-    config.active_record.collection_cache_versioning = false
-
     # Setting enables YJIT as of Ruby 3.3, to bring sizeable performance improvements. We are
     # deploying to a memory constrained environment so we set this to `false`.
     config.yjit = false

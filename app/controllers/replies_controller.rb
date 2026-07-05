@@ -32,6 +32,7 @@ class RepliesController < WritableController
     @characters = searcher.characters
     @templates = searcher.templates
     @boards = searcher.boards
+    @exclude_boards = searcher.exclude_boards
 
     return unless params[:commit].present?
 
@@ -83,6 +84,8 @@ class RepliesController < WritableController
   def show
     @page_title = @post.subject
     params[:page] ||= @reply.post_page(per_page)
+
+    check_permalink_read_position if logged_in?
 
     show_post(params[:page])
   end
@@ -188,6 +191,25 @@ class RepliesController < WritableController
     end
 
     @page_title = @post.subject
+  end
+
+  # Only skips auto-advancing when the permalink jumps ahead of the unread boundary; mark_read's own regression guard already covers the reverse case.
+  def check_permalink_read_position
+    @permalink_reply = @reply
+    cur_page = params[:page].to_i
+    return unless cur_page > 0
+
+    unread = @post.first_unread_for(current_user)
+    unread_page = if unread.nil?
+      @post.replies.paginate(per_page: per_page, page: 1).total_pages
+    elsif unread.is_a?(Post)
+      1
+    else
+      unread.post_page(per_page)
+    end
+    return unless unread_page < cur_page
+
+    @permalink_jumped_ahead = true
   end
 
   def require_create_permission

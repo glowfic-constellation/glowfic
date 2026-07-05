@@ -54,7 +54,7 @@ RSpec.describe IconsController do
       it "skips other people's icons" do
         icon = create(:icon)
         gallery = create(:gallery, user: user)
-        GalleriesIcon.new(gallery: gallery, icon: icon).save(validate: false)
+        GalleriesIcon.new(gallery: gallery, icon: icon).save!(validate: false)
         icon.reload
         expect(icon.galleries.count).to eq(1)
         delete :delete_multiple, params: { marked_ids: [icon.id], gallery_id: gallery.id, gallery_delete: true }

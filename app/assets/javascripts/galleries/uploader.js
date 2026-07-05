@@ -148,6 +148,11 @@ function invalidFileType(fileType) {
     alert("Unfortunately, .tiff files are only supported by Safari - please retry with a valid file.");
     unsetLoadingIcon();
     return true;
+  } else if (fileType === 'image/svg+xml') {
+    // SVGs can embed scripts and don't render reliably as icons, so disallow them
+    alert("Unfortunately, .svg files are not supported - please retry with a valid file.");
+    unsetLoadingIcon();
+    return true;
   }
   return false;
 }

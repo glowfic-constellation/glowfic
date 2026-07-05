@@ -556,6 +556,27 @@ div.post-subheader { width: 100%; }
 
 .reply-highlighted { border: 1px $border_color_unread_reply solid; }
 
+/* Reply permalink read-position notice */
+.permalink-read-notice {
+  margin-bottom: 10px;
+
+  .permalink-read-notice-message img { margin-right: 5px; }
+
+  .permalink-read-notice-actions {
+    margin-top: 8px;
+
+    // font-size matches the .subber .link-box convention in layout.scss for smaller containers
+    .link-box {
+      font-size: $font_size_smallish;
+      height: auto;
+      line-height: 1;
+      padding: 6px 12px;
+    }
+
+    > a:first-child .link-box { margin-left: 0; }
+  }
+}
+
 /* History page */
 .history-header { width: 170px; }
 

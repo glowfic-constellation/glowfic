@@ -33,9 +33,15 @@ module Writable
     end
 
     def word_count
+      if has_attribute?(:word_count) && !read_attribute(:word_count).nil? # rubocop:disable Style/IfUnlessModifier
+        return read_attribute(:word_count)
+      end
+      computed_word_count
+    end
+
+    def computed_word_count
       return 0 if content.nil?
-      full_sanitizer = Rails::Html::FullSanitizer.new
-      full_sanitizer.sanitize(content).split.size
+      Rails::Html::FullSanitizer.new.sanitize(content).split.size
     end
 
     def url

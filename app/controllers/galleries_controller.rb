@@ -262,7 +262,7 @@ class GalleriesController < UploadingController
       ],
       icon_ids: [],
     )
-    if permitted[:icon_ids].present?
+    if permitted[:icon_ids].present? # rubocop:disable Style/IfUnlessModifier
       permitted[:icon_ids] = Icon.where(id: permitted[:icon_ids], user_id: current_user.id).pluck(:id)
     end
     permitted

@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 source 'https://rubygems.org'
 
-ruby '3.4.8'
+ruby '3.4.10'
 
 gem 'api-pagination'
 gem 'apipie-rails'
@@ -32,7 +32,7 @@ gem 'httparty'
 gem 'jquery-fileupload-rails'
 gem 'jquery-rails', '~> 4.6'
 gem 'jquery-ui-rails-dox-fork', require: 'jquery-ui-rails'
-gem 'json', '~> 2.19'
+gem 'json', '~> 2.20'
 gem 'jwt'
 gem 'newrelic_rpm'
 gem 'nilify_blanks'
@@ -69,12 +69,12 @@ group :development do
   gem 'listen'
   gem 'memory_profiler'
   gem 'rack-mini-profiler'
-  gem 'rubocop', '~> 1.82.1', require: false
-  gem 'rubocop-capybara', '~> 2.22.1', require: false
+  gem 'rubocop', '~> 1.88.1', require: false
+  gem 'rubocop-capybara', '~> 3.0.0', require: false
   gem 'rubocop-factory_bot', '~> 2.28.0', require: false
   gem 'rubocop-performance', '~> 1.26.1', require: false
   gem 'rubocop-rails', '~> 2.34.3', require: false
-  gem 'rubocop-rspec', '~> 3.7.0', require: false
+  gem 'rubocop-rspec', '~> 3.9.0', require: false
   gem 'rubocop-rspec_rails', '~> 2.32.0', require: false
   gem 'traceroute'
 end

@@ -132,7 +132,7 @@ class WritableController < ApplicationController
         @draft = ReplyDraft.draft_for(@post.id, current_user.id)
       end
 
-      @post.mark_read(current_user, at_time: @post.read_time_for(@replies))
+      @post.mark_read(current_user, at_time: @post.read_time_for(@replies)) unless @permalink_jumped_ahead
     end
 
     if display_warnings?
