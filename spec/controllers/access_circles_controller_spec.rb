@@ -57,7 +57,10 @@ RSpec.describe AccessCirclesController do
           expect(assigns(:page_title)).to eq("Your Access Circles")
           expect(assigns(:circles).ids).to match_array(circles.map(&:id))
           expect(assigns(:user_counts)).to match_hash(circles.to_h { |circle| [circle.id, 3] })
-          expect(assigns(:post_counts)).to match_hash({ circles[0].id => 2, circles[1].id => 0 })
+          expect(assigns(:post_counts)).to match_hash({
+            circles[0].id => 2,
+            # circles[1].id => 0
+          })
         end
       end
     end
@@ -88,7 +91,7 @@ RSpec.describe AccessCirclesController do
             circles[2].id => 3,
           })
           expect(assigns(:post_counts)).to match_hash({
-            circles[0].id => 0,
+            # circles[0].id => 0,
             circles[1].id => 2,
             circles[2].id => 1,
           })

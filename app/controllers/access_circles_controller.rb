@@ -23,8 +23,9 @@ class AccessCirclesController < ApplicationController
     @circles = @public ? AccessCircle.visible : AccessCircle.where(user: @user)
     @circles = @circles.ordered_by_name.paginate(page: page)
 
-    @post_counts = AccessCircle.post_counts(@circles, current_user)
-    @user_counts = @circles.left_outer_joins(:user_tags).group(:tag_id).count
+    visible_posts = @circles.joins(:posts).merge(Post.visible_to(current_user)).pluck(posts: :id)
+    @post_counts = @circles.joins(:post_tags).where(post_tags: { post_id: visible_posts }).group(:tag_id).count
+    @user_counts = @circles.joins(:user_tags).group(:tag_id).count
   end
 
   def new
