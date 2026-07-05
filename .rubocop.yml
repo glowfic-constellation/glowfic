@@ -630,7 +630,7 @@ Rails/StripHeredoc: # new in 2.15
   Enabled: true
 
 Rails/StrongParametersExpect: # new in 2.29
-  Enabled: true
+  Enabled: false # we do a lot of custom logic around parameter existance
 
 Rails/ThreeStateBooleanColumn: # new in 2.19
   Enabled: false
