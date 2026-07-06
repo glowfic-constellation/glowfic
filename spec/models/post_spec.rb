@@ -453,6 +453,15 @@ RSpec.describe Post do
       expect(post.total_word_count).to eq(8)
     end
 
+    it "falls back to computing when replies have no cached word_count" do
+      post = create(:post, content: 'one two three four five')
+      one = create(:reply, post: post, content: 'six seven')
+      two = create(:reply, post: post, content: 'eight')
+      Reply.where(id: [one.id, two.id]).update_all(word_count: nil) # rubocop:disable Rails/SkipsModelValidations
+      expect(post.total_word_count).to eq(8)
+      expect(post.word_count_for(one.user)).to eq(2)
+    end
+
     it "guesses correctly without replies" do
       post = create(:post, content: 'one two three four five')
       expect(post.word_count).to eq(5)
