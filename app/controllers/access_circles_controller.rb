@@ -155,7 +155,7 @@ class AccessCirclesController < ApplicationController
   end
 
   def permitted_params
-    permitted = [:name, :description]
+    permitted = [:name, :description, :owned]
     params.fetch(:access_circle, {}).permit(permitted)
   end
 end

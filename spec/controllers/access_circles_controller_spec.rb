@@ -158,22 +158,39 @@ RSpec.describe AccessCirclesController do
         login_as(user)
 
         expect {
-          post :create, params: { access_circle: { name: '', description: description, user_ids: users.ids } }
+          post :create, params: {
+            access_circle: {
+              name: '',
+              description: description,
+              owned: true,
+              user_ids: users.ids,
+            },
+          }
         }.not_to change { PostTag.count }
 
         expect(response).to render_template(:new)
         expect(flash[:error][:message]).to eq('Your access circle could not be saved.')
         expect(assigns(:circle).description).to eq(description)
+        expect(assigns(:circle).owned).to eq(true)
         expect(assigns(:circle).user_ids).to eq(users.ids)
       end
 
       it "works" do
         login_as(user)
-        post :create, params: { id: circle.id, access_circle: { name: 'test name', description: description, user_ids: users.ids } }
+        post :create, params: {
+          id: circle.id,
+          access_circle: {
+            name: 'test name',
+            description: description,
+            owned: true,
+            user_ids: users.ids,
+          },
+        }
         expect(response.status).to redirect_to(assigns(:circle))
         expect(flash[:success]).to eq('Access circle saved successfully.')
         expect(assigns(:circle).name).to eq('test name')
         expect(assigns(:circle).description).to eq(description)
+        expect(assigns(:circle).owned).to eq(true)
         expect(assigns(:circle).user_ids).to eq(users.ids)
       end
     end
@@ -361,25 +378,39 @@ RSpec.describe AccessCirclesController do
         circle.update!(description: 'old description', user_ids: [create(:user).id])
 
         expect {
-          put :update, params: { id: circle.id, access_circle: { name: '', description: description, user_ids: users.ids } }
+          put :update, params: {
+            id: circle.id,
+            access_circle: { name: '', description: description, owned: true, user_ids: users.ids },
+          }
         }.not_to change { PostTag.count }
 
         expect(response).to render_template(:edit)
         expect(flash[:error][:message]).to eq('Your access circle could not be saved.')
         expect(assigns(:circle).description).to eq(description)
+        expect(assigns(:circle).owned).to eq(true)
         expect(assigns(:circle).user_ids).to eq(users.ids)
       end
 
       it "works" do
-        circle.update!(description: 'old description', user_ids: [create(:user).id])
+        circle.update!(description: 'old description', owned: true, user_ids: [create(:user).id])
         login_as(user)
-        put :update, params: { id: circle.id, access_circle: { name: 'new name', description: description, user_ids: users.ids } }
+
+        put :update, params: {
+          id: circle.id,
+          access_circle: {
+            name: 'new name',
+            description: description,
+            owned: false,
+            user_ids: users.ids,
+          },
+        }
         expect(response.status).to redirect_to(circle)
         expect(flash[:success]).to eq('Access circle saved successfully.')
 
         circle.reload
         expect(circle.name).to eq('new name')
         expect(circle.description).to eq(description)
+        expect(assigns(:circle).owned).to eq(false)
         expect(circle.user_ids).to eq(users.ids)
       end
     end
