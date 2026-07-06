@@ -66,6 +66,8 @@ function setupMetadataEditor() {
   if ($("#post_section_id").val() === '') setSections();
   $("#post_board_id").change(function() { setSections(); });
 
+  setupSecondaryBoards();
+
   $("#post_privacy").change(function() {
     if ($(this).val() === 'access_list') {
       $("#access_list").show();
@@ -506,6 +508,60 @@ function setSections() {
       $("#post_section_id").val("").trigger("change.select2");
       $("#section").hide();
     }
+  }, 'json');
+}
+
+function setupSecondaryBoards() {
+  const select = $('#post_secondary_board_ids');
+  if (select.length === 0) return;
+
+  createSelect2('#post_secondary_board_ids', {
+    width: '300px',
+    minimumResultsForSearch: 20,
+    placeholder: 'Choose other continuities for this post'
+  });
+
+  select.change(function() {
+    const selected = ($(this).val() || []).map(Number);
+    const container = $('#secondary-sections');
+
+    // Remove rows for boards no longer selected
+    container.find('.secondary-membership-row').each(function() {
+      const boardId = parseInt($(this).data('board-id'));
+      if (!selected.includes(boardId)) $(this).remove();
+    });
+
+    // Add rows for newly selected boards
+    selected.forEach(function(boardId) {
+      if (container.find('.secondary-membership-row[data-board-id="' + boardId + '"]').length > 0) return;
+      addSecondaryMembershipRow(boardId, container);
+    });
+  });
+}
+
+function addSecondaryMembershipRow(boardId, container) {
+  $.authenticatedGet('/api/v1/boards/' + boardId, {}, function(resp) {
+    const row = $('<div class="secondary-membership-row">').attr('data-board-id', boardId);
+    row.append($('<b>').text(resp.name));
+    row.append($('<input type="hidden">').attr({
+      name: 'post[secondary_memberships][][board_id]',
+      value: boardId
+    }));
+    if (resp.board_sections && resp.board_sections.length > 0) {
+      row.append(' section: ');
+      const sectionSelect = $('<select>').attr('name', 'post[secondary_memberships][][section_id]');
+      sectionSelect.append('<option value="">— Choose Section —</option>');
+      resp.board_sections.forEach(function(section) {
+        sectionSelect.append($('<option>').attr('value', section.id).text(section.name));
+      });
+      row.append(sectionSelect);
+    } else {
+      row.append($('<input type="hidden">').attr({
+        name: 'post[secondary_memberships][][section_id]',
+        value: ''
+      }));
+    }
+    container.append(row);
   }, 'json');
 }
 

@@ -28,6 +28,16 @@ module PostHelper
     Board.where(id: obj.board_id).or(Board.where(authors_locked: false)).or(Board.where(id: authored_ids)).ordered
   end
 
+  def allowed_secondary_boards(post, user)
+    authored_ids = BoardAuthor.where(user: user).select(:board_id)
+    linked_ids = post.persisted? ? post.boards.where.not(id: post.board_id).pluck(:id) : []
+    Board.where(authors_locked: false)
+      .or(Board.where(id: authored_ids))
+      .or(Board.where(id: linked_ids))
+      .where.not(id: post.board_id)
+      .ordered
+  end
+
   def unread_path(post, **kwargs)
     post_path(post, page: 'unread', anchor: 'unread', **kwargs)
   end

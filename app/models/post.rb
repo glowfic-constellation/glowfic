@@ -46,9 +46,10 @@ class Post < ApplicationRecord
 
   validates :subject, presence: true, length: { maximum: 255 }
   validates :description, length: { maximum: 255 }
-  validate :validate_main_post_board
+  validate :validate_post_boards
 
   before_validation :set_last_user, on: :create
+  before_save :resolve_main_board_conflict
   before_create :build_initial_flat_post, :set_timestamps
   before_update :set_timestamps
   after_commit :notify_followers, on: :create
@@ -358,6 +359,50 @@ class Post < ApplicationRecord
     end
   end
 
+  # Reconcile post_boards (main + secondaries) against the form's submitted state.
+  # Caller must wrap in a transaction with post.save!.
+  def assign_continuities(main_board_id:, main_section_id: nil, secondaries: nil)
+    main_id = main_board_id.presence&.to_i
+    desired = []
+    desired << { board_id: main_id, section_id: main_section_id.presence&.to_i, is_main: true } if main_id
+    Array(secondaries).each do |s|
+      bid = s[:board_id].to_i
+      next if bid.zero? || bid == main_id || desired.any? { |d| d[:board_id] == bid }
+      desired << { board_id: bid, section_id: s[:section_id].presence&.to_i, is_main: false }
+    end
+
+    post_boards.load if persisted?
+
+    # Pre-pass: demote any persisted is_main row that is NOT staying main, so the partial
+    # unique index (where: 'is_main = TRUE') can't collide while we update other rows.
+    if persisted?
+      post_boards.target.each do |pb|
+        next unless pb.persisted? && pb.is_main?
+        keep_as_main = desired.any? { |d| d[:board_id] == pb.board_id && d[:is_main] }
+        pb.update!(is_main: false) unless keep_as_main
+      end
+    end
+
+    desired_ids = desired.map { |d| d[:board_id] }
+    post_boards.target.each do |pb|
+      next if pb.marked_for_destruction?
+      pb.mark_for_destruction unless desired_ids.include?(pb.board_id)
+    end
+
+    desired.each do |d|
+      pb = post_boards.target.find { |x| x.board_id == d[:board_id] && !x.marked_for_destruction? }
+      if pb
+        pb.section_id = d[:section_id]
+        pb.is_main = d[:is_main]
+      else
+        post_boards.build(board_id: d[:board_id], section_id: d[:section_id], is_main: d[:is_main])
+      end
+    end
+
+    new_main = post_boards.target.find { |pb| pb.is_main && !pb.marked_for_destruction? }
+    association(:main_post_board).target = new_main
+  end
+
   private
 
   # Sums the word counts of the given replies, falling back to computing the
@@ -379,17 +424,37 @@ class Post < ApplicationRecord
     pb
   end
 
-  def validate_main_post_board
-    pb = main_post_board || post_boards.detect { |x| x.is_main && !x.marked_for_destruction? }
-    if pb.nil? || pb.marked_for_destruction? || (pb.board_id.blank? && pb.board.blank?)
+  def validate_post_boards
+    # Force-load post_boards so validation sees DB state for existing posts where
+    # the has_many target wasn't otherwise populated (e.g. main was loaded only via
+    # the has_one :main_post_board cache).
+    post_boards.load if persisted? && !post_boards.loaded?
+
+    candidates = post_boards.target.dup
+    candidates << main_post_board if main_post_board && candidates.exclude?(main_post_board)
+    active = candidates.reject(&:marked_for_destruction?)
+    main_pb = active.find(&:is_main)
+
+    if main_pb.nil? || (main_pb.board_id.blank? && main_pb.board.blank?)
       errors.add(:board, "must exist")
       return
     end
-    return if pb.valid?
-    pb.errors.each do |error|
-      next if error.attribute == :board && error.message == "must exist" # already handled above
-      errors.add(error.attribute, error.message)
+
+    active.each do |pb|
+      next if pb.valid?
+      pb.errors.each do |error|
+        next if pb == main_pb && error.attribute == :board && error.message == "must exist"
+        errors.add(error.attribute, error.message)
+      end
     end
+  end
+
+  # When the main board changes to one that's already a secondary, the partial unique
+  # index (post_id, is_main=TRUE) and the (post_id, board_id) index would both collide.
+  # Drop that secondary in the same transaction so the main row can move freely.
+  def resolve_main_board_conflict
+    return unless main_post_board&.board_id_changed? && main_post_board.board_id.present?
+    post_boards.where(is_main: false, board_id: main_post_board.board_id).destroy_all
   end
 
   def adjacent_posts_for(user)
