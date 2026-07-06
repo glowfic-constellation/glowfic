@@ -71,6 +71,7 @@ class BoardsController < ApplicationController
   def edit
     @page_title = 'Edit Continuity: ' + @board.name
     use_javascript('boards/edit')
+    gon.board_id = @board.id
     @board_sections = @board.board_sections.ordered
     return unless @board.ordered?
     @unsectioned_posts = @board.posts
