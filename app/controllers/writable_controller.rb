@@ -103,7 +103,9 @@ class WritableController < ApplicationController
       .left_outer_joins(:character_alias)
       .ordered
       .paginate(page: cur_page, per_page: per, total_entries: reply_count)
-    redirect_to post_path(@post, page: @replies.total_pages, per_page: per) and return if cur_page > @replies.total_pages
+    if cur_page > @replies.total_pages
+      redirect_to helpers.post_in_board_path(@post, @secondary_board, page: @replies.total_pages, per_page: per) and return
+    end
     use_javascript('paginator')
 
     @audits = @post.associated_audits.where(auditable_id: @replies.map(&:id)).group(:auditable_id).count

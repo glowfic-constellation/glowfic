@@ -390,7 +390,7 @@ class Post < ApplicationRecord
       end
     end
 
-    desired_ids = desired.map { |d| d[:board_id] }
+    desired_ids = desired.pluck(:board_id)
     post_boards.target.each do |pb|
       next if pb.marked_for_destruction?
       pb.mark_for_destruction unless desired_ids.include?(pb.board_id)
