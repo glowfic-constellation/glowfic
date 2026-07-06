@@ -253,20 +253,12 @@ class Post < ApplicationRecord
   end
 
   def total_word_count
-    return word_count unless replies.exists?
-    contents = replies.pluck(:content)
-    full_sanitizer = Rails::Html::FullSanitizer.new
-    word_count + contents.inject(0) { |r, e| r + full_sanitizer.sanitize(e).split.size }.to_i
+    word_count + reply_word_count_sum(replies)
   end
 
   def word_count_for(user)
-    sum = 0
-    sum = word_count if user_id == user.id
-    return sum unless replies.where(user_id: user.id).exists?
-
-    contents = replies.where(user_id: user.id).pluck(:content)
-    full_sanitizer = Rails::Html::FullSanitizer.new
-    sum + contents.inject(0) { |r, e| r + full_sanitizer.sanitize(e).split.size }.to_i
+    sum = user_id == user.id ? word_count : 0
+    sum + reply_word_count_sum(replies.where(user_id: user.id))
   end
 
   # only returns for authors who have written in the post (it's zero for authors who have not joined)
@@ -308,6 +300,16 @@ class Post < ApplicationRecord
   end
 
   private
+
+  # Sums the word counts of the given replies, falling back to computing the
+  # count on the fly for any replies whose word_count column hasn't been cached
+  # yet (e.g. before the backfill has run). A raw SQL SUM would silently treat
+  # those uncached (NULL) rows as zero.
+  def reply_word_count_sum(scope)
+    cached = scope.where.not(word_count: nil).sum(:word_count)
+    uncached = scope.where(word_count: nil).sum(&:computed_word_count)
+    cached + uncached
+  end
 
   def adjacent_posts_for(user)
     return unless board.ordered?

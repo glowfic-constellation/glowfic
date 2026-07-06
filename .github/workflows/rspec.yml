@@ -116,15 +116,39 @@ jobs:
       - name: Run rspec tests in parallel
         # --runtime-log lets parallel_tests balance workers by recorded per-file
         # runtime once the cached log exists; the first run falls back to file
-        # size and writes the log for next time.
+        # size and writes the log for next time. Each worker also writes its own
+        # JSON results file (named by its $TEST_ENV_NUMBER) so a failed run can be
+        # summarized below instead of scrolling interleaved logs. The whole thing
+        # runs inside a ::group:: fold so the interleaved worker output collapses
+        # out of the way, leaving the failure groups from the next step visible.
         run: |
+          echo "::group::Running $PARALLEL_TEST_PROCESSORS parallel rspec workers"
+          trap 'echo "::endgroup::"' EXIT
+          mkdir -p tmp/rspec_output
           bundle exec parallel_rspec spec \
             --runtime-log tmp/parallel_runtime_rspec.log \
-            -o '--format progress --require rspec/github --format RSpec::Github::Formatter'
+            -o '--format progress --require rspec/github --format RSpec::Github::Formatter --format json --out tmp/rspec_output/rspec_$TEST_ENV_NUMBER.json'
+      - name: Summarize rspec failures
+        if: failure()
+        run: bundle exec rake rspec_summary:report
       - name: Merge coverage and enforce threshold
         # only when the suite passed: a failed worker doesn't flush its coverage,
         # which would make the merged total look (misleadingly) too low
         run: bundle exec rake coverage:report
+      - name: Upload Capybara failure screenshots
+        if: failure()
+        uses: actions/upload-artifact@v7
+        with:
+          name: capybara-failure-screenshots
+          path: tmp/capybara/
+          if-no-files-found: ignore
+      - name: Upload rspec JSON results
+        if: failure()
+        uses: actions/upload-artifact@v7
+        with:
+          name: rspec-json-results
+          path: tmp/rspec_output/
+          if-no-files-found: ignore
       - name: Upload MinIO logs
         if: ${{ always() }}
         uses: actions/upload-artifact@v7

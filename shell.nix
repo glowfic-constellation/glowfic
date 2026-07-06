@@ -28,7 +28,7 @@ pkgs.mkShell {
     ruby
 
     # Node.js for asset pipeline and linting
-    pkgs.nodejs_22
+    pkgs.nodejs_24
 
     # PostgreSQL client and server for local dev
     pkgs.postgresql_16

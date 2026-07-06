@@ -7,6 +7,11 @@ require 'rails/all'
 # you've limited to :test, :development, or :production.
 Bundler.require(*Rails.groups)
 
+# Middleware referenced from `config.middleware.use` below has to be loaded
+# before the application config block runs, since Zeitwerk autoload isn't
+# set up yet at that point and `MiddlewareStack#use` doesn't const-resolve.
+require_relative '../app/middleware/anon_load_shed'
+
 module Glowfic
   ALLOWED_TAGS = %w(b i u sub sup del ins hr p br div span pre code h1 h2 h3 h4 h5 h6 ul ol li dl dt dd a img blockquote q table tbody td th thead tr
                     strike s strong em big small font cite abbr var samp kbd mark ruby rp rt bdo wbr details summary)
@@ -84,10 +89,9 @@ module Glowfic
     config.action_view.sanitized_allowed_attributes = %w(href src width height alt cite datetime title class name xml:lang abbr style target)
     config.middleware.use Rack::Pratchett
     config.middleware.use Rack::Deflater
-
-    # redis-rails does not support cache versioning
-    config.active_record.cache_versioning = false
-    config.active_record.collection_cache_versioning = false
+    # Sheds anonymous traffic with deep queue wait so logged-in users keep
+    # getting served during saturation. See app/middleware/anon_load_shed.rb.
+    config.middleware.use AnonLoadShed
 
     # Setting enables YJIT as of Ruby 3.3, to bring sizeable performance improvements. We are
     # deploying to a memory constrained environment so we set this to `false`.

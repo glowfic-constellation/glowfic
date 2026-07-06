@@ -100,7 +100,7 @@ RSpec.describe Post do
         let!(:reply2) do
           Timecop.freeze(post.edited_at + 30.minutes) { create(:reply, post: post) }
         end
-        let!(:old_tagged_at) { post.tagged_at } # rubocop:disable RSpec/LetSetup -- false positive
+        let!(:old_tagged_at) { post.tagged_at }
 
         it "should not update if first reply edited" do
           old_tagged_at = post.tagged_at
@@ -451,6 +451,15 @@ RSpec.describe Post do
       create(:reply, post: post, content: 'eight')
       expect(post.word_count).to eq(5)
       expect(post.total_word_count).to eq(8)
+    end
+
+    it "falls back to computing when replies have no cached word_count" do
+      post = create(:post, content: 'one two three four five')
+      one = create(:reply, post: post, content: 'six seven')
+      two = create(:reply, post: post, content: 'eight')
+      Reply.where(id: [one.id, two.id]).update_all(word_count: nil) # rubocop:disable Rails/SkipsModelValidations
+      expect(post.total_word_count).to eq(8)
+      expect(post.word_count_for(one.user)).to eq(2)
     end
 
     it "guesses correctly without replies" do
