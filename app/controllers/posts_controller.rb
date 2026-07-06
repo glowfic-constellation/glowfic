@@ -305,7 +305,9 @@ class PostsController < WritableController
     response.headers['X-Robots-Tag'] = 'noindex'
     @search_results = Post.ordered
     @search_results = @search_results.joins(:post_boards).where(post_boards: { board_id: params[:board_id] }) if params[:board_id].present?
-    @search_results = @search_results.where.not(id: PostBoard.where(board_id: params[:exclude_board_ids]).select(:post_id)) if params[:exclude_board_ids].present?
+    if params[:exclude_board_ids].present?
+      @search_results = @search_results.where.not(id: PostBoard.where(board_id: params[:exclude_board_ids]).select(:post_id))
+    end
     @search_results = @search_results.where(id: Setting.find(params[:setting_id]).post_tags.pluck(:post_id)) if params[:setting_id].present?
     if params[:subject].present?
       if params[:abbrev].present?
