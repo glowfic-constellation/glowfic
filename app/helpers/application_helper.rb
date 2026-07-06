@@ -42,8 +42,8 @@ module ApplicationHelper
     'icons/bullet_go_strong.png'
   end
 
-  def path_for(obj, path)
-    send (path + '_path') % obj.class.to_s.downcase, obj
+  def path_for(obj, path, **opts)
+    send (path + '_path') % obj.class.to_s.downcase, obj, **opts
   end
 
   def per_page_options(default=nil)

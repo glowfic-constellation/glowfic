@@ -39,7 +39,16 @@ class WritableController < ApplicationController
     per = per_page
     cur_page ||= page(allow_special: true)
     @replies = @post.replies
+
+    # The continuity the post is being viewed through: its main one by default, or another
+    # via a /boards/:continuity_id/... URL. One it isn't in fails like an unknown post id.
+    # @secondary_board is only set for secondary continuities, keeping main-continuity links flat.
+    @post_board = @post.post_board_for(params[:continuity_id])
+    return continuity_not_found unless @post_board
+    @secondary_board = @post_board.board unless @post_board.is_main?
+
     @paginate_params = { controller: 'posts', action: 'show', id: @post.id }
+    @paginate_params[:continuity_id] = @secondary_board.id if @secondary_board
 
     if params[:at_id].present?
       reply = if params[:at_id] == 'unread' && logged_in?
@@ -102,8 +111,8 @@ class WritableController < ApplicationController
 
     calculate_reply_bookmarks(@replies)
 
-    @next_post = @post.next_post(current_user)
-    @prev_post = @post.prev_post(current_user)
+    @next_post = @post.next_post(current_user, @post_board)
+    @prev_post = @post.prev_post(current_user, @post_board)
 
     # show <link rel="canonical"> – for SEO stuff
     canon_params = {}
@@ -171,9 +180,35 @@ class WritableController < ApplicationController
     gon.no_icon_path = view_context.image_path('icons/no-icon.png')
   end
 
+  def continuity_not_found
+    flash[:error] = "Post could not be found."
+    redirect_to continuities_path
+  end
+
+  # The secondary continuity a post/reply is being acted on through (params[:continuity_id],
+  # from a /boards/... URL or a form's hidden field), or nil for the main one.
+  def secondary_board_for(post)
+    return if params[:continuity_id].blank?
+    pb = post.post_board_for(params[:continuity_id])
+    pb.board unless pb.nil? || pb.is_main?
+  end
+
+  # Drop-in replacements for post_path/reply_path that return the user to the continuity
+  # they came from. Like post_path, post_path_with_continuity also accepts a post id.
+  def post_path_with_continuity(post, **opts)
+    post = Post.find_by(id: post) || post unless post.is_a?(Post)
+    return post_path(post, **opts) unless post.is_a?(Post)
+    helpers.post_in_board_path(post, secondary_board_for(post), **opts)
+  end
+
+  def reply_path_with_continuity(reply, **opts)
+    helpers.reply_in_board_path(reply, secondary_board_for(reply.post), **opts)
+  end
+
   def og_data_for_post(post, page: 1, total_pages:, per_page: 25)
-    post_location = post.board.name
-    post_location += ' » ' + post.section.name if post.section.present?
+    post_board = @post_board || post.main_post_board
+    post_location = post_board.board.name
+    post_location += ' » ' + post_board.section.name if post_board.section.present?
 
     post_description = generate_short(post.description)
     post_description += ' ('

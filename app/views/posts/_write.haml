@@ -2,6 +2,8 @@
 
 = form_for post, html: { id: 'post_form' } do |f|
   - content_for :form do
+    - if params[:continuity_id]
+      = hidden_field_tag :continuity_id, params[:continuity_id]
     - unless post.id.present? && !post.editable_by?(current_user)
       %button.view-button#rtf{type: 'button', class: ('selected' if @post.editor_mode == 'rtf')} Rich Text
       %button.view-button#md{type: 'button', class: ('selected' if @post.editor_mode == 'md')} Markdown

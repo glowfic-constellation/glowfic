@@ -65,7 +65,13 @@ class Api::V1::PostsController < Api::ApiController
     section_id = params[:section_id]&.to_i
     post_ids = params[:ordered_post_ids].map(&:to_i).uniq
 
-    post_boards = PostBoard.main.where(post_id: post_ids)
+    # Board pages pass the continuity whose ordering is being edited, since posts may be in
+    # it secondarily; without it, fall back to the posts' main continuities.
+    post_boards = if params[:board_id].present?
+      PostBoard.where(board_id: params[:board_id], post_id: post_ids)
+    else
+      PostBoard.main.where(post_id: post_ids)
+    end
     unless post_boards.count == post_ids.count
       missing_posts = post_ids - post_boards.pluck(:post_id)
       error = { message: "Some posts could not be found: #{missing_posts * ', '}" }
@@ -89,7 +95,7 @@ class Api::V1::PostsController < Api::ApiController
     end
 
     PostBoard.transaction do
-      section_scope = PostBoard.main.where(board_id: board.id, section_id: section_id)
+      section_scope = PostBoard.where(board_id: board.id, section_id: section_id)
       all_section_pbs = section_scope.ordered_in_section.to_a
       visible_post_ids = Post.where(id: all_section_pbs.map(&:post_id)).visible_to(current_user).pluck(:id).to_set
       post_id_set = post_ids.to_set
@@ -131,7 +137,7 @@ class Api::V1::PostsController < Api::ApiController
       end
     end
 
-    ordered = PostBoard.main.where(board_id: board.id, section_id: section_id).ordered_in_section.to_a
+    ordered = PostBoard.where(board_id: board.id, section_id: section_id).ordered_in_section.to_a
     visible_ids = Post.where(id: ordered.map(&:post_id)).visible_to(current_user).pluck(:id).to_set
     render json: { post_ids: ordered.map(&:post_id).select { |id| visible_ids.include?(id) } }
   end

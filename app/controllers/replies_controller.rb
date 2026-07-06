@@ -59,10 +59,10 @@ class RepliesController < WritableController
       flash[:success] = "Replies discarded."
       if editing_multi_reply?
         # Editing multi reply, going to redirect back to the reply I'm editing
-        redirect_to reply_path(@reply, anchor: "reply-#{@reply.id}")
+        redirect_to reply_path_with_continuity(@reply, anchor: "reply-#{@reply.id}")
       else
         # Posting a new multi reply, go back to unread
-        redirect_to post_path(params[:reply][:post_id], page: :unread, anchor: :unread)
+        redirect_to post_path_with_continuity(params[:reply][:post_id], page: :unread, anchor: :unread)
       end
       return
     end
@@ -118,7 +118,7 @@ class RepliesController < WritableController
   def destroy
     unless @reply.deletable_by?(current_user)
       flash[:error] = "You do not have permission to modify this reply."
-      redirect_to post_path(@reply.post) and return
+      redirect_to post_path_with_continuity(@reply.post) and return
     end
 
     previous_reply = @reply.send(:previous_reply)
@@ -129,10 +129,10 @@ class RepliesController < WritableController
       @reply.destroy!
     rescue ActiveRecord::RecordNotDestroyed => e
       render_errors(@reply, action: 'deleted', err: e)
-      redirect_to reply_path(@reply, anchor: "reply-#{@reply.id}")
+      redirect_to reply_path_with_continuity(@reply, anchor: "reply-#{@reply.id}")
     else
       flash[:success] = "Reply deleted."
-      redirect_to post_path(@reply.post, page: to_page)
+      redirect_to post_path_with_continuity(@reply.post, page: to_page)
     end
   end
 
@@ -219,7 +219,7 @@ class RepliesController < WritableController
   def require_edit_permission
     return if @reply.editable_by?(current_user)
     flash[:error] = "You do not have permission to modify this reply."
-    redirect_to post_path(@reply.post)
+    redirect_to post_path_with_continuity(@reply.post)
   end
 
   def get_multi_replies
@@ -348,7 +348,7 @@ class RepliesController < WritableController
     end
 
     flash[:success] = "#{'Reply'.pluralize(@multi_replies.length)} posted."
-    redirect_to reply_path(first_reply, anchor: "reply-#{first_reply.id}")
+    redirect_to reply_path_with_continuity(first_reply, anchor: "reply-#{first_reply.id}")
   end
 
   def editing_multi_reply?
@@ -379,7 +379,7 @@ class RepliesController < WritableController
       render :edit
     else
       flash[:success] = "Reply updated."
-      redirect_to reply_path(@reply, anchor: "reply-#{@reply.id}")
+      redirect_to reply_path_with_continuity(@reply, anchor: "reply-#{@reply.id}")
     end
   end
 

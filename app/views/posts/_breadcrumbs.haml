@@ -1,12 +1,14 @@
--# locals: ( post:, subtitle: nil )
+-# locals: ( post:, subtitle: nil, post_board: nil )
 
+-# post_board is the membership whose continuity/section the trail shows; main by default.
+- post_board ||= post.main_post_board
 - content_for :breadcrumbs do
   = link_to "Continuities", continuities_path
   &raquo;
-  = link_to post.board.name, continuity_path(post.board)
-  - if post.section
+  = link_to post_board.board.name, continuity_path(post_board.board)
+  - if post_board.section
     &raquo;
-    = link_to post.section.name, board_section_path(post.section)
+    = link_to post_board.section.name, board_section_path(post_board.section)
   &raquo;
   - if subtitle.nil?
     %b= post.subject

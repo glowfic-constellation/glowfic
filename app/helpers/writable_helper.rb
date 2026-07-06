@@ -3,14 +3,23 @@ module WritableHelper
   def unread_warning
     return unless @replies.present?
     return if @replies.total_pages == page
-    unread_link = tag.a('(View unread)', href: unread_path(@post), class: 'unread-warning')
-    new_tab_link = tag.a('(New tab)', href: unread_path(@post), class: 'unread-warning', target: '_blank')
+    unread_link = tag.a('(View unread)', href: unread_path(@post, @secondary_board), class: 'unread-warning')
+    new_tab_link = tag.a('(New tab)', href: unread_path(@post, @secondary_board), class: 'unread-warning', target: '_blank')
     "You are not on the latest page of the thread #{unread_link} #{new_tab_link}"
+  end
+
+  # Previous/next-post navigation stays inside the continuity being viewed.
+  def adjacent_post_path(post)
+    post_in_board_path(post, @post_board.board)
   end
 
   def post_or_reply_link(reply)
     return unless reply.id.present?
-    post_or_reply_mem_link(id: reply.id, klass: reply.class)
+    if reply.is_a?(Reply)
+      reply_in_board_path(reply, @secondary_board, anchor: "reply-#{reply.id}")
+    else
+      post_in_board_path(reply, @secondary_board)
+    end
   end
 
   def post_or_reply_mem_link(id: nil, klass: nil)

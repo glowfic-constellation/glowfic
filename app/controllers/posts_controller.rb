@@ -263,7 +263,7 @@ class PostsController < WritableController
       render :edit
     else
       flash[:success] = "Post updated."
-      redirect_to @post
+      redirect_to post_path_with_continuity(@post)
     end
   end
 

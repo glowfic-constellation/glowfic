@@ -347,15 +347,22 @@ class Post < ApplicationRecord
     super(remaining)
   end
 
-  def prev_post(user)
-    adjacent_posts_for(user) do |relation|
-      relation.reverse_order.where('post_boards.section_order < ?', section_order).first
+  # The post's membership in the given continuity (its main one if none is given), or nil
+  # for a continuity the post isn't in — callers treat that as not found.
+  def post_board_for(board_id)
+    return main_post_board if board_id.blank?
+    post_boards.find_by(board_id: board_id)
+  end
+
+  def prev_post(user, post_board=main_post_board)
+    adjacent_posts_for(user, post_board) do |relation|
+      relation.reverse_order.where('post_boards.section_order < ?', post_board.section_order).first
     end
   end
 
-  def next_post(user)
-    adjacent_posts_for(user) do |relation|
-      relation.where('post_boards.section_order > ?', section_order).first
+  def next_post(user, post_board=main_post_board)
+    adjacent_posts_for(user, post_board) do |relation|
+      relation.where('post_boards.section_order > ?', post_board.section_order).first
     end
   end
 
@@ -457,12 +464,13 @@ class Post < ApplicationRecord
     post_boards.where(is_main: false, board_id: main_post_board.board_id).destroy_all
   end
 
-  def adjacent_posts_for(user)
-    pb = main_post_board
-    return unless pb&.board&.ordered?
-    return unless pb.section_id || pb.board.board_sections.empty?
+  # Adjacency is within post_board's continuity and section; the (post_id, board_id)
+  # unique index means the join yields one row per post, main or secondary.
+  def adjacent_posts_for(user, post_board=main_post_board)
+    return unless post_board&.board&.ordered?
+    return unless post_board.section_id || post_board.board.board_sections.empty?
     yield Post.joins(:post_boards)
-      .where(post_boards: { board_id: pb.board_id, section_id: pb.section_id, is_main: true })
+      .where(post_boards: { board_id: post_board.board_id, section_id: post_board.section_id })
       .visible_to(user)
       .ordered_in_section
   end
