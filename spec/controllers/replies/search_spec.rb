@@ -186,14 +186,14 @@ RSpec.describe RepliesController, 'GET search' do
       excluded_post = create(:post, num_replies: 1)
       included_reply = included_post.replies.last
       get :search, params: { commit: true, exclude_board_ids: [excluded_post.board_id] }
-      expect(assigns(:search_results)).to match_array([included_reply])
+      expect(assigns(:search_results)).to match_array([included_post.written, included_reply])
     end
 
     it "does not apply exclude when scoped to a specific post" do
       post = create(:post, num_replies: 1)
       reply = post.replies.last
       get :search, params: { commit: true, post_id: post.id, exclude_board_ids: [post.board_id] }
-      expect(assigns(:search_results)).to match_array([reply])
+      expect(assigns(:search_results)).to match_array([post.written, reply])
     end
 
     it "filters by template" do

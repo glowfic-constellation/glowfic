@@ -45,7 +45,7 @@ RSpec.describe RepliesController, 'POST create' do
       expect(assigns(:page_title)).to eq(reply_post.subject)
       expect(assigns(:reply)).to be_a_new_record
       expect(assigns(:reply).post).to eq(reply_post)
-      expect(assigns(:reply).user).to eq(reply_post.user)
+      expect(assigns(:reply).user).to eq(user)
       expect(assigns(:reply).content).to eq('example')
       expect(assigns(:reply).character).to eq(char1)
       expect(assigns(:reply).icon).to eq(icon)
