@@ -31,6 +31,27 @@ RSpec.describe "Continuities" do
       end
     end
 
+    it "renders read state and page links for listed posts" do
+      paged = create(:post, subject: "Paged Thread")
+      paged.post_boards.create!(board: board)
+      create_list(:reply, 7, post: paged, user: paged.user)
+      read_post = create(:post, board: board, subject: "Read Thread")
+      create_list(:reply, 2, post: read_post, user: read_post.user)
+
+      user = login
+      read_post.mark_read(user)
+
+      get "/boards/#{board.id}", params: { per_page: 1 }
+      aggregate_failures do
+        expect(response).to have_http_status(200)
+        # unopened post links bold, through the continuity being browsed, incl. page links
+        expect(response.body).to include("/boards/#{board.id}/posts/#{paged.id}?page=2")
+        expect(response.body).to include("/boards/#{board.id}/posts/#{paged.id}?page=7")
+        # opened post keeps flat main-continuity page links
+        expect(response.body).to include("/posts/#{read_post.id}?page=2")
+      end
+    end
+
     it "shows unfavorite" do
       user = login
       create(:favorite, user: user, favorite: board)

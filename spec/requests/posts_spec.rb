@@ -2,11 +2,12 @@ RSpec.describe "Post" do
   describe "continuity-scoped display" do
     it "renders a post through a secondary continuity with its navigation" do
       user = create(:user, password: known_test_password)
-      board = create(:board, creator: user, authors_locked: true, name: "Browsed Continuity")
-      create(:post, user: user, board: board, subject: "First Thread")
+      board = create(:board, creator: user, name: "Browsed Continuity")
+      arc = create(:board_section, board: board, name: "Arc One")
+      create(:post, user: user, board: board, section: arc, subject: "First Thread")
       shared = create(:post, user: user, board: create(:board, creator: user), subject: "Shared Thread", status: :complete)
-      shared.post_boards.create!(board: board)
-      create(:post, user: user, board: board, subject: "Third Thread")
+      shared.post_boards.create!(board: board, section: arc)
+      create(:post, user: user, board: board, section: arc, subject: "Third Thread")
       login(user)
 
       get "/boards/#{board.id}/posts/#{shared.id}"
@@ -14,6 +15,7 @@ RSpec.describe "Post" do
         expect(response).to have_http_status(200)
         expect(response).to render_template(:show)
         expect(response.body).to include("Browsed Continuity")
+        expect(response.body).to include("Arc One")
         expect(response.body).to include("Previous Post")
         expect(response.body).to include("Next Post")
         expect(response.body).to include("Here Ends This Thread")
@@ -25,8 +27,10 @@ RSpec.describe "Post" do
       board = create(:board, creator: user)
       other = create(:board, creator: user, name: "Second Home")
       section = create(:board_section, board: other, name: "Away Arc")
+      plain = create(:board, creator: user, name: "Plain Home")
       target = create(:post, user: user, board: board)
       target.post_boards.create!(board: other, section: section)
+      target.post_boards.create!(board: plain)
       login(user)
 
       get "/posts/#{target.id}/edit", params: { continuity_id: other.id }
@@ -35,6 +39,7 @@ RSpec.describe "Post" do
         expect(response.body).to include("Other continuities")
         expect(response.body).to include("Second Home")
         expect(response.body).to include("Away Arc")
+        expect(response.body).to include("Plain Home")
       end
     end
   end
