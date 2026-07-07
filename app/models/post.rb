@@ -49,7 +49,6 @@ class Post < ApplicationRecord
   validate :validate_post_boards
 
   before_validation :set_last_user, on: :create
-  before_save :resolve_main_board_conflict
   before_create :build_initial_flat_post, :set_timestamps
   before_update :set_timestamps
   after_commit :notify_followers, on: :create
@@ -325,15 +324,29 @@ class Post < ApplicationRecord
     super
   end
 
-  delegate :board=, to: :ensure_main_post_board
+  # rubocop:disable Rails/Delegate -- delegate's generated nil-target guard is unreachable
+  # here (ensure_main_post_board always returns a membership), leaving permanently
+  # uncovered branches; explicit writers have no dead code.
+  def board=(value)
+    ensure_main_post_board.board = value
+  end
 
-  delegate :board_id=, to: :ensure_main_post_board
+  def board_id=(value)
+    ensure_main_post_board.board_id = value
+  end
 
-  delegate :section=, to: :ensure_main_post_board
+  def section=(value)
+    ensure_main_post_board.section = value
+  end
 
-  delegate :section_id=, to: :ensure_main_post_board
+  def section_id=(value)
+    ensure_main_post_board.section_id = value
+  end
 
-  delegate :section_order=, to: :ensure_main_post_board
+  def section_order=(value)
+    ensure_main_post_board.section_order = value
+  end
+  # rubocop:enable Rails/Delegate
 
   # board_id, section_id, and section_order have moved from posts to post_boards;
   # redirect raw column writes so callers that skip callbacks still find them.
@@ -454,14 +467,6 @@ class Post < ApplicationRecord
         errors.add(error.attribute, error.message)
       end
     end
-  end
-
-  # When the main board changes to one that's already a secondary, the partial unique
-  # index (post_id, is_main=TRUE) and the (post_id, board_id) index would both collide.
-  # Drop that secondary in the same transaction so the main row can move freely.
-  def resolve_main_board_conflict
-    return unless main_post_board&.board_id_changed? && main_post_board.board_id.present?
-    post_boards.where(is_main: false, board_id: main_post_board.board_id).destroy_all
   end
 
   # Adjacency is within post_board's continuity and section; the (post_id, board_id)
