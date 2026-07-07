@@ -247,12 +247,11 @@ class Post < ApplicationRecord
   end
 
   def total_word_count
-    word_count + reply_word_count_sum(replies)
+    reply_word_count_sum(replies)
   end
 
   def word_count_for(user)
-    sum = user_id == user.id ? word_count : 0
-    sum + reply_word_count_sum(replies.where(user_id: user.id))
+    reply_word_count_sum(replies.where(user_id: user.id))
   end
 
   # only returns for authors who have written in the post (it's zero for authors who have not joined)
