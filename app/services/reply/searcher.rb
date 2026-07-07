@@ -69,7 +69,7 @@ class Reply::Searcher < Generic::Searcher
       # Subqueries instead of pluck+IN so PG can use a hash/index join on
       # board_id rather than serializing a thousands-long id list and
       # falling off the index. Has caused statement_timeout in production.
-      if board_id.present?
+      if board_id.present?  # rubocop:disable Style/IfUnlessModifier
         @search_results = @search_results.where(post_id: PostBoard.where(board_id: board_id).select(:post_id))
       end
       if exclude_board_ids.present?
