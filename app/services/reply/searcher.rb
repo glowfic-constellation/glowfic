@@ -69,8 +69,12 @@ class Reply::Searcher < Generic::Searcher
       # Subqueries instead of pluck+IN so PG can use a hash/index join on
       # board_id rather than serializing a thousands-long id list and
       # falling off the index. Has caused statement_timeout in production.
-      @search_results = @search_results.where(post_id: PostBoard.where(board_id: board_id).select(:post_id)) if board_id.present?
-      @search_results = @search_results.where.not(post_id: PostBoard.where(board_id: exclude_board_ids).select(:post_id)) if exclude_board_ids.present?
+      if board_id.present?
+        @search_results = @search_results.where(post_id: PostBoard.where(board_id: board_id).select(:post_id))
+      end
+      if exclude_board_ids.present?
+        @search_results = @search_results.where.not(post_id: PostBoard.where(board_id: exclude_board_ids).select(:post_id))
+      end
     end
   end
 

@@ -16,31 +16,35 @@ class UnifyPostBoards < ActiveRecord::Migration[8.0]
       where: "is_main = TRUE",
       name: "index_post_boards_one_main_per_post"
 
-    execute <<-SQL
-INSERT INTO post_boards (post_id, board_id, section_id, section_order, is_main, created_at, updated_at)
-SELECT id, board_id, section_id, section_order, TRUE, NOW(), NOW()
-FROM posts;
+    execute <<~SQL.squish
+      INSERT INTO post_boards (post_id, board_id, section_id, section_order, is_main, created_at, updated_at)
+      SELECT id, board_id, section_id, section_order, TRUE, NOW(), NOW()
+      FROM posts;
     SQL
 
     remove_index :posts, name: "index_posts_on_board_id"
-    remove_column :posts, :section_order
-    remove_column :posts, :section_id
-    remove_column :posts, :board_id
+    change_table :posts, bulk: true do |t|
+      t.remove :section_order
+      t.remove :section_id
+      t.remove :board_id
+    end
   end
 
   def down
-    add_column :posts, :board_id, :integer
-    add_column :posts, :section_id, :integer
-    add_column :posts, :section_order, :integer
+    change_table :posts, bulk: true do |t|
+      t.integer :board_id
+      t.integer :section_id
+      t.integer :section_order
+    end
     add_index :posts, :board_id
 
-    execute <<-SQL
-UPDATE posts
-SET board_id = pb.board_id,
-    section_id = pb.section_id,
-    section_order = pb.section_order
-FROM post_boards pb
-WHERE pb.post_id = posts.id AND pb.is_main = TRUE;
+    execute <<~SQL.squish
+      UPDATE posts
+      SET board_id = pb.board_id,
+          section_id = pb.section_id,
+          section_order = pb.section_order
+      FROM post_boards pb
+      WHERE pb.post_id = posts.id AND pb.is_main = TRUE;
     SQL
 
     change_column_null :posts, :board_id, false
