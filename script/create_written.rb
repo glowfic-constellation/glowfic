@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 def create_writtens
   exclude = Reply.where(reply_order: 0).select(:post_id)
 
