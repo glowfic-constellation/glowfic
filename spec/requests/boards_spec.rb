@@ -17,6 +17,20 @@ RSpec.describe "Continuities" do
       expect(response).to render_template(:show)
     end
 
+    it "links posts through the continuity being browsed" do
+      shared = create(:post, subject: "Shared Thread")
+      shared.post_boards.create!(board: board)
+      native = create(:post, board: board, subject: "Native Thread")
+
+      get "/boards/#{board.id}"
+      aggregate_failures do
+        expect(response).to have_http_status(200)
+        expect(response.body).to include("/boards/#{board.id}/posts/#{shared.id}")
+        expect(response.body).to include("/posts/#{native.id}")
+        expect(response.body).not_to include("/boards/#{board.id}/posts/#{native.id}")
+      end
+    end
+
     it "shows unfavorite" do
       user = login
       create(:favorite, user: user, favorite: board)

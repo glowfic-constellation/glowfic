@@ -1,4 +1,21 @@
 RSpec.describe "Reply" do
+  describe "edit form" do
+    it "carries the continuity being viewed" do
+      user = create(:user, password: known_test_password)
+      reply = create(:reply, user: user)
+      board = create(:board)
+      reply.post.post_boards.create!(board: board)
+      login(user)
+
+      get "/replies/#{reply.id}/edit", params: { continuity_id: board.id }
+      aggregate_failures do
+        expect(response).to have_http_status(200)
+        expect(response.body).to include('name="continuity_id"')
+        expect(response.body).to include("value=\"#{board.id}\"")
+      end
+    end
+  end
+
   describe "search" do
     it "works" do
       create(:reply, content: "Sample reply")

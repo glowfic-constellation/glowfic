@@ -1,4 +1,44 @@
 RSpec.describe "Post" do
+  describe "continuity-scoped display" do
+    it "renders a post through a secondary continuity with its navigation" do
+      user = create(:user, password: known_test_password)
+      board = create(:board, creator: user, authors_locked: true, name: "Browsed Continuity")
+      create(:post, user: user, board: board, subject: "First Thread")
+      shared = create(:post, user: user, board: create(:board, creator: user), subject: "Shared Thread", status: :complete)
+      shared.post_boards.create!(board: board)
+      create(:post, user: user, board: board, subject: "Third Thread")
+      login(user)
+
+      get "/boards/#{board.id}/posts/#{shared.id}"
+      aggregate_failures do
+        expect(response).to have_http_status(200)
+        expect(response).to render_template(:show)
+        expect(response.body).to include("Browsed Continuity")
+        expect(response.body).to include("Previous Post")
+        expect(response.body).to include("Next Post")
+        expect(response.body).to include("Here Ends This Thread")
+      end
+    end
+
+    it "renders the post editor with its secondary memberships" do
+      user = create(:user, password: known_test_password)
+      board = create(:board, creator: user)
+      other = create(:board, creator: user, name: "Second Home")
+      section = create(:board_section, board: other, name: "Away Arc")
+      target = create(:post, user: user, board: board)
+      target.post_boards.create!(board: other, section: section)
+      login(user)
+
+      get "/posts/#{target.id}/edit", params: { continuity_id: other.id }
+      aggregate_failures do
+        expect(response).to have_http_status(200)
+        expect(response.body).to include("Other continuities")
+        expect(response.body).to include("Second Home")
+        expect(response.body).to include("Away Arc")
+      end
+    end
+  end
+
   describe "hidden list" do
     it "shows hidden posts" do
       user = login
