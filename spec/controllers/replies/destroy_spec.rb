@@ -48,6 +48,16 @@ RSpec.describe RepliesController, 'DELETE destroy' do
     expect(Reply.find_by(id: reply.id)).to be_nil
   end
 
+  it "preserves the continuity being viewed on redirect" do
+    reply = create(:reply)
+    board = create(:board)
+    reply.post.post_boards.create!(board: board)
+    login_as(reply.user)
+    delete :destroy, params: { id: reply.id, continuity_id: board.id }
+    expect(response).to redirect_to(continuity_post_url(board, reply.post, page: 1))
+    expect(flash[:success]).to eq("Reply deleted.")
+  end
+
   it "succeeds for admin user" do
     reply = create(:reply)
     login_as(create(:admin_user))

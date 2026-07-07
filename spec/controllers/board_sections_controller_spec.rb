@@ -204,8 +204,8 @@ RSpec.describe BoardSectionsController do
       private_post = create(:post, board: board, section: section, user: coauthor, privacy: :private)
       login_as(board.creator)
       get :edit, params: { id: section.id }
-      expect(assigns(:posts)).to eq([visible_post])
-      expect(assigns(:posts)).not_to include(private_post)
+      expect(assigns(:section_posts)).to eq([visible_post])
+      expect(assigns(:section_posts)).not_to include(private_post)
     end
   end
 

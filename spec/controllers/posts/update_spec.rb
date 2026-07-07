@@ -90,6 +90,15 @@ RSpec.describe PostsController, 'PUT update' do
     Post.auditing_enabled = false
   end
 
+  it "preserves the continuity being viewed on redirect" do
+    secondary = create(:board)
+    user_post.post_boards.create!(board: secondary)
+    login_as(user)
+    put :update, params: { id: user_post.id, post: { description: 'new' }, continuity_id: secondary.id }
+    expect(response).to redirect_to(continuity_post_url(secondary, user_post))
+    expect(flash[:success]).to eq("Post updated.")
+  end
+
   context "mark unread" do
     let(:unread_reply) { build(:reply, post: post) }
 

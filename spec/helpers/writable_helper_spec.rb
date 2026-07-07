@@ -272,11 +272,30 @@ RSpec.describe WritableHelper do
       expect(helper.post_or_reply_link(reply)).to be_nil
     end
 
-    it "delegates to post_or_reply_mem_link" do
+    it "handles a reply" do
       reply = create(:reply)
-      allow(helper).to receive(:post_or_reply_mem_link).and_call_original
-      expect(helper).to receive(:post_or_reply_mem_link).with(id: reply.id, klass: Reply)
-      helper.post_or_reply_link(reply)
+      html = reply_path(reply, anchor: "reply-#{reply.id}")
+      expect(helper.post_or_reply_link(reply)).to eq(html)
+    end
+
+    it "handles a post" do
+      post = create(:post)
+      expect(helper.post_or_reply_link(post)).to eq(post_path(post))
+    end
+
+    it "links a reply within the secondary continuity being viewed" do
+      reply = create(:reply)
+      board = create(:board)
+      assign(:secondary_board, board)
+      html = continuity_reply_path(board, reply, anchor: "reply-#{reply.id}")
+      expect(helper.post_or_reply_link(reply)).to eq(html)
+    end
+
+    it "links a post within the secondary continuity being viewed" do
+      post = create(:post)
+      board = create(:board)
+      assign(:secondary_board, board)
+      expect(helper.post_or_reply_link(post)).to eq(continuity_post_path(board, post))
     end
   end
 

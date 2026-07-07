@@ -1358,6 +1358,55 @@ RSpec.describe Post do
       expect(first.prev_post(user)).to be_nil
       expect(last.next_post(user)).to be_nil
     end
+
+    it "navigates within a secondary continuity when given its membership" do
+      other_board = create(:board, creator: user, authors_locked: true)
+      prev = create(:post, user: user, board: other_board)
+      post = create(:post, user: user, board: board, section: section)
+      post.post_boards.create!(board: other_board)
+      nextp = create(:post, user: user, board: other_board)
+
+      post_board = post.post_board_for(other_board.id)
+      expect(post.prev_post(user, post_board)).to eq(prev)
+      expect(post.next_post(user, post_board)).to eq(nextp)
+
+      # the default (main continuity) chain is unaffected
+      expect(post.prev_post(user)).to be_nil
+      expect(post.next_post(user)).to be_nil
+    end
+
+    it "includes posts there secondarily when navigating a continuity" do
+      board.update!(authors_locked: true)
+      prev = create(:post, user: user, board: board)
+      secondary = create(:post, user: user, board: create(:board, creator: user))
+      secondary.post_boards.create!(board: board)
+      post = create(:post, user: user, board: board)
+
+      expect(post.prev_post(user)).to eq(secondary)
+      expect(secondary.prev_post(user, secondary.post_board_for(board.id))).to eq(prev)
+      expect(secondary.next_post(user, secondary.post_board_for(board.id))).to eq(post)
+    end
+  end
+
+  describe "#post_board_for" do
+    it "returns the main membership with no continuity" do
+      post = create(:post)
+      expect(post.post_board_for(nil)).to eq(post.main_post_board)
+      expect(post.post_board_for('')).to eq(post.main_post_board)
+    end
+
+    it "returns the membership for a secondary continuity" do
+      post = create(:post)
+      board = create(:board)
+      membership = post.post_boards.create!(board: board)
+      expect(post.post_board_for(board.id)).to eq(membership)
+      expect(post.post_board_for(board.id.to_s)).to eq(membership)
+    end
+
+    it "returns nil for a continuity the post is not in" do
+      post = create(:post)
+      expect(post.post_board_for(create(:board).id)).to be_nil
+    end
   end
 
   context "scopes" do

@@ -99,6 +99,36 @@ RSpec.describe RepliesController, 'PUT update' do
     expect(reply.character_alias_id).to eq(calias.id)
   end
 
+  it "preserves the continuity being viewed on redirect" do
+    user = create(:user)
+    reply = create(:reply, user: user)
+    board = create(:board)
+    reply.post.post_boards.create!(board: board)
+    login_as(user)
+
+    put :update, params: { id: reply.id, reply: { content: 'new content' }, continuity_id: board.id }
+    expect(response).to redirect_to(continuity_reply_url(board, reply, anchor: "reply-#{reply.id}"))
+    expect(flash[:success]).to eq("Reply updated.")
+  end
+
+  it "redirects flat when the viewed continuity is the main one" do
+    user = create(:user)
+    reply = create(:reply, user: user)
+    login_as(user)
+
+    put :update, params: { id: reply.id, reply: { content: 'new content' }, continuity_id: reply.post.board_id }
+    expect(response).to redirect_to(reply_url(reply, anchor: "reply-#{reply.id}"))
+  end
+
+  it "redirects flat for a continuity the post is not in" do
+    user = create(:user)
+    reply = create(:reply, user: user)
+    login_as(user)
+
+    put :update, params: { id: reply.id, reply: { content: 'new content' }, continuity_id: create(:board).id }
+    expect(response).to redirect_to(reply_url(reply, anchor: "reply-#{reply.id}"))
+  end
+
   it "preserves reply_order" do
     reply_post = create(:post)
     login_as(reply_post.user)
