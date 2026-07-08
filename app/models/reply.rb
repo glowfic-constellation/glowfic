@@ -77,7 +77,8 @@ class Reply < ApplicationRecord
   def update_post
     return if post.last_reply_id != id || skip_post_update
     return if (saved_changes.keys - Post::NON_TAGGED_ATTRS - ['updated_at']).empty?
-    post.tagged_at = updated_at
+    # creating the written with its post must not push tagged_at past the new flat post
+    post.tagged_at = updated_at unless post.previously_new_record?
     post.status = :active if post.on_hiatus?
     post.save
   end
