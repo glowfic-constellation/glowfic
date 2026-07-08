@@ -359,7 +359,7 @@ RSpec.describe Api::V1::PostsController do
 
         # both hidden posts followed visible1 → they stay, in original order, right after it
         posts.each(&:reload)
-        expect(posts.map(&:section_order).to eq([1, 2, 3, 0]
+        expect(posts.map(&:section_order)).to eq([1, 2, 3, 0])
       end
 
       it "omits posts not visible to the editor from the response" do
