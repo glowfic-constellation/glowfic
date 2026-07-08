@@ -342,27 +342,24 @@ RSpec.describe Api::V1::PostsController do
       end
 
       it "anchors multiple consecutive hidden posts to the same predecessor" do
+        user = create(:user)
         coauthor = create(:user)
-        board = create(:board, writers: [coauthor])
-        visible1 = create(:post, board: board, user: board.creator)
-        hidden1 = create(:post, board: board, user: board.creator, privacy: :private)
-        hidden2 = create(:post, board: board, user: board.creator, privacy: :private)
-        visible2 = create(:post, board: board, user: board.creator)
+        board = create(:board, creator: user, writers: [coauthor])
+        visible1 = create(:post, board: board, user: user)
+        hidden = create_list(:post, 2, board: board, user: user, privacy: :private)
+        visible2 = create(:post, board: board, user: user)
+        posts = [visible1, *hidden, visible2]
 
-        expect(visible1.reload.section_order).to eq(0)
-        expect(hidden1.reload.section_order).to eq(1)
-        expect(hidden2.reload.section_order).to eq(2)
-        expect(visible2.reload.section_order).to eq(3)
+        posts.each(&:reload)
+        expect(posts.map(&:section_order).to eq([0, 1, 2, 3]
 
         api_login_as(coauthor)
         post :reorder, params: { ordered_post_ids: [visible2.id, visible1.id] }
         expect(response).to have_http_status(200)
 
         # both hidden posts followed visible1 → they stay, in original order, right after it
-        expect(visible2.reload.section_order).to eq(0)
-        expect(visible1.reload.section_order).to eq(1)
-        expect(hidden1.reload.section_order).to eq(2)
-        expect(hidden2.reload.section_order).to eq(3)
+        posts.each(&:reload)
+        expect(posts.map(&:section_order).to eq([1, 2, 3, 0]
       end
 
       it "omits posts not visible to the editor from the response" do
