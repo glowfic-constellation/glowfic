@@ -89,6 +89,7 @@ FactoryBot.define do
       "test subject #{n}"
     end
     content { "test content " }
+    editor_mode { 'rtf' }
 
     after(:build) do |post, evaluator|
       # create_written is called before factorybot sets the user
