@@ -1002,7 +1002,7 @@ RSpec.describe PostsController, 'PUT update' do
           subject: 'new',
         },
       }
-      expect(Post.find_by_id(post.id).author_for(post.user).private_note).not_to be_nil
+      expect(Post.find_by(id: post.id).author_for(post.user).private_note).not_to be_nil
       expect(post.reload.subject).to eq('new')
     end
 
