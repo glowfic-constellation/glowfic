@@ -98,8 +98,7 @@ class WritableController < ApplicationController
     redirect_to post_path(@post, page: @replies.total_pages, per_page: per) and return if cur_page > @replies.total_pages
     use_javascript('paginator')
 
-    @audits = @post.associated_audits.where(auditable_id: @replies.map(&:id)).group(:auditable_id).count
-    @audits[:post] = @post.audits.count
+    @audits = @post.associated_audits.where(auditable_id: @replies.map(&:id) + [@post.written.id]).group(:auditable_id).count
 
     calculate_reply_bookmarks(@replies)
 
