@@ -165,7 +165,12 @@ class Post < ApplicationRecord
 
   def first_unread_for(user)
     return @first_unread if @first_unread
-    viewed_at = last_read(user) || board.last_read(user)
+    view = view_for(user)
+    if view.last_read_reply_id
+      marker_order = replies.where(id: view.last_read_reply_id).pick(:reply_order)
+      return @first_unread = replies.where('reply_order > ?', marker_order).ordered.first if marker_order
+    end
+    viewed_at = view.read_at || board.last_read(user)
     return @first_unread = self unless viewed_at
     return unless replies.exists?
     reply = replies.where('created_at > ?', viewed_at).ordered.first
@@ -175,7 +180,12 @@ class Post < ApplicationRecord
   def last_seen_reply_for(user)
     return @last_seen if @last_seen
     return unless replies.exists? # unlike first_unread_for we don't care about the post
-    viewed_at = last_read(user) || board.last_read(user)
+    view = view_for(user)
+    if view.last_read_reply_id
+      marker = replies.find_by(id: view.last_read_reply_id)
+      return @last_seen = marker if marker
+    end
+    viewed_at = view.read_at || board.last_read(user)
     return unless viewed_at
     reply = replies.where('created_at <= ?', viewed_at).ordered.last
     @last_seen = reply

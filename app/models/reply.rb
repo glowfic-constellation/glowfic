@@ -20,6 +20,7 @@ class Reply < ApplicationRecord
   before_create :set_post_written
   after_create :notify_other_authors, :destroy_draft, :update_active_char, :set_last_reply, :update_post, :update_post_authors
   after_update :update_post, :update_post_written
+  before_destroy :update_view_markers
   after_destroy :set_previous_reply_to_last, :remove_post_author, :update_flat_post
   after_save :update_flat_post
 
@@ -62,6 +63,12 @@ class Reply < ApplicationRecord
     end
   end
 
+  def previous_reply
+    return @prev if defined?(@prev)
+
+    @prev = post.replies.find_by(reply_order: reply_order - 1)
+  end
+
   private
 
   def cache_word_count
@@ -92,6 +99,11 @@ class Reply < ApplicationRecord
     Reply.where('reply_order >= ?', reply_order).where(post: post).ordered.reverse_order.destroy_all
   end
 
+  def update_view_markers
+    Post::View.where(post_id: post_id, last_read_reply_id: id)
+      .update_all(last_read_reply_id: previous_reply&.id) # rubocop:disable Rails/SkipsModelValidations
+  end
+
   def set_previous_reply_to_last
     return if post.last_reply_id != id || skip_post_update
     # return unless needs to update last reply (this is destroyed, this is the last reply)
@@ -115,12 +127,6 @@ class Reply < ApplicationRecord
       next unless author.email_notifications?
       UserMailer.post_has_new_reply(author.id, self.id).deliver_later
     end
-  end
-
-  def previous_reply
-    return @prev if defined?(@prev)
-
-    @prev = post.replies.find_by(reply_order: reply_order - 1)
   end
 
   def author_can_write_in_post
