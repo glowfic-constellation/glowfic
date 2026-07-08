@@ -6,7 +6,7 @@ class Reply < ApplicationRecord
 
   # define this scope here or Orderable will redefine it
   scope :ordered, -> { order(reply_order: :asc) }
-  scope :ordered_manually, -> { ordered }
+  scope :ordered_manually, -> { where.not(reply_order: 0).ordered }
   include Orderable
 
   belongs_to :post, inverse_of: :replies, optional: false
