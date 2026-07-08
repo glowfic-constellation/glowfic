@@ -21,6 +21,7 @@ class SplitPostJob < ApplicationJob
       update_authors(new_authors, new_post: new_post, old_post: old_post)
       update_caches(new_post, new_post.replies.ordered.last)
       update_caches(old_post, old_post.replies.ordered.last)
+      update_view_markers(old_post)
     end
   end
 
@@ -84,6 +85,14 @@ class SplitPostJob < ApplicationJob
     still_valid = (old_post.replies.distinct.pluck(:user_id) + [old_post.user_id]).uniq
     invalid = old_post.post_authors.where.not(user_id: still_valid)
     invalid.destroy_all
+  end
+
+  # views whose marker moved to the new post have read everything left in the old one
+  def update_view_markers(old_post)
+    moved_markers = Post::View.where(post_id: old_post.id)
+      .where.not(last_read_reply_id: nil)
+      .where.not(last_read_reply_id: old_post.replies.select(:id))
+    moved_markers.update_all(last_read_reply_id: old_post.replies.ordered.last&.id) # rubocop:disable Rails/SkipsModelValidations
   end
 
   def update_caches(post, last_reply)
