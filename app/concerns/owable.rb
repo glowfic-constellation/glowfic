@@ -50,7 +50,7 @@ module Owable
     end
 
     def update_board_cameos
-      boards.uniq.each { |b| cameo_authors_into(b) }
+      boards.each { |b| cameo_authors_into(b) }
     end
 
     def cameo_authors_into(board)
