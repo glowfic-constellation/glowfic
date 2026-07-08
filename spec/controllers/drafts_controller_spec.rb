@@ -9,6 +9,22 @@ RSpec.describe DraftsController do
       expect(response).to redirect_to(posts_url)
     end
 
+    it "returns to the continuity being viewed" do
+      user = create(:user)
+      reply_post = create(:post, user: user)
+      board = create(:board)
+      reply_post.post_boards.create!(board: board)
+      login_as(user)
+
+      post :create, params: {
+        button_draft: true,
+        reply: { post_id: reply_post.id, content: 'testcontent', editor_mode: 'html' },
+        continuity_id: board.id,
+      }
+      expect(response).to redirect_to(continuity_post_url(board, reply_post, page: :unread, anchor: :unread))
+      expect(flash[:success]).to eq("Draft saved.")
+    end
+
     it "creates a new draft if none exists" do
       user = create(:user)
       reply_post = create(:post, user: user)
@@ -95,5 +111,30 @@ RSpec.describe DraftsController do
     end
   end
 
-  describe 'DELETE destroy'
+  describe 'DELETE destroy' do
+    it "deletes the draft" do
+      user = create(:user)
+      reply_post = create(:post, user: user)
+      draft = create(:reply_draft, post: reply_post, user: user)
+      login_as(user)
+
+      delete :destroy, params: { id: draft.id, reply: { post_id: reply_post.id } }
+      expect(response).to redirect_to(post_url(reply_post, page: :unread, anchor: :unread))
+      expect(flash[:success]).to eq("Draft deleted.")
+      expect(ReplyDraft.count).to eq(0)
+    end
+
+    it "returns to the continuity being viewed" do
+      user = create(:user)
+      reply_post = create(:post, user: user)
+      board = create(:board)
+      reply_post.post_boards.create!(board: board)
+      draft = create(:reply_draft, post: reply_post, user: user)
+      login_as(user)
+
+      delete :destroy, params: { id: draft.id, reply: { post_id: reply_post.id }, continuity_id: board.id }
+      expect(response).to redirect_to(continuity_post_url(board, reply_post, page: :unread, anchor: :unread))
+      expect(flash[:success]).to eq("Draft deleted.")
+    end
+  end
 end

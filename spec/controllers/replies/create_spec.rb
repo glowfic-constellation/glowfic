@@ -543,7 +543,37 @@ RSpec.describe RepliesController, 'POST create' do
     expect(reply.reply_order).to eq(2)
   end
 
+  it "returns new replies to the continuity being viewed" do
+    user = create(:user)
+    reply_post = create(:post, user: user)
+    board = create(:board)
+    reply_post.post_boards.create!(board: board)
+    login_as(user)
+
+    post :create, params: { reply: { post_id: reply_post.id, content: 'test content!', editor_mode: 'html' }, continuity_id: board.id }
+    reply = reply_post.replies.ordered.last
+    expect(response).to redirect_to(continuity_reply_url(board, reply, anchor: "reply-#{reply.id}"))
+    expect(flash[:success]).to eq("Reply posted.")
+  end
+
   context "with button_discard_multi_reply" do
+    it "returns to the reply being edited in its continuity" do
+      user = create(:user)
+      reply = create(:reply, user: user)
+      board = create(:board)
+      reply.post.post_boards.create!(board: board)
+      login_as(user)
+
+      post :create, params: {
+        multi_replies_json: [{ id: reply.id }].to_json,
+        button_discard_multi_reply: true,
+        reply: { post_id: reply.post_id },
+        continuity_id: board.id,
+      }
+      expect(response).to redirect_to(continuity_reply_url(board, reply, anchor: "reply-#{reply.id}"))
+      expect(flash[:success]).to eq("Replies discarded.")
+    end
+
     it "returns to unread in the continuity being viewed" do
       user = create(:user)
       reply_post = create(:post, user: user)

@@ -8,6 +8,16 @@ RSpec.describe BookmarksController, 'POST create' do
     expect(flash[:error]).to eq("You must be logged in to view that page.")
   end
 
+  it "returns to the referring page" do
+    board = create(:board)
+    reply.post.post_boards.create!(board: board)
+    login_as(user)
+    request.env['HTTP_REFERER'] = continuity_post_url(board, reply.post)
+    post :create, params: { at_id: reply.id }
+    expect(response).to redirect_to(continuity_post_url(board, reply.post) + "#reply-#{reply.id}")
+    expect(flash[:success]).to eq("Bookmark added.")
+  end
+
   it "requires reply ID" do
     login
     post :create

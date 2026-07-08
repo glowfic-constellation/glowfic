@@ -40,6 +40,16 @@ RSpec.describe RepliesController, 'PUT update' do
     expect(flash[:error]).to eq("You do not have permission to modify this reply.")
   end
 
+  it "keeps the continuity when denying edit permission" do
+    reply = create(:reply)
+    board = create(:board)
+    reply.post.post_boards.create!(board: board)
+    login
+    put :update, params: { id: reply.id, continuity_id: board.id }
+    expect(response).to redirect_to(continuity_post_url(board, reply.post))
+    expect(flash[:error]).to eq("You do not have permission to modify this reply.")
+  end
+
   it "requires notes from moderators" do
     reply = create(:reply)
     login_as(create(:admin_user))
