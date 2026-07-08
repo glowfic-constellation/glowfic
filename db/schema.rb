@@ -350,6 +350,7 @@ ActiveRecord::Schema[8.0].define(version: 2026_07_08_000000) do
   end
 
   create_table "posts", id: :serial, force: :cascade do |t|
+    t.integer "board_id", null: false
     t.integer "user_id", null: false
     t.string "subject", null: false
     t.text "content"
@@ -359,6 +360,8 @@ ActiveRecord::Schema[8.0].define(version: 2026_07_08_000000) do
     t.datetime "created_at", precision: nil
     t.datetime "updated_at", precision: nil
     t.integer "status", default: 0
+    t.integer "section_id"
+    t.integer "section_order"
     t.string "description"
     t.integer "last_user_id"
     t.integer "last_reply_id"
