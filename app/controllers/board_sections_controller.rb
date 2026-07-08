@@ -41,7 +41,7 @@ class BoardSectionsController < ApplicationController
     use_javascript('board_sections')
     gon.section_id = @board_section.id
     gon.board_id = @board_section.board_id
-    @section_posts = @board_section.posts.visible_to(current_user)
+    @posts = @board_section.posts.visible_to(current_user)
       .select('posts.*, post_boards.section_order as section_order')
       .ordered_in_section
   end
