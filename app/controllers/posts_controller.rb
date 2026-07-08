@@ -57,10 +57,18 @@ class PostsController < WritableController
       .or(no_post_view.where("date_trunc('second', board_views.read_at) < date_trunc('second', posts.tagged_at)"))
     no_post_view = no_post_view.where(board_views: { user_id: nil }).or(updated_since_board_read)
 
-    # post view exists and post has updated since post view read_at
+    # the marker's live position is before the post's last reply position
+    # (identical results to comparing against the reply count, but MAX is a single index probe per row)
+    unread_after_marker = <<~SQL.squish
+      (SELECT marker.reply_order FROM replies marker WHERE marker.id = post_views.last_read_reply_id)
+        < (SELECT MAX(replies.reply_order) FROM replies WHERE replies.post_id = posts.id)
+    SQL
+
+    # post view exists and (post has updated since post view read_at or replies exist after the read marker)
     with_post_view = @posts.where.not(post_views: { id: nil })
     with_post_view = with_post_view.where(post_views: { read_at: nil }) # possible if someone ignores and then unignores a post
       .or(with_post_view.where("date_trunc('second', post_views.read_at) < date_trunc('second', posts.tagged_at)"))
+      .or(with_post_view.where(unread_after_marker))
 
     @posts = with_post_view.or(no_post_view)
     @posts = posts_from_relation(@posts.ordered, with_unread: true, show_blocked: !!params[:show_blocked])

@@ -6,7 +6,8 @@ module ReportsHelper
     return false unless view
     return false if view.ignored?
     return false if view.read_at.nil? # totally unread, not partially
-    view.read_at < post.tagged_at
+    return true if view.read_at < post.tagged_at
+    view.last_read_reply_order.present? && view.last_read_reply_order < post.reply_count
   end
 
   def never_read?(post)
