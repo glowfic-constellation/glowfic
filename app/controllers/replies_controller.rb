@@ -344,7 +344,7 @@ class RepliesController < WritableController
       render_errors(errored_reply, action: 'created', now: true, err: e)
 
       redirect_to posts_path and return unless errored_reply.post
-      redirect_to post_path(errored_reply.post) and return
+      redirect_to post_path_with_continuity(errored_reply.post) and return
     end
 
     flash[:success] = "#{'Reply'.pluralize(@multi_replies.length)} posted."
