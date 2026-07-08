@@ -33,9 +33,9 @@
     - if reply.id.present? && !hide_post_edit_box
       .post-edit-box
         - if split_ui
-          - if reply.is_a?(Reply)
-            -# Show the Split button when Split UI is enabled, the reply is a Reply, and the current user is an author of the thread
-            -# But don't show any buttons on a post when the Split UI is enabled
+          - if reply.reply_order != 0
+            -# Show the Split button when Split UI is enabled, the reply is not the top post, and the current user is an author of the thread
+            -# But don't show any buttons on the top post when the Split UI is enabled
             = link_to split_post_path(@post, reply_id: reply.id) do
               = image_tag "icons/cut_red.png".freeze, title: 'Split Post Here'.freeze, alt: 'Split Post Here'.freeze
         - else
@@ -56,7 +56,7 @@
               - if reply.deletable_by?(current_user)
                 = link_to reply_path(reply), method: :delete, data: { confirm: "Are you sure you wish to delete this reply?" } do
                   = image_tag "icons/cross.png".freeze, title: 'Delete'.freeze, alt: 'Delete'.freeze
-            - if logged_in?
+            - if logged_in? && reply.reply_order != 0
               - if !current_user.try(:default_hide_add_bookmark_button) || params[:show_all_reply_buttons] == "true"
                 - if (bookmark_id = @reply_bookmarks[reply.id])
                   = link_to bookmark_path(bookmark_id), method: :delete do
