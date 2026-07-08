@@ -132,7 +132,10 @@ class WritableController < ApplicationController
         @draft = ReplyDraft.draft_for(@post.id, current_user.id)
       end
 
-      @post.mark_read(current_user, at_time: @post.read_time_for(@replies + [@post.written])) unless @permalink_jumped_ahead
+      unless @permalink_jumped_ahead
+        viewed_replies = @replies.to_a + [@post.written]
+        @post.mark_read(current_user, at_time: @post.read_time_for(viewed_replies), at_reply: viewed_replies.max_by(&:reply_order))
+      end
     end
 
     if display_warnings?

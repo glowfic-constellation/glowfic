@@ -75,7 +75,7 @@ class PostsController < WritableController
     posts = posts.visible_to(current_user)
 
     if params[:commit] == "Mark Read"
-      posts.each { |post| post.mark_read(current_user) }
+      posts.each { |post| post.mark_read(current_user, at_reply: post.replies.ordered.last) }
       flash[:success] = "#{posts.size} #{'post'.pluralize(posts.size)} marked as read."
     elsif params[:commit] == "Remove from Replies Owed"
       readonly_forbidden and return if current_user.read_only?
@@ -437,13 +437,13 @@ class PostsController < WritableController
     if params[:at_id].present?
       reply = Reply.find(params[:at_id])
       if reply && reply.post == @post
-        @post.mark_read(current_user, at_time: reply.created_at - 1.second, force: true)
+        @post.mark_read(current_user, at_time: reply.created_at - 1.second, force: true, at_reply: reply.previous_reply)
         flash[:success] = "Post has been marked as read until reply ##{reply.id}."
       end
       return redirect_to unread_posts_path
     end
 
-    @post.views.where(user_id: current_user.id).first.try(:update, read_at: nil)
+    @post.views.where(user_id: current_user.id).first.try(:update, read_at: nil, last_read_reply_id: nil)
     flash[:success] = "Post has been marked as unread"
     redirect_to unread_posts_path
   end

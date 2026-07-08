@@ -115,7 +115,11 @@ class BoardsController < ApplicationController
         board.mark_read(current_user)
         read_time = board.last_read(current_user)
         post_views = Post::View.joins(post: :board).where(user: current_user, boards: { id: board.id })
-        post_views.update_all(read_at: read_time, updated_at: read_time) # rubocop:disable Rails/SkipsModelValidations
+        # the marker target is the id of each post's last reply by order (no MAX_BY in postgres)
+        post_views.update_all([<<~SQL.squish, read_time, read_time]) # rubocop:disable Rails/SkipsModelValidations
+          read_at = ?, updated_at = ?,
+          last_read_reply_id = (SELECT replies.id FROM replies WHERE replies.post_id = post_views.post_id ORDER BY replies.reply_order DESC LIMIT 1)
+        SQL
       end
       flash[:success] = "#{board.name} marked as read."
     elsif params[:commit] == "Hide from Unread"
