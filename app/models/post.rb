@@ -445,11 +445,6 @@ class Post < ApplicationRecord
   end
 
   def validate_post_boards
-    # Force-load post_boards so validation sees DB state for existing posts where
-    # the has_many target wasn't otherwise populated (e.g. main was loaded only via
-    # the has_one :main_post_board cache).
-    post_boards.load if persisted? && !post_boards.loaded?
-
     candidates = post_boards.target.dup
     candidates << main_post_board if main_post_board && candidates.exclude?(main_post_board)
     active = candidates.reject(&:marked_for_destruction?)
