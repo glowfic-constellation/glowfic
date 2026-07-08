@@ -35,7 +35,7 @@ module Orderable
 
       others.each_with_index do |other, index|
         correct_order = index
-        correct_order += 1 if other.is_a?(Reply) && post.written.blank?
+        correct_order += 1 if other.is_a?(Reply)
         next if other.order == correct_order
         other.update!(order: correct_order)
       end
