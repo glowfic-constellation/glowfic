@@ -351,7 +351,7 @@ RSpec.describe Api::V1::PostsController do
         posts = [visible1, *hidden, visible2]
 
         posts.each(&:reload)
-        expect(posts.map(&:section_order).to eq([0, 1, 2, 3]
+        expect(posts.map(&:section_order).to eq([0, 1, 2, 3])
 
         api_login_as(coauthor)
         post :reorder, params: { ordered_post_ids: [visible2.id, visible1.id] }
