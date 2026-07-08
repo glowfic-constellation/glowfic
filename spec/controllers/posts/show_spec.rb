@@ -181,7 +181,7 @@ RSpec.describe PostsController, 'GET show' do
       end
 
       counts = replies.map(&:id).zip([1, 1, 2, 2, 6, 2]).to_h
-      counts[:post] = 1
+      counts[post.written.id] = 1
 
       get :show, params: { id: post.id }
       expect(assigns(:audits)).to eq(counts)
