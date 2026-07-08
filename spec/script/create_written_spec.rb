@@ -117,7 +117,7 @@ RSpec.describe "#create_writtens" do # rubocop:disable Rspec/DescribeClass
   end
 
   it "handles multiple posts" do
-    posts = create_list(:post, 30, with_character: true, with_icon: true, skip_written: true)
+    posts = create_list(:post, 30, with_character: true, with_icon: true, skip_written: true) # rubocop:disable FactoryBot/ExcessiveCreateList
     allow(STDOUT).to receive(:puts).with("Creating writtens for posts #{posts.first.id} through #{posts.last.id}")
 
     Timecop.freeze(8.hours.from_now) do
