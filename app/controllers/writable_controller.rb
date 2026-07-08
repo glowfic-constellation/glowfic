@@ -104,7 +104,7 @@ class WritableController < ApplicationController
       .ordered
       .paginate(page: cur_page, per_page: per, total_entries: reply_count)
     if cur_page > @replies.total_pages
-      redirect_to helpers.post_in_board_path(@post, @secondary_board, page: @replies.total_pages, per_page: per) and return
+      redirect_to helpers.post_in_continuity_path(@post, @secondary_board, page: @replies.total_pages, per_page: per) and return
     end
     use_javascript('paginator')
 
@@ -200,11 +200,11 @@ class WritableController < ApplicationController
   def post_path_with_continuity(post, **opts)
     post = Post.find_by(id: post) || post unless post.is_a?(Post)
     return post_path(post, **opts) unless post.is_a?(Post)
-    helpers.post_in_board_path(post, secondary_board_for(post), **opts)
+    helpers.post_in_continuity_path(post, secondary_board_for(post), **opts)
   end
 
   def reply_path_with_continuity(reply, **opts)
-    helpers.reply_in_board_path(reply, secondary_board_for(reply.post), **opts)
+    helpers.reply_in_continuity_path(reply, secondary_board_for(reply.post), **opts)
   end
 
   def og_data_for_post(post, page: 1, total_pages:, per_page: 25)

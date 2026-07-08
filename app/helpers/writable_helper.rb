@@ -10,15 +10,15 @@ module WritableHelper
 
   # Previous/next-post navigation stays inside the continuity being viewed.
   def adjacent_post_path(post)
-    post_in_board_path(post, @post_board.board)
+    post_in_continuity_path(post, @post_board.board)
   end
 
   def post_or_reply_link(reply)
     return unless reply.id.present?
     if reply.is_a?(Reply)
-      reply_in_board_path(reply, @secondary_board, anchor: "reply-#{reply.id}")
+      reply_in_continuity_path(reply, @secondary_board, anchor: "reply-#{reply.id}")
     else
-      post_in_board_path(reply, @secondary_board)
+      post_in_continuity_path(reply, @secondary_board)
     end
   end
 

@@ -1,34 +1,34 @@
 RSpec.describe PostHelper do
-  describe "#post_in_board_path" do
+  describe "#post_in_continuity_path" do
     let(:post) { create(:post) }
 
     it "gives the flat path with no continuity" do
-      expect(helper.post_in_board_path(post)).to eq(post_path(post))
-      expect(helper.post_in_board_path(post, nil, page: 2)).to eq(post_path(post, page: 2))
+      expect(helper.post_in_continuity_path(post)).to eq(post_path(post))
+      expect(helper.post_in_continuity_path(post, nil, page: 2)).to eq(post_path(post, page: 2))
     end
 
     it "gives the flat path for the post's main continuity" do
-      expect(helper.post_in_board_path(post, post.board)).to eq(post_path(post))
+      expect(helper.post_in_continuity_path(post, post.board)).to eq(post_path(post))
     end
 
     it "nests under a secondary continuity" do
       board = create(:board)
       post.post_boards.create!(board: board)
-      expect(helper.post_in_board_path(post, board, page: 2)).to eq(continuity_post_path(board, post, page: 2))
+      expect(helper.post_in_continuity_path(post, board, page: 2)).to eq(continuity_post_path(board, post, page: 2))
     end
   end
 
-  describe "#reply_in_board_path" do
+  describe "#reply_in_continuity_path" do
     let(:reply) { create(:reply) }
 
     it "gives the flat path with no continuity" do
       html = reply_path(reply, anchor: "reply-#{reply.id}")
-      expect(helper.reply_in_board_path(reply, nil, anchor: "reply-#{reply.id}")).to eq(html)
+      expect(helper.reply_in_continuity_path(reply, nil, anchor: "reply-#{reply.id}")).to eq(html)
     end
 
     it "nests under a continuity" do
       board = create(:board)
-      expect(helper.reply_in_board_path(reply, board)).to eq(continuity_reply_path(board, reply))
+      expect(helper.reply_in_continuity_path(reply, board)).to eq(continuity_reply_path(board, reply))
     end
   end
 

@@ -66,7 +66,7 @@ function setupMetadataEditor() {
   if ($("#post_section_id").val() === '') setSections();
   $("#post_board_id").change(function() { setSections(); });
 
-  setupSecondaryBoards();
+  setupSecondaryContinuities();
 
   $("#post_privacy").change(function() {
     if ($(this).val() === 'access_list') {
@@ -511,7 +511,7 @@ function setSections() {
   }, 'json');
 }
 
-function setupSecondaryBoards() {
+function setupSecondaryContinuities() {
   const select = $('#post_secondary_board_ids');
   if (select.length === 0) return;
 

@@ -87,8 +87,8 @@ class Api::V1::PostsController < Api::ApiController
     board = Board.find(board_ids.first)
     access_denied and return unless board.editable_by?(current_user)
 
-    pb_section_ids = post_boards.distinct.pluck(:section_id)
-    unless pb_section_ids == [section_id] &&
+    post_boards_section_ids = post_boards.distinct.pluck(:section_id)
+    unless post_boards_section_ids == [section_id] &&
            (section_id.nil? || BoardSection.where(id: section_id, board_id: board.id).exists?)
       error = { message: 'Posts must be from one specified section in the continuity, or no section' }
       render json: { errors: [error] }, status: :unprocessable_content and return
