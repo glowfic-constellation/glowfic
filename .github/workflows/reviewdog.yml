@@ -53,10 +53,10 @@ jobs:
         env:
           REVIEWDOG_GITHUB_API_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          bundle exec haml-lint app/views | reviewdog \
+          bundle exec haml-lint app/views --parallel | reviewdog \
           -f=haml-lint -name="haml-lint" \
           -reporter="github-pr-review" \
-          -fail-level=error
+          -fail-level=any
   eslint:
     name: eslint
     runs-on: ubuntu-latest
