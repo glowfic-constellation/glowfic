@@ -19,9 +19,12 @@ class SplitPostJob < ApplicationJob
       new_authors = find_authors(new_replies)
       migrate_replies(new_replies, new_post: new_post, old_post: old_post, first_reply: first_reply)
       update_authors(new_authors, new_post: new_post, old_post: old_post)
-      update_caches(new_post, new_post.replies.ordered.last)
-      update_caches(old_post, old_post.replies.ordered.last)
-      update_view_markers(old_post)
+
+      # both halves surface as unread, as if their latest reply had been edited
+      split_time = Time.zone.now
+      update_caches(new_post, new_post.replies.ordered.last, tagged_at: split_time)
+      update_caches(old_post, old_post.replies.ordered.last, tagged_at: split_time)
+      update_view_markers(old_post, new_post, at_time: split_time)
     end
   end
 
@@ -87,26 +90,35 @@ class SplitPostJob < ApplicationJob
     invalid.destroy_all
   end
 
-  # views whose marker moved to the new post have read everything left in the old one
-  def update_view_markers(old_post)
-    moved_markers = Post::View.where(post_id: old_post.id)
-      .where.not(last_read_reply_id: nil)
-      .where.not(last_read_reply_id: old_post.replies.select(:id))
+  def update_view_markers(old_post, new_post, at_time:)
+    # markers pointing at moved replies migrate into the new post with their read state
+    sql = <<~SQL.squish
+      INSERT INTO post_views (user_id, post_id, read_at, last_read_reply_id, ignored, warnings_hidden, created_at, updated_at)
+      SELECT user_id, :new_id, read_at, last_read_reply_id, ignored, warnings_hidden, :at_time, :at_time
+      FROM post_views
+      WHERE post_views.post_id = :old_id
+        AND post_views.last_read_reply_id IN (SELECT id FROM replies WHERE replies.post_id = :new_id)
+    SQL
+    sql = ActiveRecord::Base.sanitize_sql_array([sql, old_id: old_post.id, new_id: new_post.id, at_time: at_time])
+    ActiveRecord::Base.connection.execute(sql)
+
+    # ...and their markers in the old post rewind to its last remaining reply
+    moved_markers = Post::View.where(post_id: old_post.id, last_read_reply_id: new_post.replies.select(:id))
     moved_markers.update_all(last_read_reply_id: old_post.replies.ordered.last&.id) # rubocop:disable Rails/SkipsModelValidations
   end
 
-  def update_caches(post, last_reply)
+  def update_caches(post, last_reply, tagged_at:)
     if last_reply.nil?
       cached_data = {
         last_reply_id: nil,
         last_user_id: post.user_id,
-        tagged_at: post.edited_at,
+        tagged_at: tagged_at,
       }
     else
       cached_data = {
         last_reply_id: last_reply.id,
         last_user_id: last_reply.user_id,
-        tagged_at: last_reply.updated_at,
+        tagged_at: tagged_at,
       }
     end
 
