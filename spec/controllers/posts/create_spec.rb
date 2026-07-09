@@ -492,6 +492,54 @@ RSpec.describe PostsController, 'POST create' do
       post = assigns(:post)
       expect(post.flat_post).not_to be_nil
     end
+
+    it "handles privacy level mismatches" do
+      coauthor1 = create(:user, default_privacy: :full_accounts)
+      coauthor2 = create(:user, default_privacy: :registered)
+      user.update!(default_privacy: :public)
+
+      post :create, params: {
+        post: {
+          subject: 'a',
+          user_id: user.id,
+          board_id: board.id,
+          setting_ids: setting_ids,
+          privacy: :registered,
+          unjoined_author_ids: [coauthor1.id, coauthor2.id],
+        },
+      }
+
+      expect(response).to render_template(:new)
+      expect(flash[:error]).to eq("One or more coauthors have a lower default privacy set. Please resubmit if this was intentional.")
+      expect(assigns(:post)).not_to be_persisted
+      expect(assigns(:post)).to be_privacy_registered
+      expect(assigns(:post).user).to eq(user)
+      expect(assigns(:page_title)).to eq('New Post')
+      expect(assigns(:author_ids)).to match_array([coauthor1.id, coauthor2.id])
+      expect(assigns(:allow_privacy)).to eq(true)
+      expect(assigns(:post).settings.map(&:id_for_select)).to match_array(settings.map(&:id) + ['_other'])
+    end
+
+    it "ignores privacy mismatch on megaconts" do
+      coauthor1 = create(:user, default_privacy: :full_accounts)
+      coauthor2 = create(:user, default_privacy: :registered)
+      user.update!(default_privacy: :public)
+      board.update!(mega: true)
+
+      post :create, params: {
+        post: {
+          subject: 'a',
+          user_id: user.id,
+          board_id: board.id,
+          setting_ids: setting_ids,
+          privacy: :registered,
+          unjoined_author_ids: [coauthor1.id, coauthor2.id],
+        },
+      }
+
+      expect(response).to redirect_to(post_path(assigns(:post)))
+      expect(flash[:success]).to eq("Post created.")
+    end
   end
 
   context "with blocks" do
