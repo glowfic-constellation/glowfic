@@ -146,7 +146,8 @@ class ApplicationController < ActionController::Base
     unread_views = opened_posts.select do |view|
       post = posts.detect { |p| p.id == view.post_id }
       next false unless post
-      view.read_at < post.tagged_at || (view.last_read_reply_order && view.last_read_reply_order < post.reply_count)
+      # reply_count includes the order-0 written, so the last reply sits at reply_count - 1
+      view.read_at < post.tagged_at || (view.last_read_reply_order && view.last_read_reply_order < post.reply_count - 1)
     end
 
     @unread_ids ||= []
