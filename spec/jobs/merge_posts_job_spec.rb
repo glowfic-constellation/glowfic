@@ -127,6 +127,91 @@ RSpec.describe MergePostsJob do
     expect(target_post.reload.tagged_at).to be_the_same_time_as(target_tagged)
   end
 
+  describe "authors" do
+    let(:coauthor) { create(:user) }
+
+    it "copies source-only authors onto the target" do
+      joined_at = 2.days.ago
+      create(:post_author, post: source_post, user: coauthor, joined: true, joined_at: joined_at,
+        can_owe: false, private_note: 'my note',)
+
+      merge_at(target_replies.last)
+
+      author = target_post.author_for(coauthor)
+      expect(author.joined).to eq(true)
+      expect(author.joined_at).to be_the_same_time_as(joined_at)
+      expect(author.can_owe).to eq(false)
+      expect(author.private_note).to eq('my note')
+    end
+
+    it "merges authors on both posts" do
+      early = 3.days.ago
+      late = 1.day.ago
+      create(:post_author, post: source_post, user: coauthor, joined: true, joined_at: early,
+        can_owe: false, can_reply: true, private_note: 'source note',)
+      create(:post_author, post: target_post, user: coauthor, joined: false, joined_at: late,
+        can_owe: true, can_reply: false, private_note: 'target note',)
+
+      merge_at(target_replies.last)
+
+      author = target_post.author_for(coauthor)
+      expect(author.private_note).to eq("target note\n\n<hr>\n\nsource note")
+      expect(author.joined).to eq(true)
+      expect(author.joined_at).to be_the_same_time_as(early)
+      expect(author.can_reply).to eq(true)
+      expect(author.can_owe).to eq(true) # the target's setting wins
+    end
+
+    it "keeps a one-sided note without a separator" do
+      create(:post_author, post: source_post, user: coauthor, private_note: 'source note')
+      create(:post_author, post: target_post, user: coauthor)
+
+      merge_at(target_replies.last)
+
+      expect(target_post.author_for(coauthor).private_note).to eq('source note')
+    end
+  end
+
+  describe "drafts" do
+    it "moves drafts to the target" do
+      draft = create(:reply_draft, post: source_post, user: user)
+
+      merge_at(target_replies.last)
+
+      expect(draft.reload.post_id).to eq(target_post.id)
+    end
+
+    it "preserves a displaced draft in the author's notes" do
+      target_replies # materialize before drafting; posting a reply destroys its author's draft
+      target_post.author_for(user).update!(private_note: 'existing note')
+      character = create(:character, user: user, screenname: 'some-screenname')
+      icon = create(:icon, user: user, keyword: 'happy')
+      create(:reply_draft, post: source_post, user: user, content: 'draft words', character: character, icon: icon)
+      kept_draft = create(:reply_draft, post: target_post, user: user, content: 'target draft')
+
+      merge_at(target_replies.last)
+
+      expect(ReplyDraft.where(post_id: source_post.id)).to be_empty
+      expect(kept_draft.reload.content).to eq('target draft')
+      note = target_post.author_for(user).reload.private_note
+      header = "<strong>Unposted draft from \"#{source_post.subject}\":</strong>\n" \
+               "#{character.name} | some-screenname | icon: happy\n<br>\ndraft words"
+      expect(note).to eq("#{header}\n\n<hr>\n\nexisting note")
+    end
+
+    it "marks NPCs in a displaced draft's notes" do
+      target_replies # materialize before drafting; posting a reply destroys its author's draft
+      npc = create(:character, user: user, npc: true, screenname: nil)
+      create(:reply_draft, post: source_post, user: user, content: 'draft words', character: npc)
+      create(:reply_draft, post: target_post, user: user, content: 'target draft')
+
+      merge_at(target_replies.last)
+
+      note = target_post.author_for(user).reload.private_note
+      expect(note).to include("#{npc.name} (NPC)\n<br>\ndraft words")
+    end
+  end
+
   it "regenerates the target's flat post" do
     source_replies
     target_replies
