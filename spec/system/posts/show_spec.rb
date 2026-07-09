@@ -165,7 +165,7 @@ RSpec.describe "Viewing posts" do
 
     reply = post.replies.ordered_manually[2]
     click_link("Split Post Here", href: "/posts/#{post.id}/split?reply_id=#{reply.id}")
-    expect(page).to have_selector('.flash.error', exact_text: 'Post must be locked to current authors to be split.')
+    expect(page).to have_selector('.flash.error', exact_text: 'Post must be locked to current authors.')
 
     visit edit_post_path(post)
     find_by_id("post_authors_locked").click

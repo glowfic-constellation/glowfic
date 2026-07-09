@@ -152,6 +152,11 @@
             %div
               = image_tag "icons/cut.png".freeze, alt: ''
               Split Post
+        - if @post.authors_locked?
+          = link_to merge_post_path(@post) do
+            %div
+              = image_tag "icons/arrow_join.png".freeze, alt: ''
+              Merge Post
         - author = @post.author_for(current_user)
         - if author&.can_owe?
           = link_to mark_posts_path(marked_ids: [@post.id], commit: "Remove from Replies Owed"), method: :post do

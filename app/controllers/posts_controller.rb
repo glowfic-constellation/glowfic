@@ -4,9 +4,10 @@ class PostsController < WritableController
 
   before_action :login_required, except: [:index, :show, :history, :warnings, :search, :stats]
   before_action :readonly_forbidden, only: [:owed]
-  before_action :find_model, only: [:show, :history, :delete_history, :stats, :warnings, :edit, :update, :destroy, :split, :do_split, :preview_split]
-  before_action :require_edit_permission, only: [:edit, :delete_history, :split, :do_split, :preview_split]
-  before_action :require_locked_authorship, only: [:split, :do_split, :preview_split]
+  before_action :find_model,
+    only: [:show, :history, :delete_history, :stats, :warnings, :edit, :update, :destroy, :split, :do_split, :preview_split, :merge, :preview_merge]
+  before_action :require_edit_permission, only: [:edit, :delete_history, :split, :do_split, :preview_split, :merge, :preview_merge]
+  before_action :require_locked_authorship, only: [:split, :do_split, :preview_split, :merge, :preview_merge]
   before_action :require_import_permission, only: [:new, :create]
   before_action :require_create_permission, only: [:new, :create]
   before_action :editor_setup, only: [:new, :edit]
@@ -395,6 +396,15 @@ class PostsController < WritableController
     redirect_to post_path(@post)
   end
 
+  def merge
+    @page_title = 'Merge Post'
+  end
+
+  def preview_merge
+    # TODO(post-merger): validate the link target and render the merge form
+    redirect_to merge_post_path(@post)
+  end
+
   # Postgres's built-in english tsearch dictionary (tsearch_data/english.stop).
   POSTGRES_ENGLISH_STOP_WORDS = Set.new(%w[
     i me my myself we our ours ourselves you your yours yourself yourselves
@@ -557,7 +567,7 @@ class PostsController < WritableController
 
   def require_locked_authorship
     return if @post.authors_locked
-    flash[:error] = "Post must be locked to current authors to be split."
+    flash[:error] = "Post must be locked to current authors."
     redirect_to @post
   end
 
