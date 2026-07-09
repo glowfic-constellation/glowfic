@@ -83,6 +83,9 @@
       - editor_modes = { 'Rich Text': 'rtf', HTML: 'html', Markdown: 'md' }
       %div{class: cycle('even', 'odd')}= f.select(:default_editor, options_for_select(editor_modes, current_user.default_editor))
     %div
+      .sub= f.label :default_privacy
+      %div{class: cycle('even', 'odd')}= f.select(:default_privacy, options_from_collection_for_select(post_privacy_settings.to_a, :second, :first, current_user.default_privacy))
+    %div
       .sub Split icon picker
       .checkbox-field{class: cycle('even', 'odd')}
         = f.check_box :icon_picker_grouping
