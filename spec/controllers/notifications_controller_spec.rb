@@ -26,6 +26,18 @@ RSpec.describe NotificationsController do
       end
     end
 
+    it "marks merge notifications read once displayed" do
+      merge_notice = create(:notification, user: user, notification_type: :source_post_merged)
+      other_notice = create(:notification, user: user, notification_type: :new_favorite_post)
+      login_as(user)
+
+      get :index
+
+      expect(merge_notice.reload.unread).to eq(false)
+      expect(merge_notice.read_at).to be_present
+      expect(other_notice.reload.unread).to eq(true)
+    end
+
     it "paginates" do
       create_list(:notification, 3, user: user)
       notifications = create_list(:notification, 22, user: user)

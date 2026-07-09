@@ -32,7 +32,7 @@ def create_import_failure_notification(message)
   if links.length == 2 # AlreadyImportedError messages will have two links; the original url and the post
     notification.post_id = find_post_id(message, links.last[:href])
   else
-    notification.error_msg = content.at_css('p').children.last.to_s.delete_prefix(' could not be successfully scraped. ')
+    notification.message = content.at_css('p').children.last.to_s.delete_prefix(' could not be successfully scraped. ')
   end
 
   notification.save!

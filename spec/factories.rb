@@ -316,7 +316,7 @@ FactoryBot.define do
     notification_type { :new_favorite_post }
 
     factory :error_notification do
-      sequence :error_msg, ordered_numbers do |n|
+      sequence :message, ordered_numbers do |n|
         "test error #{n}"
       end
       notification_type { :import_fail }

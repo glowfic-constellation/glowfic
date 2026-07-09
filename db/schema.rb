@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2026_07_08_213500) do
+ActiveRecord::Schema[8.0].define(version: 2026_07_09_120000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "citext"
   enable_extension "pg_catalog.plpgsql"
@@ -287,7 +287,7 @@ ActiveRecord::Schema[8.0].define(version: 2026_07_08_213500) do
     t.integer "post_id"
     t.boolean "unread", default: true, null: false
     t.integer "notification_type", null: false
-    t.text "error_msg"
+    t.text "message"
     t.datetime "read_at", precision: nil
     t.datetime "created_at", precision: nil, null: false
     t.datetime "updated_at", precision: nil, null: false
@@ -352,26 +352,26 @@ ActiveRecord::Schema[8.0].define(version: 2026_07_08_213500) do
   end
 
   create_table "posts", id: :serial, force: :cascade do |t|
-    t.integer "board_id", null: false
     t.integer "user_id", null: false
     t.string "subject", null: false
-    t.text "content"
-    t.integer "character_id"
-    t.integer "icon_id"
     t.integer "privacy", default: 0, null: false
     t.datetime "created_at", precision: nil
     t.datetime "updated_at", precision: nil
     t.integer "status", default: 0
-    t.integer "section_id"
-    t.integer "section_order"
     t.string "description"
     t.integer "last_user_id"
     t.integer "last_reply_id"
     t.datetime "edited_at", precision: nil
     t.datetime "tagged_at", precision: nil
     t.boolean "authors_locked", default: false
+    t.text "content"
+    t.integer "character_id"
+    t.integer "icon_id"
     t.integer "character_alias_id"
     t.string "editor_mode"
+    t.integer "board_id", null: false
+    t.integer "section_id"
+    t.integer "section_order"
     t.index "to_tsvector('english'::regconfig, COALESCE((subject)::text, ''::text))", name: "idx_fts_post_subject", using: :gin
     t.index "to_tsvector('english'::regconfig, COALESCE(content, ''::text))", name: "idx_fts_post_content", using: :gin
     t.index ["board_id"], name: "index_posts_on_board_id"

@@ -10,8 +10,9 @@
   %td.post-check-box{class: klass}= check_box_tag :'marked_ids[]', notification.id, false, class: 'checkbox check-all-item', id: nil
 - if @posts.key?(notification.post_id)
   = render 'posts/list_item', klass: klass, post: @posts[notification.post_id], check_box_padding: true
-- elsif notification.error_msg
+- show_message = !notification.import_fail? || !@posts.key?(notification.post_id)
+- if notification.message && show_message
   %tr.notification-error
     %td{class: row_klass}
     %td{class: klass, colspan: 6}
-      = notification.error_msg
+      = sanitize_simple_link_text(notification.message)
