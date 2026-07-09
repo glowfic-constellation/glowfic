@@ -212,6 +212,116 @@ RSpec.describe MergePostsJob do
     end
   end
 
+  describe "unread markers" do
+    let(:reader) { create(:user) }
+    let(:early) { 3.days.ago }
+    let(:late) { 1.day.ago }
+
+    before(:each) do
+      source_replies
+      target_replies
+    end
+
+    # fresh finds to avoid the cached @view crossing users
+    def mark_read_at(post, reply, at_time)
+      Post.find(post.id).mark_read(reader, at_time: at_time, force: true, at_reply: reply)
+    end
+
+    def reader_view
+      target_post.views.find_by(user: reader)
+    end
+
+    it "keeps markers for users caught up on both when merging mid-thread" do
+      mark_read_at(source_post, source_replies.last, early)
+      mark_read_at(target_post, target_replies.last, late)
+
+      merge_at(target_replies[1])
+
+      expect(reader_view.last_read_reply).to eq(target_replies.last)
+      expect(reader_view.read_at).to be_the_same_time_as(late) # the max of the two
+      expect(Post.find(target_post.id).first_unread_for(reader)).to be_nil
+    end
+
+    it "moves markers to the source's last reply for users caught up on both when merging at the end" do
+      mark_read_at(source_post, source_replies.last, late)
+      mark_read_at(target_post, target_replies.last, early)
+
+      merge_at(target_replies.last)
+
+      expect(reader_view.last_read_reply).to eq(source_replies.last)
+      expect(reader_view.read_at).to be_the_same_time_as(late)
+      expect(Post.find(target_post.id).first_unread_for(reader)).to be_nil
+    end
+
+    it "keeps markers for users caught up on the source only" do
+      mark_read_at(source_post, source_replies.last, late)
+      mark_read_at(target_post, target_replies[2], early)
+
+      merge_at(target_post.written)
+
+      expect(reader_view.last_read_reply).to eq(target_replies[2])
+      expect(reader_view.read_at).to be_the_same_time_as(early) # the min of the two
+      expect(Post.find(target_post.id).first_unread_for(reader)).to eq(target_replies[3])
+    end
+
+    it "moves markers to their source position for users caught up on the target only" do
+      mark_read_at(source_post, source_replies[0], late)
+      mark_read_at(target_post, target_replies.last, early)
+
+      merge_at(target_replies[1])
+
+      expect(reader_view.last_read_reply).to eq(source_replies[0])
+      expect(reader_view.read_at).to be_the_same_time_as(early)
+      expect(Post.find(target_post.id).first_unread_for(reader)).to eq(source_replies[1])
+    end
+
+    it "moves markers to the earliest position for users caught up on neither" do
+      mark_read_at(source_post, source_replies[0], early)
+      mark_read_at(target_post, target_replies[2], late)
+
+      merge_at(target_post.written) # the source's replies land before the target marker
+
+      expect(reader_view.last_read_reply).to eq(source_replies[0])
+      expect(Post.find(target_post.id).first_unread_for(reader)).to eq(source_replies[1])
+    end
+
+    it "keeps the target marker for users caught up on neither when it is earliest" do
+      mark_read_at(source_post, source_replies[0], early)
+      mark_read_at(target_post, target_replies[0], late)
+
+      merge_at(target_replies.last) # the source's replies land after the target marker
+
+      expect(reader_view.last_read_reply).to eq(target_replies[0])
+      expect(Post.find(target_post.id).first_unread_for(reader)).to eq(target_replies[1])
+    end
+
+    it "creates no view for users who only opened the source" do
+      mark_read_at(source_post, source_replies.last, late)
+
+      merge_at(target_replies.last)
+
+      expect(reader_view).to be_nil
+    end
+
+    it "rewinds markers past the insertion point for users who never opened the source" do
+      mark_read_at(target_post, target_replies[2], late)
+
+      merge_at(target_replies[0])
+
+      expect(reader_view.last_read_reply).to eq(target_replies[0])
+      expect(Post.find(target_post.id).first_unread_for(reader)).to eq(source_post.written)
+    end
+
+    it "leaves markers before the insertion point for users who never opened the source" do
+      mark_read_at(target_post, target_replies[0], late)
+
+      merge_at(target_replies[2])
+
+      expect(reader_view.last_read_reply).to eq(target_replies[0])
+      expect(Post.find(target_post.id).first_unread_for(reader)).to eq(target_replies[1])
+    end
+  end
+
   it "regenerates the target's flat post" do
     source_replies
     target_replies
