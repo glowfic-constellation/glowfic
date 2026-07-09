@@ -294,5 +294,85 @@ RSpec.describe PostsController do
       expect(response).to redirect_to(post_url(user_post))
       expect(flash[:error]).to eq("Post must be locked to current authors.")
     end
+
+    context "with a mergeable post" do
+      let(:target_post) { create(:post, user: user, authors_locked: true) }
+      let(:target_reply) { create(:reply, post: target_post, user: user) }
+
+      before(:each) do
+        login_as(user)
+        user_post.update!(authors_locked: true)
+      end
+
+      it "rejects a missing target reply" do
+        post :do_merge, params: { id: user_post.id, target_reply_id: -1, post: { privacy: 'public' } }
+        expect(response).to redirect_to(merge_post_url(user_post))
+        expect(flash[:error]).to eq("Could not recognize that link as a post or reply.")
+      end
+
+      it "rejects a reply of the post itself" do
+        reply = create(:reply, post: user_post, user: user)
+        post :do_merge, params: { id: user_post.id, target_reply_id: reply.id, post: { privacy: 'public' } }
+        expect(response).to redirect_to(merge_post_url(user_post))
+        expect(flash[:error]).to eq("A post cannot be merged into itself.")
+      end
+
+      it "rejects an unlocked target" do
+        target_post.update!(authors_locked: false)
+        post :do_merge, params: { id: user_post.id, target_reply_id: target_reply.id, post: { privacy: 'public' } }
+        expect(response).to redirect_to(merge_post_url(user_post))
+        expect(flash[:error]).to eq("You must be an author of the other post, and it must be locked to its current authors.")
+      end
+
+      it "rejects an unrecognized privacy" do
+        post :do_merge, params: { id: user_post.id, target_reply_id: target_reply.id, post: { privacy: 'secret' } }
+        expect(response).to redirect_to(merge_post_url(user_post))
+        expect(flash[:error]).to eq("Privacy could not be recognized.")
+      end
+
+      it "rejects a privacy that would hide the merged post from an author" do
+        create(:post_author, post: user_post, user: coauthor)
+        post :do_merge, params: { id: user_post.id, target_reply_id: target_reply.id, post: { privacy: 'private' } }
+        expect(response).to redirect_to(merge_post_url(user_post))
+        expect(flash[:error]).to eq("Visibility or blocking settings prevent some authors of at least one of the posts from seeing the other.")
+        expect(target_post.reload.privacy).to eq('public')
+      end
+
+      it "enqueues the merge" do
+        setting = create(:setting)
+        label = create(:label)
+        expect {
+          post :do_merge, params: {
+            id: user_post.id,
+            target_reply_id: target_reply.id,
+            post: { privacy: 'registered', setting_ids: [setting.id.to_s], label_ids: [label.id.to_s] },
+          }
+        }.to enqueue_job(MergePostsJob).exactly(:once).with(user_post.id, target_reply.id, 'registered', [setting.id], [], [label.id])
+        expect(response).to redirect_to(post_url(target_post))
+        expect(flash[:success]).to eq("The posts will be merged.")
+        expect(target_post.reload.privacy).to eq('public') # applied by the job, not the controller
+      end
+
+      it "merges private posts with a single author" do
+        user_post.update!(privacy: :private)
+        target_post.update!(privacy: :private)
+        expect {
+          post :do_merge, params: { id: user_post.id, target_reply_id: target_reply.id, post: { privacy: 'private' } }
+        }.to enqueue_job(MergePostsJob).exactly(:once)
+        expect(response).to redirect_to(post_url(target_post))
+        expect(flash[:success]).to eq("The posts will be merged.")
+      end
+
+      it "creates new tags typed into the form" do
+        expect {
+          post :do_merge, params: {
+            id: user_post.id,
+            target_reply_id: target_reply.id,
+            post: { privacy: 'public', content_warning_ids: ['_brand new warning'] },
+          }
+        }.to change { ContentWarning.count }.by(1)
+        expect(ContentWarning.last.name).to eq('brand new warning')
+      end
+    end
   end
 end

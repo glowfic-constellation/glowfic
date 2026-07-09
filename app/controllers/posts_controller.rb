@@ -432,9 +432,31 @@ class PostsController < WritableController
   end
 
   def do_merge
-    # TODO(post-merger): validate and perform the merge
-    flash[:error] = "Merging is not yet implemented."
-    redirect_to post_path(@post)
+    target_reply = Reply.find_by(id: params[:target_reply_id])
+    privacy = params.fetch(:post, {})[:privacy]
+
+    error = merge_error(target_reply)
+    error = "Privacy could not be recognized." if error.nil? && !Post.privacies.key?(privacy.to_s)
+    if error
+      flash[:error] = error
+      redirect_to merge_post_path(@post) and return
+    end
+
+    target_post = target_reply.post
+    # recheck visibility under the chosen privacy before committing to it
+    target_post.privacy = privacy
+    unless cross_visible?(@post, target_post)
+      flash[:error] = "Visibility or blocking settings prevent some authors of at least one of the posts from seeing the other."
+      redirect_to merge_post_path(@post) and return
+    end
+
+    setting_ids = merge_tag_ids(Setting, :setting_ids)
+    content_warning_ids = merge_tag_ids(ContentWarning, :content_warning_ids)
+    label_ids = merge_tag_ids(Label, :label_ids)
+
+    MergePostsJob.perform_later(@post.id, target_reply.id, privacy, setting_ids, content_warning_ids, label_ids)
+    flash[:success] = "The posts will be merged."
+    redirect_to post_path(target_post)
   end
 
   # Postgres's built-in english tsearch dictionary (tsearch_data/english.stop).
@@ -605,6 +627,15 @@ class PostsController < WritableController
 
   def stricter_privacy(*posts)
     posts.map { |post| post.privacy.to_sym }.max_by { |privacy| Concealable::PRIVACY_STRICTNESS.index(privacy) }
+  end
+
+  # process_tags builds tags it doesn't find, relying on a post save to persist them;
+  # the merge applies tags in its job, so persist any new ones here instead
+  def merge_tag_ids(klass, id_param)
+    process_tags(klass, obj_param: :post, id_param: id_param).map do |tag|
+      tag.save! if tag.new_record?
+      tag.id
+    end
   end
 
   # the reason the post cannot be merged into the target reply's post, or nil if it can
