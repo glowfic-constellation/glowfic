@@ -5,9 +5,10 @@ class PostsController < WritableController
   before_action :login_required, except: [:index, :show, :history, :warnings, :search, :stats]
   before_action :readonly_forbidden, only: [:owed]
   before_action :find_model,
-    only: [:show, :history, :delete_history, :stats, :warnings, :edit, :update, :destroy, :split, :do_split, :preview_split, :merge, :preview_merge]
-  before_action :require_edit_permission, only: [:edit, :delete_history, :split, :do_split, :preview_split, :merge, :preview_merge]
-  before_action :require_locked_authorship, only: [:split, :do_split, :preview_split, :merge, :preview_merge]
+    only: [:show, :history, :delete_history, :stats, :warnings, :edit, :update, :destroy, :split, :do_split, :preview_split, :merge, :preview_merge,
+           :do_merge]
+  before_action :require_edit_permission, only: [:edit, :delete_history, :split, :do_split, :preview_split, :merge, :preview_merge, :do_merge]
+  before_action :require_locked_authorship, only: [:split, :do_split, :preview_split, :merge, :preview_merge, :do_merge]
   before_action :require_import_permission, only: [:new, :create]
   before_action :require_create_permission, only: [:new, :create]
   before_action :editor_setup, only: [:new, :edit]
@@ -401,8 +402,39 @@ class PostsController < WritableController
   end
 
   def preview_merge
-    # TODO(post-merger): validate the link target and render the merge form
-    redirect_to merge_post_path(@post)
+    @page_title = 'Merge Post'
+    @target_reply = parse_merge_target(params[:target_url])
+
+    if (error = merge_error(@target_reply))
+      flash.now[:error] = error
+      render :merge and return
+    end
+
+    @target_post = @target_reply.post
+    if @post.privacy != @target_post.privacy
+      flash.now[:error] = "Source and target posts have mismatching privacy levels; the stricter privacy level has been selected by default."
+    end
+
+    @settings = (@post.settings + @target_post.settings).uniq
+    @content_warnings = (@post.content_warnings + @target_post.content_warnings).uniq
+    @labels = (@post.labels + @target_post.labels).uniq
+    @default_privacy = stricter_privacy(@post, @target_post)
+    @reply_bookmarks = {}
+
+    # preview both replies in the style of the regular replies they will sit among post-merge (not saved)
+    @target_is_written = @target_reply.reply_order.zero?
+    @target_reply.reply_order = 1 if @target_is_written
+    @merged_written = @post.written
+    @merged_written.reply_order = @target_reply.reply_order + 1
+
+    use_javascript('posts/editor')
+    render :preview_merge
+  end
+
+  def do_merge
+    # TODO(post-merger): validate and perform the merge
+    flash[:error] = "Merging is not yet implemented."
+    redirect_to post_path(@post)
   end
 
   # Postgres's built-in english tsearch dictionary (tsearch_data/english.stop).
@@ -569,6 +601,46 @@ class PostsController < WritableController
     return if @post.authors_locked
     flash[:error] = "Post must be locked to current authors."
     redirect_to @post
+  end
+
+  def stricter_privacy(*posts)
+    posts.map { |post| post.privacy.to_sym }.max_by { |privacy| Concealable::PRIVACY_STRICTNESS.index(privacy) }
+  end
+
+  # the reason the post cannot be merged into the target reply's post, or nil if it can
+  def merge_error(target_reply)
+    return "Could not recognize that link as a post or reply." unless target_reply
+
+    target_post = target_reply.post
+    return "A post cannot be merged into itself." if target_post.id == @post.id
+
+    unless (target_post.editable_by?(current_user) || target_post.metadata_editable_by?(current_user)) && target_post.authors_locked
+      return "You must be an author of the other post, and it must be locked to its current authors."
+    end
+
+    return if cross_visible?(@post, target_post)
+    "Visibility or blocking settings prevent some authors of at least one of the posts from seeing the other."
+  end
+
+  # both posts must be visible to all of the other's authors for a merge to proceed
+  def cross_visible?(source_post, target_post)
+    User.where(id: target_post.author_ids).all? { |user| source_post.visible_to?(user) } &&
+      User.where(id: source_post.author_ids).all? { |user| target_post.visible_to?(user) }
+  end
+
+  # resolves a pasted post or reply link to the reply the merged content would follow
+  # (a post link means merging right after its top post)
+  def parse_merge_target(url)
+    return if url.blank?
+    route = Rails.application.routes.recognize_path(URI.parse(url.strip).path)
+    case [route[:controller], route[:action]]
+      when %w(posts show)
+        Post.find_by(id: route[:id])&.written
+      when %w(replies show)
+        Reply.find_by(id: route[:id])
+    end
+  rescue URI::InvalidURIError, ActionController::RoutingError
+    nil
   end
 
   def permitted_params(include_associations=true)

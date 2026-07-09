@@ -91,6 +91,7 @@ Rails.application.routes.draw do
       post :do_split
       get :merge
       post :preview_merge
+      post :do_merge
     end
     collection do
       post :mark
