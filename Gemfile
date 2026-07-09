@@ -65,7 +65,7 @@ end
 
 group :development do
   gem "brakeman", '~> 8.0.5', require: false
-  gem 'haml_lint', '~> 0.74.0', require: false
+  gem 'haml_lint', '~> 0.75.0', require: false
   gem 'listen'
   gem 'memory_profiler'
   gem 'rack-mini-profiler'
