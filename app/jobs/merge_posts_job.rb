@@ -13,6 +13,7 @@ class MergePostsJob < ApplicationJob
     Post.transaction do
       source_view_states = view_states(source_post)
       target_view_states = view_states(target_post)
+      recipients = notification_recipients(source_post, target_post, source_view_states, target_view_states, target_reply)
 
       merge_replies(source_post, target_post, target_reply)
       merge_view_markers(source_view_states, target_view_states, target_reply)
@@ -20,6 +21,8 @@ class MergePostsJob < ApplicationJob
       merge_drafts(source_post, target_post)
       target_post.update!(privacy: privacy, setting_ids: setting_ids, content_warning_ids: content_warning_ids, label_ids: label_ids)
       update_caches(source_post, target_post)
+      send_notifications(source_post, target_post, target_reply, recipients)
+      source_post.destroy!
     end
     GenerateFlatPostJob.enqueue(target_post.id)
   end
@@ -35,6 +38,51 @@ class MergePostsJob < ApplicationJob
     following_replies.update_all(['reply_order = reply_order + ?', moved_count])
     Reply.where(post_id: source_post.id).update_all(['post_id = ?, reply_order = reply_order + ?', target_post.id, offset])
     Bookmark.where(post_id: source_post.id).update_all(post_id: target_post.id)
+  end
+
+  # captured pre-merge: authors of either post, non-author users who had opened the source,
+  # and non-author users who had opened the target with their marker past the insertion point
+  def notification_recipients(source_post, target_post, source_states, target_states, target_reply)
+    author_ids = source_post.author_ids | target_post.author_ids
+    opened_source = source_states.select { |_, state| state[:view].read_at.present? }.keys
+
+    marker_ids = target_states.values.filter_map { |state| state[:view].last_read_reply_id }
+    marker_orders = Reply.where(id: marker_ids).pluck(:id, :reply_order).to_h
+    past_insertion = target_states.select do |_, state|
+      view = state[:view]
+      view.read_at.present? && marker_orders.fetch(view.last_read_reply_id, 0) > target_reply.reply_order
+    end.keys
+
+    {
+      author_ids: author_ids,
+      source_opener_ids: opened_source - author_ids,
+      target_opener_ids: past_insertion - author_ids - opened_source,
+    }
+  end
+
+  def send_notifications(source_post, target_post, target_reply, recipients)
+    target_post.reload # author and privacy changes affect the visibility checks below
+    message = merge_message(source_post, target_post, target_reply)
+
+    recipients[:author_ids].each do |user_id|
+      Notification.create!(user_id: user_id, notification_type: :post_merged_author, post: target_post,
+        message: message, skip_check_read: true,)
+    end
+    User.where(id: recipients[:source_opener_ids]).find_each do |user|
+      next unless target_post.visible_to?(user)
+      Notification.create!(user: user, notification_type: :source_post_merged, post: target_post,
+        message: message, skip_check_read: true,)
+    end
+    recipients[:target_opener_ids].each do |user_id|
+      Notification.create!(user_id: user_id, notification_type: :target_post_merged, post: target_post,
+        message: message, skip_check_read: true,)
+    end
+  end
+
+  def merge_message(source_post, target_post, target_reply)
+    path = Rails.application.routes.url_helpers.reply_path(target_reply)
+    "Post \"#{ERB::Util.html_escape(source_post.subject)}\" has been merged into " \
+      "\"#{ERB::Util.html_escape(target_post.subject)}\" immediately after <a href=\"#{path}\">this reply</a>."
   end
 
   # pre-merge read state: per user, their view and whether they had read the whole post

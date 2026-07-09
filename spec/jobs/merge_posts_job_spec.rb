@@ -322,6 +322,90 @@ RSpec.describe MergePostsJob do
     end
   end
 
+  describe "notifications" do
+    let(:reader) { create(:user) }
+
+    before(:each) do
+      source_replies
+      target_replies
+    end
+
+    def read_post(post, user)
+      Post.find(post.id).mark_read(user, at_reply: Post.find(post.id).replies.ordered.last)
+    end
+
+    it "notifies all authors of either post" do
+      coauthor = create(:user)
+      create(:post_author, post: source_post, user: coauthor)
+      read_post(target_post, user) # proves skip_check_read: the author has read the target
+
+      merge_at(target_replies.last)
+
+      author_notice = Notification.find_by(user: user)
+      expect(author_notice.notification_type).to eq('post_merged_author')
+      expect(author_notice.post_id).to eq(target_post.id)
+      expect(author_notice.unread).to eq(true)
+      expect(author_notice.message).to include("Post \"#{source_post.subject}\" has been merged into \"#{target_post.subject}\"")
+      expect(author_notice.message).to include("href=\"/replies/#{target_replies.last.id}\"")
+      expect(Notification.find_by(user: coauthor).notification_type).to eq('post_merged_author')
+    end
+
+    it "notifies source openers who can see the merged post" do
+      read_post(source_post, reader)
+
+      merge_at(target_replies.last)
+
+      notice = Notification.find_by(user: reader)
+      expect(notice.notification_type).to eq('source_post_merged')
+      expect(notice.post_id).to eq(target_post.id)
+    end
+
+    it "does not notify source openers who cannot see the merged post" do
+      read_post(source_post, reader)
+
+      merge_at(target_replies.last, privacy: 'access_list')
+
+      expect(Notification.find_by(user: reader)).to be_nil
+    end
+
+    it "notifies target openers with markers past the insertion point" do
+      Post.find(target_post.id).mark_read(reader, at_reply: target_replies[2])
+
+      merge_at(target_replies[0])
+
+      expect(Notification.find_by(user: reader).notification_type).to eq('target_post_merged')
+    end
+
+    it "does not notify target openers with markers before the insertion point" do
+      Post.find(target_post.id).mark_read(reader, at_reply: target_replies[0])
+
+      merge_at(target_replies[2])
+
+      expect(Notification.find_by(user: reader)).to be_nil
+    end
+
+    it "notifies source openers only once even with both posts opened" do
+      read_post(source_post, reader)
+      Post.find(target_post.id).mark_read(reader, at_reply: target_replies[2])
+
+      merge_at(target_replies[0])
+
+      expect(Notification.where(user: reader).count).to eq(1)
+      expect(Notification.find_by(user: reader).notification_type).to eq('source_post_merged')
+    end
+  end
+
+  it "deletes the source post" do
+    source_replies
+    reader = create(:user)
+    Post.find(source_post.id).mark_read(reader, at_reply: source_replies.last)
+
+    merge_at(target_replies.last)
+
+    expect(Post.find_by(id: source_post.id)).to be_nil
+    expect(Post::View.where(post_id: source_post.id)).to be_empty
+  end
+
   it "regenerates the target's flat post" do
     source_replies
     target_replies
