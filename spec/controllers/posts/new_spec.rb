@@ -46,6 +46,18 @@ RSpec.describe PostsController, 'GET new' do
     expect(templateless.plucked_characters).to eq([[char1.id, char1.name], [char2.id, char2.name]])
   end
 
+  it "respects user values" do
+    user.update!(default_editor: 'md', default_privacy: :full_accounts)
+    user.reload
+    login_as(user)
+
+    get :new
+
+    expect(assigns(:post)).to be_new_record
+    expect(assigns(:post)).to be_privacy_full_accounts
+    expect(assigns(:post).editor_mode).to eq('md')
+  end
+
   context "import" do
     before(:each) { login_as(user) }
 
@@ -69,7 +81,6 @@ RSpec.describe PostsController, 'GET new' do
     end
 
     it "defaults authors to be the current user in open boards" do
-      login_as(user)
       board = create(:board, authors_locked: false)
       get :new, params: { board_id: board.id }
       expect(assigns(:post).board).to eq(board)
@@ -85,7 +96,6 @@ RSpec.describe PostsController, 'GET new' do
     end
 
     it "defaults authors to be current user in closed megacontinuities" do
-      login_as(user)
       board = create(:board, authors_locked: true, mega: true)
       get :new, params: { board_id: board.id }
       expect(assigns(:post).board).to eq(board)

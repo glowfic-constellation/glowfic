@@ -1,6 +1,9 @@
 # frozen_string_literal: true
 class User < ApplicationRecord
+  alias_attribute :privacy, :default_privacy
+
   include Blockable
+  include Concealable
   include Presentable
   include Permissible
 
