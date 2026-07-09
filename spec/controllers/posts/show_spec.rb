@@ -77,6 +77,23 @@ RSpec.describe PostsController, 'GET show' do
         expect(post.reload.first_unread_for(user)).to be_nil
       end
     end
+
+    context "with read markers" do
+      let(:replies) { create_list(:reply, 3, post: post) }
+
+      before(:each) { replies }
+
+      it "sets the marker to the last reply on the viewed page" do
+        get :show, params: { id: post.id, per_page: 2 }
+        expect(post.views.find_by(user: user).last_read_reply).to eq(replies[1])
+      end
+
+      it "does not regress the marker when revisiting an earlier page" do
+        post.mark_read(user, at_reply: replies.last)
+        get :show, params: { id: post.id, per_page: 2, page: 1 }
+        expect(post.views.find_by(user: user).last_read_reply).to eq(replies.last)
+      end
+    end
   end
 
   context "invalid pages" do

@@ -41,6 +41,21 @@ RSpec.describe SplitPostJob do
     end
   end
 
+  it "rewinds markers pointing at moved replies" do
+    post = create(:post)
+    replies = create_list(:reply, 5, post: post)
+    caught_up = create(:user)
+    midway = create(:user)
+    # fresh finds to avoid the cached @view crossing users
+    Post.find(post.id).mark_read(caught_up, at_reply: replies.last)
+    Post.find(post.id).mark_read(midway, at_reply: replies[0])
+
+    SplitPostJob.perform_now(replies[2].id, 'new post')
+
+    expect(post.views.find_by(user: caught_up).last_read_reply).to eq(replies[1])
+    expect(post.views.find_by(user: midway).last_read_reply).to eq(replies[0])
+  end
+
   it "works with many replies" do
     user = create(:user)
     coauthor = create(:user)

@@ -197,6 +197,40 @@ RSpec.describe Reply do
       expect(Reply.find_by(id: reply.id)).not_to be_present
       expect(post.reload.last_reply_id).to eq(replies[1].id)
     end
+
+    it "walks read markers back to the last surviving reply" do
+      post = create(:post)
+      survivor = create(:reply, post: post)
+      destroyed = create_list(:reply, 3, post: post)
+      user = create(:user)
+      post.mark_read(user, at_reply: destroyed.last)
+      destroyed.first.send(:destroy_subsequent_replies)
+      expect(post.views.find_by(user: user).last_read_reply).to eq(survivor)
+    end
+  end
+
+  describe "#update_view_markers" do
+    let(:post) { create(:post) }
+    let(:replies) { create_list(:reply, 3, post: post) }
+    let(:user) { create(:user) }
+
+    it "moves markers on the destroyed reply to the previous reply" do
+      post.mark_read(user, at_reply: replies[1])
+      replies[1].destroy!
+      expect(post.views.find_by(user: user).last_read_reply).to eq(replies[0])
+    end
+
+    it "moves markers on the first reply to the written" do
+      post.mark_read(user, at_reply: replies[0])
+      replies[0].destroy!
+      expect(post.views.find_by(user: user).last_read_reply).to eq(post.written)
+    end
+
+    it "leaves markers on other replies alone" do
+      post.mark_read(user, at_reply: replies[2])
+      replies[1].destroy!
+      expect(post.views.find_by(user: user).last_read_reply).to eq(replies[2])
+    end
   end
 
   describe "#update_flat_post" do

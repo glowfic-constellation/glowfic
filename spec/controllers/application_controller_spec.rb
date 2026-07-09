@@ -303,6 +303,32 @@ RSpec.describe ApplicationController do
         })
       end
 
+      it "flags and counts replies behind the marker regardless of timestamps" do
+        post = create(:post, num_replies: 3)
+        replies = post.replies.ordered_manually
+        post.mark_read(user, at_reply: replies[0]) # read_at is now later than tagged_at
+
+        controller.send(:posts_from_relation, Post.where(id: post.id), with_unread: true)
+
+        expect(assigns(:unread_ids)).to eq([post.id])
+        expect(assigns(:unread_counts)).to eq({ post.id => 2 })
+      end
+
+      it "ignores replies spliced in before the marker" do
+        post = create(:post, num_replies: 2)
+        replies = post.replies.ordered_manually
+        post.mark_read(user, at_reply: replies.last)
+
+        # mimic the multi-reply editor splicing after the first reply
+        replies.last.update_columns(reply_order: 3) # rubocop:disable Rails/SkipsModelValidations
+        create(:reply, post: post, reply_order: 2, created_at: replies.first.created_at,
+          skip_post_update: true, skip_notify: true, is_import: true,)
+
+        controller.send(:posts_from_relation, Post.where(id: post.id), with_unread: true)
+
+        expect(assigns(:unread_ids)).to be_empty
+      end
+
       it "uses an accurate post_count with blocked posts" do
         create(:post, privacy: :private)
         replyless = create(:post)

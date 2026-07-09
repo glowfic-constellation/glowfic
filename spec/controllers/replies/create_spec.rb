@@ -159,7 +159,7 @@ RSpec.describe RepliesController, 'POST create' do
     reply_post = create(:post)
     login_as(reply_post.user)
     reply_post.mark_read(reply_post.user)
-    create(:reply, post: reply_post) # last_seen
+    unseen = create(:reply, post: reply_post) # last_seen
 
     post :create, params: {
       reply: {
@@ -171,6 +171,7 @@ RSpec.describe RepliesController, 'POST create' do
 
     expect(response.status).to eq(200)
     expect(flash[:error]).to eq("There has been 1 new reply since you last viewed this post.")
+    expect(reply_post.views.find_by(user: reply_post.user).last_read_reply).to eq(unseen)
 
     create(:reply, post: reply_post)
     create(:reply, post: reply_post)

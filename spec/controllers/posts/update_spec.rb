@@ -137,6 +137,20 @@ RSpec.describe PostsController, 'PUT update' do
         expect(post.reload.first_unread_for(user)).to eq(unread_reply)
         expect(post).to be_ignored_by(user)
       end
+
+      it "sets the marker to the previous reply" do
+        put :update, params: { id: post.id, unread: true, at_id: unread_reply.id }
+        expect(post.views.find_by(user: user).last_read_reply).to eq(post.written)
+      end
+
+      it "moves an existing marker backwards" do
+        Timecop.freeze(post.created_at + 2.minutes) { post.mark_read(user, at_reply: post.replies.ordered.last) }
+
+        put :update, params: { id: post.id, unread: true, at_id: unread_reply.id }
+
+        expect(post.views.find_by(user: user).last_read_reply).to eq(post.written)
+        expect(post.reload.first_unread_for(user)).to eq(unread_reply)
+      end
     end
 
     context "without at_id" do
@@ -161,6 +175,14 @@ RSpec.describe PostsController, 'PUT update' do
         expect(response).to redirect_to(unread_posts_url)
         expect(flash[:success]).to eq("Post has been marked as unread")
         expect(post.reload.first_unread_for(user)).to eq(post)
+      end
+
+      it "clears the marker" do
+        post.views.find_by(user: user).update!(last_read_reply: post.written)
+
+        put :update, params: { id: post.id, unread: true }
+
+        expect(post.views.find_by(user: user).last_read_reply_id).to be_nil
       end
     end
   end

@@ -684,6 +684,128 @@ RSpec.describe Post do
         expect(post.first_unread_for(post.user)).to be_nil
       end
     end
+
+    context "with a read marker" do
+      let(:user) { create(:user) }
+      let(:post) { create(:post) }
+      let(:replies) { create_list(:reply, 3, post: post) }
+
+      def splice_reply_after(reply)
+        # mimic the multi-reply editor: bump later orders, insert with the anchor's created_at
+        post.replies.where('reply_order > ?', reply.reply_order).ordered.reverse_order.each do |later|
+          later.update_columns(reply_order: later.reply_order + 1) # rubocop:disable Rails/SkipsModelValidations
+        end
+        create(:reply, post: post, reply_order: reply.reply_order + 1, created_at: reply.created_at,
+          skip_post_update: true, skip_notify: true, is_import: true,)
+      end
+
+      it "uses the reply after the marker" do
+        post.mark_read(user, at_reply: replies.first)
+        expect(post.first_unread_for(user)).to eq(replies[1])
+      end
+
+      it "uses the first reply if the marker is at the written" do
+        replies
+        post.mark_read(user, at_reply: post.written)
+        expect(post.first_unread_for(user)).to eq(replies.first)
+      end
+
+      it "uses nil if the marker is at the last reply" do
+        post.mark_read(user, at_reply: replies.last)
+        expect(post.first_unread_for(user)).to be_nil
+      end
+
+      it "uses a reply spliced after the marker despite its old created_at" do
+        post.mark_read(user, at_reply: replies.first)
+        spliced = splice_reply_after(replies.first)
+        expect(spliced.created_at).to be <= post.last_read(user)
+        expect(post.reload.first_unread_for(user)).to eq(spliced)
+      end
+
+      it "ignores a reply spliced before the marker despite its new id" do
+        post.mark_read(user, at_reply: replies.last)
+        spliced = splice_reply_after(replies.first)
+        expect(spliced.id).to be > replies.last.id
+        expect(post.reload.first_unread_for(user)).to be_nil
+      end
+
+      it "falls back to timestamps if the marker is not in the post" do
+        other_reply = create(:reply)
+        post.mark_read(user, at_time: replies[1].created_at, force: true)
+        post.views.find_by(user: user).update!(last_read_reply: other_reply)
+        expect(post.reload.first_unread_for(user)).to eq(replies[2])
+      end
+    end
+  end
+
+  describe "#last_seen_reply_for" do
+    let(:user) { create(:user) }
+    let(:post) { create(:post) }
+    let(:replies) { create_list(:reply, 2, post: post) }
+
+    it "uses the marker reply" do
+      post.mark_read(user, at_reply: replies.first)
+      expect(post.last_seen_reply_for(user)).to eq(replies.first)
+    end
+
+    it "uses the written if the marker is at it" do
+      replies
+      post.mark_read(user, at_reply: post.written)
+      expect(post.last_seen_reply_for(user)).to eq(post.written)
+    end
+
+    it "falls back to timestamps without a marker" do
+      replies
+      post.mark_read(user)
+      post.views.find_by(user: user).update!(last_read_reply: nil)
+      expect(post.last_seen_reply_for(user)).to eq(replies.last)
+    end
+
+    it "returns the written without replies" do
+      post.mark_read(user, at_reply: post.written)
+      expect(post.last_seen_reply_for(user)).to eq(post.written)
+    end
+  end
+
+  describe "#mark_read" do
+    let(:user) { create(:user) }
+    let(:post) { create(:post) }
+    let(:replies) { create_list(:reply, 2, post: post) }
+
+    it "sets the marker with at_reply" do
+      post.mark_read(user, at_reply: replies.last)
+      expect(post.views.find_by(user: user).last_read_reply).to eq(replies.last)
+    end
+
+    it "does not move the marker backwards without force" do
+      post.mark_read(user, at_reply: replies.last)
+      post.reload.mark_read(user, at_reply: replies.first)
+      expect(post.views.find_by(user: user).last_read_reply).to eq(replies.last)
+    end
+
+    it "moves the marker backwards with force" do
+      post.mark_read(user, at_reply: replies.last)
+      post.reload.mark_read(user, at_reply: replies.first, force: true)
+      expect(post.views.find_by(user: user).last_read_reply).to eq(replies.first)
+    end
+
+    it "advances the marker even when the read time does not advance" do
+      # a page containing freshly spliced replies has a read_time_for at or before the stored read_at
+      post.mark_read(user, at_time: Time.zone.now, at_reply: replies.first)
+      view = post.views.find_by(user: user)
+      old_read_at = view.read_at
+      post.reload.mark_read(user, at_time: old_read_at - 1.minute, at_reply: replies.last)
+      expect(view.reload.last_read_reply).to eq(replies.last)
+      expect(view.read_at).to be_the_same_time_as(old_read_at)
+    end
+
+    it "replaces a marker whose reply left the post" do
+      post.mark_read(user, at_reply: replies.last)
+      view = post.views.find_by(user: user)
+      view.update!(last_read_reply: create(:reply))
+      post.reload.mark_read(user, at_reply: replies.first)
+      expect(view.reload.last_read_reply).to eq(replies.first)
+    end
   end
 
   describe "#recent_characters_for" do
