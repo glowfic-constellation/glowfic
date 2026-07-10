@@ -25,10 +25,10 @@ RSpec.describe FlatPost do
       $redis.del(lock_key)
     end
 
-    it "regenerates all flat posts" do
+    it "regenerates all flat posts with override" do
       post = create(:post)
       delete_lock(post)
-      FlatPost.regenerate_all
+      FlatPost.regenerate_all(nil, true)
       expect(GenerateFlatPostJob).to have_been_enqueued.with(post.id).on_queue('high')
     end
 
@@ -52,7 +52,7 @@ RSpec.describe FlatPost do
 
       delete_lock(post)
       delete_lock(nonpost)
-      FlatPost.regenerate_all(nil, false)
+      FlatPost.regenerate_all(nil)
       expect(GenerateFlatPostJob).to have_been_enqueued.with(post.id).on_queue('high')
       expect(GenerateFlatPostJob).not_to have_been_enqueued.with(nonpost.id).on_queue('high')
     end

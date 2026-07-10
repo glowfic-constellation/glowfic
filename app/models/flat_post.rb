@@ -4,7 +4,7 @@ class FlatPost < ApplicationRecord
 
   validates :post, uniqueness: true
 
-  def self.regenerate_all(before=nil, override=true)
+  def self.regenerate_all(before=nil, override=false)
     if override
       Post.pluck(:id).each { GenerateFlatPostJob.enqueue(it) } # this will make prod sad
     else
