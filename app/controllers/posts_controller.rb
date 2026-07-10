@@ -443,16 +443,23 @@ class PostsController < WritableController
     end
 
     target_post = target_reply.post
-    # recheck visibility under the chosen privacy before committing to it
+    # recheck visibility under the chosen privacy before committing to it; an access
+    # list will gain all of the merged post's authors, so they are exempt from it
     target_post.privacy = privacy
-    unless cross_visible?(@post, target_post)
+    future_viewer_ids = privacy.to_s == 'access_list' ? (@post.author_ids | target_post.author_ids) : []
+    unless cross_visible?(@post, target_post, assume_target_viewers: future_viewer_ids)
       flash[:error] = "Visibility or blocking settings prevent some authors of at least one of the posts from seeing the other."
       redirect_to merge_post_path(@post) and return
     end
 
-    setting_ids = merge_tag_ids(Setting, :setting_ids)
-    content_warning_ids = merge_tag_ids(ContentWarning, :content_warning_ids)
-    label_ids = merge_tag_ids(Label, :label_ids)
+    begin
+      setting_ids = merge_tag_ids(Setting, :setting_ids)
+      content_warning_ids = merge_tag_ids(ContentWarning, :content_warning_ids)
+      label_ids = merge_tag_ids(Label, :label_ids)
+    rescue ActiveRecord::RecordInvalid => e
+      flash[:error] = "Tags could not be created: #{e.record.errors.full_messages.to_sentence}"
+      redirect_to merge_post_path(@post) and return
+    end
 
     MergePostsJob.perform_later(@post.id, target_reply.id, privacy, setting_ids, content_warning_ids, label_ids)
     flash[:success] = "The posts will be merged."
@@ -654,9 +661,11 @@ class PostsController < WritableController
   end
 
   # both posts must be visible to all of the other's authors for a merge to proceed
-  def cross_visible?(source_post, target_post)
+  def cross_visible?(source_post, target_post, assume_target_viewers: [])
     User.where(id: target_post.author_ids).all? { |user| source_post.visible_to?(user) } &&
-      User.where(id: source_post.author_ids).all? { |user| target_post.visible_to?(user) }
+      User.where(id: source_post.author_ids).all? do |user|
+        assume_target_viewers.include?(user.id) || target_post.visible_to?(user)
+      end
   end
 
   # resolves a pasted post or reply link to the reply the merged content would follow

@@ -330,6 +330,16 @@ RSpec.describe PostsController do
         expect(flash[:error]).to eq("Privacy could not be recognized.")
       end
 
+      it "accepts an access list privacy for co-authored posts" do
+        # the merge adds all authors to the access list, so co-authors are exempt from the recheck
+        create(:post_author, post: user_post, user: coauthor)
+        expect {
+          post :do_merge, params: { id: user_post.id, target_reply_id: target_reply.id, post: { privacy: 'access_list' } }
+        }.to enqueue_job(MergePostsJob).exactly(:once)
+        expect(response).to redirect_to(post_url(target_post))
+        expect(flash[:success]).to eq("The posts will be merged.")
+      end
+
       it "rejects a privacy that would hide the merged post from an author" do
         create(:post_author, post: user_post, user: coauthor)
         post :do_merge, params: { id: user_post.id, target_reply_id: target_reply.id, post: { privacy: 'private' } }
@@ -361,6 +371,18 @@ RSpec.describe PostsController do
         }.to enqueue_job(MergePostsJob).exactly(:once)
         expect(response).to redirect_to(post_url(target_post))
         expect(flash[:success]).to eq("The posts will be merged.")
+      end
+
+      it "rejects invalid new tags without crashing" do
+        expect {
+          post :do_merge, params: {
+            id: user_post.id,
+            target_reply_id: target_reply.id,
+            post: { privacy: 'public', content_warning_ids: ['_'] },
+          }
+        }.not_to change { ContentWarning.count }
+        expect(response).to redirect_to(merge_post_url(user_post))
+        expect(flash[:error]).to start_with("Tags could not be created:")
       end
 
       it "creates new tags typed into the form" do

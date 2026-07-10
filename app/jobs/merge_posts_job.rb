@@ -20,8 +20,10 @@ class MergePostsJob < ApplicationJob
       merge_authors(source_post, target_post)
       merge_drafts(source_post, target_post)
       target_post.update!(privacy: privacy, setting_ids: setting_ids, content_warning_ids: content_warning_ids, label_ids: label_ids)
+      add_author_viewers(target_post) if target_post.privacy_access_list?
       update_caches(source_post, target_post)
       send_notifications(source_post, target_post, target_reply, recipients)
+      migrate_post_references(source_post, target_post)
       source_post.destroy!
     end
     GenerateFlatPostJob.enqueue(target_post.id)
@@ -73,8 +75,10 @@ class MergePostsJob < ApplicationJob
       Notification.create!(user: user, notification_type: :source_post_merged, post: target_post,
         message: message, skip_check_read: true,)
     end
-    recipients[:target_opener_ids].each do |user_id|
-      Notification.create!(user_id: user_id, notification_type: :target_post_merged, post: target_post,
+    User.where(id: recipients[:target_opener_ids]).find_each do |user|
+      # the merged privacy may have hidden the post, making its notifications invisible too
+      next unless target_post.visible_to?(user)
+      Notification.create!(user: user, notification_type: :target_post_merged, post: target_post,
         message: message, skip_check_read: true,)
     end
   end
@@ -96,48 +100,52 @@ class MergePostsJob < ApplicationJob
   # users who had opened the source but not the target keep no read state; for users who had
   # opened both, the target view's marker and read_at merge based on how caught up they were
   def merge_view_markers(source_states, target_states, target_reply)
+    marker_ids = (source_states.values + target_states.values).filter_map { |state| state[:view].last_read_reply_id }
+    marker_orders = Reply.where(id: marker_ids.uniq).pluck(:id, :reply_order).to_h
+
+    rewound_view_ids = []
     target_states.each do |user_id, target|
       source = source_states[user_id]
-      if source.nil?
-        rewind_marker_to_insertion(target[:view], target_reply)
+      view = target[:view]
+
+      # a view without a read_at (e.g. from hiding the post unread) is not an opened post;
+      # users who never opened the source shouldn't have its replies spliced in unseen behind
+      # their marker, so it rewinds to the insertion point and they count as unread
+      if source.nil? || source[:view].read_at.blank?
+        marker_order = marker_orders[view.last_read_reply_id]
+        rewound_view_ids << view.id if marker_order && marker_order > target_reply.reply_order
         next
       end
 
-      target[:view].update!(
-        last_read_reply_id: merged_marker_id(source, target),
-        read_at: merged_read_at(source, target),
-      )
+      marker_id = merged_marker_id(source, target, marker_orders)
+      read_at = merged_read_at(source, target)
+      next if marker_id == view.last_read_reply_id && read_at == view.read_at
+      view.update!(last_read_reply_id: marker_id, read_at: read_at)
     end
+
+    return if rewound_view_ids.empty?
+    Post::View.where(id: rewound_view_ids).update_all(last_read_reply_id: target_reply.id) # rubocop:disable Rails/SkipsModelValidations
   end
 
-  # users who never opened the source shouldn't have its replies spliced in unseen behind
-  # their marker, so it rewinds to the insertion point and they count as unread
-  def rewind_marker_to_insertion(view, target_reply)
-    return if view.last_read_reply_id.nil?
-    marker_order = Reply.where(id: view.last_read_reply_id).pick(:reply_order)
-    return unless marker_order && marker_order > target_reply.reply_order
-    view.update!(last_read_reply_id: target_reply.id)
-  end
-
-  def merged_marker_id(source, target)
+  def merged_marker_id(source, target, marker_orders)
     source_id = source[:view].last_read_reply_id
     target_id = target[:view].last_read_reply_id
     return target_id if source_id.nil? || target_id.nil?
 
-    # both markers now live in the target post, so their orders compare directly
+    # both markers now live in the target post, so their orders compare directly;
+    # markers whose replies are gone have no order and cannot win
+    candidates = [source_id, target_id].filter_map { |id| [id, marker_orders[id]] if marker_orders[id] }
+    return target_id if candidates.empty?
+
     if source[:caught_up] && target[:caught_up]
-      marker_by_order(source_id, target_id, :max_by)
+      candidates.max_by(&:second).first
     elsif source[:caught_up]
       target_id
     elsif target[:caught_up]
       source_id
     else
-      marker_by_order(source_id, target_id, :min_by)
+      candidates.min_by(&:second).first
     end
-  end
-
-  def marker_by_order(source_id, target_id, comparison)
-    Reply.where(id: [source_id, target_id]).pluck(:id, :reply_order).send(comparison, &:second).first
   end
 
   def merged_read_at(source, target)
@@ -147,8 +155,9 @@ class MergePostsJob < ApplicationJob
   end
 
   def merge_authors(source_post, target_post)
+    target_authors = target_post.post_authors.index_by(&:user_id)
     source_post.post_authors.each do |source_author|
-      target_author = target_post.author_for(source_author.user)
+      target_author = target_authors[source_author.user_id]
       if target_author.nil?
         target_post.post_authors.create!(source_author.attributes.except('id', 'post_id'))
       else
@@ -169,37 +178,67 @@ class MergePostsJob < ApplicationJob
   end
 
   def merge_drafts(source_post, target_post)
+    target_drafts = ReplyDraft.where(post_id: target_post.id).index_by(&:user_id)
     ReplyDraft.where(post_id: source_post.id).find_each do |draft|
-      if ReplyDraft.where(post_id: target_post.id, user_id: draft.user_id).exists?
-        target_author = target_post.author_for(draft.user) || target_post.post_authors.create!(user_id: draft.user_id)
-        target_author.update!(private_note: merged_note(draft_note(draft, source_post), target_author.private_note))
-        draft.destroy!
-      else
+      target_draft = target_drafts[draft.user_id]
+      if target_draft.nil?
         draft.update!(post_id: target_post.id)
+        next
       end
+
+      note = draft_note(draft, source_post)
+      if (target_author = target_post.author_for(draft.user))
+        target_author.update!(private_note: merged_note(note, target_author.private_note))
+      else
+        # non-authors have no author notes, and creating an author row would grant them
+        # authorship; preserve the displaced draft in their surviving draft instead
+        target_draft.update!(content: merged_note(note, target_draft.content))
+      end
+      draft.destroy!
     end
   end
 
   # preserves a draft displaced by the user's existing draft in the target post
   def draft_note(draft, source_post)
-    note = "<strong>Unposted draft from \"#{source_post.subject}\":</strong>\n"
+    note = "<strong>Unposted draft from \"#{ERB::Util.html_escape(source_post.subject)}\":</strong>\n"
     if (character = draft.character)
-      note += character.npc? ? "#{character.name} (NPC)" : character.name
-      note += " | #{character.screenname}" if character.screenname.present?
-      note += " | icon: #{draft.icon.keyword}" if draft.icon
+      note += ERB::Util.html_escape(character.npc? ? "#{character.name} (NPC)" : character.name)
+      note += " | #{ERB::Util.html_escape(character.screenname)}" if character.screenname.present?
+      note += " | icon: #{ERB::Util.html_escape(draft.icon.keyword)}" if draft.icon
     elsif draft.icon
-      note += "icon: #{draft.icon.keyword}"
+      note += "icon: #{ERB::Util.html_escape(draft.icon.keyword)}"
     end
     "#{note}\n<br>\n#{draft.content}"
   end
 
+  # followers, curated indexes, and old notifications keep tracking the merged post;
+  # duplicates are left behind to be destroyed along with the source post
+  def migrate_post_references(source_post, target_post)
+    existing_favoriters = Favorite.where(favorite: target_post).pluck(:user_id)
+    Favorite.where(favorite: source_post).where.not(user_id: existing_favoriters).update_all(favorite_id: target_post.id)
+
+    existing_index_ids = IndexPost.where(post_id: target_post.id).pluck(:index_id)
+    IndexPost.where(post_id: source_post.id).where.not(index_id: existing_index_ids).update_all(post_id: target_post.id)
+
+    Notification.where(post_id: source_post.id).update_all(post_id: target_post.id)
+  end
+
+  # an access list would otherwise hide the post from authors who aren't already on it
+  def add_author_viewers(target_post)
+    missing = target_post.post_authors.pluck(:user_id) - target_post.post_viewers.pluck(:user_id) - [target_post.user_id]
+    missing.each { |user_id| target_post.post_viewers.create!(user_id: user_id) }
+  end
+
   def update_caches(source_post, target_post)
     last_reply = target_post.replies.ordered.last
-    target_post.update_columns(
+    cached_data = {
       last_reply_id: last_reply.id,
       last_user_id: last_reply.user_id,
       tagged_at: [source_post.tagged_at, target_post.tagged_at].max,
-    )
+    }
+    # merged-in replies end an author-set hiatus, like posting a reply would
+    cached_data[:status] = Post.statuses[:active] if target_post.hiatus?
+    target_post.update_columns(cached_data)
   end
   # rubocop:enable Rails/SkipsModelValidations
 end

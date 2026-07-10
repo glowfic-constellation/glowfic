@@ -199,6 +199,22 @@ RSpec.describe MergePostsJob do
       expect(note).to eq("#{header}\n\n<hr>\n\nexisting note")
     end
 
+    it "preserves a non-author's displaced draft in their surviving target draft" do
+      target_replies
+      drafter = create(:user)
+      [source_post, target_post].each { |post| post.update!(authors_locked: false) }
+      create(:reply_draft, post: source_post, user: drafter, content: 'source words')
+      target_draft = create(:reply_draft, post: target_post, user: drafter, content: 'target words')
+      [source_post, target_post].each { |post| post.update!(authors_locked: true) }
+
+      merge_at(target_replies.last)
+
+      expect(target_post.author_for(drafter)).to be_nil
+      expect(target_draft.reload.content).to include("Unposted draft from \"#{source_post.subject}\"")
+      expect(target_draft.content).to include('source words')
+      expect(target_draft.content).to end_with('target words')
+    end
+
     it "marks NPCs in a displaced draft's notes" do
       target_replies # materialize before drafting; posting a reply destroys its author's draft
       npc = create(:character, user: user, npc: true, screenname: nil)
@@ -312,6 +328,16 @@ RSpec.describe MergePostsJob do
       expect(Post.find(target_post.id).first_unread_for(reader)).to eq(source_post.written)
     end
 
+    it "rewinds markers for users who hid the source without reading it" do
+      Post.find(source_post.id).ignore(reader) # creates a view with no read_at
+      mark_read_at(target_post, target_replies[2], late)
+
+      merge_at(target_replies[0])
+
+      expect(reader_view.last_read_reply).to eq(target_replies[0])
+      expect(Post.find(target_post.id).first_unread_for(reader)).to eq(source_post.written)
+    end
+
     it "leaves markers before the insertion point for users who never opened the source" do
       mark_read_at(target_post, target_replies[0], late)
 
@@ -320,6 +346,26 @@ RSpec.describe MergePostsJob do
       expect(reader_view.last_read_reply).to eq(target_replies[0])
       expect(Post.find(target_post.id).first_unread_for(reader)).to eq(target_replies[1])
     end
+  end
+
+  it "adds all authors to the access list when merging to access list privacy" do
+    coauthor = create(:user)
+    create(:post_author, post: source_post, user: coauthor)
+
+    merge_at(target_replies.last, privacy: 'access_list')
+
+    expect(target_post.reload.viewers.map(&:id)).to match_array([coauthor.id])
+    expect(target_post.visible_to?(coauthor)).to eq(true)
+    expect(target_post.visible_to?(user)).to eq(true) # the creator needs no viewer row
+  end
+
+  it "does not add author viewers under other privacies" do
+    coauthor = create(:user)
+    create(:post_author, post: source_post, user: coauthor)
+
+    merge_at(target_replies.last, privacy: 'registered')
+
+    expect(target_post.reload.viewers).to be_empty
   end
 
   describe "notifications" do
@@ -376,6 +422,14 @@ RSpec.describe MergePostsJob do
       expect(Notification.find_by(user: reader).notification_type).to eq('target_post_merged')
     end
 
+    it "does not notify target openers who cannot see the merged post" do
+      Post.find(target_post.id).mark_read(reader, at_reply: target_replies[2])
+
+      merge_at(target_replies[0], privacy: 'access_list')
+
+      expect(Notification.find_by(user: reader)).to be_nil
+    end
+
     it "does not notify target openers with markers before the insertion point" do
       Post.find(target_post.id).mark_read(reader, at_reply: target_replies[0])
 
@@ -395,6 +449,45 @@ RSpec.describe MergePostsJob do
     end
   end
 
+  describe "post references" do
+    it "migrates favorites, deduplicating followers of both" do
+      follower = create(:user)
+      both_follower = create(:user)
+      create(:favorite, user: follower, favorite: source_post)
+      create(:favorite, user: both_follower, favorite: source_post)
+      kept = create(:favorite, user: both_follower, favorite: target_post)
+
+      merge_at(target_replies.last)
+
+      expect(Favorite.where(user: follower, favorite: target_post)).to exist
+      expect(Favorite.where(user: both_follower).count).to eq(1)
+      expect(Favorite.find_by(user: both_follower)).to eq(kept)
+    end
+
+    it "migrates index entries, deduplicating indexes listing both" do
+      index = create(:index)
+      both_index = create(:index)
+      create(:index_post, index: index, post: source_post)
+      create(:index_post, index: both_index, post: source_post)
+      create(:index_post, index: both_index, post: target_post)
+
+      merge_at(target_replies.last)
+
+      expect(IndexPost.where(index: index, post: target_post)).to exist
+      expect(IndexPost.where(index: both_index, post: target_post).count).to eq(1)
+      expect(IndexPost.where(post: source_post.id)).to be_empty
+    end
+
+    it "repoints old notifications at the merged post" do
+      reader = create(:user)
+      notice = create(:notification, user: reader, post: source_post, notification_type: :new_favorite_post)
+
+      merge_at(target_replies.last)
+
+      expect(notice.reload.post_id).to eq(target_post.id)
+    end
+  end
+
   it "deletes the source post" do
     source_replies
     reader = create(:user)
@@ -404,6 +497,15 @@ RSpec.describe MergePostsJob do
 
     expect(Post.find_by(id: source_post.id)).to be_nil
     expect(Post::View.where(post_id: source_post.id)).to be_empty
+  end
+
+  it "takes an author-set hiatus off the target" do
+    target_replies
+    target_post.update!(status: :hiatus)
+
+    merge_at(target_replies.last)
+
+    expect(target_post.reload.status).to eq('active')
   end
 
   it "regenerates the target's flat post" do
