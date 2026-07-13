@@ -390,6 +390,7 @@ class Post < ApplicationRecord
       icon: icon,
       character: character,
       character_alias: character_alias,
+      editor_mode: editor_mode,
       created_at: created_at,
       updated_at: edited_at,
       skip_regenerate: true,
@@ -406,6 +407,7 @@ class Post < ApplicationRecord
       icon: icon,
       character: character,
       character_alias: character_alias,
+      editor_mode: editor_mode,
       updated_at: edited_at,
       skip_post_update: true,
     )
