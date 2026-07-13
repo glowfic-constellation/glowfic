@@ -879,7 +879,7 @@ RSpec.describe PostsController, 'PUT update' do
       expect(post.reload).to be_visible_to(viewer)
       expect(post.reload).not_to be_visible_to(create(:user))
       expect(post.tagging_authors).to match_array([user, joined_user, coauthor])
-      expect(post.joined_authors).to match_array([user, joined_users])
+      expect(post.joined_authors).to match_array([user, joined_user])
       expect(post.authors).to match_array([user, coauthor, joined_user])
     end
 
