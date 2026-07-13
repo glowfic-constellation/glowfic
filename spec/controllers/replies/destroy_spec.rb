@@ -1,4 +1,8 @@
 RSpec.describe RepliesController, 'DELETE destroy' do
+  let(:user) { create(:user) }
+  let(:post) { create(:post) }
+  let(:reply) { create(:reply, post: post, user: user) }
+
   it "requires login" do
     delete :destroy, params: { id: -1 }
     expect(response).to redirect_to(root_url)
@@ -17,31 +21,24 @@ RSpec.describe RepliesController, 'DELETE destroy' do
   end
 
   it "requires post access" do
-    reply = create(:reply)
-    expect(reply.user_id).not_to eq(reply.post.user_id)
-    expect(reply.post.visible_to?(reply.user)).to eq(true)
+    post.update!(privacy: :private)
+    expect(post.reload.visible_to?(user)).to eq(false)
 
-    reply.post.update!(privacy: :private)
-    reply.reload
-    expect(reply.post.visible_to?(reply.user)).to eq(false)
-
-    login_as(reply.user)
+    login_as(user)
     delete :destroy, params: { id: reply.id }
     expect(response).to redirect_to(continuities_url)
     expect(flash[:error]).to eq("You do not have permission to view this post.")
   end
 
   it "requires reply access" do
-    reply = create(:reply)
     login
     delete :destroy, params: { id: reply.id }
-    expect(response).to redirect_to(post_url(reply.post))
+    expect(response).to redirect_to(post_url(post))
     expect(flash[:error]).to eq("You do not have permission to modify this reply.")
   end
 
   it "succeeds for reply creator" do
-    reply = create(:reply)
-    login_as(reply.user)
+    login_as(user)
     delete :destroy, params: { id: reply.id }
     expect(response).to redirect_to(post_url(reply.post, page: 1))
     expect(flash[:success]).to eq("Reply deleted.")
@@ -49,7 +46,6 @@ RSpec.describe RepliesController, 'DELETE destroy' do
   end
 
   it "succeeds for admin user" do
-    reply = create(:reply)
     login_as(create(:admin_user))
     delete :destroy, params: { id: reply.id }
     expect(response).to redirect_to(post_url(reply.post, page: 1))
@@ -58,72 +54,56 @@ RSpec.describe RepliesController, 'DELETE destroy' do
   end
 
   it "respects per_page when redirecting" do
-    reply = create(:reply) # p1
-    reply = create(:reply, post: reply.post, user: reply.user) # p1
-    reply = create(:reply, post: reply.post, user: reply.user) # p2
-    reply = create(:reply, post: reply.post, user: reply.user) # p2
-    login_as(reply.user)
+    create_list(:reply, 3, post: post, user: user)
+    reply
+    login_as(user)
     delete :destroy, params: { id: reply.id, per_page: 2 }
     expect(response).to redirect_to(post_url(reply.post, page: 2))
   end
 
   it "respects per_page when redirecting first on page" do
-    reply = create(:reply) # p1
-    reply = create(:reply, post: reply.post, user: reply.user) # p1
-    reply = create(:reply, post: reply.post, user: reply.user) # p2
-    reply = create(:reply, post: reply.post, user: reply.user) # p2
-    reply = create(:reply, post: reply.post, user: reply.user) # p3
-    login_as(reply.user)
+    create_list(:reply, 4, post: post, user: user)
+    reply
+    login_as(user)
     delete :destroy, params: { id: reply.id, per_page: 2 }
     expect(response).to redirect_to(post_url(reply.post, page: 2))
   end
 
   it "deletes post author on deleting only reply in open posts" do
-    user = create(:user)
-    post = create(:post)
-    expect(post.authors_locked).to eq(false)
     login_as(user)
-    reply = create(:reply, post: post, user: user)
+    reply
     post_user = post.post_authors.find_by(user: user)
-    id = post_user.id
     expect(post_user.joined).to eq(true)
     delete :destroy, params: { id: reply.id }
-    expect(Post::Author.find_by(id: id)).to be_nil
+    expect(Post::Author.find_by(id: post_user.id)).to be_nil
   end
 
   it "sets joined to false on deleting only reply when invited" do
-    user = create(:user)
-    other_user = create(:user)
-    post = create(:post, user: other_user, authors: [user, other_user], authors_locked: true)
-    expect(post.authors_locked).to eq(true)
-    expect(post.post_authors.find_by(user: user)).not_to be_nil
+    other_user = post.user
+    post.update!(authors: [user, other_user], authors_locked: true)
     login_as(user)
-    reply = create(:reply, post: post, user: user)
+
+    reply
     post_user = post.post_authors.find_by(user: user)
     expect(post_user.joined).to eq(true)
+
     delete :destroy, params: { id: reply.id }
-    post_user.reload
-    expect(post_user.joined).to eq(false)
+
+    expect(post_user.reload.joined).to eq(false)
   end
 
   it "does not clean up post author when other replies exist" do
-    user = create(:user)
-    post = create(:post)
-    expect(post.authors_locked).to eq(false)
     login_as(user)
     create(:reply, post: post, user: user) # remaining reply
-    reply = create(:reply, post: post, user: user)
+    reply
     post_user = post.post_authors.find_by(user: user)
     expect(post_user.joined).to eq(true)
     delete :destroy, params: { id: reply.id }
-    post_user.reload
-    expect(post_user.joined).to eq(true)
+    expect(post_user.reload.joined).to eq(true)
   end
 
   it "handles destroy failure" do
-    post = create(:post)
-    reply = create(:reply, user: post.user, post: post)
-    login_as(post.user)
+    login_as(user)
 
     allow(Reply).to receive(:find_by).and_call_original
     allow(Reply).to receive(:find_by).with({ id: reply.id.to_s }).and_return(reply)
@@ -135,5 +115,30 @@ RSpec.describe RepliesController, 'DELETE destroy' do
     expect(response).to redirect_to(reply_url(reply, anchor: "reply-#{reply.id}"))
     expect(flash[:error]).to eq("Reply could not be deleted.")
     expect(post.reload.replies).to eq([reply])
+  end
+
+  context "reorders" do
+    let!(:reply) { create(:reply, user: user, post: post) }
+    let!(:replies) { Reply.where(id: create_list(:reply, 2, post: post).map(&:id)) }
+    let!(:order) { replies.map(&:reply_order) }
+
+    before(:each) { login_as(user) }
+
+    it "correctly" do
+      delete :destroy, params: { id: reply.id }
+
+      expect(flash[:success]).to eq("Reply deleted.")
+      expect(replies.reload.map(&:reply_order)).to eq(order.map { it - 1 })
+    end
+
+    it "correctly without a written" do
+      post.written.delete
+      expect(replies.reload.map(&:reply_order)).to eq(order)
+
+      delete :destroy, params: { id: reply.id }
+
+      expect(flash[:success]).to eq("Reply deleted.")
+      expect(replies.reload.map(&:reply_order)).to eq(order.map { it - 1 })
+    end
   end
 end

@@ -89,9 +89,19 @@ RSpec.describe SplitPostJob do
     setting = create(:setting, name: 'setting')
     warning = create(:content_warning, name: 'warning')
     label = create(:label, name: 'label')
-    post = create(:post, user: user, board: board, section: section, setting_ids: [setting.id], content_warning_ids: [warning.id],
-      label_ids: [label.id],)
-    reply = create(:reply, post: post, user: user)
+    character = create(:character, user: user)
+    icon = create(:icon, user: user)
+    content = 'content'
+
+    post = create(:post,
+      user: user,
+      board: board,
+      section: section,
+      settings: [setting],
+      content_warnings: [warning],
+      labels: [label],
+    )
+    reply = create(:reply, post: post, user: user, character: character, icon: icon, content: content)
 
     expect {
       SplitPostJob.perform_now(reply.id, title)
@@ -100,9 +110,12 @@ RSpec.describe SplitPostJob do
     new_post = Post.last
     expect(new_post.board).to eq(board)
     expect(new_post.section).to eq(section)
-    expect(new_post.setting_ids).to match_array([setting.id])
-    expect(new_post.content_warning_ids).to match_array([warning.id])
-    expect(new_post.label_ids).to match_array([label.id])
+    expect(new_post.settings).to match_array([setting])
+    expect(new_post.content_warnings).to match_array([warning])
+    expect(new_post.labels).to match_array([label])
+    expect(new_post.content).to eq(content)
+    expect(new_post.character).to eq(character)
+    expect(new_post.icon).to eq(icon)
   end
 
   it "does not affect other posts" do

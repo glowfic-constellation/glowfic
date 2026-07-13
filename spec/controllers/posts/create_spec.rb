@@ -38,8 +38,7 @@ RSpec.describe PostsController, 'POST create' do
     include ActiveJob::TestHelper
 
     it "requires valid user" do
-      user = create(:user)
-      login_as(user)
+      login
       post :create, params: { button_import: true }
       expect(response).to redirect_to(new_post_path)
       expect(flash[:error]).to eq("You do not have access to this feature.")
@@ -87,6 +86,7 @@ RSpec.describe PostsController, 'POST create' do
         expect(flash[:success]).to eq("Post has begun importing. You will be updated on progress via site message.")
         post = Post.find_by(subject: 'linear b')
         expect(post).to be_present
+        expect(post.slice(Post::WRITTEN_ATTRS)).to match_hash(post.written.slice(Post::WRITTEN_ATTRS))
         expect(Notification.find_by(user: user, post: post)).to be_import_success
       end
     end
@@ -115,13 +115,17 @@ RSpec.describe PostsController, 'POST create' do
         },
       }
       expect(response).to render_template(:preview)
-      expect(assigns(:written)).to be_an_instance_of(Post)
-      expect(assigns(:written)).to be_a_new_record
-      expect(assigns(:written).user).to eq(user)
-      expect(assigns(:written).character).to eq(templateless_character)
-      expect(assigns(:written).icon).to eq(icon)
-      expect(assigns(:written).character_alias).to eq(character_alias)
       expect(assigns(:post)).to eq(assigns(:written))
+      post = assigns(:post)
+
+      expect(post).to be_an_instance_of(Post)
+      expect(post).to be_a_new_record
+      expect(post.user).to eq(user)
+      expect(post.character).to eq(templateless_character)
+      expect(post.icon).to eq(icon)
+      expect(post.character_alias).to eq(character_alias)
+      expect(post.written).to be_nil
+
       expect(assigns(:page_title)).to eq('Previewing: test')
       expect(assigns(:author_ids)).to match_array([user.id, coauthor.id])
 
@@ -353,10 +357,15 @@ RSpec.describe PostsController, 'POST create' do
 
       expect(response).to render_template(:new)
       expect(flash[:error][:message]).to eq("Post could not be created because of the following problems:")
-      expect(assigns(:post)).not_to be_persisted
-      expect(assigns(:post).user).to eq(user)
-      expect(assigns(:post).subject).to eq('asubjct')
-      expect(assigns(:post).content).to eq('acontnt')
+
+      post = assigns(:post)
+      expect(post).to be_an_instance_of(Post)
+      expect(post).not_to be_persisted
+      expect(post.user).to eq(user)
+      expect(post.subject).to eq('asubjct')
+      expect(post.content).to eq('acontnt')
+      expect(post.written).to be_nil
+
       expect(assigns(:page_title)).to eq('New Post')
       expect(assigns(:author_ids)).to match_array([user.id, coauthor.id])
 
@@ -416,17 +425,29 @@ RSpec.describe PostsController, 'POST create' do
       expect(flash[:success]).to eq("Post created.")
 
       post = assigns(:post).reload
+      written = post.written.reload
+
+      expect(post).to be_an_instance_of(Post)
       expect(post).to be_persisted
       expect(post.user).to eq(user)
       expect(post.last_user).to eq(user)
+      expect(post.board).to eq(board)
+      expect(post.section).to eq(section)
       expect(post.subject).to eq('asubjct')
       expect(post.content).to eq('acontnt')
       expect(post.description).to eq('adesc')
-      expect(post.board).to eq(board)
-      expect(post.section).to eq(section)
-      expect(post.character_id).to eq(templateless_character.id)
-      expect(post.icon_id).to eq(icon.id)
-      expect(post.character_alias_id).to eq(character_alias.id)
+      expect(post.character).to eq(templateless_character)
+      expect(post.character_alias).to eq(character_alias)
+      expect(post.icon).to eq(icon)
+
+      expect(written).to be_an_instance_of(Reply)
+      expect(written).to be_persisted
+      expect(written.user).to eq(user)
+      expect(written.content).to eq('acontnt')
+      expect(written.character).to eq(templateless_character)
+      expect(written.character_alias).to eq(character_alias)
+      expect(written.icon).to eq(icon)
+
       expect(post).to be_privacy_access_list
       expect(post.viewers).to match_array([viewer])
       expect(post.reload).to be_visible_to(viewer)
@@ -471,11 +492,11 @@ RSpec.describe PostsController, 'POST create' do
 
       post = assigns(:post).reload
       expect(post).to be_persisted
-      expect(post.character_id).not_to eq(templateless_character.id)
-      expect(post.icon_id).to eq(icon.id)
+      expect(post.character).not_to eq(templateless_character)
+      expect(post.icon).to eq(icon)
       expect(post.character.name).to eq('NPC')
       expect(post.character).to be_npc
-      expect(post.character.default_icon_id).to eq(icon.id)
+      expect(post.character.default_icon).to eq(icon)
       expect(post.character.nickname).to eq('asubjct') # post disambiguator
       expect(post.character.settings.map(&:id_for_select)).to match_array(settings.map(&:id) + [Setting.last.id])
     end
