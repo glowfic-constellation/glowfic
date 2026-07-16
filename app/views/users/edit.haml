@@ -32,6 +32,9 @@
         = f.check_box :favorite_notifications
         = f.label :favorite_notifications, 'Notify when a favorited author makes a new post'
     %div
+      .sub= f.label :notifications_per_page, 'Paging'
+      %div{class: cycle('even', 'odd')}= f.select(:notifications_per_page, per_page_options(current_user.notifications_per_page))
+    %div
       .sub= f.label :timezone, 'Time zone'
       %div{class: cycle('even', 'odd')}= f.select(:timezone, timezone_options(current_user.timezone))
     %div
