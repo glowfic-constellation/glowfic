@@ -4,7 +4,7 @@ RSpec.describe AnonLoadShed do
 
   def env(wait: nil, user_id: nil, path: '/posts')
     {
-      'rack.timeout.info' => wait && Struct.new(:wait).new(wait),
+      Rack::Timeout::ENV_INFO_KEY => wait && Struct.new(:wait).new(wait),
       'rack.session'      => { user_id: user_id },
       'PATH_INFO'         => path,
     }

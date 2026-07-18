@@ -53,10 +53,12 @@ class AnonLoadShed
     env['PATH_INFO'] == '/login'
   end
 
-  # rack-timeout populates env['rack.timeout.info'].wait with the seconds
-  # the request spent in the dyno's queue before reaching a worker.
+  # rack-timeout stores its RequestDetails (including .wait, the seconds the
+  # request spent in the dyno's queue before reaching a worker) under
+  # Rack::Timeout::ENV_INFO_KEY. Resolved at call time so this file can be
+  # required before Bundler loads the gem.
   def wait_seconds(env)
-    info = env['rack.timeout.info']
+    info = env[Rack::Timeout::ENV_INFO_KEY]
     info&.wait
   end
 end
