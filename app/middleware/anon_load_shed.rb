@@ -55,10 +55,11 @@ class AnonLoadShed
 
   # rack-timeout stores its RequestDetails (including .wait, the seconds the
   # request spent in the dyno's queue before reaching a worker) under
-  # Rack::Timeout::ENV_INFO_KEY. Resolved at call time so this file can be
-  # required before Bundler loads the gem.
+  # Rack::Timeout::ENV_INFO_KEY. The gem is production-only, so resolve the
+  # constant defensively: where it isn't loaded there is no queue-wait info
+  # and we never shed.
   def wait_seconds(env)
-    info = env[Rack::Timeout::ENV_INFO_KEY]
-    info&.wait
+    return nil unless defined?(Rack::Timeout::ENV_INFO_KEY)
+    env[Rack::Timeout::ENV_INFO_KEY]&.wait
   end
 end

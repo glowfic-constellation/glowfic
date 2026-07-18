@@ -1,4 +1,12 @@
 RSpec.describe AnonLoadShed do
+  # rack-timeout is a production-only gem; stub its env key constant where it
+  # isn't bundled (dev/test CI) so these specs still exercise the middleware.
+  # Where the gem IS present, the real constant is used, guarding against the
+  # key drifting from the gem's.
+  before do
+    stub_const('Rack::Timeout::ENV_INFO_KEY', 'rack-timeout.info') unless defined?(Rack::Timeout::ENV_INFO_KEY)
+  end
+
   let(:downstream) { ->(_env) { [200, {}, ['ok']] } }
   let(:middleware) { AnonLoadShed.new(downstream) }
 
