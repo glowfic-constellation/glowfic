@@ -37,7 +37,7 @@ RSpec.describe SplitPostJob do
       expect(post.replies.count).to eq(0)
       expect(post.content).to eq(reply.content)
       expect(post.editor_mode).to eq(reply.editor_mode)
-      expect(Reply.find_by(id: reply.id)).not_to be_present
+      expect(reply.reload).to eq(post.written)
     end
   end
 
@@ -52,14 +52,14 @@ RSpec.describe SplitPostJob do
     100.times { |i| create(:reply, post: post, user: i.even? ? user : coauthor) }
     create(:reply, post: post, user: new_user)
 
-    previous = post.replies.find_by(reply_order: 49)
-    reply = post.replies.find_by(reply_order: 50)
-    next_reply = post.replies.find_by(reply_order: 51)
+    previous = post.replies.find_by(reply_order: 50)
+    reply = post.replies.find_by(reply_order: 51)
+    next_reply = post.replies.find_by(reply_order: 52)
     last = post.replies.last
 
     expect {
       SplitPostJob.perform_now(reply.id, title)
-    }.to change { Post.count }.by(1).and change { Reply.count }.by(-1)
+    }.to change { Post.count }.by(1).and not_change { Reply.count }
 
     post.reload
     expect(post.replies.count).to eq(50)
@@ -79,7 +79,7 @@ RSpec.describe SplitPostJob do
     expect(new_post.last_user_id).to eq(last.user_id)
     expect(new_post.tagged_at).to eq(last.created_at)
     expect(new_post.replies.ordered.first).to eq(next_reply)
-    expect(Reply.find_by(id: reply.id)).not_to be_present
+    expect(reply.reload).to eq(new_post.written)
   end
 
   it "copies original post's properties" do
@@ -89,20 +89,33 @@ RSpec.describe SplitPostJob do
     setting = create(:setting, name: 'setting')
     warning = create(:content_warning, name: 'warning')
     label = create(:label, name: 'label')
-    post = create(:post, user: user, board: board, section: section, setting_ids: [setting.id], content_warning_ids: [warning.id],
-      label_ids: [label.id],)
-    reply = create(:reply, post: post, user: user)
+    character = create(:character, user: user)
+    icon = create(:icon, user: user)
+    content = 'content'
+
+    post = create(:post,
+      user: user,
+      board: board,
+      section: section,
+      settings: [setting],
+      content_warnings: [warning],
+      labels: [label],
+    )
+    reply = create(:reply, post: post, user: user, character: character, icon: icon, content: content)
 
     expect {
       SplitPostJob.perform_now(reply.id, title)
-    }.to change { Post.count }.by(1).and change { Reply.count }.by(-1)
+    }.to change { Post.count }.by(1).and not_change { Reply.count }
 
     new_post = Post.last
     expect(new_post.board).to eq(board)
     expect(new_post.section).to eq(section)
-    expect(new_post.setting_ids).to match_array([setting.id])
-    expect(new_post.content_warning_ids).to match_array([warning.id])
-    expect(new_post.label_ids).to match_array([label.id])
+    expect(new_post.settings).to match_array([setting])
+    expect(new_post.content_warnings).to match_array([warning])
+    expect(new_post.labels).to match_array([label])
+    expect(new_post.content).to eq(content)
+    expect(new_post.character).to eq(character)
+    expect(new_post.icon).to eq(icon)
   end
 
   it "does not affect other posts" do
@@ -115,8 +128,8 @@ RSpec.describe SplitPostJob do
     other_post = create(:post, num_replies: 10)
 
     expect {
-      SplitPostJob.perform_now(post.replies.find_by(reply_order: 5).id, title)
-    }.to change { Post.count }.by(1).and change { Reply.count }.by(-1)
+      SplitPostJob.perform_now(post.replies.find_by(reply_order: 6).id, title)
+    }.to change { Post.count }.by(1).and not_change { Reply.count }
 
     new_post = Post.last
 

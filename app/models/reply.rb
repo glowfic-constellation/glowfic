@@ -6,7 +6,7 @@ class Reply < ApplicationRecord
 
   # define this scope here or Orderable will redefine it
   scope :ordered, -> { order(reply_order: :asc) }
-  scope :ordered_manually, -> { ordered }
+  scope :ordered_manually, -> { where.not(reply_order: 0).ordered }
   include Orderable
 
   belongs_to :post, inverse_of: :replies, optional: false
@@ -66,7 +66,7 @@ class Reply < ApplicationRecord
   end
 
   def set_last_reply
-    return if skip_post_update
+    return if skip_post_update && reply_order != 0
     post.last_user = user
     post.last_reply = self
   end
@@ -116,7 +116,7 @@ class Reply < ApplicationRecord
   def previous_reply
     return @prev if defined?(@prev)
 
-    @prev = post.replies.find_by(reply_order: reply_order - 1)
+    @prev = post.replies.find_by(reply_order: reply_order - 1) || post.written
   end
 
   def author_can_write_in_post

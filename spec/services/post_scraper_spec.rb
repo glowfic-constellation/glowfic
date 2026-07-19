@@ -43,7 +43,7 @@ RSpec.describe PostScraper do
     scraper.scrape!
 
     expect(Post.count).to eq(1)
-    expect(Reply.count).to eq(46)
+    expect(Reply.count).to eq(47)
     expect(User.count).to eq(1)
     expect(Icon.count).to eq(0)
     expect(Character.count).to eq(2)
@@ -67,7 +67,7 @@ RSpec.describe PostScraper do
     scraper.scrape!
 
     expect(Post.count).to eq(1)
-    expect(Reply.count).to eq(92)
+    expect(Reply.count).to eq(93)
     expect(User.count).to eq(1)
     expect(Icon.count).to eq(0)
     expect(Character.count).to eq(2)
@@ -161,7 +161,7 @@ RSpec.describe PostScraper do
     expect { scraper.scrape_threads!(threads) }.to change { Post.count }.by(1)
     expect(Post.first.subject).to eq('repealing')
     expect(Post.first.authors_locked).to eq(true)
-    expect(Reply.count).to eq(55)
+    expect(Reply.count).to eq(56)
     expect(User.count).to eq(2)
     expect(Icon.count).to eq(30)
     expect(Character.count).to eq(8)

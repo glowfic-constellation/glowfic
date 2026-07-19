@@ -855,19 +855,27 @@ RSpec.describe PostsController, 'PUT update' do
       expect(flash[:success]).to eq("Post updated.")
 
       post.reload
-      expect(post.content).to eq(newcontent)
       expect(post.subject).to eq(newsubj)
       expect(post.description).to eq('desc')
-      expect(post.board_id).to eq(board.id)
-      expect(post.section_id).to eq(section.id)
-      expect(post.character_id).to eq(templateless_character.id)
-      expect(post.character_alias_id).to eq(character_alias.id)
-      expect(post.icon_id).to eq(icon.id)
+      expect(post.board).to eq(board)
+      expect(post.section).to eq(section)
       expect(post).to be_privacy_access_list
       expect(post.viewers).to match_array([viewer])
       expect(post.settings).to eq([setting])
       expect(post.content_warnings).to eq([warning])
       expect(post.labels).to eq([label])
+
+      expect(post.content).to eq(newcontent)
+      expect(post.character).to eq(templateless_character)
+      expect(post.character_alias).to eq(character_alias)
+      expect(post.icon).to eq(icon)
+
+      written = post.written.reload
+      expect(written.content).to eq(newcontent)
+      expect(written.character).to eq(templateless_character)
+      expect(written.character_alias).to eq(character_alias)
+      expect(written.icon).to eq(icon)
+
       expect(post.reload).to be_visible_to(viewer)
       expect(post.reload).not_to be_visible_to(create(:user))
       expect(post.tagging_authors).to match_array([user, joined_user, coauthor])
