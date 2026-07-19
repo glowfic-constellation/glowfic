@@ -143,9 +143,9 @@ RSpec.describe ApplicationController do
       expect(fetched2.content_warnings).to match_array([warning1])
       expect(fetched3.content_warnings).to match_array([warning1, warning2])
 
-      expect(fetched1.reply_count).to eq(0)
-      expect(fetched2.reply_count).to eq(1)
-      expect(fetched3.reply_count).to eq(35)
+      expect(fetched1.reply_count).to eq(1)
+      expect(fetched2.reply_count).to eq(2)
+      expect(fetched3.reply_count).to eq(36)
 
       expect(fetched1.joined_authors).to match_array([post1.user])
       expect(fetched2.joined_authors).to match_array([post2.user, post2_reply.user])
@@ -301,6 +301,32 @@ RSpec.describe ApplicationController do
           one_unread.id => 1,
           two_unread.id => 2,
         })
+      end
+
+      it "flags and counts replies behind the marker regardless of timestamps" do
+        post = create(:post, num_replies: 3)
+        replies = post.replies.ordered_manually
+        post.mark_read(user, at_reply: replies[0]) # read_at is now later than tagged_at
+
+        controller.send(:posts_from_relation, Post.where(id: post.id), with_unread: true)
+
+        expect(assigns(:unread_ids)).to eq([post.id])
+        expect(assigns(:unread_counts)).to eq({ post.id => 2 })
+      end
+
+      it "ignores replies spliced in before the marker" do
+        post = create(:post, num_replies: 2)
+        replies = post.replies.ordered_manually
+        post.mark_read(user, at_reply: replies.last)
+
+        # mimic the multi-reply editor splicing after the first reply
+        replies.last.update_columns(reply_order: 3) # rubocop:disable Rails/SkipsModelValidations
+        create(:reply, post: post, reply_order: 2, created_at: replies.first.created_at,
+          skip_post_update: true, skip_notify: true, is_import: true,)
+
+        controller.send(:posts_from_relation, Post.where(id: post.id), with_unread: true)
+
+        expect(assigns(:unread_ids)).to be_empty
       end
 
       it "uses an accurate post_count with blocked posts" do

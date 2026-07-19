@@ -7,7 +7,7 @@ RSpec.describe ReportsHelper do
   before(:each) do
     Timecop.freeze(now) { create(:reply, post: post) }
     Timecop.freeze(now + 1.minute) { create(:reply, post: post) }
-    assign(:opened_posts, Post::View.where(user_id: user.id).select([:post_id, :read_at, :ignored]))
+    assign(:opened_posts, Post::View.where(user_id: user.id).select([:post_id, :read_at, :ignored]).with_last_read_reply_order)
   end
 
   describe "#has_unread?" do
@@ -38,6 +38,16 @@ RSpec.describe ReportsHelper do
     it "returns false if read_at later than tagged_at" do
       view.update!(read_at: now + 3.minutes)
       expect(post.tagged_at).to be < view.read_at
+      expect(helper.has_unread?(post)).to eq(false)
+    end
+
+    it "returns true if the marker is behind, even with read_at later than tagged_at" do
+      view.update!(read_at: now + 3.minutes, last_read_reply: post.replies.find_by(reply_order: 1))
+      expect(helper.has_unread?(post)).to eq(true)
+    end
+
+    it "returns false if the marker is at the last reply" do
+      view.update!(read_at: now + 3.minutes, last_read_reply: post.replies.ordered.last)
       expect(helper.has_unread?(post)).to eq(false)
     end
   end
