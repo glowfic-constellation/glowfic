@@ -27,17 +27,27 @@ class Notification < ApplicationRecord
     import_fail: 1,
     new_favorite_post: 2,
     joined_favorite_post: 3,
+    post_merged_author: 4,
+    source_post_merged: 5,
+    target_post_merged: 6,
   }
 
-  attr_accessor :skip_email
+  MERGE_TYPES = %w(post_merged_author source_post_merged target_post_merged)
 
-  def self.notify_user(user, type, post: nil, error: nil)
-    Notification.create!(user: user, notification_type: type, post: post, error_msg: error)
+  attr_accessor :skip_email, :skip_check_read
+
+  def merge_type?
+    MERGE_TYPES.include?(notification_type)
+  end
+
+  def self.notify_user(user, type, post: nil, message: nil)
+    Notification.create!(user: user, notification_type: type, post: post, message: message)
   end
 
   private
 
   def check_read
+    return if skip_check_read
     return unless post
     view = Post::View.find_by(user: user, post: post)
     return unless view&.read_at

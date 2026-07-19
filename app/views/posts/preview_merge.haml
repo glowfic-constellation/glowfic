@@ -1,0 +1,38 @@
+= render 'breadcrumbs', subtitle: 'Merge Post', post: @post
+
+%p
+  The contents of
+  = succeed ' ' do
+    = link_to @post.subject, @post
+  will be moved into
+  = succeed ',' do
+    = link_to @target_post.subject, @target_post
+  immediately after the reply below.
+
+- if @target_is_written
+  .content-header= @target_post.subject
+  - if @target_post.description.present?
+    .post-subheader= sanitize_simple_link_text(@target_post.description)
+-# the wrapper div restarts nth-child counting so the replies get alternating backgrounds
+#preview-replies
+  = render 'replies/single', reply: @target_reply, hide_footer: true, hide_post_edit_box: true
+  = render 'replies/single', reply: @merged_written, hide_footer: true, hide_post_edit_box: true
+
+= form_with model: @target_post, url: do_merge_post_path(@post), method: :post do |f|
+  = hidden_field_tag :target_reply_id, @target_reply.id
+  .form-table#post-merger
+    .editor-title Merge Post
+    %div
+      .sub= f.label :privacy, 'Privacy:'
+      .odd= f.select :privacy, options_from_collection_for_select(post_privacy_settings.to_a, :second, :first, @default_privacy)
+    %div
+      .sub= f.label :setting_ids, 'Setting:'
+      .even= tag_select(@target_post, f, :settings)
+    %div
+      .sub= f.label :content_warning_ids, 'Content Warnings:'
+      .odd= tag_select(@target_post, f, :content_warnings)
+    %div
+      .sub= f.label :label_ids, 'Labels:'
+      .even= tag_select(@target_post, f, :labels)
+    .form-table-ender
+      = submit_tag 'Finish Merge', class: 'button', id: 'submit_button', data: { disable_with: 'Merging...' }

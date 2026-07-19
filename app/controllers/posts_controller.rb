@@ -4,9 +4,11 @@ class PostsController < WritableController
 
   before_action :login_required, except: [:index, :show, :history, :warnings, :search, :stats]
   before_action :readonly_forbidden, only: [:owed]
-  before_action :find_model, only: [:show, :history, :delete_history, :stats, :warnings, :edit, :update, :destroy, :split, :do_split, :preview_split]
-  before_action :require_edit_permission, only: [:edit, :delete_history, :split, :do_split, :preview_split]
-  before_action :require_locked_authorship, only: [:split, :do_split, :preview_split]
+  before_action :find_model,
+    only: [:show, :history, :delete_history, :stats, :warnings, :edit, :update, :destroy, :split, :do_split, :preview_split, :merge, :preview_merge,
+           :do_merge]
+  before_action :require_edit_permission, only: [:edit, :delete_history, :split, :do_split, :preview_split, :merge, :preview_merge, :do_merge]
+  before_action :require_locked_authorship, only: [:split, :do_split, :preview_split, :merge, :preview_merge, :do_merge]
   before_action :require_import_permission, only: [:new, :create]
   before_action :require_create_permission, only: [:new, :create]
   before_action :editor_setup, only: [:new, :edit]
@@ -57,10 +59,18 @@ class PostsController < WritableController
       .or(no_post_view.where("date_trunc('second', board_views.read_at) < date_trunc('second', posts.tagged_at)"))
     no_post_view = no_post_view.where(board_views: { user_id: nil }).or(updated_since_board_read)
 
-    # post view exists and post has updated since post view read_at
+    # the marker's live position is before the post's last reply position
+    # (identical results to comparing against the reply count, but MAX is a single index probe per row)
+    unread_after_marker = <<~SQL.squish
+      (SELECT marker.reply_order FROM replies marker WHERE marker.id = post_views.last_read_reply_id)
+        < (SELECT MAX(replies.reply_order) FROM replies WHERE replies.post_id = posts.id)
+    SQL
+
+    # post view exists and (post has updated since post view read_at or replies exist after the read marker)
     with_post_view = @posts.where.not(post_views: { id: nil })
     with_post_view = with_post_view.where(post_views: { read_at: nil }) # possible if someone ignores and then unignores a post
       .or(with_post_view.where("date_trunc('second', post_views.read_at) < date_trunc('second', posts.tagged_at)"))
+      .or(with_post_view.where(unread_after_marker))
 
     @posts = with_post_view.or(no_post_view)
     @posts = posts_from_relation(@posts.ordered, with_unread: true, show_blocked: !!params[:show_blocked])
@@ -75,7 +85,7 @@ class PostsController < WritableController
     posts = posts.visible_to(current_user)
 
     if params[:commit] == "Mark Read"
-      posts.each { |post| post.mark_read(current_user) }
+      posts.each { |post| post.mark_read(current_user, at_reply: post.replies.ordered.last) }
       flash[:success] = "#{posts.size} #{'post'.pluralize(posts.size)} marked as read."
     elsif params[:commit] == "Remove from Replies Owed"
       readonly_forbidden and return if current_user.read_only?
@@ -118,10 +128,12 @@ class PostsController < WritableController
   end
 
   def new
-    @post = Post.new(character: current_user.active_character, user: current_user, authors_locked: true, editor_mode: current_user.default_editor)
+    @post = Post.new(user: current_user, authors_locked: true)
     @post.board_id = params[:board_id]
     @post.section_id = params[:section_id]
-    @post.icon_id = (current_user.active_character ? current_user.active_character.default_icon.try(:id) : current_user.avatar_id)
+    @post.written.character = current_user.active_character
+    @post.written.icon_id = (current_user.active_character ? current_user.active_character.default_icon.try(:id) : current_user.avatar_id)
+    @post.written.editor_mode = current_user.default_editor
     @page_title = 'New Post'
 
     @permitted_authors -= [current_user]
@@ -134,19 +146,24 @@ class PostsController < WritableController
 
   def create
     import_thread and return if params[:button_import].present?
-    preview and return if params[:button_preview].present?
 
     @post = current_user.posts.new(permitted_params)
+    @post.assign_attributes(written_params)
+    @post.written.assign_attributes(written_params)
+
+    preview and return if params[:button_preview].present?
     @post.settings = process_tags(Setting, obj_param: :post, id_param: :setting_ids)
     @post.content_warnings = process_tags(ContentWarning, obj_param: :post, id_param: :content_warning_ids)
     @post.labels = process_tags(Label, obj_param: :post, id_param: :label_ids)
-    process_npc(@post, permitted_character_params)
+    process_npc(@post.written, permitted_character_params)
 
     begin
       @post.save!
     rescue ActiveRecord::RecordInvalid => e
+      @post.errors.merge!(@post.written)
       render_errors(@post, action: 'created', now: true, err: e)
 
+      @reply = @post.written
       editor_setup
       @page_title = 'New Post'
       render :new
@@ -217,19 +234,28 @@ class PostsController < WritableController
 
     change_status and return if params[:status].present?
     change_authors_locked and return if params[:authors_locked].present?
+
+    @post.assign_attributes(permitted_params(params[:button_preview].blank?))
+    @post.assign_attributes(written_params)
+    @post.written.assign_attributes(written_params)
     preview and return if params[:button_preview].present?
 
-    @post.assign_attributes(permitted_params)
     @post.board ||= Board.find_by(id: Board::ID_SANDBOX)
     settings = process_tags(Setting, obj_param: :post, id_param: :setting_ids)
     warnings = process_tags(ContentWarning, obj_param: :post, id_param: :content_warning_ids)
     labels = process_tags(Label, obj_param: :post, id_param: :label_ids)
 
     is_author = @post.author_ids.include?(current_user.id)
-    if current_user.id != @post.user_id && @post.audit_comment.blank? && !is_author
-      flash[:error] = "You must provide a reason for your moderator edit."
-      editor_setup
-      render :edit and return
+
+    unless current_user.id == @post.user_id || is_author
+      if @post.written.audit_comment.blank?
+        flash[:error] = "You must provide a reason for your moderator edit."
+        editor_setup
+        render :edit and return
+      else
+        # no audit will be saved if a comment is the only change, so this should be safe
+        @post.audit_comment = @post.written.audit_comment
+      end
     end
 
     begin
@@ -237,11 +263,13 @@ class PostsController < WritableController
         @post.settings = settings
         @post.content_warnings = warnings
         @post.labels = labels
-        process_npc(@post, permitted_character_params)
+        process_npc(@post.written, permitted_character_params)
         @post.save!
         @post.author_for(current_user)&.update!(private_note: @post.private_note) if is_author
+        @post.written.save!
       end
     rescue ActiveRecord::RecordInvalid => e
+      @post.errors.merge!(@post.written)
       render_errors(@post, action: 'updated', now: true, err: e)
 
       @audits = { post: @post.audits.count }
@@ -322,7 +350,7 @@ class PostsController < WritableController
     end
     if params[:character_id].present?
       post_ids = Reply.where(character_id: params[:character_id]).select(:post_id).distinct.pluck(:post_id)
-      @search_results = @search_results.where(character_id: params[:character_id]).or(@search_results.where(id: post_ids))
+      @search_results = @search_results.where(id: post_ids)
     end
     @search_results = @search_results.not_ignored_by(current_user) if current_user&.hide_from_all && params[:hide_ignored].present?
     @search_results = posts_from_relation(@search_results, show_blocked: !!params[:show_blocked], no_tests: no_tests)
@@ -369,6 +397,75 @@ class PostsController < WritableController
     redirect_to post_path(@post)
   end
 
+  def merge
+    @page_title = 'Merge Post'
+  end
+
+  def preview_merge
+    @page_title = 'Merge Post'
+    @target_reply = parse_merge_target(params[:target_url])
+
+    if (error = merge_error(@target_reply))
+      flash.now[:error] = error
+      render :merge and return
+    end
+
+    @target_post = @target_reply.post
+    if @post.privacy != @target_post.privacy
+      flash.now[:error] = "Source and target posts have mismatching privacy levels; the stricter privacy level has been selected by default."
+    end
+
+    @settings = (@post.settings + @target_post.settings).uniq
+    @content_warnings = (@post.content_warnings + @target_post.content_warnings).uniq
+    @labels = (@post.labels + @target_post.labels).uniq
+    @default_privacy = stricter_privacy(@post, @target_post)
+    @reply_bookmarks = {}
+
+    # preview both replies in the style of the regular replies they will sit among post-merge (not saved)
+    @target_is_written = @target_reply.reply_order.zero?
+    @target_reply.reply_order = 1 if @target_is_written
+    @merged_written = @post.written
+    @merged_written.reply_order = @target_reply.reply_order + 1
+
+    use_javascript('posts/editor')
+    render :preview_merge
+  end
+
+  def do_merge
+    target_reply = Reply.find_by(id: params[:target_reply_id])
+    privacy = params.fetch(:post, {})[:privacy]
+
+    error = merge_error(target_reply)
+    error = "Privacy could not be recognized." if error.nil? && !Post.privacies.key?(privacy.to_s)
+    if error
+      flash[:error] = error
+      redirect_to merge_post_path(@post) and return
+    end
+
+    target_post = target_reply.post
+    # recheck visibility under the chosen privacy before committing to it; an access
+    # list will gain all of the merged post's authors, so they are exempt from it
+    target_post.privacy = privacy
+    future_viewer_ids = privacy.to_s == 'access_list' ? (@post.author_ids | target_post.author_ids) : []
+    unless cross_visible?(@post, target_post, assume_target_viewers: future_viewer_ids)
+      flash[:error] = "Visibility or blocking settings prevent some authors of at least one of the posts from seeing the other."
+      redirect_to merge_post_path(@post) and return
+    end
+
+    begin
+      setting_ids = merge_tag_ids(Setting, :setting_ids)
+      content_warning_ids = merge_tag_ids(ContentWarning, :content_warning_ids)
+      label_ids = merge_tag_ids(Label, :label_ids)
+    rescue ActiveRecord::RecordInvalid => e
+      flash[:error] = "Tags could not be created: #{e.record.errors.full_messages.to_sentence}"
+      redirect_to merge_post_path(@post) and return
+    end
+
+    MergePostsJob.perform_later(@post.id, target_reply.id, privacy, setting_ids, content_warning_ids, label_ids)
+    flash[:success] = "The posts will be merged."
+    redirect_to post_path(target_post)
+  end
+
   # Postgres's built-in english tsearch dictionary (tsearch_data/english.stop).
   POSTGRES_ENGLISH_STOP_WORDS = Set.new(%w[
     i me my myself we our ours ourselves you your yours yourself yourselves
@@ -391,11 +488,9 @@ class PostsController < WritableController
   end
 
   def preview
-    @post ||= Post.new(user: current_user)
-    @post.assign_attributes(permitted_params(false))
     @post.board ||= Board.find_by(id: 3)
 
-    process_npc(@post, permitted_character_params)
+    process_npc(@post.written, permitted_character_params)
 
     @author_ids = params.fetch(:post, {}).fetch(:unjoined_author_ids, [])
     @viewer_ids = params.fetch(:post, {}).fetch(:viewer_ids, [])
@@ -403,10 +498,9 @@ class PostsController < WritableController
     @content_warnings = process_tags(ContentWarning, obj_param: :post, id_param: :content_warning_ids)
     @labels = process_tags(Label, obj_param: :post, id_param: :label_ids)
 
-    @written = @post
-
     @audits = { post: @post.audits.count } if @post.id.present?
     @reply_bookmarks = {}
+    @reply = @post.written
 
     editor_setup
     @page_title = 'Previewing: ' + @post.subject.to_s
@@ -422,13 +516,13 @@ class PostsController < WritableController
     if params[:at_id].present?
       reply = Reply.find(params[:at_id])
       if reply && reply.post == @post
-        @post.mark_read(current_user, at_time: reply.created_at - 1.second, force: true)
+        @post.mark_read(current_user, at_time: reply.created_at - 1.second, force: true, at_reply: reply.previous_reply)
         flash[:success] = "Post has been marked as read until reply ##{reply.id}."
       end
       return redirect_to unread_posts_path
     end
 
-    @post.views.where(user_id: current_user.id).first.try(:update, read_at: nil)
+    @post.views.where(user_id: current_user.id).first.try(:update, read_at: nil, last_read_reply_id: nil)
     flash[:success] = "Post has been marked as unread"
     redirect_to unread_posts_path
   end
@@ -534,8 +628,59 @@ class PostsController < WritableController
 
   def require_locked_authorship
     return if @post.authors_locked
-    flash[:error] = "Post must be locked to current authors to be split."
+    flash[:error] = "Post must be locked to current authors."
     redirect_to @post
+  end
+
+  def stricter_privacy(*posts)
+    posts.map { |post| post.privacy.to_sym }.max_by { |privacy| Concealable::PRIVACY_STRICTNESS.index(privacy) }
+  end
+
+  # process_tags builds tags it doesn't find, relying on a post save to persist them;
+  # the merge applies tags in its job, so persist any new ones here instead
+  def merge_tag_ids(klass, id_param)
+    process_tags(klass, obj_param: :post, id_param: id_param).map do |tag|
+      tag.save! if tag.new_record?
+      tag.id
+    end
+  end
+
+  # the reason the post cannot be merged into the target reply's post, or nil if it can
+  def merge_error(target_reply)
+    return "Could not recognize that link as a post or reply." unless target_reply
+
+    target_post = target_reply.post
+    return "A post cannot be merged into itself." if target_post.id == @post.id
+
+    unless (target_post.editable_by?(current_user) || target_post.metadata_editable_by?(current_user)) && target_post.authors_locked
+      return "You must be an author of the other post, and it must be locked to its current authors."
+    end
+
+    return if cross_visible?(@post, target_post)
+    "Visibility or blocking settings prevent some authors of at least one of the posts from seeing the other."
+  end
+
+  # both posts must be visible to all of the other's authors for a merge to proceed
+  def cross_visible?(source_post, target_post, assume_target_viewers: [])
+    User.where(id: target_post.author_ids).all? { |user| source_post.visible_to?(user) } &&
+      User.where(id: source_post.author_ids).all? do |user|
+        assume_target_viewers.include?(user.id) || target_post.visible_to?(user)
+      end
+  end
+
+  # resolves a pasted post or reply link to the reply the merged content would follow
+  # (a post link means merging right after its top post)
+  def parse_merge_target(url)
+    return if url.blank?
+    route = Rails.application.routes.recognize_path(URI.parse(url.strip).path)
+    case [route[:controller], route[:action]]
+      when %w(posts show)
+        Post.find_by(id: route[:id])&.written
+      when %w(replies show)
+        Reply.find_by(id: route[:id])
+    end
+  rescue URI::InvalidURIError, ActionController::RoutingError
+    nil
   end
 
   def permitted_params(include_associations=true)
@@ -545,14 +690,9 @@ class PostsController < WritableController
       :privacy,
       :subject,
       :description,
-      :content,
-      :character_id,
-      :icon_id,
-      :character_alias_id,
       :authors_locked,
       :audit_comment,
       :private_note,
-      :editor_mode,
     ]
 
     # prevents us from setting (and saving) associations on preview()
@@ -564,6 +704,17 @@ class PostsController < WritableController
     end
 
     params.fetch(:post, {}).permit(allowed_params)
+  end
+
+  def written_params
+    params.fetch(:reply, {}).permit(
+      :content,
+      :character_id,
+      :icon_id,
+      :character_alias_id,
+      :audit_comment,
+      :editor_mode,
+    )
   end
 
   def import_params

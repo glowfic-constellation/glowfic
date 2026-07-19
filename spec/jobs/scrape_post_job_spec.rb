@@ -50,7 +50,7 @@ RSpec.describe ScrapePostJob do
       expect(Notification.count).to eq(1)
       notification = Notification.first
       expect(notification.notification_type).to eq('import_fail')
-      expect(notification.error_msg).to eq('Unrecognized username: wild_pegasus_appeared')
+      expect(notification.message).to eq('Unrecognized username: wild_pegasus_appeared')
       expect(Post.count).to eq(0)
     else
       raise "Error should be handled"

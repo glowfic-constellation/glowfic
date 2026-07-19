@@ -41,6 +41,15 @@ RSpec.describe PostsController, 'POST mark' do
       expect(response).to redirect_to(unread_posts_url)
       expect(flash[:success]).to eq("2 posts marked as read.")
     end
+
+    it "sets markers at the last reply" do
+      reply = create(:reply, post: posts[0])
+
+      post :mark, params: { marked_ids: posts.map { |x| x.id.to_s }, commit: "Mark Read" }
+
+      expect(posts[0].views.find_by(user: user).last_read_reply).to eq(reply)
+      expect(posts[1].views.find_by(user: user).last_read_reply).to eq(posts[1].written)
+    end
   end
 
   context "ignored" do

@@ -17,7 +17,7 @@ RSpec.describe "Creating posts" do
 
     click_button 'HTML'
     fill_in 'Subject', with: 'test subject'
-    fill_in 'post_content', with: 'test content'
+    fill_in 'reply_content', with: 'test content'
     click_button 'Post'
 
     expect(page).to have_selector('.flash.success', exact_text: 'Post created.')
@@ -37,7 +37,7 @@ RSpec.describe "Creating posts" do
 
     click_button 'HTML'
     fill_in 'Subject', with: 'test subject'
-    fill_in 'post_content', with: 'test content'
+    fill_in 'reply_content', with: 'test content'
     click_button 'Preview'
 
     # verify preview, change
@@ -48,10 +48,10 @@ RSpec.describe "Creating posts" do
 
     within('#post-editor') do
       expect(page).to have_field('Subject', with: 'test subject')
-      expect(page).to have_field('post_content', with: 'test content')
+      expect(page).to have_field('reply_content', with: 'test content')
 
       fill_in 'Subject', with: 'other subject'
-      fill_in 'post_content', with: 'other content'
+      fill_in 'reply_content', with: 'other content'
     end
     click_button 'Post'
 
@@ -150,7 +150,7 @@ RSpec.describe "Creating posts" do
 
     click_button 'HTML'
     fill_in 'Subject', with: 'test subject'
-    fill_in 'post_content', with: 'test content'
+    fill_in 'reply_content', with: 'test content'
     click_button 'Post'
 
     expect(page).to have_selector('.flash.error', text: "Post could not be created because of the following problems:\nBoard must exist")
@@ -158,7 +158,7 @@ RSpec.describe "Creating posts" do
     within('#post-editor') do
       expect(page).to have_selector('.view-button.selected', text: 'HTML')
       expect(page).to have_field('Subject', with: 'test subject')
-      expect(page).to have_field('post_content', with: 'test content')
+      expect(page).to have_field('reply_content', with: 'test content')
     end
   end
 

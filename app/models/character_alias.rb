@@ -22,8 +22,7 @@ class CharacterAlias < ApplicationRecord
   end
 
   def update_flat_posts
-    reply_ids = Reply.where(character_alias_id: id).select(:post_id).distinct.pluck(:post_id)
-    post_ids = (Post.where(character_alias_id: id).pluck(:id) + reply_ids).uniq
+    post_ids = Reply.where(character_alias_id: id).select(:post_id).distinct.pluck(:post_id)
     post_ids.each { |id| GenerateFlatPostJob.enqueue(id) }
   end
 end

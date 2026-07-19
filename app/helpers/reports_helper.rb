@@ -6,7 +6,9 @@ module ReportsHelper
     return false unless view
     return false if view.ignored?
     return false if view.read_at.nil? # totally unread, not partially
-    view.read_at < post.tagged_at
+    return true if view.read_at < post.tagged_at
+    # reply_count includes the order-0 written, so the last reply sits at reply_count - 1
+    view.last_read_reply_order.present? && view.last_read_reply_order < post.reply_count - 1
   end
 
   def never_read?(post)
