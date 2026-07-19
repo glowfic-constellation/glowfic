@@ -49,6 +49,16 @@ RSpec.describe NotificationsController do
       expect(flash[:error]).not_to be_present
     end
 
+    it "respects the notifications_per_page setting" do
+      user.update!(notifications_per_page: 10)
+      create_list(:notification, 15, user: user)
+      login_as(user)
+      get :index
+      expect(assigns(:notifications).per_page).to eq(10)
+      expect(assigns(:notifications).size).to eq(10)
+      expect(flash[:error]).not_to be_present
+    end
+
     it "respects post visibility" do
       create(:notification, user: user, notification_type: :new_favorite_post, post: create(:post, privacy: :private))
       create(:notification, user: user, notification_type: :new_favorite_post, post: create(:post, privacy: :access_list))
@@ -146,6 +156,18 @@ RSpec.describe NotificationsController do
         login_as(notification.user)
         post :mark, params: { marked_ids: [notification.id.to_s], commit: "Mark Unread" }
         expect(notification.reload.unread).to eq(true)
+      end
+
+      it "redirects back to the page the user was on" do
+        login_as(notification.user)
+        post :mark, params: { marked_ids: [notification.id.to_s], commit: "Mark Unread", page: 11 }
+        expect(response).to redirect_to(notifications_url(page: 11))
+      end
+
+      it "redirects to the first page without a page param" do
+        login_as(notification.user)
+        post :mark, params: { marked_ids: [notification.id.to_s], commit: "Mark Unread", page: 1 }
+        expect(response).to redirect_to(notifications_url)
       end
     end
 

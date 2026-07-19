@@ -6,7 +6,7 @@ class NotificationsController < ApplicationController
     @page_title = "Notifications"
     @notifications = current_user.notifications.visible_to(current_user).ordered
     @notifications = @notifications.not_ignored_by(current_user) if current_user&.hide_from_all
-    @notifications = @notifications.order(:created_at).paginate(page: page)
+    @notifications = @notifications.order(:created_at).paginate(page: page, per_page: notifications_per_page)
 
     post_ids = @notifications.map(&:post_id).compact_blank
     @posts = posts_from_relation(Post.where(id: post_ids), with_pagination: false).index_by(&:id)
@@ -26,10 +26,25 @@ class NotificationsController < ApplicationController
         notifications.destroy_all
       else
         flash[:error] = "Could not perform unknown action."
-        redirect_to notifications_path and return
+        redirect_to notifications_path(page: current_page) and return
     end
 
     flash[:success] = "Notifications updated"
-    redirect_to notifications_path
+    redirect_to notifications_path(page: current_page)
+  end
+
+  private
+
+  # Preserve the page the user was on so marking/deleting keeps them in place,
+  # while leaving page 1 as a clean /notifications URL.
+  def current_page
+    page > 1 ? page : nil
+  end
+
+  def notifications_per_page
+    per = current_user.notifications_per_page || 25
+    per = 100 if per.to_i > 100
+    per = 25 if per.to_i.zero?
+    per.to_i
   end
 end
