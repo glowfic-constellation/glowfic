@@ -1,11 +1,9 @@
 -# locals: ( reply:, hide_footer: false, hide_post_edit_box: false, split_ui: false )
 
-- if reply.is_a?(Post)
+- if reply.reply_order == 0
   - write = 'post-post'.freeze
-- elsif reply.is_a?(Reply)
-  - write = 'post-reply'.freeze
 - else
-  - write = ''.freeze
+  - write = 'post-reply'.freeze
 .post-container{class: [write, (reply == @unread && current_user.try(:visible_unread?)) ? 'reply-highlighted' : '']}
   - if reply.is_a?(Reply) && reply.id.present?
     %a.noheight{id: "reply-#{reply.id}"}= " "
@@ -35,22 +33,30 @@
     - if reply.id.present? && !hide_post_edit_box
       .post-edit-box
         - if split_ui
-          - if reply.is_a?(Reply)
-            -# Show the Split button when Split UI is enabled, the reply is a Reply, and the current user is an author of the thread
-            -# But don't show any buttons on a post when the Split UI is enabled
+          - if reply.reply_order != 0
+            -# Show the Split button when Split UI is enabled, the reply is not the top post, and the current user is an author of the thread
+            -# But don't show any buttons on the top post when the Split UI is enabled
             = link_to split_post_path(@post, reply_id: reply.id) do
               = image_tag "icons/cut_red.png".freeze, title: 'Split Post Here'.freeze, alt: 'Split Post Here'.freeze
         - else
           = link_to post_or_reply_link(reply), rel: 'alternate'.freeze do
             = image_tag "icons/link.png".freeze, title: 'Permalink'.freeze, alt: 'Permalink'.freeze
           - if !current_user.try(:default_hide_edit_delete_buttons) || params[:show_all_reply_buttons] == "true"
-            - if reply.editable_by?(current_user) || (reply.is_a?(Post) && reply.metadata_editable_by?(current_user))
-              = link_to path_for(reply, 'edit_%s') do
-                = image_tag "icons/pencil.png".freeze, title: 'Edit'.freeze, alt: 'Edit'.freeze
-            - if reply.deletable_by?(current_user)
-              = link_to path_for(reply, '%s'), method: :delete, data: { confirm: "Are you sure you wish to delete this #{reply.class.to_s.downcase}?" } do
-                = image_tag "icons/cross.png".freeze, title: 'Delete'.freeze, alt: 'Delete'.freeze
-          - if reply.is_a?(Reply) && logged_in?
+            - if reply.order == 0
+              - if reply.post.metadata_editable_by?(current_user)
+                = link_to edit_post_path(reply.post) do
+                  = image_tag "icons/pencil.png".freeze, title: 'Edit'.freeze, alt: 'Edit'.freeze
+              - if reply.post.deletable_by?(current_user)
+                = link_to post_path(reply.post), method: :delete, data: { confirm: "Are you sure you wish to delete this post?" } do
+                  = image_tag "icons/cross.png".freeze, title: 'Delete'.freeze, alt: 'Delete'.freeze
+            - else
+              - if reply.editable_by?(current_user)
+                = link_to edit_reply_path(reply) do
+                  = image_tag "icons/pencil.png".freeze, title: 'Edit'.freeze, alt: 'Edit'.freeze
+              - if reply.deletable_by?(current_user)
+                = link_to reply_path(reply), method: :delete, data: { confirm: "Are you sure you wish to delete this reply?" } do
+                  = image_tag "icons/cross.png".freeze, title: 'Delete'.freeze, alt: 'Delete'.freeze
+          - if logged_in? && reply.reply_order != 0
             - if !current_user.try(:default_hide_add_bookmark_button) || params[:show_all_reply_buttons] == "true"
               - if (bookmark_id = @reply_bookmarks[reply.id])
                 = link_to bookmark_path(bookmark_id), method: :delete do

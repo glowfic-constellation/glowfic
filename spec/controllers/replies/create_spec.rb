@@ -66,9 +66,11 @@ RSpec.describe RepliesController, 'POST create' do
       expect(controller.gon.editor_user[:username]).to eq(user.username)
       # templates
       templates = assigns(:templates)
-      expect(templates.length).to eq(2)
-      template = templates.first
-      expect(template).to eq(char2.template)
+      expect(templates.length).to eq(3)
+      used = templates.first
+      expect(used.name).to eq("Post characters")
+      expect(used.plucked_characters).to eq([[char1.id, char1.name]])
+      expect(templates[1]).to eq(char2.template)
       templateless = templates.last
       expect(templateless.name).to eq('Templateless')
       expect(templateless.plucked_characters).to eq([[char1.id, char1.name]])
@@ -499,7 +501,7 @@ RSpec.describe RepliesController, 'POST create' do
 
     reply = reply_post.replies.ordered.last
     expect(reply.content).to eq(searchable)
-    expect(reply.reply_order).to eq(0)
+    expect(reply.reply_order).to eq(1)
   end
 
   it "sets reply_order correctly with an existing reply" do
@@ -519,7 +521,7 @@ RSpec.describe RepliesController, 'POST create' do
 
     reply = reply_post.replies.ordered.last
     expect(reply.content).to eq(searchable)
-    expect(reply.reply_order).to eq(1)
+    expect(reply.reply_order).to eq(2)
   end
 
   it "sets reply_order correctly with multiple existing replies" do
@@ -540,6 +542,6 @@ RSpec.describe RepliesController, 'POST create' do
 
     reply = reply_post.replies.ordered.last
     expect(reply.content).to eq(searchable)
-    expect(reply.reply_order).to eq(2)
+    expect(reply.reply_order).to eq(3)
   end
 end
