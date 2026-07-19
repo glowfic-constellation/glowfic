@@ -2,6 +2,8 @@
 module Concealable
   extend ActiveSupport::Concern
 
+  PRIVACY_ORDERING = %w[private access_list full_accounts registered public].freeze
+
   included do
     # 3 used to be used as registered but was updated to full_accounts
     # with the release of read-only accounts to avoid a db migration.

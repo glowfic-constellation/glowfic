@@ -118,7 +118,13 @@ class PostsController < WritableController
   end
 
   def new
-    @post = Post.new(character: current_user.active_character, user: current_user, authors_locked: true, editor_mode: current_user.default_editor)
+    @post = Post.new(
+      character: current_user.active_character,
+      user: current_user,
+      authors_locked: true,
+      editor_mode: current_user.default_editor,
+      privacy: current_user.default_privacy,
+    )
     @post.board_id = params[:board_id]
     @post.section_id = params[:section_id]
     @post.icon_id = (current_user.active_character ? current_user.active_character.default_icon.try(:id) : current_user.avatar_id)
@@ -141,6 +147,14 @@ class PostsController < WritableController
     @post.content_warnings = process_tags(ContentWarning, obj_param: :post, id_param: :content_warning_ids)
     @post.labels = process_tags(Label, obj_param: :post, id_param: :label_ids)
     process_npc(@post, permitted_character_params)
+
+    if params[:allow_privacy].blank? && !check_privacy
+      flash[:error] = "One or more coauthors have a lower default privacy set. Please resubmit if this was intentional."
+      @allow_privacy = true
+      editor_setup
+      @page_title = 'New Post'
+      render :new and return
+    end
 
     begin
       @post.save!
@@ -495,6 +509,15 @@ class PostsController < WritableController
       flash[:success] = "Post has begun importing. You will be updated on progress via site message."
       redirect_to posts_path
     end
+  end
+
+  def check_privacy
+    return true unless @post.valid? # fall through to regular failures with validation problems
+    return true if @post.board.mega? # we care less about confirming if it's a megacont
+    priv = Concealable::PRIVACY_ORDERING.index(@post.privacy)
+    authors = User.where(id: @post.unjoined_author_ids + [@post.user_id])
+    lowest = authors.map(&:default_privacy).map { |p| Concealable::PRIVACY_ORDERING.index(p) }.min
+    priv <= lowest
   end
 
   def find_model
