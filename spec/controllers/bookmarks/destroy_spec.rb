@@ -9,6 +9,16 @@ RSpec.describe BookmarksController, 'DELETE destroy' do
     expect(flash[:error]).to eq("You must be logged in to view that page.")
   end
 
+  it "returns to the referring page" do
+    board = create(:board)
+    reply.post.post_boards.create!(board: board)
+    login_as(user)
+    request.env['HTTP_REFERER'] = continuity_post_url(board, reply.post)
+    delete :destroy, params: { id: bookmark.id }
+    expect(response).to redirect_to(continuity_post_url(board, reply.post) + "#reply-#{reply.id}")
+    expect(flash[:success]).to eq("Bookmark removed.")
+  end
+
   it "requires valid bookmark" do
     login
     delete :destroy, params: { id: -1 }

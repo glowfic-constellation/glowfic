@@ -50,6 +50,10 @@ module Owable
     end
 
     def update_board_cameos
+      boards.each { |b| cameo_authors_into(b) }
+    end
+
+    def cameo_authors_into(board)
       return unless board.authors_locked?
 
       # adjust for the fact that the associations are managed separately

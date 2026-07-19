@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2026_07_04_000000) do
+ActiveRecord::Schema[8.0].define(version: 2026_07_06_200955) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "citext"
   enable_extension "pg_catalog.plpgsql"
@@ -318,6 +318,19 @@ ActiveRecord::Schema[8.0].define(version: 2026_07_04_000000) do
     t.index ["user_id"], name: "index_post_authors_on_user_id"
   end
 
+  create_table "post_boards", force: :cascade do |t|
+    t.integer "post_id", null: false
+    t.integer "board_id", null: false
+    t.integer "section_id"
+    t.integer "section_order"
+    t.boolean "is_main", default: false, null: false
+    t.datetime "created_at"
+    t.datetime "updated_at"
+    t.index ["board_id", "section_id", "section_order"], name: "index_post_boards_on_board_section_order"
+    t.index ["post_id", "board_id"], name: "index_post_boards_on_post_id_and_board_id", unique: true
+    t.index ["post_id"], name: "index_post_boards_one_main_per_post", unique: true, where: "(is_main = true)"
+  end
+
   create_table "post_tags", id: :serial, force: :cascade do |t|
     t.integer "post_id", null: false
     t.integer "tag_id", null: false
@@ -350,7 +363,6 @@ ActiveRecord::Schema[8.0].define(version: 2026_07_04_000000) do
   end
 
   create_table "posts", id: :serial, force: :cascade do |t|
-    t.integer "board_id", null: false
     t.integer "user_id", null: false
     t.string "subject", null: false
     t.text "content"
@@ -360,8 +372,6 @@ ActiveRecord::Schema[8.0].define(version: 2026_07_04_000000) do
     t.datetime "created_at", precision: nil
     t.datetime "updated_at", precision: nil
     t.integer "status", default: 0
-    t.integer "section_id"
-    t.integer "section_order"
     t.string "description"
     t.integer "last_user_id"
     t.integer "last_reply_id"
@@ -372,7 +382,6 @@ ActiveRecord::Schema[8.0].define(version: 2026_07_04_000000) do
     t.string "editor_mode"
     t.index "to_tsvector('english'::regconfig, COALESCE((subject)::text, ''::text))", name: "idx_fts_post_subject", using: :gin
     t.index "to_tsvector('english'::regconfig, COALESCE(content, ''::text))", name: "idx_fts_post_content", using: :gin
-    t.index ["board_id"], name: "index_posts_on_board_id"
     t.index ["character_id"], name: "index_posts_on_character_id"
     t.index ["created_at"], name: "index_posts_on_created_at"
     t.index ["icon_id"], name: "index_posts_on_icon_id"

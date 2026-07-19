@@ -19,11 +19,12 @@ class PostPresenter
   end
 
   def includeless_json(post)
-    attrs = %w(id subject description created_at tagged_at status section_order)
+    attrs = %w(id subject description created_at tagged_at status)
     post_json = post.as_json_without_presenter(only: attrs)
     post_json.merge({
       board: post.board,
       section: post.section,
+      section_order: post.section_order,
       authors: post.joined_authors.ordered,
       num_replies: post.reply_count,
     })

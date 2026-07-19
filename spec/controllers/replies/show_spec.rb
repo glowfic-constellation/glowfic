@@ -28,6 +28,20 @@ RSpec.describe RepliesController, 'GET show' do
     expect(assigns(:javascripts)).to include('posts/show')
   end
 
+  it "shows the reply through a secondary continuity" do
+    board = create(:board)
+    reply.post.post_boards.create!(board: board)
+    get :show, params: { id: reply.id, continuity_id: board.id }
+    expect(response).to have_http_status(200)
+    expect(assigns(:secondary_board)).to eq(board)
+  end
+
+  it "requires a continuity the post is in" do
+    get :show, params: { id: reply.id, continuity_id: create(:board).id }
+    expect(response).to redirect_to(continuities_url)
+    expect(flash[:error]).to eq("Post could not be found.")
+  end
+
   it "works for reader accounts" do
     login_as(create(:reader_user))
     get :show, params: { id: reply.id }

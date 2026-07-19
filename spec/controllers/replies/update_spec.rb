@@ -40,6 +40,16 @@ RSpec.describe RepliesController, 'PUT update' do
     expect(flash[:error]).to eq("You do not have permission to modify this reply.")
   end
 
+  it "keeps the continuity when denying edit permission" do
+    reply = create(:reply)
+    board = create(:board)
+    reply.post.post_boards.create!(board: board)
+    login
+    put :update, params: { id: reply.id, continuity_id: board.id }
+    expect(response).to redirect_to(continuity_post_url(board, reply.post))
+    expect(flash[:error]).to eq("You do not have permission to modify this reply.")
+  end
+
   it "requires notes from moderators" do
     reply = create(:reply)
     login_as(create(:admin_user))
@@ -97,6 +107,36 @@ RSpec.describe RepliesController, 'PUT update' do
     expect(reply.character_id).to eq(char.id)
     expect(reply.icon_id).to eq(icon.id)
     expect(reply.character_alias_id).to eq(calias.id)
+  end
+
+  it "preserves the continuity being viewed on redirect" do
+    user = create(:user)
+    reply = create(:reply, user: user)
+    board = create(:board)
+    reply.post.post_boards.create!(board: board)
+    login_as(user)
+
+    put :update, params: { id: reply.id, reply: { content: 'new content' }, continuity_id: board.id }
+    expect(response).to redirect_to(continuity_reply_url(board, reply, anchor: "reply-#{reply.id}"))
+    expect(flash[:success]).to eq("Reply updated.")
+  end
+
+  it "redirects flat when the viewed continuity is the main one" do
+    user = create(:user)
+    reply = create(:reply, user: user)
+    login_as(user)
+
+    put :update, params: { id: reply.id, reply: { content: 'new content' }, continuity_id: reply.post.board_id }
+    expect(response).to redirect_to(reply_url(reply, anchor: "reply-#{reply.id}"))
+  end
+
+  it "redirects flat for a continuity the post is not in" do
+    user = create(:user)
+    reply = create(:reply, user: user)
+    login_as(user)
+
+    put :update, params: { id: reply.id, reply: { content: 'new content' }, continuity_id: create(:board).id }
+    expect(response).to redirect_to(reply_url(reply, anchor: "reply-#{reply.id}"))
   end
 
   it "preserves reply_order" do

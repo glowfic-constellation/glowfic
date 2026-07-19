@@ -1358,6 +1358,186 @@ RSpec.describe Post do
       expect(first.prev_post(user)).to be_nil
       expect(last.next_post(user)).to be_nil
     end
+
+    it "navigates within a secondary continuity when given its membership" do
+      other_board = create(:board, creator: user, authors_locked: true)
+      prev = create(:post, user: user, board: other_board)
+      post = create(:post, user: user, board: board, section: section)
+      post.post_boards.create!(board: other_board)
+      nextp = create(:post, user: user, board: other_board)
+
+      post_board = post.post_board_for(other_board.id)
+      expect(post.prev_post(user, post_board)).to eq(prev)
+      expect(post.next_post(user, post_board)).to eq(nextp)
+
+      # the default (main continuity) chain is unaffected
+      expect(post.prev_post(user)).to be_nil
+      expect(post.next_post(user)).to be_nil
+    end
+
+    it "includes posts there secondarily when navigating a continuity" do
+      board.update!(authors_locked: true)
+      prev = create(:post, user: user, board: board)
+      secondary = create(:post, user: user, board: create(:board, creator: user))
+      secondary.post_boards.create!(board: board)
+      post = create(:post, user: user, board: board)
+
+      expect(post.prev_post(user)).to eq(secondary)
+      expect(secondary.prev_post(user, secondary.post_board_for(board.id))).to eq(prev)
+      expect(secondary.next_post(user, secondary.post_board_for(board.id))).to eq(post)
+    end
+  end
+
+  describe "#post_board_for" do
+    it "returns the main membership with no continuity" do
+      post = create(:post)
+      expect(post.post_board_for(nil)).to eq(post.main_post_board)
+      expect(post.post_board_for('')).to eq(post.main_post_board)
+    end
+
+    it "returns the membership for a secondary continuity" do
+      post = create(:post)
+      board = create(:board)
+      membership = post.post_boards.create!(board: board)
+      expect(post.post_board_for(board.id)).to eq(membership)
+      expect(post.post_board_for(board.id.to_s)).to eq(membership)
+    end
+
+    it "returns nil for a continuity the post is not in" do
+      post = create(:post)
+      expect(post.post_board_for(create(:board).id)).to be_nil
+    end
+  end
+
+  describe "#assign_continuities" do
+    let(:user) { create(:user) }
+    let(:board) { create(:board, creator: user) }
+    let(:board2) { create(:board, creator: user) }
+    let(:post) { create(:post, user: user, board: board) }
+
+    it "adds secondary continuities" do
+      post.assign_continuities(main_board_id: board.id, secondaries: [{ board_id: board2.id.to_s, section_id: '' }])
+      post.save!
+      post.reload
+      expect(post.boards).to match_array([board, board2])
+      expect(post.board).to eq(board)
+      expect(post.post_boards.find_by(board: board2).is_main).to eq(false)
+    end
+
+    it "skips blank, duplicate, and main-duplicating secondaries" do
+      post.assign_continuities(
+        main_board_id: board.id,
+        secondaries: [
+          { board_id: '' },
+          { board_id: board.id.to_s },
+          { board_id: board2.id.to_s },
+          { board_id: board2.id.to_s },
+        ],
+      )
+      post.save!
+      expect(post.reload.boards).to match_array([board, board2])
+    end
+
+    it "removes omitted secondaries" do
+      post.post_boards.create!(board: board2)
+      post.assign_continuities(main_board_id: board.id)
+      post.save!
+      expect(post.reload.boards).to eq([board])
+    end
+
+    it "moves the post to a new main continuity" do
+      post.assign_continuities(main_board_id: board2.id)
+      post.save!
+      post.reload
+      expect(post.board).to eq(board2)
+      expect(post.boards).to eq([board2])
+    end
+
+    it "promotes a secondary continuity to main" do
+      post.post_boards.create!(board: board2)
+      post.assign_continuities(main_board_id: board2.id, secondaries: [{ board_id: board.id }])
+      post.save!
+      post.reload
+      expect(post.board).to eq(board2)
+      expect(post.post_boards.find_by(board: board).is_main).to eq(false)
+      expect(post.boards).to match_array([board, board2])
+    end
+
+    it "updates a secondary's section" do
+      section2 = create(:board_section, board: board2)
+      membership = post.post_boards.create!(board: board2)
+      post.assign_continuities(main_board_id: board.id, secondaries: [{ board_id: board2.id.to_s, section_id: section2.id.to_s }])
+      post.save!
+      expect(membership.reload.section).to eq(section2)
+    end
+  end
+
+  describe "continuity membership plumbing" do
+    let(:user) { create(:user) }
+    let(:board) { create(:board, creator: user) }
+
+    it "rejects moving the main continuity directly onto an existing secondary" do
+      # promoting a secondary to main is assign_continuities' job; the raw writer refuses
+      # rather than creating a duplicate membership
+      board2 = create(:board, creator: user)
+      post = create(:post, user: user, board: board)
+      post.post_boards.create!(board: board2)
+      post.board = board2
+      expect(post).not_to be_valid
+      expect(post.errors[:post]).to be_present
+    end
+
+    it "reuses the in-memory main membership for repeated writes" do
+      post = Post.new(user: user)
+      post.board = board
+      post.section_order = 2
+      expect(post.post_boards.size).to eq(1)
+      expect(post.board).to eq(board)
+    end
+
+    it "exposes board and section on unpersisted posts" do
+      section = create(:board_section, board: board)
+      post = Post.new(user: user, board: board, section: section)
+      expect(post.board).to eq(board)
+      expect(post.section).to eq(section)
+    end
+
+    it "prefers selected columns over the membership attributes" do
+      post = create(:post, board: board)
+      fetched = Post.select("posts.*, 99 AS board_id, 98 AS section_id").find(post.id)
+      expect(fetched.board_id).to eq(99)
+      expect(fetched.section_id).to eq(98)
+    end
+
+    it "requires a main continuity" do
+      post = create(:post, board: board)
+      post.main_post_board.mark_for_destruction
+      expect(post).not_to be_valid
+      expect(post.errors[:board]).to include("must exist")
+    end
+
+    it "adds errors from invalid memberships" do
+      post = create(:post, board: board)
+      locked = create(:board, authors_locked: true) # post's author can't write there
+      post.post_boards.build(board: locked)
+      expect(post).not_to be_valid
+      expect(post.errors[:board]).to be_present
+    end
+
+    describe "#update_columns" do
+      it "redirects membership columns to the main membership" do
+        post = create(:post, board: board)
+        post.update_columns(section_order: 5) # rubocop:disable Rails/SkipsModelValidations
+        expect(post.main_post_board.reload.section_order).to eq(5)
+      end
+
+      it "splits membership columns from post columns" do
+        post = create(:post, board: board)
+        post.update_columns(subject: 'new subject', section_order: 7) # rubocop:disable Rails/SkipsModelValidations
+        expect(post.reload.subject).to eq('new subject')
+        expect(post.main_post_board.reload.section_order).to eq(7)
+      end
+    end
   end
 
   context "scopes" do

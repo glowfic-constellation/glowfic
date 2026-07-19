@@ -6,7 +6,18 @@ class Board < ApplicationRecord
   ID_SANDBOX = 3
   ID_SITETESTING = 4
 
-  has_many :posts, dependent: false # This is handled in callbacks
+  has_many :post_boards, inverse_of: :board, dependent: false # This is handled in callbacks
+  has_many :posts, through: :post_boards do
+    # Translate section_id (formerly a posts column, now on post_boards) so callers
+    # can keep writing board.posts.where(section_id: …) as before.
+    def where(*args)
+      opts = args.first
+      return super unless opts.is_a?(Hash) && opts.key?(:section_id) && !opts.key?(:post_boards)
+      remaining = opts.except(:section_id)
+      base = remaining.empty? ? all : super(remaining, *args.drop(1))
+      base.where(post_boards: { section_id: opts[:section_id] })
+    end
+  end
   has_many :board_sections, dependent: :destroy
   has_many :favorites, as: :favorite, inverse_of: :favorite, dependent: :destroy
   has_many :views, class_name: 'BoardView', dependent: :destroy
@@ -50,7 +61,13 @@ class Board < ApplicationRecord
   private
 
   def move_posts_to_sandbox
-    UpdateModelJob.perform_later(Post.to_s, { board_id: id }, { board_id: ID_SANDBOX, section_id: nil }, audited_user_id)
+    UpdateModelJob.perform_later(
+      PostBoard.to_s,
+      { board_id: id, is_main: true },
+      { board_id: ID_SANDBOX, section_id: nil },
+      audited_user_id,
+    )
+    PostBoard.where(board_id: id, is_main: false).delete_all
   end
 
   def add_creator_to_authors
@@ -63,9 +80,9 @@ class Board < ApplicationRecord
       next if section.section_order == index
       section.update_columns(section_order: index) # rubocop:disable Rails/SkipsModelValidations
     end
-    posts.where(section_id: nil).ordered_in_section.each_with_index do |post, index|
-      next if post.section_order == index
-      post.update_columns(section_order: index) # rubocop:disable Rails/SkipsModelValidations
+    post_boards.where(section_id: nil).order(:section_order).each_with_index do |pb, index|
+      next if pb.section_order == index
+      pb.update_columns(section_order: index) # rubocop:disable Rails/SkipsModelValidations
     end
   end
 end

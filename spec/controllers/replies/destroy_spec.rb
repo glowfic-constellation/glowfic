@@ -39,6 +39,16 @@ RSpec.describe RepliesController, 'DELETE destroy' do
     expect(flash[:error]).to eq("You do not have permission to modify this reply.")
   end
 
+  it "keeps the continuity when denying permission" do
+    reply = create(:reply)
+    board = create(:board)
+    reply.post.post_boards.create!(board: board)
+    login
+    delete :destroy, params: { id: reply.id, continuity_id: board.id }
+    expect(response).to redirect_to(continuity_post_url(board, reply.post))
+    expect(flash[:error]).to eq("You do not have permission to modify this reply.")
+  end
+
   it "succeeds for reply creator" do
     reply = create(:reply)
     login_as(reply.user)
@@ -46,6 +56,16 @@ RSpec.describe RepliesController, 'DELETE destroy' do
     expect(response).to redirect_to(post_url(reply.post, page: 1))
     expect(flash[:success]).to eq("Reply deleted.")
     expect(Reply.find_by(id: reply.id)).to be_nil
+  end
+
+  it "preserves the continuity being viewed on redirect" do
+    reply = create(:reply)
+    board = create(:board)
+    reply.post.post_boards.create!(board: board)
+    login_as(reply.user)
+    delete :destroy, params: { id: reply.id, continuity_id: board.id }
+    expect(response).to redirect_to(continuity_post_url(board, reply.post, page: 1))
+    expect(flash[:success]).to eq("Reply deleted.")
   end
 
   it "succeeds for admin user" do
@@ -135,5 +155,20 @@ RSpec.describe RepliesController, 'DELETE destroy' do
     expect(response).to redirect_to(reply_url(reply, anchor: "reply-#{reply.id}"))
     expect(flash[:error]).to eq("Reply could not be deleted.")
     expect(post.reload.replies).to eq([reply])
+  end
+
+  it "keeps the continuity on destroy failure" do
+    post = create(:post)
+    reply = create(:reply, user: post.user, post: post)
+    board = create(:board)
+    post.post_boards.create!(board: board)
+    login_as(post.user)
+
+    allow(Reply).to receive(:find_by).and_call_original
+    allow(Reply).to receive(:find_by).with({ id: reply.id.to_s }).and_return(reply)
+    allow(reply).to receive(:destroy!).and_raise(ActiveRecord::RecordNotDestroyed, 'fake error')
+
+    delete :destroy, params: { id: reply.id, continuity_id: board.id }
+    expect(response).to redirect_to(continuity_reply_url(board, reply, anchor: "reply-#{reply.id}"))
   end
 end

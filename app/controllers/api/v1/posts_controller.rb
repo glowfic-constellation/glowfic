@@ -54,7 +54,7 @@ class Api::V1::PostsController < Api::ApiController
     end
   end
 
-  api :POST, '/posts/reorder', 'Update the order of posts. This is an unstable feature, and may be moved or renamed; it should not be trusted.'
+  api :POST, '/posts/reorder', 'Update the order of posts within their main continuity. This is an unstable feature, and may be moved or renamed; it should not be trusted.'
   error 401, "You must be logged in"
   error 403, "Continuity is not editable by the user"
   error 404, "Post IDs could not be found"
@@ -64,76 +64,82 @@ class Api::V1::PostsController < Api::ApiController
   def reorder
     section_id = params[:section_id]&.to_i
     post_ids = params[:ordered_post_ids].map(&:to_i).uniq
-    posts = Post.where(id: post_ids)
-    posts_count = posts.count
-    unless posts_count == post_ids.count
-      missing_posts = post_ids - posts.pluck(:id)
+
+    # Board pages pass the continuity whose ordering is being edited, since posts may be in
+    # it secondarily; without it, fall back to the posts' main continuities.
+    post_boards = if params[:board_id].present?
+      PostBoard.where(board_id: params[:board_id], post_id: post_ids)
+    else
+      PostBoard.main.where(post_id: post_ids)
+    end
+    unless post_boards.count == post_ids.count
+      missing_posts = post_ids - post_boards.pluck(:post_id)
       error = { message: "Some posts could not be found: #{missing_posts * ', '}" }
       render json: { errors: [error] }, status: :not_found and return
     end
 
-    boards = Board.where(id: posts.select(:board_id).distinct.pluck(:board_id))
-    unless boards.one?
+    board_ids = post_boards.distinct.pluck(:board_id)
+    unless board_ids.one?
       error = { message: 'Posts must be from one continuity' }
       render json: { errors: [error] }, status: :unprocessable_content and return
     end
 
-    board = boards.first
+    board = Board.find(board_ids.first)
     access_denied and return unless board.editable_by?(current_user)
 
-    post_section_ids = posts.select(:section_id).distinct.pluck(:section_id)
-    unless post_section_ids == [section_id] &&
+    post_boards_section_ids = post_boards.distinct.pluck(:section_id)
+    unless post_boards_section_ids == [section_id] &&
            (section_id.nil? || BoardSection.where(id: section_id, board_id: board.id).exists?)
       error = { message: 'Posts must be from one specified section in the continuity, or no section' }
       render json: { errors: [error] }, status: :unprocessable_content and return
     end
 
-    Post.transaction do
-      section_scope = Post.where(board_id: board.id, section_id: section_id)
-      all_section_posts = section_scope.ordered_in_section.to_a
-      visible_to_user_ids = section_scope.visible_to(current_user).pluck(:id).to_set
+    PostBoard.transaction do
+      section_scope = PostBoard.where(board_id: board.id, section_id: section_id)
+      all_section_pbs = section_scope.ordered_in_section.to_a
+      visible_post_ids = Post.where(id: all_section_pbs.map(&:post_id)).visible_to(current_user).pluck(:id).to_set
       post_id_set = post_ids.to_set
 
-      # Posts the editor can't read get anchored to the post in their request that preceded
-      # them in the original ordering, so a private post placed between two visible ones
-      # stays attached to its predecessor instead of being shoved to the bottom. Posts the
-      # editor can read but omitted from the request (the documented "subset reorder" case)
-      # still get appended at the end.
+      # Post_boards whose post the editor can't read get anchored to the post in their request that
+      # preceded them in the original ordering, so a private post placed between two visible ones
+      # stays attached to its predecessor instead of being shoved to the bottom. Posts the editor can
+      # read but omitted from the request (the documented "subset reorder" case) still append at the end.
       anchors = {}
       visible_omitted = []
       anchor_id = :start
-      all_section_posts.each do |post|
-        if post_id_set.include?(post.id)
-          anchor_id = post.id
-        elsif visible_to_user_ids.include?(post.id)
-          visible_omitted << post
+      all_section_pbs.each do |pb|
+        if post_id_set.include?(pb.post_id)
+          anchor_id = pb.post_id
+        elsif visible_post_ids.include?(pb.post_id)
+          visible_omitted << pb
         else
-          anchors[post.id] = anchor_id
+          anchors[pb.post_id] = anchor_id
         end
       end
 
       anchored_by = Hash.new { |h, k| h[k] = [] }
-      all_section_posts.each do |post|
-        anchored_by[anchors[post.id]] << post if anchors.key?(post.id)
+      all_section_pbs.each do |pb|
+        anchored_by[anchors[pb.post_id]] << pb if anchors.key?(pb.post_id)
       end
 
-      ordered_visible = posts.sort_by { |post| post_ids.index(post.id) }
+      ordered_visible = post_boards.to_a.sort_by { |pb| post_ids.index(pb.post_id) }
 
       new_order = anchored_by[:start].dup
-      ordered_visible.each do |post|
-        new_order << post
-        new_order.concat(anchored_by[post.id])
+      ordered_visible.each do |pb|
+        new_order << pb
+        new_order.concat(anchored_by[pb.post_id])
       end
       new_order.concat(visible_omitted)
 
-      new_order.each_with_index do |post, index|
-        next if post.section_order == index
-        post.update(section_order: index)
+      new_order.each_with_index do |pb, index|
+        next if pb.section_order == index
+        pb.update(section_order: index)
       end
     end
 
-    posts = Post.where(board_id: board.id, section_id: section_id).visible_to(current_user)
-    render json: { post_ids: posts.ordered_in_section.pluck(:id) }
+    ordered = PostBoard.where(board_id: board.id, section_id: section_id).ordered_in_section.to_a
+    visible_ids = Post.where(id: ordered.map(&:post_id)).visible_to(current_user).pluck(:id).to_set
+    render json: { post_ids: ordered.map(&:post_id).select { |id| visible_ids.include?(id) } }
   end
 
   private

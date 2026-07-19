@@ -79,6 +79,10 @@ Rails.application.routes.draw do
       post :mark
       get :search
     end
+    # Board-scoped views of a post/reply, so a post reachable from a secondary
+    # continuity can present itself in that continuity's context. See Post#post_board_for.
+    resources :posts, only: :show
+    resources :replies, only: :show
   end
   resources :board_sections, except: :index
   resources :posts do

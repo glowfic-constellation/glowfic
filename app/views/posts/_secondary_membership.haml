@@ -1,0 +1,14 @@
+-# locals: ( post_board: )
+
+- board = post_board.board
+- sections = board.board_sections.ordered
+.secondary-membership-row{data: { board_id: board.id }}
+  %b= board.name
+  = hidden_field_tag "post[secondary_memberships][][board_id]", board.id
+  - if sections.any?
+    \  section:
+    = select_tag "post[secondary_memberships][][section_id]",
+        options_from_collection_for_select(sections, :id, :name, post_board.section_id),
+        include_blank: '— Choose Section —'
+  - else
+    = hidden_field_tag "post[secondary_memberships][][section_id]", ''

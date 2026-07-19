@@ -341,6 +341,27 @@ RSpec.describe Api::V1::PostsController do
         expect(visible1.reload.section_order).to eq(2)
       end
 
+      it "anchors multiple consecutive hidden posts to the same predecessor" do
+        user = create(:user)
+        coauthor = create(:user)
+        board = create(:board, creator: user, writers: [coauthor])
+        visible1 = create(:post, board: board, user: user)
+        hidden = create_list(:post, 2, board: board, user: user, privacy: :private)
+        visible2 = create(:post, board: board, user: user)
+        posts = [visible1, *hidden, visible2]
+
+        posts.each(&:reload)
+        expect(posts.map(&:section_order)).to eq([0, 1, 2, 3])
+
+        api_login_as(coauthor)
+        post :reorder, params: { ordered_post_ids: [visible2.id, visible1.id] }
+        expect(response).to have_http_status(200)
+
+        # both hidden posts followed visible1 → they stay, in original order, right after it
+        posts.each(&:reload)
+        expect(posts.map(&:section_order)).to eq([1, 2, 3, 0])
+      end
+
       it "omits posts not visible to the editor from the response" do
         coauthor = create(:user)
         board = create(:board, writers: [coauthor])
@@ -551,6 +572,40 @@ RSpec.describe Api::V1::PostsController do
         expect(visible2.reload.section_order).to eq(0)
         expect(visible1.reload.section_order).to eq(1)
         expect(hidden.reload.section_order).to eq(2)
+      end
+    end
+
+    context "with board_id" do
+      it "reorders posts within the given continuity, including secondary memberships" do
+        user = create(:user)
+        board = create(:board, creator: user)
+        main_post = create(:post, board_id: board.id)
+        secondary_post = create(:post, board_id: create(:board).id)
+        secondary_post.post_boards.create!(board: board)
+
+        expect(main_post.post_boards.find_by(board: board).section_order).to eq(0)
+        expect(secondary_post.post_boards.find_by(board: board).section_order).to eq(1)
+
+        api_login_as(user)
+        post :reorder, params: { ordered_post_ids: [secondary_post.id, main_post.id], board_id: board.id }
+        expect(response).to have_http_status(200)
+        expect(response.parsed_body).to eq({ 'post_ids' => [secondary_post.id, main_post.id] })
+        expect(secondary_post.post_boards.find_by(board: board).section_order).to eq(0)
+        expect(main_post.post_boards.find_by(board: board).section_order).to eq(1)
+
+        # ordering in the secondary post's own main continuity is untouched
+        expect(secondary_post.main_post_board.reload.section_order).to eq(0)
+      end
+
+      it "requires posts to be in the given continuity" do
+        user = create(:user)
+        board = create(:board, creator: user)
+        outsider = create(:post)
+
+        api_login_as(user)
+        post :reorder, params: { ordered_post_ids: [outsider.id], board_id: board.id }
+        expect(response).to have_http_status(404)
+        expect(response.parsed_body['errors'][0]['message']).to eq("Some posts could not be found: #{outsider.id}")
       end
     end
   end
