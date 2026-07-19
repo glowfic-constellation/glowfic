@@ -14,6 +14,7 @@ module Permissible
     :split_posts,
     :regenerate_flat_posts,
     :relocate_characters,
+    :edit_indexes,
     # :edit_tags,
     # :delete_tags,
     # :edit_continuities

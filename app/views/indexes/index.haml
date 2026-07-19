@@ -3,7 +3,7 @@
     %tr
       %th.table-title{colspan: 3}
         Indexes
-        - if logged_in? && current_user.admin?
+        - if logged_in? && !current_user.read_only?
           = link_to new_index_path do
             .link-box.action-new + New Index
     %tr
