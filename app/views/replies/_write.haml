@@ -37,6 +37,10 @@
           = submit_tag "Save Draft", class: 'button', id: 'draft_button', name: 'button_draft', formaction: drafts_path, data: { disable_with: 'Drafting...' }
         - if @draft.present?
           = button_tag "Delete Draft", class: 'button', id: 'delete_draft_button', name: '_method', value: 'delete', formaction: draft_path(@draft), data: { disable_with: 'Deleting...', confirm: "Delete draft?" }
+        - unless reply.new_record?
+          %label.vmid{title: "A minor edit will not bump the post in recently-updated listings or mark it unread for readers."}
+            = check_box_tag :minor, '1', false, class: 'vmid'
+            Minor edit
       - else
         = submit_tag (multi_reply_new ? 'Post All' : 'Save All'), class: 'button', id: 'submit_button', data: { disable_with: 'Saving...' }
         = submit_tag "Preview Current", class: 'button', id: 'preview_button', name: 'button_preview', data: { disable_with: 'Previewing...' }
