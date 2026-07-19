@@ -121,6 +121,8 @@ jobs:
         # summarized below instead of scrolling interleaved logs. The whole thing
         # runs inside a ::group:: fold so the interleaved worker output collapses
         # out of the way, leaving the failure groups from the next step visible.
+        # simplecov enforces minimum_coverage in-process, so a coverage miss fails
+        # this step directly.
         run: |
           echo "::group::Running $PARALLEL_TEST_PROCESSORS parallel rspec workers"
           trap 'echo "::endgroup::"' EXIT
@@ -131,10 +133,6 @@ jobs:
       - name: Summarize rspec failures
         if: failure()
         run: bundle exec rake rspec_summary:report
-      - name: Merge coverage and enforce threshold
-        # only when the suite passed: a failed worker doesn't flush its coverage,
-        # which would make the merged total look (misleadingly) too low
-        run: bundle exec rake coverage:report
       - name: Upload Capybara failure screenshots
         if: failure()
         uses: actions/upload-artifact@v7
