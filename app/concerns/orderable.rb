@@ -34,9 +34,10 @@ module Orderable
       return unless others.present?
 
       others.each_with_index do |other, index|
-        next if other.order == index
-        other.order = index
-        other.save!
+        correct_order = index
+        correct_order += 1 if other.is_a?(Reply)
+        next if other.order == correct_order
+        other.update!(order: correct_order)
       end
     end
 

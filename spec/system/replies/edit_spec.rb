@@ -103,6 +103,13 @@ RSpec.describe "Editing replies" do
 
       tagged_at = reply.post.tagged_at
 
+      # to verify unread markers across the split: one reader caught up, one at the edited reply
+      # (fresh finds to avoid the cached @view crossing users)
+      caught_up = create(:user)
+      midway = create(:user)
+      Post.find(reply.post_id).mark_read(caught_up, at_reply: reply.post.replies.ordered.last)
+      Post.find(reply.post_id).mark_read(midway, at_reply: reply)
+
       visit reply_path(reply)
       expect(page).to have_selector('.post-container', count: 3)
       within(find_reply_on_page(reply)) do
@@ -161,6 +168,14 @@ RSpec.describe "Editing replies" do
       within(all_containers[4]) { expect(page).to have_selector('.post-content', exact_text: 'example text 2') }
 
       expect(reply.post.reload.tagged_at).to be_the_same_time_as(tagged_at)
+
+      # the caught-up reader saw nothing new: the additions came before their marker
+      expect(Post.find(reply.post_id).first_unread_for(caught_up)).to be_nil
+
+      # the reader at the edited reply sees exactly the added replies as unread
+      first_added = reply.post.replies.find_by(reply_order: reply.reload.reply_order + 1)
+      expect(first_added.content).to eq('other text 2')
+      expect(Post.find(reply.post_id).first_unread_for(midway)).to eq(first_added)
 
       # Now test using the "Save Previewed" button
       within(find_reply_on_page(reply)) do

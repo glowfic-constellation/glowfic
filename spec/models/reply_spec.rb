@@ -164,7 +164,7 @@ RSpec.describe Reply do
       first_reply = create(:reply, post: post)
       second_reply = create(:reply, post: post)
       third_reply = create(:reply, post: post)
-      expect(post.replies.ordered).to eq([first_reply, second_reply, third_reply])
+      expect(post.replies.ordered).to eq([post.written, first_reply, second_reply, third_reply])
     end
 
     it "orders replies by reply_order, not created_at" do
@@ -172,17 +172,17 @@ RSpec.describe Reply do
       second_reply = Timecop.freeze(first_reply.created_at - 5.seconds) { create(:reply, post: post) }
       third_reply = Timecop.freeze(first_reply.created_at - 3.seconds) { create(:reply, post: post) }
       expect(post.replies.ordered).not_to eq(post.replies.order(:created_at))
-      expect(post.replies.order(:created_at)).to eq([second_reply, third_reply, first_reply])
-      expect(post.replies.ordered).to eq([first_reply, second_reply, third_reply])
+      expect(post.replies.order(:created_at)).to eq([second_reply, third_reply, post.written, first_reply])
+      expect(post.replies.ordered).to eq([post.written, first_reply, second_reply, third_reply])
     end
 
     it "orders replies by reply order not ID" do
       first_reply = create(:reply, post: post)
       second_reply = create(:reply, post: post)
       third_reply = create(:reply, post: post)
-      second_reply.update_columns(reply_order: 2) # rubocop:disable Rails/SkipsModelValidations
-      third_reply.update_columns(reply_order: 1) # rubocop:disable Rails/SkipsModelValidations
-      expect(post.replies.ordered).to eq([first_reply, third_reply, second_reply])
+      second_reply.update_columns(reply_order: 3) # rubocop:disable Rails/SkipsModelValidations
+      third_reply.update_columns(reply_order: 2) # rubocop:disable Rails/SkipsModelValidations
+      expect(post.replies.ordered).to eq([post.written, first_reply, third_reply, second_reply])
     end
   end
 
@@ -196,6 +196,40 @@ RSpec.describe Reply do
       expect(Reply.where(id: replies.map(&:id)).count).to eq(2)
       expect(Reply.find_by(id: reply.id)).not_to be_present
       expect(post.reload.last_reply_id).to eq(replies[1].id)
+    end
+
+    it "walks read markers back to the last surviving reply" do
+      post = create(:post)
+      survivor = create(:reply, post: post)
+      destroyed = create_list(:reply, 3, post: post)
+      user = create(:user)
+      post.mark_read(user, at_reply: destroyed.last)
+      destroyed.first.send(:destroy_subsequent_replies)
+      expect(post.views.find_by(user: user).last_read_reply).to eq(survivor)
+    end
+  end
+
+  describe "#update_view_markers" do
+    let(:post) { create(:post) }
+    let(:replies) { create_list(:reply, 3, post: post) }
+    let(:user) { create(:user) }
+
+    it "moves markers on the destroyed reply to the previous reply" do
+      post.mark_read(user, at_reply: replies[1])
+      replies[1].destroy!
+      expect(post.views.find_by(user: user).last_read_reply).to eq(replies[0])
+    end
+
+    it "moves markers on the first reply to the written" do
+      post.mark_read(user, at_reply: replies[0])
+      replies[0].destroy!
+      expect(post.views.find_by(user: user).last_read_reply).to eq(post.written)
+    end
+
+    it "leaves markers on other replies alone" do
+      post.mark_read(user, at_reply: replies[2])
+      replies[1].destroy!
+      expect(post.views.find_by(user: user).last_read_reply).to eq(replies[2])
     end
   end
 
