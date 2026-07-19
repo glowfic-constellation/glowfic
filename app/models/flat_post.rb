@@ -4,18 +4,14 @@ class FlatPost < ApplicationRecord
 
   validates :post, uniqueness: true
 
-  def self.regenerate_all(before=nil, override=true)
-    # uses Post instead of FlatPost in case any are missing
-    Post.includes(:flat_post).find_each do |post|
-      unless post.flat_post
-        # ignore arguments because posts should always have a flat post object and this is Bad
-        GenerateFlatPostJob.enqueue(post.id)
-        next
-      end
-
-      next if before.present? && post.flat_post.updated_at >= before
-      next if !override && post.flat_post.updated_at >= post.tagged_at
-      GenerateFlatPostJob.enqueue(post.id)
+  def self.regenerate_all(before=nil, override=false)
+    if override
+      Post.pluck(:id).each { GenerateFlatPostJob.enqueue(it) } # this will make prod sad
+    else
+      ids = Post.where.missing(:flat_post).pluck(posts: :id)
+      ids += FlatPost.joins(:post).where('posts.tagged_at > flat_posts.updated_at').pluck(:post_id)
+      ids += FlatPost.where(updated_at: ..before).pluck(:post_id) if before.present?
+      ids.each { GenerateFlatPostJob.enqueue(it) }
     end
   end
 end
