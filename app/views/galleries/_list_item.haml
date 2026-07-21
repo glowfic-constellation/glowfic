@@ -3,11 +3,11 @@
 - icon_id, keyword, _url, credit = list_item
 - klass = cycle('even', 'odd')
 %tr
-  %td{class: klass}
+  %td.icon-keyword{class: klass}
     = link_to keyword, icon_path(id: icon_id)
-  %td{class: klass}= credit
-  %td{class: klass}= @times_used.fetch(icon_id, 0)
-  %td{class: klass}= @posts_used.fetch(icon_id, 0)
+  %td.icon-credit{class: klass}= credit
+  %td.icon-used{class: klass}= @times_used.fetch(icon_id, 0)
+  %td.icon-posts{class: klass}= @posts_used.fetch(icon_id, 0)
 
   %td.width-70.right-align{class: klass}
     - if is_owner && !skip_forms
