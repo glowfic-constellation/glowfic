@@ -1,18 +1,17 @@
 -# locals: ( group:, page_view:, colspan:, characters: nil, no_header: false, skip_grouped_templates: false )
 
 - partial_type = (page_view == 'list') ? 'characters/list_section' : 'characters/icon_view'
-- characters ||= group.characters
+- templates = group ? group.templates : @user.templates.ungrouped
+- untemplated = group ? group.characters : @user.characters.ungrouped
+- untemplated = untemplated.non_npcs.where(template_id: nil)
 - unless no_header
   %tr
     %th.sub{colspan: colspan}
       = group ? "Group: #{group.name}" : 'Ungrouped Characters'
-- if characters.try(:exists?)
-  - template_ids = characters.group(:template_id).pluck(:template_id).uniq.compact
-  - ::Template.where(id: template_ids).ordered.each do |template|
-    - next if skip_grouped_templates && template.characters.where.not(character_group_id: nil).exists?
-    = render partial_type, name: template, characters: template.characters.ordered
-  - if characters.non_npcs.where(template_id: nil).exists?
-    = render partial_type, name: 'No Template', characters: characters.non_npcs.where(template_id: nil).ordered, show_new_character_button: @user.id == current_user&.id
+- if templates.exists?
+  = render partial: partial_type, collection: templates.ordered, as: :name
+- if untemplated.exists?
+  = render partial_type, name: 'No Template', characters: untemplated.ordered, show_new_character_button: @user.id == current_user&.id
 - else
   %tr
     %td.centered.padding-5{class: cycle('even', 'odd'), colspan: 6} — No characters yet —
