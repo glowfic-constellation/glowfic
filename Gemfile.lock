@@ -559,7 +559,7 @@ GEM
       sprockets (>= 3.0.0)
     sysexits (1.2.0)
     temple (0.10.4)
-    terser (1.2.7)
+    terser (1.2.8)
       execjs (>= 0.3.0, < 3)
     test-prof (1.6.1)
     test-unit (3.7.8)
