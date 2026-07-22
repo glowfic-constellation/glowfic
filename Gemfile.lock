@@ -134,7 +134,7 @@ GEM
       rack-test (>= 0.6.3)
       regexp_parser (>= 1.5, < 3.0)
       xpath (~> 3.2)
-    concurrent-ruby (1.3.7)
+    concurrent-ruby (1.3.8)
     connection_pool (2.5.5)
     crack (1.0.1)
       bigdecimal
@@ -158,7 +158,7 @@ GEM
     docile (1.4.1)
     dotenv (3.2.0)
     drb (2.2.3)
-    erb (6.0.4)
+    erb (6.0.5)
     erubi (1.13.1)
     ethon (0.18.0)
       ffi (>= 1.15.0)
@@ -568,7 +568,7 @@ GEM
     tilt (2.8.0)
     timecop (0.9.11)
     timeout (0.6.1)
-    tinymce-rails (7.8.0)
+    tinymce-rails (8.8.0)
       railties (>= 3.1.1)
     traceroute (0.8.1)
       rails (>= 3.0.0)
@@ -682,7 +682,7 @@ DEPENDENCIES
   test-prof
   test-unit (~> 3.7)
   timecop
-  tinymce-rails (~> 7.8)
+  tinymce-rails (~> 8.8)
   traceroute
   webmock
   will_paginate
