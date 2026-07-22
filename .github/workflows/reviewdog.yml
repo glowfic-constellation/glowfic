@@ -62,7 +62,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v7
-      - uses: actions/setup-node@v6
+      - uses: actions/setup-node@v7
       - run: npm install eslint@9 @stylistic/eslint-plugin@2
       - run: npx eslint -v
       - uses: reviewdog/action-eslint@v1
@@ -75,7 +75,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v7
-      - uses: actions/setup-node@v6
+      - uses: actions/setup-node@v7
       - run: |
           npm install stylelint@~14.2.0 \
             stylelint-config-recommended-scss@5.0.2 \
