@@ -1,0 +1,16 @@
+{
+  "name": "glowfic",
+  "private": true,
+  "description": "JavaScript tooling for the Glowfic Constellation app",
+  "scripts": {
+    "test": "jest"
+  },
+  "devDependencies": {
+    "@swc/core": "^1.7.0",
+    "@swc/jest": "^0.2.36",
+    "@testing-library/dom": "^10.4.0",
+    "@testing-library/jest-dom": "^6.4.8",
+    "jest": "^29.7.0",
+    "jest-environment-jsdom": "^29.7.0"
+  }
+}
