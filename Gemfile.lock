@@ -220,7 +220,7 @@ GEM
       activesupport (>= 5.1)
       haml (>= 4.0.6)
       railties (>= 5.1)
-    haml_lint (0.74.0)
+    haml_lint (0.75.0)
       haml (>= 5.0)
       parallel (>= 1.10)
       rainbow
@@ -268,7 +268,7 @@ GEM
       rb-fsevent (~> 0.10, >= 0.10.3)
       rb-inotify (~> 0.9, >= 0.9.10)
     logger (1.7.0)
-    loofah (2.25.1)
+    loofah (2.25.2)
       crass (~> 1.0.2)
       nokogiri (>= 1.12.0)
     mail (2.9.1)
@@ -391,8 +391,8 @@ GEM
       activesupport (>= 5.0.0)
       minitest
       nokogiri (>= 1.6)
-    rails-html-sanitizer (1.7.0)
-      loofah (~> 2.25)
+    rails-html-sanitizer (1.7.1)
+      loofah (~> 2.25, >= 2.25.2)
       nokogiri (>= 1.15.7, != 1.16.7, != 1.16.6, != 1.16.5, != 1.16.4, != 1.16.3, != 1.16.2, != 1.16.1, != 1.16.0.rc1, != 1.16.0)
     railties (8.0.5)
       actionpack (= 8.0.5)
@@ -459,7 +459,7 @@ GEM
       rspec-mocks (>= 3.13.0, < 5.0.0)
       rspec-support (>= 3.13.0, < 5.0.0)
     rspec-support (3.13.7)
-    rubocop (1.88.1)
+    rubocop (1.88.2)
       json (~> 2.3)
       language_server-protocol (~> 3.17.0.2)
       lint_roller (~> 1.1.0)
@@ -565,7 +565,7 @@ GEM
     test-unit (3.7.8)
       power_assert
     thor (1.5.0)
-    tilt (2.7.0)
+    tilt (2.8.0)
     timecop (0.9.11)
     timeout (0.6.1)
     tinymce-rails (7.8.0)
@@ -587,7 +587,7 @@ GEM
       crack (>= 0.3.2)
       hashdiff (>= 0.4.0, < 2.0.0)
     websocket (1.2.11)
-    websocket-driver (0.8.0)
+    websocket-driver (0.8.2)
       base64
       websocket-extensions (>= 0.1.0)
     websocket-extensions (0.1.5)
@@ -631,7 +631,7 @@ DEPENDENCIES
   geocoder
   gon (~> 6.6)
   haml-rails
-  haml_lint (~> 0.74.0)
+  haml_lint (~> 0.75.0)
   html-proofer (< 4)
   httparty
   jquery-fileupload-rails
@@ -663,7 +663,7 @@ DEPENDENCIES
   resque-heroku-signals
   rspec-github
   rspec-rails
-  rubocop (~> 1.88.1)
+  rubocop (~> 1.88.2)
   rubocop-capybara (~> 3.0.0)
   rubocop-factory_bot (~> 2.28.0)
   rubocop-performance (~> 1.26.1)
