@@ -104,24 +104,25 @@ RSpec.describe PostsController, 'POST create' do
         button_preview: true,
         post: {
           subject: 'test',
-          content: 'orign',
-          character_id: templateless_character.id,
-          icon_id: icon.id,
-          character_alias_id: character_alias.id,
           setting_ids: setting_ids,
           content_warning_ids: warning_ids,
           label_ids: label_ids,
           unjoined_author_ids: [user.id, coauthor.id],
         },
+        reply: {
+          content: 'orign',
+          character_id: templateless_character.id,
+          icon_id: icon.id,
+          character_alias_id: character_alias.id,
+        },
       }
       expect(response).to render_template(:preview)
-      expect(assigns(:written)).to be_an_instance_of(Post)
-      expect(assigns(:written)).to be_a_new_record
-      expect(assigns(:written).user).to eq(user)
-      expect(assigns(:written).character).to eq(templateless_character)
-      expect(assigns(:written).icon).to eq(icon)
-      expect(assigns(:written).character_alias).to eq(character_alias)
-      expect(assigns(:post)).to eq(assigns(:written))
+      expect(assigns(:post).written).to be_an_instance_of(Reply)
+      expect(assigns(:post).written).to be_a_new_record
+      expect(assigns(:post).written.user).to eq(user)
+      expect(assigns(:post).written.character).to eq(templateless_character)
+      expect(assigns(:post).written.icon).to eq(icon)
+      expect(assigns(:post).written.character_alias).to eq(character_alias)
       expect(assigns(:page_title)).to eq('Previewing: test')
       expect(assigns(:author_ids)).to match_array([user.id, coauthor.id])
 
@@ -155,9 +156,9 @@ RSpec.describe PostsController, 'POST create' do
     it "does not crash without arguments" do
       post :create, params: { button_preview: true }
       expect(response).to render_template(:preview)
-      expect(assigns(:written)).to be_an_instance_of(Post)
-      expect(assigns(:written)).to be_a_new_record
-      expect(assigns(:written).user).to eq(user)
+      expect(assigns(:post).written).to be_an_instance_of(Reply)
+      expect(assigns(:post).written).to be_a_new_record
+      expect(assigns(:post).written.user).to eq(user)
     end
 
     it "does not create authors or viewers" do
@@ -172,6 +173,8 @@ RSpec.describe PostsController, 'POST create' do
             board_id: board.id,
             unjoined_author_ids: [coauthor.id],
             viewer_ids: [coauthor.id, create(:user).id],
+          },
+          reply: {
             content: 'test content',
           },
         }
@@ -339,15 +342,18 @@ RSpec.describe PostsController, 'POST create' do
       expect(controller).to receive(:setup_layout_gon).and_call_original
 
       # valid post requires a board_id
+
       post :create, params: {
         post: {
           subject: 'asubjct',
-          content: 'acontnt',
           setting_ids: setting_ids,
           content_warning_ids: warning_ids,
           label_ids: label_ids,
-          character_id: templateless_character.id,
           unjoined_author_ids: [user.id, coauthor.id],
+        },
+        reply: {
+          content: 'acontnt',
+          character_id: templateless_character.id,
         },
       }
 
@@ -356,7 +362,7 @@ RSpec.describe PostsController, 'POST create' do
       expect(assigns(:post)).not_to be_persisted
       expect(assigns(:post).user).to eq(user)
       expect(assigns(:post).subject).to eq('asubjct')
-      expect(assigns(:post).content).to eq('acontnt')
+      expect(assigns(:post).written.content).to eq('acontnt')
       expect(assigns(:page_title)).to eq('New Post')
       expect(assigns(:author_ids)).to match_array([user.id, coauthor.id])
 
@@ -388,6 +394,10 @@ RSpec.describe PostsController, 'POST create' do
       expect(PostTag.count).to eq(0)
     end
 
+    it "handles invalid first reply" do
+      skip "it is not currently possible for this reply to be invalid"
+    end
+
     it "creates a post" do
       viewer = create(:user)
       section = create(:board_section, board: board)
@@ -396,19 +406,21 @@ RSpec.describe PostsController, 'POST create' do
         post :create, params: {
           post: {
             subject: 'asubjct',
-            content: 'acontnt',
             description: 'adesc',
             board_id: board.id,
             section_id: section.id,
-            character_id: templateless_character.id,
-            icon_id: icon.id,
-            character_alias_id: character_alias.id,
             privacy: :access_list,
             viewer_ids: [viewer.id],
             setting_ids: setting_ids,
             content_warning_ids: warning_ids,
             label_ids: label_ids,
             unjoined_author_ids: [coauthor.id],
+          },
+          reply: {
+            content: 'acontnt',
+            character_id: templateless_character.id,
+            icon_id: icon.id,
+            character_alias_id: character_alias.id,
           },
         }
       }.to change { Post.count }.by(1)
@@ -420,13 +432,13 @@ RSpec.describe PostsController, 'POST create' do
       expect(post.user).to eq(user)
       expect(post.last_user).to eq(user)
       expect(post.subject).to eq('asubjct')
-      expect(post.content).to eq('acontnt')
+      expect(post.written.content).to eq('acontnt')
       expect(post.description).to eq('adesc')
       expect(post.board).to eq(board)
       expect(post.section).to eq(section)
-      expect(post.character_id).to eq(templateless_character.id)
-      expect(post.icon_id).to eq(icon.id)
-      expect(post.character_alias_id).to eq(character_alias.id)
+      expect(post.written.character_id).to eq(templateless_character.id)
+      expect(post.written.icon_id).to eq(icon.id)
+      expect(post.written.character_alias_id).to eq(character_alias.id)
       expect(post).to be_privacy_access_list
       expect(post.viewers).to match_array([viewer])
       expect(post.reload).to be_visible_to(viewer)
@@ -456,9 +468,13 @@ RSpec.describe PostsController, 'POST create' do
           post: {
             subject: 'asubjct',
             board_id: board.id,
+            setting_ids: setting_ids,
+          },
+          reply: {
+            content: 'foo',
             character_id: nil,
             icon_id: icon.id,
-            setting_ids: setting_ids,
+            editor_mode: 'rtf',
           },
           character: {
             name: 'NPC',
@@ -471,13 +487,15 @@ RSpec.describe PostsController, 'POST create' do
 
       post = assigns(:post).reload
       expect(post).to be_persisted
-      expect(post.character_id).not_to eq(templateless_character.id)
+      expect(post.written.character_id).not_to eq(templateless_character.id)
       expect(post.icon_id).to eq(icon.id)
-      expect(post.character.name).to eq('NPC')
-      expect(post.character).to be_npc
-      expect(post.character.default_icon_id).to eq(icon.id)
-      expect(post.character.nickname).to eq('asubjct') # post disambiguator
-      expect(post.character.settings.map(&:id_for_select)).to match_array(settings.map(&:id) + [Setting.last.id])
+
+      character = post.written.character.reload
+      expect(character).to be_npc
+      expect(character.name).to eq('NPC')
+      expect(character.default_icon_id).to eq(icon.id)
+      expect(character.nickname).to eq('asubjct') # post disambiguator
+      expect(character.settings.map(&:id_for_select)).to match_array(settings.map(&:id) + [Setting.last.id])
     end
 
     it "generates a flat post" do
@@ -486,6 +504,8 @@ RSpec.describe PostsController, 'POST create' do
           subject: 'subject',
           board_id: board.id,
           privacy: :registered,
+        },
+        reply: {
           content: 'content',
         },
       }

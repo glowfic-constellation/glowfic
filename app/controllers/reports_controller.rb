@@ -28,7 +28,8 @@ class ReportsController < ApplicationController
     end
 
     if logged_in?
-      @opened_posts = Post::View.where(user_id: current_user.id, post_id: @posts.map(&:id)).select([:post_id, :read_at, :ignored])
+      @opened_posts = Post::View.where(user_id: current_user.id, post_id: @posts.map(&:id))
+        .select([:post_id, :read_at, :ignored]).with_last_read_reply_order
       @board_views = BoardView.where(user_id: current_user.id, board_id: @posts.map(&:board_id)).select([:board_id, :ignored])
       @opened_ids = @opened_posts.map(&:post_id)
 

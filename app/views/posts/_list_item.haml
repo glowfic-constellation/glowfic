@@ -1,7 +1,7 @@
 -# locals: ( post:, index: nil, hide_continuity: false, show_unread_count: false, check_box_name: nil, check_box_padding: false, colored: false, klass: cycle('even', 'odd') )
 
 %tr
-  - replies_count = post.reply_count
+  - replies_count = post.reply_count - 1
   %td.post-completed.vtop{class: [klass, (post.complete? ? 'post-complete' : 'post-incomplete')]}
     - if post.complete?
       = image_tag "icons/book.png", class: 'vmid', title: "Thread Complete", alt: 'Complete'

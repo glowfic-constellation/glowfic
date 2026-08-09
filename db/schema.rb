@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2026_07_04_000000) do
+ActiveRecord::Schema[8.0].define(version: 2026_07_08_213500) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "citext"
   enable_extension "pg_catalog.plpgsql"
@@ -346,6 +346,8 @@ ActiveRecord::Schema[8.0].define(version: 2026_07_04_000000) do
     t.datetime "updated_at", precision: nil
     t.datetime "read_at", precision: nil
     t.boolean "warnings_hidden", default: false
+    t.integer "last_read_reply_id"
+    t.index ["last_read_reply_id"], name: "index_post_views_on_last_read_reply_id"
     t.index ["user_id", "post_id"], name: "index_post_views_on_user_id_and_post_id", unique: true
   end
 

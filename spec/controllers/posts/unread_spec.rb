@@ -90,6 +90,19 @@ RSpec.describe PostsController, 'GET unread' do
       expect(assigns(:posts)).to eq([post1, post2, post3])
     end
 
+    it "shows posts with replies behind the marker regardless of timestamps" do
+      unread_post, read_post = Timecop.freeze(5.minutes.ago) do
+        [create(:post, num_replies: 2), create(:post, num_replies: 1)]
+      end
+
+      # both marked read now, so read_at is later than tagged_at for both
+      unread_post.mark_read(user, at_reply: unread_post.replies.ordered_manually.first)
+      read_post.mark_read(user, at_reply: read_post.replies.ordered_manually.last)
+
+      get :unread
+      expect(assigns(:posts)).to match_array([unread_post])
+    end
+
     it "manages board/post read time mismatches" do
       now = Time.zone.now
       # no views exist

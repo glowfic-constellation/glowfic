@@ -4,9 +4,7 @@
     %button.float-right#select-output Copy All
 .sub= render 'reports/date_nav'
 .even#copy-output
-  - @posts.each do |content, editor_mode|
-    %p= sanitize_written_content(content, editor_mode)
   - @replies.each do |content, editor_mode|
     %p= sanitize_written_content(content, editor_mode)
-  - if @posts.empty? && @replies.empty?
+  - if @replies.empty?
     .centered — Nothing written today —

@@ -41,7 +41,7 @@ RSpec.describe PostsController, 'GET edit' do
       labels: [label],
       unjoined_authors: [unjoined],
     )
-    expect(post.icon).to be_nil
+    expect(post.written.icon).to be_nil
 
     create(:reply, user: user, post: post, character: char2) # reply1
 
@@ -67,8 +67,8 @@ RSpec.describe PostsController, 'GET edit' do
 
     expect(response.status).to eq(200)
     expect(assigns(:post)).to eq(post)
-    expect(assigns(:post).character).to eq(char1)
-    expect(assigns(:post).icon).to be_nil
+    expect(assigns(:post).written.character).to eq(char1)
+    expect(assigns(:post).written.icon).to be_nil
 
     # editor_setup:
     expect(assigns(:javascripts)).to include('posts/editor')
