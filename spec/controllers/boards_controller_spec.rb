@@ -587,6 +587,21 @@ RSpec.describe BoardsController do
       expect(Post.find(unread_post.id).last_read(user)).to be_nil
     end
 
+    it "sets markers on extant post views at each post's last reply" do
+      user = create(:user)
+      replied_post = create(:post, user: user, board: board)
+      reply = create(:reply, post: replied_post)
+      replied_post.mark_read(user, at_time: 1.day.ago, force: true)
+      replyless_post = create(:post, user: user, board: board)
+      replyless_post.mark_read(user, at_time: 1.day.ago, force: true)
+
+      login_as(user)
+      post :mark, params: { board_id: board.id, commit: "Mark Read" }
+
+      expect(replied_post.views.find_by(user: user).last_read_reply).to eq(reply)
+      expect(replyless_post.views.find_by(user: user).last_read_reply).to eq(replyless_post.written)
+    end
+
     it "successfully ignores board" do
       user = create(:user)
       login_as(user)

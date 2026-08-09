@@ -18,8 +18,10 @@ RSpec.describe "Writable" do
         post "/posts", params: {
           post: {
             subject: "Temp post",
-            content: "Post text",
             board_id: board.id,
+          },
+          reply: {
+            content: "Post text",
           },
         }
       }.to change { Post.count }.by(1)
@@ -49,7 +51,7 @@ RSpec.describe "Writable" do
       end
 
       patch "/posts/#{target.id}", params: {
-        post: {
+        reply: {
           content: "Edited post text",
         },
       }

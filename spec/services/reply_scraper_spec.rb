@@ -24,7 +24,7 @@ RSpec.describe ReplyScraper do
     scraper.import(doc)
 
     expect(Post.count).to eq(1)
-    expect(Reply.count).to eq(0)
+    expect(Reply.count).to eq(1)
     expect(User.count).to eq(1)
     expect(Icon.count).to eq(1)
     expect(Character.count).to eq(1)

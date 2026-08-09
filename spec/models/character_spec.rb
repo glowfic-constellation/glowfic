@@ -459,7 +459,7 @@ RSpec.describe Character do
         end
 
         it "works with alias" do
-          post.update!(character_alias: calias)
+          post.written.update!(character_alias: calias)
           json[:alias_id_for_post] = calias.id
           expect(character.as_json(post_for_alias: post)).to match_hash(json)
         end
@@ -555,7 +555,7 @@ RSpec.describe Character do
     end
 
     it "works with everything" do
-      post.update!(character_alias: calias)
+      post.written.update!(character_alias: calias)
       json.merge!({
         alias_id_for_post: calias.id,
         selector_name: character.selector_name,

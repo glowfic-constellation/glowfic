@@ -121,7 +121,7 @@ class RepliesController < WritableController
       redirect_to post_path(@reply.post) and return
     end
 
-    previous_reply = @reply.send(:previous_reply)
+    previous_reply = @reply.previous_reply
     to_page = previous_reply.try(:post_page, per_page) || 1
 
     # to destroy subsequent replies, do @reply.destroy_subsequent_replies
@@ -323,7 +323,7 @@ class RepliesController < WritableController
 
       if most_recent_unseen_reply.present?
         # Show a list of unseen replies before posting a new one
-        replies_post.mark_read(current_user, at_time: replies_post.read_time_for(@unseen_replies))
+        replies_post.mark_read(current_user, at_time: replies_post.read_time_for(@unseen_replies), at_reply: most_recent_unseen_reply)
         num = @unseen_replies.count
         pluraled = num > 1 ? "have been #{num} new replies" : "has been 1 new reply"
         flash.now[:error] = "There #{pluraled} since you last viewed this post."
