@@ -52,9 +52,9 @@ RSpec.describe SplitPostJob do
     100.times { |i| create(:reply, post: post, user: i.even? ? user : coauthor) }
     create(:reply, post: post, user: new_user)
 
-    previous = post.replies.find_by(reply_order: 49)
-    reply = post.replies.find_by(reply_order: 50)
-    next_reply = post.replies.find_by(reply_order: 51)
+    previous = post.replies.find_by(reply_order: 50)
+    reply = post.replies.find_by(reply_order: 51)
+    next_reply = post.replies.find_by(reply_order: 52)
     last = post.replies.last
 
     expect {
@@ -115,7 +115,7 @@ RSpec.describe SplitPostJob do
     other_post = create(:post, num_replies: 10)
 
     expect {
-      SplitPostJob.perform_now(post.replies.find_by(reply_order: 5).id, title)
+      SplitPostJob.perform_now(post.replies.find_by(reply_order: 6).id, title)
     }.to change { Post.count }.by(1).and change { Reply.count }.by(-1)
 
     new_post = Post.last
