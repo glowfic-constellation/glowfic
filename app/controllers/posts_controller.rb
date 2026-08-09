@@ -136,14 +136,21 @@ class PostsController < WritableController
     import_thread and return if params[:button_import].present?
     preview and return if params[:button_preview].present?
 
-    @post = current_user.posts.new(permitted_params)
+    @post = current_user.posts.new(permitted_params.except(:board_id, :section_id, :secondary_memberships))
     @post.settings = process_tags(Setting, obj_param: :post, id_param: :setting_ids)
     @post.content_warnings = process_tags(ContentWarning, obj_param: :post, id_param: :content_warning_ids)
     @post.labels = process_tags(Label, obj_param: :post, id_param: :label_ids)
     process_npc(@post, permitted_character_params)
 
     begin
-      @post.save!
+      Post.transaction do
+        @post.assign_continuities(
+          main_board_id: permitted_params[:board_id],
+          main_section_id: permitted_params[:section_id],
+          secondaries: permitted_params[:secondary_memberships],
+        )
+        @post.save!
+      end
     rescue ActiveRecord::RecordInvalid => e
       render_errors(@post, action: 'created', now: true, err: e)
 
@@ -219,8 +226,7 @@ class PostsController < WritableController
     change_authors_locked and return if params[:authors_locked].present?
     preview and return if params[:button_preview].present?
 
-    @post.assign_attributes(permitted_params)
-    @post.board ||= Board.find_by(id: Board::ID_SANDBOX)
+    @post.assign_attributes(permitted_params.except(:board_id, :section_id, :secondary_memberships))
     settings = process_tags(Setting, obj_param: :post, id_param: :setting_ids)
     warnings = process_tags(ContentWarning, obj_param: :post, id_param: :content_warning_ids)
     labels = process_tags(Label, obj_param: :post, id_param: :label_ids)
@@ -238,6 +244,13 @@ class PostsController < WritableController
         @post.content_warnings = warnings
         @post.labels = labels
         process_npc(@post, permitted_character_params)
+        if continuity_params_submitted?(permitted_params)
+          @post.assign_continuities(
+            main_board_id: permitted_params[:board_id].presence || Board::ID_SANDBOX,
+            main_section_id: permitted_params[:section_id],
+            secondaries: permitted_params[:secondary_memberships],
+          )
+        end
         @post.save!
         @post.author_for(current_user)&.update!(private_note: @post.private_note) if is_author
       end
@@ -250,7 +263,7 @@ class PostsController < WritableController
       render :edit
     else
       flash[:success] = "Post updated."
-      redirect_to @post
+      redirect_to post_path_with_continuity(@post)
     end
   end
 
@@ -291,8 +304,10 @@ class PostsController < WritableController
 
     response.headers['X-Robots-Tag'] = 'noindex'
     @search_results = Post.ordered
-    @search_results = @search_results.where(board_id: params[:board_id]) if params[:board_id].present?
-    @search_results = @search_results.where.not(board_id: params[:exclude_board_ids]) if params[:exclude_board_ids].present?
+    @search_results = @search_results.joins(:post_boards).where(post_boards: { board_id: params[:board_id] }) if params[:board_id].present?
+    if params[:exclude_board_ids].present?
+      @search_results = @search_results.where.not(id: PostBoard.where(board_id: params[:exclude_board_ids]).select(:post_id))
+    end
     @search_results = @search_results.where(id: Setting.find(params[:setting_id]).post_tags.pluck(:post_id)) if params[:setting_id].present?
     if params[:subject].present?
       if params[:abbrev].present?
@@ -538,10 +553,15 @@ class PostsController < WritableController
     redirect_to @post
   end
 
+  def continuity_params_submitted?(post_params)
+    [:board_id, :section_id, :secondary_memberships].any? { |k| post_params.key?(k) }
+  end
+
   def permitted_params(include_associations=true)
     allowed_params = [
       :board_id,
       :section_id,
+      :secondary_memberships,
       :privacy,
       :subject,
       :description,
@@ -560,6 +580,7 @@ class PostsController < WritableController
       allowed_params << {
         unjoined_author_ids: [],
         viewer_ids: [],
+        secondary_memberships: [:board_id, :section_id],
       }
     end
 

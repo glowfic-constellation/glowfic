@@ -3,7 +3,7 @@ class DraftsController < WritableController
   def create
     draft = make_draft
     redirect_to posts_path and return unless draft.post
-    redirect_to post_path(draft.post, page: :unread, anchor: :unread)
+    redirect_to post_path_with_continuity(draft.post, page: :unread, anchor: :unread)
   end
 
   def destroy
@@ -17,6 +17,6 @@ class DraftsController < WritableController
         array: draft&.errors&.full_messages,
       }
     end
-    redirect_to post_path(post_id, page: :unread, anchor: :unread)
+    redirect_to post_path_with_continuity(post_id, page: :unread, anchor: :unread)
   end
 end

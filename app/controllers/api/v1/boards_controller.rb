@@ -42,7 +42,7 @@ class Api::V1::BoardsController < Api::ApiController
       .ordered_by_id
       .with_reply_count
       .select('posts.*')
-      .includes(:board, :joined_authors, :section)
+      .includes(:joined_authors, main_post_board: [:board, :section])
     posts = paginate(queryset, per_page: 25)
     render json: { results: posts }
   end

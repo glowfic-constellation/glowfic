@@ -22,4 +22,4 @@
   - content_for :post_list_description do
     = sanitize_simple_link_text(@board_section.description)
 
-= render 'posts/list', posts: @posts, hide_continuity: true
+= render 'posts/list', posts: @posts, hide_continuity: true, board: @board_section.board

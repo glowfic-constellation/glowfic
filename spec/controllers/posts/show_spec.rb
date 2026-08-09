@@ -352,5 +352,59 @@ RSpec.describe PostsController, 'GET show' do
       expect(assigns(:reply)).to be_nil
     end
   end
+
+  context "with continuity_id" do
+    let(:secondary) { create(:board) }
+
+    before(:each) { post.post_boards.create!(board: secondary) }
+
+    it "shows the post through the secondary continuity" do
+      get :show, params: { id: post.id, continuity_id: secondary.id }
+      expect(response).to have_http_status(200)
+      expect(assigns(:post_board)).to eq(post.post_board_for(secondary.id))
+      expect(assigns(:secondary_board)).to eq(secondary)
+      expect(assigns(:paginate_params)[:continuity_id]).to eq(secondary.id)
+    end
+
+    it "treats the main continuity as the default view" do
+      get :show, params: { id: post.id, continuity_id: post.board_id }
+      expect(response).to have_http_status(200)
+      expect(assigns(:secondary_board)).to be_nil
+      expect(assigns(:paginate_params)).not_to have_key(:continuity_id)
+    end
+
+    it "requires a continuity the post is in" do
+      get :show, params: { id: post.id, continuity_id: create(:board).id }
+      expect(response).to redirect_to(continuities_url)
+      expect(flash[:error]).to eq("Post could not be found.")
+    end
+
+    it "keeps the canonical URL on the main continuity" do
+      get :show, params: { id: post.id, continuity_id: secondary.id }
+      expect(assigns(:meta_canonical)).to eq(post_url(post))
+    end
+
+    it "calculates OpenGraph meta through the secondary continuity" do
+      user = create(:user, username: 'example user')
+      post = create(:post, subject: 'title', user: user, board: create(:board, name: 'board'))
+      other = create(:board, name: 'other continuity')
+      post.post_boards.create!(board: other)
+
+      get :show, params: { id: post.id, continuity_id: other.id }
+
+      meta_og = assigns(:meta_og)
+      expect(meta_og[:url]).to eq(post_url(post))
+      expect(meta_og[:title]).to eq('title · other continuity')
+    end
+
+    it "navigates between posts within the secondary continuity" do
+      secondary.update!(authors_locked: true)
+      nextp = create(:post, user: secondary.creator, board: secondary)
+
+      get :show, params: { id: post.id, continuity_id: secondary.id }
+      expect(assigns(:prev_post)).to be_nil
+      expect(assigns(:next_post)).to eq(nextp)
+    end
+  end
   # TODO WAY more tests
 end

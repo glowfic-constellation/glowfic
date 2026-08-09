@@ -2,6 +2,8 @@
 
 = form_for post, html: { id: 'post_form' } do |f|
   - content_for :form do
+    - if params[:continuity_id]
+      = hidden_field_tag :continuity_id, params[:continuity_id]
     - unless post.id.present? && !post.editable_by?(current_user)
       %button.view-button#rtf{type: 'button', class: ('selected' if @post.editor_mode == 'rtf')} Rich Text
       %button.view-button#md{type: 'button', class: ('selected' if @post.editor_mode == 'md')} Markdown
@@ -45,6 +47,14 @@
     #section{class: ('hidden' unless post.board&.board_sections&.exists?)}
       = f.label :section_id, 'Continuity section:'
       = f.select :section_id, options_from_collection_for_select(BoardSection.where(board_id: post.board_id).ordered, :id, :name, post.section_id), include_blank: '— Choose Section —'
+    = label_tag 'post_secondary_board_ids', 'Other continuities:'
+    - secondary_post_boards = post.persisted? ? post.post_boards.where(is_main: false).includes(:board, :section) : []
+    = select_tag 'post[secondary_board_ids][]',
+        options_from_collection_for_select(allowed_secondary_boards(post, current_user), :id, :name, secondary_post_boards.map(&:board_id)),
+        multiple: true, id: 'post_secondary_board_ids'
+    #secondary-sections
+      - secondary_post_boards.each do |pb|
+        = render partial: 'posts/secondary_membership', locals: { post_board: pb }
     = f.label :privacy, 'Privacy:'
     = f.select :privacy, options_from_collection_for_select(post_privacy_settings.to_a, :second, :first, post.privacy)
     #access_list

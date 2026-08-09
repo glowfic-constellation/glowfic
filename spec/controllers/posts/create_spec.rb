@@ -450,6 +450,22 @@ RSpec.describe PostsController, 'POST create' do
       expect(PostTag.count).to eq(9)
     end
 
+    it "creates secondary continuities" do
+      board2 = create(:board)
+      post :create, params: {
+        post: {
+          subject: 'multi continuity post',
+          board_id: board.id,
+          secondary_memberships: [{ board_id: board2.id.to_s, section_id: '' }],
+        },
+      }
+      created = assigns(:post)
+      expect(response).to redirect_to(post_url(created))
+      expect(flash[:success]).to eq("Post created.")
+      expect(created.boards).to match_array([board, board2])
+      expect(created.board).to eq(board)
+    end
+
     it "creates NPCs" do
       expect {
         post :create, params: {

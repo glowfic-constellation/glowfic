@@ -134,6 +134,8 @@ function syncRowOrders(orderBox, path, param) {
   json['ordered_' + param] = orderedIds;
   // and restrict to relevant section_id if given
   if (window.gon && window.gon.section_id) json.section_id = window.gon.section_id;
+  // and the continuity being reordered, since posts may be in it secondarily
+  if (window.gon && window.gon.board_id) json.board_id = window.gon.board_id;
 
   $.authenticatedPost(path, json, function(resp) {
     // Check the list doesn't have new elements, warn but don't block if it does

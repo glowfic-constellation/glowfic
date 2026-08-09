@@ -28,8 +28,32 @@ module PostHelper
     Board.where(id: obj.board_id).or(Board.where(authors_locked: false)).or(Board.where(id: authored_ids)).ordered
   end
 
-  def unread_path(post, **kwargs)
-    post_path(post, page: 'unread', anchor: 'unread', **kwargs)
+  def allowed_secondary_boards(post, user)
+    authored_ids = BoardAuthor.where(user: user).select(:board_id)
+    linked_ids = post.persisted? ? post.boards.where.not(id: post.board_id).pluck(:id) : []
+    Board.where(authors_locked: false)
+      .or(Board.where(id: authored_ids))
+      .or(Board.where(id: linked_ids))
+      .where.not(id: post.board_id)
+      .ordered
+  end
+
+  def unread_path(post, board=nil, **kwargs)
+    post_in_continuity_path(post, board, page: 'unread', anchor: 'unread', **kwargs)
+  end
+
+  # Path to a post viewed within the given continuity: nested under it when it's a
+  # secondary continuity for the post, the regular flat path when it's the post's main
+  # continuity or nil.
+  def post_in_continuity_path(post, board=nil, **opts)
+    return post_path(post, **opts) if board.nil? || board.id == post.board_id
+    continuity_post_path(board, post, **opts)
+  end
+
+  # As above; callers only pass secondary continuities (or nil), so no main check needed.
+  def reply_in_continuity_path(reply, board=nil, **opts)
+    return reply_path(reply, **opts) if board.nil?
+    continuity_reply_path(board, reply, **opts)
   end
 
   def anchored_continuity_path(post)

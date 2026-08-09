@@ -60,7 +60,7 @@ class ReportsController < ApplicationController
       when 'subject'
         Arel.sql('LOWER(subject)')
       when 'continuity'
-        Arel.sql('LOWER(max(boards.name)), tagged_at desc')
+        Arel.sql('LOWER(max(main_boards.name)), tagged_at desc')
       else
         { first_updated_at: :desc }
     end
