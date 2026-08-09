@@ -256,6 +256,19 @@ RSpec.describe PostsController, 'GET show' do
         expect(assigns(:replies).per_page).to eq(1)
       end
     end
+
+    it "works for unread" do
+      third_reply = post.replies.ordered[2]
+      second_last_reply = post.replies.ordered[-2]
+      user = create(:user)
+      post.mark_read(user, at_time: third_reply.created_at)
+      expect(post.first_unread_for(user)).to eq(second_last_reply)
+      login_as(user)
+      get :show, params: { id: post.id, at_id: 'unread', per_page: 1 }
+      expect(assigns(:replies)).to eq([second_last_reply])
+      expect(assigns(:unread)).to eq(second_last_reply)
+      expect(assigns(:paginate_params)['at_id']).to eq(second_last_reply.id)
+    end
   end
 
   context "page=unread" do

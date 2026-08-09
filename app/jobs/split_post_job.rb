@@ -13,12 +13,11 @@ class SplitPostJob < ApplicationJob
       raise RuntimeError, "Couldn't find reply" unless first_reply
       old_post = first_reply.post
 
-      other_replies = old_post.replies.where('reply_order > ?', first_reply.reply_order).ordered
+      new_replies = old_post.replies.where('reply_order >= ?', first_reply.reply_order).ordered
       new_post = create_post(first_reply, old_post: old_post, subject: new_subject)
 
-      new_authors = find_authors(other_replies)
-      migrate_replies(other_replies, new_post: new_post, old_post: old_post, first_reply: first_reply)
-      cleanup_first(first_reply)
+      new_authors = find_authors(new_replies)
+      migrate_replies(new_replies, new_post: new_post, old_post: old_post, first_reply: first_reply)
       update_authors(new_authors, new_post: new_post, old_post: old_post)
       update_caches(new_post, new_post.replies.ordered.last)
       update_caches(old_post, old_post.replies.ordered.last)
@@ -31,6 +30,7 @@ class SplitPostJob < ApplicationJob
     new_post = Post.new(first_reply.attributes.slice(*REPLY_ATTRS))
     new_post.skip_edited = true
     new_post.is_import = true
+    new_post.skip_written = true
     new_post.assign_attributes(old_post.attributes.slice(*POST_ATTRS))
     POST_ASSOCS.each do |assoc|
       new_post.send(assoc + "=", old_post.send(assoc))
@@ -41,14 +41,14 @@ class SplitPostJob < ApplicationJob
     new_post
   end
 
-  def find_authors(other_replies)
+  def find_authors(new_replies)
     # collect user ids for the new post's replies and created_at of first replies of that set for the author
-    author_ids = other_replies.except(:order).select(:user_id).distinct.pluck(:user_id)
-    author_ids.index_with { |id| other_replies.find_by(user_id: id).created_at }
+    author_ids = new_replies.except(:order).select(:user_id).distinct.pluck(:user_id)
+    author_ids.index_with { |id| new_replies.find_by(user_id: id).created_at }
   end
 
-  def migrate_replies(other_replies, new_post:, old_post:, first_reply:)
-    count = other_replies.count
+  def migrate_replies(new_replies, new_post:, old_post:, first_reply:)
+    count = new_replies.count
     return {} if count.zero?
 
     sql = <<~SQL.squish
@@ -56,7 +56,7 @@ class SplitPostJob < ApplicationJob
       (
         SELECT ROW_NUMBER() OVER(ORDER BY replies.reply_order asc) AS rn, id
         FROM replies
-        WHERE replies.post_id = :old_id AND reply_order > :reply_num
+        WHERE replies.post_id = :old_id AND reply_order >= :reply_num
       )
       UPDATE replies
       SET reply_order = v_replies.rn-1, post_id = :new_id
@@ -65,11 +65,6 @@ class SplitPostJob < ApplicationJob
     SQL
     sql = ActiveRecord::Base.sanitize_sql_array([sql, old_id: old_post.id, reply_num: first_reply.reply_order, new_id: new_post.id])
     ActiveRecord::Base.connection.execute(sql)
-  end
-
-  def cleanup_first(first_reply)
-    first_reply.delete
-    raise ActiveRecord::RecordNotDestroyed if Reply.exists?(first_reply.id)
   end
 
   def update_authors(new_authors, new_post:, old_post:)
