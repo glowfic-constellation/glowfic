@@ -6,7 +6,7 @@ class Reply < ApplicationRecord
 
   # define this scope here or Orderable will redefine it
   scope :ordered, -> { order(reply_order: :asc) }
-  scope :ordered_manually, -> { ordered }
+  scope :ordered_manually, -> { where.not(reply_order: 0).ordered }
   include Orderable
 
   belongs_to :post, inverse_of: :replies, optional: false
@@ -17,12 +17,15 @@ class Reply < ApplicationRecord
   has_many :bookmarking_users, -> { ordered }, through: :bookmarks, source: :user, dependent: :destroy
 
   before_save :cache_word_count, if: :content_changed?
+  before_create :set_post_written
   after_create :notify_other_authors, :destroy_draft, :update_active_char, :set_last_reply, :update_post, :update_post_authors
-  after_update :update_post
+  after_update :update_post, :update_post_written
   after_destroy :set_previous_reply_to_last, :remove_post_author, :update_flat_post
   after_save :update_flat_post
 
-  attr_accessor :skip_notify, :skip_post_update, :is_import, :skip_regenerate
+  CONTENT_ATTRS = %w(icon_id character_alias_id character_id content)
+
+  attr_accessor :skip_notify, :skip_post_update, :is_import, :skip_regenerate, :skip_draft
 
   pg_search_scope(
     :search,
@@ -35,7 +38,7 @@ class Reply < ApplicationRecord
 
   def post_page(per=25)
     per_page = per > 0 ? per : post.replies.count
-    index = post.replies.where('reply_order < ?', self.reply_order).count
+    index = post.replies.where('reply_order < ?', self.reply_order).where.not(reply_order: 0).count
     (index / per_page) + 1
   end
 
@@ -66,7 +69,7 @@ class Reply < ApplicationRecord
   end
 
   def set_last_reply
-    return if skip_post_update
+    return if skip_post_update && reply_order != 0
     post.last_user = user
     post.last_reply = self
   end
@@ -74,7 +77,8 @@ class Reply < ApplicationRecord
   def update_post
     return if post.last_reply_id != id || skip_post_update
     return if (saved_changes.keys - Post::NON_TAGGED_ATTRS - ['updated_at']).empty?
-    post.tagged_at = updated_at
+    # creating the written with its post must not push tagged_at past the new flat post
+    post.tagged_at = updated_at unless post.previously_new_record?
     post.status = :active if post.on_hiatus?
     post.save
   end
@@ -93,12 +97,12 @@ class Reply < ApplicationRecord
     # return unless needs to update last reply (this is destroyed, this is the last reply)
     post.last_reply = previous_reply
     post.last_user = (previous_reply || post).user
-    post.tagged_at = (previous_reply || post).last_updated
+    post.tagged_at = previous_reply.present? ? previous_reply.updated_at : post.edited_at
     post.save
   end
 
   def destroy_draft
-    return if is_import
+    return if is_import || skip_draft
     ReplyDraft.draft_for(post_id, user_id).try(:destroy)
   end
 
@@ -163,5 +167,28 @@ class Reply < ApplicationRecord
 
   def ordered_attributes
     [:post_id]
+  end
+
+  def set_post_written
+    return unless reply_order == 0
+    return if self.slice(CONTENT_ATTRS) == post.slice(CONTENT_ATTRS)
+    post.assign_attributes(
+      content: content,
+      icon: icon,
+      character: character,
+      character_alias: character_alias,
+    )
+  end
+
+  def update_post_written
+    return unless reply_order == 0
+    return if self.slice(CONTENT_ATTRS) == post.slice(CONTENT_ATTRS)
+    post.update!(
+      content: content,
+      icon: icon,
+      character: character,
+      character_alias: character_alias,
+      edited_at: updated_at,
+    )
   end
 end

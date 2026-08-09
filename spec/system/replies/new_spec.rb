@@ -246,7 +246,7 @@ RSpec.describe "Creating replies" do
 
       # create unseen reply after loading page
       create(:reply, post: post, user: post.user)
-      expect(post.replies.count).to eq(2)
+      expect(post.replies.count).to eq(3)
 
       within('#post-editor') do
         fill_in 'reply_content', with: 'reply I do not want to duplicate'
@@ -255,7 +255,7 @@ RSpec.describe "Creating replies" do
       expect(page).to have_selector('.flash.error', text: "There has been 1 new reply since you last viewed this post.")
 
       click_button "Post"
-      expect(post.replies.count).to eq(3)
+      expect(post.replies.count).to eq(4)
       expect(page).to have_selector('.post-content', exact_text: 'reply I do not want to duplicate', count: 1)
       expect(page).to have_no_selector('.flash.error')
     end
@@ -450,7 +450,7 @@ RSpec.describe "Creating replies" do
 
         # create unseen reply after loading page
         create(:reply, post: post, user: post.user)
-        expect(post.replies.count).to eq(2)
+        expect(post.replies.count).to eq(3)
 
         within('#post-editor') do
           fill_in 'reply_content', with: 'new reply 3'
@@ -461,7 +461,7 @@ RSpec.describe "Creating replies" do
         expect(page).to have_selector('.flash.error', text: "There has been 1 new reply since you last viewed this post.")
 
         click_button "Post All"
-        expect(post.replies.count).to eq(4)
+        expect(post.replies.count).to eq(5)
         expect(page).to have_selector('.post-content', exact_text: 'new reply 3', count: 1)
         expect(page).to have_selector('.post-content', exact_text: 'reply I do not want to duplicate', count: 1)
         expect(page).to have_no_selector('.flash.error')

@@ -143,9 +143,9 @@ RSpec.describe ApplicationController do
       expect(fetched2.content_warnings).to match_array([warning1])
       expect(fetched3.content_warnings).to match_array([warning1, warning2])
 
-      expect(fetched1.reply_count).to eq(0)
-      expect(fetched2.reply_count).to eq(1)
-      expect(fetched3.reply_count).to eq(35)
+      expect(fetched1.reply_count).to eq(1)
+      expect(fetched2.reply_count).to eq(2)
+      expect(fetched3.reply_count).to eq(36)
 
       expect(fetched1.joined_authors).to match_array([post1.user])
       expect(fetched2.joined_authors).to match_array([post2.user, post2_reply.user])

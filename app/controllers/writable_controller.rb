@@ -20,7 +20,7 @@ class WritableController < ApplicationController
 
     if @post
       uniq_chars_ids = @post.replies.where(user_id: user.id).where.not(character_id: nil).group(:character_id).pluck(:character_id)
-      uniq_chars_ids << @post.character_id if @post.user_id == user.id && @post.character_id.present?
+      uniq_chars_ids << @reply.character_id if @reply.present?
       uniq_chars = Character.non_npcs.where(id: uniq_chars_ids).ordered.pluck(Template::CHAR_PLUCK)
       threadchars = faked.new('Post characters', nil, uniq_chars)
       @templates.insert(0, threadchars)
@@ -58,12 +58,12 @@ class WritableController < ApplicationController
         self.page = cur_page = 1
       end
     elsif cur_page == 'last'
-      self.page = cur_page = @post.replies.paginate(per_page: per, page: 1).total_pages
+      self.page = cur_page = @post.replies.where.not(reply_order: 0).paginate(per_page: per, page: 1).total_pages
     elsif cur_page == 'unread'
       if logged_in?
         @unread = @post.first_unread_for(current_user) if logged_in?
         if @unread.nil?
-          self.page = cur_page = @post.replies.paginate(per_page: per, page: 1).total_pages
+          self.page = cur_page = @post.replies.where.not(reply_order: 0).paginate(per_page: per, page: 1).total_pages
         elsif @unread.class == Post
           self.page = cur_page = 1
         else
@@ -84,10 +84,11 @@ class WritableController < ApplicationController
       character_aliases.name as alias
     SQL
 
-    reply_count = @replies.count
+    reply_count = @replies.where.not(reply_order: 0).count
 
     @replies = @replies
       .select(select)
+      .where('replies.reply_order > 0')
       .joins(:user)
       .left_outer_joins(:character)
       .left_outer_joins(:icon)
@@ -97,8 +98,7 @@ class WritableController < ApplicationController
     redirect_to post_path(@post, page: @replies.total_pages, per_page: per) and return if cur_page > @replies.total_pages
     use_javascript('paginator')
 
-    @audits = @post.associated_audits.where(auditable_id: @replies.map(&:id)).group(:auditable_id).count
-    @audits[:post] = @post.audits.count
+    @audits = @post.associated_audits.where(auditable_id: @replies.map(&:id) + [@post.written.id]).group(:auditable_id).count
 
     calculate_reply_bookmarks(@replies)
 
@@ -132,7 +132,7 @@ class WritableController < ApplicationController
         @draft = ReplyDraft.draft_for(@post.id, current_user.id)
       end
 
-      @post.mark_read(current_user, at_time: @post.read_time_for(@replies)) unless @permalink_jumped_ahead
+      @post.mark_read(current_user, at_time: @post.read_time_for(@replies + [@post.written])) unless @permalink_jumped_ahead
     end
 
     if display_warnings?
@@ -219,18 +219,12 @@ class WritableController < ApplicationController
 
     # we take the NPC's first post's subject as its nickname, for disambiguation in dropdowns etc
     # additionally, we grab the post's settings and attach those to the character
-    post = if writable.is_a? Post
-      writable
-    else
-      writable.post
-    end
-
     writable.build_character(
       permitted_character_params.merge(
         default_icon_id: writable.icon_id,
         user_id: writable.user_id,
-        nickname: post.subject,
-        settings: post.settings,
+        nickname: writable.post.subject,
+        settings: writable.post.settings,
       ),
     )
   end
