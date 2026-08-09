@@ -115,7 +115,7 @@ RSpec.describe UserMailer do
     it "works when notification has error" do
       notification = create(:error_notification, user: user)
       mail = UserMailer.new_notification(notification.id)
-      subject = "Post import failed: #{notification.error_msg}"
+      subject = "Post import failed: #{notification.message}"
 
       expect(mail.subject).to eq(subject.tr("\n", ''))
       expect(mail.to).to eq([user.email])
@@ -126,7 +126,7 @@ RSpec.describe UserMailer do
 
       expect(mail.html_part.content_type).to eq('text/html; charset=UTF-8')
       expect(mail.html_part.body.to_s).to start_with("<!DOCTYPE html>\n<html>\n<head>\n<title>#{subject}</title>")
-      expect(html_text(mail.html_part)).to eq("Post Import Failed #{notification.error_msg}")
+      expect(html_text(mail.html_part)).to eq("Post Import Failed #{notification.message}")
 
       mail.deliver!
       expect(ActionMailer::Base.deliveries.count).to eq(1)

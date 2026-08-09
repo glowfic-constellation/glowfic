@@ -1,0 +1,20 @@
+= render 'breadcrumbs', subtitle: 'Merge Post', post: @post
+
+= form_with url: preview_merge_post_path(@post), method: :post do |f|
+  .form-table#post-merger
+    .editor-title Merge Post
+    .even.colspan
+      %div
+        %p
+          Merging will move the full contents of this post into another post, immediately after an existing
+          reply and before any replies that follow it. Navigate to the reply in the target post you wish to
+          merge into and copy its permalink (or the permalink to the post itself if you wish to move this
+          post to immediately after the top post) then paste it in the box below.
+        %p
+          The next page will let you review the merge and choose the privacy level, setting(s), content
+          warnings, and labels of the merged post.
+    %div
+      .sub= f.label :target_url, "Link to post or reply"
+      .odd= f.text_field :target_url, value: params[:target_url], placeholder: 'Link to the post or reply to merge this post into'
+    .form-table-ender
+      = submit_tag 'Next', class: 'button', id: 'submit_button', data: { disable_with: 'Checking...' }

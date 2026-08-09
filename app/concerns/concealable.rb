@@ -2,6 +2,9 @@
 module Concealable
   extend ActiveSupport::Concern
 
+  # the enum's integer values are historical and do not reflect strictness
+  PRIVACY_STRICTNESS = %i(public registered full_accounts access_list private)
+
   included do
     # 3 used to be used as registered but was updated to full_accounts
     # with the release of read-only accounts to avoid a db migration.

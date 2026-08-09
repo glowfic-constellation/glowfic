@@ -11,7 +11,7 @@ class Reply::Searcher < Generic::Searcher
   def setup(params)
     if @post&.visible_to?(@current_user)
       @users = @post.authors.active
-      char_ids = @post.replies.select(:character_id).distinct.pluck(:character_id) + [@post.character_id]
+      char_ids = @post.replies.select(:character_id).distinct.pluck(:character_id)
       @characters = Character.where(id: char_ids).ordered
       @templates = Template.where(id: @characters.map(&:template_id).uniq.compact).ordered
       @boards = [@post.board]

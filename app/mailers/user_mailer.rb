@@ -29,7 +29,7 @@ class UserMailer < ApplicationMailer
     @notification = Notification.find(notification_id)
     @subject = subject_for_type(@notification.notification_type)
     @subject += ": #{@notification.post.subject}" if @notification.post.present?
-    @subject += ": #{@notification.error_msg}" if @notification.error_msg.present?
+    @subject += ": #{@notification.message}" if @notification.message.present? && !@notification.merge_type?
     mail(to: @notification.user.email, subject: @subject)
   end
 end

@@ -104,14 +104,14 @@ RSpec.describe RepliesController, 'PUT update' do
     login_as(reply_post.user)
     create(:reply, post: reply_post)
     reply = create(:reply, post: reply_post, user: reply_post.user)
-    expect(reply.reply_order).to eq(1)
+    expect(reply.reply_order).to eq(2)
     expect(reply_post.replies.ordered.last).to eq(reply)
     create(:reply, post: reply_post)
     expect(reply_post.replies.ordered.last).not_to eq(reply)
     reply_post.mark_read(reply_post.user)
     put :update, params: { id: reply.id, reply: { content: 'new content' } }
     expect(flash[:success]).to eq("Reply updated.")
-    expect(reply.reload.reply_order).to eq(1)
+    expect(reply.reload.reply_order).to eq(2)
   end
 
   it "preserves NPC" do
@@ -180,9 +180,11 @@ RSpec.describe RepliesController, 'PUT update' do
       expect(controller.gon.editor_user[:username]).to eq(user.username)
       # templates
       templates = assigns(:templates)
-      expect(templates.length).to eq(2)
-      template_chars = templates.first
-      expect(template_chars).to eq(char2.template)
+      expect(templates.length).to eq(3)
+      used = templates.first
+      expect(used.name).to eq("Post characters")
+      expect(used.plucked_characters).to eq([[char.id, char.name]])
+      expect(templates[1]).to eq(char2.template)
       templateless = templates.last
       expect(templateless.name).to eq('Templateless')
       expect(templateless.plucked_characters).to eq([[char.id, char.name]])

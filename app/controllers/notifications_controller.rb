@@ -11,6 +11,11 @@ class NotificationsController < ApplicationController
     post_ids = @notifications.map(&:post_id).compact_blank
     @posts = posts_from_relation(Post.where(id: post_ids), with_pagination: false).index_by(&:id)
 
+    # displaying a merge notification is reading it; the loaded objects keep their
+    # unread flags so this render still highlights the new ones
+    displayed_merges = @notifications.select { |notification| notification.unread && notification.merge_type? }
+    Notification.where(id: displayed_merges).update_all(unread: false, read_at: Time.zone.now) # rubocop:disable Rails/SkipsModelValidations
+
     use_javascript('global')
   end
 

@@ -93,7 +93,7 @@ RSpec.describe "migrate_notifications" do # rubocop:disable RSpec/DescribeClass
     expect(previous_notifications.count).to eq(10)
     expect(previous_notifications.ids).to match_array(import_previous_messages.reload.pluck(:notification_id))
 
-    error_notifications = failure_notifications.where.not(error_msg: nil)
+    error_notifications = failure_notifications.where.not(message: nil)
     expect(error_notifications.count).to eq(10)
     expect(error_notifications.ids).to match_array(import_error_messages.reload.pluck(:notification_id))
 
@@ -178,7 +178,7 @@ RSpec.describe "migrate_notifications" do # rubocop:disable RSpec/DescribeClass
       expect(notification.id).to eq(message.reload.notification_id)
       expect(notification.notification_type).to eq('import_fail')
       expect(notification.post_id).to be_nil
-      expect(notification.error_msg).to eq(error)
+      expect(notification.message).to eq(error)
     end
 
     it "finds post_id" do
@@ -189,7 +189,7 @@ RSpec.describe "migrate_notifications" do # rubocop:disable RSpec/DescribeClass
       expect(notification.id).to eq(message.reload.notification_id)
       expect(notification.notification_type).to eq('import_fail')
       expect(notification.post_id).to eq(post.id)
-      expect(notification.error_msg).to be_nil
+      expect(notification.message).to be_nil
     end
   end
 

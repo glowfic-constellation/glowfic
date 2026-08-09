@@ -13,7 +13,7 @@ class ScrapePostJob < ApplicationJob
     Resque.logger.warn "Failed to import #{url}: #{exception.message}"
     super unless user
     post = exception.is_a?(AlreadyImportedError) ? Post.find_by(id: exception.post_id) : nil
-    Notification.notify_user(user, :import_fail, error: exception.message, post: post)
+    Notification.notify_user(user, :import_fail, message: exception.message, post: post)
     super
   end
 

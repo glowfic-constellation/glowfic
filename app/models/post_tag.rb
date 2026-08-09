@@ -7,4 +7,8 @@ class PostTag < ApplicationRecord
   belongs_to :label, foreign_key: :tag_id, inverse_of: :post_tags, optional: true
 
   validates :post, uniqueness: { scope: :tag }
+
+  # a join built through an unsaved post can be saved from the tag's side first
+  # (e.g. via an NPC's settings), before the post's own save syncs this foreign key
+  before_create -> { self.post_id ||= post&.id }
 end

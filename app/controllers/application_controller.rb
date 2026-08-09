@@ -142,10 +142,12 @@ class ApplicationController < ActionController::Base
     post_views = Post::View.where(user_id: current_user.id).where.not(read_at: nil)
     @opened_ids ||= post_views.pluck(:post_id)
 
-    opened_posts = post_views.where(post_id: posts.map(&:id)).select([:post_id, :read_at])
+    opened_posts = post_views.where(post_id: posts.map(&:id)).select([:post_id, :read_at]).with_last_read_reply_order
     unread_views = opened_posts.select do |view|
       post = posts.detect { |p| p.id == view.post_id }
-      post && view.read_at < post.tagged_at
+      next false unless post
+      # reply_count includes the order-0 written, so the last reply sits at reply_count - 1
+      view.read_at < post.tagged_at || (view.last_read_reply_order && view.last_read_reply_order < post.reply_count - 1)
     end
 
     @unread_ids ||= []
@@ -154,8 +156,15 @@ class ApplicationController < ActionController::Base
     return unless with_unread
 
     @unread_counts = Reply.where(post_id: @unread_ids).joins('INNER JOIN post_views ON replies.post_id = post_views.post_id')
+    @unread_counts = @unread_counts.joins('LEFT JOIN replies markers ON markers.id = post_views.last_read_reply_id')
     @unread_counts = @unread_counts.where(post_views: { user_id: current_user.id })
-    @unread_counts = @unread_counts.where('replies.created_at > post_views.read_at').group(:post_id).count
+    # count by marker position when one is set; fall back to timestamps for views without one
+    @unread_counts = @unread_counts.where(<<~SQL.squish).group(:post_id).count
+      CASE WHEN post_views.last_read_reply_id IS NULL
+        THEN replies.created_at > post_views.read_at
+        ELSE replies.reply_order > markers.reply_order
+      END
+    SQL
   end
 
   def calculate_reply_bookmarks(replies)

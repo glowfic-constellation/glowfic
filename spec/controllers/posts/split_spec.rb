@@ -22,7 +22,7 @@ RSpec.describe PostsController do
       user_post.update!(authors_locked: false)
       get :split, params: { id: user_post.id }
       expect(response).to redirect_to(post_url(user_post))
-      expect(flash[:error]).to eq("Post must be locked to current authors to be split.")
+      expect(flash[:error]).to eq("Post must be locked to current authors.")
     end
 
     it "works for creator if locked" do
@@ -63,7 +63,7 @@ RSpec.describe PostsController do
       user_post.update!(authors_locked: false)
       post :do_split, params: { id: user_post.id }
       expect(response).to redirect_to(post_url(user_post))
-      expect(flash[:error]).to eq("Post must be locked to current authors to be split.")
+      expect(flash[:error]).to eq("Post must be locked to current authors.")
     end
 
     it "requires reply" do
