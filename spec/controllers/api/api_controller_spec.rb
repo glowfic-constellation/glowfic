@@ -71,4 +71,53 @@ RSpec.describe Api::ApiController do
       end
     end
   end
+
+  describe "oauth token handling" do
+    let(:user) { create(:user) }
+    let(:client_application) do
+      ClientApplication.create!(
+        user: user,
+        name: "Client Application name",
+        url: "http://localhost/",
+        callback_url: "http://localhost:3000/callback",
+      )
+    end
+
+    def oauth_login(token_value)
+      request.headers.merge({ Authorization: "Bearer #{token_value}" })
+    end
+
+    it "works when a valid access token is provided" do
+      token = Oauth2Token.create!(user: user, client_application: client_application)
+      oauth_login(token.token)
+      get :show, params: { id: 1 }
+      expect(response).to have_http_status(200)
+      expect(response.parsed_body['results'].size).to eq(3)
+    end
+
+    it "does not accept an authorization code as a bearer token" do
+      verifier = Oauth2Verifier.create!(user: user, client_application: client_application)
+      oauth_login(verifier.code)
+      get :index
+      expect(response).to have_http_status(422)
+      expect(response.parsed_body['errors'][0]['message']).to eq("Authorization token is not valid.")
+    end
+
+    it "does not accept an expired access token" do
+      token = Oauth2Token.create!(user: user, client_application: client_application, expires_at: 1.hour.ago)
+      oauth_login(token.token)
+      get :index
+      expect(response).to have_http_status(422)
+      expect(response.parsed_body['errors'][0]['message']).to eq("Authorization token is not valid.")
+    end
+
+    it "does not accept an invalidated access token" do
+      token = Oauth2Token.create!(user: user, client_application: client_application)
+      token.invalidate!
+      oauth_login(token.token)
+      get :index
+      expect(response).to have_http_status(422)
+      expect(response.parsed_body['errors'][0]['message']).to eq("Authorization token is not valid.")
+    end
+  end
 end
