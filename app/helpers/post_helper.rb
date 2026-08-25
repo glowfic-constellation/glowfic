@@ -23,6 +23,38 @@ module PostHelper
     safe_join([first_link, others], ' and ')
   end
 
+  DRAFT_STATUS_PHRASES = { draft: 'draft in progress', tagging: 'still tagging' }
+
+  # icons summarising who has something in progress on a post, shown in post lists
+  def draft_status_icons(post)
+    own = @own_draft_statuses.try(:[], post.id)
+    coauthors = @coauthor_draft_statuses.try(:[], post.id)
+    return if own.blank? && coauthors.blank?
+
+    icons = []
+    if own.present?
+      title = "You: #{draft_status_phrase(own)}"
+      icons << image_tag('icons/pencil.png', class: 'vmid', title: title, alt: title)
+    end
+    if coauthors.present?
+      title = coauthors.map { |user, status| "#{user.username}: #{draft_status_phrase(status)}" }.join(', ')
+      icons << image_tag('icons/status_online.png', class: 'vmid', title: title, alt: title)
+    end
+    safe_join(icons)
+  end
+
+  def draft_status_phrase(status)
+    status.map { |key| DRAFT_STATUS_PHRASES[key] }.to_sentence
+  end
+
+  # "Alicorn has a draft in progress and is still tagging"
+  def draft_status_sentence(user, status)
+    phrases = []
+    phrases << 'has a draft in progress' if status.include?(:draft)
+    phrases << 'is still tagging' if status.include?(:tagging)
+    "#{user.username} #{phrases.to_sentence}"
+  end
+
   def allowed_boards(obj, user)
     authored_ids = BoardAuthor.where(user: user).select(:board_id)
     Board.where(id: obj.board_id).or(Board.where(authors_locked: false)).or(Board.where(id: authored_ids)).ordered

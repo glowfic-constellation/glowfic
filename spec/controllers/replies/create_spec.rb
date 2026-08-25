@@ -284,6 +284,37 @@ RSpec.describe RepliesController, 'POST create' do
     expect(reply.character_alias_id).to eq(calias.id)
   end
 
+  context "with the still tagging check box" do
+    let(:user) { create(:user) }
+    let(:reply_post) { create(:post, user: user) }
+
+    before(:each) do
+      login_as(user)
+      reply_post.mark_read(user, at_time: reply_post.created_at + 1.second, force: true)
+    end
+
+    def create_reply(params={})
+      post :create, params: { reply: { post_id: reply_post.id, content: 'test!' } }.merge(params)
+    end
+
+    it "marks the author as still tagging when checked" do
+      create_reply(still_tagging: '1')
+      expect(reply_post.author_for(user).still_tagging).to eq(true)
+    end
+
+    it "clears the flag when unchecked" do
+      reply_post.author_for(user).update!(still_tagging: true)
+      create_reply(still_tagging: '0')
+      expect(reply_post.author_for(user).still_tagging).to eq(false)
+    end
+
+    it "leaves the flag alone when the check box is absent" do
+      reply_post.author_for(user).update!(still_tagging: true)
+      create_reply
+      expect(reply_post.author_for(user).still_tagging).to eq(true)
+    end
+  end
+
   it "allows you to reply to a post you created" do
     user = create(:user)
     login_as(user)

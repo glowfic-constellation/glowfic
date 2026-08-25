@@ -397,6 +397,57 @@ RSpec.describe PostsController, 'PUT update' do
     end
   end
 
+  context "draft status visibility" do
+    let(:draft_post) { create(:post, user: user, unjoined_authors: [coauthor]) }
+
+    before(:each) { login_as(user) }
+
+    it "requires authorship of the post" do
+      login_as(create(:user))
+
+      put :update, params: { id: draft_post.id, show_drafts: 'true' }
+
+      expect(response).to redirect_to(post_url(draft_post))
+      expect(flash[:error]).to eq("You are not an author of this post.")
+      expect(draft_post.author_for(user).show_drafts).to be_nil
+    end
+
+    it "shows draft status to coauthors" do
+      put :update, params: { id: draft_post.id, show_drafts: 'true' }
+
+      expect(response).to redirect_to(post_url(draft_post))
+      expect(flash[:success]).to eq("Your draft status on this post is now visible to your coauthors.")
+      expect(draft_post.author_for(user).show_drafts).to eq(true)
+    end
+
+    it "hides draft status from coauthors" do
+      user.update!(show_drafts_to_coauthors: true)
+
+      put :update, params: { id: draft_post.id, show_drafts: 'false' }
+
+      expect(response).to redirect_to(post_url(draft_post))
+      expect(flash[:success]).to eq("Your draft status on this post is now hidden from your coauthors.")
+      expect(draft_post.author_for(user).show_drafts).to eq(false)
+      expect(draft_post.author_for(user).shows_drafts?).to eq(false)
+    end
+
+    it "reverts to the user's default" do
+      draft_post.author_for(user).update!(show_drafts: false)
+
+      put :update, params: { id: draft_post.id, show_drafts: 'default' }
+
+      expect(response).to redirect_to(post_url(draft_post))
+      expect(flash[:success]).to eq("Your draft status on this post now uses your default setting.")
+      expect(draft_post.author_for(user).show_drafts).to be_nil
+    end
+
+    it "only changes the current user's setting" do
+      put :update, params: { id: draft_post.id, show_drafts: 'true' }
+
+      expect(draft_post.author_for(coauthor).show_drafts).to be_nil
+    end
+  end
+
   context "preview" do
     before(:each) { login_as(user) }
 

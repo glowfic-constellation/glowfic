@@ -131,6 +131,7 @@ class WritableController < ApplicationController
         @reply.editor_mode ||= params[:editor_mode] || current_user.default_editor
         @draft = ReplyDraft.draft_for(@post.id, current_user.id)
       end
+      @in_progress_statuses = @post.in_progress_statuses_for(current_user)
 
       @post.mark_read(current_user, at_time: @post.read_time_for(@replies)) unless @permalink_jumped_ahead
     end
@@ -211,6 +212,15 @@ class WritableController < ApplicationController
       end
     end
     draft
+  end
+
+  # records whether the user has more replies coming on this post, from the reply form's
+  # "still tagging" check box (only rendered when their draft status is shared)
+  def update_tagging_status(post)
+    return unless post
+    return unless params.key?(:still_tagging)
+    return unless (author = post.author_for(current_user))
+    author.update(still_tagging: params[:still_tagging] == '1')
   end
 
   def process_npc(writable, permitted_character_params)

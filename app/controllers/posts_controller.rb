@@ -211,6 +211,7 @@ class PostsController < WritableController
   def update
     mark_unread and return if params[:unread].present?
     mark_hidden and return if params[:hidden].present?
+    change_draft_visibility and return if params[:show_drafts].present?
 
     require_edit_permission
     return if performed?
@@ -440,6 +441,29 @@ class PostsController < WritableController
     else
       @post.unignore(current_user)
       flash[:success] = "Post has been unhidden"
+    end
+    redirect_to @post
+  end
+
+  def change_draft_visibility
+    author = @post.author_for(current_user)
+    unless author
+      flash[:error] = "You are not an author of this post."
+      return redirect_to @post
+    end
+
+    show_drafts = case params[:show_drafts]
+      when 'true' then true
+      when 'false' then false
+    end
+    author.update!(show_drafts: show_drafts)
+
+    flash[:success] = if show_drafts.nil?
+      "Your draft status on this post now uses your default setting."
+    elsif show_drafts
+      "Your draft status on this post is now visible to your coauthors."
+    else
+      "Your draft status on this post is now hidden from your coauthors."
     end
     redirect_to @post
   end

@@ -186,6 +186,55 @@ RSpec.describe PostsController, 'GET show' do
     end
   end
 
+  context "with in-progress coauthors" do
+    render_views
+
+    let(:author) { create(:user) }
+    let(:coauthor) { create(:user, username: 'Alicorn') }
+    let(:shared_post) { create(:post, user: author, unjoined_authors: [coauthor]) }
+
+    before(:each) { login_as(author) }
+
+    it "shows a coauthor's draft when they share it" do
+      coauthor.update!(show_drafts_to_coauthors: true)
+      create(:reply_draft, post: shared_post, user: coauthor)
+
+      get :show, params: { id: shared_post.id }
+
+      expect(assigns(:in_progress_statuses)).to eq({ coauthor => [:draft] })
+      expect(response.body).to include('Alicorn has a draft in progress')
+    end
+
+    it "shows a coauthor's multitag when they share it on this post" do
+      shared_post.author_for(coauthor).update!(show_drafts: true, still_tagging: true)
+
+      get :show, params: { id: shared_post.id }
+
+      expect(assigns(:in_progress_statuses)).to eq({ coauthor => [:tagging] })
+      expect(response.body).to include('Alicorn is still tagging')
+    end
+
+    it "hides a coauthor's draft by default" do
+      create(:reply_draft, post: shared_post, user: coauthor)
+
+      get :show, params: { id: shared_post.id }
+
+      expect(assigns(:in_progress_statuses)).to eq({})
+      expect(response.body).not_to include('draft in progress')
+    end
+
+    it "does not show anything to non-authors" do
+      coauthor.update!(show_drafts_to_coauthors: true)
+      create(:reply_draft, post: shared_post, user: coauthor)
+      login_as(create(:user))
+
+      get :show, params: { id: shared_post.id }
+
+      expect(assigns(:in_progress_statuses)).to eq({})
+      expect(response.body).not_to include('draft in progress')
+    end
+  end
+
   context "with at_id" do
     let(:post) { create(:post) }
     let(:second_last_reply) { post.replies.ordered.last(2).first }

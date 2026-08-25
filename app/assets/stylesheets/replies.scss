@@ -124,6 +124,17 @@ div.post-subheader { width: 100%; }
   .view-button { background-color: $bg_color_navbutton; }
 }
 
+/* Coauthors' in-progress drafts and multitags */
+.post-in-progress { font-style: italic; }
+
+.still-tagging {
+  clear: both;
+  padding-top: 5px;
+  font-size: $font_size_smallish;
+
+  label { padding-left: 3px; }
+}
+
 .post-expander {
   min-height: 5px;
   background-color: $bg_color_expander;

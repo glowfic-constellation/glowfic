@@ -43,6 +43,12 @@
       = submit_tag "Add More Replies", class: 'button', id: 'add_more_button', name: 'button_add_more', data: { disable_with: 'Adding...' }
       - if multi_replies_params.present?
         = submit_tag "Discard Replies", class: 'button', id: 'discard_multi_reply_button', name: 'button_discard_multi_reply', data: { disable_with: 'Discarding...', confirm: "Discard all replies added?" }
+      - if (tagging_author = reply.post.try(:author_for, current_user))&.shows_drafts?
+        .still-tagging
+          = hidden_field_tag :still_tagging, '0'.freeze, id: nil
+          - still_tagging = params.key?(:still_tagging) ? params[:still_tagging] == '1'.freeze : tagging_author.still_tagging?
+          = check_box_tag :still_tagging, '1'.freeze, still_tagging
+          = label_tag :still_tagging, 'Show my coauthors that I have more replies coming'
     - if reply.post.author_for(current_user).present?
       %hr.clear
       .post-note-editor

@@ -210,6 +210,47 @@ RSpec.describe "Viewing posts" do
     expect(page).to have_selector(".post-content", count: 3)
   end
 
+  scenario "Sharing draft status with coauthors" do
+    coauthor = create(:user, username: 'Alicorn')
+    shared_post = create(:post, user: user, unjoined_authors: [coauthor])
+    create(:reply_draft, post: shared_post, user: coauthor)
+
+    login(user)
+    visit post_path(shared_post)
+    expect(page).to have_selector('#post-title', text: shared_post.subject)
+    expect(page).to have_no_text('Alicorn has a draft in progress')
+
+    coauthor.update!(show_drafts_to_coauthors: true)
+    visit post_path(shared_post)
+    expect(page).to have_text('Alicorn has a draft in progress')
+
+    # the coauthor can opt back out for this thread specifically
+    shared_post.author_for(coauthor).update!(show_drafts: false)
+    visit post_path(shared_post)
+    expect(page).to have_selector('#post-title', text: shared_post.subject)
+    expect(page).to have_no_text('Alicorn has a draft in progress')
+  end
+
+  scenario "Toggling your own draft status on a thread" do
+    shared_post = create(:post, user: user, unjoined_authors: [create(:user)])
+
+    login(user)
+    visit post_path(shared_post)
+    expect(page).to have_selector('#post-title', text: shared_post.subject)
+    expect(page).to have_no_field('still_tagging')
+    expect(page).to have_no_link("Use Default Draft Status")
+
+    within('#post-menu-box') { click_link "Show Draft Status Here" }
+    expect(page).to have_text("Your draft status on this post is now visible to your coauthors.")
+    expect(shared_post.author_for(user).show_drafts).to eq(true)
+    expect(page).to have_field('still_tagging', checked: false)
+
+    within('#post-menu-box') { click_link "Use Default Draft Status" }
+    expect(page).to have_text("Your draft status on this post now uses your default setting.")
+    expect(shared_post.author_for(user).show_drafts).to be_nil
+    expect(page).to have_no_field('still_tagging')
+  end
+
   scenario "Hidden reply buttons" do
     login(user)
     create_list(:reply, 3, post: post)

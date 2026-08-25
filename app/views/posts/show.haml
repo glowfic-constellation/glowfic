@@ -111,6 +111,22 @@
           %div
             = image_tag "icons/star_add.png".freeze, class: 'vmid'.freeze, style: 'margin-bottom: 3px;'.freeze, alt: ''
             Favorite
+      - if (draft_author = @post.author_for(current_user))
+        - if draft_author.shows_drafts?
+          = link_to post_path(@post, show_drafts: 'false'.freeze), method: :put do
+            %div
+              = image_tag "icons/status_online.png".freeze, alt: ''
+              Hide Draft Status Here
+        - else
+          = link_to post_path(@post, show_drafts: 'true'.freeze), method: :put do
+            %div
+              = image_tag "icons/status_online.png".freeze, alt: ''
+              Show Draft Status Here
+        - unless draft_author.show_drafts.nil?
+          = link_to post_path(@post, show_drafts: 'default'.freeze), method: :put do
+            %div
+              = image_tag "icons/swap.png".freeze, alt: ''
+              Use Default Draft Status
       - if @post.metadata_editable_by?(current_user)
         - unless @post.complete?
           = link_to post_path(@post, status: 'complete'.freeze), method: :put do
@@ -210,6 +226,10 @@
   = render 'posts/paginator', paginated: @replies
 - if logged_in? && @unread.nil?
   %a.noheight{id: "unread"}= " "
+- if @in_progress_statuses.present?
+  .post-subheader.post-in-progress
+    = image_tag "icons/status_online.png".freeze, class: 'vmid'.freeze, alt: ''
+    = @in_progress_statuses.map { |author, status| draft_status_sentence(author, status) }.join('; ')
 - if @post.taggable_by?(current_user) && !split_ui
   - post_open = !@post.authors_locked?
   - draft_exists = !@reply.content.nil?

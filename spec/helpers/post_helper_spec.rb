@@ -228,4 +228,62 @@ RSpec.describe PostHelper do
 
     it_behaves_like 'unread_or_opened'
   end
+
+  describe "#draft_status_sentence" do
+    let(:user) { create(:user, username: 'Alicorn') }
+
+    it "describes a draft" do
+      expect(helper.draft_status_sentence(user, [:draft])).to eq('Alicorn has a draft in progress')
+    end
+
+    it "describes a multitag" do
+      expect(helper.draft_status_sentence(user, [:tagging])).to eq('Alicorn is still tagging')
+    end
+
+    it "describes both" do
+      expect(helper.draft_status_sentence(user, [:draft, :tagging])).to eq('Alicorn has a draft in progress and is still tagging')
+    end
+  end
+
+  describe "#draft_status_icons" do
+    let(:post) { create(:post) }
+    let(:coauthor) { create(:user, username: 'Alicorn') }
+
+    before(:each) do
+      assign(:own_draft_statuses, own)
+      assign(:coauthor_draft_statuses, coauthors)
+    end
+
+    context "with nothing in progress" do
+      let(:own) { {} }
+      let(:coauthors) { {} }
+
+      it "renders nothing" do
+        expect(helper.draft_status_icons(post)).to be_nil
+      end
+    end
+
+    context "with your own draft" do
+      let(:own) { { post.id => [:draft] } }
+      let(:coauthors) { {} }
+
+      it "renders one icon" do
+        icons = helper.draft_status_icons(post)
+        expect(icons).to include('You: draft in progress')
+        expect(icons.scan('<img').size).to eq(1)
+      end
+    end
+
+    context "with both yours and a coauthor's" do
+      let(:own) { { post.id => [:draft, :tagging] } }
+      let(:coauthors) { { post.id => { coauthor => [:tagging] } } }
+
+      it "renders both icons" do
+        icons = helper.draft_status_icons(post)
+        expect(icons).to include('You: draft in progress and still tagging')
+        expect(icons).to include('Alicorn: still tagging')
+        expect(icons.scan('<img').size).to eq(2)
+      end
+    end
+  end
 end

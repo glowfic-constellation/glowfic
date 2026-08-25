@@ -96,7 +96,10 @@ class ApplicationController < ActionController::Base
     posts_count = posts.except(:select, :order, :group).count(count_target)
     posts = posts_list_relation(posts, select: select, max: max)
     posts = posts.paginate(page: page, total_entries: posts_count) if with_pagination
-    calculate_view_status(posts, with_unread: with_unread) if logged_in?
+    if logged_in?
+      calculate_view_status(posts, with_unread: with_unread)
+      calculate_draft_statuses(posts)
+    end
     posts
   end
   helper_method :posts_from_relation
@@ -156,6 +159,44 @@ class ApplicationController < ActionController::Base
     @unread_counts = Reply.where(post_id: @unread_ids).joins('INNER JOIN post_views ON replies.post_id = post_views.post_id')
     @unread_counts = @unread_counts.where(post_views: { user_id: current_user.id })
     @unread_counts = @unread_counts.where('replies.created_at > post_views.read_at').group(:post_id).count
+  end
+
+  # In-progress statuses (a saved draft, a multitag underway) for the current user's own
+  # posts, and for coauthors who have opted into showing theirs on posts the current user
+  # writes in. Both are hashes of post id => statuses, where a status list is some
+  # combination of :draft and :tagging.
+  def calculate_draft_statuses(posts)
+    @own_draft_statuses ||= {}
+    @coauthor_draft_statuses ||= {}
+    post_ids = posts.map(&:id)
+    return if post_ids.empty?
+
+    own_authorships = Post::Author.where(user_id: current_user.id, post_id: post_ids).pluck(:post_id, :still_tagging).to_h
+    own_draft_ids = ReplyDraft.where(user_id: current_user.id, post_id: post_ids).pluck(:post_id)
+
+    (own_draft_ids | own_authorships.select { |_, tagging| tagging }.keys).each do |post_id|
+      status = []
+      status << :draft if own_draft_ids.include?(post_id)
+      status << :tagging if own_authorships[post_id]
+      @own_draft_statuses[post_id] = status
+    end
+
+    return if own_authorships.empty?
+    calculate_coauthor_draft_statuses(own_authorships.keys)
+  end
+
+  def calculate_coauthor_draft_statuses(authored_ids)
+    authors = Post::Author.showing_drafts.where(post_id: authored_ids).where.not(user_id: current_user.id).includes(:user).to_a
+    return if authors.empty?
+
+    drafts = ReplyDraft.where(post_id: authored_ids, user_id: authors.map(&:user_id)).pluck(:post_id, :user_id)
+    authors.sort_by { |author| author.user.username.downcase }.each do |author|
+      status = []
+      status << :draft if drafts.include?([author.post_id, author.user_id])
+      status << :tagging if author.still_tagging?
+      next if status.empty?
+      (@coauthor_draft_statuses[author.post_id] ||= {})[author.user] = status
+    end
   end
 
   def calculate_reply_bookmarks(replies)

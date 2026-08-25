@@ -1058,6 +1058,56 @@ RSpec.describe Post do
     end
   end
 
+  describe "#in_progress_statuses_for" do
+    let(:poster) { create(:user) }
+    let(:coauthor) { create(:user, show_drafts_to_coauthors: true) }
+    let(:post) { create(:post, user: poster, unjoined_authors: [coauthor]) }
+
+    it "is empty without a user" do
+      expect(post.in_progress_statuses_for(nil)).to eq({})
+    end
+
+    it "is empty for non-authors" do
+      create(:reply_draft, post: post, user: coauthor)
+      expect(post.in_progress_statuses_for(create(:user))).to eq({})
+    end
+
+    it "reports a coauthor's draft" do
+      create(:reply_draft, post: post, user: coauthor)
+      expect(post.in_progress_statuses_for(poster)).to eq({ coauthor => [:draft] })
+    end
+
+    it "reports a coauthor's multitag" do
+      post.author_for(coauthor).update!(still_tagging: true)
+      expect(post.in_progress_statuses_for(poster)).to eq({ coauthor => [:tagging] })
+    end
+
+    it "reports both at once" do
+      create(:reply_draft, post: post, user: coauthor)
+      post.author_for(coauthor).update!(still_tagging: true)
+      expect(post.in_progress_statuses_for(poster)).to eq({ coauthor => [:draft, :tagging] })
+    end
+
+    it "hides the status of authors who have not opted in" do
+      private_author = create(:user)
+      post.author_for(coauthor).update!(show_drafts: false)
+      Post::Author.create!(post: post, user: private_author)
+      create(:reply_draft, post: post, user: coauthor)
+      create(:reply_draft, post: post, user: private_author)
+      expect(post.in_progress_statuses_for(poster)).to eq({})
+    end
+
+    it "does not report your own status back to you" do
+      create(:reply_draft, post: post, user: coauthor)
+      expect(post.in_progress_statuses_for(coauthor)).to eq({})
+    end
+
+    it "ignores drafts on other posts" do
+      create(:reply_draft, post: create(:post), user: coauthor)
+      expect(post.in_progress_statuses_for(poster)).to eq({})
+    end
+  end
+
   describe "#visible_to" do
     it "logged out only shows public posts" do
       create(:post, privacy: :private)

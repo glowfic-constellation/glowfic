@@ -46,6 +46,45 @@ RSpec.describe PostsController, 'GET owed' do
     end
   end
 
+  context "with draft statuses" do
+    render_views
+
+    let(:coauthor) { create(:user, username: 'Alicorn', show_drafts_to_coauthors: true) }
+    let(:shared_post) { create(:post, user: user, unjoined_authors: [coauthor]) }
+
+    before(:each) do
+      login_as(user)
+      create(:reply, post: shared_post, user: coauthor)
+      shared_post.mark_read(user)
+    end
+
+    it "shows your own draft" do
+      create(:reply_draft, post: shared_post, user: user)
+
+      get :owed
+      expect(assigns(:own_draft_statuses)).to eq({ shared_post.id => [:draft] })
+      expect(response.body).to include('You: draft in progress')
+    end
+
+    it "shows a coauthor's draft and multitag" do
+      create(:reply_draft, post: shared_post, user: coauthor)
+      shared_post.author_for(coauthor).update!(still_tagging: true)
+
+      get :owed
+      expect(assigns(:coauthor_draft_statuses)).to eq({ shared_post.id => { coauthor => [:draft, :tagging] } })
+      expect(response.body).to include('Alicorn: draft in progress and still tagging')
+    end
+
+    it "hides a coauthor's draft when they have not opted in" do
+      coauthor.update!(show_drafts_to_coauthors: false)
+      create(:reply_draft, post: shared_post, user: coauthor)
+
+      get :owed
+      expect(assigns(:coauthor_draft_statuses)).to eq({})
+      expect(response.body).not_to include('draft in progress')
+    end
+  end
+
   context "with hidden" do
     let(:hidden_post) { create(:post, user: user) }
 

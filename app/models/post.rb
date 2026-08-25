@@ -243,6 +243,25 @@ class Post < ApplicationRecord
     author_ids.include?(user.id)
   end
 
+  # In-progress statuses of this post's other authors, for those who have opted into
+  # showing them. Returns a hash of User => array of :draft / :tagging, only including
+  # authors who currently have something in progress.
+  def in_progress_statuses_for(user)
+    return {} unless user
+    return {} unless author_for(user)
+
+    authors = post_authors.showing_drafts.where.not(user_id: user.id).includes(:user).to_a
+    return {} if authors.empty?
+
+    draft_user_ids = reply_drafts.where(user_id: authors.map(&:user_id)).pluck(:user_id)
+    authors.sort_by { |author| author.user.username.downcase }.each_with_object({}) do |author, statuses|
+      status = []
+      status << :draft if draft_user_ids.include?(author.user_id)
+      status << :tagging if author.still_tagging?
+      statuses[author.user] = status if status.present?
+    end
+  end
+
   def taggable_by?(user)
     return false unless user
     return false if complete? || abandoned?

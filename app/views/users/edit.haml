@@ -93,6 +93,11 @@
         = f.check_box :show_user_in_switcher
         = f.label :show_user_in_switcher, "Show user character"
     %div
+      .sub Draft status
+      .checkbox-field{class: cycle('even', 'odd')}
+        = f.check_box :show_drafts_to_coauthors
+        = f.label :show_drafts_to_coauthors, "Show coauthors when I have a draft or multitag in progress"
+    %div
       .sub Reply defaults
       .checkbox-fields{class: cycle('even', 'odd')}
         - unless current_user.read_only?

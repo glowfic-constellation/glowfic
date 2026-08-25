@@ -3,6 +3,7 @@ class DraftsController < WritableController
   def create
     draft = make_draft
     redirect_to posts_path and return unless draft.post
+    update_tagging_status(draft.post)
     redirect_to post_path(draft.post, page: :unread, anchor: :unread)
   end
 

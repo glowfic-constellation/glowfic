@@ -347,6 +347,8 @@ class RepliesController < WritableController
       redirect_to post_path(errored_reply.post) and return
     end
 
+    update_tagging_status(first_reply.post)
+
     flash[:success] = "#{'Reply'.pluralize(@multi_replies.length)} posted."
     redirect_to reply_path(first_reply, anchor: "reply-#{first_reply.id}")
   end
@@ -378,6 +380,8 @@ class RepliesController < WritableController
       editor_setup
       render :edit
     else
+      update_tagging_status(@reply.post)
+
       flash[:success] = "Reply updated."
       redirect_to reply_path(@reply, anchor: "reply-#{@reply.id}")
     end
