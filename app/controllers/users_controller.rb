@@ -250,6 +250,7 @@ class UsersController < ApplicationController
       :password_confirmation,
       :email_notifications,
       :per_page,
+      :notifications_per_page,
       :timezone,
       :icon_picker_grouping,
       :default_view,

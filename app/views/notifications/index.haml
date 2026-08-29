@@ -1,5 +1,6 @@
 .content-header Notifications
 = form_tag mark_notifications_path, method: :post do
+  = hidden_field_tag :page, page
   %table
     %thead
       %tr
