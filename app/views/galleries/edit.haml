@@ -13,10 +13,14 @@
     .editor-title Edit Gallery
     = render 'editor', f: f, gallery: @gallery
     .subber Edit Icons
+  - if @editable_galleries_icons.total_pages > 1
+    = render 'posts/paginator', paginated: @editable_galleries_icons
   .gallery-icons-edit
-    = f.fields_for :galleries_icons, @gallery.galleries_icons.joins(:icon).order(Arel.sql('LOWER(keyword)')) do |gif|
+    = f.fields_for :galleries_icons, @editable_galleries_icons do |gif|
       .gallery-icon-editor
         = gif.fields_for :icon do |i|
           = render 'icons/editor', f: i, gif: gif
+  - if @editable_galleries_icons.total_pages > 1
+    = render 'posts/paginator', paginated: @editable_galleries_icons
   .submit-button
     = submit_tag "Save", class: 'button'
