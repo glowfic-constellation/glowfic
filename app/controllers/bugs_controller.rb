@@ -2,8 +2,14 @@
 class BugsController < ApplicationController
   before_action :login_required
 
+  class ClientWarning < RuntimeError; end
+
   def create
-    exception = Icon::UploadError.new
+    exception = if params[:response_status].to_s == 'client_warning'
+      ClientWarning.new(params[:response_text].to_s)
+    else
+      Icon::UploadError.new
+    end
     data = {
       response_status: params[:response_status],
       response_body: params[:response_body],
