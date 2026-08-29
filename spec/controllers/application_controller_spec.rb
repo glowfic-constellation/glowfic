@@ -559,13 +559,24 @@ RSpec.describe ApplicationController do
       expect(flash[:error]).to include("Oops, looks like your session expired!")
     end
 
-    it "saves reply if present" do
-      reply_param = build(:reply).attributes
-      reply_param.each { |k, v| reply_param[k] = "" if v.nil? }
-      post :create, params: { reply: reply_param }
+    it "saves reply to a draft if present" do
+      user = create(:user)
+      target_post = create(:post)
+      content = "in-progress reply content"
+      login_as(user)
+
+      post :create, params: { reply: { post_id: target_post.id, content: content } }
       expect(flash[:error]).to include("Oops, looks like your session expired!")
-      session_save = session[:attempted_reply].permit!
-      expect(session_save.to_h).to eq(reply_param)
+      expect(flash[:error]).to include("cached for your next page load")
+      draft = ReplyDraft.draft_for(target_post.id, user.id)
+      expect(draft).not_to be_nil
+      expect(draft.content).to eq(content)
+    end
+
+    it "does not mention caching when there's no reply to save" do
+      get :index
+      expect(flash[:error]).to include("Oops, looks like your session expired!")
+      expect(flash[:error]).not_to include("cached for your next page load")
     end
   end
 

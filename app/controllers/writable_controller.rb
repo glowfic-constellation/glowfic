@@ -123,11 +123,7 @@ class WritableController < ApplicationController
       if @post.taggable_by?(current_user)
         build_template_groups
 
-        session_params = ActionController::Parameters.new(reply: session.fetch(:attempted_reply, {}))
-        reply_hash = permitted_params(session_params)
-        session.delete(:attempted_reply)
-
-        @reply = @post.build_new_reply_for(current_user, reply_hash)
+        @reply = @post.build_new_reply_for(current_user)
         @reply.editor_mode ||= params[:editor_mode] || current_user.default_editor
         @draft = ReplyDraft.draft_for(@post.id, current_user.id)
       end

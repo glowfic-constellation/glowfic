@@ -30,9 +30,27 @@ class ApplicationController < ActionController::Base
 
   def handle_invalid_token
     flash[:error] = 'Oops, looks like your session expired! Please try another tab or log in again to resume glowficcing.'
-    flash[:error] += ' If you were writing a reply, it has been cached for your next page load.'
-    session[:attempted_reply] = params[:reply] if params[:reply].present?
+    flash[:error] += ' If you were writing a reply, it has been cached for your next page load.' if persist_attempted_reply
     redirect_to root_path
+  end
+
+  # When CSRF rejects a reply submission, stash the in-progress text on the
+  # user's ReplyDraft for the post so build_new_reply_for picks it up on the
+  # next page load. Previously this was crammed into session[:attempted_reply],
+  # but cookie sessions cap at 4KB and long replies overflowed (CookieOverflow
+  # in production). Returns whether anything was persisted, so the flash can
+  # only mention the cache when it actually exists.
+  def persist_attempted_reply
+    return false unless logged_in?
+    reply_params = params[:reply]
+    return false if reply_params.blank?
+    post_id = reply_params[:post_id]
+    return false if post_id.blank?
+
+    permitted = reply_params.permit(:content, :character_id, :icon_id, :character_alias_id, :editor_mode)
+    draft = ReplyDraft.find_or_initialize_by(post_id: post_id, user_id: current_user.id)
+    draft.assign_attributes(permitted)
+    draft.save
   end
 
   def use_javascript(js)
