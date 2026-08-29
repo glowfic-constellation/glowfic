@@ -1,15 +1,9 @@
 -# locals: ( paginated:, no_per: false )
 
-.paginator.centered.sub
-  .paginator-meta
-    .left-align
-      Total:
-      %span.reply-count=paginated.total_entries
-    .right-align
-      - if paginated.klass == Reply && !no_per
-        Posts Per Page:
-        = select_tag :per_page, per_page_options, class: 'per-page', id: nil
-    .narrow-clear
+.paginator
+  .total-entries.paginator-meta
+    Total:
+    %span.reply-count=paginated.total_entries
   .pagination
     - if paginated.total_entries > paginated.per_page
       - args = { container: false, params: @paginate_params || {}, first_label: "&laquo; First", last_label: "Last &raquo;", summary_label: "%d of %d" }
@@ -17,4 +11,8 @@
         = will_paginate paginated, args
       .mobile-pagination
         = will_paginate paginated, args.merge(mobile_view: true)
+  .paginator-per-page.paginator-meta
+    - if paginated.klass == Reply && !no_per
+      Posts Per Page:
+      = select_tag :per_page, per_page_options, class: 'per-page', id: nil
   .clear
