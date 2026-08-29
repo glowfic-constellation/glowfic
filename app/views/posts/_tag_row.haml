@@ -1,0 +1,20 @@
+-# locals: (klass:, label:)
+- taggings = @post.displayable_post_tags.select { |post_tag| post_tag.tag.is_a?(klass) }
+- if taggings.present?
+  - plain, spoilered = taggings.partition { |post_tag| post_tag.expanded_for?(current_user) }
+  %tr
+    %th.sub.width-150= label
+    %td{class: cycle('odd', 'even')}
+      - if plain.present?
+        = safe_join(plain.map { |post_tag| link_to post_tag.tag.name, tag_path(post_tag.tag) }, ', ')
+      - if spoilered.present?
+        %details.spoiler-tags
+          %summary
+            #{spoilered.length} spoiler #{'tag'.pluralize(spoilered.length)}
+          %ul
+            - spoilered.each do |post_tag|
+              %li
+                = link_to post_tag.tag.name, tag_path(post_tag.tag)
+                - if post_tag.applies_from_reply_order.present?
+                  %span.subber
+                    from reply #{post_tag.applies_from_reply_order}

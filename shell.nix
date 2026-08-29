@@ -17,7 +17,21 @@
 
 let
   # Ruby 3.4.x
-  ruby = pkgs.ruby_3_4;
+  #
+  # main pins Ruby 3.4.10 in Gemfile/.ruby-version, and bundler hard-fails on a
+  # patch-level mismatch. No nixpkgs channel ships 3.4.10 yet (unstable is on
+  # 3.4.9, nixos-25.05 on 3.4.7), so override the source on the pinned 3.4.8
+  # derivation rather than bumping the whole pin — keeps postgres/node/etc
+  # identical. Drop this override once nixpkgs catches up to >= 3.4.10.
+  rubyVersion = "3.4.10";
+  ruby = pkgs.ruby_3_4.overrideAttrs (old: {
+    name = "ruby-${rubyVersion}";
+    version = rubyVersion;
+    src = pkgs.fetchurl {
+      url = "https://cache.ruby-lang.org/pub/ruby/3.4/ruby-${rubyVersion}.tar.gz";
+      sha256 = "1v19qjffzx50pnnglyqiynmk0cawzvcdymnx8x1x3whl583jvvpc";
+    };
+  });
 
   # Chrome path - only evaluated on Linux
   chromePath = if pkgs.stdenv.isLinux then "${pkgs.chromium}/bin/chromium" else "";
@@ -57,8 +71,11 @@ pkgs.mkShell {
   ];
 
   shellHook = ''
-    # Set up gem installation to local directory
-    export GEM_HOME="$PWD/.gems"
+    # Set up gem installation to local directory.
+    # Keyed by Ruby version: native extensions link against a specific Ruby, so
+    # a version bump would otherwise silently poison the shared gemset. This
+    # keeps the old gemset intact for branches still pinned to it.
+    export GEM_HOME="$PWD/.gems-${rubyVersion}"
     export PATH="$GEM_HOME/bin:$PATH"
     mkdir -p "$GEM_HOME"
 

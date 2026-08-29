@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2026_07_04_000000) do
+ActiveRecord::Schema[8.0].define(version: 2026_08_04_100000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "citext"
   enable_extension "pg_catalog.plpgsql"
@@ -324,7 +324,10 @@ ActiveRecord::Schema[8.0].define(version: 2026_07_04_000000) do
     t.boolean "suggested", default: false
     t.datetime "created_at", precision: nil
     t.datetime "updated_at", precision: nil
+    t.boolean "spoiler", default: false, null: false
+    t.integer "reveal_after_reply_order"
     t.index ["post_id"], name: "index_post_tags_on_post_id"
+    t.index ["tag_id", "post_id"], name: "index_post_tags_unspoilered", where: "(spoiler = false)"
     t.index ["tag_id"], name: "index_post_tags_on_tag_id"
   end
 
@@ -370,6 +373,7 @@ ActiveRecord::Schema[8.0].define(version: 2026_07_04_000000) do
     t.boolean "authors_locked", default: false
     t.integer "character_alias_id"
     t.string "editor_mode"
+    t.boolean "allow_tag_suggestions", default: true, null: false
     t.index "to_tsvector('english'::regconfig, COALESCE((subject)::text, ''::text))", name: "idx_fts_post_subject", using: :gin
     t.index "to_tsvector('english'::regconfig, COALESCE(content, ''::text))", name: "idx_fts_post_content", using: :gin
     t.index ["board_id"], name: "index_posts_on_board_id"
@@ -425,10 +429,30 @@ ActiveRecord::Schema[8.0].define(version: 2026_07_04_000000) do
     t.index ["user_id"], name: "index_report_views_on_user_id"
   end
 
+  create_table "tag_suggestions", force: :cascade do |t|
+    t.integer "post_id", null: false
+    t.integer "user_id", null: false
+    t.integer "tag_id"
+    t.string "tag_type"
+    t.citext "tag_name"
+    t.integer "status", default: 0, null: false
+    t.integer "resolved_by_id"
+    t.datetime "resolved_at"
+    t.text "note"
+    t.boolean "spoiler", default: false, null: false
+    t.integer "reveal_after_reply_order"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["post_id", "status"], name: "index_tag_suggestions_on_post_id_and_status"
+    t.index ["post_id", "tag_id"], name: "index_tag_suggestions_on_post_and_tag", unique: true, where: "(tag_id IS NOT NULL)"
+    t.index ["post_id", "tag_type", "tag_name"], name: "index_tag_suggestions_on_post_and_name", unique: true, where: "(tag_id IS NULL)"
+    t.index ["user_id"], name: "index_tag_suggestions_on_user_id"
+  end
+
   create_table "tag_tags", id: :serial, force: :cascade do |t|
     t.integer "tagged_id", null: false
     t.integer "tag_id", null: false
-    t.boolean "suggested", default: false
+    t.boolean "suggested", default: false, null: false
     t.datetime "created_at", precision: nil
     t.datetime "updated_at", precision: nil
     t.index ["tag_id"], name: "index_tag_tags_on_tag_id"
@@ -443,7 +467,12 @@ ActiveRecord::Schema[8.0].define(version: 2026_07_04_000000) do
     t.string "type"
     t.text "description"
     t.boolean "owned", default: false
+    t.boolean "canonical", default: false, null: false
+    t.boolean "unwrangleable", default: false, null: false
+    t.integer "merger_id"
+    t.index ["merger_id"], name: "index_tags_on_merger_id"
     t.index ["name"], name: "index_tags_on_name"
+    t.index ["type", "canonical"], name: "index_tags_on_type_and_canonical"
     t.index ["type"], name: "index_tags_on_type"
   end
 
@@ -504,7 +533,26 @@ ActiveRecord::Schema[8.0].define(version: 2026_07_04_000000) do
     t.boolean "default_hide_edit_delete_buttons", default: false
     t.boolean "default_hide_add_bookmark_button", default: false
     t.boolean "moiety_colors_unread", default: false
+    t.boolean "allow_tag_suggestions", default: true, null: false
+    t.boolean "reveal_spoiler_tags", default: false, null: false
     t.index ["email"], name: "index_users_on_email", unique: true
     t.index ["username"], name: "index_users_on_username", unique: true
   end
+
+  create_table "wrangling_assignments", force: :cascade do |t|
+    t.integer "user_id", null: false
+    t.integer "setting_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["setting_id"], name: "index_wrangling_assignments_on_setting_id"
+    t.index ["user_id", "setting_id"], name: "index_wrangling_assignments_on_user_id_and_setting_id", unique: true
+  end
+
+  add_foreign_key "tag_suggestions", "posts"
+  add_foreign_key "tag_suggestions", "tags"
+  add_foreign_key "tag_suggestions", "users"
+  add_foreign_key "tag_suggestions", "users", column: "resolved_by_id"
+  add_foreign_key "tags", "tags", column: "merger_id"
+  add_foreign_key "wrangling_assignments", "tags", column: "setting_id"
+  add_foreign_key "wrangling_assignments", "users"
 end

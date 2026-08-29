@@ -79,6 +79,16 @@
         = f.check_box :hide_warnings
         = f.label :hide_warnings, "Hide content warnings"
     %div
+      .sub Tag suggestions
+      .checkbox-field{class: cycle('even', 'odd')}
+        = f.check_box :allow_tag_suggestions
+        = f.label :allow_tag_suggestions, "Allow readers to suggest tags on new posts"
+    %div
+      .sub Spoiler tags
+      .checkbox-field{class: cycle('even', 'odd')}
+        = f.check_box :reveal_spoiler_tags
+        = f.label :reveal_spoiler_tags, "Show spoiler tags without clicking to reveal them"
+    %div
       .sub= f.label :default_editor
       - editor_modes = { 'Rich Text': 'rtf', HTML: 'html', Markdown: 'md' }
       %div{class: cycle('even', 'odd')}= f.select(:default_editor, options_for_select(editor_modes, current_user.default_editor))

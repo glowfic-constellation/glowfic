@@ -14,7 +14,7 @@ EXCLUDED_SCHEMA = {
   Setting: ['created_at', 'updated_at', 'description'],
   CharacterTag: ['created_at', 'updated_at'],
   GalleryTag: ['created_at', 'updated_at'],
-  Tag::SettingTag => ['created_at', 'updated_at', 'suggested'],
+  Tag::MetaTag => ['created_at', 'updated_at', 'suggested'],
   PostTag: ['created_at', 'updated_at', 'suggested'],
   'Audited::Audit': [],
   Post::Author => ['created_at', 'updated_at'],
@@ -24,7 +24,7 @@ EXCLUDED_SCHEMA = {
 
 MODELS = [
   Icon, Template, Character, CharacterAlias, Gallery, CharactersGallery, GalleriesIcon, Post, Reply, ContentWarning, GalleryGroup,
-  Setting, CharacterTag, GalleryTag, Tag::SettingTag, PostTag, Post::View,
+  Setting, CharacterTag, GalleryTag, Tag::MetaTag, PostTag, Post::View,
 ]
 
 FILES = {
@@ -38,7 +38,7 @@ FILES = {
   # Reply: [Reply],
   Tag: [
     ContentWarning, GalleryGroup, Setting, 'puts "Assigning tags to characters..."', CharacterTag, 'puts "Assigning tags to galleries..."',
-    GalleryTag, 'puts "Attaching settings to each other..."', Tag::SettingTag, 'puts "Attaching tags to posts..."', PostTag,
+    GalleryTag, 'puts "Attaching settings to each other..."', Tag::MetaTag, 'puts "Attaching tags to posts..."', PostTag,
   ],
 }
 

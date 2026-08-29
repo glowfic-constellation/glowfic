@@ -19,7 +19,7 @@
   .checkbox-field{class: cycle('even', 'odd')}
     = f.check_box :owned
     = f.label :owned, 'Tag belongs to owner'
-- if f.object.is_a?(Setting)
+- if f.object.is_a?(Setting) && f.object.hierarchy_editable_by?(current_user)
   %div
     .sub= f.label :parent_settings
     %div{class: cycle('even', 'odd')}= tag_select(@tag, f, :parent_settings, data: { tag_id: f.object.id })

@@ -1,0 +1,73 @@
+- content_for :breadcrumbs do
+  %b Suggested Tags
+
+%table
+  %thead
+    %tr
+      %th.table-title{colspan: 5} Pending Suggestions
+    %tr
+      %th.sub Post
+      %th.sub Tag
+      %th.sub Suggested by
+      %th.sub Note
+      %th.sub Actions
+  %tbody
+    - if @pending.empty?
+      %tr
+        %td.padding-10{colspan: 5} No pending suggestions.
+    - @pending.each do |suggestion|
+      %tr{class: cycle('even', 'odd')}
+        %td= link_to suggestion.post.subject, post_path(suggestion.post)
+        %td
+          = suggestion.tag_display_name
+          %span.subber= suggestion.tag_display_type
+          - if suggestion.spoiler?
+            %span.subber (spoiler)
+        %td= link_to suggestion.user.username, user_path(suggestion.user)
+        %td= suggestion.note
+        %td
+          = button_to "Apply", accept_tag_suggestion_path(suggestion), method: :post, class: 'button'
+          = button_to "Decline", reject_tag_suggestion_path(suggestion), method: :post, class: 'button'
+
+%table
+  %thead
+    %tr
+      %th.table-title{colspan: 3} Endorsements
+    %tr
+      %th.sub Post
+      %th.sub Tag
+      %th.sub Endorsed by
+  %tbody
+    - if @endorsements.empty?
+      %tr
+        %td.padding-10{colspan: 3} No endorsements.
+    - @endorsements.each do |suggestion|
+      %tr{class: cycle('even', 'odd')}
+        %td= link_to suggestion.post.subject, post_path(suggestion.post)
+        %td= suggestion.tag_display_name
+        %td= link_to suggestion.user.username, user_path(suggestion.user)
+
+%p.subber
+  An endorsement records that a reader independently suggested a tag already applied to the post. No action is required.
+
+%table
+  %thead
+    %tr
+      %th.table-title{colspan: 4} Resolved
+    %tr
+      %th.sub Post
+      %th.sub Tag
+      %th.sub Outcome
+      %th.sub Actions
+  %tbody
+    - if @resolved.empty?
+      %tr
+        %td.padding-10{colspan: 4} No resolved suggestions.
+    - @resolved.each do |suggestion|
+      %tr{class: cycle('even', 'odd')}
+        %td= link_to suggestion.post.subject, post_path(suggestion.post)
+        %td= suggestion.tag_display_name
+        %td= suggestion.status.titlecase
+        %td
+          - if suggestion.rejected?
+            = button_to "Permit again", allow_again_tag_suggestion_path(suggestion), method: :delete, class: 'button'

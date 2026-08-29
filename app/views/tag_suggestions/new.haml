@@ -1,0 +1,31 @@
+- content_for :breadcrumbs do
+  = link_to @post.subject, post_path(@post)
+  &raquo;
+  %b Suggest a Tag
+
+= form_for @suggestion, url: post_tag_suggestions_path(@post), method: :post do |f|
+  %table
+    %thead
+      %tr
+        %th.table-title{colspan: 2} Suggest a Tag
+    %tbody
+      %tr
+        %td.sub Tag
+        %td
+          = f.select :tag_type, options_for_select(Tag::POST_TYPES), include_blank: '— type —'
+          = f.text_field :tag_name, placeholder: 'Tag name'
+          .subber An existing tag with this name and type is suggested as that tag.
+      %tr
+        %td.sub Note
+        %td= f.text_area :note, rows: 3, placeholder: 'Optional. Shown to the post author.'
+      %tr
+        %td.sub Spoiler
+        %td
+          = f.check_box :spoiler
+          = f.label :spoiler, 'Tag reveals a spoiler'
+          = f.number_field :reveal_after_reply_order, placeholder: 'Reveal after reply number'
+      %tr
+        %td{colspan: 2}= f.submit "Suggest", class: 'button'
+
+%p.subber
+  The post author decides whether to apply the tag. A declined tag cannot be suggested on this post again.

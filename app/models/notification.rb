@@ -27,6 +27,8 @@ class Notification < ApplicationRecord
     import_fail: 1,
     new_favorite_post: 2,
     joined_favorite_post: 3,
+    wrangling_scope_merged: 4,
+    tag_suggested: 5,
   }
 
   attr_accessor :skip_email
@@ -35,10 +37,15 @@ class Notification < ApplicationRecord
     Notification.create!(user: user, notification_type: type, post: post, error_msg: error)
   end
 
+  # Only meaningful for notifications about a post's own content: having read
+  # the post says nothing about whether you have seen a tag suggested on it.
+  PRE_READ_EXEMPT_TYPES = ['tag_suggested'].freeze
+
   private
 
   def check_read
     return unless post
+    return if PRE_READ_EXEMPT_TYPES.include?(notification_type)
     view = Post::View.find_by(user: user, post: post)
     return unless view&.read_at
     self.read_at = view.read_at

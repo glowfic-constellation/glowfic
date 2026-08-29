@@ -120,6 +120,19 @@ Rails.application.routes.draw do
   # Blocks
   resources :blocks, except: [:show]
 
+  # Tag wrangling
+  resources :tag_wranglings, only: [:index, :update]
+  resources :tag_suggestions, only: [:index] do
+    member do
+      post :accept
+      post :reject
+      delete :allow_again
+    end
+  end
+  resources :posts, only: [] do
+    resources :tag_suggestions, only: [:new, :create]
+  end
+
   # API
   namespace :api do
     namespace :v1 do

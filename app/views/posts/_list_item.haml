@@ -12,7 +12,7 @@
     - unless post.privacy_public?
       = privacy_icon(post.privacy.to_sym, dark_layout: current_user&.layout_darkmode?)
     - if !current_user.try(:hide_warnings) && post.has_content_warnings?
-      = image_tag "icons/exclamation.png", class: 'vmid', title: "Content Warning: " + post.content_warnings.pluck(:name).join(', '), alt: 'Has Warnings'
+      = image_tag "icons/exclamation.png", class: 'vmid', title: "Content Warning: " + post.unspoilered_content_warnings.pluck(:name).join(', '), alt: 'Has Warnings'
   %td.post-subject.vtop{class: klass}
     - if logged_in?
       - if unread_post?(post, unread_ids) || (@show_unread && !opened_post?(post, opened_ids))

@@ -27,6 +27,9 @@ class Post < ApplicationRecord
   has_many :bookmarked_replies, -> { ordered }, through: :bookmarks, source: :reply, dependent: :destroy
 
   has_many :post_tags, inverse_of: :post, dependent: :destroy
+  has_many :tag_suggestions, inverse_of: :post, dependent: :destroy
+
+  before_validation :default_tag_suggestions_from_user, on: :create
   has_many :labels, -> { ordered_by_post_tag }, through: :post_tags, source: :label, dependent: :destroy
   has_many :settings, -> { ordered_by_post_tag }, through: :post_tags, source: :setting, dependent: :destroy
   has_many :content_warnings, -> { ordered_by_post_tag }, through: :post_tags, source: :content_warning,
@@ -208,6 +211,21 @@ class Post < ApplicationRecord
     end
   end
 
+  # All taggings for display, spoilered ones included; the view decides which
+  # are rendered expanded. Ordered by tagging id to match the previous display
+  # order.
+  def displayable_post_tags
+    post_tags.includes(:tag).order(:id)
+  end
+
+  def displayable_tags(klass)
+    displayable_post_tags.map(&:tag).grep(klass)
+  end
+
+  def spoiler_post_tag_count
+    post_tags.count(&:spoiler?)
+  end
+
   def hide_warnings_for(user)
     view_for(user).update(warnings_hidden: true)
   end
@@ -274,7 +292,19 @@ class Post < ApplicationRecord
 
   def has_content_warnings?
     return read_attribute(:has_content_warnings) if has_attribute?(:has_content_warnings)
-    content_warnings.exists?
+    unspoilered_content_warnings.exists?
+  end
+
+  # Listings and tooltips are seen by readers at any point in the post, so they
+  # must not include spoilered taggings.
+  def unspoilered_content_warnings
+    content_warnings.where(post_tags: { spoiler: false })
+  end
+
+  def default_tag_suggestions_from_user
+    return if allow_tag_suggestions_changed?
+    return if user.nil?
+    self.allow_tag_suggestions = user.allow_tag_suggestions
   end
 
   def reply_count

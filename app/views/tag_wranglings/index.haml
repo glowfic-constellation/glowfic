@@ -1,0 +1,74 @@
+- content_for :breadcrumbs do
+  %b Tag Wrangling
+
+%table
+  %thead
+    %tr
+      %th.table-title{colspan: 5} Tag Wrangling
+    %tr
+      %th.subber.padding-10{colspan: 5}
+        = form_tag tag_wranglings_path, method: :get do
+          = select_tag :type, options_for_select(Tag::TYPES, @type), include_blank: '— All Types —', id: 'wrangling-type'
+          = submit_tag "Filter", class: 'button'
+  %tbody
+    %tr
+      %td.padding-10{colspan: 5}
+        %b Coverage:
+        #{@coverage.percentage}% of #{number_with_delimiter(@coverage.total_taggings)} taggings use a canonical tag.
+        %span.subber #{number_with_delimiter(@coverage.remaining_tags)} tags not reviewed.
+
+- if @clusters.present?
+  %table
+    %thead
+      %tr
+        %th.table-title{colspan: 2} Candidate Duplicates
+      %tr
+        %th.sub Normalized
+        %th.sub Tags
+    %tbody
+      - @clusters.each do |cluster|
+        %tr{class: cycle('even', 'odd')}
+          %td= cluster[:normalized]
+          %td
+            - cluster[:names].each_with_index do |name, index|
+              = link_to name, tag_path(cluster[:tag_ids][index])
+              = ' · ' unless index == cluster[:names].length - 1
+
+%table
+  %thead
+    %tr
+      %th.table-title{colspan: 4} Unreviewed Tags
+    %tr
+      %th.sub Name
+      %th.sub Type
+      %th.sub Posts
+      %th.sub Actions
+  %tbody
+    - if @tags.empty?
+      %tr
+        %td.padding-10{colspan: 4} No tags await review.
+    - @tags.each do |tag|
+      %tr{class: cycle('even', 'odd')}
+        %td= link_to tag.name, tag_path(tag)
+        %td= tag.type
+        %td= tag.post_count
+        %td
+          = form_tag tag_wrangling_path(tag), method: :patch, class: 'wrangling-actions' do
+            = hidden_field_tag :type, @type
+            = hidden_field_tag :commit_action, 'canonical'
+            = submit_tag "Mark canonical", class: 'button'
+          = form_tag tag_wrangling_path(tag), method: :patch, class: 'wrangling-actions' do
+            = hidden_field_tag :type, @type
+            = hidden_field_tag :commit_action, 'unwrangleable'
+            = submit_tag "Mark unwrangleable", class: 'button'
+          = form_tag tag_wrangling_path(tag), method: :patch, class: 'wrangling-actions' do
+            = hidden_field_tag :type, @type
+            = hidden_field_tag :commit_action, 'merge'
+            = text_field_tag :merger_id, nil, placeholder: 'Target tag ID'
+            - if current_user.has_permission?(:delete_tags)
+              = check_box_tag :destroy_loser
+              = label_tag :destroy_loser, 'delete source tag'
+            = submit_tag "Merge", class: 'button'
+  %tfoot
+    %tr
+      %td{colspan: 4}= render 'posts/paginator', paginated: @tags

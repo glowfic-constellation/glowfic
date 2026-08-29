@@ -53,6 +53,21 @@ FactoryBot.define do
     factory :reader_user do
       role_id { 5 }
     end
+
+    factory :wrangler_user do
+      role_id { 6 }
+    end
+  end
+
+  factory :wrangling_assignment do
+    user
+    setting
+  end
+
+  factory :tag_suggestion do
+    post
+    user
+    tag { association(:label) }
   end
 
   factory :board do
