@@ -1,0 +1,49 @@
+!!!
+%html
+  %head
+    %title #{@index.name} | Glowfic Constellation
+    %meta{ charset: "utf-8" }
+    %meta{ name: "viewport", content: "width=device-width" }
+    = stylesheet_link_tag 'application'
+    - if current_user.try(:layout).present?
+      = stylesheet_link_tag "layouts/#{current_user.layout}"
+    = favicon_link_tag 'favicons/favicon-32x32.png', type: 'image/png', rel: 'icon', sizes: '32x32'
+    = favicon_link_tag 'favicons/favicon-16x16.png', type: 'image/png', rel: 'icon', sizes: '16x16'
+  %body
+    #content
+      = link_to @index do
+        &laquo; Back
+      %br
+      .details.float-right
+        Generated: #{pretty_time(DateTime.now.in_time_zone)}
+      .content-header
+        %span#post-title= @index.name
+      - if @index.description.present?
+        .post-subheader= sanitize_written_content(@index.description)
+
+      %table
+        - @index.index_sections.ordered.each do |section|
+          %tr
+            %th.table-title{colspan: 2}= section.name
+          - if section.description.present?
+            %tr
+              %td.subber.index-description{colspan: 2}= sanitize_written_content(section.description)
+          - section.posts.ordered_by_index.includes(:user).each do |post|
+            %tr
+              %td.padding-10= link_to post.subject, post_url(post)
+              %td.padding-10.right-align
+                - if post.user.deleted?
+                  %em (deleted user)
+                - else
+                  = post.user.username
+        - if @sectionless.present?
+          %tr
+            %th.table-title{colspan: 2} (no section)
+          - @sectionless.each do |post|
+            %tr
+              %td.padding-10= link_to post.subject, post_url(post)
+              %td.padding-10.right-align
+                - if post.user.deleted?
+                  %em (deleted user)
+                - else
+                  = post.user.username

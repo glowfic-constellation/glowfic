@@ -45,3 +45,4 @@ backstop/reports/*
 /.gems
 /.envrc
 dump.rdb
+node_modules/
