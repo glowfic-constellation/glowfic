@@ -62,7 +62,7 @@ RSpec.describe PostsController, 'GET delete_history' do
   end
 
   def restore(reply)
-    audit = Audited::Audit.where(action: 'destroy', auditable_id: reply.id).last
+    audit = Audited::Audit.where(action: 'destroy', auditable_type: 'Reply', auditable_id: reply.id).last
     new_reply = Reply.new(audit.audited_changes)
     new_reply.is_import = true
     new_reply.skip_notify = true
