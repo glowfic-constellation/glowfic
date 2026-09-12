@@ -229,7 +229,7 @@ module RSpec::Rails::ViewRendering # rubocop:disable Style/ClassAndModuleChildre
   class EmptyTemplateResolver
     def self.nullify_template_rendering(templates)
       templates.map do |template|
-        ::ActionView::Template.new(
+        ActionView::Template.new(
           "",
           template.identifier + ".no_render", # overwrite path of fake template to avoid collisions
           EmptyTemplateHandler,
