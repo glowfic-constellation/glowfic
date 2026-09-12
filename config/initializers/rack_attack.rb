@@ -1,4 +1,66 @@
 # frozen_string_literal: true
+
+# The responses this app sends when a client is asking for too much.
+#
+# Crawlers read these as instructions, and the codes are not interchangeable.
+# Google reduces its crawl rate on 429 and 503 and backs off on Retry-After;
+# 403 and 404 mean the URL is gone for good, so answering a rate limit with
+# one is how a site gets dropped from an index rather than merely slowed
+# down. Bing reduces its rate on 429 but ignores Retry-After entirely, which
+# is why bingbot also gets a Crawl-delay in public/robots.txt.
+#
+# Defined above the production guard below so they can be exercised in specs;
+# only the wiring into Rack::Attack is production-only.
+module RackAttackResponders
+  ALLOW2BAN_NAME = 'allow2ban bots'
+
+  # The two allow2ban bans further down. Retry-After on a ban advertises the
+  # shorter of them: a client that comes back too early just gets the header
+  # again, which is the loop backing off is supposed to take.
+  SHORT_BAN = 1.hour
+  LONG_BAN = 1.day
+
+  # rack-attack's `throttled_response_retry_after_header` setting is read only
+  # inside its DEFAULT_THROTTLED_RESPONDER, so it silently stops doing
+  # anything the moment a custom responder is assigned — as one is here.
+  # Retry-After has to be set by hand, or not one 429 this app sends carries
+  # the single header that tells a client how long to wait.
+  THROTTLED = lambda do |req|
+    match_data = req.env['rack.attack.match_data']
+    now = match_data[:epoch_time]
+    retry_after = match_data[:period] - (now % match_data[:period])
+
+    headers = { 'content-type' => 'text/plain', 'retry-after' => retry_after.to_s }
+
+    # RateLimit-* describes a quota, which only means something to a client
+    # that knows it has one: our own safelisted callers and the documented
+    # API. Retry-After above is the part every other client understands.
+    if $safe_ips.include?(req.ip) || req.path.starts_with?('/api')
+      headers['ratelimit-limit'] = match_data[:limit].to_s
+      headers['ratelimit-remaining'] = '0'
+      headers['ratelimit-reset'] = (now + retry_after).to_s
+    end
+
+    [429, headers, ["Throttled\n"]]
+  end
+
+  # A ban earned by request rate is temporary and the client should be told
+  # when to return; an IP on the explicit RACK_ATTACK_BAD_IP list is not
+  # welcome at all, and 403 says exactly that.
+  #
+  # Answering the rate-earned ban with 403 was measurably counterproductive:
+  # in the seven days to 2026-09-09 ClaudeBot took 625,122 of them and never
+  # backed off, because 403 carries no notion of trying again later.
+  #
+  # rack-attack records the matched rule's name here, and `blocklist_ip`
+  # builds an anonymous blocklist, so the manual list leaves it nil.
+  BLOCKLISTED = lambda do |req|
+    return [403, { 'content-type' => 'text/plain' }, ["Forbidden\n"]] unless req.env['rack.attack.matched'] == ALLOW2BAN_NAME
+
+    [429, { 'content-type' => 'text/plain', 'retry-after' => SHORT_BAN.to_i.to_s }, ["Throttled\n"]]
+  end
+end
+
 $safe_ips = [] and return unless Rails.env.production?
 
 # allow all IPs in RACK_ATTACK_SAFE_IP split by comma
@@ -57,40 +119,29 @@ Rack::Attack.throttle('logins/ip', limit: 5, period: 20.seconds) do |req|
   req.ip if req.path == '/login' && req.post?
 end
 
-# Return to user how many seconds to wait until they can start sending requests again
-Rack::Attack.throttled_response_retry_after_header = true
-
-# Includes conventional RateLimit-* headers for safe IPs and the API:
-Rack::Attack.throttled_responder = lambda do |req|
-  return [429, {}, ["Throttled\n"]] unless $safe_ips.include?(req.ip) || req.path.starts_with?('/api')
-
-  match_data = req.env['rack.attack.match_data']
-  now = match_data[:epoch_time]
-
-  headers = {
-    'RateLimit-Limit'     => match_data[:limit].to_s,
-    'RateLimit-Remaining' => '0',
-    'RateLimit-Reset'     => (now + match_data[:period] - (now % match_data[:period])).to_s,
-  }
-
-  [429, headers, ["Throttled\n"]]
-end
+# Tell every throttled and banned client how long to wait. See the responders
+# at the top of this file for why Retry-After cannot be left to rack-attack's
+# own setting, and why a rate-earned ban answers 429 rather than 403.
+Rack::Attack.throttled_responder = RackAttackResponders::THROTTLED
+Rack::Attack.blocklisted_responder = RackAttackResponders::BLOCKLISTED
 
 def req_logged_in?(req)
   req.session[:user_id].present?
 end
 
 # Lockout IP addresses that are hammering the app.
-Rack::Attack.blocklist('allow2ban bots') do |req|
+Rack::Attack.blocklist(RackAttackResponders::ALLOW2BAN_NAME) do |req|
   next false if req_logged_in?(req)
 
+  minute_limit = ENV.fetch("RACK_ATTACK_IP_LIMIT", 25).to_i
+
   # ban anyone at 5x the rate of our throttle limit per minute unless logged in or using API
-  Rack::Attack::Allow2Ban.filter("minute:#{req.ip}", maxretry: ENV.fetch("RACK_ATTACK_IP_LIMIT", 25).to_i, findtime: 1.minute, bantime: 1.hour) do
+  Rack::Attack::Allow2Ban.filter("minute:#{req.ip}", maxretry: minute_limit, findtime: 1.minute, bantime: RackAttackResponders::SHORT_BAN) do
     !req.path.starts_with?('/api')
   end
 
   # ban anyone at our throttle limit for the duration of an hour unless logged in or using API
-  Rack::Attack::Allow2Ban.filter("hour:#{req.ip}", maxretry: ENV.fetch("RACK_ATTACK_IP_LIMIT", 25).to_i * 60, findtime: 1.hour, bantime: 1.day) do
+  Rack::Attack::Allow2Ban.filter("hour:#{req.ip}", maxretry: minute_limit * 60, findtime: 1.hour, bantime: RackAttackResponders::LONG_BAN) do
     !req.path.starts_with?('/api')
   end
 end

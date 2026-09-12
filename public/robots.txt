@@ -3,6 +3,11 @@
 User-agent: BLEXBot
 Crawl-delay: 30
 
+# Bingbot slows down on a 429 but ignores Retry-After, so the pace it is
+# asked to keep has to be stated here rather than in the response headers.
+User-agent: bingbot
+Crawl-delay: 10
+
 User-agent: GPTBot
 Disallow: /
 
