@@ -758,22 +758,22 @@ RSpec.describe GalleriesController do
       fake_bucket = instance_double(Aws::S3::Bucket, url: "http://fake-url.example.com/my-bucket")
       stub_const("S3_BUCKET", fake_bucket)
       allow(ENV).to receive(:key?).and_call_original
-      allow(ENV).to receive(:key?).with("MINIO_ENDPOINT").and_return(true)
-      allow(ENV).to receive(:key?).with("MINIO_ENDPOINT_EXTERNAL").and_return(true)
-      allow(ENV).to receive(:fetch).with("MINIO_ENDPOINT", nil).and_return("http://invalid-url.example.com/")
-      allow(ENV).to receive(:fetch).with("MINIO_ENDPOINT_EXTERNAL", nil).and_return("http://updated-url.example.com/")
+      allow(ENV).to receive(:key?).with("LOCAL_S3_ENDPOINT").and_return(true)
+      allow(ENV).to receive(:key?).with("LOCAL_S3_ENDPOINT_EXTERNAL").and_return(true)
+      allow(ENV).to receive(:fetch).with("LOCAL_S3_ENDPOINT", nil).and_return("http://invalid-url.example.com/")
+      allow(ENV).to receive(:fetch).with("LOCAL_S3_ENDPOINT_EXTERNAL", nil).and_return("http://updated-url.example.com/")
       login
-      expect { get :add, params: { id: 0 } }.to raise_error(RuntimeError, /couldn't find minio endpoint.*invalid-url.*in.*fake-url.*/)
+      expect { get :add, params: { id: 0 } }.to raise_error(RuntimeError, /couldn't find local S3 endpoint.*invalid-url.*in.*fake-url.*/)
     end
 
-    it "works with Docker minio mapping for devs" do
+    it "works with Docker local S3 mapping for devs" do
       fake_bucket = instance_double(Aws::S3::Bucket, url: "http://old-url.example.com/my-bucket")
       stub_const("S3_BUCKET", fake_bucket)
       allow(ENV).to receive(:key?).and_call_original
-      allow(ENV).to receive(:key?).with("MINIO_ENDPOINT").and_return(true)
-      allow(ENV).to receive(:key?).with("MINIO_ENDPOINT_EXTERNAL").and_return(true)
-      allow(ENV).to receive(:fetch).with("MINIO_ENDPOINT", nil).and_return("http://old-url.example.com/")
-      allow(ENV).to receive(:fetch).with("MINIO_ENDPOINT_EXTERNAL", nil).and_return("http://updated-url.example.com/")
+      allow(ENV).to receive(:key?).with("LOCAL_S3_ENDPOINT").and_return(true)
+      allow(ENV).to receive(:key?).with("LOCAL_S3_ENDPOINT_EXTERNAL").and_return(true)
+      allow(ENV).to receive(:fetch).with("LOCAL_S3_ENDPOINT", nil).and_return("http://old-url.example.com/")
+      allow(ENV).to receive(:fetch).with("LOCAL_S3_ENDPOINT_EXTERNAL", nil).and_return("http://updated-url.example.com/")
       expect(fake_bucket).to receive(:presigned_post).with(hash_including(url: "http://updated-url.example.com/my-bucket"))
       login
       get :add, params: { id: 0 }

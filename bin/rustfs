@@ -1,9 +1,10 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
+# Replaces minio; install from https://github.com/rustfs/rustfs/releases
 data_dir="$(dirname "$0")/../tmp/rustfs-data"
 mkdir -p "$data_dir" # rustfs will not create its own data directory
 
-env RUSTFS_ACCESS_KEY=glowfic_minio RUSTFS_SECRET_KEY=glowfic_minio \
+env RUSTFS_ACCESS_KEY=glowfic_s3 RUSTFS_SECRET_KEY=glowfic_s3 \
   RUSTFS_ADDRESS=:9000 RUSTFS_CONSOLE_ADDRESS=:9001 \
   rustfs "$data_dir"

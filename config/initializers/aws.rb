@@ -1,6 +1,6 @@
 # frozen_string_literal: true
-access_key_id = ENV.fetch('AWS_ACCESS_KEY_ID', 'glowfic_minio')
-secret_access_key = ENV.fetch('AWS_SECRET_ACCESS_KEY', 'glowfic_minio')
+access_key_id = ENV.fetch('AWS_ACCESS_KEY_ID', 'glowfic_s3')
+secret_access_key = ENV.fetch('AWS_SECRET_ACCESS_KEY', 'glowfic_s3')
 bucket_name = ENV.fetch('S3_BUCKET_NAME', 'glowfic-dev')
 Aws.config.update({
   region: 'us-east-1',
@@ -9,9 +9,9 @@ Aws.config.update({
 })
 
 s3_config = {}
-if ENV.key?('MINIO_ENDPOINT')
+if ENV.key?('LOCAL_S3_ENDPOINT')
   s3_config = {
-    endpoint: ENV['MINIO_ENDPOINT'],
+    endpoint: ENV['LOCAL_S3_ENDPOINT'],
     force_path_style: true,
   }
   client = Aws::S3::Client.new(**s3_config)

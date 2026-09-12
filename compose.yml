@@ -3,11 +3,11 @@ x-env: &env
   GLOWFIC_DATABASE_HOST: postgres
   GLOWFIC_DATABASE_USER: postgres
   GLOWFIC_DATABASE_PASS: postgres
-  AWS_ACCESS_KEY_ID: glowfic_minio
-  AWS_SECRET_ACCESS_KEY: glowfic_minio
+  AWS_ACCESS_KEY_ID: glowfic_s3
+  AWS_SECRET_ACCESS_KEY: glowfic_s3
   S3_BUCKET_NAME: glowfic-dev
-  MINIO_ENDPOINT: http://minio:9000/
-  MINIO_ENDPOINT_EXTERNAL: http://localhost:9000/
+  LOCAL_S3_ENDPOINT: http://s3:9000/
+  LOCAL_S3_ENDPOINT_EXTERNAL: http://localhost:9000/
   ACCOUNT_SECRET: secret
 x-svc: &svc
   build: .
@@ -15,7 +15,7 @@ x-svc: &svc
   links:
     - redis
     - postgres
-    - minio
+    - s3
   volumes:
     - .:/code:z
     - bundler-volume:/usr/local/bundle
@@ -55,11 +55,14 @@ services:
       - postgres-data:/var/lib/postgresql/data
     ports:
       - 5432:5432
-  minio:
+  # S3-compatible object store for icon uploads (replaces MinIO).
+  # /data must be a named volume: the image runs as uid 10001 and can't
+  # write a host directory owned by someone else.
+  s3:
     image: rustfs/rustfs:1.0.0-rc.6
     environment:
-      - RUSTFS_ACCESS_KEY=glowfic_minio
-      - RUSTFS_SECRET_KEY=glowfic_minio
+      - RUSTFS_ACCESS_KEY=glowfic_s3
+      - RUSTFS_SECRET_KEY=glowfic_s3
       - RUSTFS_ADDRESS=:9000
       - RUSTFS_CONSOLE_ADDRESS=:9001
     ports:

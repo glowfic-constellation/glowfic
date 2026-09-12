@@ -35,11 +35,11 @@ jobs:
         image: redis:7.2
         ports: ["6379:6379"]
         options: --health-cmd "redis-cli ping" --health-interval 2s --health-timeout 3s --health-retries 15
-      rustfs:
+      s3:
         image: rustfs/rustfs:1.0.0-rc.6
         env:
-          RUSTFS_ACCESS_KEY: glowfic_minio
-          RUSTFS_SECRET_KEY: glowfic_minio
+          RUSTFS_ACCESS_KEY: glowfic_s3
+          RUSTFS_SECRET_KEY: glowfic_s3
           RUSTFS_ADDRESS: ":9000"
           # no one reads the web console in CI; skip it
           RUSTFS_CONSOLE_ENABLE: "false"
@@ -52,8 +52,8 @@ jobs:
       GLOWFIC_DATABASE_PASS: postgres
       GLOWFIC_DATABASE_PORT: 5432
       RAILS_ENV: test
-      MINIO_ENDPOINT: http://localhost:9000/
-      MINIO_ENDPOINT_EXTERNAL: http://localhost:9000/
+      LOCAL_S3_ENDPOINT: http://localhost:9000/
+      LOCAL_S3_ENDPOINT_EXTERNAL: http://localhost:9000/
       # Run the suite across this many parallel_tests workers (ubuntu-latest = 4 vCPUs).
       PARALLEL_TEST_PROCESSORS: 4
 
