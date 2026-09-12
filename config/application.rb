@@ -11,6 +11,7 @@ Bundler.require(*Rails.groups)
 # before the application config block runs, since Zeitwerk autoload isn't
 # set up yet at that point and `MiddlewareStack#use` doesn't const-resolve.
 require_relative '../app/middleware/anon_load_shed'
+require_relative '../app/middleware/client_fingerprint'
 
 module Glowfic
   ALLOWED_TAGS = %w(b i u sub sup del ins hr p br div span pre code h1 h2 h3 h4 h5 h6 ul ol li dl dt dd a img blockquote q table tbody td th thead tr
@@ -89,6 +90,10 @@ module Glowfic
     config.action_view.sanitized_allowed_attributes = %w(href src width height alt cite datetime title class name xml:lang abbr style target)
     config.middleware.use Rack::Pratchett
     config.middleware.use Rack::Deflater
+    # Ordered ahead of AnonLoadShed so shed requests are still fingerprinted:
+    # traffic arriving during saturation is the traffic we most want to
+    # identify. See app/middleware/client_fingerprint.rb.
+    config.middleware.use ClientFingerprint
     # Sheds anonymous traffic with deep queue wait so logged-in users keep
     # getting served during saturation. See app/middleware/anon_load_shed.rb.
     config.middleware.use AnonLoadShed
