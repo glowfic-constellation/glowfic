@@ -203,15 +203,6 @@ Naming/VariableNumber:
 Performance:
   NewCops: '1.24'
 
-Performance/AncestorsInclude:
-  Enabled: true
-
-Performance/BigDecimalWithNumericArgument:
-  Enabled: true
-
-Performance/BlockGivenWithExplicitBlock:
-  Enabled: true
-
 Performance/CollectionLiteralInLoop:
   Enabled: false
 
@@ -221,10 +212,6 @@ Performance/ConcurrentMonotonicTime:
 Performance/StringBytesize:
   Enabled: false
   # we don't use byte operations
-
-Performance/ZipWithoutBlock:
-  Enabled: false
-  # unlikely to be hit on our codebase (and hasn't been a problem)
 
 ##################### Rails ##################################
 
