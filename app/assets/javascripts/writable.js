@@ -3,6 +3,10 @@
 
 let tinyMCEInit = false;
 
+// Matches values that look like a web address (scheme, "www.", or "domain.tld"),
+// used to warn when a URL is typed/pasted into a link's Title (tooltip) field.
+const TITLE_URL_PATTERN = /^\s*((https?|ftp):\/\/|www\.|[a-z0-9][a-z0-9-]*\.[a-z]{2,}([/?#]|\s|$))/i;
+
 function tinyMCEConfig(selector) {
   const height = ($(selector).height() || 150) + 15;
   return {
@@ -35,7 +39,68 @@ function tinyMCEConfig(selector) {
     // plugin configs
     // - autoresize
     autoresize_bottom_margin: 5,
+    // warn when a URL is entered into a link's Title field (it only sets a tooltip)
+    setup: setupLinkTitleValidation,
   };
+}
+
+function setupLinkTitleValidation(editor) {
+  editor.on('OpenWindow', function(evt) {
+    const dialog = evt.dialog;
+    if (!dialog || typeof dialog.getData !== 'function') return;
+    if (!isLinkDialogData(dialog.getData())) return;
+    // Let the dialog finish rendering before we reach into its DOM.
+    window.setTimeout(bindLinkTitleWarning, 0);
+  });
+}
+
+function isLinkDialogData(data) {
+  // The link dialog is the only one exposing both a URL and a Title field.
+  if (!data) return false;
+  return ('url' in data) && ('title' in data);
+}
+
+function bindLinkTitleWarning() {
+  const dialogs = document.querySelectorAll('.tox-dialog');
+  const dialogEl = dialogs[dialogs.length - 1];
+  if (!dialogEl) return;
+
+  const titleInput = findDialogTitleInput(dialogEl);
+  if (!titleInput || titleInput.dataset.glowficUrlCheck) return;
+  titleInput.dataset.glowficUrlCheck = '1';
+
+  const warning = buildTitleUrlWarning();
+  titleInput.parentNode.appendChild(warning);
+
+  const check = function() {
+    warning.style.display = TITLE_URL_PATTERN.test(titleInput.value) ? '' : 'none';
+  };
+  titleInput.addEventListener('input', check);
+  check();
+}
+
+function findDialogTitleInput(dialogEl) {
+  let titleInput = null;
+  const groups = dialogEl.querySelectorAll('.tox-form__group');
+  groups.forEach(function(group) {
+    const label = group.querySelector('.tox-label, label');
+    if (label && label.textContent.trim() === 'Title') {
+      titleInput = group.querySelector('input, textarea');
+    }
+  });
+  return titleInput;
+}
+
+function buildTitleUrlWarning() {
+  const warning = document.createElement('div');
+  warning.className = 'glowfic-title-url-warning';
+  warning.setAttribute('role', 'alert');
+  warning.style.color = '#c0392b';
+  warning.style.fontSize = '12px';
+  warning.style.marginTop = '4px';
+  warning.style.display = 'none';
+  warning.textContent = 'This looks like a URL. The Title field only sets a hover tooltip — put the web address in the URL field above.';
+  return warning;
 }
 
 function setupEditorHelpBox() {
