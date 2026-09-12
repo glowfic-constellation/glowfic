@@ -216,44 +216,11 @@ Performance/CollectionLiteralInLoop:
   Enabled: false
 
 Performance/ConcurrentMonotonicTime:
-  Enabled: false
-
-Performance/ConstantRegexp:
-  Enabled: true
-
-Performance/MethodObjectAsBlock:
-  Enabled: true
-
-Performance/RedundantEqualityComparisonBlock:
-  Enabled: true
-
-Performance/RedundantSortBlock:
-  Enabled: true
-
-Performance/RedundantSplitRegexpArgument:
-  Enabled: true
-
-Performance/RedundantStringChars:
-  Enabled: true
-
-Performance/ReverseFirst:
-  Enabled: true
-
-Performance/SortReverse:
-  Enabled: true
-
-Performance/Squeeze:
-  Enabled: true
+  Enabled: false # we don't use monotonic time
 
 Performance/StringBytesize:
   Enabled: false
   # we don't use byte operations
-
-Performance/StringInclude:
-  Enabled: true
-
-Performance/Sum:
-  Enabled: true
 
 Performance/ZipWithoutBlock:
   Enabled: false
