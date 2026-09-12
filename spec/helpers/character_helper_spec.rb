@@ -154,7 +154,7 @@ RSpec.describe CharacterHelper do
       other_user = create_list(:character, 2, user: create(:user))
       characters = templateless + templated + one_template + deleted_user + other_user
       assoc = Character.where(id: characters.map(&:id))
-      # rubocop:disable Layout/LineLength
+      # rubocop:disable-next Layout/LineLength
       expected = [
         templateless.map { |char| [char.id, char.name, nil, nil, nil, nil, user.id,      user.username,      false, nil,              nil] },
         templated.map    { |char| [char.id, char.name, nil, nil, nil, nil, user.id,      user.username,      false, char.template.id, char.template.name] },
@@ -162,7 +162,6 @@ RSpec.describe CharacterHelper do
         deleted_user.map { |char| [char.id, char.name, nil, nil, nil, nil, char.user.id, char.user.username, true,  nil,              nil] },
         other_user.map   { |char| [char.id, char.name, nil, nil, nil, nil, char.user.id, char.user.username, false, nil,              nil] },
       ].flatten(1)
-      # rubocop:enable Layout/LineLength
       expect(helper.characters_list(assoc, true)).to match_array(expected)
     end
   end

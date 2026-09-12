@@ -75,7 +75,7 @@ class Post < ApplicationRecord
 
   scope :no_tests, -> { where.not(board_id: Board::ID_SITETESTING) }
 
-  # rubocop:disable Style/TrailingCommaInArguments
+  # rubocop:disable-next Style/TrailingCommaInArguments
   scope :with_has_content_warnings, -> {
     select(
       <<~SQL.squish
@@ -86,7 +86,6 @@ class Post < ApplicationRecord
       SQL
     )
   }
-  # rubocop:enable Style/TrailingCommaInArguments
 
   scope :with_reply_count, -> {
     select('(SELECT COUNT(*) FROM replies WHERE replies.post_id = posts.id) AS reply_count')
