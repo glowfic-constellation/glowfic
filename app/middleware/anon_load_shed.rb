@@ -21,19 +21,41 @@
 class AnonLoadShed
   WAIT_THRESHOLD_SECONDS = 5.0
 
+  # Requests that look like the distributed scrape are shed an order of
+  # magnitude sooner, so that when the queue does back up it is the scraper
+  # that loses its thread slot rather than whichever reader happened to arrive
+  # at the same moment.
+  #
+  # In the seven days to 2026-09-09 the scrape was 9.7M of the 12.5M HTML
+  # navigations and 469 of the 594 dyno-hours spent serving them, while 65,595
+  # genuine page loads (2.4%) were shed as collateral. Both classes were
+  # competing on the same 5s threshold, so the shedder was splitting the
+  # damage between them instead of aiming it.
+  #
+  # This is still a threshold and not a block: below it, scraper-shaped
+  # traffic is served exactly as before. It only bites once the queue is deep
+  # enough that somebody is going to be shed regardless, and it decides who.
+  SCRAPER_WAIT_THRESHOLD_SECONDS = 0.5
+
   def initialize(app)
     @app = app
   end
 
-  # The queue-wait check comes first because it is the cheapest and by far the
-  # most common answer: in steady state nothing is saturated, so this costs one
-  # env lookup and returns. Identifying the user means building a cookie jar to
-  # verify a signature, which is only worth doing on the rare request we are
-  # otherwise about to shed. All three checks are pass-throughs, so ordering
-  # changes only the work done, never the verdict.
+  # The checks are ordered cheapest-first, because each one is a pass-through:
+  # ordering changes only the work done on the way to a verdict, never the
+  # verdict itself.
+  #
+  # The queue-wait check leads because it is both the cheapest and by far the
+  # most common answer — in steady state nothing is saturated, so this costs
+  # one env lookup and returns. The shape check comes next at two header string
+  # comparisons, and only runs on requests already waiting long enough to be
+  # worth classifying. Identifying the user comes last because it means
+  # building a cookie jar to verify a signature, which is only worth doing on
+  # the rare request we are otherwise about to shed.
   def call(env)
     waited = wait_seconds(env)
-    return @app.call(env) if waited.nil? || waited < WAIT_THRESHOLD_SECONDS
+    return @app.call(env) if waited.nil? || waited < SCRAPER_WAIT_THRESHOLD_SECONDS
+    return @app.call(env) if waited < WAIT_THRESHOLD_SECONDS && !scraper_shaped?(env)
     return @app.call(env) if login_request?(env)
     return @app.call(env) if logged_in?(env)
     [
@@ -44,6 +66,33 @@ class AnonLoadShed
   end
 
   private
+
+  # Chrome announces `application/signed-exchange;v=b3;q=0.7` on HTML
+  # navigations. Measured across glowfic traffic by Chrome major version, every
+  # genuine release from 120 to 141 sits at 95-100%; the scrape's rotating
+  # forged UA strings sit at 0.0-0.3%, alongside self-declared crawlers. Over
+  # the seven days to 2026-09-09 the pair of conditions split HTML navigations
+  # 9,745,482 scraper-shaped against 2,744,787 real.
+  #
+  # Both halves of the test matter. Requiring the Chrome claim is what makes it
+  # safe: Firefox and Safari never send the token either, so testing on Accept
+  # alone would classify every one of their users as a scraper. Requiring the
+  # missing token is what makes it useful, since the UA strings themselves are
+  # forged and are shared with real readers.
+  #
+  # Restricting to `text/html` keeps this to navigations. Subresource requests
+  # are not classified here — they carry a different Accept, and a page's
+  # images should not be judged separately from the page.
+  #
+  # This is a header-level heuristic, which is the most forgeable tier there
+  # is; it informs a threshold rather than a block precisely because it can be
+  # defeated the moment anyone cares to.
+  def scraper_shaped?(env)
+    accept = env['HTTP_ACCEPT']
+    return false unless accept&.start_with?('text/html')
+    return false if accept.include?('signed-exchange')
+    env['HTTP_USER_AGENT'].to_s.include?('Chrome/')
+  end
 
   def logged_in?(env)
     session_user_id(env).present? || permanent_user_id(env).present?
