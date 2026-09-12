@@ -7,6 +7,7 @@ AllCops:
   MigratedSchemaVersion: 20241224202900
   DisabledByDefault: false
   SuggestExtensions: false
+  UseProjectIndex: true
   Exclude:
     - 'config/initializers/audited.rb'
     - 'config/initializers/will_paginate.rb'
