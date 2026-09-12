@@ -56,18 +56,20 @@ services:
     ports:
       - 5432:5432
   minio:
-    image: minio/minio
-    command: server /data
+    image: rustfs/rustfs:1.0.0-rc.6
     environment:
-      - MINIO_ROOT_USER=glowfic_minio
-      - MINIO_ROOT_PASSWORD=glowfic_minio
+      - RUSTFS_ACCESS_KEY=glowfic_minio
+      - RUSTFS_SECRET_KEY=glowfic_minio
+      - RUSTFS_ADDRESS=:9000
+      - RUSTFS_CONSOLE_ADDRESS=:9001
     ports:
       - 9000:9000
+      - 9001:9001 # web console, for poking at uploaded objects
     volumes:
-      - minio-data:/data
+      - rustfs-data:/data
 
 volumes:
   bundler-volume:
   postgres-data:
   webdrivers:
-  minio-data:
+  rustfs-data:

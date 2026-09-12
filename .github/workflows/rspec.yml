@@ -35,6 +35,17 @@ jobs:
         image: redis:7.2
         ports: ["6379:6379"]
         options: --health-cmd "redis-cli ping" --health-interval 2s --health-timeout 3s --health-retries 15
+      rustfs:
+        image: rustfs/rustfs:1.0.0-rc.6
+        env:
+          RUSTFS_ACCESS_KEY: glowfic_minio
+          RUSTFS_SECRET_KEY: glowfic_minio
+          RUSTFS_ADDRESS: ":9000"
+          # no one reads the web console in CI; skip it
+          RUSTFS_CONSOLE_ENABLE: "false"
+          RUSTFS_OBS_LOGGER_LEVEL: error
+        ports: ["9000:9000"]
+        options: --health-cmd "curl -f http://localhost:9000/health" --health-interval 2s --health-timeout 3s --health-retries 20
 
     env:
       GLOWFIC_DATABASE_USER: postgres
@@ -49,20 +60,6 @@ jobs:
     steps:
       - uses: actions/checkout@v7
       - uses: browser-actions/setup-chrome@v2
-      - name: Cache MinIO binary
-        id: minio-cache
-        uses: actions/cache@v6
-        with:
-          path: minio
-          # bump the suffix to force a refresh of the cached binary
-          key: ${{ runner.os }}-minio-v1
-      - name: Set up MinIO
-        run: |
-          if [ ! -x ./minio ]; then
-            wget --show-progress --progress=dot:mega https://dl.min.io/server/minio/release/linux-amd64/minio
-            chmod +x minio
-          fi
-          MINIO_ROOT_USER=glowfic_minio MINIO_ROOT_PASSWORD=glowfic_minio ./minio server ./minio-data 2>&1 > minio.log &
       - name: Set up Ruby
         uses: ruby/setup-ruby@v1
         with:
@@ -149,12 +146,6 @@ jobs:
           name: rspec-json-results
           path: tmp/rspec_output/
           if-no-files-found: ignore
-      - name: Upload MinIO logs
-        if: ${{ always() }}
-        uses: actions/upload-artifact@v7
-        with:
-          name: minio-logs
-          path: minio.log
       - name: Upload Coverage files
         if: ${{ always() }}
         uses: actions/upload-artifact@v7
