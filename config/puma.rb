@@ -53,7 +53,7 @@ end
 # Active Record connections on boot rather than inheriting the master's.
 # Belt-and-suspenders against stale connections after a DB maintenance event
 # (mirrors what config/initializers/resque.rb does on fork).
-on_worker_boot do
+before_worker_boot do
   ActiveRecord::Base.establish_connection if defined?(ActiveRecord::Base)
 end
 
