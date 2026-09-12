@@ -1,7 +1,5 @@
 FROM ruby:3.4.10
 
-WORKDIR /code
-
 RUN mkdir -p /etc/apt/keyrings
 RUN curl -fsSL https://www.postgresql.org/media/keys/ACCC4CF8.asc -o /etc/apt/keyrings/postgresql.asc && \
   echo "deb [signed-by=/etc/apt/keyrings/postgresql.asc] https://apt.postgresql.org/pub/repos/apt bookworm-pgdg main" >> /etc/apt/sources.list.d/pgdg.list
@@ -12,12 +10,14 @@ RUN echo "Package: postgresql* libpq-dev\nPin: origin apt.postgresql.org\nPin-Pr
 RUN apt-get update \
   && apt install -y nodejs postgresql-client-16 \
   && apt-get clean
-RUN npx -y @puppeteer/browsers install chrome@stable --install-deps
+RUN CHROME_PATH=$(npx -y @puppeteer/browsers install chrome@stable --install-deps --path /opt/chrome-for-testing | awk '{print $2}') \
+  && ln -sf "$CHROME_PATH" /usr/local/bin/google-chrome
 
 ARG bundler_version=2.7.2
 
 RUN gem install bundler -v $bundler_version
 
+WORKDIR /code
 ADD Gemfile* /code/
 RUN bundler _${bundler_version}_ install --jobs $(nproc)
 RUN npm i -g eslint@9 @stylistic/eslint-plugin@2
