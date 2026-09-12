@@ -109,7 +109,7 @@ Layout/SpaceAroundEqualsInParameterDefault:
 #################### Lint ################################
 
 Lint:
-  NewCops: '1.85'
+  NewCops: '1.90'
 
 Lint/AmbiguousBlockAssociation:
   Exclude:
@@ -118,6 +118,9 @@ Lint/AmbiguousBlockAssociation:
 Lint/ConstantDefinitionInBlock:
   Exclude:
     - 'spec/lib/presentable_spec.rb'
+
+Lint/DeprecatedReference:
+  Enabled: false # we don't use @deprecated
 
 Lint/IncompatibleIoSelectWithFiberScheduler:
   Enabled: false # unlikely to use IO select
@@ -524,7 +527,7 @@ Security:
 ################## Style #################################
 
 Style:
-  NewCops: '1.85'
+  NewCops: '1.90'
 
 Style/AndOr:
   EnforcedStyle: 'conditionals'
