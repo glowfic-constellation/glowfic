@@ -64,7 +64,7 @@ module Glowfic
   # in config/environments, which are processed later.
   class Application < Rails::Application
     # Initialize configuration defaults for originally generated Rails version.
-    config.load_defaults 8.0
+    config.load_defaults 8.1
 
     # use newer 7.1 cache format
     config.active_support.cache_format_version = 7.1
