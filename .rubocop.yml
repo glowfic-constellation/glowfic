@@ -233,36 +233,19 @@ Rails/ActionOrder:
     - update
     - destroy
 
-Rails/ActiveRecordCallbacksOrder:
-  Enabled: true
-
 Rails/AddColumnIndex:
   Enabled: false
   # disabled because we don't run cops on db/*, otherwise good
-
-Rails/AfterCommitOverride:
-  Enabled: true
 
 Rails/ApplicationController:
   Exclude:
     - 'app/controllers/api/api_controller.rb'
 
-Rails/AttributeDefaultBlockValue:
-  Enabled: true
-
 Rails/Blank:
-  Enabled: true
   UnlessPresent: false
 
-Rails/ContentTag:
-  Enabled: true
-
 Rails/DotSeparatedKeys:
-  Enabled: false
-  # I18n
-
-Rails/DynamicFindBy:
-  Enabled: true
+  Enabled: false # I18n
 
 Rails/Env:
   Enabled: false
@@ -270,9 +253,6 @@ Rails/Env:
 
 Rails/FilePath:
   EnforcedStyle: 'arguments'
-
-Rails/FindById:
-  Enabled: true
 
 Rails/HasManyOrHasOneDependent:
   Exclude:
@@ -287,17 +267,8 @@ Rails/I18nLazyLookup:
 Rails/I18nLocaleTexts:
   Enabled: false
 
-Rails/Inquiry:
-  Enabled: true
-
 Rails/I18nLocaleAssignment:
   Enabled: false
-
-Rails/MailerName:
-  Enabled: true
-
-Rails/NegateInclude:
-  Enabled: true
 
 Rails/Output:
   Exclude:
@@ -305,34 +276,22 @@ Rails/Output:
     - 'db/seeds.rb'
     - 'db/seeds/**' # seed files are run from the command line
 
-Rails/Pluck:
-  Enabled: true
-
 Rails/PluckInWhere:
   Enabled: false
 
-# read_attribute(:attr) and self[:attr] are no longer equivalent
 Rails/ReadWriteAttribute:
   Enabled: false
+  # read_attribute(:attr) and self[:attr] are no longer equivalent
 
 Rails/RedundantTravelBack:
   Enabled: false
   # we don't use rails tests
 
-Rails/RenderInline:
-  Enabled: true
-
-Rails/RenderPlainText:
-  Enabled: true
-
 Rails/SaveBang:
   Enabled: true
 
 Rails/ShortI18n:
-  Enabled: true
-
-Rails/SquishedSQLHeredocs:
-  Enabled: true
+  Enabled: false
 
 Rails/StrongParametersExpect:
   Enabled: false # we do a lot of custom logic around parameter existance
@@ -343,9 +302,6 @@ Rails/ThreeStateBooleanColumn:
 Rails/UniqueValidationWithoutIndex:
   Enabled: false
 
-Rails/WhereEquals:
-  Enabled: true
-
 Rails/WhereExists:
   Enabled: false
 
@@ -353,8 +309,8 @@ Rails/WhereNot:
   Enabled: true
 
 Rails/WhereRange:
-  # we don't use this format
   Enabled: false
+  # we don't use this format
 
 ################## RSpec #################################
 
