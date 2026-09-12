@@ -158,6 +158,3 @@ class ReplyScraper < Object
     content[0..(index - 13)]
   end
 end
-
-class UnrecognizedUsernameError < RuntimeError
-end
