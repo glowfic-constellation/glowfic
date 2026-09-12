@@ -174,7 +174,7 @@ RSpec.describe "Searching bookmarks" do
     new_bookmark_name = "New Bookmark Name #{first_bookmark.id}"
     first_bookmark_name_text_field.set(new_bookmark_name)
     click_button "Save"
-    expect(find('.saveconf')['data-bookmark-id']).to eq(first_bookmark.id.to_s)
+    expect(page).to have_selector(".saveconf[data-bookmark-id='#{first_bookmark.id}']")
     expect(first_bookmark_name_text_field).not_to be_visible
     refresh
     expect(find(".bookmark-name[data-bookmark-id='#{first_bookmark.id}']")).to have_text(new_bookmark_name)
@@ -184,12 +184,13 @@ RSpec.describe "Searching bookmarks" do
     first_bookmark_public_checkbox = find('.bookmark-public-checkbox')
     first_bookmark_public_checkbox.click
     click_button "Save"
-    expect(find('.saveconf')['data-bookmark-id']).to eq(first_bookmark.id.to_s)
+    expect(page).to have_selector(".saveconf[data-bookmark-id='#{first_bookmark.id}']")
     refresh
     first_bookmark_edit_button.click
     expect(first_bookmark_public_checkbox).to be_checked
     first_bookmark_public_checkbox.click
     click_button "Save"
+    expect(page).to have_selector(".saveconf[data-bookmark-id='#{first_bookmark.id}']")
 
     # Discarding changes works
     first_bookmark_edit_button.click
