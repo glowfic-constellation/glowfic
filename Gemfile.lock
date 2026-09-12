@@ -555,7 +555,8 @@ GEM
     temple (0.10.4)
     terser (1.2.8)
       execjs (>= 0.3.0, < 3)
-    test-prof (1.6.1)
+    test-prof (1.6.3)
+      logger
     test-unit (3.7.8)
       power_assert
     thor (1.5.0)
