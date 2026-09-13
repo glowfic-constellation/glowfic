@@ -29,16 +29,28 @@ MODELS = [
 
 FILES = {
   # Icon: [Icon],
-  Character: [Template, 'puts "Creating characters..."', Character, 'puts "Creating character aliases..."', CharacterAlias].freeze,
-  Gallery: [Gallery, 'puts "Assigning galleries to characters..."', CharactersGallery, 'puts "Populating galleries with icons..."', GalleriesIcon].freeze,
+  Character: [
+    Template,
+    'puts "Creating characters..."', Character,
+    'puts "Creating character aliases..."', CharacterAlias
+  ].freeze,
+  Gallery: [
+    Gallery,
+    'puts "Assigning galleries to characters..."', CharactersGallery,
+    'puts "Populating galleries with icons..."', GalleriesIcon
+  ].freeze,
   Post: [
-    Post, 'puts "Setting up post views..."', Post::View, 'puts "Queuing flat post generation (will not update until jobs are run)"',
-    'FlatPost.regenerate_all',
+    Post,
+    'puts "Setting up post views..."', Post::View,
+    'puts "Queuing flat post generation (will not update until jobs are run)"', 'FlatPost.regenerate_all',
   ].freeze,
   # Reply: [Reply],
   Tag: [
-    ContentWarning, GalleryGroup, Setting, 'puts "Assigning tags to characters..."', CharacterTag, 'puts "Assigning tags to galleries..."',
-    GalleryTag, 'puts "Attaching settings to each other..."', Tag::SettingTag, 'puts "Attaching tags to posts..."', PostTag,
+    ContentWarning, GalleryGroup, Setting,
+    'puts "Assigning tags to characters..."', CharacterTag,
+    'puts "Assigning tags to galleries..."', GalleryTag,
+    'puts "Attaching settings to each other..."', Tag::SettingTag,
+    'puts "Attaching tags to posts..."', PostTag,
   ].freeze,
 }.freeze
 
