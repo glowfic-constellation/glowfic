@@ -77,7 +77,7 @@ module PostHelper
     return sanitize_simple_link_text(desc) if desc.length <= 255
     sanitize_simple_link_text(desc[0...255]) +
       tag.span('... ', id: "dots-#{id}") +
-      tag.span(sanitize_simple_link_text(desc[255..-1]), class: 'hidden', id: "desc-#{id}") +
+      tag.span(sanitize_simple_link_text(desc[255..]), class: 'hidden', id: "desc-#{id}") +
       tag.a('more &raquo;'.html_safe, href: '#', id: "expanddesc-#{id}", class: 'expanddesc')
   end
 

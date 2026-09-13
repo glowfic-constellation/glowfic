@@ -171,7 +171,7 @@ RSpec.describe MessagesController do
       it "sets succeeds with previous messages" do
         user = create(:user)
         messages = create_list(:message, 7, sender: user)
-        recents = messages[-5..-1].map(&:recipient)
+        recents = messages[-5..].map(&:recipient)
         recents_data = recents.reverse.map { |x| [x.username, x.id] }
         users_data = messages.map(&:recipient).map { |x| [x.username, x.id] }
         users_data.sort_by! { |x| x[0] }

@@ -420,9 +420,6 @@ Style/RegexpLiteral:
   EnforcedStyle: 'slashes'
   AllowInnerSlashes: true
 
-Style/SlicingWithRange:
-  Enabled: false
-
 Style/StringConcatenation:
   Enabled: false
 
