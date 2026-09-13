@@ -120,6 +120,11 @@ Metrics/AbcSize:
 
 Metrics/BlockLength:
   Enabled: false
+  AllowedMethods:
+    - 'included'
+    - 'namespace'
+    - 'task'
+  Exclude: ['config/routes.rb']
 
 Metrics/BlockNesting:
   Enabled: true
@@ -127,21 +132,25 @@ Metrics/BlockNesting:
 
 Metrics/ClassLength:
   Enabled: false
+  Max: 350
 
 Metrics/CyclomaticComplexity:
   Enabled: false
+  Max: 20
 
 Metrics/MethodLength:
   Enabled: false
+  Max: 40
 
 Metrics/ModuleLength:
   Enabled: false
 
 Metrics/ParameterLists:
-  Enabled: false
+  CountKeywordArgs: false
 
 Metrics/PerceivedComplexity:
   Enabled: false
+  Max: 20
 
 ####################### Naming ################################
 
