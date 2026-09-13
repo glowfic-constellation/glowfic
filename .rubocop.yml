@@ -304,9 +304,6 @@ Style/BitwisePredicate:
   Enabled: false
   # we don't use bitwise operations
 
-Style/CaseLikeIf:
-  Enabled: false
-
 Style/ClassAndModuleChildren:
   EnforcedStyle: 'compact'
 
