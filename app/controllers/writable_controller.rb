@@ -171,7 +171,7 @@ class WritableController < ApplicationController
     gon.no_icon_path = view_context.image_path('icons/no-icon.png')
   end
 
-  def og_data_for_post(post, page: 1, total_pages:, per_page: 25)
+  def og_data_for_post(post, total_pages:, page: 1, per_page: 25)
     post_location = post.board.name
     post_location += ' » ' + post.section.name if post.section.present?
 

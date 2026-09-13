@@ -369,9 +369,6 @@ Style/InvertibleUnlessCondition:
   # overriding InverseMethods isn't working right now and we have a lot of fine examples of "unless .present?"
   # TODO: review this
 
-Style/KeywordParametersOrder:
-  Enabled: false
-
 Style/Lambda:
   Enabled: false
 
