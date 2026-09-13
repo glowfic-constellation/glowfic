@@ -66,15 +66,6 @@ Layout/FirstHashElementIndentation:
 Layout/HashAlignment:
   EnforcedHashRocketStyle: table
 
-Layout/HeredocIndentation:
-  Enabled: true
-  Exclude:
-    - 'db/migrate/**/*'
-
-Layout/IndentationWidth:
-  Enabled: true
-  Width: 2
-
 Layout/LineLength:
   Enabled: true
   Max: 150
@@ -277,9 +268,6 @@ Rails/UniqueValidationWithoutIndex:
 Rails/WhereExists:
   Enabled: false
 
-Rails/WhereNot:
-  Enabled: true
-
 Rails/WhereRange:
   Enabled: false
   # we don't use this format
@@ -300,9 +288,6 @@ Style/AndOr:
 Style/ArgumentsForwarding:
   UseAnonymousForwarding: false  # TODO: consider enabling
 
-Style/ArrayFirstLast:
-  Enabled: false # unsafe
-
 Style/AsciiComments:
   Enabled: false
 
@@ -311,9 +296,6 @@ Style/AutoResourceCleanup:
 
 Style/BitwisePredicate:
   Enabled: false # we don't really use bitwise operations
-
-Style/BlockDelimiters:
-  AllowedMethods: ['lambda', 'proc']
 
 Style/CaseLikeIf:
   Enabled: false
@@ -475,6 +457,3 @@ Style/TrailingCommaInHashLiteral:
 
 Style/WordArray:
   Enabled: false
-
-Style/YAMLFileRead:
-  Enabled: true
