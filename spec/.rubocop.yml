@@ -18,7 +18,7 @@ Layout/MultilineMethodCallBraceLayout:
 #################### Lint ################################
 
 Lint/AmbiguousBlockAssociation:
-  Enabled: false
+  AllowedMethods: ['change', 'not_change']
 
 Lint/ConstantDefinitionInBlock:
   Exclude: ['lib/presentable_spec.rb']

@@ -274,8 +274,7 @@ Rails/UniqueValidationWithoutIndex:
   # we don't use unique indexes
 
 Rails/WhereExists:
-  Enabled: false
-
+  EnforcedStyle: where
 
 ################## Security ##############################
 
@@ -320,7 +319,7 @@ Style/DoubleNegation:
   Enabled: false
 
 Style/EmptyMethod:
-  Enabled: false
+  EnforcedStyle: expanded
 
 Style/ExplicitBlockArgument:
   Enabled: false
@@ -372,10 +371,6 @@ Style/InvertibleUnlessCondition:
 Style/Lambda:
   Enabled: false
 
-Style/MapIntoArray:
-  Enabled: false
-  # unsafe, and we don't tend to make this mistake
-
 Style/MixinUsage:
   Exclude: ['bin/*']
 
@@ -405,7 +400,7 @@ Style/QuotedSymbols:
   # we don't use quoted symbols
 
 Style/RaiseArgs:
-  Enabled: false
+  EnforcedStyle: compact
 
 Style/RedundantArgument:
   Enabled: false
