@@ -109,7 +109,7 @@ Layout/SpaceAroundEqualsInParameterDefault:
 #################### Lint ################################
 
 Lint:
-  NewCops: '1.90'
+  NewCops: '1.91'
 
 Lint/AmbiguousBlockAssociation:
   Exclude:
