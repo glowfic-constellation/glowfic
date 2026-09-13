@@ -94,8 +94,7 @@ RSpec/IsExpectedSpecify:
   Enabled: false # we don't use specify and is_expected
 
 RSpec/LeakyConstantDeclaration:
-  Exclude:
-    - 'lib/presentable_spec.rb'
+  Exclude: ['lib/presentable_spec.rb']
 
 RSpec/MatchArray:
   Enabled: false
@@ -125,8 +124,7 @@ RSpec/SpecFilePathFormat:
     - 'controllers/bookmarks/*'
 
 RSpec/StubbedMock:
-  Exclude:
-    - 'script/post_split_spec.rb' # mocking multiple gets in order needs expect
+  Exclude: ['script/post_split_spec.rb'] # mocking multiple gets in order needs expect
 
 RSpec/SubjectDeclaration:
   Enabled: false # we don't use subject

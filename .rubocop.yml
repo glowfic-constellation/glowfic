@@ -94,8 +94,7 @@ Layout/MultilineMethodParameterLineBreaks:
 
 Layout/MultilineOperationIndentation:
   EnforcedStyle: aligned
-  Exclude:
-    - 'app/helpers/writable_helper.rb'
+  Exclude: ['app/helpers/writable_helper.rb']
 
 Layout/ParameterAlignment:
   EnforcedStyle: 'with_fixed_indentation'
@@ -115,9 +114,7 @@ Lint/IncompatibleIoSelectWithFiberScheduler:
   Enabled: false # unlikely to use IO select
 
 Lint/MissingSuper:
-  Exclude:
-    - 'app/services/daily_report.rb'
-
+  Exclude: ['app/services/daily_report.rb']
 
 ###################### Metrics ####################################
 
@@ -215,8 +212,7 @@ Rails/AddColumnIndex:
   # disabled because we don't run cops on db/*, otherwise good
 
 Rails/ApplicationController:
-  Exclude:
-    - 'app/controllers/api/api_controller.rb'
+  Exclude: ['app/controllers/api/api_controller.rb']
 
 Rails/Blank:
   UnlessPresent: false
@@ -232,8 +228,7 @@ Rails/FilePath:
   EnforcedStyle: 'arguments'
 
 Rails/HasManyOrHasOneDependent:
-  Exclude:
-    - 'app/models/user.rb'
+  Exclude: ['app/models/user.rb']
 
 Rails/HelperInstanceVariable:
   Enabled: false
