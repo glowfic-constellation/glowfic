@@ -379,9 +379,6 @@ Style/MapIntoArray:
 Style/MixinUsage:
   Exclude: ['bin/*']
 
-Style/MutableConstant:
-  Enabled: false
-
 Style/NumericLiterals:
   Enabled: false
 

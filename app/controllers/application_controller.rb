@@ -40,7 +40,7 @@ class ApplicationController < ActionController::Base
     @javascripts << js
   end
 
-  VALID_PAGES = ['last', 'unread']
+  VALID_PAGES = ['last', 'unread'].freeze
   def page(allow_special: false)
     return @page if @page
     return (@page = 1) unless params[:page]

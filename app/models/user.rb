@@ -8,7 +8,7 @@ class User < ApplicationRecord
   MAX_USERNAME_LEN = 80
   MIN_PASSWORD_LEN = 6
   CURRENT_TOS_VERSION = 20181109
-  RESERVED_NAMES = ['(deleted user)', 'Glowfic Constellation']
+  RESERVED_NAMES = ['(deleted user)', 'Glowfic Constellation'].freeze
 
   attr_accessor :password, :password_confirmation
   attr_writer :validate_password

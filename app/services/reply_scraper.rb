@@ -19,7 +19,7 @@ class ReplyScraper < Object
     'nemoconsequentiae'  => 'Nemo',
     'armokgob'           => 'Armok',
     'timepoof'           => 'Timepoof',
-  }
+  }.freeze
 
   def initialize(reply, console: false)
     @reply = reply

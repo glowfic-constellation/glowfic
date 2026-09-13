@@ -15,20 +15,20 @@ require_relative '../app/middleware/database_unavailable'
 
 module Glowfic
   ALLOWED_TAGS = %w(b i u sub sup del ins hr p br div span pre code h1 h2 h3 h4 h5 h6 ul ol li dl dt dd a img blockquote q table tbody td th thead tr
-                    strike s strong em big small font cite abbr var samp kbd mark ruby rp rt bdo wbr details summary)
+                    strike s strong em big small font cite abbr var samp kbd mark ruby rp rt bdo wbr details summary).freeze
   ALLOWED_ATTRIBUTES = {
-    :all         => %w(xml:lang class style title lang dir),
-    "hr"         => %w(width),
-    "li"         => %w(value),
-    "ol"         => %w(reversed start type),
-    "a"          => %w(href hreflang rel target type),
-    "del"        => %w(cite datetime),
-    "table"      => %w(width),
-    "td"         => %w(abbr width colspan rowspan),
-    "th"         => %w(abbr width colspan rowspan),
-    "blockquote" => %w(cite),
-    "cite"       => %w(href),
-  }
+    :all         => %w(xml:lang class style title lang dir).freeze,
+    "hr"         => %w(width).freeze,
+    "li"         => %w(value).freeze,
+    "ol"         => %w(reversed start type).freeze,
+    "a"          => %w(href hreflang rel target type).freeze,
+    "del"        => %w(cite datetime).freeze,
+    "table"      => %w(width).freeze,
+    "td"         => %w(abbr width colspan rowspan).freeze,
+    "th"         => %w(abbr width colspan rowspan).freeze,
+    "blockquote" => %w(cite).freeze,
+    "cite"       => %w(href).freeze,
+  }.freeze
 
   DISCORD_LINK_CONSTELLATION = 'https://discord.gg/RWUPXQD'
 
