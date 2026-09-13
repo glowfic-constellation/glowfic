@@ -12,7 +12,7 @@ class UploadingController < ApplicationController
       replacement_endpoint = ENV.fetch('LOCAL_S3_ENDPOINT_EXTERNAL', nil)
       bucket_url = S3_BUCKET.url
       unless bucket_url.include?(standard_endpoint)
-        raise RuntimeError.new("couldn't find local S3 endpoint in direct post URL: #{standard_endpoint} in #{bucket_url}")
+        raise "couldn't find local S3 endpoint in direct post URL: #{standard_endpoint} in #{bucket_url}"
       end
       presign_conf[:url] = bucket_url.sub(standard_endpoint, replacement_endpoint)
     end

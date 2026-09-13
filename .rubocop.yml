@@ -413,9 +413,6 @@ Style/RedundantArgument:
 Style/RedundantBegin:
   Enabled: false
 
-Style/RedundantException:
-  Enabled: false
-
 Style/RegexpLiteral:
   EnforcedStyle: 'slashes'
   AllowInnerSlashes: true

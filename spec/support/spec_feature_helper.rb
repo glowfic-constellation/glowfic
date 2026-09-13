@@ -13,7 +13,7 @@ module SpecSystemHelper
     fill_in "Username", with: user.username
     fill_in "Password", with: password
     click_button "Log in"
-    raise(RuntimeError, "Failed to log in as '#{user.username}':\n" + page.find('.flash.error').text) if page.all('.flash.error').present?
+    raise("Failed to log in as '#{user.username}':\n" + page.find('.flash.error').text.to_s) if page.all('.flash.error').present?
     user
   end
 
