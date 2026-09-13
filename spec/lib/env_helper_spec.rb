@@ -1,7 +1,8 @@
 # `ENV#[]` is the method the helper stubs and the method the failure came
 # through, so these examples have to call it. Style/FetchEnvVar would rewrite
 # them to `ENV.fetch`, which exercises a different method and proves nothing.
-# rubocop:disable Style/FetchEnvVar
+
+# rubocop:disable-next Style/FetchEnvVar
 RSpec.describe EnvHelper do
   # The bug this helper exists to prevent. `with` does not scope a stub to one
   # argument; it replaces the method and rejects every other call. Any code
@@ -35,4 +36,3 @@ RSpec.describe EnvHelper do
     expect { ENV['RACK_MULTIPART_BUFFERED_UPLOAD_BYTESIZE_LIMIT'] }.not_to raise_error
   end
 end
-# rubocop:enable Style/FetchEnvVar

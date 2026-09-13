@@ -26,7 +26,7 @@ class Gallery < ApplicationRecord
       .group("galleries.id")
   }
 
-  # rubocop:disable Style/TrailingCommaInArguments
+  # rubocop:disable-next Style/TrailingCommaInArguments
   scope :with_gallery_groups, -> {
     # fetches an array of
     # galleries.map(&:gallery_groups).map{|group| [f1: group.id, f2: group.name]}
@@ -42,7 +42,6 @@ class Gallery < ApplicationRecord
       SQL
     )
   }
-  # rubocop:enable Style/TrailingCommaInArguments
 
   # Converts the internal [{'f1' => id, 'f2' => name}] structure of the retrieved data
   # to [{id => id, name => name}]
