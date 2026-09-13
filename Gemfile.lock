@@ -210,7 +210,8 @@ GEM
     google-protobuf (4.35.1-x86_64-linux-musl)
       bigdecimal
       rake (~> 13.3)
-    haml (7.2.0)
+    haml (7.5.1)
+      prism (>= 1.1.0)
       temple (>= 0.8.2)
       thor
       tilt
@@ -219,7 +220,7 @@ GEM
       activesupport (>= 5.1)
       haml (>= 4.0.6)
       railties (>= 5.1)
-    haml_lint (0.75.0)
+    haml_lint (0.78.0)
       haml (>= 5.0)
       parallel (>= 1.10)
       rainbow
@@ -547,7 +548,7 @@ GEM
       activesupport (>= 6.1)
       sprockets (>= 3.0.0)
     sysexits (1.2.0)
-    temple (0.10.4)
+    temple (0.10.7)
     terser (1.2.8)
       execjs (>= 0.3.0, < 3)
     test-prof (1.6.3)
@@ -618,7 +619,7 @@ DEPENDENCIES
   geocoder
   gon (~> 7.1)
   haml-rails
-  haml_lint (~> 0.75.0)
+  haml_lint (~> 0.78.0)
   httparty
   jquery-fileupload-rails
   jquery-rails (~> 4.6)
