@@ -99,10 +99,12 @@ Lint:
   NewCops: '1.90'
 
 Lint/DeprecatedReference:
-  Enabled: false # we don't use @deprecated
+  Enabled: false
+  # we don't use @deprecated
 
 Lint/IncompatibleIoSelectWithFiberScheduler:
-  Enabled: false # unlikely to use IO select
+  Enabled: false
+  # we don't use IO select
 
 Lint/MissingSuper:
   Exclude: ['app/services/daily_report.rb']
@@ -172,7 +174,8 @@ Performance/CollectionLiteralInLoop:
   Enabled: false
 
 Performance/ConcurrentMonotonicTime:
-  Enabled: false # we don't use monotonic time
+  Enabled: false
+  # we don't use monotonic time
 
 Performance/StringBytesize:
   Enabled: false
@@ -186,7 +189,7 @@ Rails:
 
 Rails/ActionControllerTestCase:
   Enabled: false
-  # we don't use rails native tests, and also, no.
+  # we don't use rails native tests
 
 Rails/ActionOrder:
   ExpectedOrder:
@@ -209,11 +212,12 @@ Rails/Blank:
   UnlessPresent: false
 
 Rails/DotSeparatedKeys:
-  Enabled: false # I18n
+  Enabled: false
+  # we don't use I18n
 
 Rails/Env:
   Enabled: false
-  # we don't use feature flags (yet?)
+  # we don't use feature flags
 
 Rails/FilePath:
   EnforcedStyle: 'arguments'
@@ -257,13 +261,15 @@ Rails/ShortI18n:
   Enabled: false
 
 Rails/StrongParametersExpect:
-  Enabled: false # we do a lot of custom logic around parameter existance
+  Enabled: false
+  # we do a lot of custom logic around parameter existance
 
 Rails/ThreeStateBooleanColumn:
   Enabled: false # we don't run cops on db/; otherwise good
 
 Rails/UniqueValidationWithoutIndex:
   Enabled: false
+  # we don't use unique indexes
 
 Rails/WhereExists:
   Enabled: false
@@ -293,9 +299,11 @@ Style/AsciiComments:
 
 Style/AutoResourceCleanup:
   Enabled: true
+  # we don't use file operations
 
 Style/BitwisePredicate:
-  Enabled: false # we don't really use bitwise operations
+  Enabled: false
+  # we don't use bitwise operations
 
 Style/CaseLikeIf:
   Enabled: false
@@ -323,6 +331,7 @@ Style/EmptyMethod:
 
 Style/ExplicitBlockArgument:
   Enabled: false
+  # we don't generally pass blocks
 
 Style/ExponentialNotation:
   Enabled: false
@@ -402,10 +411,11 @@ Style/PercentLiteralDelimiters:
 
 Style/Proc:
   Enabled: false
+  # we don't use proc
 
 Style/QuotedSymbols:
   Enabled: false
-  # we don't use quoted symbols OR the cop it's based on
+  # we don't use quoted symbols
 
 Style/RaiseArgs:
   Enabled: false
@@ -436,8 +446,8 @@ Style/StringLiterals:
   Enabled: false
 
 Style/SuperWithArgsParentheses:
-  # unlikely in our code
   Enabled: false
+  # we rarely use super
 
 Style/SymbolArray:
   Enabled: false

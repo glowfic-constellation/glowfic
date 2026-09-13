@@ -13,6 +13,7 @@ Layout/CommentIndentation:
 
 Layout/MultilineMethodCallBraceLayout:
   Enabled: false
+  # newline mode handles `])` layout badly
 
 #################### Lint ################################
 
@@ -24,6 +25,7 @@ Lint/ConstantDefinitionInBlock:
 
 Lint/ParenthesesAsGroupedExpression:
   Enabled: false
+  # handles let format badly
 
 Lint/SuppressedException:
   Exclude:
@@ -34,6 +36,7 @@ Lint/SuppressedException:
 
 Naming/VariableNumber:
   Enabled: false
+  # tests have many numbered models
 
 #################### Style ###############################
 
@@ -53,6 +56,7 @@ RSpec/BeEq:
 
 RSpec/ContainExactly:
   Enabled: false
+  # TODO: review, prefers match_array when passing arrays
 
 RSpec/ContextWording:
   Enabled: false
@@ -73,7 +77,8 @@ RSpec/DescribeMethod:
     - 'controllers/bookmarks/*'
 
 RSpec/EmptyOutput:
-  Enabled: false # we don't use the output matcher
+  Enabled: false
+  # we don't use the output matcher
 
 RSpec/ExampleLength:
   Enabled: false
@@ -91,13 +96,15 @@ RSpec/IndexedLet:
   Enabled: false
 
 RSpec/IsExpectedSpecify:
-  Enabled: false # we don't use specify and is_expected
+  Enabled: false
+  # we don't use specify and is_expected
 
 RSpec/LeakyConstantDeclaration:
   Exclude: ['lib/presentable_spec.rb']
 
 RSpec/MatchArray:
   Enabled: false
+  # TODO: review, prefers contain_exactly for array literals
 
 RSpec/MessageSpies:
   EnforcedStyle: receive
@@ -115,7 +122,8 @@ RSpec/PendingWithoutReason:
   Enabled: false
 
 RSpec/RepeatedSubjectCall:
-  Enabled: false # we don't use subject
+  Enabled: false
+  # we don't use subject
 
 RSpec/SpecFilePathFormat:
   Exclude:
@@ -127,7 +135,8 @@ RSpec/StubbedMock:
   Exclude: ['script/post_split_spec.rb'] # mocking multiple gets in order needs expect
 
 RSpec/SubjectDeclaration:
-  Enabled: false # we don't use subject
+  Enabled: false
+  # we don't use subject
 
 ################## Capybara ####################################
 
