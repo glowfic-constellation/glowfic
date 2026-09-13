@@ -64,7 +64,7 @@ class WritableController < ApplicationController
         @unread = @post.first_unread_for(current_user) if logged_in?
         if @unread.nil?
           self.page = cur_page = @post.replies.paginate(per_page: per, page: 1).total_pages
-        elsif @unread.class == Post
+        elsif @unread.is_a?(Post)
           self.page = cur_page = 1
         else
           self.page = cur_page = @unread.post_page(per)

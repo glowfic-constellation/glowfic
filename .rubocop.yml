@@ -307,9 +307,6 @@ Style/BitwisePredicate:
 Style/ClassAndModuleChildren:
   EnforcedStyle: 'compact'
 
-Style/ClassEqualityComparison:
-  Enabled: false
-
 Style/CommentAnnotation:
   Enabled: false
 
