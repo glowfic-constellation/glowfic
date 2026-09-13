@@ -51,7 +51,7 @@ class Character < ApplicationRecord
   audited on: :update, mod_only: true, update_with_comment_only: false
 
   def editable_by?(user)
-    self.class.editable_by?(user, self.user_id)
+    self.class.editable_by?(user, user_id)
   end
 
   def self.editable_by?(user, user_id)
@@ -61,7 +61,7 @@ class Character < ApplicationRecord
   end
 
   def deletable_by?(user)
-    self.class.deletable_by?(user, self.user_id)
+    self.class.deletable_by?(user, user_id)
   end
 
   def self.deletable_by?(user, user_id)
@@ -134,9 +134,9 @@ class Character < ApplicationRecord
       # leftover galleries from gallery groups will be added by that model
       self.characters_galleries = new_chargals
       if persisted?
-        self.update(characters_galleries: new_chargals)
+        update(characters_galleries: new_chargals)
       else
-        self.assign_attributes(characters_galleries: new_chargals)
+        assign_attributes(characters_galleries: new_chargals)
       end
     end
   end
@@ -187,7 +187,7 @@ class Character < ApplicationRecord
   end
 
   def strip_spaces
-    self.pb = self.pb.strip if self.pb.present?
+    self.pb = pb.strip if pb.present?
   end
 
   def update_flat_posts

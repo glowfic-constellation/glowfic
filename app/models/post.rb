@@ -151,8 +151,8 @@ class Post < ApplicationRecord
       reply.character_id = last_user_reply.character_id
       reply.character_alias_id = last_user_reply.character_alias_id
     elsif self.user == user
-      reply.character_id = self.character_id
-      reply.character_alias_id = self.character_alias_id
+      reply.character_id = character_id
+      reply.character_alias_id = character_alias_id
     elsif user.active_character_id.present?
       reply.character_id = user.active_character_id
     end
@@ -221,7 +221,7 @@ class Post < ApplicationRecord
   end
 
   def read_time_for(viewing_replies)
-    return self.edited_at if viewing_replies.empty?
+    return edited_at if viewing_replies.empty?
 
     most_recent = viewing_replies.max_by(&:reply_order)
     most_recent_id = replies.select(:id).ordered.last.id
@@ -232,7 +232,7 @@ class Post < ApplicationRecord
     audits_exist = audits.where('created_at > ?', most_recent.created_at).where(action: 'update')
     audits_exist = audits_exist.where("(audited_changes -> 'status' ->> 1)::integer = ?", Post.statuses[:complete])
     return most_recent.updated_at unless audits_exist.exists?
-    self.edited_at
+    edited_at
   end
 
   def metadata_editable_by?(user)
@@ -287,15 +287,15 @@ class Post < ApplicationRecord
   end
 
   def user_joined(user)
-    NotifyFollowersOfNewPostJob.perform_later(self.id, user.id)
+    NotifyFollowersOfNewPostJob.perform_later(id, user.id)
   end
 
   def prev_post(user)
-    adjacent_posts_for(user) { |relation| relation.reverse_order.find_by('section_order < ?', self.section_order) }
+    adjacent_posts_for(user) { |relation| relation.reverse_order.find_by('section_order < ?', section_order) }
   end
 
   def next_post(user)
-    adjacent_posts_for(user) { |relation| relation.find_by('section_order > ?', self.section_order) }
+    adjacent_posts_for(user) { |relation| relation.find_by('section_order > ?', section_order) }
   end
 
   private
@@ -313,7 +313,7 @@ class Post < ApplicationRecord
   def adjacent_posts_for(user)
     return unless board.ordered?
     return unless section || board.board_sections.empty?
-    yield Post.where(board_id: self.board_id, section_id: self.section_id).visible_to(user).ordered_in_section
+    yield Post.where(board_id: board_id, section_id: section_id).visible_to(user).ordered_in_section
   end
 
   def valid_board
@@ -336,10 +336,10 @@ class Post < ApplicationRecord
   # timestamps start existing between before_save and before_create/update
   def set_timestamps
     return if skip_edited
-    self.edited_at = self.updated_at
+    self.edited_at = updated_at
     return if skip_tagged
     return if replies.exists? && (!status_changed? || !complete?)
-    self.tagged_at = self.updated_at
+    self.tagged_at = updated_at
   end
 
   def skip_edited
@@ -365,7 +365,7 @@ class Post < ApplicationRecord
 
   def notify_followers
     return if is_import
-    NotifyFollowersOfNewPostJob.perform_later(self.id, user_id)
+    NotifyFollowersOfNewPostJob.perform_later(id, user_id)
   end
 
   def invalidate_caches

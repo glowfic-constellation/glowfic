@@ -112,7 +112,7 @@ class WritableController < ApplicationController
     @meta_canonical = post_url(@post, canon_params)
 
     # show <meta property="og:..." content="..."> – for embed data
-    @meta_og = og_data_for_post(@post, page: self.page, total_pages: @replies.total_pages, per_page: per)
+    @meta_og = og_data_for_post(@post, page: page, total_pages: @replies.total_pages, per_page: per)
     @meta_og[:url] = @meta_canonical
 
     use_javascript('posts/show')
