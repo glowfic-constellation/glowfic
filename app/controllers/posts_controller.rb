@@ -514,9 +514,9 @@ class PostsController < WritableController
   def check_privacy
     return true unless @post.valid? # fall through to regular failures with validation problems
     return true if @post.board.mega? # we care less about confirming if it's a megacont
-    priv = Concealable::PRIVACY_ORDERING.index(@post.privacy)
+    priv = Concealable::PRIVACY_ORDERING.find_index(@post.privacy)
     authors = User.where(id: @post.unjoined_author_ids + [@post.user_id])
-    lowest = authors.map(&:default_privacy).map { |p| Concealable::PRIVACY_ORDERING.index(p) }.min
+    lowest = authors.map(&:default_privacy).map { |p| Concealable::PRIVACY_ORDERING.find_index(p) }.min
     priv <= lowest
   end
 
