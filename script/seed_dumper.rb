@@ -32,12 +32,12 @@ FILES = {
   Character: [
     Template,
     'puts "Creating characters..."', Character,
-    'puts "Creating character aliases..."', CharacterAlias
+    'puts "Creating character aliases..."', CharacterAlias,
   ].freeze,
   Gallery: [
     Gallery,
     'puts "Assigning galleries to characters..."', CharactersGallery,
-    'puts "Populating galleries with icons..."', GalleriesIcon
+    'puts "Populating galleries with icons..."', GalleriesIcon,
   ].freeze,
   Post: [
     Post,
