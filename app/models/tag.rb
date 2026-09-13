@@ -10,7 +10,7 @@ class Tag < ApplicationRecord
   has_many :gallery_tags, dependent: :destroy, inverse_of: :tag
   has_many :galleries, through: :gallery_tags, dependent: :destroy
 
-  TYPES = %w(Setting Label ContentWarning GalleryGroup)
+  TYPES = %w(Setting Label ContentWarning GalleryGroup).freeze
 
   validates :name, :type, presence: true
   validates :name, uniqueness: { scope: :type }
@@ -51,7 +51,7 @@ class Tag < ApplicationRecord
   end
 
   def as_json(options={})
-    tag_json = { id: self.id, text: self.name }
+    tag_json = { id: id, text: name }
     return tag_json unless options[:include].present? && options[:include].include?(:gallery_ids)
 
     g_tags = gallery_tags.joins(:gallery)
@@ -80,9 +80,10 @@ class Tag < ApplicationRecord
     characters.count
   end
 
+  # rubocop:disable-next Rails/SkipsModelValidations
+  # rubocop:disable-next Style/RedundantSelf
   def merge_with(other_tag)
     transaction do
-      # rubocop:disable Rails/SkipsModelValidations
       UserTag.where(tag_id: other_tag.id).where(user_id: user_tags.select(:user_id).distinct.pluck(:user_id)).delete_all
       UserTag.where(tag_id: other_tag.id).update_all(tag_id: self.id)
       PostTag.where(tag_id: other_tag.id).where(post_id: post_tags.select(:post_id).distinct.pluck(:post_id)).delete_all
@@ -96,7 +97,6 @@ class Tag < ApplicationRecord
       Tag::SettingTag.where(tag_id: other_tag.id).update_all(tag_id: self.id)
       Tag::SettingTag.where(tagged_id: other_tag.id).update_all(tagged_id: self.id)
       other_tag.destroy
-      # rubocop:enable Rails/SkipsModelValidations
     end
   end
 end

@@ -1,46 +1,58 @@
 # frozen_string_literal: true
 EXCLUDED_SCHEMA = {
-  Icon: ['created_at', 'updated_at', 'has_gallery', 's3_key', 'credit'],
-  Template: ['created_at', 'updated_at', 'description'],
-  Character: ['created_at', 'updated_at', 'character_group_id', 'description'],
-  CharacterAlias: ['created_at', 'updated_at'],
-  Gallery: ['created_at', 'updated_at'],
-  CharactersGallery: ['created_at', 'updated_at'],
-  GalleriesIcon: ['created_at', 'updated_at'],
-  Post: ['privacy', 'last_reply_id', 'last_user_id'],
-  Reply: ['reply_order', 'thread_id'],
-  ContentWarning: ['created_at', 'updated_at', 'description'],
-  GalleryGroup: ['created_at', 'updated_at', 'description'],
-  Setting: ['created_at', 'updated_at', 'description'],
-  CharacterTag: ['created_at', 'updated_at'],
-  GalleryTag: ['created_at', 'updated_at'],
-  Tag::SettingTag => ['created_at', 'updated_at', 'suggested'],
-  PostTag: ['created_at', 'updated_at', 'suggested'],
-  'Audited::Audit': [],
-  Post::Author => ['created_at', 'updated_at'],
-  Message: ['created_at', 'updated_at'],
-  Post::View => ['created_at', 'updated_at', 'ignored', 'notify_message', 'notify_email', 'warnings_hidden'],
-}
+  Icon: ['created_at', 'updated_at', 'has_gallery', 's3_key', 'credit'].freeze,
+  Template: ['created_at', 'updated_at', 'description'].freeze,
+  Character: ['created_at', 'updated_at', 'character_group_id', 'description'].freeze,
+  CharacterAlias: ['created_at', 'updated_at'].freeze,
+  Gallery: ['created_at', 'updated_at'].freeze,
+  CharactersGallery: ['created_at', 'updated_at'].freeze,
+  GalleriesIcon: ['created_at', 'updated_at'].freeze,
+  Post: ['privacy', 'last_reply_id', 'last_user_id'].freeze,
+  Reply: ['reply_order', 'thread_id'].freeze,
+  ContentWarning: ['created_at', 'updated_at', 'description'].freeze,
+  GalleryGroup: ['created_at', 'updated_at', 'description'].freeze,
+  Setting: ['created_at', 'updated_at', 'description'].freeze,
+  CharacterTag: ['created_at', 'updated_at'].freeze,
+  GalleryTag: ['created_at', 'updated_at'].freeze,
+  Tag::SettingTag => ['created_at', 'updated_at', 'suggested'].freeze,
+  PostTag: ['created_at', 'updated_at', 'suggested'].freeze,
+  'Audited::Audit': [].freeze,
+  Post::Author => ['created_at', 'updated_at'].freeze,
+  Message: ['created_at', 'updated_at'].freeze,
+  Post::View => ['created_at', 'updated_at', 'ignored', 'notify_message', 'notify_email', 'warnings_hidden'].freeze,
+}.freeze
 
 MODELS = [
   Icon, Template, Character, CharacterAlias, Gallery, CharactersGallery, GalleriesIcon, Post, Reply, ContentWarning, GalleryGroup,
   Setting, CharacterTag, GalleryTag, Tag::SettingTag, PostTag, Post::View,
-]
+].freeze
 
 FILES = {
   # Icon: [Icon],
-  Character: [Template, 'puts "Creating characters..."', Character, 'puts "Creating character aliases..."', CharacterAlias],
-  Gallery: [Gallery, 'puts "Assigning galleries to characters..."', CharactersGallery, 'puts "Populating galleries with icons..."', GalleriesIcon],
+  Character: [
+    Template,
+    'puts "Creating characters..."', Character,
+    'puts "Creating character aliases..."', CharacterAlias,
+  ].freeze,
+  Gallery: [
+    Gallery,
+    'puts "Assigning galleries to characters..."', CharactersGallery,
+    'puts "Populating galleries with icons..."', GalleriesIcon,
+  ].freeze,
   Post: [
-    Post, 'puts "Setting up post views..."', Post::View, 'puts "Queuing flat post generation (will not update until jobs are run)"',
-    'FlatPost.regenerate_all',
-  ],
+    Post,
+    'puts "Setting up post views..."', Post::View,
+    'puts "Queuing flat post generation (will not update until jobs are run)"', 'FlatPost.regenerate_all',
+  ].freeze,
   # Reply: [Reply],
   Tag: [
-    ContentWarning, GalleryGroup, Setting, 'puts "Assigning tags to characters..."', CharacterTag, 'puts "Assigning tags to galleries..."',
-    GalleryTag, 'puts "Attaching settings to each other..."', Tag::SettingTag, 'puts "Attaching tags to posts..."', PostTag,
-  ],
-}
+    ContentWarning, GalleryGroup, Setting,
+    'puts "Assigning tags to characters..."', CharacterTag,
+    'puts "Assigning tags to galleries..."', GalleryTag,
+    'puts "Attaching settings to each other..."', Tag::SettingTag,
+    'puts "Attaching tags to posts..."', PostTag,
+  ].freeze,
+}.freeze
 
 def dump(model)
   puts "Dumping #{model.name.titleize.pluralize(model.count)}..."

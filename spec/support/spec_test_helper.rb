@@ -20,19 +20,20 @@ module SpecTestHelper
     end
 
     def transform_element(ele)
-      if ele.is_a?(ActiveRecord::Relation)
-        ele = ele.ordered if ele.respond_to?(:ordered)
-        ele.to_a
-      elsif ele.is_a?(Array)
-        ele.map { |e| transform_element(e) }
-      elsif ele.is_a?(Hash)
-        transform(ele)
-      elsif ele.is_a?(ActiveSupport::TimeWithZone)
-        ele.in_time_zone.iso8601(3)
-      elsif ele.is_a?(Symbol)
-        ele.to_s
-      else
-        ele
+      case ele
+        when ActiveRecord::Relation
+          ele = ele.ordered if ele.respond_to?(:ordered)
+          ele.to_a
+        when Array
+          ele.map { |e| transform_element(e) }
+        when Hash
+          transform(ele)
+        when ActiveSupport::TimeWithZone
+          ele.in_time_zone.iso8601(3)
+        when Symbol
+          ele.to_s
+        else
+          ele
       end
     end
 

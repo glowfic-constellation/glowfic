@@ -50,7 +50,7 @@ module Orderable
 
     def autofill_order
       return unless new_record? || order_change?(false)
-      return if new_record? && self.order.present?
+      return if new_record? && order.present?
       self.order = ordered_items.count
     end
 

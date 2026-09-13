@@ -35,7 +35,7 @@ class Reply < ApplicationRecord
 
   def post_page(per=25)
     per_page = per > 0 ? per : post.replies.count
-    index = post.replies.where('reply_order < ?', self.reply_order).count
+    index = post.replies.where(reply_order: ...reply_order).count
     (index / per_page) + 1
   end
 
@@ -85,7 +85,7 @@ class Reply < ApplicationRecord
   end
 
   def destroy_subsequent_replies
-    Reply.where('reply_order >= ?', reply_order).where(post: post).ordered.reverse_order.destroy_all
+    post.replies.where(reply_order: reply_order..).ordered.reverse_order.destroy_all
   end
 
   def set_previous_reply_to_last
@@ -109,7 +109,7 @@ class Reply < ApplicationRecord
       next if author.id == user_id
       next unless author.email.present?
       next unless author.email_notifications?
-      UserMailer.post_has_new_reply(author.id, self.id).deliver_later
+      UserMailer.post_has_new_reply(author.id, id).deliver_later
     end
   end
 

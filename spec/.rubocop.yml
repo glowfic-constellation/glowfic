@@ -1,0 +1,168 @@
+inherit_from: ../.rubocop.yml
+
+plugins:
+  - rubocop-capybara
+  - rubocop-factory_bot
+  - rubocop-rspec
+  - rubocop-rspec_rails
+
+#################### Layout ##############################
+
+Layout/CommentIndentation:
+  Exclude: ['spec_helper.rb']
+
+Layout/MultilineMethodCallBraceLayout:
+  Enabled: false
+  # newline mode handles `])` layout badly
+
+#################### Lint ################################
+
+Lint/AmbiguousBlockAssociation:
+  AllowedMethods: ['change', 'not_change']
+
+Lint/ConstantDefinitionInBlock:
+  Exclude: ['lib/presentable_spec.rb']
+
+Lint/ParenthesesAsGroupedExpression:
+  Enabled: false
+  # handles let format badly
+
+Lint/SuppressedException:
+  Exclude:
+    - 'jobs/application_job_spec.rb'
+    - 'jobs/generate_flat_post_job_spec.rb'
+
+#################### Naming ##############################
+
+Naming/VariableNumber:
+  Enabled: false
+  # tests have many numbered models
+
+#################### Style ###############################
+
+Style/FrozenStringLiteralComment:
+  Enabled: false
+
+Style/BlockDelimiters:
+  AllowedMethods: ['lambda', 'proc', 'it', 'expect']
+
+################## RSpec #################################
+
+RSpec:
+  NewCops: '3.10'
+
+RSpec/BeEq:
+  Enabled: false
+
+RSpec/ContainExactly:
+  Enabled: false
+  # TODO: review, prefers match_array when passing arrays
+
+RSpec/ContextWording:
+  Enabled: false
+
+RSpec/Dialect:
+  PreferredMethods:
+    background: :before
+    given:      :let
+    given!:     :let!
+
+RSpec/DescribedClass:
+  EnforcedStyle: explicit
+
+RSpec/DescribeMethod:
+  Exclude:
+    - 'controllers/posts/*'
+    - 'controllers/replies/*'
+    - 'controllers/bookmarks/*'
+
+RSpec/EmptyOutput:
+  Enabled: false
+  # we don't use the output matcher
+
+RSpec/ExampleLength:
+  Enabled: false
+
+RSpec/ExampleWording:
+  Enabled: false
+
+RSpec/ExpectChange:
+  EnforcedStyle: block
+
+RSpec/HookArgument:
+  EnforcedStyle: each
+
+RSpec/IndexedLet:
+  Enabled: false
+
+RSpec/IsExpectedSpecify:
+  Enabled: false
+  # we don't use specify and is_expected
+
+RSpec/LeakyConstantDeclaration:
+  Exclude: ['lib/presentable_spec.rb']
+
+RSpec/MatchArray:
+  Enabled: false
+  # TODO: review, prefers contain_exactly for array literals
+
+RSpec/MessageSpies:
+  EnforcedStyle: receive
+
+RSpec/MultipleExpectations:
+  Enabled: false
+
+RSpec/MultipleMemoizedHelpers:
+  Enabled: false
+
+RSpec/NestedGroups:
+  Max: 5
+
+RSpec/PendingWithoutReason:
+  Enabled: false
+
+RSpec/RepeatedSubjectCall:
+  Enabled: false
+  # we don't use subject
+
+RSpec/SpecFilePathFormat:
+  Exclude:
+    - 'controllers/posts/*'
+    - 'controllers/replies/*'
+    - 'controllers/bookmarks/*'
+
+RSpec/StubbedMock:
+  Exclude: ['script/post_split_spec.rb'] # mocking multiple gets in order needs expect
+
+RSpec/SubjectDeclaration:
+  Enabled: false
+  # we don't use subject
+
+################## Capybara ####################################
+
+################## Capybara/RSpec ##############################
+
+Capybara/RSpec/HaveSelector:
+  Enabled: false
+
+Capybara/RSpec/NegationMatcher:
+  EnforcedStyle: have_no
+
+################## FactoryBot ##################################
+
+FactoryBot:
+  NewCops: '2.25'
+
+FactoryBot/ExcessiveCreateList:
+  MaxAmount: 27 # to allow pagination tests
+
+################## RSpecRails #################################
+
+RSpecRails:
+  NewCops: '2.23'
+
+RSpecRails/HaveHttpStatus:
+  Enabled: false
+
+RSpecRails/HttpStatus:
+  EnforcedStyle: numeric

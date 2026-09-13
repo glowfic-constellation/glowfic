@@ -4,7 +4,7 @@ AllCops:
   TargetRubyVersion: 3.4
   TargetRailsVersion: 8.0
   # used so rubocop doesn't edit old migrations, doesn't need to be perfectly up to date
-  MigratedSchemaVersion: 20241224202900
+  MigratedSchemaVersion: 20260704000000
   DisabledByDefault: false
   SuggestExtensions: false
   UseProjectIndex: true
@@ -16,12 +16,14 @@ AllCops:
     - 'vendor/**/*'
 
 plugins:
-  - rubocop-capybara
-  - rubocop-factory_bot
+  #- rubocop-capybara
+  #- rubocop-factory_bot
   - rubocop-performance
   - rubocop-rails
-  - rubocop-rspec
-  - rubocop-rspec_rails
+  #- rubocop-rspec
+  #- rubocop-rspec_rails
+
+# For RSpec, Factorybot, etc config, see spec/.rubocop.yml
 
 #################### Gemspec ##############################
 
@@ -39,9 +41,6 @@ Layout/ArgumentAlignment:
 Layout/CaseIndentation:
   EnforcedStyle: 'end'
   IndentOneStep: true
-
-Layout/CommentIndentation:
-  Exclude: ['spec/spec_helper.rb']
 
 Layout/EmptyLineAfterGuardClause:
   Enabled: false
@@ -67,15 +66,6 @@ Layout/FirstHashElementIndentation:
 Layout/HashAlignment:
   EnforcedHashRocketStyle: table
 
-Layout/HeredocIndentation:
-  Enabled: true
-  Exclude:
-    - 'db/migrate/**/*'
-
-Layout/IndentationWidth:
-  Enabled: true
-  Width: 2
-
 Layout/LineLength:
   Enabled: true
   Max: 150
@@ -86,8 +76,6 @@ Layout/LineLength:
 
 Layout/MultilineMethodCallBraceLayout:
   EnforcedStyle: symmetrical
-  Exclude:
-    - 'spec/**/*'
 
 Layout/MultilineMethodCallIndentation:
   EnforcedStyle: 'indented'
@@ -97,8 +85,7 @@ Layout/MultilineMethodParameterLineBreaks:
 
 Layout/MultilineOperationIndentation:
   EnforcedStyle: aligned
-  Exclude:
-    - 'app/helpers/writable_helper.rb'
+  Exclude: ['app/helpers/writable_helper.rb']
 
 Layout/ParameterAlignment:
   EnforcedStyle: 'with_fixed_indentation'
@@ -111,32 +98,16 @@ Layout/SpaceAroundEqualsInParameterDefault:
 Lint:
   NewCops: '1.90'
 
-Lint/AmbiguousBlockAssociation:
-  Exclude:
-    - 'spec/**/*'
-
-Lint/ConstantDefinitionInBlock:
-  Exclude:
-    - 'spec/lib/presentable_spec.rb'
-
 Lint/DeprecatedReference:
-  Enabled: false # we don't use @deprecated
+  Enabled: false
+  # we don't use @deprecated
 
 Lint/IncompatibleIoSelectWithFiberScheduler:
-  Enabled: false # unlikely to use IO select
+  Enabled: false
+  # we don't use IO select
 
 Lint/MissingSuper:
-  Exclude:
-    - 'app/services/daily_report.rb'
-
-Lint/ParenthesesAsGroupedExpression:
-  Exclude:
-    - 'spec/**/*'
-
-Lint/SuppressedException:
-  Exclude:
-    - 'spec/jobs/application_job_spec.rb'
-    - 'spec/jobs/generate_flat_post_job_spec.rb'
+  Exclude: ['app/services/daily_report.rb']
 
 ###################### Metrics ####################################
 
@@ -149,6 +120,11 @@ Metrics/AbcSize:
 
 Metrics/BlockLength:
   Enabled: false
+  AllowedMethods:
+    - 'included'
+    - 'namespace'
+    - 'task'
+  Exclude: ['config/routes.rb']
 
 Metrics/BlockNesting:
   Enabled: true
@@ -156,21 +132,25 @@ Metrics/BlockNesting:
 
 Metrics/ClassLength:
   Enabled: false
+  Max: 350
 
 Metrics/CyclomaticComplexity:
   Enabled: false
+  Max: 20
 
 Metrics/MethodLength:
   Enabled: false
+  Max: 40
 
 Metrics/ModuleLength:
   Enabled: false
 
 Metrics/ParameterLists:
-  Enabled: false
+  CountKeywordArgs: false
 
 Metrics/PerceivedComplexity:
   Enabled: false
+  Max: 20
 
 ####################### Naming ################################
 
@@ -194,10 +174,6 @@ Naming/PredicateMethod:
 Naming/PredicatePrefix:
   Enabled: false
 
-Naming/VariableNumber:
-  Exclude:
-    - 'spec/**/*'
-
 ####################### Performance ################################
 
 Performance:
@@ -207,7 +183,8 @@ Performance/CollectionLiteralInLoop:
   Enabled: false
 
 Performance/ConcurrentMonotonicTime:
-  Enabled: false # we don't use monotonic time
+  Enabled: false
+  # we don't use monotonic time
 
 Performance/StringBytesize:
   Enabled: false
@@ -221,7 +198,7 @@ Rails:
 
 Rails/ActionControllerTestCase:
   Enabled: false
-  # we don't use rails native tests, and also, no.
+  # we don't use rails native tests
 
 Rails/ActionOrder:
   ExpectedOrder:
@@ -233,30 +210,25 @@ Rails/ActionOrder:
     - update
     - destroy
 
-Rails/AddColumnIndex:
-  Enabled: false
-  # disabled because we don't run cops on db/*, otherwise good
-
 Rails/ApplicationController:
-  Exclude:
-    - 'app/controllers/api/api_controller.rb'
+  Exclude: ['app/controllers/api/api_controller.rb']
 
 Rails/Blank:
   UnlessPresent: false
 
 Rails/DotSeparatedKeys:
-  Enabled: false # I18n
+  Enabled: false
+  # we don't use I18n
 
 Rails/Env:
   Enabled: false
-  # we don't use feature flags (yet?)
+  # we don't use feature flags
 
 Rails/FilePath:
   EnforcedStyle: 'arguments'
 
 Rails/HasManyOrHasOneDependent:
-  Exclude:
-    - 'app/models/user.rb'
+  Exclude: ['app/models/user.rb']
 
 Rails/HelperInstanceVariable:
   Enabled: false
@@ -294,140 +266,15 @@ Rails/ShortI18n:
   Enabled: false
 
 Rails/StrongParametersExpect:
-  Enabled: false # we do a lot of custom logic around parameter existance
-
-Rails/ThreeStateBooleanColumn:
-  Enabled: false # we don't run cops on db/; otherwise good
+  Enabled: false
+  # we do a lot of custom logic around parameter existance
 
 Rails/UniqueValidationWithoutIndex:
   Enabled: false
+  # we don't use unique indexes
 
 Rails/WhereExists:
-  Enabled: false
-
-Rails/WhereNot:
-  Enabled: true
-
-Rails/WhereRange:
-  Enabled: false
-  # we don't use this format
-
-################## RSpec #################################
-
-RSpec:
-  NewCops: '3.10'
-
-RSpec/BeEq:
-  Enabled: false
-
-RSpec/ContainExactly:
-  Enabled: false
-
-RSpec/ContextWording:
-  Enabled: false
-
-RSpec/Dialect:
-  PreferredMethods:
-    background: :before
-    given:      :let
-    given!:     :let!
-
-RSpec/DescribedClass:
-  EnforcedStyle: explicit
-
-RSpec/DescribeMethod:
-  Exclude:
-    - 'spec/controllers/posts/*'
-    - 'spec/controllers/replies/*'
-    - 'spec/controllers/bookmarks/*'
-
-RSpec/EmptyOutput:
-  Enabled: false # we don't use the output matcher
-
-RSpec/ExampleLength:
-  Enabled: false
-
-RSpec/ExampleWording:
-  Enabled: false
-
-RSpec/ExpectChange:
-  EnforcedStyle: block
-
-RSpec/HookArgument:
-  EnforcedStyle: each
-
-RSpec/IndexedLet:
-  Enabled: false
-
-RSpec/IsExpectedSpecify:
-  Enabled: false # we don't use specify and is_expected
-
-RSpec/LeakyConstantDeclaration:
-  Exclude:
-    - 'spec/lib/presentable_spec.rb'
-
-RSpec/MatchArray:
-  Enabled: false
-
-RSpec/MessageSpies:
-  EnforcedStyle: receive
-
-RSpec/MultipleExpectations:
-  Enabled: false
-
-RSpec/MultipleMemoizedHelpers:
-  Enabled: false
-
-RSpec/NestedGroups:
-  Max: 5
-
-RSpec/PendingWithoutReason:
-  Enabled: false
-
-RSpec/RepeatedSubjectCall:
-  Enabled: false # we don't use subject
-
-RSpec/SpecFilePathFormat:
-  Exclude:
-    - 'spec/controllers/posts/*'
-    - 'spec/controllers/replies/*'
-    - 'spec/controllers/bookmarks/*'
-
-RSpec/StubbedMock:
-  Exclude:
-    - 'spec/script/post_split_spec.rb' # mocking multiple gets in order needs expect
-
-RSpec/SubjectDeclaration:
-  Enabled: false # we don't use subject
-
-################## Capybara ####################################
-
-################## Capybara/RSpec ##############################
-
-Capybara/RSpec/HaveSelector:
-  Enabled: false
-
-Capybara/RSpec/NegationMatcher:
-  EnforcedStyle: have_no
-
-################## FactoryBot ##################################
-
-FactoryBot:
-  NewCops: '2.25'
-
-FactoryBot/ExcessiveCreateList:
-  MaxAmount: 27 # to allow pagination tests
-
-################## RSpecRails #################################
-
-RSpecRails:
-  NewCops: '2.23'
-
-RSpecRails/HaveHttpStatus:
-  Enabled: false
-
-RSpecRails/HttpStatus:
-  EnforcedStyle: numeric
+  EnforcedStyle: where
 
 ################## Security ##############################
 
@@ -445,29 +292,19 @@ Style/AndOr:
 Style/ArgumentsForwarding:
   UseAnonymousForwarding: false  # TODO: consider enabling
 
-Style/ArrayFirstLast:
-  Enabled: false # unsafe
-
 Style/AsciiComments:
   Enabled: false
 
 Style/AutoResourceCleanup:
   Enabled: true
+  # we don't use file operations
 
 Style/BitwisePredicate:
-  Enabled: false # we don't really use bitwise operations
-
-Style/BlockDelimiters:
-  AllowedMethods: ['lambda', 'proc', 'it', 'expect']
-
-Style/CaseLikeIf:
   Enabled: false
+  # we don't use bitwise operations
 
 Style/ClassAndModuleChildren:
   EnforcedStyle: 'compact'
-
-Style/ClassEqualityComparison:
-  Enabled: false
 
 Style/CommentAnnotation:
   Enabled: false
@@ -482,10 +319,11 @@ Style/DoubleNegation:
   Enabled: false
 
 Style/EmptyMethod:
-  Enabled: false
+  EnforcedStyle: expanded
 
 Style/ExplicitBlockArgument:
   Enabled: false
+  # we don't generally pass blocks
 
 Style/ExponentialNotation:
   Enabled: false
@@ -512,7 +350,6 @@ Style/FrozenStringLiteralComment:
     - 'bin/*'
     - 'config/**/*'
     - 'db/**/*'
-    - 'spec/**/*'
 
 Style/GlobalStdStream:
   Enabled: false
@@ -531,21 +368,11 @@ Style/InvertibleUnlessCondition:
   # overriding InverseMethods isn't working right now and we have a lot of fine examples of "unless .present?"
   # TODO: review this
 
-Style/KeywordParametersOrder:
-  Enabled: false
-
 Style/Lambda:
   Enabled: false
 
-Style/MapIntoArray:
-  Enabled: false
-  # unsafe, and we don't tend to make this mistake
-
 Style/MixinUsage:
   Exclude: ['bin/*']
-
-Style/MutableConstant:
-  Enabled: false
 
 Style/NumericLiterals:
   Enabled: false
@@ -566,13 +393,14 @@ Style/PercentLiteralDelimiters:
 
 Style/Proc:
   Enabled: false
+  # we don't use proc
 
 Style/QuotedSymbols:
   Enabled: false
-  # we don't use quoted symbols OR the cop it's based on
+  # we don't use quoted symbols
 
 Style/RaiseArgs:
-  Enabled: false
+  EnforcedStyle: compact
 
 Style/RedundantArgument:
   Enabled: false
@@ -580,18 +408,9 @@ Style/RedundantArgument:
 Style/RedundantBegin:
   Enabled: false
 
-Style/RedundantException:
-  Enabled: false
-
-Style/RedundantSelf:
-  Enabled: false
-
 Style/RegexpLiteral:
   EnforcedStyle: 'slashes'
   AllowInnerSlashes: true
-
-Style/SlicingWithRange:
-  Enabled: false
 
 Style/StringConcatenation:
   Enabled: false
@@ -600,8 +419,8 @@ Style/StringLiterals:
   Enabled: false
 
 Style/SuperWithArgsParentheses:
-  # unlikely in our code
   Enabled: false
+  # we rarely use super
 
 Style/SymbolArray:
   Enabled: false
@@ -621,6 +440,3 @@ Style/TrailingCommaInHashLiteral:
 
 Style/WordArray:
   Enabled: false
-
-Style/YAMLFileRead:
-  Enabled: true

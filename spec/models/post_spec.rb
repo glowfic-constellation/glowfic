@@ -803,6 +803,7 @@ RSpec.describe Post do
         create(:reply, user: user, post: post, character: char)
       end
 
+      # rubocop:disable-next Style/SlicingWithRange
       expect(post.recent_characters_for(user, 9)).to eq(characters[-9..-1].reverse)
       expect(post.recent_characters_for(user, 10)).to eq(characters.reverse)
     end

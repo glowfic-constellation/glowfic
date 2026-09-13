@@ -7,10 +7,10 @@ class SplitPostJob < ApplicationJob
   POST_ASSOCS = [:setting_ids, :label_ids, :content_warning_ids].map(&:to_s) # Associations aren't attributes so they're handled separately
 
   def perform(reply_id, new_subject)
-    raise RuntimeError, "Invalid subject" if new_subject.blank?
+    raise "Invalid subject" if new_subject.blank?
     Post.transaction do
       first_reply = Reply.find_by(id: reply_id)
-      raise RuntimeError, "Couldn't find reply" unless first_reply
+      raise "Couldn't find reply" unless first_reply
       old_post = first_reply.post
 
       other_replies = old_post.replies.where('reply_order > ?', first_reply.reply_order).ordered

@@ -31,7 +31,7 @@ class PostsController < WritableController
       @posts = @posts.where.not(last_user: current_user).or(@posts.where(id: (drafts + solo).uniq))
     end
     @posts = @posts.where.not(status: [:complete, :abandoned])
-    hiatused = @posts.hiatus.or(@posts.where('tagged_at < ?', 1.month.ago))
+    hiatused = @posts.hiatus.or(@posts.where(tagged_at: ...1.month.ago))
 
     if params[:view] == 'hiatused'
       @posts = hiatused
@@ -74,22 +74,23 @@ class PostsController < WritableController
     posts = Post.where(id: params[:marked_ids])
     posts = posts.visible_to(current_user)
 
-    if params[:commit] == "Mark Read"
-      posts.each { |post| post.mark_read(current_user) }
-      flash[:success] = "#{posts.size} #{'post'.pluralize(posts.size)} marked as read."
-    elsif params[:commit] == "Remove from Replies Owed"
-      readonly_forbidden and return if current_user.read_only?
-      posts.each { |post| post.opt_out_of_owed(current_user) }
-      flash[:success] = "#{posts.size} #{'post'.pluralize(posts.size)} removed from replies owed."
-      redirect_to owed_posts_path and return
-    elsif params[:commit] == "Show in Replies Owed"
-      readonly_forbidden and return if current_user.read_only?
-      posts.each { |post| post.opt_in_to_owed(current_user) }
-      flash[:success] = "#{posts.size} #{'post'.pluralize(posts.size)} added to replies owed."
-      redirect_to owed_posts_path and return
-    else
-      posts.each { |post| post.ignore(current_user) }
-      flash[:success] = "#{posts.size} #{'post'.pluralize(posts.size)} hidden from this page."
+    case params[:commit]
+      when "Mark Read"
+        posts.each { |post| post.mark_read(current_user) }
+        flash[:success] = "#{posts.size} #{'post'.pluralize(posts.size)} marked as read."
+      when "Remove from Replies Owed"
+        readonly_forbidden and return if current_user.read_only?
+        posts.each { |post| post.opt_out_of_owed(current_user) }
+        flash[:success] = "#{posts.size} #{'post'.pluralize(posts.size)} removed from replies owed."
+        redirect_to owed_posts_path and return
+      when "Show in Replies Owed"
+        readonly_forbidden and return if current_user.read_only?
+        posts.each { |post| post.opt_in_to_owed(current_user) }
+        flash[:success] = "#{posts.size} #{'post'.pluralize(posts.size)} added to replies owed."
+        redirect_to owed_posts_path and return
+      else
+        posts.each { |post| post.ignore(current_user) }
+        flash[:success] = "#{posts.size} #{'post'.pluralize(posts.size)} hidden from this page."
     end
     redirect_to unread_posts_path
   end
@@ -178,7 +179,7 @@ class PostsController < WritableController
 
     @audit = @deleted_audits.first
     @deleted = Reply.new(@audit.audited_changes)
-    @preceding = @post.replies.where('id < ?', @audit.auditable_id).order(id: :desc).limit(2).reverse
+    @preceding = @post.replies.where(id: ...@audit.auditable_id).order(id: :desc).limit(2).reverse
     @preceding = [@post] unless @preceding.present?
     @following = @post.replies.where('id > ?', @audit.auditable_id).order(id: :asc).limit(2)
     @audits = {} # set to prevent crashes, but we don't need this calculated, we don't want to display edit history on this page

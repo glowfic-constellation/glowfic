@@ -51,7 +51,7 @@ class WritableController < ApplicationController
       end
 
       if reply && reply.post_id == @post.id
-        @replies = @replies.where('replies.reply_order >= ?', reply.reply_order)
+        @replies = @replies.where(replies: { reply_order: reply.reply_order.. })
         self.page = cur_page = cur_page.to_i
       else
         flash[:error] = "Could not locate specified reply, defaulting to first page."
@@ -64,7 +64,7 @@ class WritableController < ApplicationController
         @unread = @post.first_unread_for(current_user) if logged_in?
         if @unread.nil?
           self.page = cur_page = @post.replies.paginate(per_page: per, page: 1).total_pages
-        elsif @unread.class == Post
+        elsif @unread.is_a?(Post)
           self.page = cur_page = 1
         else
           self.page = cur_page = @unread.post_page(per)
@@ -112,7 +112,7 @@ class WritableController < ApplicationController
     @meta_canonical = post_url(@post, canon_params)
 
     # show <meta property="og:..." content="..."> – for embed data
-    @meta_og = og_data_for_post(@post, page: self.page, total_pages: @replies.total_pages, per_page: per)
+    @meta_og = og_data_for_post(@post, page: page, total_pages: @replies.total_pages, per_page: per)
     @meta_og[:url] = @meta_canonical
 
     use_javascript('posts/show')
@@ -171,7 +171,7 @@ class WritableController < ApplicationController
     gon.no_icon_path = view_context.image_path('icons/no-icon.png')
   end
 
-  def og_data_for_post(post, page: 1, total_pages:, per_page: 25)
+  def og_data_for_post(post, total_pages:, page: 1, per_page: 25)
     post_location = post.board.name
     post_location += ' » ' + post.section.name if post.section.present?
 

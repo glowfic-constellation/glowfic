@@ -34,7 +34,7 @@ RSpec.describe TagsController do
         tags = create_tags
         get :index, params: { view: 'Setting' }
         expect(response).to have_http_status(200)
-        expect(assigns(:tags)).to match_array(tags[-2..-1])
+        expect(assigns(:tags)).to match_array(tags[-2..])
         expect(assigns(:page_title)).to eq('Settings')
       end
 

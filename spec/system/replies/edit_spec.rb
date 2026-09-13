@@ -1,4 +1,4 @@
-TIME_FORMAT = '%b %d, %Y %-l:%M %p'
+TIME_FORMAT = '%b %d, %Y %-l:%M %p'.freeze
 
 RSpec.describe "Editing replies" do
   let(:user) { create(:user, default_editor: 'html') }
