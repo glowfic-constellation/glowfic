@@ -28,23 +28,28 @@ plugins:
 Gemspec:
   Enabled: false
 
+#################### Bundler ##############################
+
+Bundler/OrderedGems:
+  Enabled: true # preview changes default
+
 #################### Layout ##############################
 
 Layout:
   NewCops: '1.79'
 
 Layout/ArgumentAlignment:
-  EnforcedStyle: with_fixed_indentation
+  EnforcedStyle: with_fixed_indentation # default in preview
 
 Layout/CaseIndentation:
-  EnforcedStyle: 'end'
+  EnforcedStyle: 'end' # default in preview
   IndentOneStep: true
 
 Layout/CommentIndentation:
   Exclude: ['spec/spec_helper.rb']
 
 Layout/EmptyLineAfterGuardClause:
-  Enabled: false
+  Enabled: false # default in preview
 
 Layout/EmptyLineAfterMagicComment:
   Enabled: false
@@ -53,16 +58,16 @@ Layout/EmptyLinesAroundAttributeAccessor:
   Enabled: false
 
 Layout/EndAlignment:
-  EnforcedStyleAlignWith: 'variable'
+  EnforcedStyleAlignWith: 'variable' # default in preview
 
 Layout/EndOfLine:
   EnforcedStyle: lf
 
 Layout/FirstArrayElementIndentation:
-  EnforcedStyle: 'consistent'
+  EnforcedStyle: 'consistent' # default in preview
 
 Layout/FirstHashElementIndentation:
-  EnforcedStyle: 'consistent'
+  EnforcedStyle: 'consistent' # default in preview
 
 Layout/HashAlignment:
   EnforcedHashRocketStyle: table
@@ -90,7 +95,7 @@ Layout/MultilineMethodCallBraceLayout:
     - 'spec/**/*'
 
 Layout/MultilineMethodCallIndentation:
-  EnforcedStyle: 'indented'
+  EnforcedStyle: 'indented' # default in preview
 
 Layout/MultilineMethodParameterLineBreaks:
   AllowMultilineFinalElement: true
@@ -101,7 +106,7 @@ Layout/MultilineOperationIndentation:
     - 'app/helpers/writable_helper.rb'
 
 Layout/ParameterAlignment:
-  EnforcedStyle: 'with_fixed_indentation'
+  EnforcedStyle: 'with_fixed_indentation' # default in preview
 
 Layout/SpaceAroundEqualsInParameterDefault:
   EnforcedStyle: 'no_space'
@@ -109,7 +114,7 @@ Layout/SpaceAroundEqualsInParameterDefault:
 #################### Lint ################################
 
 Lint:
-  NewCops: '1.90'
+  NewCops: '1.91'
 
 Lint/AmbiguousBlockAssociation:
   Exclude:
@@ -144,33 +149,33 @@ Metrics:
   NewCops: '1.47'
 
 Metrics/AbcSize:
-  Enabled: false
+  Enabled: false # default in preview
   Max: 20
 
 Metrics/BlockLength:
-  Enabled: false
+  Enabled: false # default in preview
 
 Metrics/BlockNesting:
-  Enabled: true
+  Enabled: true # preview changes default
   Max: 4
 
 Metrics/ClassLength:
-  Enabled: false
+  Enabled: false # default in preview
 
 Metrics/CyclomaticComplexity:
-  Enabled: false
+  Enabled: false # default in preview
 
 Metrics/MethodLength:
-  Enabled: false
+  Enabled: false # default in preview
 
 Metrics/ModuleLength:
-  Enabled: false
+  Enabled: false # default in preview
 
 Metrics/ParameterLists:
-  Enabled: false
+  Enabled: false # default in preview
 
 Metrics/PerceivedComplexity:
-  Enabled: false
+  Enabled: false # default in preview
 
 ####################### Naming ################################
 
@@ -179,6 +184,9 @@ Naming:
 
 Naming/AccessorMethodName:
   Enabled: false
+
+Naming/HeredocDelimiterNaming:
+  Enabled: true # preview changes default
 
 Naming/MemoizedInstanceVariableName:
   Enabled: false
@@ -195,6 +203,7 @@ Naming/PredicatePrefix:
   Enabled: false
 
 Naming/VariableNumber:
+  Enabled: true # preview changes default
   Exclude:
     - 'spec/**/*'
 
@@ -439,11 +448,14 @@ Security:
 Style:
   NewCops: '1.90'
 
+Style/Alias:
+  EnforcedStyle: 'prefer_alias' # preview changes default
+
 Style/AndOr:
   EnforcedStyle: 'conditionals'
 
 Style/ArgumentsForwarding:
-  UseAnonymousForwarding: false  # TODO: consider enabling
+  UseAnonymousForwarding: false # TODO: consider enabling
 
 Style/ArrayFirstLast:
   Enabled: false # unsafe
@@ -458,12 +470,14 @@ Style/BitwisePredicate:
   Enabled: false # we don't really use bitwise operations
 
 Style/BlockDelimiters:
+  Enabled: true # preview changes default
   AllowedMethods: ['lambda', 'proc', 'it', 'expect']
 
 Style/CaseLikeIf:
   Enabled: false
 
 Style/ClassAndModuleChildren:
+  Enabled: true # preview changes default
   EnforcedStyle: 'compact'
 
 Style/ClassEqualityComparison:
@@ -476,13 +490,14 @@ Style/ConditionalAssignment:
   Enabled: false
 
 Style/Documentation:
-  Enabled: false
+  Enabled: false # default in preview
 
 Style/DoubleNegation:
-  Enabled: false
+  Enabled: false # default in preview
 
 Style/EmptyMethod:
   Enabled: false
+  # 'expanded' (which matches our code) is default in preview
 
 Style/ExplicitBlockArgument:
   Enabled: false
@@ -503,11 +518,15 @@ Style/FileWrite:
   Enabled: false
   # we don't use file operations
 
+Style/FormatString:
+  Enabled: true # preview changes default
+
 Style/FormatStringToken:
+  Enabled: true # preview changes default
   EnforcedStyle: 'template'
 
 Style/FrozenStringLiteralComment:
-  Enabled: true
+  Enabled: true # preview changes default
   Exclude:
     - 'bin/*'
     - 'config/**/*'
@@ -520,11 +539,17 @@ Style/GlobalStdStream:
 Style/GlobalVars:
   AllowedVariables: ['$redis','$safe_ips']
 
+Style/GuardClause:
+  Enabled: true # preview changes default
+
 Style/HashAsLastArrayItem:
   Enabled: false
 
 Style/HashSyntax:
   EnforcedShorthandSyntax: either_consistent
+
+Style/IfUnlessModifier:
+  Enabled: true # preview changes default
 
 Style/InvertibleUnlessCondition:
   Enabled: false
@@ -535,7 +560,7 @@ Style/KeywordParametersOrder:
   Enabled: false
 
 Style/Lambda:
-  Enabled: false
+  Enabled: false # default in preview
 
 Style/MapIntoArray:
   Enabled: false
@@ -544,14 +569,24 @@ Style/MapIntoArray:
 Style/MixinUsage:
   Exclude: ['bin/*']
 
+Style/ModuleFunction:
+  Enabled: true # preview changes default
+  # TODO: this doesn't flag on our code but do we want it?
+
 Style/MutableConstant:
   Enabled: false
 
+Style/Next:
+  Enabled: true # preview changes default
+
+Style/NegatedIf:
+  Enabled: true # preview changes default
+
 Style/NumericLiterals:
-  Enabled: false
+  Enabled: false # default in preview
 
 Style/NumericPredicate:
-  Enabled: false
+  Enabled: false # default in preview
 
 Style/OneClassPerFile:
   Exclude:
@@ -560,6 +595,13 @@ Style/OneClassPerFile:
 
 Style/OptionalBooleanParameter:
   Enabled: false
+
+Style/ParallelAssignment:
+  Enabled: true # preview changes default
+
+Style/PerlBackrefs:
+  Enabled: true # preview changes default
+  # TODO: this doesn't flag on our code but do we want it?
 
 Style/PercentLiteralDelimiters:
   Enabled: false
@@ -572,7 +614,7 @@ Style/QuotedSymbols:
   # we don't use quoted symbols OR the cop it's based on
 
 Style/RaiseArgs:
-  Enabled: false
+  Enabled: false # default in preview
 
 Style/RedundantArgument:
   Enabled: false
@@ -587,11 +629,21 @@ Style/RedundantSelf:
   Enabled: false
 
 Style/RegexpLiteral:
+  Enabled: true # preview changes default
   EnforcedStyle: 'slashes'
   AllowInnerSlashes: true
 
+Style/RescueStandardError:
+  EnforcedStyle: 'explicit' # preview changes default
+
+Style/SignalException:
+  Enabled: true # preview changes default
+
 Style/SlicingWithRange:
   Enabled: false
+
+Style/SpecialGlobalVars:
+  Enabled: true # preview changes default
 
 Style/StringConcatenation:
   Enabled: false
@@ -599,16 +651,20 @@ Style/StringConcatenation:
 Style/StringLiterals:
   Enabled: false
 
+Style/StringLiteralsInInterpolation:
+  EnforcedStyle: 'single_quotes' # preview changes default
+
 Style/SuperWithArgsParentheses:
   # unlikely in our code
   Enabled: false
 
 Style/SymbolArray:
   Enabled: false
-  EnforcedStyle: 'brackets'
+  EnforcedStyle: 'brackets' # default in preview
 
 Style/TernaryParentheses:
   Enabled: false
+  # 'require_parentheses_when_complex' is default in preview
 
 Style/TrailingCommaInArguments:
   EnforcedStyleForMultiline: 'consistent_comma'
@@ -621,6 +677,7 @@ Style/TrailingCommaInHashLiteral:
 
 Style/WordArray:
   Enabled: false
+  # 'brackets' is default in preview
 
 Style/YAMLFileRead:
   Enabled: true
