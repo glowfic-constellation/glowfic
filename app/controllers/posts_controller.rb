@@ -31,7 +31,7 @@ class PostsController < WritableController
       @posts = @posts.where.not(last_user: current_user).or(@posts.where(id: (drafts + solo).uniq))
     end
     @posts = @posts.where.not(status: [:complete, :abandoned])
-    hiatused = @posts.hiatus.or(@posts.where('tagged_at < ?', 1.month.ago))
+    hiatused = @posts.hiatus.or(@posts.where(tagged_at: ...1.month.ago))
 
     if params[:view] == 'hiatused'
       @posts = hiatused
@@ -178,7 +178,7 @@ class PostsController < WritableController
 
     @audit = @deleted_audits.first
     @deleted = Reply.new(@audit.audited_changes)
-    @preceding = @post.replies.where('id < ?', @audit.auditable_id).order(id: :desc).limit(2).reverse
+    @preceding = @post.replies.where(id: ...@audit.auditable_id).order(id: :desc).limit(2).reverse
     @preceding = [@post] unless @preceding.present?
     @following = @post.replies.where('id > ?', @audit.auditable_id).order(id: :asc).limit(2)
     @audits = {} # set to prevent crashes, but we don't need this calculated, we don't want to display edit history on this page

@@ -175,7 +175,7 @@ class Post < ApplicationRecord
     return unless replies.exists? # unlike first_unread_for we don't care about the post
     viewed_at = last_read(user) || board.last_read(user)
     return unless viewed_at
-    reply = replies.where('created_at <= ?', viewed_at).ordered.last
+    reply = replies.where(created_at: ..viewed_at).ordered.last
     @last_seen = reply
   end
 

@@ -276,9 +276,6 @@ Rails/UniqueValidationWithoutIndex:
 Rails/WhereExists:
   Enabled: false
 
-Rails/WhereRange:
-  Enabled: false
-  # we don't use this format
 
 ################## Security ##############################
 
