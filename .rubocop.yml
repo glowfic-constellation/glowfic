@@ -4,7 +4,7 @@ AllCops:
   TargetRubyVersion: 3.4
   TargetRailsVersion: 8.0
   # used so rubocop doesn't edit old migrations, doesn't need to be perfectly up to date
-  MigratedSchemaVersion: 20241224202900
+  MigratedSchemaVersion: 20260704000000
   DisabledByDefault: false
   SuggestExtensions: false
   UseProjectIndex: true
@@ -210,10 +210,6 @@ Rails/ActionOrder:
     - update
     - destroy
 
-Rails/AddColumnIndex:
-  Enabled: false
-  # disabled because we don't run cops on db/*, otherwise good
-
 Rails/ApplicationController:
   Exclude: ['app/controllers/api/api_controller.rb']
 
@@ -272,9 +268,6 @@ Rails/ShortI18n:
 Rails/StrongParametersExpect:
   Enabled: false
   # we do a lot of custom logic around parameter existance
-
-Rails/ThreeStateBooleanColumn:
-  Enabled: false # we don't run cops on db/; otherwise good
 
 Rails/UniqueValidationWithoutIndex:
   Enabled: false
