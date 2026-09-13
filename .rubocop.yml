@@ -16,12 +16,14 @@ AllCops:
     - 'vendor/**/*'
 
 plugins:
-  - rubocop-capybara
-  - rubocop-factory_bot
+  #- rubocop-capybara
+  #- rubocop-factory_bot
   - rubocop-performance
   - rubocop-rails
-  - rubocop-rspec
-  - rubocop-rspec_rails
+  #- rubocop-rspec
+  #- rubocop-rspec_rails
+
+# For RSpec, Factorybot, etc config, see spec/.rubocop.yml
 
 #################### Gemspec ##############################
 
@@ -39,9 +41,6 @@ Layout/ArgumentAlignment:
 Layout/CaseIndentation:
   EnforcedStyle: 'end'
   IndentOneStep: true
-
-Layout/CommentIndentation:
-  Exclude: ['spec/spec_helper.rb']
 
 Layout/EmptyLineAfterGuardClause:
   Enabled: false
@@ -86,8 +85,6 @@ Layout/LineLength:
 
 Layout/MultilineMethodCallBraceLayout:
   EnforcedStyle: symmetrical
-  Exclude:
-    - 'spec/**/*'
 
 Layout/MultilineMethodCallIndentation:
   EnforcedStyle: 'indented'
@@ -111,14 +108,6 @@ Layout/SpaceAroundEqualsInParameterDefault:
 Lint:
   NewCops: '1.90'
 
-Lint/AmbiguousBlockAssociation:
-  Exclude:
-    - 'spec/**/*'
-
-Lint/ConstantDefinitionInBlock:
-  Exclude:
-    - 'spec/lib/presentable_spec.rb'
-
 Lint/DeprecatedReference:
   Enabled: false # we don't use @deprecated
 
@@ -129,14 +118,6 @@ Lint/MissingSuper:
   Exclude:
     - 'app/services/daily_report.rb'
 
-Lint/ParenthesesAsGroupedExpression:
-  Exclude:
-    - 'spec/**/*'
-
-Lint/SuppressedException:
-  Exclude:
-    - 'spec/jobs/application_job_spec.rb'
-    - 'spec/jobs/generate_flat_post_job_spec.rb'
 
 ###################### Metrics ####################################
 
@@ -193,10 +174,6 @@ Naming/PredicateMethod:
 
 Naming/PredicatePrefix:
   Enabled: false
-
-Naming/VariableNumber:
-  Exclude:
-    - 'spec/**/*'
 
 ####################### Performance ################################
 
@@ -312,123 +289,6 @@ Rails/WhereRange:
   Enabled: false
   # we don't use this format
 
-################## RSpec #################################
-
-RSpec:
-  NewCops: '3.10'
-
-RSpec/BeEq:
-  Enabled: false
-
-RSpec/ContainExactly:
-  Enabled: false
-
-RSpec/ContextWording:
-  Enabled: false
-
-RSpec/Dialect:
-  PreferredMethods:
-    background: :before
-    given:      :let
-    given!:     :let!
-
-RSpec/DescribedClass:
-  EnforcedStyle: explicit
-
-RSpec/DescribeMethod:
-  Exclude:
-    - 'spec/controllers/posts/*'
-    - 'spec/controllers/replies/*'
-    - 'spec/controllers/bookmarks/*'
-
-RSpec/EmptyOutput:
-  Enabled: false # we don't use the output matcher
-
-RSpec/ExampleLength:
-  Enabled: false
-
-RSpec/ExampleWording:
-  Enabled: false
-
-RSpec/ExpectChange:
-  EnforcedStyle: block
-
-RSpec/HookArgument:
-  EnforcedStyle: each
-
-RSpec/IndexedLet:
-  Enabled: false
-
-RSpec/IsExpectedSpecify:
-  Enabled: false # we don't use specify and is_expected
-
-RSpec/LeakyConstantDeclaration:
-  Exclude:
-    - 'spec/lib/presentable_spec.rb'
-
-RSpec/MatchArray:
-  Enabled: false
-
-RSpec/MessageSpies:
-  EnforcedStyle: receive
-
-RSpec/MultipleExpectations:
-  Enabled: false
-
-RSpec/MultipleMemoizedHelpers:
-  Enabled: false
-
-RSpec/NestedGroups:
-  Max: 5
-
-RSpec/PendingWithoutReason:
-  Enabled: false
-
-RSpec/RepeatedSubjectCall:
-  Enabled: false # we don't use subject
-
-RSpec/SpecFilePathFormat:
-  Exclude:
-    - 'spec/controllers/posts/*'
-    - 'spec/controllers/replies/*'
-    - 'spec/controllers/bookmarks/*'
-
-RSpec/StubbedMock:
-  Exclude:
-    - 'spec/script/post_split_spec.rb' # mocking multiple gets in order needs expect
-
-RSpec/SubjectDeclaration:
-  Enabled: false # we don't use subject
-
-################## Capybara ####################################
-
-################## Capybara/RSpec ##############################
-
-Capybara/RSpec/HaveSelector:
-  Enabled: false
-
-Capybara/RSpec/NegationMatcher:
-  EnforcedStyle: have_no
-
-################## FactoryBot ##################################
-
-FactoryBot:
-  NewCops: '2.25'
-
-FactoryBot/ExcessiveCreateList:
-  MaxAmount: 27 # to allow pagination tests
-
-################## RSpecRails #################################
-
-RSpecRails:
-  NewCops: '2.23'
-
-RSpecRails/HaveHttpStatus:
-  Enabled: false
-
-RSpecRails/HttpStatus:
-  EnforcedStyle: numeric
-
 ################## Security ##############################
 
 Security:
@@ -458,7 +318,7 @@ Style/BitwisePredicate:
   Enabled: false # we don't really use bitwise operations
 
 Style/BlockDelimiters:
-  AllowedMethods: ['lambda', 'proc', 'it', 'expect']
+  AllowedMethods: ['lambda', 'proc']
 
 Style/CaseLikeIf:
   Enabled: false
@@ -512,7 +372,6 @@ Style/FrozenStringLiteralComment:
     - 'bin/*'
     - 'config/**/*'
     - 'db/**/*'
-    - 'spec/**/*'
 
 Style/GlobalStdStream:
   Enabled: false
