@@ -17,12 +17,10 @@
           %table.search-form
             %tr
               %td= f.label :author_id
-              %td= f.select :author_id, options_from_collection_for_select(@users, :id, :username, params[:author_id]),
-                class: 'chosen-select', prompt: '— Choose Author —'
+              %td= f.select :author_id, options_from_collection_for_select(@users, :id, :username, params[:author_id]), {}, { class: 'chosen-select', prompt: '— Choose Author —' }
             %tr
               %td= f.label :template_id
-              %td= f.select :template_id, options_from_collection_for_select(@templates, :id, :name, params[:template_id]),
-                class: 'chosen-select', prompt: '— Choose Template —'
+              %td= f.select :template_id, options_from_collection_for_select(@templates, :id, :name, params[:template_id]), {}, { class: 'chosen-select', prompt: '— Choose Template —' }
             %tr
               %td= f.label :name
               %td= f.text_field :name, value: params[:name], style: 'width: 100%; margin: 5px 0px;'
@@ -31,13 +29,13 @@
               %td
                 Searching for name in:
                 %br
-                = f.check_box :search_name, checked: params[:commit] ? params[:search_name] : true, unchecked_value: nil, class: 'vmid no-margin', style: 'margin-bottom: 3px;'
+                = f.check_box :search_name, { checked: params[:commit].present? ? params[:search_name].present? : true, class: 'vmid no-margin', style: 'margin-bottom: 3px;' }, true, false
                 = f.label :search_name, "Name"
                 %br
-                = f.check_box :search_screenname, checked: params[:commit] ? params[:search_screenname] : true, unchecked_value: nil, class: 'vmid no-margin', style: 'margin-bottom: 3px;'
+                = f.check_box :search_screenname, { checked: params[:commit].present? ? params[:search_screenname].present? : true, class: 'vmid no-margin', style: 'margin-bottom: 3px;' }, true, false
                 = f.label :search_screenname, "Screenname"
                 %br
-                = f.check_box :search_nickname, checked: params[:commit] ? params[:search_nickname] : true, unchecked_value: nil, class: 'vmid no-margin', style: 'margin-bottom: 3px;'
+                = f.check_box :search_nickname, { checked: params[:commit].present? ? params[:search_nickname].present? : true, class: 'vmid no-margin', style: 'margin-bottom: 3px;' }, true, false
                 = f.label :search_nickname, "Nickname"
                 -# TODO
                   -# %br
