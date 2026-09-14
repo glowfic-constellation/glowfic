@@ -21,7 +21,7 @@
             %tr
               %td Acronym
               %td.padding-5
-                = f.check_box :abbrev, checked: params[:abbrev], class: 'vmid no-margin', style: 'margin-bottom: 3px;'
+                = f.check_box :abbrev, checked: params[:abbrev], unchecked_value: nil, class: 'vmid no-margin', style: 'margin-bottom: 3px;'
                 = f.label :abbrev, 'Search for acronym'
             %tr
               %td= f.label :exclude_board_ids, 'Exclude'

@@ -1403,32 +1403,32 @@ RSpec.describe CharactersController do
       let!(:screenname) { create(:character, name: 'c', screenname: 'a', nickname: 'b') }
 
       it "searches names correctly" do
-        get :search, params: { commit: true, name: 'a', search_name: 1 }
+        get :search, params: { commit: true, name: 'a', search_name: true }
         expect(assigns(:search_results)).to match_array([name])
       end
 
       it "searches screenname correctly" do
-        get :search, params: { commit: true, name: 'a', search_screenname: 1 }
+        get :search, params: { commit: true, name: 'a', search_screenname: true }
         expect(assigns(:search_results)).to match_array([screenname])
       end
 
       it "searches nickname correctly" do
-        get :search, params: { commit: true, name: 'a', search_nickname: 1 }
+        get :search, params: { commit: true, name: 'a', search_nickname: true }
         expect(assigns(:search_results)).to match_array([nickname])
       end
 
       it "searches name + screenname correctly" do
-        get :search, params: { commit: true, name: 'a', search_name: 1, search_screenname: 1 }
+        get :search, params: { commit: true, name: 'a', search_name: true, search_screenname: true }
         expect(assigns(:search_results)).to match_array([name, screenname])
       end
 
       it "searches name + nickname correctly" do
-        get :search, params: { commit: true, name: 'a', search_name: 1, search_nickname: 1 }
+        get :search, params: { commit: true, name: 'a', search_name: true, search_nickname: true }
         expect(assigns(:search_results)).to match_array([name, nickname])
       end
 
       it "searches nickname + screenname correctly" do
-        get :search, params: { commit: true, name: 'a', search_nickname: 1, search_screenname: 1 }
+        get :search, params: { commit: true, name: 'a', search_nickname: true, search_screenname: true }
         expect(assigns(:search_results)).to match_array([nickname, screenname])
       end
 
@@ -1436,9 +1436,9 @@ RSpec.describe CharactersController do
         get :search, params: {
           commit: true,
           name: 'a',
-          search_name: '1',
-          search_screenname: '1',
-          search_nickname: '1',
+          search_name: true,
+          search_screenname: true,
+          search_nickname: true,
         }
         expect(assigns(:search_results)).to match_array([name, screenname, nickname])
       end

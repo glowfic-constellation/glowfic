@@ -3,7 +3,7 @@
     .editor-title Sign In
     #username-row
       .sub.vtop= f.label :username
-      .even= f.text_field :username, value: params[:username], placeholder: "Username", autocomplete: 'username'
+      .even= f.text_field :username, value: params[:username], unchecked_value: nil, placeholder: "Username", autocomplete: 'username'
     #password-row
       .sub.vtop= f.label :password
       .odd

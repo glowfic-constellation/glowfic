@@ -25,7 +25,7 @@ class UsersController < ApplicationController
     @user = User.new(user_params)
     @user.validate_password = true
 
-    unless params[:tos] == '1'
+    unless params[:tos].present?
       signup_prep
       flash.now[:error] = "You must accept the Terms and Conditions to use the Constellation."
       render :new and return

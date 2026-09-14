@@ -13,18 +13,18 @@
   %tbody
     %tr
       %td.search-box
-        = form_with url: search_bookmarks_path, method: :get do
+        = form_with url: search_bookmarks_path, method: :get do |f|
           %table.search-form
             %tr
               %td{ style: 'width: 80px;' }= f.label :user_id
               %td= f.select :user_id, options_from_collection_for_select([@user].compact || [], :id, :username, params[:user_id]), class: 'chosen-select', prompt: '— Choose User —'
             %tr
               %td= f.label :post_id, 'Posts'
-              %td= f.select :post_id, options_from_collection_for_select(@posts || [], :id, :subject, params[:post_id]), class: 'chosen-select', prompt: '— Choose Post —', multiple: true
+              %td= f.select :post_id, options_from_collection_for_select(@posts || [], :id, :subject, params[:post_id]), class: 'chosen-select', prompt: '— Choose User —', multiple: true
             %tr
               %td= f.label :condensed
               %td
-                = f.check_box :condensed, checked: (params[:commit].nil? || params[:condensed].present?), class: 'vmid'
+                = f.check_box :condensed, checked: (params[:commit].nil? || params[:condensed].present?), unchecked_value: nil, class: 'vmid'
                 = f.label :condensed, 'Hide screennames and icons'
             %tr
               %td.centered{ colspan: 2 }= f.submit "Search", class: 'button'

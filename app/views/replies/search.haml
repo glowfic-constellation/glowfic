@@ -62,7 +62,7 @@
             %tr
               %td= f.label :condensed
               %td
-                = f.check_box :condensed, checked: (params[:commit].nil? || params[:condensed]), class: 'vmid'
+                = f.check_box :condensed, checked: (params[:commit].nil? || params[:condensed]), unchecked_value: nil, class: 'vmid'
                 = f.label :condensed, 'Hide screennames and icons'
             %tr
               %td.centered{colspan: 2}= f.submit "Search", class: 'button'

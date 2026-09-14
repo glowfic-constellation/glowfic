@@ -159,7 +159,7 @@ RSpec.describe PostsController, 'GET search' do
     it "filters by completed" do
       create(:post)
       post = create(:post, status: :complete)
-      get :search, params: { commit: true, completed: '1' }
+      get :search, params: { commit: true, completed: true }
       expect(assigns(:search_results)).to match_array(post)
     end
 
@@ -199,7 +199,7 @@ RSpec.describe PostsController, 'GET search' do
 
       it "hides ignored posts when checkbox is checked with hide_from_all enabled" do
         viewer.update!(hide_from_all: true)
-        get :search, params: { commit: true, hide_ignored: '1' }
+        get :search, params: { commit: true, hide_ignored: true }
         expect(assigns(:search_results).map(&:id)).to eq([normal_post.id])
       end
 

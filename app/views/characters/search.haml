@@ -31,13 +31,13 @@
               %td
                 Searching for name in:
                 %br
-                = f.check_box :search_name, checked: params[:commit] ? params[:search_name] : true, class: 'vmid no-margin', style: 'margin-bottom: 3px;'
+                = f.check_box :search_name, checked: params[:commit] ? params[:search_name] : true, unchecked_value: nil, class: 'vmid no-margin', style: 'margin-bottom: 3px;'
                 = f.label :search_name, "Name"
                 %br
-                = f.check_box :search_screenname, checked: params[:commit] ? params[:search_screenname] : true, class: 'vmid no-margin', style: 'margin-bottom: 3px;'
+                = f.check_box :search_screenname, checked: params[:commit] ? params[:search_screenname] : true, unchecked_value: nil, class: 'vmid no-margin', style: 'margin-bottom: 3px;'
                 = f.label :search_screenname, "Screenname"
                 %br
-                = f.check_box :search_nickname, checked: params[:commit] ? params[:search_nickname] : true, class: 'vmid no-margin', style: 'margin-bottom: 3px;'
+                = f.check_box :search_nickname, checked: params[:commit] ? params[:search_nickname] : true, unchecked_value: nil, class: 'vmid no-margin', style: 'margin-bottom: 3px;'
                 = f.label :search_nickname, "Nickname"
                 -# TODO
                   -# %br
