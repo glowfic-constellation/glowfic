@@ -1,7 +1,7 @@
 -# locals: ( reply:, multi_replies_params: nil, multi_reply_new: false )
 
 - content_for :form do
-  = form_with model: reply, html: { id: 'post_form' } do |f|
+  = form_with model: reply, id: 'post_form' do |f|
     %b Reply
     %button.view-button#rtf{type: 'button', class: ('selected' if reply.editor_mode == 'rtf')} Rich Text
     %button.view-button#md{type: 'button', class: ('selected' if reply.editor_mode == 'md')} Markdown
@@ -17,7 +17,7 @@
     = f.hidden_field :icon_id
     = f.hidden_field :character_alias_id
     = f.hidden_field :editor_mode, value: params[:editor_mode] || current_user.default_editor, id: 'editor_mode'
-    = f.fields_for :character, reply.character do |cf|
+    = fields_for :character, reply.character do |cf|
       = cf.hidden_field :name
       = cf.hidden_field :npc
     = f.hidden_field :allow_dupe, value: @allow_dupe
@@ -31,18 +31,18 @@
         = f.text_area :audit_comment, placeholder: 'Explain reason for moderation here', class: 'mod'
         %br
       - if multi_replies_params.blank?
-        = f.submit (reply.new_record? ? 'Post' : 'Save'), class: 'button', id: 'submit_button', data: { disable_with: 'Saving...' }
-        = f.submit "Preview", class: 'button', id: 'preview_button', name: 'button_preview', data: { disable_with: 'Previewing...' }
+        = submit_tag (reply.new_record? ? 'Post' : 'Save'), class: 'button', id: 'submit_button', data: { disable_with: 'Saving...' }
+        = submit_tag "Preview", class: 'button', id: 'preview_button', name: 'button_preview', data: { disable_with: 'Previewing...' }
         - if reply.new_record?
-          = f.submit "Save Draft", class: 'button', id: 'draft_button', name: 'button_draft', formaction: drafts_path, data: { disable_with: 'Drafting...' }
+          = submit_tag "Save Draft", class: 'button', id: 'draft_button', name: 'button_draft', formaction: drafts_path, data: { disable_with: 'Drafting...' }
         - if @draft.present?
-          = f.button "Delete Draft", class: 'button', id: 'delete_draft_button', name: '_method', value: 'delete', formaction: draft_path(@draft), data: { disable_with: 'Deleting...', confirm: "Delete draft?" }
+          = button_tag "Delete Draft", class: 'button', id: 'delete_draft_button', name: '_method', value: 'delete', formaction: draft_path(@draft), data: { disable_with: 'Deleting...', confirm: "Delete draft?" }
       - else
-        = f.submit (multi_reply_new ? 'Post All' : 'Save All'), class: 'button', id: 'submit_button', data: { disable_with: 'Saving...' }
-        = f.submit "Preview Current", class: 'button', id: 'preview_button', name: 'button_preview', data: { disable_with: 'Previewing...' }
-      = f.submit "Add More Replies", class: 'button', id: 'add_more_button', name: 'button_add_more', data: { disable_with: 'Adding...' }
+        = submit_tag (multi_reply_new ? 'Post All' : 'Save All'), class: 'button', id: 'submit_button', data: { disable_with: 'Saving...' }
+        = submit_tag "Preview Current", class: 'button', id: 'preview_button', name: 'button_preview', data: { disable_with: 'Previewing...' }
+      = submit_tag "Add More Replies", class: 'button', id: 'add_more_button', name: 'button_add_more', data: { disable_with: 'Adding...' }
       - if multi_replies_params.present?
-        = f.submit "Discard Replies", class: 'button', id: 'discard_multi_reply_button', name: 'button_discard_multi_reply', data: { disable_with: 'Discarding...', confirm: "Discard all replies added?" }
+        = submit_tag "Discard Replies", class: 'button', id: 'discard_multi_reply_button', name: 'button_discard_multi_reply', data: { disable_with: 'Discarding...', confirm: "Discard all replies added?" }
     - if reply.post.author_for(current_user).present?
       %hr.clear
       .post-note-editor
