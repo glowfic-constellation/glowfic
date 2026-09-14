@@ -21,7 +21,7 @@ RSpec.describe "Editing account settings" do
     expect(page).to have_no_selector('.flash.error')
 
     find_by_id("user_default_hide_edit_delete_buttons").click
-    within("#edit_user_#{user.id}") { click_button 'Save' }
+    within("#edit_user_form") { click_button 'Save' }
     # Save reloads the page, so re-query the checkboxes via page matchers (which
     # re-find + wait) rather than holding now-stale element references.
     expect(page).to have_checked_field("user_default_hide_edit_delete_buttons")
@@ -29,7 +29,7 @@ RSpec.describe "Editing account settings" do
 
     find_by_id('user_default_hide_add_bookmark_button').click
     find_by_id("user_default_hide_edit_delete_buttons").click
-    within("#edit_user_#{user.id}") { click_button 'Save' }
+    within("#edit_user_form") { click_button 'Save' }
     expect(page).to have_unchecked_field("user_default_hide_edit_delete_buttons")
     expect(page).to have_checked_field("user_default_hide_add_bookmark_button")
 
