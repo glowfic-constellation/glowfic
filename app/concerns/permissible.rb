@@ -16,8 +16,9 @@ module Permissible
     :relocate_characters,
     # :edit_tags,
     # :delete_tags,
-    # :edit_continuities
+    # :edit_continuities,
     :create_news,
+    # :view_access_circles,
   ]
 
   def has_permission?(permission)

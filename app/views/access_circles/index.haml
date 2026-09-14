@@ -1,0 +1,43 @@
+- content_for :breadcrumbs do
+  - unless @user.nil? || @user.id == current_user.try(:id)
+    = user_link(@user)
+    &raquo;
+    %b #{@user.username}'s Access Circles
+
+- col_count = 4
+
+%table
+  %thead
+    %tr
+      %th.table-title{colspan: col_count}
+        = @page_title
+        - if !@public && @user.id == current_user&.id
+          = link_to new_access_circle_path do
+            .link-box.action-new + New Circle
+    %tr
+      %th.sub Name
+      %th.sub Posts
+      %th.sub Users
+      %th.sub
+  %tbody
+    - @circles.each do |circle|
+      - klass = cycle('even', 'odd')
+      %tr
+        %td{class: klass}= link_to circle.name, circle
+        %td{class: klass}= @post_counts.fetch(circle.id, 0)
+        %td{class: klass}= @user_counts.fetch(circle.id, 0)
+        %td.width-70.right-align{class: klass}
+          - if circle.editable_by?(current_user)
+            = link_to edit_access_circle_path(circle) do
+              = image_tag "icons/pencil.png", alt: 'Edit'
+          - if circle.deletable_by?(current_user)
+            = link_to delete_path(circle), method: :delete, data: { confirm: "Are you sure you want to delete #{circle.name}?" } do
+              = image_tag "icons/cross.png", alt: 'Delete'
+            &nbsp;
+    - if @circles.empty?
+      %tr
+        %td.centered.padding-10{ class: cycle('even', 'odd'), colspan: col_count } — No matching circles —
+  - if !@circles.empty? && @circles.total_pages > 1
+    %tfoot
+      %tr
+        %td{colspan: 6}= render 'posts/paginator', paginated: @circles

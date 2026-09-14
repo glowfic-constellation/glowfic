@@ -1,6 +1,6 @@
 -# locals: ( user: )
 
-- unless user.user_tags.empty?
+- unless user.content_warnings.empty?
   - content_for :flashes do
     .flash.error
       %details
@@ -8,5 +8,5 @@
           = image_tag "icons/exclamation.png".freeze, class: 'vmid'.freeze, alt: ''
           This author has set some general content warnings which might apply to their posts even when not otherwise warned.
         %ul
-          - user.user_tags.each do |warning|
-            %li= link_to warning.tag.name, tag_path(warning.tag)
+          - user.content_warnings.each do |warning|
+            %li= link_to warning.name, tag_path(warning)
