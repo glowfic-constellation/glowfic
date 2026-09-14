@@ -13,21 +13,23 @@
   %tbody
     %tr
       %td.search-box
-        = form_with url: search_bookmarks_path, method: :get do |f|
+        = form_with url: search_bookmarks_path, method: :get do
           %table.search-form
             %tr
-              %td{ style: 'width: 80px;' }= f.label :user_id
-              %td= f.select :user_id, options_from_collection_for_select([@user].compact || [], :id, :username, params[:user_id]), class: 'chosen-select', prompt: '— Choose User —'
+              %td{ style: 'width: 80px;' }= label_tag :user_id, 'User'
+              %td= select_tag :user_id, options_from_collection_for_select([@user].compact || [], :id, :username, params[:user_id]),
+                { class: 'chosen-select', prompt: '— Choose User —' }
             %tr
-              %td= f.label :post_id, 'Posts'
-              %td= f.select :post_id, options_from_collection_for_select(@posts || [], :id, :subject, params[:post_id]), { include_hidden: false }, { class: 'chosen-select', prompt: '— Choose Post —', multiple: true }
+              %td= label_tag :post_id, 'Posts'
+              %td= select_tag :post_id, options_from_collection_for_select(@posts || [], :id, :subject, params[:post_id]),
+                { class: 'chosen-select', prompt: '— Choose Post —', multiple: true }
             %tr
-              %td= f.label :condensed
+              %td= label_tag :condensed, 'Condensed'
               %td
-                = f.check_box :condensed, { checked: params[:commit].nil? || params[:condensed].present?, class: 'vmid' }, true, false
-                = f.label :condensed, 'Hide screennames and icons'
+                = check_box_tag :condensed, nil, (params[:commit].nil? || params[:condensed].present?), class: 'vmid'
+                = label_tag :condensed, 'Hide screennames and icons'
             %tr
-              %td.centered{ colspan: 2 }= f.submit "Search", class: 'button'
+              %td.centered{ colspan: 2 }= submit_tag "Search", class: 'button'
       %td.vtop
         - if @search_results.present?
           %table
