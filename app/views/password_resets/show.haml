@@ -1,10 +1,10 @@
-= form_for @password_reset, url: password_reset_path(id: @password_reset.auth_token), method: :put do
+= form_with model: @password_reset, url: password_reset_path(id: @password_reset.auth_token), scope: '', method: :put do |f|
   .form-table
     .editor-title Change Password
     %div
-      .sub= label_tag :password, 'New'
-      .odd= password_field_tag :password, params[:password], placeholder: "New Password"
+      .sub= f.label :password, 'New'
+      .odd= f.password_field :password, value: params[:password], placeholder: "New Password"
     %div
-      .sub= label_tag :password_confirmation, 'Confirm'
-      .even= password_field_tag :password_confirmation, params[:password_confirmation], placeholder: "Confirm Password"
-    .form-table-ender= submit_tag "Save", class: 'button'
+      .sub= f.label :password_confirmation, 'Confirm'
+      .even= f.password_field :password_confirmation, value: params[:password_confirmation], placeholder: "Confirm Password"
+    .form-table-ender= f.submit "Save", class: 'button'

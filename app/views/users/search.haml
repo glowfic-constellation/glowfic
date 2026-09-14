@@ -13,7 +13,7 @@
   %tbody
     %tr
       %td.search-box
-        = form_tag search_users_path, method: :get do
+        = form_with url: search_users_path, method: :get do
           %table.search-form
             %tr
               %td.width-70= label_tag :search_username, 'Username'

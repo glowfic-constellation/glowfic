@@ -13,7 +13,7 @@
   %tbody
     %tr
       %td.search-box
-        = form_tag search_continuities_path, method: :get do
+        = form_with url: search_continuities_path, method: :get do
           %table.search-form
             %tr
               %td.width-70= label_tag :name, 'Name'
@@ -29,8 +29,7 @@
                 { class: 'chosen-select', prompt: '— Choose Continuity —', multiple: true, name: 'exclude_board_ids[]' }
             %tr
               %td= label_tag :author_id, 'Author'
-              %td= select_tag :author_id, options_from_collection_for_select(@user || [], :id, :username,
-                params[:author_id]), { class: 'chosen-select', prompt: '— Choose Author —', multiple: true }
+              %td= select_tag :author_id, options_from_collection_for_select(@user || [], :id, :username, params[:author_id]), { class: 'chosen-select', prompt: '— Choose Author —', multiple: true }
             %tr
               %td.centered{colspan: 2}= submit_tag "Search", class: 'button'
       %td.vtop

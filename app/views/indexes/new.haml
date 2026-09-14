@@ -4,7 +4,7 @@
   %b New
 
 
-= form_for @index do |f|
+= form_with model: @index do |f|
   .form-table#index-editor
     .editor-title Create Index
     = render 'editor', f: f

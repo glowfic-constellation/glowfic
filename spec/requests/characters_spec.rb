@@ -133,7 +133,7 @@ RSpec.describe "Character" do
         expect(response.body).to include("Search Characters")
       end
 
-      get "/characters/search?name=Sample&search_name=true&commit=Search"
+      get "/characters/search?name=Sample&search_name=1&commit=Search"
       aggregate_failures do
         expect(response).to have_http_status(200)
         expect(response).to render_template(:search)

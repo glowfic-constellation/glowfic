@@ -7,7 +7,7 @@
   &raquo;
   %b Edit
 
-= form_for @board_section, url: board_section_path(@board_section), method: :put do |f|
+= form_with model: @board_section, method: :put do |f|
   .form-table#section-editor
     .editor-title Edit #{@board_section.name}
     = render 'editor', f: f

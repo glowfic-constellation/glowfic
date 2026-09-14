@@ -20,7 +20,7 @@ RSpec.describe "AnonLoadShed cookie handling" do
   # returning reader whose browser dropped the session cookie sends exactly
   # this and nothing else.
   def remember_me_cookie
-    post '/login', params: { username: user.username, password: 'knownpass', remember_me: '1' }
+    post '/login', params: { username: user.username, password: 'knownpass', remember_me: true }
     raw = response.headers['Set-Cookie']
     raw = raw.join("\n") if raw.is_a?(Array)
     entry = raw.split("\n").find { |c| c.start_with?('user_id=') }

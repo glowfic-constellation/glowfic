@@ -62,4 +62,4 @@
   %div
     .sub.vtop= f.label :audit_comment, 'Moderator Note'
     %div{class: cycle('even', 'odd')}= f.text_area :audit_comment, placeholder: 'Explain reason for moderation here', cols: 35
-.form-table-ender= submit_tag "Save", class: 'button'
+.form-table-ender= f.submit "Save", class: 'button'

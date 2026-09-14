@@ -7,22 +7,22 @@
     - if blocked_user.nil?
       = f.select :blocked_user_id, options_from_collection_for_select(@users,
         :id, :username, params.fetch(:block, {})[:blocked_user_id]),
-        { class: 'chosen-select', prompt: '— Choose User —' }
+        class: 'chosen-select', prompt: '— Choose User —'
     - else
       = blocked_user.username
 %div
   .sub= f.label :block_interactions, 'Interactions'
   .checkbox-field{class: klass}
     = f.check_box :block_interactions
-    = f.label :block_interactions, "Prevent them from interacting with you?"
+    = f.label :block_interactions, 'Prevent them from interacting with you?'
 %div
   .sub= f.label :hide_them
   .narrow-select{class: klass}
     Prevent you from seeing their:
-    = f.select :hide_them, options_from_collection_for_select(@options.to_a, :second, :first, @block.hide_them), { class: 'chosen-select' }
+    = f.select :hide_them, options_from_collection_for_select(@options.to_a, :second, :first, @block.hide_them), class: 'chosen-select'
 %div
   .sub= f.label :hide_me, 'Hide yourself'
   .narrow-select{class: klass}
     Prevent them from seeing your:
-    = f.select :hide_me, options_from_collection_for_select(@options.to_a, :second, :first, @block.hide_me), { class: 'chosen-select' }
-.form-table-ender= submit_tag "Save", class: 'button'
+    = f.select :hide_me, options_from_collection_for_select(@options.to_a, :second, :first, @block.hide_me), class: 'chosen-select'
+.form-table-ender= f.submit "Save", class: 'button'

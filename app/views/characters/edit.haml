@@ -10,7 +10,7 @@
   &raquo;
   %b Edit
 
-= form_for @character, url: @character, method: :put do |f|
+= form_with model: @character, method: :put do |f|
   .character-form
     .form-table#character-editor
       .editor-title= @character.name

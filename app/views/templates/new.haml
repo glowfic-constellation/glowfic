@@ -5,7 +5,7 @@
   &raquo;
   %b New Template
 
-= form_for @template, url: templates_path, method: :post do |f|
+= form_with model: @template, method: :post do |f|
   .form-table
     .editor-title New Template
     = render 'editor', f: f

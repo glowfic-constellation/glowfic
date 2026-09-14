@@ -3,7 +3,7 @@
   &raquo;
   %b New
 
-= form_for @block do |f|
+= form_with model: @block do |f|
   .form-table
     .editor-title Block User
     = render 'editor', f: f

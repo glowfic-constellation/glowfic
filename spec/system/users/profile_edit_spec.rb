@@ -61,7 +61,7 @@ RSpec.describe "Editing user profile" do
     # Editing the user settings does not erase any of the profile fields
     visit edit_user_path(user)
     fill_in 'user_username', with: "Updated Username"
-    within("#edit_user_#{user.id}") { click_button 'Save' }
+    within("#edit_user_form") { click_button 'Save' }
     expect(find_by_id('user_username').value).to eq("Updated Username")
     visit user_path(user)
     expect(page).to have_selector('.table-title', text: 'Author Profile') # wait for page to load

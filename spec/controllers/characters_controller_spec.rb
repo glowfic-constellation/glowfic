@@ -304,13 +304,13 @@ RSpec.describe CharactersController do
       expect(Template.count).to eq(0)
       login
       post :create, params: {
-        new_template: '1',
         character: {
           template_attributes: {
             name: 'TemplateTest',
           },
           name: 'Test',
         },
+        new_template: '1',
       }
       expect(Template.count).to eq(1)
       expect(Template.first.name).to eq('TemplateTest')
@@ -557,11 +557,11 @@ RSpec.describe CharactersController do
       new_name = character.name + 'aaa'
       put :update, params: {
         id: character.id,
-        new_template: '1',
         character: {
           template_attributes: { name: '' },
           name: new_name,
         },
+        new_template: '1',
       }
       expect(response.status).to eq(200)
       expect(flash[:error][:message]).to eq("Character could not be updated because of the following problems:")
@@ -706,7 +706,13 @@ RSpec.describe CharactersController do
       expect(Template.count).to eq(0)
       character = create(:character)
       login_as(character.user)
-      put :update, params: { id: character.id, new_template: '1', character: { template_attributes: { name: 'Test' } } }
+      put :update, params: {
+        id: character.id,
+        character: {
+          template_attributes: { name: 'Test' },
+        },
+        new_template: '1',
+      }
       expect(Template.count).to eq(1)
       expect(Template.first.name).to eq('Test')
       expect(character.reload.template_id).to eq(Template.first.id)

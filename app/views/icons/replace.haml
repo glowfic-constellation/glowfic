@@ -5,8 +5,8 @@
   &raquo;
   %b= link_to 'Replace', replace_icon_path(@icon)
 
-- content_for :options do
-  = select_tag :icon_dropdown, options_for_select(@alts.map { |i| [i.keyword, i.id] }, @alts.first.try(:id)), prompt: "No Icon"
+= form_with model: @icon, url: do_replace_icon_path(@icon), scope: '', method: :post do |f|
+  - content_for :options do
+    = f.select :icon_dropdown, options_for_select(@alts.map { |i| [i.keyword, i.id] }, @alts.first.try(:id)), prompt: "No Icon"
 
-= form_for @icon, url: do_replace_icon_path(@icon), method: :post do
-  = render 'global/replace', obj: @icon, name: @icon.keyword, icon: @icon, alt_icon: @alts.first
+  = render 'global/replace', obj: @icon, name: @icon.keyword, icon: @icon, alt_icon: @alts.first, f: f

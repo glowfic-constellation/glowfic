@@ -132,7 +132,7 @@ RSpec.describe "Creating a new character" do
 
     within('.form-table') do
       fill_in 'Character Name', with: 'Example character'
-      check 'new_template'
+      check 'Create New Template'
       fill_in 'Template Name', with: 'Example template'
       click_button 'Save'
     end

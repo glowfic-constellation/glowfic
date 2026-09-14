@@ -4,5 +4,5 @@
   .sub= f.label :name
   %div{class: cycle('even', 'odd')}= f.text_field :name, placeholder: "Gallery Name"
 %div
-  .sub.vtop= label_tag :gallery_group_ids, 'Groups'
+  .sub.vtop= f.label :gallery_group_ids, 'Groups'
   .select2-field{class: cycle('even', 'odd')}= tag_select(gallery, f, :gallery_groups)

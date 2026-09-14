@@ -199,7 +199,7 @@ RSpec.describe PostsController, 'GET search' do
 
       it "hides ignored posts when checkbox is checked with hide_from_all enabled" do
         viewer.update!(hide_from_all: true)
-        get :search, params: { commit: true, hide_ignored: '1' }
+        get :search, params: { commit: true, hide_ignored: true }
         expect(assigns(:search_results).map(&:id)).to eq([normal_post.id])
       end
 
