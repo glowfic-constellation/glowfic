@@ -37,23 +37,23 @@
               %td= f.label :subject
               %td= f.text_field :subject, value: params[:subject], style: 'width: 100%; margin: 5px 0px;'
             %tr
-              %td Acronym
+              %td= f.label :abbrev, 'Acronym'
               %td.padding-5
-                = check_box_tag :abbrev, true, params[:abbrev].present?, { class: 'vmid no-margin', style: 'margin-bottom: 3px;' }
-                = label_tag :abbrev, 'Search for acronym'
+                = f.check_box :abbrev, checked: params[:abbrev].present?, class: 'vmid no-margin', style: 'margin-bottom: 3px;'
+                = f.label :abbrev, 'Search for acronym'
             %tr
-              %td Exact
+              %td= f.label :exact
               %td.padding-5
-                = check_box_tag :exact, true, params[:exact].present?, { class: 'vmid no-margin', style: 'margin-bottom: 3px;' }
-                = label_tag :exact, 'Exact string match'
+                = f.check_box :exact, checked: params[:exact].present?, class: 'vmid no-margin', style: 'margin-bottom: 3px;'
+                = f.label :exact, 'Exact string match'
             %tr
-              %td Completed
+              %td= f.label :completed
               %td.padding-5
                 = f.check_box :completed, checked: params[:completed], class: 'vmid no-margin', style: 'margin-bottom: 3px;'
                 = f.label :completed, "Completed Only"
             - if current_user&.hide_from_all
               %tr
-                %td Ignored
+                %td= f.label :hide_ignored, 'Ignored'
                 %td.padding-5
                   = f.check_box :hide_ignored, checked: !params.key?(:commit) || params[:hide_ignored].present?, class: 'vmid no-margin', style: 'margin-bottom: 3px;'
                   = f.label :hide_ignored, "Hide ignored posts"

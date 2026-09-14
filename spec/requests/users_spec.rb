@@ -17,7 +17,7 @@ RSpec.describe "Users" do
             password_confirmation: "password",
           },
           addition: 14,
-          tos: true,
+          tos: '1',
         }
       }.to change { User.count }.by(1)
 

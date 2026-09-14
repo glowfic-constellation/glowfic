@@ -16,6 +16,6 @@
     = f.select :status, options_for_select(Post.statuses.map { |k, _v| [k.titlecase, k] }, params[:status] || :complete), style: 'margin-top: 5px;'
     %br
     = f.label :threaded, "Threaded?", style: "width: 150px; display: inline-block;"
-    = f.check_box :threaded, "1", params[:threaded].present?
+    = f.check_box :threaded, checked: params[:threaded].present?
     %br
     = f.submit "Import", class: 'button', id: 'import_button', name: 'button_import'

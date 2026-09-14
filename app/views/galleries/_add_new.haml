@@ -48,7 +48,7 @@
           = f.hidden_field :s3_key, value: s3_key, id: "icons_#{i}_s3_key"
           = f.hidden_field :filename, value: @icons[i].try(:[], :filename), id: "icons_#{i}_filename"
         .keyword-cell.input-cell{class: klass}= f.text_field :keyword, value: keyword, placeholder: "Keyword", id: "icons_#{i}_keyword"
-        .credit-cell.input-cell{class: klass}== f.text_field :credit, value: @icons[i].try(:[], :credit), placeholder: "Credit", id: "icons_#{i}_credit"
+        .credit-cell.input-cell{class: klass}= f.text_field :credit, value: @icons[i].try(:[], :credit), placeholder: "Credit", id: "icons_#{i}_credit"
         .icon-buttons{class: klass}
           %a{href: '#'}= image_tag "icons/add.png", class: "icon-row-add", alt: 'Add Row'
           %a{href: '#'}= image_tag "icons/minus.png", class: "icon-row-rem", alt: 'Delete Row'

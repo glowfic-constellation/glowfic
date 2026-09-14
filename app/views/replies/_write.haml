@@ -36,7 +36,7 @@
         - if reply.new_record?
           = f.submit "Save Draft", class: 'button', id: 'draft_button', name: 'button_draft', formaction: drafts_path, data: { disable_with: 'Drafting...' }
         - if @draft.present?
-          = f.submit "Delete Draft", class: 'button', id: 'delete_draft_button', name: '_method', value: 'delete', formaction: draft_path(@draft), data: { disable_with: 'Deleting...', confirm: "Delete draft?" }
+          = f.button "Delete Draft", class: 'button', id: 'delete_draft_button', name: '_method', value: 'delete', formaction: draft_path(@draft), data: { disable_with: 'Deleting...', confirm: "Delete draft?" }
       - else
         = f.submit (multi_reply_new ? 'Post All' : 'Save All'), class: 'button', id: 'submit_button', data: { disable_with: 'Saving...' }
         = f.submit "Preview Current", class: 'button', id: 'preview_button', name: 'button_preview', data: { disable_with: 'Previewing...' }
