@@ -12,7 +12,7 @@ class Character::Relocator < Object
 
   def transfer(character_ids, new_user_id, include_templates: false)
     @characters = Character.where(id: character_ids)
-    raise CharacterGroupError.new('Characters must not have groups') if @characters.where.not(character_group: nil).exists?
+    raise CharacterGroupError.new('Characters must not have groups') unless @characters.ids.sort == @characters.ungrouped.ids.sort
 
     User.find(new_user_id) # fail with invalid target user
 
