@@ -1,5 +1,10 @@
 # frozen_string_literal: true
 class CharacterTag < ApplicationRecord
+  # define this scope here or Orderable will redefine it
+  scope :ordered, -> { order(section_order: :asc) }
+  scope :ordered_manually, -> { ordered }
+  include Orderable
+
   belongs_to :character, inverse_of: :character_tags, optional: false
   belongs_to :tag, inverse_of: :character_tags, optional: true # TODO: This is required, fix bug around validation if it is set as such
   belongs_to :setting, foreign_key: :tag_id, inverse_of: :character_tags, optional: true
@@ -7,12 +12,14 @@ class CharacterTag < ApplicationRecord
   belongs_to :character_group, foreign_key: :tag_id, inverse_of: :character_tags, optional: true
 
   validates :character, uniqueness: { scope: :tag }
-  validate :single_group_for_character
 
   scope :only_character_groups, -> { joins(:tag).where(tags: { type: 'CharacterGroup' }) }
 
+  before_save :autofill_order, if: -> { character_group.present? }
   after_create :add_galleries_to_character
   after_destroy :remove_galleries_from_character
+  after_destroy :reorder_others_before, if: -> { character_group.present? }
+  after_save :reorder_others_after, if: -> { character_group.present? }
 
   private
 
@@ -34,9 +41,7 @@ class CharacterTag < ApplicationRecord
     character.characters_galleries.reload
   end
 
-  def single_group_for_character
-    return unless tag.type == 'CharacterGroup'
-    return unless character.character_tags.joins(:tag).where(tags: { type: 'CharacterGroup' }).exists?
-    errors.add(:character, 'has already been taken')
+  def ordered_attributes
+    [:character_id]
   end
 end

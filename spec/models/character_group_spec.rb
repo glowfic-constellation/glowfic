@@ -59,24 +59,6 @@ RSpec.describe CharacterGroup do
       expect(group).to be_valid
     end
 
-    it "cannot have the same character as another group" do
-      character = create(:character, user: user)
-      create(:character_group, user: user, characters: [character])
-      group = build(:character_group, user: user, characters: [character])
-      expect(group).not_to be_valid
-      expect(group.errors.full_messages).to match_array(['Character tags is invalid', 'Characters is invalid'])
-      expect(group.character_tags.first.errors.full_messages).to eq(['Character has already been taken'])
-    end
-
-    it "cannot have the same template as another group" do
-      template = create(:template, user: user)
-      create(:character_group, user: user, templates: [template])
-      group = build(:character_group, user: user, templates: [template])
-      expect(group).not_to be_valid
-      expect(group.errors.full_messages).to eq(['Template tags is invalid'])
-      expect(template.template_tag.errors.full_messages).to eq(['Template has already been taken'])
-    end
-
     it "can have the same character as a setting" do
       character = create(:character, user: user)
       create(:setting, characters: [character])

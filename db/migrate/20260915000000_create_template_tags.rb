@@ -3,15 +3,15 @@ class CreateTemplateTags < ActiveRecord::Migration[6.0]
     create_table :template_tags do |t|
       t.integer :template_id, null: false
       t.integer :tag_id, null: false
-      t.boolean :primary, default: false
+      t.integer :section_order
       t.timestamps null: true
 
       t.index :template_id
       t.index :tag_id
-      t.index :primary
+      t.index :section_order
     end
 
-    add_column :character_tags, :primary, :boolean
-    add_index :character_tags, :primary
+    add_column :character_tags, :section_order, :integer
+    add_index :character_tags, :section_order
   end
 end

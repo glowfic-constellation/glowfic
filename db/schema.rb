@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_07_04_000000) do
+ActiveRecord::Schema[8.1].define(version: 2026_09_15_000000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "citext"
   enable_extension "pg_catalog.plpgsql"
@@ -121,10 +121,11 @@ ActiveRecord::Schema[8.1].define(version: 2026_07_04_000000) do
   create_table "character_tags", id: :serial, force: :cascade do |t|
     t.integer "character_id", null: false
     t.datetime "created_at", precision: nil
+    t.integer "section_order"
     t.integer "tag_id", null: false
     t.datetime "updated_at", precision: nil
-    t.boolean "primary", default: false
     t.index ["character_id"], name: "index_character_tags_on_character_id"
+    t.index ["section_order"], name: "index_character_tags_on_section_order"
     t.index ["tag_id"], name: "index_character_tags_on_tag_id"
   end
 
@@ -449,11 +450,12 @@ ActiveRecord::Schema[8.1].define(version: 2026_07_04_000000) do
   end
 
   create_table "template_tags", force: :cascade do |t|
-    t.integer "template_id", null: false
+    t.datetime "created_at"
+    t.integer "section_order"
     t.integer "tag_id", null: false
-    t.boolean "primary", default: false
-    t.datetime "created_at", precision: 6
-    t.datetime "updated_at", precision: 6
+    t.integer "template_id", null: false
+    t.datetime "updated_at"
+    t.index ["section_order"], name: "index_template_tags_on_section_order"
     t.index ["tag_id"], name: "index_template_tags_on_tag_id"
     t.index ["template_id"], name: "index_template_tags_on_template_id"
   end
