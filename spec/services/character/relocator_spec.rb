@@ -11,7 +11,8 @@ RSpec.describe Character::Relocator do
     end
 
     it 'fails with character groups' do
-      expect { relocator.transfer(create(:character, character_group_id: 3), target) }.to raise_error(CharacterGroupError)
+      character = create(:character, user: user, character_group: create(:character_group, user: user))
+      expect { relocator.transfer(character, target) }.to raise_error(CharacterGroupError)
     end
 
     it 'fails with galleries used on other characters' do

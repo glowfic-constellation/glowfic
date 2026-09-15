@@ -5,7 +5,7 @@ class Character < ApplicationRecord
   belongs_to :user, optional: false
   belongs_to :template, inverse_of: :characters, optional: true
   belongs_to :default_icon, class_name: 'Icon', inverse_of: false, optional: true
-  belongs_to :character_group, optional: true
+  belongs_to :old_character_group, optional: true
   has_many :replies, dependent: false
   has_many :posts, dependent: false # These are handled in callbacks
   has_many :aliases, class_name: 'CharacterAlias', inverse_of: :character, dependent: :destroy
@@ -20,6 +20,8 @@ class Character < ApplicationRecord
   has_many :character_tags, inverse_of: :character, dependent: :destroy
   has_many :settings, -> { ordered_by_char_tag }, through: :character_tags, source: :setting, dependent: :destroy
   has_many :gallery_groups, -> { ordered_by_char_tag }, through: :character_tags, source: :gallery_group, dependent: :destroy
+  has_one :character_group_tag, -> { where(primary: true) }, class_name: 'CharacterTag', dependent: :destroy, inverse_of: :character
+  has_one :character_group, through: :character_group_tag, source: :character_group, dependent: :destroy
 
   validates :name,
     presence: true,
@@ -28,8 +30,6 @@ class Character < ApplicationRecord
   validates :pb, length: { maximum: 255 }
   validates :cluster, length: { maximum: 255 }
   validate :valid_group, :valid_galleries, :valid_default_icon
-
-  attr_accessor :group_name
 
   before_validation :strip_spaces
   after_update :update_flat_posts
@@ -43,6 +43,11 @@ class Character < ApplicationRecord
     base = where(retired: false).left_outer_joins(:template)
     base.where(template_id: nil).or(base.where(template: { retired: false }))
   end
+  scope :ungrouped, -> {
+    left_outer_joins(:character_tags)
+      .where("NOT EXISTS (SELECT 1 FROM tags WHERE character_tags.tag_id = tags.id AND tags.type = 'CharacterGroup')")
+      .where("NOT EXISTS (SELECT 1 FROM template_tags WHERE template_tags.template_id = characters.template_id)")
+  }
 
   accepts_nested_attributes_for :template, reject_if: :all_blank
 
@@ -163,12 +168,10 @@ class Character < ApplicationRecord
   private
 
   def valid_group
-    return unless character_group_id == 0
-    @group = CharacterGroup.new(user: user, name: group_name)
-    return if @group.valid?
-    @group.errors.messages.each do |k, v|
-      v.each { |val| errors.add("group #{k}", val) }
-    end
+    return if character_group.nil?
+    errors.add(:template, 'and character group cannot co-exist') and return unless template.nil?
+    return if character_group.user_id == user_id
+    errors.add(:character_group, "must be yours")
   end
 
   def valid_galleries

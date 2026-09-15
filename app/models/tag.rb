@@ -9,11 +9,13 @@ class Tag < ApplicationRecord
   has_many :characters, through: :character_tags, dependent: :destroy
   has_many :gallery_tags, dependent: :destroy, inverse_of: :tag
   has_many :galleries, through: :gallery_tags, dependent: :destroy
+  has_many :template_tags, dependent: :destroy, inverse_of: :tag
+  has_many :templates, through: :template_tags, dependent: :destroy
 
-  TYPES = %w(Setting Label ContentWarning GalleryGroup)
+  TYPES = %w(Setting Label ContentWarning GalleryGroup CharacterGroup)
 
   validates :name, :type, presence: true
-  validates :name, uniqueness: { scope: :type }
+  validates :name, uniqueness: { scope: :type }, unless: proc { |tag| tag.is_a?(CharacterGroup) }
 
   scope :ordered_by_type, -> { order(type: :desc, name: :asc) }
 
