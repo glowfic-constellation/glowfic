@@ -16,6 +16,6 @@ class ReplyDraft < ApplicationRecord
   end
 
   def self.reply_from_draft(draft)
-    Reply.new(draft.attributes.except('id', 'created_at', 'updated_at'))
+    Reply.new(draft.attributes.except('id', 'created_at', 'updated_at', 'reserved'))
   end
 end

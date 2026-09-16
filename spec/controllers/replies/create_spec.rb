@@ -31,6 +31,7 @@ RSpec.describe RepliesController, 'POST create' do
 
       post :create, params: {
         button_preview: true,
+        reserved: true,
         reply: {
           content: 'example',
           character_id: char1.id,
@@ -51,6 +52,7 @@ RSpec.describe RepliesController, 'POST create' do
       expect(assigns(:reply).icon).to eq(icon)
       expect(assigns(:reply).character_alias).to eq(calias)
       expect(assigns(:post)).to eq(reply_post)
+      expect(assigns(:reserved)).to eq("true")
       expect(ReplyDraft.count).to eq(1)
       draft = ReplyDraft.last
 
@@ -282,6 +284,7 @@ RSpec.describe RepliesController, 'POST create' do
     expect(reply.character_id).to eq(char.id)
     expect(reply.icon_id).to eq(icon.id)
     expect(reply.character_alias_id).to eq(calias.id)
+    expect(reply_post.author_for(user).reserved).to eq(false)
   end
 
   it "allows you to reply to a post you created" do
@@ -541,5 +544,32 @@ RSpec.describe RepliesController, 'POST create' do
     reply = reply_post.replies.ordered.last
     expect(reply.content).to eq(searchable)
     expect(reply.reply_order).to eq(2)
+  end
+
+  it "holds owed correctly" do
+    user = create(:user)
+    login_as(user)
+    reply_post = create(:post)
+    reply_post.mark_read(user, at_time: reply_post.created_at + 1.second, force: true)
+
+    expect {
+      post :create, params: {
+        reserved: true,
+        reply: {
+          post_id: reply_post.id,
+          content: 'test!',
+          editor_mode: 'html',
+        },
+      }
+    }.to change { Reply.count }.by(1)
+
+    reply = Reply.order(:id).last
+    expect(reply).not_to be_nil
+    expect(response).to redirect_to(reply_url(reply, anchor: "reply-#{reply.id}"))
+    expect(flash[:success]).to eq("Reply posted.")
+    expect(reply.user).to eq(user)
+    expect(reply.post).to eq(reply_post)
+    expect(reply.content).to eq('test!')
+    expect(reply_post.author_for(user).reserved).to eq(true)
   end
 end

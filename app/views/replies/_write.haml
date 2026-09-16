@@ -30,6 +30,11 @@
         %br
         = f.text_area :audit_comment, placeholder: 'Explain reason for moderation here', class: 'mod'
         %br
+      - if reply.new_record? # TODO: or if last in post?
+        - reserved_status = @reserved.nil? ? reply.post.author_for(current_user)&.reserved : @reserved
+        = check_box_tag :reserved, true, reserved_status, { class: 'vmid' }
+        = label_tag :reserved, "Still Writing (posting this won't change Replies Owed status)"
+        %br
       - if multi_replies_params.blank?
         = submit_tag (reply.new_record? ? 'Post' : 'Save'), class: 'button', id: 'submit_button', data: { disable_with: 'Saving...' }
         = submit_tag "Preview", class: 'button', id: 'preview_button', name: 'button_preview', data: { disable_with: 'Previewing...' }
