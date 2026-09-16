@@ -1,7 +1,9 @@
--# locals: ( name: nil, characters: nil, show_template: false, show_user: false, hide_buttons: false, show_new_character_button: false, show_retired: show_retired() )
+-# locals: ( name: nil, characters: nil, show_template: false, show_user: false, show_settings: true, hide_buttons: false, show_new_character_button: false, show_retired: show_retired() )
 
 - col_count = 7
 - col_count += 1 if show_template
+- col_count += 1 if show_user && show_settings
+- col_count -= 1 if hide_buttons
 - characters ||= name.characters.non_npcs.ordered
 - characters = characters.not_retired unless show_retired
 
@@ -51,15 +53,17 @@
       %b Screenname
     %td.padding-5{class: klass}
       %b Facecast
-    %td.padding-5{class: klass}
-      - if show_user
-        %b User
-      - else
+    - if show_settings
+      %td.padding-5{class: klass}
         %b Setting
-    %td.padding-5{class: klass}
+    - if show_user
+      %td.padding-5{class: klass}
+        %b User
+    - unless hide_buttons
+      %td.padding-5{class: klass}
   - pluck = characters_list(characters.ordered, show_template)
-  - params = { show_template: show_template, show_user: show_user, hide_buttons: hide_buttons }
-  - params[:settings] = show_user ? {} : settings_info(characters)
+  - params = { show_template: show_template, show_user: show_user, show_settings: show_settings, hide_buttons: hide_buttons }
+  - params[:settings] = show_settings ? settings_info(characters) : {}
   = render partial: 'characters/list_item', collection: pluck, as: :character, locals: params
   - if characters.methods.include?(:total_pages) && characters.total_pages > 1
     %tfoot
