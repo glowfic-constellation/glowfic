@@ -23,13 +23,27 @@ class PostsController < WritableController
     @hide_quicklinks = true
 
     can_owe = (params[:view] != 'hidden')
-    ids = Post::Author.where(user_id: current_user.id, can_owe: can_owe).group(:post_id).pluck(:post_id)
-    @posts = Post.where(id: ids)
+    ids = Post::Author.where(user: current_user, can_owe: can_owe).group(:post_id).pluck(:post_id)
+
+    reserved_ids = Post::Author.joins(:post)
+      .where(post_id: ids, reserved: true)
+      .where.not(user: current_user)
+      .where('post_authors.user_id = posts.last_user_id')
+      .pluck(post_authors: :post_id)
+
+    @posts = Post.where(id: ids).where.not(id: reserved_ids)
+
     unless params[:view] == 'hidden'
       drafts = ReplyDraft.where(post_id: @posts.select(:id)).where(user: current_user).pluck(:post_id)
       solo = Post::Author.where(post_id: ids).group(:post_id).having('count(post_id) < 2').pluck(:post_id)
-      @posts = @posts.where.not(last_user: current_user).or(@posts.where(id: (drafts + solo).uniq))
+      held = Post::Author.where(post_id: ids, user: current_user, reserved: true).pluck(:post_id)
+
+      @posts = @posts
+        .where.not(last_user: current_user)
+        .or(@posts.where(last_user: current_user, id: held))
+        .or(@posts.where(id: (drafts + solo).uniq))
     end
+
     @posts = @posts.where.not(status: [:complete, :abandoned])
     hiatused = @posts.hiatus.or(@posts.where('tagged_at < ?', 1.month.ago))
 

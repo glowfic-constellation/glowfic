@@ -18,6 +18,7 @@ RSpec.describe "Creating replies" do
       within('#post-editor') do
         click_button 'Preview'
       end
+
       expect(page).to have_selector('.flash.success', exact_text: 'Draft saved.')
       expect(page).to have_no_selector('.flash.error')
       expect(page).to have_selector('#post-editor')
@@ -260,6 +261,83 @@ RSpec.describe "Creating replies" do
       expect(page).to have_no_selector('.flash.error')
     end
 
+    scenario "Reply retains reserved status" do
+      reserved_label = "Still Writing (posting this won't change Replies Owed status)"
+      post = create(:post, authors_locked: true, authors: [user])
+
+      visit post_path(post)
+      expect(page).to have_selector('#post-editor')
+
+      within('#post-editor') do
+        check reserved_label
+        click_button 'Preview'
+      end
+
+      aggregate_failures do
+        expect(page).to have_selector('.flash.success', exact_text: 'Draft saved.')
+        expect(page).to have_no_selector('.flash.error')
+        expect(page).to have_selector('#post-editor')
+      end
+
+      within('#post-editor') do
+        expect(page).to have_checked_field(reserved_label)
+        click_button 'Save Draft'
+      end
+
+      aggregate_failures do
+        expect(page).to have_selector('.flash.success', exact_text: 'Draft saved.')
+        expect(page).to have_no_selector('.flash.error')
+        expect(page).to have_selector('#post-editor')
+      end
+
+      within('#post-editor') do
+        expect(page).to have_checked_field(reserved_label)
+        click_button 'Post'
+      end
+
+      aggregate_failures do
+        expect(page).to have_selector('.flash.success', exact_text: 'Reply posted.')
+        expect(page).to have_no_selector('.flash.error')
+        expect(page).to have_selector('.post-container', count: 2)
+      end
+
+      within('#post-editor') do
+        expect(page).to have_checked_field(reserved_label)
+        uncheck reserved_label
+        fill_in 'reply_content', with: 'foo bar'
+        click_button 'Preview'
+      end
+
+      aggregate_failures do
+        expect(page).to have_selector('.flash.success', exact_text: 'Draft saved.')
+        expect(page).to have_no_selector('.flash.error')
+        expect(page).to have_selector('#post-editor')
+      end
+
+      within('#post-editor') do
+        expect(page).to have_unchecked_field(reserved_label)
+        click_button 'Save Draft'
+      end
+
+      aggregate_failures do
+        expect(page).to have_selector('.flash.success', exact_text: 'Draft saved.')
+        expect(page).to have_no_selector('.flash.error')
+        expect(page).to have_selector('#post-editor')
+      end
+
+      within('#post-editor') do
+        expect(page).to have_unchecked_field(reserved_label)
+        click_button 'Post'
+      end
+
+      aggregate_failures do
+        expect(page).to have_selector('.flash.success', exact_text: 'Reply posted.')
+        expect(page).to have_no_selector('.flash.error')
+        expect(page).to have_selector('.post-container', count: 3)
+        expect(page).to have_unchecked_field(reserved_label)
+      end
+    end
+
     context "using the multi reply editor" do
       scenario "works", :js do
         char
@@ -465,6 +543,62 @@ RSpec.describe "Creating replies" do
         expect(page).to have_selector('.post-content', exact_text: 'new reply 3', count: 1)
         expect(page).to have_selector('.post-content', exact_text: 'reply I do not want to duplicate', count: 1)
         expect(page).to have_no_selector('.flash.error')
+      end
+
+      scenario "replies retain reserved status" do
+        reserved_label = "Still Writing (posting this won't change Replies Owed status)"
+        post = create(:post, authors_locked: true, authors: [user])
+
+        visit post_path(post)
+        expect(page).to have_selector('#post-editor')
+
+        within('#post-editor') do
+          fill_in "reply_content", with: 'reply 1'
+          check reserved_label
+          click_button "Add More Replies"
+        end
+
+        expect(page).to have_selector('.content-header', exact_text: 'Adding multiple replies')
+        expect(page).to have_no_selector('.flash.error')
+
+        within('#post-editor') do
+          expect(page).to have_checked_field(reserved_label)
+          fill_in 'reply_content', with: 'reply 2'
+          click_button 'Add More Replies'
+        end
+
+        expect(page).to have_no_selector('.flash.error')
+
+        within('#post-editor') do
+          expect(page).to have_checked_field(reserved_label)
+          fill_in 'reply_content', with: 'new reply 3'
+          click_button 'Preview Current'
+        end
+
+        expect(page).to have_no_selector('.flash.error')
+
+        within('#post-editor') do
+          expect(page).to have_checked_field(reserved_label)
+          uncheck reserved_label
+          click_button 'Preview Current'
+        end
+
+        expect(page).to have_no_selector('.flash.error')
+
+        within('#post-editor') do
+          expect(page).to have_unchecked_field(reserved_label)
+          fill_in 'reply_content', with: 'new reply 4'
+          click_button 'Add More Replies'
+        end
+
+        expect(page).to have_no_selector('.flash.error')
+
+        within('#post-editor') do
+          expect(page).to have_unchecked_field(reserved_label)
+          click_button 'Post All'
+        end
+
+        expect(page).to have_unchecked_field(reserved_label)
       end
     end
 
