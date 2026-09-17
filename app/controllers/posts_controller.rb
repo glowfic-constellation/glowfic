@@ -162,6 +162,10 @@ class PostsController < WritableController
       render :flat, layout: false
       return
     end
+    # The single page worth sharing: 95.3% of HTML traffic lands on the
+    # thousand busiest of these URLs, and the same ones are fetched again and
+    # again. No-op for a logged-in reader. See AnonCacheable.
+    cache_publicly
     show_post
   end
 

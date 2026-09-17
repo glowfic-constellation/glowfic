@@ -289,7 +289,7 @@ class UsersController < ApplicationController
       render 'about/accept_tos'
     else
       flash[:success] = "Acceptance saved. Thank you."
-      redirect_to session[:previous_url] || root_url # allow_other_host: false
+      redirect_to return_path # allow_other_host: false
     end
   end
 end

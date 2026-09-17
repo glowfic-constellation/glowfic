@@ -10,6 +10,9 @@ Rails.application.routes.draw do
   # Accounts
   get '/login' => 'sessions#new', as: :login
   post '/login' => 'sessions#create'
+  # Supplies a CSRF token to pages rendered without one so they can be shared
+  # from a cache. See app/controllers/csrf_controller.rb.
+  get '/csrf' => 'csrf#show', as: :csrf
   delete '/logout' => 'sessions#destroy', as: :logout
   patch '/confirm_tos' => 'sessions#confirm_tos', as: :confirm_tos
   get '/users/:id/templates' => redirect('/users/%{id}/characters')
