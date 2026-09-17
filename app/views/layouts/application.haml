@@ -6,7 +6,12 @@
     / Meta
     %meta{charset: 'utf-8'}
     %meta{name: 'viewport', content: 'width=device-width'}
-    = csrf_meta_tags
+    -# Generating a CSRF token writes it to the session, and writing the
+    -# session emits Set-Cookie, which makes the page unshareable. A shared
+    -# page carries no token; the header form fetches its own. See
+    -# AnonCacheable and app/assets/javascripts/csrf.js.
+    - unless anon_cacheable?
+      = csrf_meta_tags
 
     / SEO canonical
     - if @meta_canonical.present?
@@ -100,7 +105,13 @@
               = link_to logout_path, method: :delete, id: :"header-logout", data: { confirm: 'Press OK to confirm logout' } do
                 = button_tag "Log out", class: 'button'
             - elsif !current_page?(login_path)
-              = form_tag login_path, method: :post, id: 'header-form' do
+              -# On a shareable page the token field is omitted rather than
+              -# baked in, because generating one writes the session. csrf.js
+              -# fills it in from /csrf, which is why the form is marked.
+              = form_tag login_path, method: :post, id: 'header-form', authenticity_token: (false if anon_cacheable?), data: { needs_csrf: anon_cacheable? } do
+                -# Travels with the page instead of the session, so a shared
+                -# copy still returns each reader to the page they logged in from.
+                = hidden_field_tag :return_to, request.fullpath
                 #header-forms
                   = text_field_tag :username, params[:username], placeholder: "Username", id: 'header-username', autocomplete: 'username'
                   = password_field_tag :password, params[:password], placeholder: "Password", id: 'header-password', autocomplete: 'current-password'

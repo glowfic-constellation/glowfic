@@ -22,20 +22,20 @@ class SessionsController < ApplicationController
       }
       cookies.permanent.signed[:user_id] = cookie_hash(user.id) if params[:remember_me].present?
       @current_user = user
-      redirect_to continuities_path and return if session[:previous_url] == '/login'
+      redirect_to continuities_path and return if return_path == '/login'
     else
       flash[:error] = auth.error
     end
-    redirect_to session[:previous_url] || root_url # allow_other_host: false
+    redirect_to return_path # allow_other_host: false
   end
 
   def confirm_tos
     cookies.permanent[:accepted_tos] = cookie_hash(User::CURRENT_TOS_VERSION)
-    redirect_to session[:previous_url] || root_url # allow_other_host: false
+    redirect_to return_path # allow_other_host: false
   end
 
   def destroy
-    url = session[:previous_url] || root_url
+    url = return_path
     logout
     flash[:success] = "You have been logged out."
     redirect_to url # allow_other_host: false

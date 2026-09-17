@@ -12,6 +12,7 @@ Bundler.require(*Rails.groups)
 # set up yet at that point and `MiddlewareStack#use` doesn't const-resolve.
 require_relative '../app/middleware/anon_load_shed'
 require_relative '../app/middleware/database_unavailable'
+require_relative '../app/middleware/shared_cache_guard'
 
 module Glowfic
   ALLOWED_TAGS = %w(b i u sub sup del ins hr p br div span pre code h1 h2 h3 h4 h5 h6 ul ol li dl dt dd a img blockquote q table tbody td th thead tr
@@ -94,6 +95,11 @@ module Glowfic
     # sees the exception before that renders a 500.
     # See app/middleware/database_unavailable.rb.
     config.middleware.use DatabaseUnavailable
+    # Must sit OUTSIDE the session store: the session writes its Set-Cookie on
+    # the way back out, after every controller callback has run, so this is the
+    # first place that can see whether a response identifies somebody.
+    # See app/middleware/shared_cache_guard.rb.
+    config.middleware.insert_before ActionDispatch::Session::CookieStore, SharedCacheGuard
 
     # Setting enables YJIT as of Ruby 3.3, to bring sizeable performance improvements. We are
     # deploying to a memory constrained environment so we set this to `false`.
