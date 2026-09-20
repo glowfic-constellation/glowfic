@@ -186,6 +186,131 @@ RSpec.describe PostsController, 'GET show' do
     end
   end
 
+  context "RSS feed" do
+    render_views
+
+    let!(:post) { create(:post, subject: 'a feed thread', description: 'a thread description') }
+    let!(:reply) { create(:reply, post: post, content: 'a reply body') }
+
+    it "renders a well-formed RSS feed without requiring login" do
+      get :show, params: { id: post.id, format: :rss }
+      expect(response).to have_http_status(200)
+      expect(response.media_type).to eq('application/rss+xml')
+
+      doc = Nokogiri::XML(response.body, &:strict)
+      expect(doc.errors).to be_empty
+      expect(doc.at_xpath('/rss/channel/title').text).to eq('a feed thread')
+      items = doc.xpath('/rss/channel/item')
+      expect(items.size).to eq(2) # the reply and the opening post
+      expect(response.body).to include('a reply body')
+    end
+
+    it "requires permission" do
+      post.update!(privacy: :private)
+      get :show, params: { id: post.id, format: :rss }
+      expect(response).to redirect_to(continuities_url)
+      expect(flash[:error]).to eq("You do not have permission to view this post.")
+    end
+
+    it "supports conditional GET with an ETag" do
+      get :show, params: { id: post.id, format: :rss }
+      expect(response).to have_http_status(200)
+      expect(response.etag).to be_present
+
+      request.headers['If-None-Match'] = response.etag
+      get :show, params: { id: post.id, format: :rss }
+      expect(response).to have_http_status(304)
+    end
+
+    it "re-renders when the thread changes" do
+      get :show, params: { id: post.id, format: :rss }
+      etag = response.etag
+
+      request.headers['If-None-Match'] = etag
+      create(:reply, post: post)
+      get :show, params: { id: post.id, format: :rss }
+      expect(response).to have_http_status(200)
+      expect(response.etag).not_to eq(etag)
+    end
+
+    it "marks public feeds cacheable by shared caches" do
+      get :show, params: { id: post.id, format: :rss }
+      expect(response.headers['Cache-Control']).to include('public')
+      expect(response.headers['Cache-Control']).to include('max-age')
+    end
+
+    it "keeps non-public feeds private" do
+      hidden = create(:post, privacy: :registered)
+      reader = create(:user)
+      get :show, params: { id: hidden.id, format: :rss, rss_token: reader.rss_token }
+      expect(response).to have_http_status(200)
+      expect(response.headers['Cache-Control']).to include('private')
+    end
+
+    it "shows the newest items first and includes the opening post last" do
+      get :show, params: { id: post.id, format: :rss }
+      items = assigns(:feed_items)
+      expect(items.first).to eq(reply)
+      expect(items.last).to eq(post)
+    end
+
+    it "limits the number of items and drops the opening post when full" do
+      create_list(:reply, WritableController::RSS_ITEM_LIMIT + 2, post: post)
+      get :show, params: { id: post.id, format: :rss }
+      items = assigns(:feed_items)
+      expect(items.size).to eq(WritableController::RSS_ITEM_LIMIT)
+      expect(items).not_to include(post)
+    end
+
+    it "advertises the feed for autodiscovery on the HTML thread page" do
+      get :show, params: { id: post.id }
+      expect(response.body).to include('application/rss+xml')
+      expect(response.body).to include(post_url(post, format: :rss))
+    end
+
+    it "includes the subscriber's token in the feed URL when logged in" do
+      viewer = create(:user)
+      login_as(viewer)
+      get :show, params: { id: post.id }
+      expect(response.body).to include("rss_token=#{viewer.rss_token}")
+    end
+
+    context "token authentication" do
+      let(:reader) { create(:user) }
+      let!(:hidden_post) { create(:post, privacy: :registered, subject: 'members only thread') }
+
+      it "lets a logged-out reader use a valid rss_token to read a non-public thread" do
+        get :show, params: { id: hidden_post.id, format: :rss, rss_token: reader.rss_token }
+        expect(response).to have_http_status(200)
+        expect(response.body).to include('members only thread')
+      end
+
+      it "denies a non-public thread when no token is given" do
+        get :show, params: { id: hidden_post.id, format: :rss }
+        expect(response).to redirect_to(continuities_url)
+        expect(flash[:error]).to eq("You do not have permission to view this post.")
+      end
+
+      it "denies an invalid rss_token" do
+        get :show, params: { id: hidden_post.id, format: :rss, rss_token: 'not-a-real-token' }
+        expect(response).to redirect_to(continuities_url)
+      end
+
+      it "ignores the token for a suspended user" do
+        reader.update!(role_id: Permissible::SUSPENDED)
+        get :show, params: { id: hidden_post.id, format: :rss, rss_token: reader.rss_token }
+        expect(response).to redirect_to(continuities_url)
+      end
+
+      it "does not grant HTML access via rss_token" do
+        private_post = create(:post, privacy: :private)
+        get :show, params: { id: private_post.id, rss_token: reader.rss_token }
+        expect(response).to redirect_to(continuities_url)
+        expect(flash[:error]).to eq("You do not have permission to view this post.")
+      end
+    end
+  end
+
   context "with at_id" do
     let(:post) { create(:post) }
     let(:second_last_reply) { post.replies.ordered.last(2).first }

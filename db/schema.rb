@@ -494,6 +494,9 @@ ActiveRecord::Schema[8.1].define(version: 2026_07_04_000000) do
     t.string "profile"
     t.string "profile_editor_mode", default: "html"
     t.boolean "public_bookmarks", default: false
+    t.boolean "default_hide_edit_delete_buttons", default: false
+    t.boolean "default_hide_add_bookmark_button", default: false
+    t.string "rss_token"
     t.integer "role_id"
     t.string "salt_uuid"
     t.boolean "show_user_in_switcher", default: true
@@ -505,6 +508,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_07_04_000000) do
     t.citext "username", null: false
     t.boolean "visible_unread", default: false
     t.index ["email"], name: "index_users_on_email", unique: true
+    t.index ["rss_token"], name: "index_users_on_rss_token", unique: true
     t.index ["username"], name: "index_users_on_username", unique: true
   end
 end

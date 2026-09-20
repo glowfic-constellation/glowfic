@@ -337,4 +337,23 @@ RSpec.describe User do
       expect(user.as_json).to match_hash({ id: user.id, username: '(deleted user)' })
     end
   end
+
+  describe "rss_token" do
+    it "is generated for new users" do
+      user = create(:user)
+      expect(user.rss_token).to be_present
+    end
+
+    it "is unique per user" do
+      expect(create(:user).rss_token).not_to eq(create(:user).rss_token)
+    end
+
+    it "#rss_token! generates and persists a token when missing" do
+      user = create(:user)
+      user.update_columns(rss_token: nil) # rubocop:disable Rails/SkipsModelValidations
+      token = user.rss_token!
+      expect(token).to be_present
+      expect(user.reload.rss_token).to eq(token)
+    end
+  end
 end

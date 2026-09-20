@@ -28,6 +28,24 @@ class ApplicationController < ActionController::Base
     redirect_to continuities_path
   end
 
+  # The user whose visibility should be applied when serving a feed: the logged-in
+  # user, or – for RSS requests only – the holder of a valid rss_token. This lets feed
+  # readers (which cannot hold a login session) subscribe to non-public threads without
+  # granting the token any write or HTML access.
+  def feed_user
+    return @feed_user if defined?(@feed_user)
+    @feed_user = current_user
+    @feed_user ||= rss_token_user if request.format.rss?
+    @feed_user
+  end
+
+  def rss_token_user
+    return if params[:rss_token].blank?
+    user = User.find_by(rss_token: params[:rss_token])
+    return if user.nil? || user.deleted? || user.suspended?
+    user
+  end
+
   def handle_invalid_token
     flash[:error] = 'Oops, looks like your session expired! Please try another tab or log in again to resume glowficcing.'
     flash[:error] += ' If you were writing a reply, it has been cached for your next page load.'

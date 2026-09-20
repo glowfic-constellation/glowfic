@@ -6,7 +6,7 @@ class UsersController < ApplicationController
   before_action :signup_prep, only: :new
   before_action :login_required, except: [:index, :show, :new, :create, :search]
   before_action :logout_required, only: [:new, :create]
-  before_action :require_own_user, only: [:edit, :update, :password, :upgrade, :profile_edit]
+  before_action :require_own_user, only: [:edit, :update, :password, :upgrade, :profile_edit, :reset_rss_token]
   before_action :require_readonly_user, only: :upgrade
   before_action :check_lock, only: [:new, :create]
 
@@ -159,6 +159,12 @@ class UsersController < ApplicationController
     end
 
     flash[:success] = "Changes saved successfully."
+    redirect_to edit_user_path(current_user)
+  end
+
+  def reset_rss_token
+    current_user.regenerate_rss_token
+    flash[:success] = "Your RSS feed token has been reset. Existing feed links will no longer work."
     redirect_to edit_user_path(current_user)
   end
 
