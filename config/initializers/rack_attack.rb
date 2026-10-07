@@ -12,14 +12,6 @@
 # Defined above the production guard below so they can be exercised in specs;
 # only the wiring into Rack::Attack is production-only.
 module RackAttackResponders
-  ALLOW2BAN_NAME = 'allow2ban bots'
-
-  # The two allow2ban bans further down. Retry-After on a ban advertises the
-  # shorter of them: a client that comes back too early just gets the header
-  # again, which is the loop backing off is supposed to take.
-  SHORT_BAN = 1.hour
-  LONG_BAN = 1.day
-
   # rack-attack's `throttled_response_retry_after_header` setting is read only
   # inside its DEFAULT_THROTTLED_RESPONDER, so it silently stops doing
   # anything the moment a custom responder is assigned — as one is here.
@@ -44,22 +36,11 @@ module RackAttackResponders
     [429, headers, ["Throttled\n"]]
   end
 
-  # A ban earned by request rate is temporary and the client should be told
-  # when to return; an IP on the explicit RACK_ATTACK_BAD_IP list, or in a
-  # blocked hosting ASN ('bad_asn'), is not welcome at all, and 403 says
-  # exactly that.
-  #
-  # Answering the rate-earned ban with 403 was measurably counterproductive:
-  # in the seven days to 2026-09-09 ClaudeBot took 625,122 of them and never
-  # backed off, because 403 carries no notion of trying again later.
-  #
-  # rack-attack records the matched rule's name here: 'bad_asn' for the ASN
-  # blocklist, and nil for the manual list since `blocklist_ip` builds an
-  # anonymous one. Anything other than the allow2ban ban gets the 403.
-  BLOCKLISTED = lambda do |req|
-    return [403, { 'content-type' => 'text/plain' }, ["Forbidden\n"]] unless req.env['rack.attack.matched'] == ALLOW2BAN_NAME
-
-    [429, { 'content-type' => 'text/plain', 'retry-after' => SHORT_BAN.to_i.to_s }, ["Throttled\n"]]
+  # Blocklists here are deliberate denials (the hosting-ASN list and
+  # RACK_ATTACK_BAD_IP), and 403 says exactly that. Rate limits go through
+  # THROTTLED above, so a crawler that is only too fast always sees 429.
+  BLOCKLISTED = lambda do |_req|
+    [403, { 'content-type' => 'text/plain' }, ["Forbidden\n"]]
   end
 end
 
@@ -135,9 +116,8 @@ Rack::Attack.throttle('logins/ip', limit: 5, period: 20.seconds) do |req|
   req.ip if req.path == '/login' && req.post?
 end
 
-# Tell every throttled and banned client how long to wait. See the responders
-# at the top of this file for why Retry-After cannot be left to rack-attack's
-# own setting, and why a rate-earned ban answers 429 rather than 403.
+# Tell every throttled client how long to wait. See the responders at the top
+# of this file for why Retry-After cannot be left to rack-attack's own setting.
 Rack::Attack.throttled_responder = RackAttackResponders::THROTTLED
 Rack::Attack.blocklisted_responder = RackAttackResponders::BLOCKLISTED
 
@@ -160,19 +140,3 @@ Rack::Attack.blocklist('bad_asn') do |req|
   AsnBlocker.block?(req.ip)
 end
 
-# Lockout IP addresses that are hammering the app.
-Rack::Attack.blocklist(RackAttackResponders::ALLOW2BAN_NAME) do |req|
-  next false if req_logged_in?(req) || oauth_client_request?(req)
-
-  minute_limit = ENV.fetch("RACK_ATTACK_IP_LIMIT", 25).to_i
-
-  # ban anyone at 5x the rate of our throttle limit per minute unless logged in or using API
-  Rack::Attack::Allow2Ban.filter("minute:#{req.ip}", maxretry: minute_limit, findtime: 1.minute, bantime: RackAttackResponders::SHORT_BAN) do
-    !req.path.starts_with?('/api')
-  end
-
-  # ban anyone at our throttle limit for the duration of an hour unless logged in or using API
-  Rack::Attack::Allow2Ban.filter("hour:#{req.ip}", maxretry: minute_limit * 60, findtime: 1.hour, bantime: RackAttackResponders::LONG_BAN) do
-    !req.path.starts_with?('/api')
-  end
-end
