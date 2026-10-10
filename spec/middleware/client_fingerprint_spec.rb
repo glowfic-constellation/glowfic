@@ -130,7 +130,9 @@ RSpec.describe ClientFingerprint do
     end
 
     it "records absent for a request that does not" do
-      attrs = attributes_for(env(chrome_headers.merge('HTTP_USER_AGENT' => 'Mozilla/5.0 (X11; Linux x86_64; rv:129.0) Firefox/129.0')))
+      firefox = chrome_headers.merge('HTTP_USER_AGENT' => 'Mozilla/5.0 (X11; Linux x86_64; rv:129.0) Firefox/129.0',
+        'HTTP_COOKIE' => '_glowfic_constellation_production=abc',)
+      attrs = attributes_for(env(firefox))
       expect(attrs).to include('scraper_signal' => '(absent)')
     end
   end

@@ -571,6 +571,7 @@ GEM
     unicode-emoji (4.2.0)
     uri (1.1.1)
     useragent (0.16.11)
+    vernier (1.11.0)
     webmock (3.26.4)
       addressable (>= 2.8.0)
       crack (>= 0.3.2)
@@ -672,6 +673,7 @@ DEPENDENCIES
   timecop
   tinymce-rails (~> 7.8)
   traceroute
+  vernier (~> 1.11)
   webmock
   will_paginate
 

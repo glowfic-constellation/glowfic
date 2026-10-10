@@ -18,7 +18,9 @@ class Api::ApiController < ActionController::Base
 
   def check_token
     # checks for invalid tokens in a before to prevent double renders
-    logged_in?
+    logged_in = logged_in?
+    NewRelic::Agent.add_custom_attributes(logged_in: logged_in) if defined?(NewRelic::Agent)
+    logged_in
   end
 
   def login_required
