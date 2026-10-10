@@ -15,6 +15,7 @@ class Template < ApplicationRecord
   attr_writer :plucked_characters
 
   def plucked_characters
+    # synchronize with writeable_controller#build_template_groups
     @plucked_characters ||= characters.non_npcs.not_retired.pluck(CHAR_PLUCK)
   end
 end
