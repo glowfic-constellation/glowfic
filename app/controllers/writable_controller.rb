@@ -9,7 +9,11 @@ class WritableController < ApplicationController
 
     faked = Struct.new(:name, :id, :plucked_characters)
     faked_npcs = Struct.new(:name, :id, :plucked_npcs)
-    templates = user.templates.ordered
+    templates = user.templates.ordered.to_a
+    # One query for every template's characters, not one per template per use.
+    chars_by_template = Character.non_npcs.not_retired.where(template_id: templates.map(&:id)).ordered
+      .pluck(:template_id, Template::CHAR_PLUCK).group_by(&:first).transform_values { |rows| rows.map { |row| row.drop(1) } }
+    templates.each { |template| template.plucked_characters = chars_by_template.fetch(template.id, []) }
     templateless = faked.new(
       'Templateless', nil,
       user.characters.non_npcs.where(template_id: nil, retired: false).ordered.pluck(Template::CHAR_PLUCK),
