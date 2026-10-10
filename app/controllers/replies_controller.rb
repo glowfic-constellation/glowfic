@@ -45,6 +45,8 @@ class RepliesController < WritableController
   end
 
   def create
+    @reserved = params.fetch(:reserved, false)
+
     if params[:button_preview]
       draft = make_draft
       preview_reply(ReplyDraft.reply_from_draft(draft)) and return
@@ -338,7 +340,10 @@ class RepliesController < WritableController
     end
 
     begin
-      Reply.transaction { @multi_replies.each(&:save!) }
+      Reply.transaction do
+        @multi_replies.each(&:save!)
+        replies_post&.author_for(current_user)&.update!(reserved: @reserved)
+      end
     rescue ActiveRecord::RecordInvalid => e
       errored_reply = @multi_replies.detect { |r| r.errors.present? } || first_reply
       render_errors(errored_reply, action: 'created', now: true, err: e)

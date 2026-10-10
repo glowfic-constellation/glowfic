@@ -130,6 +130,7 @@ class WritableController < ApplicationController
         @reply = @post.build_new_reply_for(current_user, reply_hash)
         @reply.editor_mode ||= params[:editor_mode] || current_user.default_editor
         @draft = ReplyDraft.draft_for(@post.id, current_user.id)
+        @reserved = @draft&.reserved
       end
 
       @post.mark_read(current_user, at_time: @post.read_time_for(@replies)) unless @permalink_jumped_ahead
@@ -198,6 +199,7 @@ class WritableController < ApplicationController
     end
     process_npc(draft, permitted_character_params)
     new_npc = !draft.character.nil? && !draft.character.persisted?
+    draft.reserved = params.fetch(:reserved, false)
 
     begin
       draft.save!

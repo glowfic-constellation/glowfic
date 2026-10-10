@@ -158,6 +158,24 @@ RSpec.describe PostsController, 'GET owed' do
         expect(response.status).to eq(200)
         expect(assigns(:page_title)).to eq('[1] Replies Owed')
       end
+
+      it "hides reserved posts" do
+        post.author_for(other_user).update!(reserved: true)
+        get :owed
+        expect(response.status).to eq(200)
+        expect(assigns(:posts)).to be_empty
+      end
+
+      it "shows reserved posts from not the last user" do
+        cameo_author = create(:user)
+        create(:reply, post: post, user: cameo_author)
+        create(:reply, post: post, user: other_user)
+        post.author_for(cameo_author).update!(reserved: true)
+
+        get :owed
+        expect(response.status).to eq(200)
+        expect(assigns(:posts)).to match_array([post])
+      end
     end
 
     context "with own reply" do
@@ -184,6 +202,13 @@ RSpec.describe PostsController, 'GET owed' do
         get :owed
         expect(response.status).to eq(200)
         expect(assigns(:posts)).to be_empty
+      end
+
+      it "shows threads you have reserved" do
+        post.author_for(user).update!(reserved: true)
+        get :owed
+        expect(response.status).to eq(200)
+        expect(assigns(:posts)).to match_array([post])
       end
     end
 
