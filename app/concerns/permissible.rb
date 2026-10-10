@@ -5,6 +5,7 @@ module Permissible
   IMPORTER = 3
   SUSPENDED = 4
   READONLY = 5
+  WRANGLER = 6
 
   MOD_PERMS = [
     :edit_posts,
@@ -24,6 +25,7 @@ module Permissible
     return false unless role_id
     return true if admin?
     return true if importer? && permission == :import_posts
+    return true if wrangler? && permission == :wrangle_tags
     return false unless mod?
     MOD_PERMS.include?(permission)
   end
@@ -38,6 +40,10 @@ module Permissible
 
   def importer?
     role_id == IMPORTER
+  end
+
+  def wrangler?
+    role_id == WRANGLER
   end
 
   def suspended?

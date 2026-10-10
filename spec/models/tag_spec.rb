@@ -121,4 +121,118 @@ RSpec.describe Tag do
       expect(fetched.map(&:character_count)).to eq([0, 1, 2])
     end
   end
+
+  describe "synonyms" do
+    it "rejects a merger of a different type" do
+      label = create(:label)
+      label.merger = create(:setting, canonical: true)
+      expect(label).not_to be_valid
+      expect(label.errors.full_messages.join).to include("same type")
+    end
+
+    it "rejects a merger that is not itself canonical" do
+      tag = create(:label)
+      tag.merger = create(:label)
+      expect(tag).not_to be_valid
+      expect(tag.errors.full_messages.join).to include("canonical")
+    end
+
+    it "rejects a tag that is both canonical and a synonym" do
+      tag = create(:label, canonical: true)
+      tag.merger = create(:label, canonical: true)
+      expect(tag).not_to be_valid
+    end
+  end
+
+  describe "#merge_as_synonym" do
+    let(:target) { create(:label, name: 'Bar Fight') }
+    let(:loser) { create(:label, name: 'Barfight') }
+
+    it "re-points taggings and keeps the loser as a synonym" do
+      post = create(:post, labels: [loser])
+      target.merge_as_synonym(loser)
+
+      expect(post.reload.labels).to eq([target])
+      expect(loser.reload.merger).to eq(target)
+      expect(loser).to be_synonym
+      expect(loser).not_to be_canonical
+      expect(target.reload).to be_canonical
+    end
+
+    it "drops taggings that would collide" do
+      post = create(:post, labels: [target, loser])
+      expect { target.merge_as_synonym(loser) }.to change { PostTag.count }.by(-1)
+      expect(post.reload.labels).to eq([target])
+    end
+
+    it "keeps synonym chains one level deep" do
+      grand_loser = create(:label)
+      loser.update!(canonical: true)
+      grand_loser.update!(merger: loser)
+
+      target.merge_as_synonym(loser)
+
+      expect(grand_loser.reload.merger).to eq(target)
+      expect(loser.reload.merger).to eq(target)
+    end
+
+    it "refuses to merge across types" do
+      expect { create(:setting).merge_as_synonym(target) }.to raise_error(ArgumentError)
+    end
+
+    it "refuses to merge a tag into itself" do
+      expect { target.merge_as_synonym(target) }.to raise_error(ArgumentError)
+    end
+  end
+
+  describe ".awaiting_wrangling" do
+    it "excludes synonyms, unwrangleable and canonical tags" do
+      plain = create(:label)
+      create(:label, unwrangleable: true)
+      canonical = create(:label, canonical: true)
+      create(:label).update!(merger: canonical)
+
+      expect(Label.awaiting_wrangling).to eq([plain])
+    end
+  end
+
+  describe "#wrangleable_by?" do
+    let(:wrangler) { create(:wrangler_user) }
+
+    it "allows a wrangler their assigned setting but not another" do
+      assigned = create(:setting)
+      create(:wrangling_assignment, user: wrangler, setting: assigned)
+
+      expect(assigned.wrangleable_by?(wrangler)).to eq(true)
+      expect(create(:setting).wrangleable_by?(wrangler)).to eq(false)
+    end
+
+    it "allows a wrangler a tag that shares a post with an assigned setting" do
+      setting = create(:setting)
+      label = create(:label)
+      create(:post, settings: [setting], labels: [label])
+      create(:wrangling_assignment, user: wrangler, setting: setting)
+
+      expect(label.wrangleable_by?(wrangler)).to eq(true)
+      expect(create(:label).wrangleable_by?(wrangler)).to eq(false)
+    end
+
+    it "does not extend to a setting that only shares a post with an assigned one" do
+      setting = create(:setting)
+      other = create(:setting)
+      create(:post, settings: [setting, other])
+      create(:wrangling_assignment, user: wrangler, setting: setting)
+
+      expect(other.wrangleable_by?(wrangler)).to eq(false)
+    end
+
+    it "allows admins everything without assignments" do
+      expect(create(:content_warning).wrangleable_by?(create(:admin_user))).to eq(true)
+    end
+
+    it "denies users and mods" do
+      expect(create(:setting).wrangleable_by?(create(:user))).to eq(false)
+      expect(create(:setting).wrangleable_by?(create(:mod_user))).to eq(false)
+    end
+  end
 end

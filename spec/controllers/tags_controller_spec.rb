@@ -402,14 +402,25 @@ RSpec.describe TagsController do
       expect(tag.reload.name).to eq(name)
     end
 
-    it "allows update of setting tags" do
+    it "allows a wrangler to update setting tags" do
       tag = create(:setting)
       parent_tag = create(:setting)
-      login_as(tag.user)
+      wrangler = create(:wrangler_user)
+      create(:wrangling_assignment, user: wrangler, setting: tag)
+      login_as(wrangler)
       expect(tag.parent_settings).to be_empty
       put :update, params: { id: tag.id, tag: { name: 'newname', parent_setting_ids: ["", parent_tag.id.to_s] } }
       expect(tag.reload.name).to eq('newname')
       expect(Setting.find(tag.id).parent_settings).to eq([parent_tag])
+    end
+
+    it "ignores hierarchy changes from a user who cannot wrangle the tag" do
+      tag = create(:setting)
+      parent_tag = create(:setting)
+      login_as(tag.user)
+      put :update, params: { id: tag.id, tag: { name: 'newname', parent_setting_ids: ["", parent_tag.id.to_s] } }
+      expect(tag.reload.name).to eq('newname')
+      expect(Setting.find(tag.id).parent_settings).to be_empty
     end
   end
 

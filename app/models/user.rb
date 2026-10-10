@@ -35,6 +35,9 @@ class User < ApplicationRecord
   has_many :user_tags, inverse_of: :user, dependent: :destroy
   has_many :content_warnings, -> { ordered_by_user_tag }, through: :user_tags, source: :content_warning, dependent: :destroy
 
+  has_many :wrangling_assignments, inverse_of: :user, dependent: :destroy
+  has_many :wrangled_settings, through: :wrangling_assignments, source: :setting
+
   has_many :bookmarks, inverse_of: :user, dependent: :destroy
   has_many :bookmarked_replies, through: :bookmarks, source: :reply, dependent: :destroy
   has_many :bookmarked_posts, -> { ordered }, through: :bookmarks, source: :post, dependent: :destroy
@@ -124,6 +127,11 @@ class User < ApplicationRecord
     posts_blocked = blocks.where(hide_them: :posts).pluck(:blocked_user_id)
     full_blocked = blocks.where(hide_them: :all).pluck(:blocked_user_id)
     blocked_or_hidden_posts('hidden', posts_blocked, full_blocked)
+  end
+
+  # Memoized because Tag#editable_by? runs once per row on tag listings.
+  def wrangling_scope_ids
+    @wrangling_scope_ids ||= WranglingAssignment.scope_ids_for(self)
   end
 
   private

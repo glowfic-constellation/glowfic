@@ -111,6 +111,7 @@ Rails.application.routes.draw do
     collection { get :search }
   end
   resources :tags, except: [:new, :create]
+  resources :tag_wranglings, only: [:index, :update]
 
   # Indexes
   resources :indexes

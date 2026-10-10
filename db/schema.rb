@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_07_04_000000) do
+ActiveRecord::Schema[8.1].define(version: 2026_08_03_120100) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "citext"
   enable_extension "pg_catalog.plpgsql"
@@ -427,7 +427,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_07_04_000000) do
 
   create_table "tag_tags", id: :serial, force: :cascade do |t|
     t.datetime "created_at", precision: nil
-    t.boolean "suggested", default: false
+    t.boolean "suggested", default: false, null: false
     t.integer "tag_id", null: false
     t.integer "tagged_id", null: false
     t.datetime "updated_at", precision: nil
@@ -436,14 +436,19 @@ ActiveRecord::Schema[8.1].define(version: 2026_07_04_000000) do
   end
 
   create_table "tags", id: :serial, force: :cascade do |t|
+    t.boolean "canonical", default: false, null: false
     t.datetime "created_at", precision: nil
     t.text "description"
+    t.integer "merger_id"
     t.citext "name", null: false
     t.boolean "owned", default: false
     t.string "type"
+    t.boolean "unwrangleable", default: false, null: false
     t.datetime "updated_at", precision: nil
     t.integer "user_id", null: false
+    t.index ["merger_id"], name: "index_tags_on_merger_id"
     t.index ["name"], name: "index_tags_on_name"
+    t.index ["type", "canonical"], name: "index_tags_on_type_and_canonical"
     t.index ["type"], name: "index_tags_on_type"
   end
 
@@ -507,4 +512,17 @@ ActiveRecord::Schema[8.1].define(version: 2026_07_04_000000) do
     t.index ["email"], name: "index_users_on_email", unique: true
     t.index ["username"], name: "index_users_on_username", unique: true
   end
+
+  create_table "wrangling_assignments", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.integer "setting_id", null: false
+    t.datetime "updated_at", null: false
+    t.integer "user_id", null: false
+    t.index ["setting_id"], name: "index_wrangling_assignments_on_setting_id"
+    t.index ["user_id", "setting_id"], name: "index_wrangling_assignments_on_user_id_and_setting_id", unique: true
+  end
+
+  add_foreign_key "tags", "tags", column: "merger_id"
+  add_foreign_key "wrangling_assignments", "tags", column: "setting_id"
+  add_foreign_key "wrangling_assignments", "users"
 end
