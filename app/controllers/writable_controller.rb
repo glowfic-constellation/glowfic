@@ -86,14 +86,21 @@ class WritableController < ApplicationController
 
     reply_count = @replies.count
 
-    @replies = @replies
+    # OFFSET on the joined query reads every skipped row, so deep pages of long
+    # posts were slow. Find the page's first reply_order from the index alone.
+    first_order = @replies.ordered.offset((cur_page - 1) * per).pick(:reply_order)
+    page_replies = @replies
       .select(select)
       .joins(:user)
       .left_outer_joins(:character)
       .left_outer_joins(:icon)
       .left_outer_joins(:character_alias)
       .ordered
-      .paginate(page: cur_page, per_page: per, total_entries: reply_count)
+      .where('replies.reply_order >= ?', first_order)
+      .limit(per)
+    @replies = WillPaginate::Collection.create(cur_page, per, reply_count) do |pager|
+      pager.replace(first_order.nil? ? [] : page_replies.to_a)
+    end
     redirect_to post_path(@post, page: @replies.total_pages, per_page: per) and return if cur_page > @replies.total_pages
     use_javascript('paginator')
 

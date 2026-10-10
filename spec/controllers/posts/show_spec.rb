@@ -353,4 +353,46 @@ RSpec.describe PostsController, 'GET show' do
     end
   end
   # TODO WAY more tests
+
+  describe "paging through replies" do
+    let(:post) { create(:post, user: user) }
+    let!(:replies) { Array.new(9) { create(:reply, post: post, user: user) } }
+
+    # The same pages the old LIMIT/OFFSET query returned.
+    def offset_page(scope, page, per)
+      scope.ordered.offset((page - 1) * per).limit(per).pluck(:id)
+    end
+
+    before(:each) do
+      replies[3].destroy!
+      # Deleting renumbers later replies; a gap can still come from writes that skip callbacks.
+      Reply.where(id: replies[8].id).update_all(reply_order: 50) # rubocop:disable Rails/SkipsModelValidations
+    end
+
+    it "returns the same replies as LIMIT/OFFSET on every page" do
+      [1, 2, 4].each do |per|
+        pages = (8.0 / per).ceil
+        (1..pages).each do |page|
+          get :show, params: { id: post.id, page: page, per_page: per }
+          expect(assigns(:replies).map(&:id)).to eq(offset_page(post.replies, page, per)), "per_page #{per}, page #{page}"
+          expect(assigns(:replies).total_pages).to eq(pages)
+          expect(assigns(:replies).current_page).to eq(page)
+        end
+      end
+    end
+
+    it "pages from a linked reply" do
+      at = replies[5].reload
+      get :show, params: { id: post.id, at_id: at.id, per_page: 2, page: 2 }
+      expected = offset_page(post.replies.where('reply_order >= ?', at.reply_order), 2, 2)
+      expect(assigns(:replies).map(&:id)).to eq(expected)
+    end
+
+    it "keeps the joined columns" do
+      get :show, params: { id: post.id, per_page: 2 }
+      reply = assigns(:replies).first
+      expect(reply.username).to eq(user.username)
+      expect(reply).to respond_to(:user_deleted)
+    end
+  end
 end
