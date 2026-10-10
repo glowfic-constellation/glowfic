@@ -47,8 +47,8 @@ class TagSuggestionsController < ApplicationController
         @page_title = "Suggest a Tag"
         render :new
       else
-        # :created, :endorsed and :silently_deduped are indistinguishable to the
-        # suggester on purpose; see TagSuggestion.submit.
+        # :created, :endorsed, :silently_deduped and :suppressed are
+        # indistinguishable to the suggester on purpose; see TagSuggestion.submit.
         flash[:success] = "Suggestion recorded. The post author will review it."
         redirect_to post_path(@post)
     end

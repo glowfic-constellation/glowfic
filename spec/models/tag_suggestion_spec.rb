@@ -54,6 +54,17 @@ RSpec.describe TagSuggestion do
         expect(outcome).to eq(:silently_deduped)
       end
 
+      it "silently drops a suggestion from a user the author has blocked" do
+        create(:block, blocking_user: author, blocked_user: reader, block_interactions: true)
+
+        record, outcome = TagSuggestion.submit(post: post, user: reader, tag: tag)
+
+        expect(outcome).to eq(:suppressed)
+        expect(record).to be_nil
+        expect(TagSuggestion.count).to eq(0)
+        expect(Notification.where(user: author)).to be_empty
+      end
+
       it "blocks a rejected tag re-proposed by name rather than by id" do
         named = create(:label, name: 'Spoilery')
         TagSuggestion.create!(post: post, user: create(:user), tag: named, status: :rejected)

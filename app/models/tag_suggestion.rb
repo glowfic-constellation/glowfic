@@ -28,12 +28,14 @@ class TagSuggestion < ApplicationRecord
   # Returns [record_or_nil, outcome].
   #
   # The response must not disclose anything the suggester cannot already see:
-  # "already on this post" would reveal a collapsed spoiler tagging, and
-  # "already declined" would reveal the author's decision. Those collisions get
-  # the same outcome to the suggester as a new suggestion.
+  # "already on this post" would reveal a collapsed spoiler tagging, "already
+  # declined" would reveal the author's decision, and a refusal would reveal a
+  # block. Those cases get the same outcome to the suggester as a new suggestion.
   def self.submit(post:, user:, tag: nil, tag_type: nil, tag_name: nil, note: nil, spoiler: false, applies_from_reply_order: nil)
     # Checked first, as the endorsement below would otherwise raise on a closed post.
     return [nil, :not_accepted] unless post.allow_tag_suggestions?
+    # Dropped silently, as a message to someone who has blocked you is.
+    return [nil, :suppressed] if post.user.has_interaction_blocked?(user)
 
     # A proposed name that already exists is a suggestion of that tag, so a
     # declined tag cannot be re-proposed by name to get past the block.

@@ -383,7 +383,10 @@ surfacing them more widely MUST re-derive these rules and apply the reveal rule
 of section 6.3 to the suggestion list.
 
 **Abuse controls.** Readonly and suspended users MUST NOT suggest. Per-user and
-per-post caps on pending suggestions apply.
+per-post caps on pending suggestions apply. A suggestion from a user the post
+author has blocked from interacting is discarded, and the suggester receives
+the ordinary confirmation, as with a message sent to someone who has blocked
+the sender.
 
 **Suggestible types.** Only `Setting`, `Label`, and `ContentWarning` may be
 suggested. `GalleryGroup` tags attach to galleries, not posts.
@@ -431,7 +434,6 @@ Not part of the initial implementation:
 
 - An interface for proposing and confirming suggested implications.
 - A hierarchy editor for `Label`.
-- Suppressing suggestions from users the author has blocked.
 - Surfacing declined `ContentWarning` suggestions to mods as a signal.
 
 ## 9. Resolved decisions

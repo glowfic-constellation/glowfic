@@ -58,6 +58,16 @@ RSpec.describe TagSuggestionsController do
       expect(flash[:error]).to be_nil
     end
 
+    it "gives the same confirmation when the author has blocked the suggester" do
+      create(:block, blocking_user: author, blocked_user: reader, block_interactions: true)
+      login_as(reader)
+
+      expect {
+        post :create, params: { post_id: post_record.id, tag_suggestion: { tag_id: tag.id } }
+      }.not_to change { TagSuggestion.count }
+      expect(flash[:success]).to eq("Suggestion recorded. The post author will review it.")
+    end
+
     it "re-renders on invalid input" do
       login_as(reader)
       post :create, params: { post_id: post_record.id, tag_suggestion: { tag_name: '' } }
