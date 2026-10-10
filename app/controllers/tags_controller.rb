@@ -35,7 +35,7 @@ class TagsController < ApplicationController
       @characters = @tag.characters.includes(:user, :template).ordered.paginate(page: page)
       @show_retired = true # page has no buttons for filters, show retired characters by default
     elsif @view == 'galleries'
-      @galleries = @tag.galleries.with_icon_count.ordered_by_name
+      @galleries = @tag.galleries.with_icon_count.with_gallery_groups.ordered_by_name
       use_javascript('galleries/expander')
     elsif @view == 'users'
       @users = @tag.users.ordered.paginate(page: page)

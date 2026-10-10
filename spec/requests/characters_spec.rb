@@ -159,5 +159,28 @@ RSpec.describe "Character" do
         expect(response.body).to include("Your Characters")
       end
     end
+
+    it "checks for grouped templates in one query" do
+      user = login
+      create(:character, user: user, character_group: create(:character_group, user: user))
+      create(:template_character, user: user)
+      expect_constant_queries("/characters", matching: /character_group_id" IS NOT NULL/) do
+        create_list(:template_character, 2, user: user)
+      end
+    end
+  end
+
+  describe "replace" do
+    it "does not run a query per alt" do
+      user = login
+      template = create(:template, user: user)
+      character = create(:character, user: user, template: template)
+      add_alt = lambda do
+        alt = create(:character, user: user, template: template, with_default_icon: true, settings: [create(:setting)])
+        create(:alias, character: alt)
+      end
+      add_alt.call
+      expect_constant_queries("/characters/#{character.id}/replace") { 2.times { add_alt.call } }
+    end
   end
 end

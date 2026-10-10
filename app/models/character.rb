@@ -79,8 +79,14 @@ class Character < ApplicationRecord
 
   def selector_name(include_settings: false)
     parts = [name, nickname, screenname]
-    parts << settings.pluck(:name).join(' & ') if include_settings
+    parts << setting_names.join(' & ') if include_settings
     parts.compact_blank.join(' | ')
+  end
+
+  # Uses preloaded character_tags: :setting when available to avoid a query per character
+  def setting_names
+    return settings.pluck(:name) unless character_tags.loaded?
+    character_tags.sort_by(&:id).filter_map { |character_tag| character_tag.setting&.name }
   end
 
   def reorder_galleries(_gallery=nil)

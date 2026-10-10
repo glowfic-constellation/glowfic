@@ -41,6 +41,16 @@ RSpec.describe MessagesController do
         expect(assigns(:messages)).to match_array(messages)
       end
 
+      it "counts all messages in each thread" do
+        user = create(:user)
+        login_as(user)
+        first = create(:message, recipient: user)
+        create_list(:message, 2, sender: first.sender, recipient: user, thread_id: first.id)
+        other = create(:message, recipient: user)
+        get :index
+        expect(assigns(:thread_counts)).to eq(first.id => 3, other.id => 1)
+      end
+
       it "includes site messages" do
         user = create(:user)
         login_as(user)
