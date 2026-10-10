@@ -527,9 +527,10 @@ Style/HashSyntax:
   EnforcedShorthandSyntax: either_consistent
 
 Style/InvertibleUnlessCondition:
-  Enabled: false
-  # overriding InverseMethods isn't working right now and we have a lot of fine examples of "unless .present?"
-  # TODO: review this
+  Enabled: true
+  InverseMethods:
+    :present?: ~
+    :include?: ~
 
 Style/KeywordParametersOrder:
   Enabled: false
