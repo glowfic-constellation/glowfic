@@ -143,7 +143,7 @@ GEM
       bigdecimal
       rexml
     crass (1.0.7)
-    csv (3.3.5)
+    csv (3.3.6)
     dartsass-sprockets (3.2.1)
       railties (>= 4.0.0)
       sassc-embedded (~> 1.80.1)
@@ -224,7 +224,7 @@ GEM
       rubocop (>= 1.0)
       sysexits (~> 1.1)
     hashdiff (1.2.1)
-    httparty (0.24.2)
+    httparty (0.24.3)
       csv
       mini_mime (>= 1.0.0)
       multi_xml (>= 0.5.2)
