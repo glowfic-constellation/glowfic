@@ -515,8 +515,6 @@ GEM
       ffi (~> 1.9)
     sassc-embedded (1.80.9)
       sass-embedded (~> 1.80)
-    scout_apm (6.3.0)
-      parser
     securerandom (0.4.1)
     seed_dump (3.4.2)
       activerecord (>= 4)
@@ -655,7 +653,6 @@ DEPENDENCIES
   rubocop-rspec_rails (~> 2.32.0)
   rubydex
   sanitize
-  scout_apm
   seed_dump (~> 3.4)
   select2-rails
   selenium-webdriver
