@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_07_04_000000) do
+ActiveRecord::Schema[8.1].define(version: 2026_10_05_000000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "citext"
   enable_extension "pg_catalog.plpgsql"
@@ -388,6 +388,8 @@ ActiveRecord::Schema[8.1].define(version: 2026_07_04_000000) do
     t.string "editor_mode"
     t.integer "icon_id"
     t.integer "post_id", null: false
+    t.text "rendered_content"
+    t.integer "rendered_content_version"
     t.integer "reply_order"
     t.integer "thread_id"
     t.datetime "updated_at", precision: nil

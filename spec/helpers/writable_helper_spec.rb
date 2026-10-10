@@ -297,4 +297,28 @@ RSpec.describe WritableHelper do
       expect(helper.post_or_reply_mem_link(id: post.id, klass: Post)).to eq(html)
     end
   end
+
+  describe "#written_content" do
+    it "uses the stored HTML for a saved reply" do
+      reply = create(:reply, content: "text")
+      reply.update_columns(rendered_content: "<p>stored</p>") # rubocop:disable Rails/SkipsModelValidations
+      expect(helper.written_content(reply.reload)).to eq("<p>stored</p>")
+    end
+
+    it "sanitizes unsaved edits instead" do
+      reply = create(:reply, content: "text")
+      reply.content = "<b>edited</b><script>x</script>"
+      expect(helper.written_content(reply)).to eq(helper.sanitize_written_content(reply.content, reply.editor_mode))
+    end
+
+    it "sanitizes a post, which has no stored HTML" do
+      post = create(:post, content: "<i>post</i>")
+      expect(helper.written_content(post)).to eq(helper.sanitize_written_content(post.content, post.editor_mode))
+    end
+
+    it "matches the live sanitizer for a stored reply" do
+      reply = create(:reply, content: "line one\nline two\n\n<blockquote>q</blockquote>")
+      expect(helper.written_content(reply.reload)).to eq(helper.sanitize_written_content(reply.content, reply.editor_mode))
+    end
+  end
 end
