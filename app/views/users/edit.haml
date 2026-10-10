@@ -79,6 +79,11 @@
         = f.check_box :hide_warnings
         = f.label :hide_warnings, "Hide content warnings"
     %div
+      .sub Tag Suggestions
+      .checkbox-field{class: cycle('even', 'odd')}
+        = f.check_box :allow_tag_suggestions
+        = f.label :allow_tag_suggestions, "Allow readers to suggest tags on new posts"
+    %div
       .sub Spoiler Tags
       .checkbox-field{class: cycle('even', 'odd')}
         = f.check_box :reveal_spoiler_tags

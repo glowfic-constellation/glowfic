@@ -28,6 +28,7 @@ class Notification < ApplicationRecord
     new_favorite_post: 2,
     joined_favorite_post: 3,
     wrangling_scope_merged: 4,
+    tag_suggested: 5,
   }
 
   attr_accessor :skip_email
@@ -40,6 +41,8 @@ class Notification < ApplicationRecord
 
   def check_read
     return unless post
+    # Having read the post says nothing about having seen a suggestion on it.
+    return if tag_suggested?
     view = Post::View.find_by(user: user, post: post)
     return unless view&.read_at
     self.read_at = view.read_at

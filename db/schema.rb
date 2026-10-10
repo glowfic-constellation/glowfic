@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_08_03_120200) do
+ActiveRecord::Schema[8.1].define(version: 2026_08_03_120300) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "citext"
   enable_extension "pg_catalog.plpgsql"
@@ -353,6 +353,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_08_03_120200) do
   end
 
   create_table "posts", id: :serial, force: :cascade do |t|
+    t.boolean "allow_tag_suggestions", default: true, null: false
     t.boolean "authors_locked", default: false
     t.integer "board_id", null: false
     t.integer "character_alias_id"
@@ -428,6 +429,26 @@ ActiveRecord::Schema[8.1].define(version: 2026_08_03_120200) do
     t.index ["user_id"], name: "index_report_views_on_user_id"
   end
 
+  create_table "tag_suggestions", force: :cascade do |t|
+    t.integer "applies_from_reply_order"
+    t.datetime "created_at", null: false
+    t.text "note"
+    t.integer "post_id", null: false
+    t.datetime "resolved_at"
+    t.integer "resolved_by_id"
+    t.boolean "spoiler", default: false, null: false
+    t.integer "status", default: 0, null: false
+    t.integer "tag_id"
+    t.citext "tag_name"
+    t.string "tag_type"
+    t.datetime "updated_at", null: false
+    t.integer "user_id", null: false
+    t.index ["post_id", "status"], name: "index_tag_suggestions_on_post_id_and_status"
+    t.index ["post_id", "tag_id"], name: "index_tag_suggestions_on_post_and_tag", unique: true, where: "(tag_id IS NOT NULL)"
+    t.index ["post_id", "tag_type", "tag_name"], name: "index_tag_suggestions_on_post_and_name", unique: true, where: "(tag_id IS NULL)"
+    t.index ["user_id"], name: "index_tag_suggestions_on_user_id"
+  end
+
   create_table "tag_tags", id: :serial, force: :cascade do |t|
     t.datetime "created_at", precision: nil
     t.boolean "suggested", default: false, null: false
@@ -476,6 +497,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_08_03_120200) do
 
   create_table "users", id: :serial, force: :cascade do |t|
     t.integer "active_character_id"
+    t.boolean "allow_tag_suggestions", default: true, null: false
     t.integer "avatar_id"
     t.datetime "created_at", precision: nil
     t.string "crypted", null: false
@@ -526,6 +548,10 @@ ActiveRecord::Schema[8.1].define(version: 2026_08_03_120200) do
     t.index ["user_id", "setting_id"], name: "index_wrangling_assignments_on_user_id_and_setting_id", unique: true
   end
 
+  add_foreign_key "tag_suggestions", "posts"
+  add_foreign_key "tag_suggestions", "tags"
+  add_foreign_key "tag_suggestions", "users"
+  add_foreign_key "tag_suggestions", "users", column: "resolved_by_id"
   add_foreign_key "tags", "tags", column: "merger_id"
   add_foreign_key "wrangling_assignments", "tags", column: "setting_id"
   add_foreign_key "wrangling_assignments", "users"

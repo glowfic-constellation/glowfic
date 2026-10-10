@@ -61,6 +61,10 @@
     = render 'tag_row', label: 'Setting', taggings: taggings['Setting']
     = render 'tag_row', label: 'Content Warnings', taggings: taggings['ContentWarning']
     = render 'tag_row', label: 'Labels', taggings: taggings['Label']
+    - if current_user && @post.allow_tag_suggestions? && @post.user_id != current_user.id && !current_user.read_only?
+      %tr
+        %th.sub.width-150 Tags
+        %td{class: cycle('odd', 'even')}= link_to "Suggest a tag", new_post_tag_suggestion_path(@post)
     %tr
       %th.sub.width-150.vtop Word Count
       %td{class: cycle('odd', 'even')}

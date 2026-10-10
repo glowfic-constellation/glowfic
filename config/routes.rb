@@ -98,6 +98,7 @@ Rails.application.routes.draw do
       get :hidden
       post :unhide
     end
+    resources :tag_suggestions, only: [:new, :create]
   end
   resources :replies, except: [:index, :new] do
     member do
@@ -112,6 +113,13 @@ Rails.application.routes.draw do
   end
   resources :tags, except: [:new, :create]
   resources :tag_wranglings, only: [:index, :update]
+  resources :tag_suggestions, only: [:index] do
+    member do
+      post :accept
+      post :reject
+      delete :allow_again
+    end
+  end
 
   # Indexes
   resources :indexes

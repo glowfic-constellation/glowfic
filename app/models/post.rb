@@ -27,6 +27,7 @@ class Post < ApplicationRecord
   has_many :bookmarked_replies, -> { ordered }, through: :bookmarks, source: :reply, dependent: :destroy
 
   has_many :post_tags, inverse_of: :post, dependent: :destroy
+  has_many :tag_suggestions, inverse_of: :post, dependent: :destroy
   has_many :labels, -> { ordered_by_post_tag }, through: :post_tags, source: :label, dependent: :destroy
   has_many :settings, -> { ordered_by_post_tag }, through: :post_tags, source: :setting, dependent: :destroy
   has_many :content_warnings, -> { ordered_by_post_tag }, through: :post_tags, source: :content_warning,
@@ -45,7 +46,7 @@ class Post < ApplicationRecord
   validates :description, length: { maximum: 255 }
   validate :valid_board, :valid_board_section
 
-  before_validation :set_last_user, on: :create
+  before_validation :set_last_user, :default_tag_suggestions_from_user, on: :create
   before_create :build_initial_flat_post, :set_timestamps
   before_update :set_timestamps
   after_commit :notify_followers, on: :create
@@ -327,6 +328,11 @@ class Post < ApplicationRecord
     return unless section.present?
     return if section.board_id == board_id
     errors.add(:section, "must be in the post's board")
+  end
+
+  def default_tag_suggestions_from_user
+    return if user.nil? || allow_tag_suggestions_changed?
+    self.allow_tag_suggestions = user.allow_tag_suggestions
   end
 
   def set_last_user

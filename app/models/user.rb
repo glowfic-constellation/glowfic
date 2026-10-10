@@ -37,6 +37,7 @@ class User < ApplicationRecord
 
   has_many :wrangling_assignments, inverse_of: :user, dependent: :destroy
   has_many :wrangled_settings, through: :wrangling_assignments, source: :setting
+  has_many :tag_suggestions, inverse_of: :user, dependent: :destroy
 
   has_many :bookmarks, inverse_of: :user, dependent: :destroy
   has_many :bookmarked_replies, through: :bookmarks, source: :reply, dependent: :destroy
