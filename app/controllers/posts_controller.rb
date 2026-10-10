@@ -162,6 +162,7 @@ class PostsController < WritableController
       render :flat, layout: false
       return
     end
+    cache_publicly
     show_post
   end
 

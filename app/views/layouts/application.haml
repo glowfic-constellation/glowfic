@@ -6,7 +6,8 @@
     / Meta
     %meta{charset: 'utf-8'}
     %meta{name: 'viewport', content: 'width=device-width'}
-    = csrf_meta_tags
+    - unless anon_cacheable?
+      = csrf_meta_tags
 
     / SEO canonical
     - if @meta_canonical.present?
@@ -100,7 +101,8 @@
               = link_to logout_path, method: :delete, id: :"header-logout", data: { confirm: 'Press OK to confirm logout' } do
                 = button_tag "Log out", class: 'button'
             - elsif !current_page?(login_path)
-              = form_tag login_path, method: :post, id: 'header-form' do
+              = form_tag login_path, method: :post, id: 'header-form', authenticity_token: false do
+                = hidden_field_tag :return_to, request.fullpath
                 #header-forms
                   = text_field_tag :username, params[:username], placeholder: "Username", id: 'header-username', autocomplete: 'username'
                   = password_field_tag :password, params[:password], placeholder: "Password", id: 'header-password', autocomplete: 'current-password'

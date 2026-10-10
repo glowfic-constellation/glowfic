@@ -16,5 +16,6 @@
   = form_for current_user, url: current_user, method: :put, name: :tos_form do
     = content_for :tos_form
 - else
-  = form_tag confirm_tos_path, method: :patch, id: :tos_form do
+  = form_tag confirm_tos_path, method: :patch, id: :tos_form, authenticity_token: false do
+    = hidden_field_tag :return_to, request.fullpath, id: nil
     = content_for :tos_form

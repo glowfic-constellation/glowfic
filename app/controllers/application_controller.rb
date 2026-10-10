@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 class ApplicationController < ActionController::Base
   include Authentication::Web
+  include AnonCacheable
 
   rescue_from ActionController::InvalidAuthenticityToken, with: :handle_invalid_token
 
@@ -204,9 +205,19 @@ class ApplicationController < ActionController::Base
     flash.now[:error] = "Because Marri accidentally made passwords a bit too secure, you must log back in to continue using the site."
   end
 
+  # Logged-out pages must not write the session, or they set a cookie and cannot be shared.
   def store_location
     return unless standard_request?
+    return unless logged_in?
     session[:previous_url] = request.fullpath
+  end
+
+  # return_to can come from a cached page, so only same-site paths are accepted.
+  def return_path(param=params[:return_to])
+    fallback = session[:previous_url] || root_url
+    return fallback unless param.is_a?(String) && param.start_with?('/')
+    return fallback if param.start_with?('//', '/\\')
+    url_from(param) || fallback
   end
 
   def set_login_gon

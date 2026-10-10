@@ -1,4 +1,5 @@
 = form_tag login_path, method: :post do
+  = hidden_field_tag :return_to, login_path
   .form-table
     .editor-title Sign In
     #username-row
