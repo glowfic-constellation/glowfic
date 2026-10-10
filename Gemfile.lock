@@ -179,9 +179,6 @@ GEM
     ffi (1.17.4-x86_64-darwin)
     ffi (1.17.4-x86_64-linux-gnu)
     ffi (1.17.4-x86_64-linux-musl)
-    geocoder (1.8.6)
-      base64 (>= 0.1.0)
-      csv (>= 3.0.0)
     globalid (1.4.0)
       activesupport (>= 6.1)
     gon (7.1.0)
@@ -617,7 +614,6 @@ DEPENDENCIES
   dotenv
   exception_notification
   factory_bot_rails
-  geocoder
   gon (~> 7.1)
   haml-rails
   haml_lint (~> 0.78.0)

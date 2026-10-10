@@ -1,0 +1,62 @@
+# ASNs whose IP space is blocked at the Rack::Attack layer (for requests not
+# from logged-in users). These are hosting / cloud-provider ASNs whose
+# legitimate end-user traffic to glowfic is effectively zero — IPs that appear
+# from these networks are overwhelmingly scrapers, bots, and abuse.
+#
+# The actual CIDR ranges are resolved from these ASNs by `bin/rails asn:refresh`
+# (see lib/tasks/asn.rake) and written to config/blocked_asn_cidrs.yml. The
+# `.github/workflows/refresh-asn-cidrs.yml` workflow runs the refresh on the
+# first of every month and opens a PR with the diff.
+#
+# DO NOT add ASNs here that host:
+#   - Search-engine crawlers we want to keep indexing the site
+#       (e.g. AS15169 Google, AS8075 Microsoft/Bing, AS13238 Yandex)
+#   - Embed-preview / link-unfurling traffic that legitimate users see
+#       (e.g. AS13335 Cloudflare, AS16509 Amazon AWS, AS32934 Facebook,
+#        AS13414 Twitter)
+#   - Commercial VPN providers, since their users are often glowfic authors
+#     who legitimately want privacy
+#       (e.g. AS39351 Mullvad, AS62041 Proton, AS9009 M247/Nord backbone)
+#
+# Adding/removing an ASN here only takes effect on the next refresh run.
+asns:
+  # Tencent Cloud — source of the May 17 outage scrape
+  - asn: 132203
+    name: Tencent Cloud (HK)
+  - asn: 45090
+    name: Tencent (CN)
+  - asn: 133478
+    name: Tencent (SG)
+  - asn: 132591
+    name: Tencent US/EU edges
+
+  # Alibaba Cloud
+  - asn: 45102
+    name: Alibaba Cloud (HK)
+  - asn: 37963
+    name: Alibaba (CN)
+  - asn: 134963
+    name: Alibaba Cloud (US-West)
+
+  # General-purpose hosting providers heavily used by scrapers
+  - asn: 14061
+    name: DigitalOcean
+  - asn: 16276
+    name: OVH SAS
+  - asn: 24940
+    name: Hetzner Online
+  # AS63949 Linode / Akamai Cloud is intentionally NOT blocked — glowfic-
+  # adjacent legitimate traffic (dev/staging, sanctioned API consumers)
+  # lives there.
+  - asn: 20473
+    name: Vultr / Choopa
+  - asn: 51167
+    name: Contabo
+  - asn: 60781
+    name: LeaseWeb NL
+  - asn: 7203
+    name: LeaseWeb USA SFO
+  - asn: 8100
+    name: QuadraNet
+  - asn: 210644
+    name: Aeza Group (RU)
