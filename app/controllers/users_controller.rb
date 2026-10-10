@@ -266,6 +266,7 @@ class UsersController < ApplicationController
       :visible_unread,
       :hide_from_all,
       :hide_warnings,
+      :reveal_spoiler_tags,
       :hide_hiatused_tags_owed,
       :public_bookmarks,
       :ignore_unread_daily_report,

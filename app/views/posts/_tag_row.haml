@@ -1,0 +1,16 @@
+-# locals: (label:, taggings:)
+- if taggings.present?
+  - expanded, collapsed = taggings.partition { |post_tag| post_tag.expanded_for?(current_user) }
+  %tr
+    %th.sub.width-150= label
+    %td{class: cycle('odd', 'even')}
+      = safe_join(expanded.map { |post_tag| link_to post_tag.tag.name, tag_path(post_tag.tag) }, ', ')
+      - if collapsed.present?
+        %details.spoiler-tags
+          %summary #{collapsed.length} spoiler #{'tag'.pluralize(collapsed.length)}
+          %ul
+            - collapsed.each do |post_tag|
+              %li
+                = link_to post_tag.tag.name, tag_path(post_tag.tag)
+                - if post_tag.applies_from_reply_order.present?
+                  %span.subber from reply #{post_tag.applies_from_reply_order}

@@ -293,7 +293,7 @@ class PostsController < WritableController
     @search_results = Post.ordered
     @search_results = @search_results.where(board_id: params[:board_id]) if params[:board_id].present?
     @search_results = @search_results.where.not(board_id: params[:exclude_board_ids]) if params[:exclude_board_ids].present?
-    @search_results = @search_results.where(id: Setting.find(params[:setting_id]).post_tags.pluck(:post_id)) if params[:setting_id].present?
+    @search_results = @search_results.where(id: Setting.find(params[:setting_id]).unspoilered_posts.pluck(:id)) if params[:setting_id].present?
     if params[:subject].present?
       if params[:abbrev].present?
         search = params[:subject].chars.join('% ')

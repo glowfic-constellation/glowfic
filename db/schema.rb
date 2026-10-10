@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_08_03_120100) do
+ActiveRecord::Schema[8.1].define(version: 2026_08_03_120200) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "citext"
   enable_extension "pg_catalog.plpgsql"
@@ -319,12 +319,15 @@ ActiveRecord::Schema[8.1].define(version: 2026_08_03_120100) do
   end
 
   create_table "post_tags", id: :serial, force: :cascade do |t|
+    t.integer "applies_from_reply_order"
     t.datetime "created_at", precision: nil
     t.integer "post_id", null: false
+    t.boolean "spoiler", default: false, null: false
     t.boolean "suggested", default: false
     t.integer "tag_id", null: false
     t.datetime "updated_at", precision: nil
     t.index ["post_id"], name: "index_post_tags_on_post_id"
+    t.index ["tag_id", "post_id"], name: "index_post_tags_unspoilered", where: "(spoiler = false)"
     t.index ["tag_id"], name: "index_post_tags_on_tag_id"
   end
 
@@ -499,6 +502,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_08_03_120100) do
     t.string "profile"
     t.string "profile_editor_mode", default: "html"
     t.boolean "public_bookmarks", default: false
+    t.boolean "reveal_spoiler_tags", default: false, null: false
     t.integer "role_id"
     t.string "salt_uuid"
     t.boolean "show_user_in_switcher", default: true

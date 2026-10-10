@@ -122,6 +122,18 @@ RSpec.describe Tag do
     end
   end
 
+  describe "#unspoilered_posts" do
+    it "leaves out posts that carry the tag as a spoiler" do
+      tag = create(:label)
+      listed = create(:post, labels: [tag])
+      hidden = create(:post)
+      PostTag.create!(post: hidden, tag: tag, spoiler: true)
+
+      expect(tag.posts).to include(hidden)
+      expect(tag.unspoilered_posts).to eq([listed])
+    end
+  end
+
   describe "synonyms" do
     it "rejects a merger of a different type" do
       label = create(:label)

@@ -10,7 +10,7 @@ class TagsController < ApplicationController
 
   def index
     @tags = TagSearcher.new.search(tag_name: params[:name], tag_type: params[:view], page: page)
-    @post_counts = Post.visible_to(current_user).joins(post_tags: :tag).where(post_tags: { tag_id: @tags.map(&:id) })
+    @post_counts = Post.visible_to(current_user).joins(post_tags: :tag).where(post_tags: { tag_id: @tags.map(&:id), spoiler: false })
     @post_counts = @post_counts.group('post_tags.tag_id').count
     @view = params[:view]
     @page_title = @view.present? ? @view.titlecase.pluralize : 'Tags'
@@ -28,7 +28,7 @@ class TagsController < ApplicationController
     response.headers['X-Robots-Tag'] = 'noindex' if @view
 
     if @view == 'posts'
-      posts = @tag.posts.ordered
+      posts = @tag.unspoilered_posts.ordered
       posts = posts.not_ignored_by(current_user) if current_user&.hide_from_all
       @posts = posts_from_relation(posts)
     elsif @view == 'characters'
@@ -116,7 +116,7 @@ class TagsController < ApplicationController
     desc = []
     desc << generate_short(@tag.description) if @tag.description.present?
     stats = []
-    post_count = @tag.posts.privacy_public.count
+    post_count = @tag.unspoilered_posts.privacy_public.count
     stats << ("#{post_count} " + "post".pluralize(post_count)) if post_count > 0
     gallery_count = @tag.galleries.count
     stats << ("#{gallery_count} " + "gallery".pluralize(gallery_count)) if gallery_count > 0

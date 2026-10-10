@@ -30,6 +30,14 @@ RSpec.describe TagsController do
         expect(response).to have_http_status(200)
       end
 
+      it "does not count posts that carry the tag as a spoiler" do
+        tag = create(:label)
+        create(:post, labels: [tag])
+        PostTag.create!(post: create(:post), tag: tag, spoiler: true)
+        get :index
+        expect(assigns(:post_counts)[tag.id]).to eq(1)
+      end
+
       it "succeeds with type filter" do
         tags = create_tags
         get :index, params: { view: 'Setting' }
@@ -186,6 +194,14 @@ RSpec.describe TagsController do
         login
         get :show, params: { id: tag.id, view: 'posts' }
         expect(response.status).to eq(200)
+        expect(assigns(:posts)).to match_array([post])
+      end
+
+      it "does not list posts that carry the tag as a spoiler" do
+        tag = create(:label)
+        post = create(:post, labels: [tag])
+        PostTag.create!(post: create(:post), tag: tag, spoiler: true)
+        get :show, params: { id: tag.id, view: 'posts' }
         expect(assigns(:posts)).to match_array([post])
       end
 

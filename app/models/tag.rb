@@ -114,6 +114,12 @@ class Tag < ApplicationRecord
     characters.count
   end
 
+  # Posts listed under this tag. A spoiler tagging must not disclose its post
+  # through the tag, so it is left out.
+  def unspoilered_posts
+    posts.where(post_tags: { spoiler: false })
+  end
+
   def synonym?
     merger_id.present?
   end

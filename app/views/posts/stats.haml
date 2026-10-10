@@ -57,21 +57,10 @@
               = surround '(', ')' do
                 = link_to "#{count} #{'time'.pluralize(count)}", search_replies_path(post_id: @post.id, character_id: character.id, commit: true, sort: :created_new)
 
-    - if @post.settings.present?
-      %tr
-        %th.sub.width-150 Setting
-        - setting_links = @post.settings.ordered_by_post_tag.map { |tag| link_to tag.name, tag_path(tag) }
-        %td{class: cycle('odd', 'even')}= safe_join(setting_links, ', ')
-    - if @post.content_warnings.present?
-      %tr
-        %th.sub.width-150 Content Warnings
-        - warning_links = @post.content_warnings.ordered_by_post_tag.map { |tag| link_to tag.name, tag_path(tag) }
-        %td{class: cycle('odd', 'even')}= safe_join(warning_links, ', ')
-    - if @post.labels.present?
-      %tr
-        %th.sub.width-150 Labels
-        - label_links = @post.labels.ordered_by_post_tag.map { |tag| link_to tag.name, tag_path(tag) }
-        %td{class: cycle('odd', 'even')}= safe_join(label_links, ', ')
+    - taggings = @post.post_tags.includes(:tag).order(:id).group_by { |post_tag| post_tag.tag.type }
+    = render 'tag_row', label: 'Setting', taggings: taggings['Setting']
+    = render 'tag_row', label: 'Content Warnings', taggings: taggings['ContentWarning']
+    = render 'tag_row', label: 'Labels', taggings: taggings['Label']
     %tr
       %th.sub.width-150.vtop Word Count
       %td{class: cycle('odd', 'even')}
