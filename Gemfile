@@ -97,7 +97,7 @@ group :test do
   gem 'rails-controller-testing'
   gem 'rspec-github', require: false
   gem 'selenium-webdriver'
-  gem 'simplecov', '1.2.0'
+  gem 'simplecov', '1.3.2'
   gem 'timecop'
   gem 'webmock'
 end
