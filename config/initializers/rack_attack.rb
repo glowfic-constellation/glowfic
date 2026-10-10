@@ -45,15 +45,17 @@ module RackAttackResponders
   end
 
   # A ban earned by request rate is temporary and the client should be told
-  # when to return; an IP on the explicit RACK_ATTACK_BAD_IP list is not
-  # welcome at all, and 403 says exactly that.
+  # when to return; an IP on the explicit RACK_ATTACK_BAD_IP list, or in a
+  # blocked hosting ASN ('bad_asn'), is not welcome at all, and 403 says
+  # exactly that.
   #
   # Answering the rate-earned ban with 403 was measurably counterproductive:
   # in the seven days to 2026-09-09 ClaudeBot took 625,122 of them and never
   # backed off, because 403 carries no notion of trying again later.
   #
-  # rack-attack records the matched rule's name here, and `blocklist_ip`
-  # builds an anonymous blocklist, so the manual list leaves it nil.
+  # rack-attack records the matched rule's name here: 'bad_asn' for the ASN
+  # blocklist, and nil for the manual list since `blocklist_ip` builds an
+  # anonymous one. Anything other than the allow2ban ban gets the 403.
   BLOCKLISTED = lambda do |req|
     return [403, { 'content-type' => 'text/plain' }, ["Forbidden\n"]] unless req.env['rack.attack.matched'] == ALLOW2BAN_NAME
 

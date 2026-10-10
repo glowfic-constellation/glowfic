@@ -16,9 +16,14 @@ namespace :asn do
     asns.each do |asn|
       uri = URI("https://stat.ripe.net/data/announced-prefixes/data.json?resource=AS#{asn}")
       puts "  AS#{asn} → #{uri}"
-      body = Net::HTTP.get_response(uri).body
-      data = JSON.parse(body)
-      announced = (data.dig('data', 'prefixes') || []).map { |p| p['prefix'] }
+      # Fail loudly rather than treat an error as "announces nothing", which
+      # would silently drop the ASN's prefixes from the blocklist.
+      response = Net::HTTP.get_response(uri)
+      raise "RIPEstat returned HTTP #{response.code} for AS#{asn}" unless response.is_a?(Net::HTTPSuccess)
+      data = JSON.parse(response.body)
+      raise "RIPEstat returned status #{data['status'].inspect} for AS#{asn}" unless data['status'] == 'ok'
+      raise "RIPEstat response for AS#{asn} has no prefix list" unless data.dig('data', 'prefixes').is_a?(Array)
+      announced = data['data']['prefixes'].map { |p| p['prefix'] }
       puts "    #{announced.size} prefixes"
       prefixes.concat(announced)
     end

@@ -5,7 +5,7 @@ RSpec.describe AsnBlocker do
     # the seeded snapshot to assert on, and an unrelated one that isn't.
 
     it "blocks IPs inside a configured CIDR" do
-      # 43.128.0.0/10 is one of the Tencent Cloud HK prefixes in the seeded list
+      # covered by 43.129.0.0/16, one of the Tencent Cloud HK prefixes in the seeded list
       expect(AsnBlocker.block?('43.129.207.57')).to be(true)
     end
 
@@ -45,6 +45,11 @@ RSpec.describe AsnBlocker do
       expect(AsnBlocker.block?('9.255.255.255')).to be(false)
       expect(AsnBlocker.block?('10.0.1.0')).to be(false)
       expect(AsnBlocker.block?('2001:db8::1:0')).to be(false)
+    end
+
+    it "checks IPv4-mapped IPv6 addresses against the IPv4 ranges" do
+      expect(AsnBlocker.block?('::ffff:10.0.0.1')).to be(true)
+      expect(AsnBlocker.block?('::ffff:10.0.1.0')).to be(false)
     end
   end
 

@@ -13,7 +13,8 @@ class AsnBlocker
     def block?(address)
       return false if address.blank?
 
-      addr = IPAddr.new(address.to_s)
+      # native turns IPv4-mapped IPv6 (::ffff:a.b.c.d) back into plain IPv4
+      addr = IPAddr.new(address.to_s).native
       ranges = addr.ipv4? ? IPV4_RANGES : IPV6_RANGES
       ip = addr.to_i
       # the only range that can contain ip is the last one starting at or before it
@@ -35,7 +36,7 @@ class AsnBlocker
     private
 
     def merge_ranges(nets)
-      nets.map { |net| [net.to_range.first.to_i, net.to_range.last.to_i] }.sort.each_with_object([]) do |(lo, hi), merged|
+      nets.map { |net| net.to_range.then { |range| [range.first.to_i, range.last.to_i] } }.sort.each_with_object([]) do |(lo, hi), merged|
         if merged.any? && lo <= merged.last[1] + 1
           merged.last[1] = [merged.last[1], hi].max
         else
@@ -58,14 +59,10 @@ class AsnBlocker
     end
   end
 
-  CIDRS = begin
-    data = YAML.load_file(CIDR_FILE)
-    (data['prefixes'] || []).map { |p| IPAddr.new(p) }
+  IPV4_RANGES, IPV6_RANGES = begin
+    nets = (YAML.load_file(CIDR_FILE)['prefixes'] || []).map { |p| IPAddr.new(p) }
+    nets.partition(&:ipv4?).map { |family| merge_ranges(family).each(&:freeze).freeze }
   rescue Errno::ENOENT
-    []
+    [[].freeze, [].freeze]
   end
-
-  IPV4_RANGES = merge_ranges(CIDRS.select(&:ipv4?)).each(&:freeze).freeze
-  IPV6_RANGES = merge_ranges(CIDRS.reject(&:ipv4?)).each(&:freeze).freeze
-  private_constant :CIDRS
 end
