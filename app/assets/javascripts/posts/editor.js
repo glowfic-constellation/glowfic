@@ -58,6 +58,8 @@ function setupMetadataEditor() {
   createTagSelect("Label", "label", "post");
   createTagSelect("Setting", "setting", "post");
   createTagSelect("ContentWarning", "content_warning", "post");
+  createTagSelect("Setting", "spoiler_setting", "post");
+  createTagSelect("Label", "spoiler_label", "post");
 
   if ($("#post_privacy").val() !== 'access_list') {
     $("#access_list").hide();

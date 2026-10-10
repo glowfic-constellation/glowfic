@@ -28,8 +28,14 @@ class Post < ApplicationRecord
 
   has_many :post_tags, inverse_of: :post, dependent: :destroy
   has_many :tag_suggestions, inverse_of: :post, dependent: :destroy
-  has_many :labels, -> { ordered_by_post_tag }, through: :post_tags, source: :label, dependent: :destroy
-  has_many :settings, -> { ordered_by_post_tag }, through: :post_tags, source: :setting, dependent: :destroy
+  has_many :labels, -> { ordered_by_post_tag.where(post_tags: { spoiler: false }) }, through: :post_tags, source: :label,
+    dependent: :destroy
+  has_many :spoiler_labels, -> { ordered_by_post_tag.where(post_tags: { spoiler: true }) }, through: :post_tags, source: :label,
+    dependent: :destroy
+  has_many :settings, -> { ordered_by_post_tag.where(post_tags: { spoiler: false }) }, through: :post_tags, source: :setting,
+    dependent: :destroy
+  has_many :spoiler_settings, -> { ordered_by_post_tag.where(post_tags: { spoiler: true }) }, through: :post_tags, source: :setting,
+    dependent: :destroy
   has_many :content_warnings, -> { ordered_by_post_tag }, through: :post_tags, source: :content_warning,
     after_add: :reset_warnings, dependent: :destroy
 
@@ -206,6 +212,15 @@ class Post < ApplicationRecord
     Character.where(id: recent_ids).includes(:default_icon).sort_by do |x|
       recent_ids.index(x.id)
     end
+  end
+
+  # Replaces the post's tags, given as { association name => tags }. A tag can
+  # move between a plain and a spoiler list, so every list drops the tags it
+  # loses before any list gains new ones; otherwise the new tagging would
+  # collide with the old.
+  def assign_tags(lists)
+    lists.each { |name, tags| public_send(name).delete(public_send(name).to_a - tags) }
+    assign_attributes(lists)
   end
 
   def hide_warnings_for(user)

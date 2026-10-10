@@ -93,4 +93,19 @@ RSpec.describe PostsController, 'GET edit' do
     expect(assigns(:post).content_warnings.map(&:id_for_select)).to match_array([warning.id])
     expect(assigns(:post).labels.map(&:id_for_select)).to match_array([label.id])
   end
+
+  context "with views" do
+    render_views
+
+    it "shows spoiler tags in their own fields" do
+      user = create(:user)
+      post = create(:post, user: user, labels: [create(:label, name: 'Plain')], spoiler_labels: [create(:label, name: 'Twist')])
+      login_as(user)
+
+      get :edit, params: { id: post.id }
+
+      expect(response.body).to have_select('post_label_ids', selected: ['Plain'])
+      expect(response.body).to have_select('post_spoiler_label_ids', selected: ['Twist'])
+    end
+  end
 end

@@ -137,9 +137,7 @@ class PostsController < WritableController
     preview and return if params[:button_preview].present?
 
     @post = current_user.posts.new(permitted_params)
-    @post.settings = process_tags(Setting, obj_param: :post, id_param: :setting_ids)
-    @post.content_warnings = process_tags(ContentWarning, obj_param: :post, id_param: :content_warning_ids)
-    @post.labels = process_tags(Label, obj_param: :post, id_param: :label_ids)
+    @post.assign_tags(submitted_tags)
     process_npc(@post, permitted_character_params)
 
     begin
@@ -221,9 +219,7 @@ class PostsController < WritableController
 
     @post.assign_attributes(permitted_params)
     @post.board ||= Board.find_by(id: Board::ID_SANDBOX)
-    settings = process_tags(Setting, obj_param: :post, id_param: :setting_ids)
-    warnings = process_tags(ContentWarning, obj_param: :post, id_param: :content_warning_ids)
-    labels = process_tags(Label, obj_param: :post, id_param: :label_ids)
+    tags = submitted_tags
 
     is_author = @post.author_ids.include?(current_user.id)
     if current_user.id != @post.user_id && @post.audit_comment.blank? && !is_author
@@ -234,9 +230,7 @@ class PostsController < WritableController
 
     begin
       Post.transaction do
-        @post.settings = settings
-        @post.content_warnings = warnings
-        @post.labels = labels
+        @post.assign_tags(tags)
         process_npc(@post, permitted_character_params)
         @post.save!
         @post.author_for(current_user)&.update!(private_note: @post.private_note) if is_author
@@ -399,9 +393,7 @@ class PostsController < WritableController
 
     @author_ids = params.fetch(:post, {}).fetch(:unjoined_author_ids, [])
     @viewer_ids = params.fetch(:post, {}).fetch(:viewer_ids, [])
-    @settings = process_tags(Setting, obj_param: :post, id_param: :setting_ids)
-    @content_warnings = process_tags(ContentWarning, obj_param: :post, id_param: :content_warning_ids)
-    @labels = process_tags(Label, obj_param: :post, id_param: :label_ids)
+    submitted_tags.each { |name, tags| instance_variable_set(:"@#{name}", tags) }
 
     @written = @post
 
@@ -536,6 +528,22 @@ class PostsController < WritableController
     return if @post.authors_locked
     flash[:error] = "Post must be locked to current authors to be split."
     redirect_to @post
+  end
+
+  def submitted_tags
+    tags = {
+      settings: process_tags(Setting, obj_param: :post, id_param: :setting_ids),
+      spoiler_settings: process_tags(Setting, obj_param: :post, id_param: :spoiler_setting_ids),
+      content_warnings: process_tags(ContentWarning, obj_param: :post, id_param: :content_warning_ids),
+      labels: process_tags(Label, obj_param: :post, id_param: :label_ids),
+      spoiler_labels: process_tags(Label, obj_param: :post, id_param: :spoiler_label_ids),
+    }
+    # A tag entered both plainly and as a spoiler is kept as a spoiler.
+    { settings: :spoiler_settings, labels: :spoiler_labels }.each do |plain, spoiler|
+      spoiler_names = tags[spoiler].map { |tag| tag.name.upcase }
+      tags[plain] = tags[plain].reject { |tag| spoiler_names.include?(tag.name.upcase) }
+    end
+    tags
   end
 
   def permitted_params(include_associations=true)

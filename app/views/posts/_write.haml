@@ -77,6 +77,15 @@
     %br
     = f.label :label_ids, 'Labels:'
     = tag_select(post, f, :labels)
+    %br
+    = f.label :spoiler_setting_ids, 'Spoiler settings:'
+    = tag_select(post, f, :spoiler_settings)
+    %br
+    = f.label :spoiler_label_ids, 'Spoiler labels:'
+    = tag_select(post, f, :spoiler_labels)
+    .details
+      Spoiler tags are shown collapsed until a reader expands them, and the post is not listed on their tag pages.
+      Their names are still present in the page source.
 
   - if !post.persisted? || post.author_ids.include?(current_user.id)
     #post-notes.subber Notes

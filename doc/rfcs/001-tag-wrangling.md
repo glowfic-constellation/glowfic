@@ -240,7 +240,10 @@ The following columns are added to `post_tags`:
 | `applies_from_reply_order` | integer, nullable | Reply the tag applies from |
 
 **A spoiler tagging is one the reader must choose to reveal.** It is displayed
-collapsed, and expanded on request.
+collapsed, and expanded on request. The post editor has separate spoiler fields
+for Settings and Labels; a tag entered in both a plain and a spoiler field is
+kept as a spoiler. Spoiler Settings are not copied onto NPCs created from the
+post, as that would disclose them on the character's page.
 
 A tagging is displayed expanded, without the reader acting, when any of:
 
@@ -428,8 +431,6 @@ Not part of the initial implementation:
 
 - An interface for proposing and confirming suggested implications.
 - A hierarchy editor for `Label`.
-- Applying spoiler state from the post editor; spoiler taggings arrive through
-  accepted suggestions.
 - Suppressing suggestions from users the author has blocked.
 - Surfacing declined `ContentWarning` suggestions to mods as a signal.
 

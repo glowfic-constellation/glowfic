@@ -450,6 +450,26 @@ RSpec.describe PostsController, 'POST create' do
       expect(PostTag.count).to eq(9)
     end
 
+    it "creates spoiler tags, preferring spoiler over plain for a tag entered in both" do
+      label = create(:label)
+      post :create, params: {
+        post: {
+          subject: 'asubjct',
+          board_id: board.id,
+          label_ids: ['', label.id, '_Twist'],
+          spoiler_label_ids: ['', '_twist'],
+          spoiler_setting_ids: ['', '_Hidden World'],
+        },
+      }
+      expect(flash[:success]).to eq("Post created.")
+
+      post = assigns(:post).reload
+      expect(post.labels).to eq([label])
+      expect(post.spoiler_labels.map(&:name)).to eq(['twist'])
+      expect(post.spoiler_settings.map(&:name)).to eq(['Hidden World'])
+      expect(post.post_tags.where(spoiler: true).count).to eq(2)
+    end
+
     it "creates NPCs" do
       expect {
         post :create, params: {

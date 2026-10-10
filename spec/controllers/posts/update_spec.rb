@@ -560,6 +560,26 @@ RSpec.describe PostsController, 'PUT update' do
     before(:each) { login_as(user) }
 
     context "with tag changes" do
+      it "moves tags between their plain and spoiler fields" do
+        spoiled = create(:label)
+        unspoiled = create(:setting)
+        post = create(:post, user: user, labels: [label, spoiled], spoiler_settings: [unspoiled])
+        expect(post.post_tags.find_by(tag: unspoiled)).to be_spoiler
+
+        put :update, params: {
+          id: post.id,
+          post: { setting_ids: ['', unspoiled.id], label_ids: ['', label.id], spoiler_label_ids: ['', spoiled.id] },
+        }
+        expect(response).to redirect_to(post_url(post))
+
+        post.reload
+        expect(post.settings).to eq([unspoiled])
+        expect(post.labels).to eq([label])
+        expect(post.spoiler_settings).to be_empty
+        expect(post.spoiler_labels).to eq([spoiled])
+        expect(post.post_tags.count).to eq(3)
+      end
+
       it "creates new tags if needed" do
         post = create(:post,
           user: user,
