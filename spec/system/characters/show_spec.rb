@@ -397,10 +397,19 @@ RSpec.describe "Viewing a character" do
 
       # test moving up
       within(current_headers[1]) do
+        # the arrows are unbound while the previous move saves, so a click before
+        # they come back is dropped; wait for the re-bind before clicking
+        expect(page).to have_selector('.section-up.pointer')
         click_link 'Move Up'
       end
       expect(current_titles).to eq(["Gallery 2", "Gallery 1", "Gallery 0", "Gallery 3"])
       expect_tbody_order([2, 1, 0, 3], galleries)
+
+      # the page reorders before the server confirms; wait for the save to land
+      # (the arrows re-bind on success) before reloading to check persistence
+      within(current_headers[1]) do
+        expect(page).to have_selector('.section-up.pointer')
+      end
     end
 
     # reload page and ensure the ordering is correct (ensure it persisted)
