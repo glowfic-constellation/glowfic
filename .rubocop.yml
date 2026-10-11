@@ -421,7 +421,7 @@ FactoryBot/ExcessiveCreateList:
 ################## RSpecRails #################################
 
 RSpecRails:
-  NewCops: '2.23'
+  NewCops: '2.33'
 
 RSpecRails/HaveHttpStatus:
   Enabled: false
