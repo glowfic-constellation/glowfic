@@ -172,7 +172,11 @@ class PostsController < WritableController
     audit_ids = @post.associated_audits.where(action: 'destroy').where(auditable_type: 'Reply') # all destroyed replies
     audit_ids = audit_ids.joins('LEFT JOIN replies ON replies.id = audits.auditable_id').where(replies: { id: nil }) # not restored
     audit_ids = audit_ids.group(:auditable_id).pluck(Arel.sql('MAX(audits.id)')) # only most recent per reply
-    @deleted_audits = Audited::Audit.where(id: audit_ids).paginate(per_page: 1, page: page)
+    # `audit_ids` is already restricted to Reply audits above, so this scope
+    # cannot change the result today. It is stated anyway: an audit id is only
+    # meaningful together with its type, and leaving that to be inferred three
+    # lines up is how the bug this fixes was written in the first place.
+    @deleted_audits = Audited::Audit.where(id: audit_ids, auditable_type: 'Reply').paginate(per_page: 1, page: page)
 
     return unless @deleted_audits.present?
 
