@@ -11,6 +11,8 @@ module Writable
     accepts_nested_attributes_for :character
 
     validate :character_ownership, :icon_ownership
+    # Edit forms submit a nil editor_mode back as a blank hidden field
+    normalizes :editor_mode, with: ->(mode) { mode.presence }
     validates :editor_mode, inclusion: { in: ['html', 'rtf', 'md'] }, allow_nil: true
 
     def has_icons?
