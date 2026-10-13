@@ -237,10 +237,6 @@ GEM
       rdoc (>= 4.0.0)
       reline (>= 0.4.2)
     jmespath (1.6.2)
-    jquery-fileupload-rails (1.0.0)
-      actionpack (>= 3.1)
-      railties (>= 3.1)
-      sassc
     jquery-rails (4.6.1)
       rails-dom-testing (>= 1, < 3)
       railties (>= 4.2.0)
@@ -511,8 +507,6 @@ GEM
       google-protobuf (~> 4.31)
     sass-embedded (1.101.0-x86_64-linux-musl)
       google-protobuf (~> 4.31)
-    sassc (2.4.0)
-      ffi (~> 1.9)
     sassc-embedded (1.80.9)
       sass-embedded (~> 1.80)
     securerandom (0.4.1)
@@ -615,7 +609,6 @@ DEPENDENCIES
   haml-rails
   haml_lint (~> 0.78.0)
   httparty
-  jquery-fileupload-rails
   jquery-rails (~> 4.6)
   jquery-ui-rails-dox-fork
   json (~> 2.20)
