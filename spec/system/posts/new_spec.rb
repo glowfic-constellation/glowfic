@@ -64,7 +64,7 @@ RSpec.describe "Creating posts" do
   end
 
   scenario "User creates a post with a new NPC", :js do
-    user = login
+    login
 
     visit new_post_path
 
