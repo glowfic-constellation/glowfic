@@ -126,6 +126,36 @@ RSpec.describe RepliesController, 'PUT update' do
     expect(reply.reload.character.nickname).to eq(reply.post.subject)
   end
 
+  context "minor edit" do
+    it "bumps the post's tagged_at on a normal edit of the last reply" do
+      user = create(:user)
+      reply = create(:reply, user: user)
+      reply.post.update_columns(tagged_at: 2.days.ago)
+      old_tagged = reply.post.reload.tagged_at
+      login_as(user)
+
+      put :update, params: { id: reply.id, reply: { content: 'new content' } }
+
+      expect(flash[:success]).to eq("Reply updated.")
+      expect(reply.reload.content).to eq('new content')
+      expect(reply.post.reload.tagged_at).to be > old_tagged
+    end
+
+    it "does not bump the post's tagged_at when marked minor" do
+      user = create(:user)
+      reply = create(:reply, user: user)
+      reply.post.update_columns(tagged_at: 2.days.ago)
+      old_tagged = reply.post.reload.tagged_at
+      login_as(user)
+
+      put :update, params: { id: reply.id, minor: '1', reply: { content: 'new content' } }
+
+      expect(flash[:success]).to eq("Reply updated.")
+      expect(reply.reload.content).to eq('new content')
+      expect(reply.post.reload.tagged_at).to be_the_same_time_as(old_tagged)
+    end
+  end
+
   context "preview" do
     it "takes correct actions" do
       Reply.auditing_enabled = true
