@@ -552,4 +552,41 @@ RSpec.describe PostsController, 'POST create' do
       expect(blocked.blocked_posts).to eq([post.id])
     end
   end
+
+  it "regenerates visible_posts" do
+    viewer = create(:user)
+    circle_viewers = User.where(id: create_list(:user, 3).map(&:id))
+    unrelated = create(:user)
+    all = User.where(id: [user.id, coauthor.id, viewer.id, circle_viewers.ids, unrelated.id].flatten)
+    circle = create(:access_circle, users: circle_viewers)
+
+    all.each(&:visible_posts)
+    all.each { |u| expect(Rails.cache.exist?(PostViewer.cache_string_for(u.id))).to eq(true) }
+
+    login_as(user)
+
+    post :create, params: {
+      post: {
+        subject: "subject",
+        user_id: user.id,
+        unjoined_author_ids: [coauthor.id],
+        board_id: create(:board).id,
+        authors_locked: true,
+        privacy: :access_list,
+        viewer_ids: [viewer.id, coauthor.id],
+        access_circle_ids: [circle.id],
+      },
+    }
+
+    expect(flash[:success]).to eq('Post created.')
+    post = assigns(:post).reload
+    expect(post.viewers).to match_array([viewer, coauthor])
+    expect(post.access_circles).to eq([circle])
+
+    circle_viewers.each { |u| expect(Rails.cache.exist?(PostViewer.cache_string_for(u.id))).to be(false) }
+    expect(Rails.cache.exist?(PostViewer.cache_string_for(coauthor.id))).to be(false)
+    expect(Rails.cache.exist?(PostViewer.cache_string_for(viewer.id))).to be(false)
+    expect(Rails.cache.exist?(PostViewer.cache_string_for(unrelated.id))).to be(true)
+    expect(Rails.cache.exist?(PostViewer.cache_string_for(user.id))).to be(true)
+  end
 end

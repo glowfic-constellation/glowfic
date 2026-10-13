@@ -1,0 +1,6 @@
+= form_for @circle, url: access_circles_path, method: :post do |f|
+  %table.form-table
+    %thead
+      %tr
+        %th.editor-title{colspan: 2} New Access Circle
+      = render 'editor', f: f
