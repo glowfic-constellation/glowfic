@@ -34,8 +34,30 @@
 
   .icons-box {
     display: flex;
+    flex-wrap: wrap;
     align-items: center;
     justify-content: center;
+  }
+}
+
+.reverse-image-search {
+  flex-basis: 100%;
+  margin-top: 5px;
+  font-size: 0.75em;
+  line-height: 1.5;
+  text-align: center;
+
+  &.hidden { display: none; }
+
+  .reverse-image-search-label {
+    display: block;
+    font-weight: bold;
+  }
+
+  .reverse-image-search-link {
+    display: inline-block;
+    margin: 0 3px;
+    white-space: nowrap;
   }
 }
 

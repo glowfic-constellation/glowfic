@@ -44,7 +44,15 @@
     .select2-field{class: cycle('even', 'odd')}= tag_select(@character, f, :gallery_groups)
 %div
   .sub= f.label :pb, 'Facecast'
-  %div{class: cycle('even', 'odd')}= f.text_field :pb, placeholder: "Facecast"
+  %div{class: cycle('even', 'odd')}
+    = f.text_field :pb, placeholder: "Facecast"
+    - if FacecastIdentifier.enabled? && @character.persisted?
+      - has_image = character_facecast_image_url(@character).present?
+      %button.button#identify-facecast{type: 'button', disabled: !has_image,
+        data: { url: identify_facecast_character_path(@character) },
+        title: (has_image ? "Guess the facecast from this character's icon via reverse image search" : 'Add an icon to this character first')}
+        Identify
+      %span.hidden#identify-facecast-status
 %div
   .sub.vtop= f.label :description
   %div{class: cycle('even', 'odd')}= f.text_area :description, placeholder: 'Description', cols: 35

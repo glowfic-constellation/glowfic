@@ -6,6 +6,16 @@ module IconHelper
   CHAR_ICON = 'char-access-icon pointer'
   CHAR_ICON_FAKE = 'char-access-icon char-access-fake pointer'
 
+  # Reverse image search engines used to help identify a facecast from an uploaded icon.
+  # {url} is replaced with the (encoded) image url. Google Lens/TinEye lean towards real
+  # people; Yandex/SauceNAO also cover anime, art and other fictional facecasts.
+  REVERSE_IMAGE_SEARCH_ENGINES = [
+    ['Google Lens', 'https://lens.google.com/uploadbyurl?url={url}'],
+    ['Yandex', 'https://yandex.com/images/search?rpt=imageview&url={url}'],
+    ['TinEye', 'https://tineye.com/search?url={url}'],
+    ['SauceNAO', 'https://saucenao.com/search.php?url={url}'],
+  ].freeze
+
   def icon_tag(icon, **args)
     return '' if icon.nil?
     icon_mem_tag(icon.url, icon.keyword, **args)
@@ -30,6 +40,23 @@ module IconHelper
 
   def no_icon_tag(**args)
     icon_mem_tag(NO_ICON_URL, NO_ICON, lookup_asset: true, **args)
+  end
+
+  # Renders reverse image search links for an (optionally not-yet-uploaded) icon url. The
+  # data-search-template attributes let reverse_image_search.js refill the links after a
+  # fresh upload, so the same markup works for existing icons and ones uploaded in-page.
+  def reverse_image_search_links(url, id: nil)
+    classes = ['reverse-image-search']
+    classes << 'hidden' if url.blank?
+
+    label = tag.span('Identify facecast:', class: 'reverse-image-search-label')
+    links = REVERSE_IMAGE_SEARCH_ENGINES.map do |name, template|
+      href = url.present? ? template.sub('{url}', CGI.escape(url.to_s)) : '#'
+      link_to(name, href, class: 'reverse-image-search-link', target: '_blank',
+        rel: 'noopener noreferrer', data: { search_template: template },)
+    end
+
+    tag.div(safe_join([label, *links], ' '), id: id, class: classes.join(' '), data: { image_url: url.presence })
   end
 
   def quick_switch_tag(image_url, short_text, hover_name, char_id)

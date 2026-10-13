@@ -28,3 +28,4 @@
 //= require tinymce
 //= require select2
 //= require global
+//= require reverse_image_search
