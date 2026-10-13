@@ -93,6 +93,48 @@ RSpec.describe DraftsController do
       expect(draft.editor_mode).to eq('rtf')
       expect(ReplyDraft.count).to eq(1)
     end
+
+    it "queues a draft for a future time" do
+      user = create(:user)
+      reply_post = create(:post, user: user)
+      login_as(user)
+      scheduled_at = 2.days.from_now
+
+      post :create, params: {
+        button_draft: true,
+        reply: {
+          post_id: reply_post.id,
+          content: 'later gator',
+          editor_mode: 'rtf',
+          scheduled_at: scheduled_at.strftime('%Y-%m-%dT%H:%M'),
+        },
+      }
+
+      draft = ReplyDraft.last
+      expect(draft).to be_scheduled
+      expect(draft.scheduled_at).to be_within(1.minute).of(scheduled_at)
+      expect(flash[:success]).to start_with("Draft saved and queued to post")
+    end
+
+    it "rejects a schedule in the past" do
+      user = create(:user)
+      reply_post = create(:post, user: user)
+      login_as(user)
+
+      post :create, params: {
+        button_draft: true,
+        reply: {
+          post_id: reply_post.id,
+          content: 'oops',
+          editor_mode: 'rtf',
+          scheduled_at: 2.days.ago.strftime('%Y-%m-%dT%H:%M'),
+        },
+      }
+
+      expect(flash[:error][:message]).to eq("Draft could not be saved because of the following problems:")
+      expect(flash[:error][:array]).to include("Scheduled at must be in the future")
+      expect(ReplyDraft.count).to eq(0)
+    end
   end
 
   describe 'DELETE destroy'

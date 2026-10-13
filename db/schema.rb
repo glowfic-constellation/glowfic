@@ -413,10 +413,12 @@ ActiveRecord::Schema[8.1].define(version: 2026_10_05_000000) do
     t.string "editor_mode"
     t.integer "icon_id"
     t.integer "post_id", null: false
+    t.datetime "scheduled_at"
     t.integer "thread_id"
     t.datetime "updated_at", precision: nil
     t.integer "user_id", null: false
     t.index ["post_id", "user_id"], name: "index_reply_drafts_on_post_id_and_user_id"
+    t.index ["scheduled_at"], name: "index_reply_drafts_on_scheduled_at"
   end
 
   create_table "report_views", id: :serial, force: :cascade do |t|
