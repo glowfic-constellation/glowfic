@@ -52,7 +52,9 @@ class User < ApplicationRecord
     confirmation: { if: :validate_password? }
   validates :moiety, format: { with: /\A([0-9A-F]{3}){0,2}\z/i }, length: { maximum: 255 }
   validates :moiety_name, length: { maximum: 255 }
-  validates :profile_editor_mode, inclusion: { in: ['html', 'rtf', 'md'] }, allow_nil: true
+  validates :profile_editor_mode, inclusion: { in: Writable::EDITOR_MODES }, allow_nil: true
+  # only checked on change so users with an invalid stored value can still save other settings
+  validates :default_editor, inclusion: { in: Writable::EDITOR_MODES }, allow_nil: true, if: :default_editor_changed?
   validates :password, :password_confirmation, presence: { if: :validate_password? }
   validate :username_not_reserved
 

@@ -2,6 +2,13 @@
 module Writable
   extend ActiveSupport::Concern
 
+  EDITOR_MODES = ['html', 'rtf', 'md'].freeze
+
+  # Returns the mode if it is a valid editor mode, otherwise nil
+  def self.editor_mode_or_nil(mode)
+    mode if EDITOR_MODES.include?(mode)
+  end
+
   included do
     belongs_to :character, optional: true
     belongs_to :icon, optional: true
@@ -13,7 +20,7 @@ module Writable
     validate :character_ownership, :icon_ownership
     # Edit forms submit a nil editor_mode back as a blank hidden field
     normalizes :editor_mode, with: ->(mode) { mode.presence }
-    validates :editor_mode, inclusion: { in: ['html', 'rtf', 'md'] }, allow_nil: true
+    validates :editor_mode, inclusion: { in: EDITOR_MODES }, allow_nil: true
 
     def has_icons?
       return user.avatar_id? unless character
