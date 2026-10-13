@@ -19,7 +19,7 @@ class ReplyScraper < Object
     'nemoconsequentiae'  => 'Nemo',
     'armokgob'           => 'Armok',
     'timepoof'           => 'Timepoof',
-  }
+  }.freeze
 
   def initialize(reply, console: false)
     @reply = reply
@@ -132,9 +132,9 @@ class ReplyScraper < Object
   def kappa_keyword(keyword, without_desc)
     # kappa icon handling - icons are prefixed
     if @reply.user_id == 3 && (spaceindex = keyword.index(" "))
-      unprefixed = keyword[spaceindex..-1]
+      unprefixed = keyword[spaceindex..]
       icon = @reply.character.icons.detect { |i| i.keyword.ends_with?(unprefixed) }
-      icon ||= @reply.character.icons.detect { |i| i.keyword.ends_with?(without_desc[spaceindex..-1]) } if without_desc
+      icon ||= @reply.character.icons.detect { |i| i.keyword.ends_with?(without_desc[spaceindex..]) } if without_desc
     end
     icon
   end

@@ -44,17 +44,17 @@ module PostHelper
       'Full Users'          => :full_accounts,
       'Access List'         => :access_list,
       'Private'             => :private,
-    }
+    }.freeze
   end
 
   PRIVACY_MAP = {
     # name, icon, icon_darkmode
-    public: ['Public', 'world', 'world'],
-    registered: ['Constellation Users', 'stars_constellation', 'stars_constellation_darkmode'],
-    full_accounts: ['Full Users', 'star_tricolor', 'star_tricolor'],
-    access_list: ['Access List', 'group', 'group'],
-    private: ['Private', 'lock', 'lock'],
-  }
+    public: ['Public', 'world', 'world'].freeze,
+    registered: ['Constellation Users', 'stars_constellation', 'stars_constellation_darkmode'].freeze,
+    full_accounts: ['Full Users', 'star_tricolor', 'star_tricolor'].freeze,
+    access_list: ['Access List', 'group', 'group'].freeze,
+    private: ['Private', 'lock', 'lock'].freeze,
+  }.freeze
 
   def privacy_state(privacy, dark_layout: false)
     privacy = privacy.to_sym
@@ -77,7 +77,7 @@ module PostHelper
     return sanitize_simple_link_text(desc) if desc.length <= 255
     sanitize_simple_link_text(desc[0...255]) +
       tag.span('... ', id: "dots-#{id}") +
-      tag.span(sanitize_simple_link_text(desc[255..-1]), class: 'hidden', id: "desc-#{id}") +
+      tag.span(sanitize_simple_link_text(desc[255..]), class: 'hidden', id: "desc-#{id}") +
       tag.a('more &raquo;'.html_safe, href: '#', id: "expanddesc-#{id}", class: 'expanddesc')
   end
 

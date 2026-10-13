@@ -7,7 +7,7 @@ class ReplyDraft < ApplicationRecord
   validates :post, uniqueness: { scope: :user }
 
   def self.draft_for(post_id, user_id)
-    self.find_by(post_id: post_id, user_id: user_id)
+    find_by(post_id: post_id, user_id: user_id)
   end
 
   def self.draft_reply_for(post, user)

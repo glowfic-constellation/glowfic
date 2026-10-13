@@ -96,7 +96,7 @@ class NewsController < ApplicationController
   end
 
   def paged_news_url(news)
-    page_num = News.where('id >= ?', news.id).count
+    page_num = News.where(id: news.id..).count
     page_num = nil if page_num <= 1
     news_index_path(page: page_num)
   end

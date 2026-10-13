@@ -44,7 +44,7 @@ class GenerateFlatPostJob < ApplicationJob
   end
 
   def self.notify_exception(exception, *args)
-    $redis.del(self.lock_key(args[0]))
+    $redis.del(lock_key(args[0]))
     super
   end
 end

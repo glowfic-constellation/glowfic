@@ -62,7 +62,7 @@ class Icon < ApplicationRecord
     return unless uploaded?
     return unless url.present? && ENV.fetch('ICON_HOST', nil).present?
     return if url.to_s.include?(ENV.fetch('ICON_HOST'))
-    self.url = ENV.fetch('ICON_HOST') + url[(url.index(S3_DOMAIN).to_i + S3_DOMAIN.length)..-1]
+    self.url = ENV.fetch('ICON_HOST') + url[(url.index(S3_DOMAIN).to_i + S3_DOMAIN.length)..]
   end
 
   def use_https

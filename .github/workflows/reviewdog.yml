@@ -17,10 +17,9 @@ jobs:
         uses: reviewdog/action-rubocop@v2
         with:
           rubocop_version: gemfile
-          rubocop_extensions: rubocop-rails:gemfile rubocop-rspec:gemfile rubocop-performance:gemfile
+          rubocop_extensions: rubocop-rails:gemfile rubocop-rspec:gemfile rubocop-performance:gemfile rubocop-rspec_rails:gemfile rubocop-capybara:gemfile rubocop-factory_bot:gemfile
           skip_install: true
           use_bundler: true
-          rubocop_flags: --config ./.rubocop.yml
           fail_level: any
           reporter: github-pr-review
   brakeman:

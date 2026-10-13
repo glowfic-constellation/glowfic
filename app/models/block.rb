@@ -30,7 +30,7 @@ class Block < ApplicationRecord
 
   def editable_by?(user)
     return false unless user
-    self.blocking_user_id == user.id
+    blocking_user_id == user.id
   end
 
   def hide_my_posts?
@@ -65,7 +65,7 @@ class Block < ApplicationRecord
   end
 
   def invalidate_caches
-    Rails.cache.delete(Block.cache_string_for(self.blocking_user.id, 'hidden'))
-    Rails.cache.delete(Block.cache_string_for(self.blocked_user.id, 'blocked'))
+    Rails.cache.delete(Block.cache_string_for(blocking_user.id, 'hidden'))
+    Rails.cache.delete(Block.cache_string_for(blocked_user.id, 'blocked'))
   end
 end

@@ -8,7 +8,7 @@ class User < ApplicationRecord
   MAX_USERNAME_LEN = 80
   MIN_PASSWORD_LEN = 6
   CURRENT_TOS_VERSION = 20181109
-  RESERVED_NAMES = ['(deleted user)', 'Glowfic Constellation']
+  RESERVED_NAMES = ['(deleted user)', 'Glowfic Constellation'].freeze
 
   attr_accessor :password, :password_confirmation
   attr_writer :validate_password
@@ -98,8 +98,8 @@ class User < ApplicationRecord
 
   def archive
     User.transaction do
-      self.update!(email_notifications: false, deleted: true, favorite_notifications: false)
-      Setting.where(user_id: self.id).where(owned: true).find_each do |setting|
+      update!(email_notifications: false, deleted: true, favorite_notifications: false)
+      Setting.where(user_id: id).where(owned: true).find_each do |setting|
         setting.update!(owned: false)
       end
       Block.where(blocking_user: self).or(Block.where(blocked_user: self)).destroy_all
@@ -107,20 +107,20 @@ class User < ApplicationRecord
   end
 
   def visible_posts
-    Rails.cache.fetch(PostViewer.cache_string_for(self.id), expires_in: 1.month) do
+    Rails.cache.fetch(PostViewer.cache_string_for(id), expires_in: 1.month) do
       PostViewer.where(user: self).pluck(:post_id)
     end
   end
 
   def blocked_posts
-    blocks = Block.where(blocked_user_id: self.id)
+    blocks = Block.where(blocked_user_id: id)
     posts_blockers = blocks.where(hide_me: :posts).pluck(:blocking_user_id)
     full_blockers = blocks.where(hide_me: :all).pluck(:blocking_user_id)
     blocked_or_hidden_posts('blocked', posts_blockers, full_blockers)
   end
 
   def hidden_posts
-    blocks = Block.where(blocking_user_id: self.id)
+    blocks = Block.where(blocking_user_id: id)
     posts_blocked = blocks.where(hide_them: :posts).pluck(:blocked_user_id)
     full_blocked = blocks.where(hide_them: :all).pluck(:blocked_user_id)
     blocked_or_hidden_posts('hidden', posts_blocked, full_blocked)
@@ -129,7 +129,7 @@ class User < ApplicationRecord
   private
 
   def strip_spaces
-    self.username = self.username.strip if self.username.present?
+    self.username = username.strip if username.present?
   end
 
   def encrypt_password
@@ -164,23 +164,23 @@ class User < ApplicationRecord
   end
 
   def username_not_reserved
-    return unless self.username.present?
-    return unless RESERVED_NAMES.include?(self.username)
+    return unless username.present?
+    return unless RESERVED_NAMES.include?(username)
     errors.add(:username, 'is invalid')
   end
 
   def blocked_or_hidden_posts(keyword, post_user_ids, full_user_ids)
-    Rails.cache.fetch(Block.cache_string_for(self.id, keyword), expires_in: 1.month) do
+    Rails.cache.fetch(Block.cache_string_for(id, keyword), expires_in: 1.month) do
       all_user_ids = (post_user_ids + full_user_ids).uniq
       post_ids = Post.unscoped.where(
         authors_locked: true,
         id: Post::Author.where(user_id: all_user_ids).select(:post_id),
       ).pluck(:id)
       if keyword == 'blocked'
-        post_ids -= Post::Author.where(user_id: self.id).pluck(:post_id)
+        post_ids -= Post::Author.where(user_id: id).pluck(:post_id)
       else
         full_ids = Post::Author.where(user_id: full_user_ids).pluck(:post_id)
-        full_ids -= Post::Author.where(user_id: self.id).pluck(:post_id)
+        full_ids -= Post::Author.where(user_id: id).pluck(:post_id)
         post_ids += full_ids
         post_ids.uniq!
       end

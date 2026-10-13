@@ -26,7 +26,7 @@ class News < ApplicationRecord
       return view.save
     end
 
-    return true if view.news_id > self.id
+    return true if view.news_id > id
     view.update(news: self)
   end
 

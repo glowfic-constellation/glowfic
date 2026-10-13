@@ -16,6 +16,6 @@ class PostViewer < ApplicationRecord
   private
 
   def invalidate_cache
-    Rails.cache.delete(PostViewer.cache_string_for(self.user.id))
+    Rails.cache.delete(PostViewer.cache_string_for(user.id))
   end
 end

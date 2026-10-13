@@ -5,7 +5,7 @@ class ReportsController < ApplicationController
   def index
   end
 
-  REPORT_TYPES = ['daily', 'monthly']
+  REPORT_TYPES = ['daily', 'monthly'].freeze
 
   def show
     @report_type = REPORT_TYPES.detect { |x| x == params[:id] }

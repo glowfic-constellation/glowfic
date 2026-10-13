@@ -54,7 +54,7 @@ class NotifyFollowersOfNewPostJob < ApplicationJob
     if notif
       return notif if !unread_only || notif.unread
     else
-      messages = Message.where(recipient: user, sender_id: 0).where('created_at >= ?', post.created_at)
+      messages = Message.where(recipient: user, sender_id: 0).where(created_at: post.created_at..)
       messages = messages.unread if unread_only
       messages.find_each do |notification|
         return notification if notification.message.include?(ScrapePostJob.view_post(post.id))
@@ -64,9 +64,9 @@ class NotifyFollowersOfNewPostJob < ApplicationJob
   end
 
   def blocked_user_ids(post)
-    blocked = Block.where(blocked_user_id: post.author_ids).where("hide_them >= ?", Block.hide_thems[:posts])
+    blocked = Block.where(blocked_user_id: post.author_ids).where(hide_them: Block.hide_thems[:posts]..)
     blocked = blocked.select(:blocking_user_id).distinct.pluck(:blocking_user_id)
-    blocking = Block.where(blocking_user_id: post.author_ids).where("hide_me >= ?", Block.hide_mes[:posts])
+    blocking = Block.where(blocking_user_id: post.author_ids).where(hide_me: Block.hide_mes[:posts]..)
     blocking = blocking.select(:blocked_user_id).distinct.pluck(:blocked_user_id)
     (blocked + blocking).uniq
   end

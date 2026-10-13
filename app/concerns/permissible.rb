@@ -18,7 +18,7 @@ module Permissible
     # :delete_tags,
     # :edit_continuities
     :create_news,
-  ]
+  ].freeze
 
   def has_permission?(permission)
     return false unless role_id

@@ -20,7 +20,7 @@ class PasswordReset < ApplicationRecord
     return unless user
     loop do
       self.auth_token = generate_auth_token
-      break unless self.class.where(auth_token: self.auth_token).exists?
+      break unless self.class.where(auth_token: auth_token).exists?
     end
   end
 
