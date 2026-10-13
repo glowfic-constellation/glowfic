@@ -29,6 +29,18 @@ RSpec.describe Api::V1::BoardsController do
       get :index, params: { page: 'b' }
       expect(response).to have_http_status(422)
     end
+
+    it "raises error on invalid user", :show_in_doc do
+      get :index, params: { user_id: 'b' }
+      expect(response).to have_http_status(422)
+    end
+
+    it "filters by user id", :show_in_doc do
+      create(:board, name: 'notmine')
+      mine = create(:board, name: 'mine')
+      get :index, params: { user_id: mine.creator.id }
+      expect(response.parsed_body['results'].count).to eq(1)
+    end
   end
 
   describe "GET show" do
@@ -40,12 +52,13 @@ RSpec.describe Api::V1::BoardsController do
     end
 
     it "succeeds with valid board" do
-      board = create(:board)
+      board = create(:board, description: 'example desc')
       section1 = create(:board_section, board: board)
       section2 = create(:board_section, board: board)
       get :show, params: { id: board.id }
       expect(response).to have_http_status(200)
       expect(response.parsed_body['id']).to eq(board.id)
+      expect(response.parsed_body['description']).to eq(board.description)
       expect(response.parsed_body['board_sections'].size).to eq(2)
       expect(response.parsed_body['board_sections'][0]['id']).to eq(section1.id)
       expect(response.parsed_body['board_sections'][1]['id']).to eq(section2.id)
