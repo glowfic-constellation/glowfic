@@ -63,7 +63,7 @@ RSpec.describe 'OpenID Connect' do
         expect(config['grant_types_supported']).to match_array(['authorization_code', 'refresh_token'])
         expect(config['subject_types_supported']).to eq(['public'])
         expect(config['id_token_signing_alg_values_supported']).to eq(['RS256'])
-        expect(config['code_challenge_methods_supported']).to include('S256')
+        expect(config['code_challenge_methods_supported']).to eq(['S256'])
         expect(config['claims_supported']).to include('sub', 'preferred_username', 'name', 'profile')
         expect(config['claims_supported']).not_to include('email')
       end

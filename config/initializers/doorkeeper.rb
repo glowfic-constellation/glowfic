@@ -19,6 +19,8 @@ Doorkeeper.configure do
   grant_flows %w[authorization_code]
   use_refresh_token
   force_pkce
+  # "plain" sends the verifier itself as the challenge, which protects nothing.
+  pkce_code_challenge_methods %w[S256]
 
   # Store only digests: a database leak must not leak usable credentials.
   # This means an application secret is shown once, when it is generated.
@@ -40,4 +42,10 @@ Doorkeeper.configure do
 
   # Plain http is only acceptable for a client running on the user's machine.
   force_ssl_in_redirect_uri { |uri| ['localhost', '127.0.0.1', '[::1]'].exclude?(uri.host) }
+end
+
+# The consent and authorized-applications pages use the site layout, like every other page.
+Rails.application.config.to_prepare do
+  Doorkeeper::AuthorizationsController.layout 'application'
+  Doorkeeper::AuthorizedApplicationsController.layout 'application'
 end

@@ -45,6 +45,20 @@ RSpec.describe 'OAuth authorization' do
   context 'when logged in' do
     let!(:user) { login }
 
+    it 'shows the consent page in the site layout' do
+      get '/oauth/authorize', params: authorize_params
+      expect(response).to have_http_status(200)
+      expect(response).to render_template(layout: 'layouts/application')
+    end
+
+    it 'refuses the plain PKCE method' do
+      get '/oauth/authorize', params: authorize_params.merge(code_challenge: verifier, code_challenge_method: 'plain')
+      aggregate_failures do
+        expect(response).not_to have_http_status(200)
+        expect(Doorkeeper::AccessGrant.count).to eq(0)
+      end
+    end
+
     it 'issues a token the API accepts after the user approves' do
       get '/oauth/authorize', params: authorize_params
       aggregate_failures do
