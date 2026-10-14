@@ -22,21 +22,13 @@ class PostsController < WritableController
     @show_unread = true
     @hide_quicklinks = true
 
-    can_owe = (params[:view] != 'hidden')
-    ids = Post::Author.where(user_id: current_user.id, can_owe: can_owe).group(:post_id).pluck(:post_id)
-    @posts = Post.where(id: ids)
-    unless params[:view] == 'hidden'
-      drafts = ReplyDraft.where(post_id: @posts.select(:id)).where(user: current_user).pluck(:post_id)
-      solo = Post::Author.where(post_id: ids).group(:post_id).having('count(post_id) < 2').pluck(:post_id)
-      @posts = @posts.where.not(last_user: current_user).or(@posts.where(id: (drafts + solo).uniq))
-    end
-    @posts = @posts.where.not(status: [:complete, :abandoned])
-    hiatused = @posts.hiatus.or(@posts.where('tagged_at < ?', 1.month.ago))
+    @posts = Post.replies_owed_by(current_user, hidden: params[:view] == 'hidden')
+    hiatused = @posts.on_hiatus
 
     if params[:view] == 'hiatused'
       @posts = hiatused
     elsif current_user.hide_hiatused_tags_owed?
-      @posts = @posts.where.not(status: :hiatus).where('tagged_at > ?', 1.month.ago)
+      @posts = @posts.not_on_hiatus
       @hiatused_exist = true if hiatused.any?
     end
 
@@ -320,10 +312,7 @@ class PostsController < WritableController
       author_posts = author_posts.having('COUNT(post_authors.user_id) = ?', params[:author_id].length).pluck(:post_id)
       @search_results = @search_results.where(id: author_posts)
     end
-    if params[:character_id].present?
-      post_ids = Reply.where(character_id: params[:character_id]).select(:post_id).distinct.pluck(:post_id)
-      @search_results = @search_results.where(character_id: params[:character_id]).or(@search_results.where(id: post_ids))
-    end
+    @search_results = @search_results.with_character(params[:character_id]) if params[:character_id].present?
     @search_results = @search_results.not_ignored_by(current_user) if current_user&.hide_from_all && params[:hide_ignored].present?
     @search_results = posts_from_relation(@search_results, show_blocked: !!params[:show_blocked], no_tests: no_tests)
   end

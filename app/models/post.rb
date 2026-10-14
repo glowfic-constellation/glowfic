@@ -118,6 +118,28 @@ class Post < ApplicationRecord
       .where(board_views: { ignored: [nil, false] })
   }
 
+  # Posts in which any of the given characters (IDs or a relation selecting IDs) appear,
+  # either in the post itself or in any reply
+  scope :with_character, ->(character_ids) {
+    where(character_id: character_ids).or(where(id: Reply.where(character_id: character_ids).select(:post_id)))
+  }
+
+  # Posts on which the given user owes a reply, as shown on the Replies Owed page:
+  # the user is an author who has not opted out (or, with hidden: true, has opted out),
+  # and the post is neither complete nor abandoned. Unless hidden, posts where the user
+  # made the last reply are excluded, except for solo posts and posts with a reply draft.
+  # Does not apply visibility, block or hiatus filtering.
+  def self.replies_owed_by(user, hidden: false)
+    ids = Post::Author.where(user_id: user.id, can_owe: !hidden).group(:post_id).pluck(:post_id)
+    posts = where(id: ids)
+    unless hidden
+      drafts = ReplyDraft.where(post_id: posts.select(:id)).where(user: user).pluck(:post_id)
+      solo = Post::Author.where(post_id: ids).group(:post_id).having('count(post_id) < 2').pluck(:post_id)
+      posts = posts.where.not(last_user: user).or(posts.where(id: (drafts + solo).uniq))
+    end
+    posts.where.not(status: [:complete, :abandoned])
+  end
+
   def visible_to?(user)
     return false if user&.author_blocking?(self, author_ids)
     return false if self.class.posts_fulllocked?(user)
