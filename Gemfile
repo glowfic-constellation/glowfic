@@ -25,6 +25,7 @@ gem 'bootstrap', '~> 5.3' # pin until major version is handled
 gem 'connection_pool', '~> 2.0' # pin until version 3.x is supported by Rails (https://github.com/glowfic-constellation/glowfic/pull/2616)
 gem 'dartsass-sprockets'
 gem 'doorkeeper', '~> 5.9'
+gem 'doorkeeper-openid_connect', '~> 2.0'
 gem 'exception_notification'
 gem 'geocoder'
 gem 'gon', '~> 7.1'

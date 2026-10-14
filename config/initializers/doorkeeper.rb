@@ -36,6 +36,7 @@ Doorkeeper.configure do
   end
 
   default_scopes :api
+  optional_scopes :openid, :profile
 
   # Plain http is only acceptable for a client running on the user's machine.
   force_ssl_in_redirect_uri { |uri| ['localhost', '127.0.0.1', '[::1]'].exclude?(uri.host) }

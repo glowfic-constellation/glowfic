@@ -16,7 +16,7 @@ module Authentication::Api
     private
 
     def oauth_user
-      return unless doorkeeper_token&.accessible?
+      return unless doorkeeper_token&.acceptable?([:api])
       Authentication.oauth_user(doorkeeper_token.resource_owner_id)
     end
 

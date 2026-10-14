@@ -124,6 +124,7 @@ Rails.application.routes.draw do
   use_doorkeeper do
     skip_controllers :applications
   end
+  use_doorkeeper_openid_connect
   resources :oauth_clients do
     member { patch :renew_secret }
   end

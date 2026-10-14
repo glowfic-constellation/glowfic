@@ -81,7 +81,7 @@ RSpec.describe Api::ApiController do
     end
 
     def create_token(**)
-      Doorkeeper::AccessToken.create!(application: application, resource_owner_id: user.id, expires_in: 2.hours, **)
+      Doorkeeper::AccessToken.create!(application: application, resource_owner_id: user.id, expires_in: 2.hours, scopes: 'api', **)
     end
 
     it "works when a valid access token is provided" do
@@ -89,6 +89,12 @@ RSpec.describe Api::ApiController do
       get :show, params: { id: 1 }
       expect(response).to have_http_status(200)
       expect(response.parsed_body['results'].size).to eq(3)
+    end
+
+    it "does not accept a token without the api scope" do
+      oauth_login(create_token(scopes: 'openid profile'))
+      get :show, params: { id: 1 }
+      expect(response).to have_http_status(422)
     end
 
     it "does not accept an authorization code as a bearer token" do

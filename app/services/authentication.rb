@@ -53,6 +53,21 @@ class Authentication < Object
     user unless user&.suspended?
   end
 
+  def self.oidc_signing_key
+    return ENV.fetch("OIDC_SIGNING_KEY") if Rails.env.production?
+    @oidc_signing_key ||= ENV["OIDC_SIGNING_KEY"] || development_oidc_signing_key
+  end
+
+  # Kept in tmp/ in development so that every server process signs with the same key.
+  def self.development_oidc_signing_key
+    return OpenSSL::PKey::RSA.new(2048).to_pem if Rails.env.test?
+    path = Rails.root.join('tmp', 'oidc_signing_key.pem')
+    path.dirname.mkpath
+    path.write(OpenSSL::PKey::RSA.new(2048).to_pem) unless path.exist?
+    path.read
+  end
+  private_class_method :development_oidc_signing_key
+
   private
 
   def valid_user?(user)
