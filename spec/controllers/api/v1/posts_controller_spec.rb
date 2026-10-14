@@ -52,6 +52,274 @@ RSpec.describe Api::V1::PostsController do
     context "when logged out" do
       it_behaves_like "index.parsed_body", true
     end
+
+    context "with filters" do
+      let(:result_ids) { response.parsed_body['results'].pluck('id') }
+
+      it "filters by author", :show_in_doc do
+        author = create(:user)
+        own_post = create(:post, user: author)
+        coauthored = create(:post, unjoined_authors: [author])
+        create(:post)
+        get :index, params: { author_id: author.id, min: 'true' }
+        expect(response).to have_http_status(200)
+        expect(result_ids).to contain_exactly(own_post.id, coauthored.id)
+      end
+
+      it "filters by continuity", :show_in_doc do
+        board = create(:board)
+        board_post = create(:post, board: board)
+        create(:post)
+        get :index, params: { board_id: board.id, min: 'true' }
+        expect(response).to have_http_status(200)
+        expect(result_ids).to eq([board_post.id])
+      end
+
+      it "filters by character in post or replies", :show_in_doc do
+        character = create(:character)
+        post_with_char = create(:post, user: character.user, character: character)
+        reply_with_char = create(:reply, user: character.user, character: character).post
+        create(:reply, with_character: true)
+        create(:post, with_character: true)
+        get :index, params: { character_id: character.id, min: 'true' }
+        expect(response).to have_http_status(200)
+        expect(result_ids).to contain_exactly(post_with_char.id, reply_with_char.id)
+      end
+
+      it "filters by template" do
+        template = create(:template)
+        char1 = create(:character, template: template, user: template.user)
+        char2 = create(:character, template: template, user: template.user)
+        post1 = create(:post, user: template.user, character: char1)
+        post2 = create(:reply, user: template.user, character: char2).post
+        create(:post, with_character: true)
+        get :index, params: { template_id: template.id, min: 'true' }
+        expect(response).to have_http_status(200)
+        expect(result_ids).to contain_exactly(post1.id, post2.id)
+      end
+
+      it "filters by status", :show_in_doc do
+        complete = create(:post, status: :complete)
+        create(:post, status: :active)
+        create(:post, status: :hiatus)
+        get :index, params: { status: 'complete', min: 'true' }
+        expect(response).to have_http_status(200)
+        expect(result_ids).to eq([complete.id])
+      end
+
+      it "combines filters" do
+        author = create(:user)
+        board = create(:board)
+        character = create(:character, user: author)
+        match = create(:post, user: author, board: board, character: character, subject: 'match', status: :complete)
+        create(:post, user: author, board: board, character: character, subject: 'match') # wrong status
+        create(:post, user: author, board: board, subject: 'match', status: :complete) # no character
+        create(:post, user: author, character: character, subject: 'match', status: :complete) # wrong board
+        create(:post, board: board, subject: 'match', status: :complete) # wrong author
+        create(:post, user: author, board: board, character: character, subject: 'other', status: :complete) # wrong subject
+        get :index, params: { author_id: author.id, board_id: board.id, character_id: character.id, status: 'complete', q: 'mat' }
+        expect(response).to have_http_status(200)
+        expect(result_ids).to eq([match.id])
+      end
+
+      it "orders by subject by default" do
+        post_b = create(:post, subject: 'b')
+        post_a = create(:post, subject: 'A')
+        post_c = create(:post, subject: 'c')
+        get :index, params: { min: 'true' }
+        expect(result_ids).to eq([post_a.id, post_b.id, post_c.id])
+      end
+
+      it "orders by tagged_at", :show_in_doc do
+        post_a = create(:post, subject: 'a')
+        post_b = create(:post, subject: 'b')
+        post_c = create(:post, subject: 'c')
+        post_a.update_columns(tagged_at: 1.hour.ago) # rubocop:disable Rails/SkipsModelValidations
+        post_b.update_columns(tagged_at: 3.hours.ago) # rubocop:disable Rails/SkipsModelValidations
+        post_c.update_columns(tagged_at: 2.hours.ago) # rubocop:disable Rails/SkipsModelValidations
+        get :index, params: { order: 'tagged_at', min: 'true' }
+        expect(response).to have_http_status(200)
+        expect(result_ids).to eq([post_a.id, post_c.id, post_b.id])
+      end
+
+      context "with invalid parameters" do
+        it "rejects non-numeric IDs", :show_in_doc do
+          get :index, params: { author_id: 'abc' }
+          expect(response).to have_http_status(422)
+          expect(response.parsed_body['errors'][0]['message']).to include('author_id')
+        end
+
+        it "rejects missing users", :show_in_doc do
+          get :index, params: { author_id: 0 }
+          expect(response).to have_http_status(422)
+          expect(response.parsed_body['errors'][0]['message']).to eq('User could not be found.')
+        end
+
+        it "rejects missing continuities" do
+          get :index, params: { board_id: 0 }
+          expect(response).to have_http_status(422)
+          expect(response.parsed_body['errors'][0]['message']).to eq('Board could not be found.')
+        end
+
+        it "rejects missing characters" do
+          get :index, params: { character_id: 0 }
+          expect(response).to have_http_status(422)
+          expect(response.parsed_body['errors'][0]['message']).to eq('Character could not be found.')
+        end
+
+        it "rejects missing templates" do
+          get :index, params: { template_id: 0 }
+          expect(response).to have_http_status(422)
+          expect(response.parsed_body['errors'][0]['message']).to eq('Template could not be found.')
+        end
+
+        it "rejects unknown statuses" do
+          get :index, params: { status: 'finished' }
+          expect(response).to have_http_status(422)
+          expect(response.parsed_body['errors'][0]['message']).to include('status')
+        end
+
+        it "rejects unknown orders" do
+          get :index, params: { order: 'created_at' }
+          expect(response).to have_http_status(422)
+          expect(response.parsed_body['errors'][0]['message']).to include('order')
+        end
+
+        it "rejects non-boolean owed" do
+          get :index, params: { owed: 'maybe' }
+          expect(response).to have_http_status(422)
+          expect(response.parsed_body['errors'][0]['message']).to include('owed')
+        end
+      end
+
+      context "with privacy" do
+        let(:author) { create(:user) }
+        let!(:public_post) { create(:post, user: author) }
+
+        before(:each) do
+          create(:post, user: author, privacy: :private)
+          create(:post, user: author, privacy: :registered)
+          create(:post, user: author, privacy: :access_list)
+        end
+
+        it "only shows public posts when logged out" do
+          get :index, params: { author_id: author.id }
+          expect(result_ids).to eq([public_post.id])
+          expect(response.headers['Total'].to_i).to eq(1)
+        end
+
+        it "hides private and inaccessible posts from other users" do
+          api_login
+          get :index, params: { author_id: author.id }
+          expect(result_ids).to match_array([public_post.id, Post.privacy_registered.first.id])
+          expect(response.headers['Total'].to_i).to eq(2)
+        end
+
+        it "shows access-listed posts to viewers" do
+          viewer = api_login
+          access_post = Post.privacy_access_list.first
+          PostViewer.create!(post: access_post, user: viewer)
+          get :index, params: { author_id: author.id }
+          expect(result_ids).to match_array([public_post.id, Post.privacy_registered.first.id, access_post.id])
+        end
+
+        it "shows all posts to the author" do
+          api_login_as(author)
+          get :index, params: { author_id: author.id }
+          expect(response.headers['Total'].to_i).to eq(4)
+        end
+      end
+
+      context "with owed" do
+        let(:user) { create(:user) }
+        let(:other_user) { create(:user) }
+        let!(:owed_post) { create(:post, user: user, unjoined_authors: [other_user], subject: 'owed') }
+
+        before(:each) { create(:reply, post: owed_post, user: other_user) }
+
+        it "requires login", :show_in_doc do
+          get :index, params: { owed: true }
+          expect(response).to have_http_status(401)
+          expect(response.parsed_body['errors'][0]['message']).to eq("You must be logged in to view that page.")
+        end
+
+        it "ignores owed=false when logged out" do
+          get :index, params: { owed: false, min: 'true' }
+          expect(response).to have_http_status(200)
+          expect(result_ids).to eq([owed_post.id])
+        end
+
+        it "returns posts the user owes a reply on", :show_in_doc do
+          api_login_as(user)
+          replied = create(:post, user: user, unjoined_authors: [other_user])
+          create(:reply, post: replied, user: user)
+          create(:post, user: other_user) # not an author
+          get :index, params: { owed: true }
+          expect(response).to have_http_status(200)
+          expect(result_ids).to eq([owed_post.id])
+        end
+
+        it "includes posts with drafts" do
+          api_login_as(user)
+          drafted = create(:post, user: user, unjoined_authors: [other_user])
+          create(:reply, post: drafted, user: other_user)
+          create(:reply, post: drafted, user: user)
+          create(:reply_draft, post: drafted, user: user)
+          get :index, params: { owed: true }
+          expect(result_ids).to contain_exactly(owed_post.id, drafted.id)
+        end
+
+        it "excludes completed, abandoned and opted-out posts" do
+          api_login_as(user)
+          [:complete, :abandoned].each do |status|
+            post = create(:post, user: user, unjoined_authors: [other_user], status: status)
+            create(:reply, post: post, user: other_user)
+          end
+          opted_out = create(:post, user: user, unjoined_authors: [other_user])
+          create(:reply, post: opted_out, user: other_user)
+          opted_out.opt_out_of_owed(user)
+          get :index, params: { owed: true }
+          expect(result_ids).to eq([owed_post.id])
+        end
+
+        it "excludes site testing posts" do
+          api_login_as(user)
+          owed_post.update!(board: create(:board, id: Board::ID_SITETESTING))
+          get :index, params: { owed: true }
+          expect(result_ids).to be_empty
+        end
+
+        context "with hiatused posts" do
+          let!(:hiatused) { create(:post, user: user, unjoined_authors: [other_user]) }
+
+          before(:each) do
+            create(:reply, post: hiatused, user: other_user)
+            hiatused.update!(status: :hiatus)
+          end
+
+          it "includes hiatused posts by default" do
+            api_login_as(user)
+            get :index, params: { owed: true }
+            expect(result_ids).to contain_exactly(owed_post.id, hiatused.id)
+          end
+
+          it "respects the hide hiatused preference" do
+            user.update!(hide_hiatused_tags_owed: true)
+            api_login_as(user)
+            get :index, params: { owed: true }
+            expect(result_ids).to eq([owed_post.id])
+          end
+        end
+
+        it "combines with other filters" do
+          api_login_as(user)
+          board_post = create(:post, user: user, unjoined_authors: [other_user])
+          create(:reply, post: board_post, user: other_user)
+          get :index, params: { owed: true, board_id: board_post.board_id }
+          expect(result_ids).to eq([board_post.id])
+        end
+      end
+    end
   end
 
   describe "GET show" do
