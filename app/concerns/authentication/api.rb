@@ -17,8 +17,7 @@ module Authentication::Api
 
     def oauth_user
       return unless doorkeeper_token&.accessible?
-      user = User.active.find_by(id: doorkeeper_token.resource_owner_id)
-      user unless user&.suspended?
+      Authentication.oauth_user(doorkeeper_token.resource_owner_id)
     end
 
     def user_from_token

@@ -27,6 +27,14 @@ Doorkeeper.configure do
 
   access_token_methods :from_bearer_authorization
 
+  # A user deleted or suspended since approving an application gets no new tokens.
+  before_successful_strategy_response do |request|
+    token = request.access_token
+    next if Authentication.oauth_user(token.resource_owner_id)
+    token.revoke
+    raise Doorkeeper::Errors::InvalidGrant, Doorkeeper::OAuth::ErrorResponse.new(name: :invalid_grant)
+  end
+
   default_scopes :api
 
   # Plain http is only acceptable for a client running on the user's machine.

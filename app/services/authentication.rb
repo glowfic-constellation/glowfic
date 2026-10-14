@@ -47,6 +47,12 @@ class Authentication < Object
     ENV.fetch("SECRET_KEY_API")
   end
 
+  # The user an OAuth access token acts for, unless they have since been deleted or suspended.
+  def self.oauth_user(id)
+    user = User.active.find_by(id: id)
+    user unless user&.suspended?
+  end
+
   private
 
   def valid_user?(user)

@@ -101,6 +101,31 @@ RSpec.describe 'OAuth authorization' do
       expect(response.parsed_body['error']).to eq('invalid_client')
     end
 
+    it 'issues no token to a user suspended after approving' do
+      post '/oauth/authorize', params: authorize_params
+      code = code_from(response.location)['code']
+      user.update!(role_id: Permissible::SUSPENDED)
+      exchange(code)
+      aggregate_failures do
+        expect(response.parsed_body['error']).to eq('invalid_grant')
+        expect(Doorkeeper::AccessToken.where(revoked_at: nil)).not_to exist
+      end
+    end
+
+    it 'does not refresh a token for a deleted user' do
+      post '/oauth/authorize', params: authorize_params
+      exchange(code_from(response.location)['code'])
+      refresh_token = response.parsed_body['refresh_token']
+      user.archive
+      post '/oauth/token', params: {
+        grant_type: 'refresh_token',
+        refresh_token: refresh_token,
+        client_id: application.uid,
+        client_secret: application.plaintext_secret,
+      }
+      expect(response.parsed_body['error']).to eq('invalid_grant')
+    end
+
     it 'requires CSRF protection on the consent form' do
       ActionController::Base.allow_forgery_protection = true
       post '/oauth/authorize', params: authorize_params
