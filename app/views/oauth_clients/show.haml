@@ -33,6 +33,10 @@
     .sub Token URL
     .odd
       %code= oauth_token_url
+  %div
+    .sub OpenID Configuration
+    .even
+      %code= oauth_discovery_provider_url
   .form-table-ender
     = button_to 'Generate New Secret', renew_secret_oauth_client_path(@application), method: :patch, class: 'button',
       data: { confirm: 'Are you sure? The current secret will stop working immediately.' }

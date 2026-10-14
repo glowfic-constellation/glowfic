@@ -159,6 +159,7 @@ RSpec.describe 'OAuth authorization' do
       expect(response).to have_http_status(200)
       expect(response.body).to include(created.uid)
       expect(response.body).to include(oauth_token_url)
+      expect(response.body).to include(oauth_discovery_provider_url)
       codes = response.body.scan(/<code>([\w-]+)<\/code>/).flatten
       expect(codes.any? { |code| created.secret_matches?(code) }).to be(true)
     end
