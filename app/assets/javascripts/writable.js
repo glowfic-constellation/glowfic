@@ -9,7 +9,7 @@ function tinyMCEConfig(selector) {
     // integration configs
     selector: selector,
     plugins: ["wordcount", "image", "link", "autoresize"],
-    cache_suffix: '?v=7.8.0-2025-05-11',
+    cache_suffix: '?v=8.9.3-2026-10-10',
     license_key: 'gpl',
     // interface configs
     menubar: false, // disable "File", "Edit", etc
