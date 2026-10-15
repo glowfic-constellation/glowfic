@@ -1,4 +1,15 @@
 RSpec.describe "Writable" do
+  describe "editor" do
+    it "does not run a query per gallery when grouping the icon picker" do
+      user = login
+      character = create(:character, user: user)
+      user.update!(active_character: character)
+      add_gallery = -> { character.galleries << create(:gallery, user: user, icon_count: 1) }
+      2.times { add_gallery.call }
+      expect_constant_queries("/posts/new") { 2.times { add_gallery.call } }
+    end
+  end
+
   describe "creation" do
     it "creates a new post and reply and edits them with history" do
       user = create(:user, username: "John Doe", password: known_test_password)

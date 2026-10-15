@@ -9,7 +9,11 @@ class WritableController < ApplicationController
 
     faked = Struct.new(:name, :id, :plucked_characters)
     faked_npcs = Struct.new(:name, :id, :plucked_npcs)
-    templates = user.templates.ordered
+    templates = user.templates.ordered.to_a
+    # One query for every template's characters, not one per template per use.
+    chars_by_template = Character.non_npcs.not_retired.where(template_id: templates.map(&:id)).ordered
+      .pluck(:template_id, Template::CHAR_PLUCK).group_by(&:first).transform_values { |rows| rows.map { |row| row.drop(1) } }
+    templates.each { |template| template.plucked_characters = chars_by_template.fetch(template.id, []) }
     templateless = faked.new(
       'Templateless', nil,
       user.characters.non_npcs.where(template_id: nil, retired: false).ordered.pluck(Template::CHAR_PLUCK),
@@ -86,14 +90,21 @@ class WritableController < ApplicationController
 
     reply_count = @replies.count
 
-    @replies = @replies
+    # OFFSET on the joined query reads every skipped row, so deep pages of long
+    # posts were slow. Find the page's first reply_order from the index alone.
+    first_order = @replies.ordered.offset((cur_page - 1) * per).pick(:reply_order)
+    page_replies = @replies
       .select(select)
       .joins(:user)
       .left_outer_joins(:character)
       .left_outer_joins(:icon)
       .left_outer_joins(:character_alias)
       .ordered
-      .paginate(page: cur_page, per_page: per, total_entries: reply_count)
+      .where('replies.reply_order >= ?', first_order)
+      .limit(per)
+    @replies = WillPaginate::Collection.create(cur_page, per, reply_count) do |pager|
+      pager.replace(first_order.nil? ? [] : page_replies.to_a)
+    end
     redirect_to post_path(@post, page: @replies.total_pages, per_page: per) and return if cur_page > @replies.total_pages
     use_javascript('paginator')
 

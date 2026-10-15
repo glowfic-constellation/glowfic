@@ -12,7 +12,10 @@ class Template < ApplicationRecord
   CHAR_PLUCK = Arel.sql("characters.id as id, concat_ws(' | ', characters.name, nickname, screenname)")
   NPC_PLUCK = Arel.sql("characters.id as id, concat_ws(' | ', characters.name, nickname)")
 
+  attr_writer :plucked_characters
+
   def plucked_characters
-    characters.non_npcs.not_retired.pluck(CHAR_PLUCK)
+    # synchronize with writeable_controller#build_template_groups
+    @plucked_characters ||= characters.non_npcs.not_retired.pluck(CHAR_PLUCK)
   end
 end

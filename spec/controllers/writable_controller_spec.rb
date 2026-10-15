@@ -113,6 +113,20 @@ RSpec.describe WritableController do
   end
 
   describe "#build_template_groups" do
+    it "loads every template's characters in one query, however many templates there are" do
+      user = create(:user)
+      login_as(user)
+      create_list(:template, 6, user: user).each { |template| create(:character, user: user, template: template) }
+      queries = []
+      count = ->(*, payload) { queries << payload[:sql] if payload[:sql].include?('concat_ws') }
+      ActiveSupport::Notifications.subscribed(count, 'sql.active_record') do
+        controller.send(:build_template_groups)
+        assigns(:templates).each(&:plucked_characters)
+      end
+      expect(queries.size).to eq(3) # templated characters, templateless characters, NPCs
+      expect(assigns(:templates).size).to eq(6)
+    end
+
     it "orders templates correctly" do
       user = create(:user)
       template2 = create(:template, user: user, name: "b")

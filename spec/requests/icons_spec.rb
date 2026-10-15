@@ -43,6 +43,15 @@ RSpec.describe "Icon" do
   end
 
   describe "replace" do
+    it "does not run a query per gallery" do
+      user = login
+      icon = create(:icon, user: user)
+      create(:gallery, user: user, icon_count: 1).icons << icon
+      expect_constant_queries("/icons/#{icon.id}/replace") do
+        2.times { create(:gallery, user: user, icon_count: 1).icons << icon }
+      end
+    end
+
     it "replaces post and reply icons" do
       user = login
       icon = create(:icon, user: user, keyword: "original")
