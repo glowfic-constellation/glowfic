@@ -37,6 +37,10 @@ Doorkeeper.configure do
     raise Doorkeeper::Errors::InvalidGrant, Doorkeeper::OAuth::ErrorResponse.new(name: :invalid_grant)
   end
 
+  after_successful_strategy_response do |_request, _response|
+    CleanOauthRecordsJob.enqueue_daily
+  end
+
   default_scopes :api
   optional_scopes :openid, :profile
 

@@ -5,3 +5,5 @@
 require File.expand_path('config/application', __dir__)
 
 Rails.application.load_tasks
+# doorkeeper:db:cleanup, for running the OAuth cleanup by hand (CleanOauthRecordsJob runs it daily).
+Doorkeeper::Rake.load_tasks

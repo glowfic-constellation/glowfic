@@ -51,6 +51,11 @@ RSpec.describe 'OAuth authorization' do
       expect(response).to render_template(layout: 'layouts/application')
     end
 
+    it 'enqueues the daily cleanup of stale tokens and grants' do
+      post '/oauth/authorize', params: authorize_params
+      expect { exchange(code_from(response.location)['code']) }.to have_enqueued_job(CleanOauthRecordsJob)
+    end
+
     it 'refuses the plain PKCE method' do
       get '/oauth/authorize', params: authorize_params.merge(code_challenge: verifier, code_challenge_method: 'plain')
       aggregate_failures do
