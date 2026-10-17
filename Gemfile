@@ -36,10 +36,10 @@ gem 'jwt'
 gem 'newrelic_rpm'
 gem 'nilify_blanks'
 gem 'nokogiri'
-gem 'pg', '~> 1.6'
+gem 'pg', '~> 1.7'
 gem 'pg_search'
 gem 'rack-pratchett'
-gem 'rails', '~> 8.1.3'
+gem 'rails', '~> 8.1.4'
 gem "redcarpet", "~> 3.6"
 gem 'redis', '~> 6.0'
 gem 'request_store', '~> 1.7'
@@ -68,7 +68,7 @@ group :development do
   gem 'listen'
   gem 'memory_profiler'
   gem 'rack-mini-profiler'
-  gem 'rubocop', '~> 1.90.0', require: false
+  gem 'rubocop', '~> 1.91.0', require: false
   gem 'rubocop-capybara', '~> 3.0.0', require: false
   gem 'rubocop-factory_bot', '~> 2.28.0', require: false
   gem 'rubocop-performance', '~> 1.27.0', require: false
