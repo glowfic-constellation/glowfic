@@ -273,6 +273,14 @@ RSpec.describe Reply do
         expect(reply.word_count).to eq(999)
       end
     end
+
+    describe "#editor_mode" do
+      it "treats a blank editor mode as unset" do
+        reply = create(:reply, editor_mode: nil)
+        reply.update!(editor_mode: '', content: 'edited')
+        expect(reply.reload.editor_mode).to be_nil
+      end
+    end
   end
 
   describe "rendered content" do

@@ -442,6 +442,17 @@ RSpec.describe Post do
       post = create(:post, content: '')
       expect(post.id).not_to be_nil
     end
+
+    it "treats a blank editor mode as unset" do
+      post = create(:post, editor_mode: nil)
+      post.update!(editor_mode: '', content: 'edited')
+      expect(post.reload.editor_mode).to be_nil
+    end
+
+    it "rejects an unknown editor mode" do
+      post = build(:post, editor_mode: 'txt')
+      expect(post.valid?).to eq(false)
+    end
   end
 
   describe "#word_count" do

@@ -14,6 +14,13 @@ RSpec.describe PostsController, 'GET new' do
     expect(flash[:error]).to eq("You do not have permission to create posts.")
   end
 
+  it "ignores an invalid default editor" do
+    user.update_columns(default_editor: 'txt') # rubocop:disable Rails/SkipsModelValidations
+    login_as(user)
+    get :new
+    expect(assigns(:post).editor_mode).to be_nil
+  end
+
   it "sets relevant fields" do
     char1 = create(:character, user: user, name: 'alphafirst')
     user.update!(active_character: char1)
