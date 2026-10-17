@@ -48,6 +48,10 @@
       Paragraphs are inserted using the Return key.
       Single linebreaks can be inserted by also holding the Shift key when you press the Return key.
     %p
+      The expando button inserts a collapsible section: readers see only the summary line, and click it to reveal the text inside.
+      If you have text selected, it becomes the summary.
+      Expandos are always shown collapsed once posted.
+    %p
       %strong Beware:
       when pasting content into the editor, such as from another reply or from another website, you may accidentally transfer font or background formatting properties.
       Please instead paste without formatting (usually available on right-click) and re-format with bold, italics, underline (etc.) as necessary, to avoid breaking the display of the text for users on other layouts.
@@ -70,6 +74,9 @@
       or a
       %code="<br>"
       tag.
+    %p
+      To make a collapsible expando, use
+      %code="<details><summary>click to expand</summary>expanded text</details>"
     #markup-allowed-tags
       %strong Allowed tags:
       %ul.inline-list

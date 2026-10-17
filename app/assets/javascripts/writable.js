@@ -8,7 +8,7 @@ function tinyMCEConfig(selector) {
   return {
     // integration configs
     selector: selector,
-    plugins: ["wordcount", "image", "link", "autoresize"],
+    plugins: ["wordcount", "image", "link", "autoresize", "accordion"],
     cache_suffix: '?v=7.8.0-2025-05-11',
     license_key: 'gpl',
     // interface configs
@@ -17,7 +17,7 @@ function tinyMCEConfig(selector) {
     min_height: height,
     // - toolbar
     toolbar_sticky: true,
-    toolbar: ["bold italic underline strikethrough forecolor | link image | blockquote hr bullist numlist | undo redo"],
+    toolbar: ["bold italic underline strikethrough forecolor | link image | blockquote hr bullist numlist accordion | undo redo"],
     // - statusbar
     statusbar: true,
     branding: false,
@@ -99,6 +99,13 @@ function setupTinyMCE() {
   if (typeof tinyMCE === 'undefined') {
     setTimeout(setupTinyMCE, 50);
   } else {
+    // relabel the accordion plugin (<details><summary>) as an "expando"
+    tinyMCE.addI18n('en', {
+      'Insert accordion': 'Insert expando',
+      'Accordion': 'Expando',
+      'Accordion summary...': 'Click to expand',
+      'Accordion body...': 'Expanded text',
+    });
     tinyMCE.init(tinyMCEConfig(selector));
     tinyMCEInit = true;
   }
