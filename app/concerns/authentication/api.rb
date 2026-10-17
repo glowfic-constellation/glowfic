@@ -10,10 +10,15 @@ module Authentication::Api
     end
 
     def current_user
-      @current_user ||= user_from_token
+      @current_user ||= oauth_user || user_from_token
     end
 
     private
+
+    def oauth_user
+      return unless doorkeeper_token&.acceptable?([:api])
+      Authentication.oauth_user(doorkeeper_token.resource_owner_id)
+    end
 
     def user_from_token
       user_id = decoded_api_token[:user_id]

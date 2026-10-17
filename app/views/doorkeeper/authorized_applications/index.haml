@@ -1,0 +1,23 @@
+%table
+  %thead
+    %tr
+      %th.table-title{colspan: 3} Authorized Applications
+    %tr
+      %th.sub Application
+      %th.sub First Authorized
+      %th.sub
+  %tbody
+    - @applications.each do |application|
+      - klass = cycle('even', 'odd')
+      %tr
+        %td.padding-5{class: klass}
+          = application.name
+          by
+          = user_link(application.owner)
+        %td.padding-5{class: klass}= pretty_time(application.created_at)
+        %td.width-70.right-align{class: klass}
+          = button_to 'Revoke', oauth_authorized_application_path(application), method: :delete, class: 'button',
+            data: { confirm: "Are you sure? #{application.name} will no longer be able to act as you." }
+    - if @applications.empty?
+      %tr
+        %td.centered.padding-10.no-posts{ class: cycle('even', 'odd'), colspan: 3 } — No authorized applications —

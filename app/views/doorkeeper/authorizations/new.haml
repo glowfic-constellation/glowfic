@@ -1,0 +1,25 @@
+- client = @pre_auth.client.application
+- fields = [:redirect_uri, :state, :response_type, :response_mode, :scope, :code_challenge, :code_challenge_method]
+- auth_params = fields.index_with { |field| @pre_auth.public_send(field) }.merge(client_id: client.uid)
+
+.form-table
+  .editor-title Authorize Application
+  %div
+    .sub Application
+    .even
+      %b= client.name
+      registered by
+      = user_link(client.owner)
+  %div
+    .sub Redirects to
+    .odd
+      %code= URI.parse(@pre_auth.redirect_uri).host
+  %div
+    .sub.vtop Permissions
+    .even
+      %ul
+        - @pre_auth.scopes.each do |scope|
+          %li= t(scope, scope: [:doorkeeper, :scopes])
+  .form-table-ender
+    = button_to 'Authorize', oauth_authorization_path, method: :post, params: auth_params, class: 'button'
+    = button_to 'Deny', oauth_authorization_path, method: :delete, params: auth_params, class: 'button'

@@ -120,6 +120,15 @@ Rails.application.routes.draw do
   # Blocks
   resources :blocks, except: [:show]
 
+  # OAuth2 provider
+  use_doorkeeper do
+    skip_controllers :applications
+  end
+  use_doorkeeper_openid_connect
+  resources :oauth_clients do
+    member { patch :renew_secret }
+  end
+
   # API
   namespace :api do
     namespace :v1 do

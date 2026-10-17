@@ -1,0 +1,3 @@
+.form-table
+  .editor-title Authorization Error
+  .even.padding-10= (local_assigns[:error_response] || @pre_auth.error_response).body[:error_description]

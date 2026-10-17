@@ -31,6 +31,11 @@
 
 en:
   hello: "Hello world"
+  doorkeeper:
+    scopes:
+      api: "Read and write anything you can through the Glowfic API, as you"
+      openid: "Log you in with your Glowfic account"
+      profile: "See your username and profile link"
   will_paginate:
     previous_label: "&lsaquo; Previous"
     next_label: "Next &rsaquo;"

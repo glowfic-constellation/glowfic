@@ -14,6 +14,13 @@
         = link_to profile_edit_user_path(current_user) do
           %button{type: 'button'} Edit Profile
     %div
+      .sub Applications
+      %div{class: cycle('even', 'odd')}
+        = link_to oauth_authorized_applications_path do
+          %button{type: 'button'} Authorized Applications
+        = link_to oauth_clients_path do
+          %button{type: 'button'} Your Applications
+    %div
       .sub Bookmarks
       .checkbox-field{class: cycle('even', 'odd')}
         = f.check_box :public_bookmarks
