@@ -7,15 +7,60 @@ class Api::V1::PostsController < Api::ApiController
     description 'Viewing and editing posts'
   end
 
-  api :GET, '/posts', 'Load all posts optionally filtered by subject'
+  api :GET, '/posts', 'Load all posts, optionally filtered. Results are ordered by subject unless otherwise specified.'
+  header 'Authorization', 'Authorization token for a user in the format "Authorization" : "Bearer [token]". Required only when owed is true.', required: false
   param :q, String, required: false, desc: 'Subject search term'
   param :min, String, required: false, desc: 'If present, returns only ID and subject per post'
+  param :page, :number, required: false, desc: 'Page in results (25 per page)'
+  param :author_id, :number, required: false, desc: 'If provided, returns only posts where the given user is an author'
+  param :board_id, :number, required: false, desc: 'If provided, returns only posts in the given continuity'
+  param :character_id, :number, required: false, desc: 'If provided, returns only posts where the given character appears, in the post itself or in any reply'
+  param :template_id, :number, required: false, desc: 'If provided, returns only posts where any character in the given template appears, in the post itself or in any reply'
+  param :status, Post.statuses.keys, required: false, desc: 'If provided, returns only posts with the given status'
+  param :owed, :boolean, required: false, desc: "If true, returns only posts on which the current user owes a reply, as on the Replies Owed page (including the user's preference for hiding hiatused posts there). Requires authentication."
+  param :order, ['subject', 'tagged_at'], required: false, desc: "Result ordering: 'subject' (default, alphabetical) or 'tagged_at' (most recently updated first)"
+  error 401, "You must be logged in to request owed posts"
+  error 422, "Invalid parameters provided"
   def index
-    queryset = Post.order(Arel.sql('LOWER(subject) asc'))
+    owed = ActiveModel::Type::Boolean.new.cast(params[:owed])
+    if owed && !logged_in?
+      login_required
+      return
+    end
+
+    queryset = owed ? owed_posts : Post.all
     queryset = queryset.where('subject ILIKE ?', "%#{params[:q]}%") if params[:q].present?
+    queryset = queryset.where(status: params[:status]) if params[:status].present?
+
+    if params[:author_id].present?
+      return unless (author = find_object(User, param: :author_id, status: :unprocessable_content))
+      queryset = queryset.where(id: Post::Author.where(user_id: author.id).select(:post_id))
+    end
+
+    if params[:board_id].present?
+      return unless (board = find_object(Board, param: :board_id, status: :unprocessable_content))
+      queryset = queryset.where(board_id: board.id)
+    end
+
+    if params[:character_id].present?
+      return unless (character = find_object(Character, param: :character_id, status: :unprocessable_content))
+      queryset = queryset.with_character(character.id)
+    end
+
+    if params[:template_id].present?
+      return unless (template = find_object(Template, param: :template_id, status: :unprocessable_content))
+      queryset = queryset.with_character(Character.where(template_id: template.id).select(:id))
+    end
+
+    # filter visibility before paginating so the pagination headers only count visible posts
+    queryset = queryset.visible_to(current_user)
+    queryset = if params[:order] == 'tagged_at'
+      queryset.ordered
+    else
+      queryset.order(Arel.sql('LOWER(subject) asc'), id: :asc)
+    end
 
     posts = paginate queryset, per_page: 25
-    posts = posts.visible_to(current_user)
     render json: { results: posts.as_json(min: params[:min].present?) }
   end
 
@@ -137,6 +182,13 @@ class Api::V1::PostsController < Api::ApiController
   end
 
   private
+
+  # matches PostsController#owed's default view
+  def owed_posts
+    posts = Post.replies_owed_by(current_user)
+    posts = posts.not_on_hiatus if current_user.hide_hiatused_tags_owed?
+    posts.where.not(id: current_user.hidden_posts).no_tests
+  end
 
   def find_post
     return unless (@post = find_object(Post))
