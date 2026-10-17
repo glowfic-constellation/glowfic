@@ -25,7 +25,7 @@ gem 'bootstrap', '~> 5.3' # pin until major version is handled
 gem 'connection_pool', '~> 2.0' # pin until version 3.x is supported by Rails (https://github.com/glowfic-constellation/glowfic/pull/2616)
 gem 'dartsass-sprockets'
 gem 'exception_notification'
-gem 'gon', '~> 7.1'
+gem 'gon', '~> 8.0'
 gem 'haml-rails'
 gem 'httparty'
 gem 'jquery-fileupload-rails'
