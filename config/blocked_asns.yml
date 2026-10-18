@@ -56,7 +56,5 @@ asns:
     name: LeaseWeb NL
   - asn: 7203
     name: LeaseWeb USA SFO
-  - asn: 8100
-    name: QuadraNet
   - asn: 210644
     name: Aeza Group (RU)
