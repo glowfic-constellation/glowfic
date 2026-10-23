@@ -274,4 +274,37 @@ RSpec.describe Reply do
       end
     end
   end
+
+  describe "rendered content" do
+    it "stores sanitized HTML when created" do
+      reply = create(:reply, content: "<p>hi</p><script>bad()</script>")
+      expect(reply.rendered_content).to eq(Reply.render_content(reply.content, reply.editor_mode))
+      expect(reply.rendered_content).not_to include('script')
+      expect(reply.rendered_content_version).to eq(Reply::RENDER_VERSION)
+    end
+
+    it "re-renders when the content or editor mode changes" do
+      reply = create(:reply, content: "*one*", editor_mode: 'md')
+      reply.update!(content: "*two*")
+      expect(reply.rendered_content).to include('two')
+      reply.update!(editor_mode: 'html')
+      expect(reply.rendered_content).to eq(Reply.render_content("*two*", 'html'))
+    end
+
+    it "does not offer stored HTML for unsaved edits" do
+      reply = create(:reply, content: "old")
+      reply.content = "new"
+      expect(reply.current_rendered_content).to be_nil
+    end
+
+    it "does not offer stored HTML from an older render version" do
+      reply = create(:reply)
+      reply.update_columns(rendered_content_version: Reply::RENDER_VERSION - 1) # rubocop:disable Rails/SkipsModelValidations
+      expect(reply.reload.current_rendered_content).to be_nil
+    end
+
+    it "is not audited" do
+      expect(Reply.non_audited_columns).to include('rendered_content', 'rendered_content_version')
+    end
+  end
 end

@@ -25,4 +25,15 @@ RSpec.describe "Tags" do
       end
     end
   end
+
+  describe "show" do
+    it "does not run a query per gallery" do
+      user = login
+      group = create(:gallery_group, user: user)
+      create(:gallery, user: user, gallery_groups: [group])
+      expect_constant_queries("/tags/#{group.id}?view=galleries") do
+        create_list(:gallery, 2, user: user, gallery_groups: [group])
+      end
+    end
+  end
 end

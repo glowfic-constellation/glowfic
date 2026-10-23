@@ -12,6 +12,8 @@ Bundler.require(*Rails.groups)
 # set up yet at that point and `MiddlewareStack#use` doesn't const-resolve.
 require_relative '../app/middleware/anon_load_shed'
 require_relative '../app/middleware/database_unavailable'
+require_relative '../app/middleware/client_fingerprint'
+require_relative '../app/middleware/profile_sampler'
 
 module Glowfic
   ALLOWED_TAGS = %w(b i u sub sup del ins hr p br div span pre code h1 h2 h3 h4 h5 h6 ul ol li dl dt dd a img blockquote q table tbody td th thead tr
@@ -86,9 +88,13 @@ module Glowfic
     config.action_view.sanitized_allowed_attributes = %w(href src width height alt cite datetime title class name xml:lang abbr style target)
     config.middleware.use Rack::Pratchett
     config.middleware.use Rack::Deflater
+    # Before AnonLoadShed, so shed requests are fingerprinted too.
+    config.middleware.use ClientFingerprint
     # Sheds anonymous traffic with deep queue wait so logged-in users keep
     # getting served during saturation. See app/middleware/anon_load_shed.rb.
     config.middleware.use AnonLoadShed
+    # After AnonLoadShed, so shed requests are not profiled.
+    config.middleware.use ProfileSampler
     # Answers with 503 rather than 500 while Postgres is restarting or failing
     # over. Appended last so it sits inside ActionDispatch::ShowExceptions and
     # sees the exception before that renders a 500.

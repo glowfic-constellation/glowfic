@@ -53,6 +53,7 @@ require 'support/spec_test_helper'
 require 'support/api_test_helper'
 require 'support/env_helper'
 require 'support/posts_controller_shared'
+require 'support/query_count_helper'
 require 'capybara/rspec'
 
 RSpec.configure do |config|
@@ -84,6 +85,7 @@ RSpec.configure do |config|
   config.include SpecTestHelper, type: :controller
   config.include ApiTestHelper, type: :controller
   config.include SpecRequestHelper, type: :request
+  config.include QueryCountHelper, type: :request
   config.include SpecSystemHelper, type: :system
 
   config.filter_run show_in_doc: true if ENV['APIPIE_RECORD']

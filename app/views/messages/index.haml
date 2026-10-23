@@ -21,14 +21,14 @@
             %td.padding-left-5{class: klass}= # just padding
             %td{class: klass}
               = link_to message.unempty_subject, message
-              - if message.num_in_thread.to_i > 1
-                (#{message.num_in_thread})
+              - if @thread_counts[message.thread_id] > 1
+                (#{@thread_counts[message.thread_id]})
             %td{class: klass}
               - if @view == 'inbox'
                 = message_sender(message)
               - else
                 = user_link(message.recipient)
-            %td{class: klass}= pretty_time(message.last_in_thread.created_at)
+            %td{class: klass}= pretty_time(message.thread_created_at)
             %td{class: klass}= check_box_tag :"marked_ids[]", message.id, false, class: 'checkbox check-all-item', id: nil
         %tr
           %td.right-align.padding-5{colspan: 5, class: cycle('even', 'odd')}

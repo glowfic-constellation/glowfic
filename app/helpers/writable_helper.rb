@@ -72,6 +72,13 @@ module WritableHelper
   MD_RENDERER = Redcarpet::Render::HTML.new(prettify: true, hard_wrap: true, with_toc_data: true)
   MD_CONVERTER = Redcarpet::Markdown.new(MD_RENDERER, MD_EXTENSIONS)
 
+  # Stored HTML for a saved, unedited reply; otherwise sanitizes content now.
+  def written_content(written)
+    stored = written.try(:current_rendered_content)
+    return stored.html_safe if stored
+    sanitize_written_content(written.content.to_s, written.editor_mode)
+  end
+
   # specific blockquote handling is due to simple_format wanting to wrap a blockquote in a paragraph
   def sanitize_written_content(content, editor_mode='html')
     if editor_mode == 'md'

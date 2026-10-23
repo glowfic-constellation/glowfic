@@ -4,9 +4,9 @@ class ApplicationController < ActionController::Base
 
   rescue_from ActionController::InvalidAuthenticityToken, with: :handle_invalid_token
 
-  before_action :check_country
   before_action :check_tos
   before_action :check_permanent_user
+  before_action :record_logged_in
   before_action :show_password_warning
   before_action :require_glowfic_domain
   before_action :set_login_gon
@@ -15,6 +15,11 @@ class ApplicationController < ActionController::Base
   after_action :store_location
 
   protected
+
+  # Runs after check_permanent_user, so "remember me" users count as logged in.
+  def record_logged_in
+    NewRelic::Agent.add_custom_attributes(logged_in: logged_in?) if defined?(NewRelic::Agent)
+  end
 
   def login_required
     return if logged_in?
@@ -185,11 +190,6 @@ class ApplicationController < ActionController::Base
   end
 
   private
-
-  def check_country
-    return if $safe_ips.include?(request.ip)
-    render plain: "Access denied from your location.", status: :forbidden if request.location&.country_code == 'CN'
-  end
 
   def check_forced_logout
     return unless logged_in?

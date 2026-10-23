@@ -25,7 +25,6 @@ gem 'bootstrap', '~> 5.3' # pin until major version is handled
 gem 'connection_pool', '~> 2.0' # pin until version 3.x is supported by Rails (https://github.com/glowfic-constellation/glowfic/pull/2616)
 gem 'dartsass-sprockets'
 gem 'exception_notification'
-gem 'geocoder'
 gem 'gon', '~> 7.1'
 gem 'haml-rails'
 gem 'httparty'
@@ -37,22 +36,22 @@ gem 'jwt'
 gem 'newrelic_rpm'
 gem 'nilify_blanks'
 gem 'nokogiri'
-gem 'pg', '~> 1.6'
+gem 'pg', '~> 1.7'
 gem 'pg_search'
 gem 'rack-pratchett'
-gem 'rails', '~> 8.1.3'
+gem 'rails', '~> 8.1.4'
 gem "redcarpet", "~> 3.6"
-gem 'redis', '~> 5.4'
+gem 'redis', '~> 6.0'
 gem 'request_store', '~> 1.7'
 gem 'resque'
 gem 'sanitize'
-gem 'scout_apm'
 gem 'select2-rails'
 gem 'sprockets'
 gem 'sprockets-rails'
 gem 'terser'
 gem 'test-unit', '~> 3.7' # required by Heroku for production console
 gem 'tinymce-rails', '~> 7.8' # when upgrading, bump cache_suffix in app/assets/javascripts/writable.js
+gem 'vernier', '~> 1.11' # sampled request profiling
 gem 'will_paginate'
 
 group :production do
@@ -64,18 +63,18 @@ group :production do
 end
 
 group :development do
-  gem "brakeman", '~> 8.0.6', require: false
+  gem "brakeman", '~> 8.1.0', require: false
   gem 'haml_lint', '~> 0.78.0', require: false
   gem 'listen'
   gem 'memory_profiler'
   gem 'rack-mini-profiler'
-  gem 'rubocop', '~> 1.90.0', require: false
+  gem 'rubocop', '~> 1.92.0', require: false
   gem 'rubocop-capybara', '~> 3.0.0', require: false
   gem 'rubocop-factory_bot', '~> 2.28.0', require: false
   gem 'rubocop-performance', '~> 1.27.0', require: false
-  gem 'rubocop-rails', '~> 2.37.0', require: false
+  gem 'rubocop-rails', '~> 2.38.0', require: false
   gem 'rubocop-rspec', '~> 3.10.2', require: false
-  gem 'rubocop-rspec_rails', '~> 2.32.0', require: false
+  gem 'rubocop-rspec_rails', '~> 2.33.0', require: false
   gem 'rubydex', require: false
   gem 'traceroute'
 end
@@ -97,7 +96,7 @@ group :test do
   gem 'rails-controller-testing'
   gem 'rspec-github', require: false
   gem 'selenium-webdriver'
-  gem 'simplecov', '1.2.0'
+  gem 'simplecov', '1.3.2'
   gem 'timecop'
   gem 'webmock'
 end

@@ -195,7 +195,7 @@ class RepliesController < WritableController
   def check_permalink_read_position
     @permalink_reply = @reply
     cur_page = params[:page].to_i
-    return unless cur_page > 0
+    return if cur_page <= 0
 
     unread = @post.first_unread_for(current_user)
     unread_page = if unread.nil?
@@ -205,7 +205,7 @@ class RepliesController < WritableController
     else
       unread.post_page(per_page)
     end
-    return unless unread_page < cur_page
+    return if unread_page >= cur_page
 
     @permalink_jumped_ahead = true
   end

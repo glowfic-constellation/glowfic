@@ -175,6 +175,7 @@ class CharactersController < ApplicationController
     else
       @alts = @character.user.characters.where(template_id: nil)
     end
+    @alts = @alts.preload(:default_icon, :aliases, character_tags: :setting)
     @alts -= [@character] unless @alts.size <= 1 || @character.aliases.exists?
     use_javascript('icons')
 

@@ -20,8 +20,10 @@ class MessagesController < ApplicationController
       includes << :sender
     end
     @messages = Message.from(from_table, "messages").joins(:first_thread)
-      .select('*', 'first_threads_messages.subject as thread_subject')
+      .select('*', 'first_threads_messages.subject as thread_subject', 'first_threads_messages.created_at as thread_created_at')
       .includes(*includes).order('messages.id desc').paginate(page: page)
+    # counted after pagination so only the threads on this page are counted
+    @thread_counts = Message.where(thread_id: @messages.map(&:thread_id)).group(:thread_id).count
     @view = @page_title.downcase
   end
 

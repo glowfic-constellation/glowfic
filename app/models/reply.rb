@@ -11,12 +11,13 @@ class Reply < ApplicationRecord
 
   belongs_to :post, inverse_of: :replies, optional: false
   validate :author_can_write_in_post, on: :create
-  audited associated_with: :post, except: [:reply_order, :word_count], update_with_comment_only: false
+  audited associated_with: :post, except: [:reply_order, :word_count, :rendered_content, :rendered_content_version], update_with_comment_only: false
 
   has_many :bookmarks, inverse_of: :reply, dependent: :destroy
   has_many :bookmarking_users, -> { ordered }, through: :bookmarks, source: :user, dependent: :destroy
 
   before_save :cache_word_count, if: :content_changed?
+  before_save :cache_rendered_content, if: :rendered_content_stale?
   after_create :notify_other_authors, :destroy_draft, :update_active_char, :set_last_reply, :update_post, :update_post_authors
   after_update :update_post
   after_destroy :set_previous_reply_to_last, :remove_post_author, :update_flat_post
@@ -59,7 +60,29 @@ class Reply < ApplicationRecord
     end
   end
 
+  # Bump when the sanitizer or Markdown rules change, so stored HTML is re-rendered.
+  RENDER_VERSION = 1
+
+  # Sanitized HTML for display, or nil when it has to be rendered from content.
+  def current_rendered_content
+    return if rendered_content.nil? || rendered_content_stale?
+    rendered_content
+  end
+
+  def self.render_content(content, editor_mode)
+    ApplicationController.helpers.sanitize_written_content(content.to_s, editor_mode)
+  end
+
   private
+
+  def rendered_content_stale?
+    rendered_content_version != RENDER_VERSION || content_changed? || editor_mode_changed?
+  end
+
+  def cache_rendered_content
+    self.rendered_content = Reply.render_content(content, editor_mode)
+    self.rendered_content_version = RENDER_VERSION
+  end
 
   def cache_word_count
     self.word_count = computed_word_count
