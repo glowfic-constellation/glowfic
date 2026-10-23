@@ -185,6 +185,24 @@ RSpec.describe PostHelper do
       expect(helper.anchored_continuity_path(post)).to eq(continuity_path(post.board_id) + "#section-" + section.id.to_s)
     end
 
+    it "links to the page containing the section" do
+      board = create(:board)
+      create_list(:board_section, BoardSection::PER_PAGE, board: board)
+      section = create(:board_section, board: board)
+      post = create(:post, board: board, section: section)
+      expect(helper.anchored_continuity_path(post)).to eq(continuity_path(board, page: 2, anchor: "section-#{section.id}"))
+    end
+
+    it "uses the selected section order when available" do
+      board = create(:board)
+      create_list(:board_section, BoardSection::PER_PAGE * 2, board: board)
+      section = create(:board_section, board: board)
+      create(:post, board: board, section: section)
+      post = Post.left_joins(:section).select('posts.*, board_sections.section_order as board_section_order').find_by(section: section)
+      expect(post.board_section_order).to eq(BoardSection::PER_PAGE * 2)
+      expect(helper.anchored_continuity_path(post)).to eq(continuity_path(board, page: 3, anchor: "section-#{section.id}"))
+    end
+
     it "does not anchor for unsectioned post" do
       post = create(:post)
       expect(helper.anchored_continuity_path(post)).to eq(continuity_path(post.board_id))
