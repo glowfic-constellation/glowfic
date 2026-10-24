@@ -1,6 +1,6 @@
 - client = @pre_auth.client.application
-- fields = [:redirect_uri, :state, :response_type, :response_mode, :scope, :code_challenge, :code_challenge_method]
-- auth_params = fields.index_with { |field| @pre_auth.public_send(field) }.merge(client_id: client.uid)
+- fields = [:redirect_uri, :state, :response_type, :response_mode, :scope, :code_challenge, :code_challenge_method, :nonce]
+- auth_params = fields.index_with { |field| @pre_auth.public_send(field) }.compact.merge(client_id: client.uid)
 
 .form-table
   .editor-title Authorize Application
@@ -13,7 +13,7 @@
   %div
     .sub Redirects to
     .odd
-      %code= URI.parse(@pre_auth.redirect_uri).host
+      %code= @pre_auth.redirect_uri
   %div
     .sub.vtop Permissions
     .even

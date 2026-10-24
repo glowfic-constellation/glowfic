@@ -10,14 +10,34 @@ module Authentication::Api
     end
 
     def current_user
-      @current_user ||= oauth_user || user_from_token
+      @current_user ||= jwt_request? ? user_from_token : oauth_user
     end
 
     private
 
+    # Our JWTs always have three dot-separated segments, and Doorkeeper's opaque tokens
+    # (the default hex generator) never contain a dot, so this cleanly tells them apart.
+    # Don't configure a JWT or dotted access_token_generator without revisiting it.
+    def jwt_request?
+      authorization_value.to_s.count('.') == 2
+    end
+
+    def authorization_value
+      request.headers['Authorization'].to_s.split(' ').last
+    end
+
     def oauth_user
-      return unless doorkeeper_token&.acceptable?([:api])
-      Authentication.oauth_user(doorkeeper_token.resource_owner_id)
+      return unless authorization_value.present?
+      user = Authentication.oauth_user(doorkeeper_token.resource_owner_id) if doorkeeper_token&.acceptable?([:api])
+      return user if user
+      render_invalid_oauth_token unless performed?
+      nil
+    end
+
+    def render_invalid_oauth_token
+      error = { message: "Authorization token is not valid." }
+      response.headers['WWW-Authenticate'] = 'Bearer error="invalid_token"'
+      render json: { errors: [error] }, status: :unauthorized
     end
 
     def user_from_token
@@ -32,7 +52,7 @@ module Authentication::Api
 
     # handle edge case errors more reasonably
     def decode_api_token
-      auth_header = request.headers['Authorization'].to_s.split(' ').last
+      auth_header = authorization_value
       return {} unless auth_header.present?
       decode_value(auth_header)
     end

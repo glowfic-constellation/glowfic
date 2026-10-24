@@ -17,6 +17,13 @@ RSpec.describe Api::ApiController do
       it "displays an error if an invalid token is provided" do
         request.headers.merge({ Authorization: "Bearer definitely-invalid" })
         get :show, params: { id: 1 }
+        expect(response).to have_http_status(401)
+        expect(response.parsed_body['errors'][0]['message']).to eq("Authorization token is not valid.")
+      end
+
+      it "displays an error if a malformed JWT is provided" do
+        request.headers.merge({ Authorization: "Bearer not.a.jwt" })
+        get :show, params: { id: 1 }
         expect(response).to have_http_status(422)
         expect(response.parsed_body['errors'][0]['message']).to eq("Authorization token is not valid.")
       end
@@ -43,7 +50,7 @@ RSpec.describe Api::ApiController do
       it "displays an error if an invalid token is provided" do
         request.headers.merge({ Authorization: "Bearer definitely-invalid" })
         get :index
-        expect(response).to have_http_status(422)
+        expect(response).to have_http_status(401)
         expect(response.parsed_body['errors'][0]['message']).to eq("Authorization token is not valid.")
       end
 
@@ -94,7 +101,7 @@ RSpec.describe Api::ApiController do
     it "does not accept a token without the api scope" do
       oauth_login(create_token(scopes: 'openid profile'))
       get :show, params: { id: 1 }
-      expect(response).to have_http_status(422)
+      expect(response).to have_http_status(401)
     end
 
     it "does not accept an authorization code as a bearer token" do
@@ -102,7 +109,7 @@ RSpec.describe Api::ApiController do
         expires_in: 10.minutes, redirect_uri: application.redirect_uri,)
       request.headers.merge({ Authorization: "Bearer #{grant.plaintext_token}" })
       get :index
-      expect(response).to have_http_status(422)
+      expect(response).to have_http_status(401)
       expect(response.parsed_body['errors'][0]['message']).to eq("Authorization token is not valid.")
     end
 
@@ -112,7 +119,7 @@ RSpec.describe Api::ApiController do
         oauth_login(token)
         get :index
       end
-      expect(response).to have_http_status(422)
+      expect(response).to have_http_status(401)
     end
 
     it "does not accept a revoked access token" do
@@ -120,7 +127,7 @@ RSpec.describe Api::ApiController do
       token.revoke
       oauth_login(token)
       get :index
-      expect(response).to have_http_status(422)
+      expect(response).to have_http_status(401)
     end
 
     it "does not authenticate a suspended user" do
@@ -128,7 +135,7 @@ RSpec.describe Api::ApiController do
       user.update!(role_id: Permissible::SUSPENDED)
       oauth_login(token)
       get :show, params: { id: 1 }
-      expect(response).to have_http_status(422)
+      expect(response).to have_http_status(401)
     end
 
     it "does not authenticate a deleted user" do
@@ -136,7 +143,7 @@ RSpec.describe Api::ApiController do
       user.archive
       oauth_login(token)
       get :show, params: { id: 1 }
-      expect(response).to have_http_status(422)
+      expect(response).to have_http_status(401)
     end
   end
 end

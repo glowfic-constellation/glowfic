@@ -87,6 +87,16 @@ RSpec.describe 'OAuth authorization' do
       expect(Bookmark.find_by(reply: reply).user).to eq(user)
     end
 
+    it 'issues the token and releases the cleanup lock when the enqueue fails' do
+      allow(CleanOauthRecordsJob).to receive(:perform_later).and_raise(RuntimeError, 'queue down')
+      post '/oauth/authorize', params: authorize_params
+      exchange(code_from(response.location)['code'])
+      aggregate_failures do
+        expect(response).to have_http_status(200)
+        expect(Rails.cache.exist?(CleanOauthRecordsJob::LOCK_KEY)).to be(false)
+      end
+    end
+
     it 'issues nothing when the user denies' do
       delete '/oauth/authorize', params: authorize_params
       expect(code_from(response.location)['error']).to eq('access_denied')
@@ -152,6 +162,33 @@ RSpec.describe 'OAuth authorization' do
       expect(Doorkeeper::AccessGrant.count).to eq(0)
     ensure
       ActionController::Base.allow_forgery_protection = false
+    end
+
+    it 'shows the full redirect URI on the consent page' do
+      application.update!(redirect_uri: 'http://localhost:8080/auth/callback')
+      get '/oauth/authorize', params: authorize_params.merge(redirect_uri: 'http://localhost:8080/auth/callback')
+      expect(response.body).to include('<code>http://localhost:8080/auth/callback</code>')
+    end
+
+    it 'shows when each application last issued a token' do
+      Doorkeeper::AccessToken.create!(application: application, resource_owner_id: user.id, created_at: 10.days.ago)
+      newest = Doorkeeper::AccessToken.create!(application: application, resource_owner_id: user.id, created_at: 2.days.ago)
+      get '/oauth/authorized_applications'
+      aggregate_failures do
+        expect(response.parsed_body.at_css('table').text).to include('Last Active')
+        expect(response.parsed_body.css('time').pluck('datetime')).to eq([newest.created_at.utc.iso8601])
+      end
+    end
+
+    it 'removes the user\'s tokens and grants when the user row is deleted' do
+      Doorkeeper::AccessToken.create!(application: application, resource_owner_id: user.id)
+      Doorkeeper::AccessGrant.create!(application: application, resource_owner_id: user.id, expires_in: 600, redirect_uri: redirect_uri)
+      user.delete
+      aggregate_failures do
+        expect(Doorkeeper::AccessToken.count).to eq(0)
+        expect(Doorkeeper::AccessGrant.count).to eq(0)
+        expect(Doorkeeper::Application.find_by(id: application.id)).to be_present
+      end
     end
 
     it 'lets the user revoke an authorized application' do

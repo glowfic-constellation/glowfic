@@ -11,6 +11,10 @@ class CleanOauthRecordsJob < ApplicationJob
   def self.enqueue_daily
     return unless Rails.cache.write(LOCK_KEY, true, expires_in: 1.day, unless_exist: true)
     perform_later
+  rescue StandardError => e
+    # Don't hold the lock for a day if nothing was enqueued; cleanup is optional, so don't fail the token request.
+    Rails.cache.delete(LOCK_KEY)
+    Rails.error.report(e, handled: true)
   end
 
   def perform

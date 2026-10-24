@@ -105,6 +105,16 @@ RSpec.describe 'OpenID Connect' do
       end
     end
 
+    it 'keeps the nonce when approved through the consent form' do
+      get '/oauth/authorize', params: authorize_params
+      form = response.parsed_body.css('form').find { |node| node.text.include?('Authorize') }
+      form_params = form.css('input[name]').to_h { |input| [input['name'], input['value']] }
+      post form['action'], params: form_params
+
+      claims = verified_claims(exchange(redirect_query['code'])['id_token'])
+      expect(claims['nonce']).to eq('n-0S6_WzA2Mj')
+    end
+
     it 'returns the user from the userinfo endpoint' do
       token = exchange(authorize)['access_token']
       get '/oauth/userinfo', headers: { Authorization: "Bearer #{token}" }
@@ -139,7 +149,7 @@ RSpec.describe 'OpenID Connect' do
     it 'does not let an openid token use the API' do
       token = exchange(authorize)['access_token']
       post '/api/v1/bookmarks', params: { reply_id: create(:reply).id }, headers: { Authorization: "Bearer #{token}" }
-      expect(response).to have_http_status(422)
+      expect(response).to have_http_status(401)
       expect(Bookmark.count).to eq(0)
     end
 
