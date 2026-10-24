@@ -55,8 +55,8 @@ RSpec.describe PostsController, 'GET new' do
       expect(flash[:error]).to eq('You do not have access to this feature.')
     end
 
-    it "works for importer" do
-      user.update!(role_id: Permissible::IMPORTER)
+    it "works for power user" do
+      user.update!(role_id: Permissible::POWER_USER)
       get :new, params: { view: :import }
       expect(response).to have_http_status(200)
     end

@@ -3,8 +3,9 @@
     %tr
       %th.table-title{colspan: 3}
         = @page_title
-        = link_to new_oauth_client_path do
-          .link-box.action-new + Register Application
+        - if current_user.has_permission?(:create_oauth_applications)
+          = link_to new_oauth_client_path do
+            .link-box.action-new + Register Application
     %tr
       %th.sub Application
       %th.sub Redirect URIs

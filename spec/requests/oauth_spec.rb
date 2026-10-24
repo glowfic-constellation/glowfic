@@ -201,8 +201,20 @@ RSpec.describe 'OAuth authorization' do
     end
   end
 
-  it 'renders the application management pages' do
+  it 'hides application registration from users without permission' do
     user = login
+    get edit_user_path(user)
+    aggregate_failures do
+      expect(response.body).to include('Authorized Applications')
+      expect(response.body).not_to include('Your Applications')
+    end
+
+    get '/oauth_clients'
+    expect(response.body).not_to include('Register Application')
+  end
+
+  it 'renders the application management pages' do
+    user = login(create(:power_user, password: known_test_password))
     get edit_user_path(user)
     expect(response.body).to include('Your Applications')
 

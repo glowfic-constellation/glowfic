@@ -2,6 +2,7 @@
 # Lets a user register and manage the OAuth applications they develop.
 class OauthClientsController < ApplicationController
   before_action :login_required
+  before_action :require_creation_permission, only: [:new, :create]
   before_action :find_application, except: [:index, :new, :create]
 
   def index
@@ -75,6 +76,13 @@ class OauthClientsController < ApplicationController
 
   def application_params
     params.fetch(:application, {}).permit(:name, :redirect_uri, :confidential)
+  end
+
+  # Anyone can authorize applications, but only some users can register them. Managing an existing one is never restricted.
+  def require_creation_permission
+    return if current_user.has_permission?(:create_oauth_applications)
+    flash[:error] = "You do not have permission to register applications."
+    redirect_to oauth_clients_path
   end
 
   def find_application

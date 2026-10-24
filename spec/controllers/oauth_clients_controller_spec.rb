@@ -1,10 +1,37 @@
 RSpec.describe OauthClientsController do
-  let(:user) { create(:user) }
+  let(:user) { create(:power_user) }
   let!(:application) { create(:oauth_application, owner: user) }
 
   it "requires login" do
     get :index
     expect(response).to redirect_to(root_url)
+  end
+
+  context "when the user may not register applications" do
+    let(:user) { create(:user) }
+
+    before(:each) { login_as(user) }
+
+    it "does not show the new application form" do
+      get :new
+      expect(response).to redirect_to(oauth_clients_path)
+      expect(flash[:error]).to eq("You do not have permission to register applications.")
+    end
+
+    it "does not register an application" do
+      expect {
+        post :create, params: { application: { name: 'Reader', redirect_uri: 'https://reader.example.com/cb' } }
+      }.not_to change { Doorkeeper::Application.count }
+      expect(response).to redirect_to(oauth_clients_path)
+    end
+
+    it "still lets them manage an application they already own" do
+      patch :update, params: { id: application.id, application: { name: 'Renamed' } }
+      expect(application.reload.name).to eq('Renamed')
+
+      delete :destroy, params: { id: application.id }
+      expect(Doorkeeper::Application.exists?(application.id)).to be(false)
+    end
   end
 
   context "when logged in" do

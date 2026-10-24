@@ -46,7 +46,7 @@ FactoryBot.define do
       role_id { 2 }
     end
 
-    factory :importing_user do
+    factory :power_user do
       role_id { 3 }
     end
 

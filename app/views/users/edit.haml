@@ -18,8 +18,9 @@
       %div{class: cycle('even', 'odd')}
         = link_to oauth_authorized_applications_path do
           %button{type: 'button'} Authorized Applications
-        = link_to oauth_clients_path do
-          %button{type: 'button'} Your Applications
+        - if current_user.has_permission?(:create_oauth_applications)
+          = link_to oauth_clients_path do
+            %button{type: 'button'} Your Applications
     %div
       .sub Bookmarks
       .checkbox-field{class: cycle('even', 'odd')}

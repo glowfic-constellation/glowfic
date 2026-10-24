@@ -2,9 +2,14 @@
 module Permissible
   ADMIN = 1
   MOD = 2
-  IMPORTER = 3
+  POWER_USER = 3
   SUSPENDED = 4
   READONLY = 5
+
+  POWER_USER_PERMS = [
+    :import_posts,
+    :create_oauth_applications,
+  ]
 
   MOD_PERMS = [
     :edit_posts,
@@ -18,12 +23,13 @@ module Permissible
     # :delete_tags,
     # :edit_continuities
     :create_news,
+    :create_oauth_applications,
   ]
 
   def has_permission?(permission)
     return false unless role_id
     return true if admin?
-    return true if importer? && permission == :import_posts
+    return true if power_user? && POWER_USER_PERMS.include?(permission)
     return false unless mod?
     MOD_PERMS.include?(permission)
   end
@@ -36,8 +42,8 @@ module Permissible
     role_id == MOD
   end
 
-  def importer?
-    role_id == IMPORTER
+  def power_user?
+    role_id == POWER_USER
   end
 
   def suspended?
