@@ -1,4 +1,4 @@
-FROM ruby:4.0.6
+FROM ruby:4.0.9
 
 RUN mkdir -p /etc/apt/keyrings
 RUN curl -fsSL https://www.postgresql.org/media/keys/ACCC4CF8.asc -o /etc/apt/keyrings/postgresql.asc && \
