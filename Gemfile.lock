@@ -289,9 +289,9 @@ GEM
       net-protocol
     newrelic_rpm (10.9.1)
       logger
-    nilify_blanks (1.4.0)
-      activerecord (>= 4.0.0)
-      activesupport (>= 4.0.0)
+    nilify_blanks (2.0.0)
+      activerecord (>= 6.1)
+      activesupport (>= 6.1)
     nio4r (2.7.5)
     nokogiri (1.19.4-aarch64-linux-gnu)
       racc (~> 1.4)
