@@ -7,7 +7,8 @@ Doorkeeper.configure do
 
   resource_owner_authenticator do
     next current_user if logged_in?
-    session[:previous_url] = request.fullpath
+    # Only a GET can be replayed after login; a POST/DELETE from an expired consent form has lost its params.
+    session[:previous_url] = request.fullpath if request.get?
     flash.now[:error] = "You must be logged in to authorize an application."
     @page_title = 'Sign In'
     render 'sessions/new', status: :unauthorized

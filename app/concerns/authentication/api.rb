@@ -28,10 +28,12 @@ module Authentication::Api
 
     def oauth_user
       return unless authorization_value.present?
-      user = Authentication.oauth_user(doorkeeper_token.resource_owner_id) if doorkeeper_token&.acceptable?([:api])
-      return user if user
-      render_invalid_oauth_token unless performed?
-      nil
+      return unless doorkeeper_token&.acceptable?([:api])
+      Authentication.oauth_user(doorkeeper_token.resource_owner_id)
+    end
+
+    def invalid_oauth_token?
+      !jwt_request? && authorization_value.present? && current_user.nil?
     end
 
     def render_invalid_oauth_token
