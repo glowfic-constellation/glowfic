@@ -13,7 +13,7 @@ class CreateDoorkeeperTables < ActiveRecord::Migration[8.1]
     add_index :oauth_applications, :uid, unique: true
 
     create_table :oauth_access_grants do |t|
-      t.references :resource_owner, type: :integer, null: false, foreign_key: { to_table: :users }
+      t.references :resource_owner, type: :integer, null: false, foreign_key: { to_table: :users, on_delete: :cascade }
       t.references :application, null: false, foreign_key: { to_table: :oauth_applications }
       t.string :token, null: false, index: { unique: true }
       t.integer :expires_in, null: false
@@ -26,7 +26,7 @@ class CreateDoorkeeperTables < ActiveRecord::Migration[8.1]
     end
 
     create_table :oauth_access_tokens do |t|
-      t.references :resource_owner, type: :integer, null: false, foreign_key: { to_table: :users }
+      t.references :resource_owner, type: :integer, null: false, foreign_key: { to_table: :users, on_delete: :cascade }
       t.references :application, null: false, foreign_key: { to_table: :oauth_applications }
       t.string :token, null: false, index: { unique: true }
       t.string :refresh_token, index: { unique: true }
