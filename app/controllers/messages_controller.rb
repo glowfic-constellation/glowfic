@@ -5,26 +5,21 @@ class MessagesController < ApplicationController
   before_action :editor_setup, only: :new
 
   def index
-    blocked_ids = Block.where(blocking_user: current_user).pluck(:blocked_user_id)
-
-    includes = []
     if params[:view] == 'outbox'
       @page_title = 'Outbox'
-      from_table = current_user.sent_messages.where(visible_outbox: true).ordered_by_thread.select('distinct on (thread_id) messages.*')
-      from_table = from_table.where.not(recipient_id: blocked_ids).joins(:recipient).where.not(users: { deleted: true })
-      includes << :recipient
+      includes = :recipient
     else
       @page_title = 'Inbox'
-      from_table = current_user.messages.where(visible_inbox: true).ordered_by_thread.select('distinct on (thread_id) messages.*')
-      from_table = from_table.where.not(sender_id: blocked_ids).left_outer_joins(:sender).where('users.deleted IS NULL OR users.deleted = false')
-      includes << :sender
+      includes = :sender
     end
+    @view = @page_title.downcase
+
+    from_table = Message.box_threads_for(current_user, @view)
     @messages = Message.from(from_table, "messages").joins(:first_thread)
       .select('*', 'first_threads_messages.subject as thread_subject', 'first_threads_messages.created_at as thread_created_at')
-      .includes(*includes).order('messages.id desc').paginate(page: page)
+      .includes(includes).order('messages.id desc').paginate(page: page)
     # counted after pagination so only the threads on this page are counted
     @thread_counts = Message.where(thread_id: @messages.map(&:thread_id)).group(:thread_id).count
-    @view = @page_title.downcase
   end
 
   def new

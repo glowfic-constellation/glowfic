@@ -151,6 +151,7 @@ Rails.application.routes.draw do
       resources :index_sections, only: [] do
         collection { post :reorder }
       end
+      resources :messages, only: [:index, :show]
       resources :replies, only: [] do
         member { get :bookmark }
       end
