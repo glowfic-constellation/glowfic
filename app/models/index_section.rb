@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 class IndexSection < ApplicationRecord
   include Orderable
+  include Presentable
 
   belongs_to :index, inverse_of: :index_sections, optional: false
   has_many :index_posts, inverse_of: :index_section, dependent: false # This is handled in callbacks
