@@ -66,8 +66,10 @@ Rack::Attack.cache.store = ActiveSupport::Cache::RedisCacheStore.new(url: url, s
 # dropdown opened and one per keystroke - which is fundamentally different from
 # normal page browsing (~1 request per navigation). They get their own, more
 # generous bucket below so a search doesn't exhaust the general per-IP limit.
+# The reply search API is not autocomplete: one request costs the same as one
+# /replies/search page, so it stays in the same bucket as that page.
 def autocomplete_api_request?(req)
-  req.get? && req.path.start_with?('/api/v1/')
+  req.get? && req.path.start_with?('/api/v1/') && !req.path.match?(%r{\A/api/v1/replies(\.json)?/?\z})
 end
 
 # Calls an OAuth client makes from its own server: the token and OpenID Connect endpoints,
