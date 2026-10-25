@@ -45,6 +45,8 @@ workers ENV.fetch("WEB_CONCURRENCY", 2)
 unless ENV.fetch("RAILS_ENV", "development") == "test"
   require 'barnes'
   before_fork do
+    # Compact and age the preloaded heap so workers keep sharing its pages instead of copying them.
+    Process.warmup
     Barnes.start
   end
 end
