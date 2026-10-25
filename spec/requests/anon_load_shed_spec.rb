@@ -3,7 +3,7 @@ RSpec.describe "AnonLoadShed cookie handling" do
   # but not that a real signed cookie is actually readable from where the
   # middleware sits in the stack. That is the part most likely to break: the
   # jar needs `action_dispatch.key_generator` and friends on the env, and if
-  # they were missing the rescue in `permanent_user_id` would swallow it and
+  # they were missing the rescue in `RequestUser` would swallow it and
   # silently shed every remembered reader — exactly the bug being fixed, with
   # green unit tests. So build the cookie the way SessionsController does and
   # read it back through the middleware's own code path.

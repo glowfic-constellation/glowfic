@@ -110,7 +110,7 @@ end
 # household) don't fight each other for the IP-based quota.
 # Key: "rack::attack:#{Time.now.to_i/:period}:user:#{user_id}"
 Rack::Attack.throttle('user', limit: ENV.fetch("RACK_ATTACK_USER_LIMIT", 1000).to_i, period: 5.minutes) do |req|
-  if (uid = req.session[:user_id])
+  if (uid = RequestUser.id(req.env))
     "user:#{uid}"
   end
 end
@@ -127,8 +127,11 @@ end
 Rack::Attack.throttled_responder = RackAttackResponders::THROTTLED
 Rack::Attack.blocklisted_responder = RackAttackResponders::BLOCKLISTED
 
+# Counts "remember me" readers whose session cookie is gone as logged in, so
+# the ASN blocklist and IP throttles don't turn them away before a controller
+# can restore their session. See RequestUser.
 def req_logged_in?(req)
-  req.session[:user_id].present?
+  RequestUser.id(req.env).present?
 end
 
 # Block requests from hosting / cloud-provider ASNs whose IP space carries
