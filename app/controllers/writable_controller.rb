@@ -139,7 +139,7 @@ class WritableController < ApplicationController
         session.delete(:attempted_reply)
 
         @reply = @post.build_new_reply_for(current_user, reply_hash)
-        @reply.editor_mode ||= params[:editor_mode] || current_user.default_editor
+        @reply.editor_mode ||= Writable.editor_mode_or_nil(params[:editor_mode]) || Writable.editor_mode_or_nil(current_user.default_editor)
         @draft = ReplyDraft.draft_for(@post.id, current_user.id)
       end
 

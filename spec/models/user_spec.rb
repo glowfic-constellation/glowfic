@@ -126,6 +126,21 @@ RSpec.describe User do
     expect(user.galleryless_icons).to eq([icon1, icon2, icon3, icon4])
   end
 
+  describe "default editor" do
+    it "rejects an unknown editor mode" do
+      user = create(:user)
+      user.default_editor = 'txt'
+      expect(user.valid?).to eq(false)
+    end
+
+    it "still saves other settings when the stored editor mode is invalid" do
+      user = create(:user)
+      user.update_columns(default_editor: 'txt') # rubocop:disable Rails/SkipsModelValidations
+      user.reload
+      expect(user.update(per_page: 50)).to eq(true)
+    end
+  end
+
   describe "blocking" do
     it "correctly catches blocked interaction users" do
       blocker = create(:user)
