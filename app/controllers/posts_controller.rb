@@ -65,7 +65,6 @@ class PostsController < WritableController
     @posts = with_post_view.or(no_post_view)
     @posts = posts_from_relation(@posts.ordered, with_unread: true, show_blocked: !!params[:show_blocked])
 
-    @hide_quicklinks = true
     @page_title = @started ? 'Opened Threads' : 'Unread Threads'
     use_javascript('posts/unread')
   end
