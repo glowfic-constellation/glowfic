@@ -8,7 +8,7 @@ class Api::V1::PostsController < Api::ApiController
   end
 
   api :GET, '/posts', 'Load all posts, optionally filtered. Results are ordered by subject unless otherwise specified.'
-  header 'Authorization', 'Authorization token for a user in the format "Authorization" : "Bearer [token]". Required only when owed is true.', required: false
+  header 'Authorization', 'Authorization token for a user in the format "Authorization" : "Bearer [token]". Required only when owed or favorites is true.', required: false
   param :q, String, required: false, desc: 'Subject search term'
   param :min, String, required: false, desc: 'If present, returns only ID and subject per post'
   param :page, :number, required: false, desc: 'Page in results (25 per page)'
@@ -18,17 +18,20 @@ class Api::V1::PostsController < Api::ApiController
   param :template_id, :number, required: false, desc: 'If provided, returns only posts where any character in the given template appears, in the post itself or in any reply'
   param :status, Post.statuses.keys, required: false, desc: 'If provided, returns only posts with the given status'
   param :owed, :boolean, required: false, desc: "If true, returns only posts on which the current user owes a reply, as on the Replies Owed page (including the user's preference for hiding hiatused posts there). Requires authentication."
+  param :favorites, :boolean, required: false, desc: "If true, returns only posts shown on the current user's Favorites page: posts the user favorited, posts in continuities the user favorited, and posts where a favorited user is an author. Like that page, excludes posts the user has ignored (if the user hides ignored posts from all lists), posts hidden by the user's blocks and Site testing posts. Use order=tagged_at for the page's ordering. Requires authentication."
   param :order, ['subject', 'tagged_at'], required: false, desc: "Result ordering: 'subject' (default, alphabetical) or 'tagged_at' (most recently updated first)"
-  error 401, "You must be logged in to request owed posts"
+  error 401, "You must be logged in to request owed or favorite posts"
   error 422, "Invalid parameters provided"
   def index
     owed = ActiveModel::Type::Boolean.new.cast(params[:owed])
-    if owed && !logged_in?
+    favorites = ActiveModel::Type::Boolean.new.cast(params[:favorites])
+    if (owed || favorites) && !logged_in?
       login_required
       return
     end
 
     queryset = owed ? owed_posts : Post.all
+    queryset = favorite_posts(queryset) if favorites
     queryset = queryset.where('subject ILIKE ?', "%#{params[:q]}%") if params[:q].present?
     queryset = queryset.where(status: params[:status]) if params[:status].present?
 
@@ -187,6 +190,13 @@ class Api::V1::PostsController < Api::ApiController
   def owed_posts
     posts = Post.replies_owed_by(current_user)
     posts = posts.not_on_hiatus if current_user.hide_hiatused_tags_owed?
+    posts.where.not(id: current_user.hidden_posts).no_tests
+  end
+
+  # matches FavoritesController#index
+  def favorite_posts(posts)
+    posts = posts.where(id: Post.favorited_by(current_user).select(:id))
+    posts = posts.not_ignored_by(current_user) if current_user.hide_from_all
     posts.where.not(id: current_user.hidden_posts).no_tests
   end
 
