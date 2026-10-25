@@ -56,7 +56,10 @@
           %td.post-subject{class: klass}
             - if has_unread?(post)
               = link_to unread_path(post) do
-                = image_tag unread_img, class: 'vmid mobile-target', title: 'First Unread'
+                - if current_user&.layout_auto?
+                  = auto_image_tag 'icons/note_go.png', 'icons/bullet_go.png', class: 'vmid mobile-target', title: 'First Unread'
+                - else
+                  = image_tag unread_img, class: 'vmid mobile-target', title: 'First Unread'
             - if never_read?(post)
               %b= link_to post.subject, post_path(post)
             - else
