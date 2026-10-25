@@ -1,0 +1,17 @@
+-# locals: ( f: )
+
+%div
+  .sub= f.label :name
+  .even= f.text_field :name, placeholder: 'Application name'
+%div
+  .sub.vtop= f.label :redirect_uri, 'Redirect URIs'
+  .odd
+    = f.text_area :redirect_uri, rows: 3
+    %br
+    One per line. Must use https, except for localhost.
+%div
+  .sub= f.label :confidential
+  .checkbox-field.even
+    = f.check_box :confidential
+    = f.label :confidential, 'Can the application keep its secret private? (Uncheck for mobile and in-browser apps.)'
+.form-table-ender= submit_tag "Save", class: 'button'

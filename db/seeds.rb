@@ -14,7 +14,7 @@ marri = User.create!(
 alicorn = User.create!(username: 'Alicorn', password: 'alicorn', email: "dummy2@example.com", created_at: "2015-10-05 19:39:00")
 
 kappa = User.create!(
-  username: 'Kappa', password: 'pythbox', email: "dummy3@example.com", role_id: Permissible::IMPORTER,
+  username: 'Kappa', password: 'pythbox', email: "dummy3@example.com", role_id: Permissible::POWER_USER,
   visible_unread: true, created_at: "2015-10-05 19:39:00",
 )
 

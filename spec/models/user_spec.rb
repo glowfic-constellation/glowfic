@@ -346,6 +346,27 @@ RSpec.describe User do
     end
   end
 
+  describe "#has_permission?" do
+    it "lets admins, mods and power users create OAuth applications" do
+      aggregate_failures do
+        expect(build(:admin_user).has_permission?(:create_oauth_applications)).to be(true)
+        expect(build(:mod_user).has_permission?(:create_oauth_applications)).to be(true)
+        expect(build(:power_user).has_permission?(:create_oauth_applications)).to be(true)
+        expect(build(:user).has_permission?(:create_oauth_applications)).to be(false)
+        expect(build(:reader_user).has_permission?(:create_oauth_applications)).to be(false)
+      end
+    end
+
+    it "lets power users import posts but not moderate" do
+      user = build(:power_user)
+      aggregate_failures do
+        expect(user.has_permission?(:import_posts)).to be(true)
+        expect(user.has_permission?(:edit_posts)).to be(false)
+        expect(user.has_permission?(:create_news)).to be(false)
+      end
+    end
+  end
+
   describe "#as_json" do
     it "handles deleted users" do
       user = create(:user, deleted: true)

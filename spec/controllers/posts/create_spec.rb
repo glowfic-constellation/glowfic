@@ -30,7 +30,7 @@ RSpec.describe PostsController, 'POST create' do
   end
 
   context "scrape" do
-    let(:user) { create(:importing_user) }
+    let(:user) { create(:power_user) }
     let(:url) { 'http://wild-pegasus-appeared.dreamwidth.org/403.html?style=site&view=flat' }
 
     before(:each) { clear_enqueued_jobs }
@@ -45,7 +45,7 @@ RSpec.describe PostsController, 'POST create' do
       expect(flash[:error]).to eq("You do not have access to this feature.")
     end
 
-    context "with importer" do
+    context "with power user" do
       before(:each) { login_as(user) }
 
       it "requires valid dreamwidth url" do

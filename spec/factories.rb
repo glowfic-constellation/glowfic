@@ -46,7 +46,7 @@ FactoryBot.define do
       role_id { 2 }
     end
 
-    factory :importing_user do
+    factory :power_user do
       role_id { 3 }
     end
 
@@ -305,5 +305,13 @@ FactoryBot.define do
       notification_type { :import_fail }
       post_id { nil }
     end
+  end
+
+  factory :oauth_application, class: 'Doorkeeper::Application' do
+    owner factory: :user
+    sequence :name, ordered_numbers do |n|
+      "Application #{n}"
+    end
+    redirect_uri { 'https://client.example.com/callback' }
   end
 end

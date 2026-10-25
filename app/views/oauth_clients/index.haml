@@ -1,0 +1,34 @@
+%table
+  %thead
+    %tr
+      %th.table-title{colspan: 3}
+        = @page_title
+        - if current_user.has_permission?(:create_oauth_applications)
+          = link_to new_oauth_client_path do
+            .link-box.action-new + Register Application
+    %tr
+      %th.sub Application
+      %th.sub Redirect URIs
+      %th.sub
+  %tbody
+    - @applications.each do |application|
+      - klass = cycle('even', 'odd')
+      %tr
+        %td.padding-5{class: klass}= link_to application.name, oauth_client_path(application)
+        %td.padding-5{class: klass}= safe_join(application.redirect_uri.split, tag.br)
+        %td.width-70.right-align{class: klass}
+          = link_to edit_oauth_client_path(application) do
+            = image_tag "icons/pencil.png", alt: 'Edit'
+          = link_to oauth_client_path(application), method: :delete, data: { confirm: "Are you sure you want to delete #{application.name}? Every user's access through it will be revoked." } do
+            = image_tag "icons/cross.png", alt: 'Delete'
+    - if @applications.empty?
+      %tr
+        %td.centered.padding-10.no-posts{ class: cycle('even', 'odd'), colspan: 3 } — No applications yet —
+
+%p
+  Register an application here to let it use the
+  = link_to 'Glowfic API', '/api'
+  on behalf of the users who approve it, or to let them log in to it with their Glowfic account through OpenID Connect.
+  To see or revoke the applications you have approved, go to
+  = succeed '.' do
+    = link_to 'authorized applications', oauth_authorized_applications_path

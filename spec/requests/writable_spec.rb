@@ -144,7 +144,7 @@ RSpec.describe "Writable" do
     end
 
     it "renders the post import page" do
-      user = create(:importing_user, password: known_test_password)
+      user = create(:power_user, password: known_test_password)
       login(user)
 
       get "/posts/new?view=import"

@@ -1,0 +1,42 @@
+- content_for :breadcrumbs do
+  = link_to 'OAuth Applications', oauth_clients_path
+  &raquo;
+  %b= @application.name
+
+.form-table
+  .editor-title
+    = @application.name
+    = link_to edit_oauth_client_path(@application) do
+      .link-box.action-edit Edit
+  %div
+    .sub Client ID
+    .even
+      %code= @application.uid
+  %div
+    .sub Client Secret
+    .odd
+      - if @secret
+        %code= @secret
+      - else
+        Hidden. Generate a new secret if you have lost it.
+  %div
+    .sub.vtop Redirect URIs
+    .even= safe_join(@application.redirect_uri.split.map { |uri| tag.code(uri) }, tag.br)
+  %div
+    .sub Confidential
+    .odd= @application.confidential? ? 'Yes' : 'No (PKCE is required)'
+  %div
+    .sub Authorize URL
+    .even
+      %code= oauth_authorization_url
+  %div
+    .sub Token URL
+    .odd
+      %code= oauth_token_url
+  %div
+    .sub OpenID Configuration
+    .even
+      %code= oauth_discovery_provider_url
+  .form-table-ender
+    = button_to 'Generate New Secret', renew_secret_oauth_client_path(@application), method: :patch, class: 'button',
+      data: { confirm: 'Are you sure? The current secret will stop working immediately.' }

@@ -1,0 +1,11 @@
+- content_for :breadcrumbs do
+  = link_to 'OAuth Applications', oauth_clients_path
+  &raquo;
+  = link_to @application.name_was, oauth_client_path(@application)
+  &raquo;
+  %b Edit
+
+= form_with model: @application, scope: :application, url: oauth_client_path(@application), method: :patch do |f|
+  .form-table
+    .editor-title Edit Application
+    = render 'editor', f: f

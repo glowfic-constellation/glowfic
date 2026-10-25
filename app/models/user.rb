@@ -29,6 +29,7 @@ class User < ApplicationRecord
   has_many :indexes
   has_many :news
   has_one :report_view
+  has_many :oauth_applications, class_name: 'Doorkeeper::Application', as: :owner, inverse_of: :owner
   belongs_to :avatar, class_name: 'Icon', inverse_of: :user, optional: true
   belongs_to :active_character, class_name: 'Character', inverse_of: :user, optional: true
 

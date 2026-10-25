@@ -89,20 +89,34 @@ def autocomplete_api_request?(req)
   req.get? && req.path.start_with?('/api/v1/')
 end
 
+# Calls an OAuth client makes from its own server: the token and OpenID Connect endpoints,
+# and API calls with a bearer token. See app/services/oauth_request.rb.
+def oauth_client_request?(req)
+  OauthRequest.client?(req.path, req.get_header('HTTP_AUTHORIZATION'))
+end
+
 # Throttle anonymous, non-autocomplete traffic by IP. Tight ceiling here is the
 # steady-state defence against scrapers — combined with the cluster-wide cache
 # store this limit actually enforces fleet-wide (rather than per-worker).
 # Key: "rack::attack:#{Time.now.to_i/:period}:req/ip:#{req.ip}"
-# Autocomplete API GETs are excluded here and counted under 'api/ip' instead.
+# Autocomplete API GETs are excluded here and counted under 'api/ip' instead,
+# and OAuth client requests under 'oauth/ip'.
 Rack::Attack.throttle('req/ip', limit: ENV.fetch("RACK_ATTACK_IP_LIMIT", 25).to_i, period: 5.minutes) do |req|
-  req.ip if !req_logged_in?(req) && !autocomplete_api_request?(req)
+  req.ip if !req_logged_in?(req) && !autocomplete_api_request?(req) && !oauth_client_request?(req)
 end
 
 # Throttle the read-only autocomplete API GETs by IP, with a higher limit since
 # a single search legitimately generates many of them.
 # Key: "rack::attack:#{Time.now.to_i/:period}:api/ip:#{req.ip}"
 Rack::Attack.throttle('api/ip', limit: ENV.fetch("RACK_ATTACK_API_LIMIT", 150).to_i, period: 5.minutes) do |req|
-  req.ip if !req_logged_in?(req) && autocomplete_api_request?(req)
+  req.ip if !req_logged_in?(req) && autocomplete_api_request?(req) && !oauth_client_request?(req)
+end
+
+# One OAuth client's server makes these requests for all of its users, so it gets
+# the logged-in user's ceiling rather than one anonymous reader's.
+# Key: "rack::attack:#{Time.now.to_i/:period}:oauth/ip:#{req.ip}"
+Rack::Attack.throttle('oauth/ip', limit: ENV.fetch("RACK_ATTACK_OAUTH_LIMIT", 1000).to_i, period: 5.minutes) do |req|
+  req.ip if !req_logged_in?(req) && oauth_client_request?(req)
 end
 
 # Logged-in users get a much higher ceiling, keyed on user_id rather than IP,
@@ -139,15 +153,16 @@ end
 # config/blocked_asns.yml and config/blocked_asn_cidrs.yml). Logged-in users
 # and explicitly safelisted IPs are exempt. This catches distributed scrapers
 # that rotate across many cloud IPs in the same ASN — a class of abuse the
-# per-IP throttle can't address.
+# per-IP throttle can't address. OAuth clients are exempt too: their servers
+# are on hosting providers, and these requests serve no posts to a scraper.
 Rack::Attack.blocklist('bad_asn') do |req|
-  next false if req_logged_in?(req)
+  next false if req_logged_in?(req) || oauth_client_request?(req)
   AsnBlocker.block?(req.ip)
 end
 
 # Lockout IP addresses that are hammering the app.
 Rack::Attack.blocklist(RackAttackResponders::ALLOW2BAN_NAME) do |req|
-  next false if req_logged_in?(req)
+  next false if req_logged_in?(req) || oauth_client_request?(req)
 
   minute_limit = ENV.fetch("RACK_ATTACK_IP_LIMIT", 25).to_i
 
