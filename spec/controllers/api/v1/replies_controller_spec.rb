@@ -152,8 +152,8 @@ RSpec.describe Api::V1::RepliesController do
     it "filters by template and author together" do
       character = create(:template_character)
       reply = create(:reply, character: character, user: character.user)
-      create(:reply, user: character.user)
-      get :search, params: { template_id: character.template_id, author_id: character.user_id }
+      create(:reply, user: reply.user)
+      get :search, params: { template_id: character.template_id, author_id: reply.user_id }
       expect(result_ids).to eq([reply.id])
     end
 
