@@ -62,7 +62,7 @@ a:visited { color: $font_color_link_visited; }
   background-color: $bg_color_head;
 }
 
-.sub {
+.sub, .paginator {
   @include header-links;
   color: $font_color_sub;
   background-color: $bg_color_sub;
