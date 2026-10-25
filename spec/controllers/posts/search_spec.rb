@@ -103,8 +103,33 @@ RSpec.describe PostsController, 'GET search' do
         expect(assigns(:search_results)).to match_array([post1, post2, post3])
       end
 
+      it "requires a full-text word match by default" do
+        create(:post, subject: 'Starship')
+        get :search, params: { commit: true, subject: 'stars' }
+        expect(assigns(:search_results)).to match_array([post1, post2])
+        expect(assigns(:pruned_words)).to be_nil
+      end
+
       it "exact match" do
-        skip "TODO not yet implemented"
+        post3 = create(:post, subject: 'Starship')
+        get :search, params: { commit: true, subject: 'stars', exact: true }
+        expect(assigns(:search_results)).to match_array([post1, post2, post3])
+      end
+
+      it "ignores stop words in the full-text match" do
+        post3 = create(:post, subject: 'all the stars')
+        get :search, params: { commit: true, subject: 'the stars' }
+        expect(assigns(:search_results)).to match_array([post3])
+        expect(assigns(:pruned_words)).to eq(['the'])
+        expect(assigns(:all_pruned)).to be_nil
+      end
+
+      it "falls back to exact match when every word is a stop word" do
+        post3 = create(:post, subject: 'The end')
+        get :search, params: { commit: true, subject: 'the' }
+        expect(assigns(:search_results)).to match_array([post3])
+        expect(assigns(:pruned_words)).to eq(['the'])
+        expect(assigns(:all_pruned)).to be(true)
       end
     end
 
