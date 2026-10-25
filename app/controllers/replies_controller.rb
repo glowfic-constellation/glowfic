@@ -296,19 +296,15 @@ class RepliesController < WritableController
     replies_post = first_reply.post
     if replies_post.present?
       # Logic to check for reply duplication and unseen replies
-      last_seen_reply_order = replies_post.last_seen_reply_for(current_user).try(:reply_order)
-      @unseen_replies = replies_post.replies.ordered.paginate(page: 1, per_page: 10)
-      if last_seen_reply_order.present?
-        @unseen_replies = @unseen_replies.where('reply_order > ?', last_seen_reply_order)
-        @audits = Audited::Audit.where(auditable_id: @unseen_replies.map(&:id)).group(:auditable_id).count
-      end
+      last_seen_reply = replies_post.last_seen_reply_for(current_user)
+      @unseen_replies = replies_post.unseen_replies_after(last_seen_reply)
+      @audits = Audited::Audit.where(auditable_id: @unseen_replies.map(&:id)).group(:auditable_id).count if last_seen_reply.present?
       most_recent_unseen_reply = @unseen_replies.last
 
       if params[:allow_dupe].blank?
         # Confirm that the user really wants the first of their new replies to match the latest reply on the thread
-        last_by_user = replies_post.replies.where(user_id: first_reply.user_id).ordered.last
-        match_attrs = ['content', 'icon_id', 'character_id', 'character_alias_id']
-        if last_by_user.present? && last_by_user.attributes.slice(*match_attrs) == first_reply.attributes.slice(*match_attrs)
+        last_by_user = first_reply.duplicated_reply
+        if last_by_user.present?
           flash.now[:error] = "This looks like a duplicate. Did you attempt to post this twice? Please resubmit if this was intentional."
           @allow_dupe = true
           if most_recent_unseen_reply.nil? || (most_recent_unseen_reply.id == last_by_user.id && @unseen_replies.one?)
