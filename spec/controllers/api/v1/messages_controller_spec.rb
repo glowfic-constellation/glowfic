@@ -51,22 +51,22 @@ RSpec.describe Api::V1::MessagesController do
       expect(response).to have_http_status(200)
       expect(response.parsed_body['results']).to eq([
         {
-          'id' => message.id,
-          'thread_id' => message.id,
-          'parent_id' => nil,
-          'subject' => 'Hello',
-          'message' => 'Message body',
-          'created_at' => message.created_at.utc.as_json,
+          'id'           => message.id,
+          'thread_id'    => message.id,
+          'parent_id'    => nil,
+          'subject'      => 'Hello',
+          'message'      => 'Message body',
+          'created_at'   => message.created_at.utc.as_json,
           'site_message' => false,
-          'sender' => { 'id' => message.sender_id, 'username' => message.sender.username },
-          'recipient' => { 'id' => user.id, 'username' => user.username },
-          'unread' => true,
-          'thread' => {
-            'id' => message.id,
-            'subject' => 'Hello',
-            'created_at' => message.created_at.utc.as_json,
+          'sender'       => { 'id' => message.sender_id, 'username' => message.sender.username },
+          'recipient'    => { 'id' => user.id, 'username' => user.username },
+          'unread'       => true,
+          'thread'       => {
+            'id'            => message.id,
+            'subject'       => 'Hello',
+            'created_at'    => message.created_at.utc.as_json,
             'message_count' => 1,
-            'unread' => true,
+            'unread'        => true,
           },
         },
       ])
@@ -98,11 +98,11 @@ RSpec.describe Api::V1::MessagesController do
       expect(results[1]['sender']['id']).to eq(other.id)
       expect(results[1]['unread']).to be(true)
       expect(results[1]['thread']).to include(
-        'id' => first.id,
-        'subject' => 'Thread subject',
-        'created_at' => first.created_at.utc.as_json,
+        'id'            => first.id,
+        'subject'       => 'Thread subject',
+        'created_at'    => first.created_at.utc.as_json,
         'message_count' => 4,
-        'unread' => true,
+        'unread'        => true,
       )
       expect(results[0]['thread']['message_count']).to eq(1)
     end
