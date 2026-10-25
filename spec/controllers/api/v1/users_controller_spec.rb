@@ -275,9 +275,9 @@ RSpec.describe Api::V1::UsersController do
       galleryless = response.parsed_body['galleryless']
       expect(galleryless).to eq({ 'id' => 0, 'name' => 'Galleryless', 'icon_count' => 2, 'gallery_groups' => [] })
       results = response.parsed_body['results']
-      expect(results.map { |g| g['id'] }).to eq([first.id, second.id, third.id])
-      expect(results.map { |g| g['name'] }).to eq(['A gallery', 'b gallery', 'c gallery'])
-      expect(results.map { |g| g['icon_count'] }).to eq([0, 2, 1])
+      expect(results.pluck('id')).to eq([first.id, second.id, third.id])
+      expect(results.pluck('name')).to eq(['A gallery', 'b gallery', 'c gallery'])
+      expect(results.pluck('icon_count')).to eq([0, 2, 1])
       expect(results[1]['gallery_groups']).to eq([{ 'id' => group.id, 'text' => 'Group' }])
       expect(results[0]['gallery_groups']).to eq([])
       expect(results[0]).not_to have_key('icons')
@@ -290,7 +290,7 @@ RSpec.describe Api::V1::UsersController do
       api_login
       get :galleries, params: { id: user.id }
       expect(response).to have_http_status(200)
-      expect(response.parsed_body['results'].map { |g| g['id'] }).to eq([gallery.id])
+      expect(response.parsed_body['results'].pluck('id')).to eq([gallery.id])
     end
 
     it 'includes icons when requested', :show_in_doc do
@@ -305,11 +305,11 @@ RSpec.describe Api::V1::UsersController do
       get :galleries, params: { id: user.id, includes: ['icons'] }
       expect(response).to have_http_status(200)
       galleryless = response.parsed_body['galleryless']
-      expect(galleryless['icons'].map { |i| i['id'] }).to eq([galleryless_icon.id])
+      expect(galleryless['icons'].pluck('id')).to eq([galleryless_icon.id])
       expect(galleryless['icons'][0].keys).to match_array(['id', 'url', 'keyword'])
       results = response.parsed_body['results']
       expect(results[0]['icon_count']).to eq(2)
-      expect(results[0]['icons'].map { |i| i['id'] }).to eq([icon_a.id, icon_b.id])
+      expect(results[0]['icons'].pluck('id')).to eq([icon_a.id, icon_b.id])
       expect(results[0]['icons'][0]).to eq({ 'id' => icon_a.id, 'url' => icon_a.url, 'keyword' => 'a icon' })
     end
 
