@@ -190,9 +190,9 @@ RSpec.describe Api::V1::BoardsController do
 
       it "orders by tagged_at" do
         board = create(:board, authors_locked: true)
-        post1 = create(:post, board: board)
-        post2 = create(:post, board: board)
-        post3 = create(:post, board: board)
+        post1 = create(:post, board: board, user: board.creator)
+        post2 = create(:post, board: board, user: board.creator)
+        post3 = create(:post, board: board, user: board.creator)
         set_tagged_at(post1, 3.hours.ago)
         set_tagged_at(post2, 1.hour.ago)
         set_tagged_at(post3, 2.hours.ago)
@@ -216,9 +216,9 @@ RSpec.describe Api::V1::BoardsController do
 
       it "orders a locked continuity with no sections by section order in board order" do
         board = create(:board, authors_locked: true)
-        post1 = create(:post, board: board)
-        post2 = create(:post, board: board)
-        post3 = create(:post, board: board)
+        post1 = create(:post, board: board, user: board.creator)
+        post2 = create(:post, board: board, user: board.creator)
+        post3 = create(:post, board: board, user: board.creator)
         set_section_order(post1, 2)
         set_section_order(post3, 0)
         set_section_order(post2, 1)
@@ -262,9 +262,9 @@ RSpec.describe Api::V1::BoardsController do
 
       it "breaks ties in section order by id in board order" do
         board = create(:board, authors_locked: true)
-        post1 = create(:post, board: board)
-        post2 = create(:post, board: board)
-        post3 = create(:post, board: board)
+        post1 = create(:post, board: board, user: board.creator)
+        post2 = create(:post, board: board, user: board.creator)
+        post3 = create(:post, board: board, user: board.creator)
         Post.where(id: [post1.id, post2.id, post3.id]).update_all(section_order: 0) # rubocop:disable Rails/SkipsModelValidations
         get :posts, params: { id: board.id, order: 'board' }
         expect(result_ids).to eq([post1.id, post2.id, post3.id])
