@@ -515,6 +515,27 @@ RSpec.describe CharactersController do
         expect(controller.gon.user_id).to eq(character.user.id)
         expect(assigns(:templates)).to match_array([character.template, template])
       end
+
+      it "shows the identify facecast button when reverse image search is configured" do
+        allow(FacecastIdentifier).to receive(:enabled?).and_return(true)
+        character = create(:character)
+        login_as(character.user)
+
+        get :edit, params: { id: character.id }
+
+        expect(response.body).to include('id="identify-facecast"')
+        expect(response.body).to include(identify_facecast_character_path(character))
+      end
+
+      it "hides the identify facecast button when reverse image search is off" do
+        allow(FacecastIdentifier).to receive(:enabled?).and_return(false)
+        character = create(:character)
+        login_as(character.user)
+
+        get :edit, params: { id: character.id }
+
+        expect(response.body).not_to include('id="identify-facecast"')
+      end
     end
   end
 
@@ -1629,5 +1650,82 @@ RSpec.describe CharactersController do
     end
 
     skip "has more tests"
+  end
+
+  describe "POST identify_facecast" do
+    it "requires login" do
+      post :identify_facecast, params: { id: -1 }
+      expect(response).to redirect_to(root_url)
+      expect(flash[:error]).to eq('You must be logged in to view that page.')
+    end
+
+    it "requires valid character id" do
+      user_id = login
+      post :identify_facecast, params: { id: -1 }
+      expect(response).to redirect_to(user_characters_url(user_id))
+      expect(flash[:error]).to eq('Character could not be found.')
+    end
+
+    it "requires character with permissions" do
+      user_id = login
+      post :identify_facecast, params: { id: create(:character).id }
+      expect(response).to redirect_to(user_characters_url(user_id))
+      expect(flash[:error]).to eq('You do not have permission to modify this character.')
+    end
+
+    it "returns a suggested facecast" do
+      character = create(:character)
+      login_as(character.user)
+      allow(FacecastIdentifier).to receive(:new).and_return(instance_double(FacecastIdentifier, identify: 'Rem (Re:Zero)'))
+
+      post :identify_facecast, params: { id: character.id }
+
+      expect(response).to have_http_status(200)
+      expect(response.parsed_body['name']).to eq('Rem (Re:Zero)')
+    end
+
+    it "reverse image searches the character's default icon" do
+      allow(ENV).to receive(:fetch).and_call_original
+      allow(ENV).to receive(:fetch).with('SAUCENAO_API_KEY', nil).and_return('test-key')
+      user = create(:user)
+      icon = create(:icon, user: user)
+      gallery = create(:gallery, icons: [icon], user: user)
+      character = create(:character, user: user, galleries: [gallery], default_icon: icon)
+      login_as(user)
+      stub = stub_request(:get, /saucenao\.com/).with(query: hash_including('url' => icon.url)).to_return(
+        status: 200,
+        body: { results: [{ header: { similarity: '90' }, data: { characters: 'Rem', material: 'Re:Zero' } }] }.to_json,
+        headers: { 'Content-Type' => 'application/json' },
+      )
+
+      post :identify_facecast, params: { id: character.id }
+
+      expect(response.parsed_body['name']).to eq('Rem (Re:Zero)')
+      expect(stub).to have_been_requested
+    end
+
+    it "returns unprocessable when nothing is identified" do
+      character = create(:character)
+      login_as(character.user)
+      allow(FacecastIdentifier).to receive(:new).and_return(instance_double(FacecastIdentifier, identify: nil))
+
+      post :identify_facecast, params: { id: character.id }
+
+      expect(response).to have_http_status(422)
+      expect(response.parsed_body['error']).to be_present
+    end
+
+    it "returns service unavailable when reverse image search errors" do
+      character = create(:character)
+      login_as(character.user)
+      identifier = instance_double(FacecastIdentifier)
+      allow(identifier).to receive(:identify).and_raise(FacecastIdentifier::Error, 'Reverse image search could not be reached.')
+      allow(FacecastIdentifier).to receive(:new).and_return(identifier)
+
+      post :identify_facecast, params: { id: character.id }
+
+      expect(response).to have_http_status(503)
+      expect(response.parsed_body['error']).to eq('Reverse image search could not be reached.')
+    end
   end
 end

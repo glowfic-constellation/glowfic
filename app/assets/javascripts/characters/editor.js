@@ -138,7 +138,29 @@ $(document).ready(function() {
     disableNPCBoxes($(this).is(":checked"));
   });
   disableNPCBoxes($("#character_npc").is(":checked"));
+
+  bindIdentifyFacecast();
 });
+
+function bindIdentifyFacecast() {
+  const button = $("#identify-facecast");
+  if (button.length === 0) return;
+
+  const status = $("#identify-facecast-status");
+  button.click(function() {
+    button.prop('disabled', true);
+    status.removeClass('hidden').text('Searching…');
+    $.authenticatedPost(button.data('url'), {}, function(resp) {
+      $("#character_pb").val(resp.name);
+      status.text('Filled in a guess — double-check it.');
+    }, 'json').fail(function(xhr) {
+      const error = (xhr.responseJSON && xhr.responseJSON.error) || 'Reverse image search failed.';
+      status.text(error);
+    }).always(function() {
+      button.prop('disabled', false);
+    });
+  });
+}
 
 function findGalleryInGroups(galleryId) {
   galleryId = parseInt(galleryId);
