@@ -124,6 +124,53 @@ class Post < ApplicationRecord
     where(character_id: character_ids).or(where(id: Reply.where(character_id: character_ids).select(:post_id)))
   }
 
+  # Posts tagged with the given setting
+  scope :with_setting, ->(setting_id) {
+    where(id: PostTag.where(tag_id: setting_id).select(:post_id))
+  }
+
+  # Postgres's built-in english tsearch dictionary (tsearch_data/english.stop).
+  SEARCH_STOP_WORDS = Set.new(%w[
+    i me my myself we our ours ourselves you your yours yourself yourselves
+    he him his himself she her hers herself it its itself they them their
+    theirs themselves what which who whom this that these those am is are
+    was were be been being have has had having do does did doing a an the
+    and but if or because as until while of at by for with about against
+    between into through during before after above below to from up down in
+    out on off over under again further then once here there when where why
+    how all any both each few more most other some such no nor not only own
+    same so than too very s t can will just don should now
+  ]).freeze
+
+  # The words in a subject search that full-text search ignores because they are too common.
+  # all_pruned is true when every word is ignored, so full-text search could match nothing.
+  def self.pruned_search_words(query)
+    words = query.split(/\s+/).compact_blank
+    pruned_words = words.select { |word| SEARCH_STOP_WORDS.include?(word.downcase) }
+    { pruned_words: pruned_words, all_pruned: pruned_words.length == words.length && words.any? }
+  end
+
+  # Posts whose subject matches the given text, as on the post search page:
+  # - abbrev: the text is an acronym of the subject ("cs" matches "Case starlight")
+  # - exact: the subject contains the text (case-insensitive)
+  # - otherwise: the subject contains the text, and the text's words match the subject
+  #   or content in an english full-text search. If every word is a stop word
+  #   (see pruned_search_words), only the subject must contain the text.
+  def self.matching_subject(subject, abbrev: false, exact: false)
+    return where('posts.subject ILIKE ?', "%#{subject.chars.join('% ')}%") if abbrev
+    contains = where('posts.subject ILIKE ?', "%#{subject}%")
+    return contains if exact || pruned_search_words(subject)[:all_pruned]
+    contains.search(subject)
+  end
+
+  # Posts on which every one of the given users is an author
+  # (any Post::Author row, which includes invited authors who have not joined)
+  def self.with_all_authors(user_ids)
+    user_ids = Array(user_ids).uniq
+    author_posts = Post::Author.where(user_id: user_ids).group(:post_id)
+    where(id: author_posts.having('COUNT(DISTINCT post_authors.user_id) = ?', user_ids.length).select(:post_id))
+  end
+
   # Posts on which the given user owes a reply, as shown on the Replies Owed page:
   # the user is an author who has not opted out (or, with hidden: true, has opted out),
   # and the post is neither complete nor abandoned. Unless hidden, posts where the user
