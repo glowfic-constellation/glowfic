@@ -155,7 +155,7 @@ Rails.application.routes.draw do
         member { get :bookmark }
       end
       resources :posts, only: [:index, :show, :update] do
-        resources :replies, only: :index
+        resources :replies, only: [:index, :create]
         collection { post :reorder }
       end
       resources :bookmarks, only: [:create, :update, :destroy]

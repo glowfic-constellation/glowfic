@@ -201,6 +201,15 @@ class Post < ApplicationRecord
     @last_seen = reply
   end
 
+  # The first replies (at most 10) after the given reply, or from the start of the
+  # post if there is none. Replies use this to warn a user about replies they have
+  # not seen before they post.
+  def unseen_replies_after(last_seen_reply)
+    unseen = replies.ordered.paginate(page: 1, per_page: 10)
+    return unseen unless last_seen_reply&.reply_order
+    unseen.where('reply_order > ?', last_seen_reply.reply_order)
+  end
+
   def recent_characters_for(user, count, multi_replies_params: nil)
     # fetch the (count) most recent non-nil character_ids for user in post, including those being added by multi-replies
     recent_ids = []
