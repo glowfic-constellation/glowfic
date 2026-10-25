@@ -43,6 +43,7 @@ RSpec.describe Api::V1::RepliesController do
 
   describe "GET search" do
     def result_ids
+      expect(response).to have_http_status(200), response.body
       response.parsed_body['results'].pluck('id')
     end
 

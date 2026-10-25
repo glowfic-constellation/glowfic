@@ -69,7 +69,7 @@ Rack::Attack.cache.store = ActiveSupport::Cache::RedisCacheStore.new(url: url, s
 # The reply search API is not autocomplete: one request costs the same as one
 # /replies/search page, so it stays in the same bucket as that page.
 def autocomplete_api_request?(req)
-  req.get? && req.path.start_with?('/api/v1/') && !req.path.match?(%r{\A/api/v1/replies(\.json)?/?\z})
+  req.get? && req.path.start_with?('/api/v1/') && ['/api/v1/replies', '/api/v1/replies.json'].exclude?(req.path.chomp('/'))
 end
 
 # Calls an OAuth client makes from its own server: the token and OpenID Connect endpoints,
