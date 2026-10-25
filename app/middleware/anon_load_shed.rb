@@ -62,6 +62,7 @@ class AnonLoadShed
     return @app.call(env) if waited.nil? || waited < SCRAPER_WAIT_THRESHOLD_SECONDS
     return @app.call(env) if waited < WAIT_THRESHOLD_SECONDS && !self.class.scraper_signal(env)
     return @app.call(env) if login_request?(env)
+    return @app.call(env) if oauth_client_request?(env)
     return @app.call(env) if safe_ip?(env)
     return @app.call(env) if logged_in?(env)
     record_shed(env)
@@ -201,6 +202,13 @@ class AnonLoadShed
 
   def login_request?(env)
     env['PATH_INFO'] == '/login'
+  end
+
+  # Likewise an OAuth client's server, which has no session to log in with.
+  # A shed token exchange fails the user's "Log in with Glowfic", and a shed
+  # API call fails whatever they asked the application to do.
+  def oauth_client_request?(env)
+    OauthRequest.client?(env['PATH_INFO'].to_s, env['HTTP_AUTHORIZATION'])
   end
 
   # rack-timeout stores its RequestDetails (including .wait, the seconds the

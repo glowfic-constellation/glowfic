@@ -108,6 +108,21 @@ RSpec.describe AnonLoadShed do
     expect(status).to eq(200)
   end
 
+  it "never sheds an OAuth client's token exchange, which logs a user in elsewhere" do
+    status, = middleware.call(env(wait: 30.0, path: '/oauth/token'))
+    expect(status).to eq(200)
+  end
+
+  it "never sheds an API call made with a bearer token" do
+    status, = middleware.call(env(wait: 30.0, path: '/api/v1/posts', headers: { 'HTTP_AUTHORIZATION' => 'Bearer abc' }))
+    expect(status).to eq(200)
+  end
+
+  it "still sheds a logged-out visit to the consent page, like any other page" do
+    status, = middleware.call(env(wait: 30.0, path: '/oauth/authorize'))
+    expect(status).to eq(503)
+  end
+
   # A "remember me" reader arrives with a permanent signed cookie and no
   # session, because the session cookie has no expiry and dies with the
   # browser. `check_permanent_user` would restore their session, but it runs in
