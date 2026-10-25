@@ -15,7 +15,7 @@ RSpec.describe RepliesController, 'POST restore' do
 
   it "must find the reply" do
     expect(Reply.find_by(id: 99)).to be_nil
-    expect(Audited::Audit.find_by(auditable_id: 99)).to be_nil
+    expect(Audited::Audit.find_by(auditable_type: 'Reply', auditable_id: 99)).to be_nil
     login
     post :restore, params: { id: 99 }
     expect(response).to redirect_to(continuities_url)
@@ -24,7 +24,7 @@ RSpec.describe RepliesController, 'POST restore' do
 
   it "must be a deleted reply" do
     reply = create(:reply)
-    Audited::Audit.where(action: 'create').find_by(auditable_id: reply.id).update!(action: 'destroy')
+    Audited::Audit.where(action: 'create').find_by(auditable_type: 'Reply', auditable_id: reply.id).update!(action: 'destroy')
     login_as(reply.user)
     post :restore, params: { id: 99 }
     expect(response).to redirect_to(continuities_url)
