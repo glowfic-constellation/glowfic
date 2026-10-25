@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 class ApplicationController < ActionController::Base
   include Authentication::Web
+  include PostListFilter
 
   rescue_from ActionController::InvalidAuthenticityToken, with: :handle_invalid_token
 
@@ -105,12 +106,6 @@ class ApplicationController < ActionController::Base
     posts
   end
   helper_method :posts_from_relation
-
-  def posts_relation_filter(posts, no_tests: true, show_blocked: false)
-    posts = posts.where.not(id: current_user.hidden_posts) if logged_in? && !show_blocked
-    posts = posts.no_tests if no_tests
-    posts.visible_to(current_user)
-  end
 
   def posts_list_relation(relation, select: '', max: false)
     select = if max
