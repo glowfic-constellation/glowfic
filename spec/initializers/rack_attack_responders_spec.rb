@@ -69,34 +69,20 @@ RSpec.describe RackAttackResponders do
     end
   end
 
-  # A ban earned by request rate is temporary. Answering it with 403 tells a
-  # crawler the URL is gone for good, which is both wrong and, as ClaudeBot's
-  # 625,122 unbacked-off 403s showed, useless at slowing anything down.
+  # Blocklists are deliberate denials, so 403 states them accurately; rate
+  # limits never come through here.
   describe "blocklisted" do
-    it "answers a rate-earned ban with 429 and a wait" do
-      status, headers, _body = described_class::BLOCKLISTED.call(request(matched: described_class::ALLOW2BAN_NAME))
-      expect(status).to eq(429)
-      expect(headers['retry-after']).to eq(described_class::SHORT_BAN.to_i.to_s)
-    end
-
-    # `blocklist_ip` builds an anonymous blocklist, so a manually banned IP
-    # arrives with no matched name. That one is a deliberate denial, and 403
-    # states it accurately.
-    it "still answers the manual bad-IP list with 403" do
-      status, headers, _body = described_class::BLOCKLISTED.call(request(matched: nil))
+    it "answers with 403 and no wait" do
+      status, headers, _body = described_class::BLOCKLISTED.call(request(matched: 'bad_asn'))
       expect(status).to eq(403)
       expect(headers).not_to have_key('retry-after')
     end
 
-    it "does not treat some other named blocklist as a rate ban" do
-      status, = described_class::BLOCKLISTED.call(request(matched: 'something else'))
+    # `blocklist_ip` builds an anonymous blocklist, so a manually banned IP
+    # arrives with no matched name.
+    it "answers the manual bad-IP list with 403" do
+      status, = described_class::BLOCKLISTED.call(request(matched: nil))
       expect(status).to eq(403)
-    end
-
-    # The advertised wait has to track the ban actually applied, or the client
-    # is told to come back while still banned and simply burns the request.
-    it "advertises a wait no longer than the ban it describes" do
-      expect(described_class::SHORT_BAN).to be <= described_class::LONG_BAN
     end
   end
 
@@ -107,7 +93,6 @@ RSpec.describe RackAttackResponders do
     responses = [
       described_class::THROTTLED.call(request(client_ip: '203.0.113.1')),
       described_class::THROTTLED.call(request),
-      described_class::BLOCKLISTED.call(request(matched: described_class::ALLOW2BAN_NAME)),
       described_class::BLOCKLISTED.call(request),
     ]
     responses.each do |_status, headers, _body|
