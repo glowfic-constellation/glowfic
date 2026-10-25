@@ -45,3 +45,6 @@ backstop/reports/*
 /.gems
 /.envrc
 dump.rdb
+
+# JavaScript / Jest
+/node_modules
