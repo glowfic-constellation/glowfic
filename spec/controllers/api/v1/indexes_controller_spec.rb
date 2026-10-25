@@ -265,9 +265,9 @@ RSpec.describe Api::V1::IndexesController do
       expect(response.parsed_body['unsectioned_posts'].pluck('id')).to eq([visible.post_id])
     end
 
-    it "raises error on invalid id" do
+    it "returns not found for a non-numeric id" do
       get :show, params: { id: 'b' }
-      expect(response).to have_http_status(422)
+      expect(response).to have_http_status(404)
     end
   end
 end

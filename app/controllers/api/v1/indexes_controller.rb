@@ -29,7 +29,6 @@ class Api::V1::IndexesController < Api::ApiController
   param :id, :number, required: true, desc: 'Index ID'
   error 403, "Index is not visible to the user"
   error 404, "Index not found"
-  error 422, "Invalid parameters provided"
   def show
     posts = posts_relation_filter(@index.posts)
       .select('posts.*, index_posts.index_section_id, index_posts.id AS index_post_id, index_posts.description AS index_description')
