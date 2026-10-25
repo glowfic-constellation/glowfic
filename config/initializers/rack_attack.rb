@@ -67,7 +67,18 @@ Rack::Attack.cache.store = ActiveSupport::Cache::RedisCacheStore.new(url: url, s
 # normal page browsing (~1 request per navigation). They get their own, more
 # generous bucket below so a search doesn't exhaust the general per-IP limit.
 def autocomplete_api_request?(req)
+  return false if post_search_api_request?(req)
   req.get? && req.path.start_with?('/api/v1/')
+end
+
+# A post list request with a subject search is not autocomplete: it runs the
+# same full-text search as one /posts/search page, so it stays in the same
+# bucket as that page.
+def post_search_api_request?(req)
+  return false unless req.get? && ['/api/v1/posts', '/api/v1/posts.json'].include?(req.path.chomp('/'))
+  req.GET['subject'].present?
+rescue Rack::QueryParser::ParameterTypeError, Rack::QueryParser::InvalidParameterError
+  false
 end
 
 # Calls an OAuth client makes from its own server: the token and OpenID Connect endpoints,
@@ -139,4 +150,3 @@ Rack::Attack.blocklist('bad_asn') do |req|
   next false if req_logged_in?(req) || oauth_client_request?(req)
   AsnBlocker.block?(req.ip)
 end
-
