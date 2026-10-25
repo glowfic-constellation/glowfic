@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 class Message < ApplicationRecord
+  include Presentable
+
   # TODO drop marked_*
   belongs_to :sender, class_name: 'User', inverse_of: :sent_messages, optional: true
   belongs_to :recipient, class_name: 'User', inverse_of: :messages, optional: false
