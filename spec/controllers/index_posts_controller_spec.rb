@@ -125,6 +125,15 @@ RSpec.describe IndexPostsController do
       expect(flash[:error]).to eq("You do not have permission to modify this index.")
     end
 
+    it "requires access to the post" do
+      index = create(:index)
+      index_post = create(:index_post, index: index, post: create(:post, privacy: :private))
+      login_as(index.user)
+      get :edit, params: { id: index_post.id }
+      expect(response).to redirect_to(index_url(index))
+      expect(flash[:error]).to eq("You do not have permission to modify this index.")
+    end
+
     it "works" do
       index = create(:index)
       index.posts << create(:post, user: index.user)
