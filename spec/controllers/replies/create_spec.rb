@@ -479,8 +479,8 @@ RSpec.describe RepliesController, 'POST create' do
       },
     }
 
-    expect(flash[:error][:message]).to eq("Reply could not be created because of the following problems:")
-    expect(flash[:error][:array]).to eq(["User #{user.username} cannot write in this post"])
+    expect(response).to redirect_to(post_url(reply_post))
+    expect(flash[:error]).to eq("You do not have permission to reply to this post.")
   end
 
   it "sets reply_order correctly on the first reply" do
@@ -541,6 +541,83 @@ RSpec.describe RepliesController, 'POST create' do
     reply = reply_post.replies.ordered.last
     expect(reply.content).to eq(searchable)
     expect(reply.reply_order).to eq(2)
+  end
+
+  context "with a post the user cannot see" do
+    let(:user) { create(:user) }
+    let(:reply_post) { create(:post, privacy: :private) }
+
+    before(:each) do
+      create(:reply, post: reply_post, content: 'secret reply')
+      login_as(user)
+    end
+
+    it "does not show unseen replies or save a reply" do
+      expect {
+        post :create, params: { reply: { post_id: reply_post.id, content: 'test', editor_mode: 'html' } }
+      }.not_to change { [Reply.count, ReplyDraft.count, Post::View.count] }
+
+      expect(response).to redirect_to(continuities_url)
+      expect(flash[:error]).to eq("You do not have permission to view this post.")
+      expect(assigns(:unseen_replies)).to be_nil
+    end
+
+    it "does not preview or save a draft" do
+      expect {
+        post :create, params: {
+          button_preview: true,
+          reply: { post_id: reply_post.id, content: 'test', editor_mode: 'html' },
+          character: { name: 'NPC', npc: true },
+        }
+      }.not_to change { [ReplyDraft.count, Character.count] }
+
+      expect(response).to redirect_to(continuities_url)
+      expect(flash[:error]).to eq("You do not have permission to view this post.")
+    end
+
+    it "does not save multi replies" do
+      reply_post.mark_read(user)
+      expect {
+        post :create, params: {
+          button_submit_previewed_multi_reply: true,
+          multi_replies_json: [{ post_id: reply_post.id, content: 'test', editor_mode: 'html' }].to_json,
+        }
+      }.not_to change { Reply.count }
+
+      expect(response).to redirect_to(continuities_url)
+    end
+
+    it "does not save multi replies hidden behind a visible post" do
+      visible_post = create(:post)
+      visible_post.mark_read(user)
+      reply_post.mark_read(user)
+      expect {
+        post :create, params: {
+          multi_replies_json: [{ post_id: reply_post.id, content: 'test', editor_mode: 'html' }].to_json,
+          reply: { post_id: visible_post.id, content: 'test', editor_mode: 'html' },
+        }
+      }.not_to change { Reply.count }
+
+      expect(response).to redirect_to(posts_url)
+      expect(flash[:error]).to eq("Replies must all be in the same post.")
+    end
+  end
+
+  [:complete, :abandoned].each do |status|
+    it "does not reply to a #{status} post" do
+      user = create(:user)
+      reply_post = create(:post, tagging_authors: [user])
+      reply_post.update!(status: status)
+      reply_post.mark_read(user)
+      login_as(user)
+
+      expect {
+        post :create, params: { reply: { post_id: reply_post.id, content: 'test', editor_mode: 'html' } }
+      }.not_to change { Reply.count }
+
+      expect(response).to redirect_to(post_url(reply_post))
+      expect(flash[:error]).to eq("You do not have permission to reply to this post.")
+    end
   end
 
   context "when saving an edited multi reply" do

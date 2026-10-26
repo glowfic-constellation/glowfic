@@ -8,6 +8,7 @@ class RepliesController < WritableController
   before_action :editor_setup, only: [:edit]
   before_action :require_create_permission, only: [:create]
   before_action :require_multi_reply_edit_permission, only: [:create]
+  before_action :require_post_permission, only: [:create]
   before_action :require_edit_permission, only: [:edit, :update]
 
   def search
@@ -229,6 +230,30 @@ class RepliesController < WritableController
     return if @reply.post.visible_to?(current_user) && @reply.editable_by?(current_user)
     flash[:error] = "You do not have permission to modify this reply."
     redirect_to continuities_path
+  end
+
+  # New replies, previews and drafts are only for posts the user can see, and new replies only for posts they can tag
+  def require_post_permission
+    return if editing_multi_reply?
+
+    post_ids = (@multi_replies.map(&:post_id) + [permitted_params[:post_id]]).compact_blank.map(&:to_i).uniq
+    if post_ids.size > 1
+      flash[:error] = "Replies must all be in the same post."
+      redirect_to posts_path and return
+    end
+
+    # a missing post is reported by the reply's own validation
+    return unless (reply_post = Post.find_by(id: post_ids.first))
+
+    unless reply_post.visible_to?(current_user)
+      flash[:error] = "You do not have permission to view this post."
+      redirect_to continuities_path and return
+    end
+
+    return if params[:button_preview] || params[:button_add_more] || params[:button_discard_multi_reply]
+    return if reply_post.taggable_by?(current_user)
+    flash[:error] = "You do not have permission to reply to this post."
+    redirect_to post_path(reply_post)
   end
 
   def get_multi_replies
