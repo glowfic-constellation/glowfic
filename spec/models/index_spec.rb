@@ -42,4 +42,15 @@ RSpec.describe Index do
         .and not_change { [Index.count, IndexSection.count] }
     end
   end
+
+  describe "#editable_by?" do
+    it "requires the index to be visible to the user" do
+      user = create(:user)
+      index = create(:index, authors_locked: false)
+      expect(index.editable_by?(user)).to eq(true)
+      index.update!(privacy: :private)
+      expect(index.editable_by?(user)).to eq(false)
+      expect(index.editable_by?(index.user)).to eq(true)
+    end
+  end
 end

@@ -74,6 +74,17 @@ RSpec.describe IndexPostsController do
       expect(flash[:error][:message]).to eq("Post could not be added to index because of the following problems:")
     end
 
+    it "requires access to the post" do
+      index = create(:index)
+      add_post = create(:post, privacy: :private)
+      login_as(index.user)
+      expect {
+        post :create, params: { index_post: { index_id: index.id, post_id: add_post.id } }
+      }.not_to change { IndexPost.count }
+      expect(response).to redirect_to(index_url(index))
+      expect(flash[:error]).to eq("You do not have permission to view this post.")
+    end
+
     it "succeeds" do
       index = create(:index)
       add_post = create(:post)

@@ -185,6 +185,24 @@ RSpec.describe IndexesController do
       expect(flash[:error]).to eq('You do not have permission to modify this index.')
     end
 
+    it "requires permission to view an open index" do
+      login
+      index = create(:index, authors_locked: false, privacy: :private)
+      get :edit, params: { id: index.id }
+      expect(response).to redirect_to(index_url(index))
+      expect(flash[:error]).to eq('You do not have permission to modify this index.')
+    end
+
+    it "lists only posts the editor can see" do
+      index = create(:index, authors_locked: false)
+      visible = create(:index_post, index: index).post
+      create(:index_post, index: index, post: create(:post, privacy: :private))
+      login
+      get :edit, params: { id: index.id }
+      expect(response).to have_http_status(200)
+      expect(assigns(:unsectioned_posts)).to eq([visible])
+    end
+
     it "works" do
       index = create(:index)
       login_as(index.user)

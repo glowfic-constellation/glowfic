@@ -31,6 +31,11 @@ class IndexPostsController < ApplicationController
       redirect_to @index_post.index and return
     end
 
+    if @index_post.post && !@index_post.post.visible_to?(current_user)
+      flash[:error] = "You do not have permission to view this post." # rubocop:disable Rails/ActionControllerFlashBeforeRender
+      redirect_to @index_post.index and return
+    end
+
     unless @index_post.save
       render_errors(@index_post, now: true, action: 'added', msg: 'Post could not be added to index')
       @page_title = 'Add Posts to Index'
@@ -80,7 +85,7 @@ class IndexPostsController < ApplicationController
       redirect_to indexes_path and return
     end
 
-    return if @index_post.index.editable_by?(current_user)
+    return if @index_post.index.editable_by?(current_user) && @index_post.post.visible_to?(current_user)
     flash[:error] = "You do not have permission to modify this index."
     redirect_to @index_post.index
   end
