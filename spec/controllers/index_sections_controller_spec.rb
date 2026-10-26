@@ -112,6 +112,14 @@ RSpec.describe IndexSectionsController do
       expect(response).to have_http_status(200)
       expect(assigns(:page_title)).to eq(section.name)
     end
+
+    it "requires permission to view the index" do
+      section.index.update!(privacy: :private)
+      login
+      get :show, params: { id: section.id }
+      expect(response).to redirect_to(indexes_url)
+      expect(flash[:error]).to eq("You do not have permission to view this index.")
+    end
   end
 
   describe "GET edit" do

@@ -17,6 +17,44 @@ RSpec.describe IndexesController do
       get :index
       expect(response).to have_http_status(200)
     end
+
+    context "with private indexes" do
+      render_views
+
+      let(:owner) { create(:user) }
+      let!(:public_index) { create(:index, name: 'Public index') }
+      let!(:private_index) { create(:index, user: owner, name: 'Hidden index', privacy: :private) }
+      let!(:access_list_index) { create(:index, user: owner, name: 'Listed index', privacy: :access_list) }
+
+      it "hides them when logged out" do
+        get :index
+        expect(assigns(:indexes)).to eq([public_index])
+        expect(response.body).not_to include('Hidden index')
+        expect(response.body).not_to include('Listed index')
+      end
+
+      it "hides them from other users" do
+        login
+        get :index
+        expect(assigns(:indexes)).to eq([public_index])
+      end
+
+      it "shows them to their owner" do
+        login_as(owner)
+        get :index
+        expect(assigns(:indexes)).to eq([public_index, private_index, access_list_index])
+      end
+    end
+
+    it "counts only visible posts" do
+      render_views
+      index = create(:index)
+      create(:index_post, index: index, post: create(:post, privacy: :private))
+      create(:index_post, index: index, post: create(:post))
+      get :index
+      row = response.parsed_body.at_xpath("//a[@href='/indexes/#{index.id}']/ancestor::tr")
+      expect(row.css('td')[1].text.strip).to eq('1')
+    end
   end
 
   describe "GET new" do
