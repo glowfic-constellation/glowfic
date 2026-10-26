@@ -47,11 +47,13 @@ end
 $safe_ips = [] and return unless Rails.env.production?
 
 # allow all IPs in RACK_ATTACK_SAFE_IP split by comma
-$safe_ips = ENV.fetch("RACK_ATTACK_SAFE_IP", "").split(",").compact_blank
-$safe_ips.each { |ip| Rack::Attack.safelist_ip(ip) }
+$safe_ips = ENV.fetch("RACK_ATTACK_SAFE_IP", "").split(",").map(&:strip).compact_blank
+# Not Rack::Attack.safelist_ip / blocklist_ip, which raise on a client IP that isn't
+# an address (a 500). See app/services/rack_attack_ip_list.rb.
+Rack::Attack.safelist('safe ips') { |req| RackAttackIpList.safe?(req.ip) }
 
 # block all IPs in RACK_ATTACK_BAD_IP split by comma
-ENV.fetch("RACK_ATTACK_BAD_IP", "").split(",").compact_blank.each { |ip| Rack::Attack.blocklist_ip(ip) }
+Rack::Attack.blocklist('bad ips') { |req| RackAttackIpList.bad?(req.ip) }
 
 # Configure Cache
 # Rack::Attack stores its throttle/blocklist counters here. This needs to be
@@ -139,4 +141,3 @@ Rack::Attack.blocklist('bad_asn') do |req|
   next false if req_logged_in?(req) || oauth_client_request?(req)
   AsnBlocker.block?(req.ip)
 end
-
