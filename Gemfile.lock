@@ -160,10 +160,9 @@ GEM
     diff-lcs (1.6.2)
     doorkeeper (5.9.9)
       railties (>= 5)
-    doorkeeper-openid_connect (2.0.0)
+    doorkeeper-openid_connect (2.1.0)
       doorkeeper (>= 5.5, < 7.0)
       jwt (>= 2.5)
-      ostruct (>= 0.5)
     dotenv (3.2.0)
     drb (2.2.3)
     erb (6.0.7)
@@ -358,7 +357,7 @@ GEM
     rack-session (2.1.2)
       base64 (>= 0.1.0)
       rack (>= 3.0.0)
-    rack-test (2.2.0)
+    rack-test (2.3.0)
       rack (>= 1.3)
     rack-timeout (0.7.0)
     rackup (2.3.1)
@@ -615,7 +614,7 @@ DEPENDENCIES
   dartsass-sprockets
   database_cleaner
   doorkeeper (~> 5.9)
-  doorkeeper-openid_connect (~> 2.0)
+  doorkeeper-openid_connect (~> 2.1)
   dotenv
   exception_notification
   factory_bot_rails
