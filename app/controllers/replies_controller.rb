@@ -99,7 +99,7 @@ class RepliesController < WritableController
   end
 
   def update
-    @reply.assign_attributes(permitted_params)
+    @reply.assign_attributes(permitted_params.except(:post_id))
     process_npc(@reply, permitted_character_params)
     if params[:button_preview]
       preview_reply(@reply) and return
