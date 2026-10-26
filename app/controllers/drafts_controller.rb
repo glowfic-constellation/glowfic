@@ -1,5 +1,8 @@
 # frozen_string_literal: true
 class DraftsController < WritableController
+  before_action :login_required
+  before_action :require_post_access, only: :create
+
   def create
     draft = make_draft
     redirect_to posts_path and return unless draft.post
@@ -18,5 +21,15 @@ class DraftsController < WritableController
       }
     end
     redirect_to post_path(post_id, page: :unread, anchor: :unread)
+  end
+
+  private
+
+  # a missing post is reported by the draft's own validation
+  def require_post_access
+    reply_post = Post.find_by(id: permitted_params[:post_id])
+    return if reply_post.nil? || reply_post.visible_to?(current_user)
+    flash[:error] = "You do not have permission to view this post."
+    redirect_to continuities_path
   end
 end
