@@ -46,14 +46,17 @@ RSpec.describe IndexesController do
       end
     end
 
-    it "counts only visible posts" do
+    context "with views" do
       render_views
-      index = create(:index)
-      create(:index_post, index: index, post: create(:post, privacy: :private))
-      create(:index_post, index: index, post: create(:post))
-      get :index
-      row = response.parsed_body.at_xpath("//a[@href='/indexes/#{index.id}']/ancestor::tr")
-      expect(row.css('td')[1].text.strip).to eq('1')
+
+      it "counts only visible posts" do
+        index = create(:index)
+        create(:index_post, index: index, post: create(:post, privacy: :private))
+        create(:index_post, index: index, post: create(:post))
+        get :index
+        row = response.parsed_body.at_xpath("//a[@href='/indexes/#{index.id}']/ancestor::tr")
+        expect(row.css('td')[1].text.strip).to eq('1')
+      end
     end
   end
 
