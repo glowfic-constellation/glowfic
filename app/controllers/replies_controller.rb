@@ -7,6 +7,7 @@ class RepliesController < WritableController
   before_action :find_model, only: [:show, :history, :edit, :update, :destroy]
   before_action :editor_setup, only: [:edit]
   before_action :require_create_permission, only: [:create]
+  before_action :require_multi_reply_edit_permission, only: [:create]
   before_action :require_edit_permission, only: [:edit, :update]
 
   def search
@@ -220,6 +221,14 @@ class RepliesController < WritableController
     return if @reply.editable_by?(current_user)
     flash[:error] = "You do not have permission to modify this reply."
     redirect_to post_path(@reply.post)
+  end
+
+  # Saving an edited multi reply goes through create, not update, so it needs the same checks as update
+  def require_multi_reply_edit_permission
+    return unless editing_multi_reply?
+    return if @reply.post.visible_to?(current_user) && @reply.editable_by?(current_user)
+    flash[:error] = "You do not have permission to modify this reply."
+    redirect_to continuities_path
   end
 
   def get_multi_replies

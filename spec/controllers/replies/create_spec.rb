@@ -542,4 +542,52 @@ RSpec.describe RepliesController, 'POST create' do
     expect(reply.content).to eq(searchable)
     expect(reply.reply_order).to eq(2)
   end
+
+  context "when saving an edited multi reply" do
+    def submit_multi_reply(reply, content)
+      post :create, params: {
+        button_submit_previewed_multi_reply: true,
+        multi_replies_json: [
+          { id: reply.id, post_id: reply.post_id, content: content, editor_mode: 'html' },
+          { post_id: reply.post_id, content: 'added reply', editor_mode: 'html' },
+        ].to_json,
+      }
+    end
+
+    it "requires permission to modify the reply" do
+      reply = create(:reply, content: 'original')
+      login
+
+      expect { submit_multi_reply(reply, 'changed') }.not_to change { Reply.count }
+
+      expect(response).to redirect_to(continuities_url)
+      expect(flash[:error]).to eq("You do not have permission to modify this reply.")
+      expect(reply.reload.content).to eq('original')
+    end
+
+    it "requires access to the post" do
+      reply = create(:reply, content: 'original')
+      reply.post.update!(privacy: :private)
+      login_as(reply.user)
+
+      expect { submit_multi_reply(reply, 'changed') }.not_to change { Reply.count }
+
+      expect(response).to redirect_to(continuities_url)
+      expect(flash[:error]).to eq("You do not have permission to modify this reply.")
+      expect(reply.reload.content).to eq('original')
+    end
+
+    it "lets the author edit their reply and add more" do
+      reply = create(:reply, content: 'original')
+      login_as(reply.user)
+
+      expect { submit_multi_reply(reply, 'changed') }.to change { Reply.count }.by(1)
+
+      expect(response).to redirect_to(reply_url(reply, anchor: "reply-#{reply.id}"))
+      expect(reply.reload.content).to eq('changed')
+      added = reply.post.replies.ordered.last
+      expect(added.user).to eq(reply.user)
+      expect(added.content).to eq('added reply')
+    end
+  end
 end
