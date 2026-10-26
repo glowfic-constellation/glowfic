@@ -45,7 +45,7 @@ module Authentication::Api
     def user_from_token
       user_id = decoded_api_token[:user_id]
       return unless user_id
-      User.find_by(id: user_id)
+      Authentication.oauth_user(user_id)
     end
 
     def decoded_api_token

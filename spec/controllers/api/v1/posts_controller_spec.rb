@@ -382,6 +382,15 @@ RSpec.describe Api::V1::PostsController do
       expect(response.parsed_body['errors'][0]['message']).to eq("Missing parameter private_note")
     end
 
+    it "requires an active user" do
+      user = api_login
+      post = create(:post, user: user)
+      user.update!(role_id: Permissible::SUSPENDED)
+      patch :update, params: { id: post.id, private_note: "Shiny new note" }
+      expect(response).to have_http_status(401)
+      expect(post.author_for(user).private_note).to be_nil
+    end
+
     it "requires authorship of post" do
       api_login
       post = create(:post)
