@@ -157,6 +157,24 @@ RSpec.describe Board do
       end
     end
 
+    context "with include ordered" do
+      let(:options) { { include: [:ordered] } }
+
+      it "is unordered with no sections and open authors" do
+        expect(board.as_json(options)).to match_hash({ id: board.id, name: board.name, authors_locked: false, ordered: false })
+      end
+
+      it "is ordered with locked authors" do
+        board.update!(authors_locked: true)
+        expect(board.as_json(options)).to match_hash({ id: board.id, name: board.name, authors_locked: true, ordered: true })
+      end
+
+      it "is ordered with sections" do
+        create(:board_section, board: board)
+        expect(board.as_json(options)).to match_hash({ id: board.id, name: board.name, authors_locked: false, ordered: true })
+      end
+    end
+
     context "without include sections" do
       let(:options) { {} }
       let(:json) { { id: board.id, name: board.name } }
