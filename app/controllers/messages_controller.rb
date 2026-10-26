@@ -19,8 +19,9 @@ class MessagesController < ApplicationController
       from_table = from_table.where.not(sender_id: blocked_ids).left_outer_joins(:sender).where('users.deleted IS NULL OR users.deleted = false')
       includes << :sender
     end
+    # select only the subquery's columns: with '*' the joined first message's columns would replace the newest message's
     @messages = Message.from(from_table, "messages").joins(:first_thread)
-      .select('*', 'first_threads_messages.subject as thread_subject', 'first_threads_messages.created_at as thread_created_at')
+      .select('messages.*', 'first_threads_messages.subject as thread_subject', 'first_threads_messages.created_at as thread_created_at')
       .includes(*includes).order('messages.id desc').paginate(page: page)
     # counted after pagination so only the threads on this page are counted
     @thread_counts = Message.where(thread_id: @messages.map(&:thread_id)).group(:thread_id).count

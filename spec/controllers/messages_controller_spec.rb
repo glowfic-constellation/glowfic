@@ -51,6 +51,37 @@ RSpec.describe MessagesController do
         expect(assigns(:thread_counts)).to eq(first.id => 3, other.id => 1)
       end
 
+      it "shows the newest message in each thread" do
+        user = create(:user)
+        other_user = create(:user)
+        first = create(:message, sender: user, recipient: other_user, unread: false)
+        newest = create(:message, sender: other_user, recipient: user, thread_id: first.id)
+        login_as(user)
+
+        get :index
+
+        expect(assigns(:messages).map(&:id)).to eq([newest.id])
+        message = assigns(:messages).first
+        expect(message.sender).to eq(other_user)
+        expect(message).to be_unread
+        expect(message.thread_subject).to eq(first.subject)
+        expect(response.body).to include(message_path(newest))
+        expect(response.body).to include(other_user.username)
+      end
+
+      it "shows the newest message in each outbox thread" do
+        user = create(:user)
+        other_user = create(:user)
+        first = create(:message, sender: other_user, recipient: user)
+        newest = create(:message, sender: user, recipient: other_user, thread_id: first.id)
+        login_as(user)
+
+        get :index, params: { view: 'outbox' }
+
+        expect(assigns(:messages).map(&:id)).to eq([newest.id])
+        expect(assigns(:messages).first.recipient).to eq(other_user)
+      end
+
       it "includes site messages" do
         user = create(:user)
         login_as(user)
