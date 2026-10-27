@@ -39,6 +39,7 @@ RSpec.describe "Editing a character" do
     within('.character-form') do
       expect(page).to have_field('Template Cluster Name', disabled: true)
       expect(page).to have_field('Facecast', disabled: false)
+      expect(page).to have_field('Original post', placeholder: 'Original Post', with: 'Thread')
 
       fill_in 'Facecast', with: 'Example facecast'
       click_button 'Save'
@@ -60,6 +61,7 @@ RSpec.describe "Editing a character" do
       uncheck 'NPC?'
       expect(page).to have_field('Template Cluster Name', disabled: false)
       expect(page).to have_field('Facecast', disabled: false)
+      expect(page).to have_field('Nickname', placeholder: 'Template Nickname', with: 'Thread')
 
       fill_in 'Screenname', with: 'example_screenname'
       click_button 'Save'

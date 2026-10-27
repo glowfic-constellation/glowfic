@@ -222,7 +222,9 @@ function disableNPCBoxes(disable) {
   $("#character_template_id, #new_template, #character_template_attributes_name, #character_cluster").prop("disabled", disable);
   if (disable) {
     $("label[for='character_nickname']").text("Original post");
+    $("#character_nickname").attr("placeholder", "Original Post");
   } else {
     $("label[for='character_nickname']").text("Nickname");
+    $("#character_nickname").attr("placeholder", "Template Nickname");
   }
 }
