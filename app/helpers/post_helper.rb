@@ -34,7 +34,11 @@ module PostHelper
 
   def anchored_continuity_path(post)
     return continuity_path(post.board_id) unless post.section_id.present?
-    continuity_path(post.board_id, anchor: "section-#{post.section_id}")
+    section_order = post.has_attribute?(:board_section_order) ? post.board_section_order : post.section&.section_order
+    return continuity_path(post.board_id) if section_order.nil?
+    section_page = (section_order / BoardSection::PER_PAGE) + 1
+    page_params = section_page > 1 ? { page: section_page } : {}
+    continuity_path(post.board_id, anchor: "section-#{post.section_id}", **page_params)
   end
 
   def post_privacy_settings
