@@ -1,11 +1,14 @@
 //= require hsluv
 /* global gon, Hsluv */
 
-// The wheel is rendered at a lower resolution and scaled up, since every pixel is an HSLuv conversion
-const WHEEL_RESOLUTION = 200;
-const DOT_RADIUS = 6;
+// Drawing happens in SIZE x SIZE logical pixels, scaled up for high-DPI screens. The wheel itself is
+// rendered at a lower resolution and smoothed, since every pixel is an HSLuv conversion.
+const SIZE = 400;
+const WHEEL_RESOLUTION = 320;
+const DOT_RADIUS = 5.5;
+const FADED_DOT_RADIUS = 3.5;
 const HOVER_RADIUS = 9;
-const NEAREST_COUNT = 10;
+const NEAREST_COUNT = 8;
 
 let canvas, context, wheelImage;
 let moieties = [];
@@ -15,7 +18,11 @@ let candidate = null;
 $(document).ready(function() {
   canvas = document.getElementById('moiety-wheel');
   if (!canvas) return;
+  const scale = window.devicePixelRatio || 1;
+  canvas.width = SIZE * scale;
+  canvas.height = SIZE * scale;
   context = canvas.getContext('2d');
+  context.setTransform(scale, 0, 0, scale, 0, 0);
   wheelImage = document.createElement('canvas');
   wheelImage.width = WHEEL_RESOLUTION;
   wheelImage.height = WHEEL_RESOLUTION;
@@ -59,9 +66,28 @@ function parseMoiety(moiety) {
 function setLightness(value) {
   lightness = value;
   $('#moiety_lightness').val(value);
-  $('#moiety-lightness-value').text(value);
+  styleSlider();
   renderWheel();
   draw();
+}
+
+function hsluvHex(hue, saturation, light) {
+  const color = new Hsluv();
+  color.hsluv_h = hue;
+  color.hsluv_s = saturation;
+  color.hsluv_l = light;
+  color.hsluvToHex();
+  return color.hex;
+}
+
+// The lightness track shows the picked color from black to white, and the thumb the color at this lightness
+function styleSlider() {
+  const hue = candidate ? candidate.color.hsluv_h : 0;
+  const saturation = candidate ? candidate.color.hsluv_s : 0;
+  const stops = [0, 20, 40, 60, 80, 100].map((light) => hsluvHex(hue, saturation, light) + ' ' + light + '%');
+  const slider = document.getElementById('moiety_lightness');
+  slider.style.background = 'linear-gradient(to right, ' + stops.join(', ') + ')';
+  slider.style.setProperty('--moiety-thumb', hsluvHex(hue, saturation, lightness));
 }
 
 function renderWheel() {
@@ -69,13 +95,13 @@ function renderWheel() {
   const image = ctx.createImageData(WHEEL_RESOLUTION, WHEEL_RESOLUTION);
   const color = new Hsluv();
   const center = WHEEL_RESOLUTION / 2;
-  const radius = wheelRadius() * WHEEL_RESOLUTION / canvas.width;
+  const radius = wheelRadius() * WHEEL_RESOLUTION / SIZE;
   for (let y = 0; y < WHEEL_RESOLUTION; y++) {
     for (let x = 0; x < WHEEL_RESOLUTION; x++) {
       const polar = toPolar(x + 0.5 - center, y + 0.5 - center, radius);
-      if (polar.saturation > 100) continue;
+      if (polar.saturation > 101) continue;
       color.hsluv_h = polar.hue;
-      color.hsluv_s = polar.saturation;
+      color.hsluv_s = Math.min(polar.saturation, 100);
       color.hsluv_l = lightness;
       color.hsluvToRgb();
       const i = ((y * WHEEL_RESOLUTION) + x) * 4;
@@ -96,11 +122,11 @@ function toPolar(dx, dy, radius) {
 
 // Leaves room for dots at full saturation to fit inside the canvas
 function wheelRadius() {
-  return (canvas.width / 2) - DOT_RADIUS;
+  return (SIZE / 2) - DOT_RADIUS - 2;
 }
 
 function toCanvas(hue, saturation) {
-  const center = canvas.width / 2;
+  const center = SIZE / 2;
   const angle = hue * Math.PI / 180;
   const distance = Math.min(saturation, 100) / 100 * wheelRadius();
   return { x: center + (distance * Math.cos(angle)), y: center - (distance * Math.sin(angle)) };
@@ -113,9 +139,16 @@ function dotAlpha(moiety) {
 }
 
 function draw() {
-  context.clearRect(0, 0, canvas.width, canvas.height);
+  const center = SIZE / 2;
+  context.clearRect(0, 0, SIZE, SIZE);
+  context.save();
+  context.beginPath();
+  context.arc(center, center, wheelRadius(), 0, 2 * Math.PI);
+  context.clip();
   context.imageSmoothingEnabled = true;
-  context.drawImage(wheelImage, 0, 0, canvas.width, canvas.height);
+  context.imageSmoothingQuality = 'high';
+  context.drawImage(wheelImage, 0, 0, SIZE, SIZE);
+  context.restore();
   const ordered = moieties.slice().sort((a, b) => dotAlpha(a) - dotAlpha(b));
   ordered.forEach(drawDot);
   if (candidate) drawCandidate();
@@ -123,13 +156,14 @@ function draw() {
 
 function drawDot(moiety) {
   const point = toCanvas(moiety.color.hsluv_h, moiety.color.hsluv_s);
-  context.globalAlpha = dotAlpha(moiety);
+  const alpha = dotAlpha(moiety);
+  context.globalAlpha = alpha;
   context.beginPath();
-  context.arc(point.x, point.y, DOT_RADIUS, 0, 2 * Math.PI);
+  context.arc(point.x, point.y, alpha < 0.5 ? FADED_DOT_RADIUS : DOT_RADIUS, 0, 2 * Math.PI);
   context.fillStyle = moiety.hex;
   context.fill();
-  context.lineWidth = 1.5;
-  context.strokeStyle = moiety.color.hsluv_l > 50 ? '#000' : '#fff';
+  context.lineWidth = 1;
+  context.strokeStyle = moiety.color.hsluv_l > 60 ? 'rgba(0, 0, 0, 0.5)' : 'rgba(255, 255, 255, 0.8)';
   context.stroke();
   context.globalAlpha = 1;
 }
@@ -138,17 +172,17 @@ function drawCandidate() {
   const point = toCanvas(candidate.color.hsluv_h, candidate.color.hsluv_s);
   context.beginPath();
   context.arc(point.x, point.y, DOT_RADIUS + 4, 0, 2 * Math.PI);
-  context.lineWidth = 3;
-  context.strokeStyle = '#fff';
+  context.lineWidth = 4;
+  context.strokeStyle = 'rgba(0, 0, 0, 0.6)';
   context.stroke();
-  context.lineWidth = 1.5;
-  context.strokeStyle = '#000';
+  context.lineWidth = 2;
+  context.strokeStyle = '#fff';
   context.stroke();
 }
 
 function eventPoint(event) {
   const rect = canvas.getBoundingClientRect();
-  const scale = canvas.width / rect.width;
+  const scale = SIZE / rect.width;
   return { x: (event.clientX - rect.left) * scale, y: (event.clientY - rect.top) * scale };
 }
 
@@ -170,7 +204,7 @@ function showHover(event) {
     hideHover();
     return;
   }
-  const scale = canvas.getBoundingClientRect().width / canvas.width;
+  const scale = canvas.getBoundingClientRect().width / SIZE;
   const label = moiety.username + (moiety.moiety_name ? ` (${moiety.moiety_name})` : '') + ' ' + moiety.hex;
   $('#moiety-hover').text(label).css({ left: (point.x * scale) + 12, top: (point.y * scale) + 12 }).show();
 }
@@ -187,16 +221,13 @@ function pickFromWheel(event) {
     $('#moiety_hex').val(moiety.hex.substring(1));
     return;
   }
-  const center = canvas.width / 2;
+  const center = SIZE / 2;
   const polar = toPolar(point.x - center, point.y - center, wheelRadius());
   if (polar.saturation > 105) return;
-  const color = new Hsluv();
-  color.hsluv_h = polar.hue;
-  color.hsluv_s = Math.min(polar.saturation, 100);
-  color.hsluv_l = lightness;
-  color.hsluvToHex();
-  $('#moiety_hex').val(color.hex.substring(1));
-  setCandidate(color.hex);
+  const hex = hsluvHex(polar.hue, Math.min(polar.saturation, 100), lightness);
+  $('#moiety_hex').val(hex.substring(1));
+  setCandidate(hex);
+  styleSlider();
   draw();
 }
 
@@ -211,10 +242,9 @@ function pickHex(value) {
 function setCandidate(hex) {
   candidate = { hex: hex, color: colorFromHex(hex) };
   const c = candidate.color;
-  $('#moiety-swatch').text('█').css('color', hex);
+  $('#moiety-swatch').css('background', hex);
   $('#moiety-sample-name').css('color', hex);
-  $('#moiety-hsluv').text(`${hex}: HSLuv ${Math.round(c.hsluv_h)}°, ${Math.round(c.hsluv_s)}%, ${Math.round(c.hsluv_l)}%`);
-  $('#moiety-sample').removeClass('hidden');
+  $('#moiety-hsluv').text(`HSLuv ${Math.round(c.hsluv_h)}° ${Math.round(c.hsluv_s)}% ${Math.round(c.hsluv_l)}%`);
   showNearest();
 }
 
@@ -226,21 +256,17 @@ function colorDistance(a, b) {
 function showNearest() {
   const nearest = moieties.map((moiety) => ({ moiety: moiety, distance: colorDistance(candidate.color, moiety.color) }));
   nearest.sort((a, b) => a.distance - b.distance);
-  const body = $('#moiety-nearest tbody').empty();
-  nearest.slice(0, NEAREST_COUNT).forEach(function(entry, index) {
-    body.append(nearestRow(entry, index % 2 ? 'odd' : 'even'));
-  });
+  $('#moiety-nearest-list').empty().append(nearest.slice(0, NEAREST_COUNT).map(nearestItem));
   $('#moiety-nearest').toggleClass('hidden', nearest.length === 0);
 }
 
-function nearestRow(entry, klass) {
+function nearestItem(entry) {
   const moiety = entry.moiety;
-  const row = $('<tr>');
-  const swatch = $('<span>').text('█').css('color', moiety.hex).attr('title', moiety.moiety_name || '');
-  const link = $('<a>').attr('href', '/users/' + moiety.id).text(moiety.username).css({ color: moiety.hex, fontWeight: 'bold' });
-  row.append($('<td>').addClass(klass + ' padding-5 centered').append(swatch));
-  row.append($('<td>').addClass(klass + ' padding-5').append(link, moiety.moiety_name ? $('<span>').text(' ' + moiety.moiety_name) : null));
-  row.append($('<td>').addClass(klass + ' padding-5').text(moiety.hex));
-  row.append($('<td>').addClass(klass + ' padding-5').text(entry.distance.toFixed(1)));
-  return row;
+  const meta = [moiety.moiety_name, moiety.hex].filter(Boolean).join(' · ');
+  return $('<li>').append(
+    $('<span>').addClass('dot').css('background', moiety.hex),
+    $('<a>').addClass('name').attr('href', '/users/' + moiety.id).text(moiety.username).css('color', moiety.hex),
+    $('<span>').addClass('meta').text(meta),
+    $('<span>').addClass('distance').attr('title', 'Perceptual color difference (CIELUV ΔE): 0 is identical').text(entry.distance.toFixed(1))
+  );
 }

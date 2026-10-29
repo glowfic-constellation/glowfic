@@ -1,41 +1,28 @@
-%table
+%table.moiety-explorer
   %thead
     %tr
-      %th.table-title{colspan: 2} Moiety Explorer
-    %tr
-      %td.even.padding-10{colspan: 2}
-        Every author's moiety on an HSLuv color wheel: hue runs around the circle and saturation runs outward, with the
-        slider setting the wheel's lightness. HSLuv spaces colors evenly to the eye, so two moieties close together
-        here also look close together on the page. Dots near the wheel's lightness are drawn solid, the rest faded.
-        Click the wheel or enter a hex code to find the nearest moieties.
-        = link_to 'List by color', users_path(sort: 'moiety')
+      %th.table-title{colspan: 2}
+        Moiety Explorer
+        = link_to 'List by color', users_path(sort: 'moiety'), class: 'moiety-list-link'
   %tbody
     %tr
-      %td.odd.padding-10.vtop.centered.moiety-wheel-cell
+      %td.even.moiety-explorer-cell.moiety-wheel-cell
         %noscript The moiety explorer needs JavaScript.
         .moiety-wheel-wrapper
-          %canvas#moiety-wheel{width: 400, height: 400}
+          %canvas#moiety-wheel
           #moiety-hover
-        %br
-        = label_tag :moiety_lightness, 'Lightness'
-        %input#moiety_lightness{type: 'range', min: 0, max: 100, step: 1, value: 60}
-        %span#moiety-lightness-value 60
-      %td.odd.padding-10.vtop.moiety-wheel-cell
-        = label_tag :moiety_hex, 'Hex code'
-        \#
-        = text_field_tag :moiety_hex, nil, maxlength: 6, style: 'width: 80px;', placeholder: 'Hex code'
-        %span#moiety-swatch
-        #moiety-sample.hidden
-          %span#moiety-sample-name= current_user&.username || 'Your Name'
-          %br
-          %span#moiety-hsluv
-        %table#moiety-nearest.hidden
-          %thead
-            %tr
-              %th.sub{colspan: 4} Nearest moieties
-            %tr
-              %th.sub.centered Moiety
-              %th.sub Name
-              %th.sub Hex
-              %th.sub{title: 'Perceptual color difference (CIELUV ΔE): 0 is identical'} Distance
-          %tbody
+        .moiety-lightness
+          = label_tag :moiety_lightness, 'Lightness'
+          %input#moiety_lightness{type: 'range', min: 0, max: 100, step: 1, value: 60}
+      %td.even.moiety-explorer-cell
+        .moiety-pick
+          %span#moiety-swatch
+          .moiety-pick-fields
+            .moiety-hex-field
+              \#
+              = text_field_tag :moiety_hex, nil, maxlength: 6, placeholder: 'pick a color', 'aria-label': 'Hex code'
+            #moiety-sample-name= current_user&.username || 'Your Name'
+            #moiety-hsluv
+        #moiety-nearest.hidden
+          .moiety-nearest-title Nearest moieties
+          %ol#moiety-nearest-list
