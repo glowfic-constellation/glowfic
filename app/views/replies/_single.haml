@@ -31,7 +31,7 @@
             .post-screenname= breakable_text(reply.screenname)
         - else
           .spacer-alt
-        .post-author= user_mem_link(reply.user_id, reply.username, reply.user_deleted?)
+        .post-author= user_mem_link(reply.user_id, reply.username, reply.user_deleted?, moiety: (reply.user_moiety if colored_names?))
     - if reply.id.present? && !hide_post_edit_box
       .post-edit-box
         - if split_ui

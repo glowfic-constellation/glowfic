@@ -118,8 +118,14 @@ module ApplicationHelper
     user_mem_link(user.id, username, user.deleted?)
   end
 
-  def user_mem_link(user_id, username, deleted)
+  # Whether to show author names in their moiety colors; a preference, since it makes pages much more colorful
+  def colored_names?
+    current_user&.moiety_colors_unread? || false
+  end
+
+  def user_mem_link(user_id, username, deleted, moiety: nil)
     return '(deleted user)'.html_safe if deleted
+    username = tag.span(username, style: "font-weight: bold; color: ##{moiety}") if moiety.present?
     link_to username, user_path(user_id)
   end
 end

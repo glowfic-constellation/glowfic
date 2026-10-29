@@ -90,6 +90,11 @@ module Writable
       user.deleted?
     end
 
+    def user_moiety
+      return read_attribute(:user_moiety) if has_attribute?(:user_moiety)
+      user.moiety
+    end
+
     private
 
     def character_ownership
