@@ -3,6 +3,8 @@ class UsersController < ApplicationController
   include DateSelectable
   include Taggable
 
+  MOIETY_ACTIVITY_CACHE_KEY = 'users/moieties/activity'
+
   before_action :signup_prep, only: :new
   before_action :login_required, except: [:index, :moieties, :show, :new, :create, :search]
   before_action :logout_required, only: [:new, :create]
@@ -24,8 +26,11 @@ class UsersController < ApplicationController
   def moieties
     @page_title = 'Moiety Explorer'
     use_javascript('users/moieties')
-    gon.moieties = moiety_users.map do |user|
-      { id: user.id, username: user.username, moiety: user.moiety, moiety_name: user.moiety_name }
+    users = moiety_users.to_a
+    activity = moiety_activity
+    gon.moieties = users.map do |user|
+      total, recent = activity.fetch(user.id, [0, 0])
+      { id: user.id, username: user.username, moiety: user.moiety, moiety_name: user.moiety_name, total: total, recent: recent }
     end
   end
 
@@ -211,6 +216,23 @@ class UsersController < ApplicationController
 
   def moiety_users
     User.active.where.not(moiety: nil).ordered
+  end
+
+  # { user_id => [posts and replies written, those from the past year] } for everyone with a moiety. Counting
+  # means scanning every reply, so it's cached; the explorer only uses it to size dots.
+  def moiety_activity
+    Rails.cache.fetch(MOIETY_ACTIVITY_CACHE_KEY, expires_in: 1.day) do
+      user_ids = moiety_users.pluck(:id)
+      counts = {}
+      [Post, Reply].each do |klass|
+        klass.where(user_id: user_ids).group(:user_id).pluck(
+          :user_id, Arel.sql('COUNT(*)'), Arel.sql("COUNT(*) FILTER (WHERE created_at > NOW() - INTERVAL '1 year')"),
+        ).each do |user_id, total, recent|
+          counts[user_id] = (counts[user_id] || [0, 0]).zip([total, recent]).map(&:sum)
+        end
+      end
+      counts
+    end
   end
 
   def require_own_user

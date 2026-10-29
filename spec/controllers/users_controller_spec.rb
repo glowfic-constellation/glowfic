@@ -80,7 +80,17 @@ RSpec.describe UsersController do
       create(:user, moiety: 'aaaaaa', deleted: true)
       login
       get :moieties
-      expect(controller.gon.moieties).to eq([{ id: user.id, username: user.username, moiety: 'fed123', moiety_name: 'moietycolor' }])
+      expected = { id: user.id, username: user.username, moiety: 'fed123', moiety_name: 'moietycolor', total: 0, recent: 0 }
+      expect(controller.gon.moieties).to eq([expected])
+    end
+
+    it "counts each author's posts and replies, overall and in the past year" do
+      user = create(:user, moiety: 'fed123')
+      post = create(:post, user: user)
+      create(:reply, post: post, user: user)
+      Timecop.freeze(2.years.ago) { create(:reply, post: post, user: user) }
+      get :moieties
+      expect(controller.gon.moieties.first).to include(total: 3, recent: 2)
     end
   end
 

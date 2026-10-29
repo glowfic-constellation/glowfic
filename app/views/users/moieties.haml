@@ -14,6 +14,9 @@
         .moiety-lightness
           = label_tag :moiety_lightness, 'Lightness'
           %input#moiety_lightness{type: 'range', min: 0, max: 100, step: 1, value: 60}
+        .moiety-size
+          = label_tag :moiety_size, 'Size by'
+          = select_tag :moiety_size, options_for_select({ 'Posts and replies this year' => 'recent', 'Posts and replies ever' => 'total', 'Nothing' => 'none' })
       %td.even.moiety-explorer-cell
         .moiety-pick
           %span#moiety-swatch

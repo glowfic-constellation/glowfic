@@ -691,6 +691,15 @@ tr.gallery-tags .tag-item { color: $font_color_tag_item_gallery; }
   }
 }
 
+.moiety-size {
+  max-width: 400px;
+  margin: 10px auto 0px;
+  text-align: left;
+  font-size: $font_size_small;
+
+  select { margin-left: 10px; }
+}
+
 .moiety-pick {
   display: flex;
   align-items: center;
