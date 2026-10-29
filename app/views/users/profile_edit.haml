@@ -29,6 +29,7 @@
             %td{class: cycle('even', 'odd')}
               \#
               = f.text_field :moiety, placeholder: "Hex code", style: 'width: 80px;', maxlength: 6
+              = link_to 'Moiety explorer', moieties_users_path(hex: current_user.moiety), target: '_blank', rel: 'noopener'
           %tr
             %th.sub.vtop= f.label :moiety_name, "Moiety name"
             %td{class: cycle('even', 'odd')}= f.text_field :moiety_name, placeholder: "Moiety"
