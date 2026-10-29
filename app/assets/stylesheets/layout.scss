@@ -610,6 +610,39 @@ tr.gallery-tags .tag-item { color: $font_color_tag_item_gallery; }
 
 .user-moiety { font-size: 80%; }
 
+.moiety-wheel-wrapper {
+  position: relative;
+  display: inline-block;
+  max-width: 100%;
+
+  canvas {
+    max-width: 100%;
+    height: auto;
+    cursor: crosshair;
+    touch-action: manipulation;
+  }
+}
+
+#moiety-hover {
+  position: absolute;
+  display: none;
+  pointer-events: none;
+  white-space: nowrap;
+  padding: 2px 6px;
+  font-size: $font_size_small;
+  background-color: $bg_color_header_middle;
+  color: $font_color_header_link;
+}
+
+#moiety-swatch { font-size: 150%; vertical-align: middle; }
+#moiety-sample { margin: 10px 0px; }
+#moiety-sample-name { font-weight: bold; font-size: 150%; }
+#moiety-nearest { margin-top: 10px; }
+
+@media (max-width: 600px) {
+  .moiety-wheel-cell { display: block; width: 100%; }
+}
+
 #footer {
   font-size: $font_size_small;
   background-color: $bg_color_header_middle;

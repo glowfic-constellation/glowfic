@@ -4,7 +4,7 @@ class UsersController < ApplicationController
   include Taggable
 
   before_action :signup_prep, only: :new
-  before_action :login_required, except: [:index, :show, :new, :create, :search]
+  before_action :login_required, except: [:index, :moieties, :show, :new, :create, :search]
   before_action :logout_required, only: [:new, :create]
   before_action :require_own_user, only: [:edit, :update, :password, :upgrade, :profile_edit]
   before_action :require_readonly_user, only: :upgrade
@@ -12,7 +12,21 @@ class UsersController < ApplicationController
 
   def index
     @page_title = 'Users'
-    @users = User.active.ordered.paginate(page: page)
+    if params[:sort] == 'moiety'
+      # Everyone with a moiety on one page, in rainbow order, so neighboring colors can be compared
+      users = moiety_users.sort_by { |user| MoietyColor.sort_key_for(user.moiety) }
+      @users = WillPaginate::Collection.create(1, [users.size, 1].max, users.size) { |pager| pager.replace(users) }
+    else
+      @users = User.active.ordered.paginate(page: page)
+    end
+  end
+
+  def moieties
+    @page_title = 'Moiety Explorer'
+    use_javascript('users/moieties')
+    gon.moieties = moiety_users.map do |user|
+      { id: user.id, username: user.username, moiety: user.moiety, moiety_name: user.moiety_name }
+    end
   end
 
   def new
@@ -194,6 +208,10 @@ class UsersController < ApplicationController
   end
 
   private
+
+  def moiety_users
+    User.active.where.not(moiety: nil).ordered
+  end
 
   def require_own_user
     return if params[:id] == current_user.id.to_s
