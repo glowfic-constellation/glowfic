@@ -119,6 +119,7 @@ class ApplicationController < ActionController::Base
         max(boards.name) as board_name,
         max(users.username) as last_user_name,
         bool_or(users.deleted) as last_user_deleted,
+        max(users.moiety) as last_user_moiety,
         max(board_sections.name) as section_name
         #{select}
       SQL
@@ -128,6 +129,7 @@ class ApplicationController < ActionController::Base
         boards.name as board_name,
         users.username as last_user_name,
         users.deleted as last_user_deleted,
+        users.moiety as last_user_moiety,
         board_sections.name as section_name
         #{select}
       SQL

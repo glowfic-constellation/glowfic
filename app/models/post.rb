@@ -308,6 +308,11 @@ class Post < ApplicationRecord
     last_user.deleted?
   end
 
+  def last_user_moiety
+    return read_attribute(:last_user_moiety) if has_attribute?(:last_user_moiety)
+    last_user.moiety
+  end
+
   def user_joined(user)
     NotifyFollowersOfNewPostJob.perform_later(self.id, user.id)
   end
