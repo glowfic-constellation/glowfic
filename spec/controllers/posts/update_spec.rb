@@ -1105,4 +1105,36 @@ RSpec.describe PostsController, 'PUT update' do
       expect(blocked.blocked_posts).to be_empty
     end
   end
+
+  context "minor edit" do
+    before(:each) { login_as(user) }
+
+    it "bumps edited_at and tagged_at on a normal edit" do
+      user_post.update_columns(edited_at: 2.days.ago, tagged_at: 2.days.ago)
+      old_edited = user_post.reload.edited_at
+      old_tagged = user_post.tagged_at
+
+      put :update, params: { id: user_post.id, post: { content: 'new content' } }
+
+      expect(response).to redirect_to(post_url(user_post))
+      user_post.reload
+      expect(user_post.content).to eq('new content')
+      expect(user_post.edited_at).to be > old_edited
+      expect(user_post.tagged_at).to be > old_tagged
+    end
+
+    it "does not bump edited_at or tagged_at when marked minor" do
+      user_post.update_columns(edited_at: 2.days.ago, tagged_at: 2.days.ago)
+      old_edited = user_post.reload.edited_at
+      old_tagged = user_post.tagged_at
+
+      put :update, params: { id: user_post.id, minor: '1', post: { content: 'new content' } }
+
+      expect(response).to redirect_to(post_url(user_post))
+      user_post.reload
+      expect(user_post.content).to eq('new content')
+      expect(user_post.edited_at).to be_the_same_time_as(old_edited)
+      expect(user_post.tagged_at).to be_the_same_time_as(old_tagged)
+    end
+  end
 end
