@@ -19,7 +19,6 @@ class FavoritesController < ApplicationController
     @posts = Post.where(id: author_posts).or(Post.where(id: post_favorites)).or(Post.where(board_id: board_favorites))
     @posts = @posts.not_ignored_by(current_user) if current_user&.hide_from_all
     @posts = posts_from_relation(@posts.ordered, with_unread: true)
-    @hide_quicklinks = true
   end
 
   def create

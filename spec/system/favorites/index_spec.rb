@@ -6,6 +6,7 @@ RSpec.describe "Favorites page" do
     board = create(:board, creator: user, name: "boardt")
     create(:post, board: board, subject: "board post") # board_post
     create(:post, board: board, user: user, subject: "board user post") # board_user_post
+    long = create(:post, user: user, subject: "long favorite thread", num_replies: 26)
 
     logged_in_user = login
     create(:favorite, user: logged_in_user, favorite: user)
@@ -21,6 +22,11 @@ RSpec.describe "Favorites page" do
     expect(page).to have_text("user post")
     expect(page).to have_text("board post")
     expect(page).to have_text("board user post")
+
+    # page links, as on a continuity, so a reader can jump straight to a page
+    within('.post-subject', text: 'long favorite thread') do
+      expect(page).to have_link('2', href: post_path(long, page: 2))
+    end
 
     click_link "Grouped »"
 

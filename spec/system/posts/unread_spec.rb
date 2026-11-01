@@ -23,13 +23,21 @@ RSpec.describe "Unread posts" do
       read.mark_read(user)
     end
 
+    long = create(:post, subject: 'long unread', num_replies: 26)
+
     visit unread_posts_path
-    expect(page).to have_selector('.post-subject', count: 5)
+    expect(page).to have_selector('.post-subject', count: 6)
     expect(page).to have_xpath("//img[contains(@src, 'note')]")
+
+    # page links, as on a continuity, so a reader can jump straight to a page
+    within('.post-subject', text: 'long unread') do
+      expect(page).to have_link('2', href: post_path(long, page: 2))
+    end
 
     user.update!(layout: 'starrydark')
     click_link "Opened Threads »"
     expect(page).to have_selector('.post-subject', count: 3)
+    expect(page).to have_no_selector('.post-subject', text: 'long unread')
     expect(page).to have_xpath("//img[contains(@src, 'bullet')]")
   end
 
