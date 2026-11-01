@@ -5,6 +5,8 @@
 
 - content_for :posts_title do
   = @index.name
+  = link_to index_path(@index, view: 'flat'), rel: 'nofollow noindex' do
+    .link-box View Flat HTML
   - if @index.editable_by?(current_user)
     = link_to new_index_post_path params: { index_id: @index.id } do
       .link-box.action-new + Add Post to Index
@@ -30,3 +32,7 @@
       %tr
         %td.continuity-spacer{colspan: 7}
       = render partial: 'posts/list_item', collection: @sectionless, as: :post, locals: { index: @index }
+  - if @sectionless.respond_to?(:total_pages) && @sectionless.total_pages > 1
+    %tfoot
+      %tr
+        %td{colspan: 7}= render 'posts/paginator', paginated: @sectionless
