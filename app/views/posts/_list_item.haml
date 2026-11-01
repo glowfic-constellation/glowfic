@@ -1,4 +1,4 @@
--# locals: ( post:, index: nil, hide_continuity: false, show_unread_count: false, check_box_name: nil, check_box_padding: false, colored: false, klass: cycle('even', 'odd') )
+-# locals: ( post:, index: nil, hide_continuity: false, show_unread_count: false, check_box_name: nil, check_box_padding: false, colored: colored_names?, klass: cycle('even', 'odd') )
 
 %tr
   - replies_count = post.reply_count
@@ -58,7 +58,7 @@
   %td.post-time.vtop{class: klass}
     = pretty_time(post.tagged_at)
     by
-    = user_mem_link(post.last_user_id, post.last_user_name, post.last_user_deleted?)
+    = user_mem_link(post.last_user_id, post.last_user_name, post.last_user_deleted?, moiety: (post.last_user_moiety if colored))
   - if check_box_name
     %td.post-check-box{class: klass}= check_box_tag check_box_name, post.id, false, class: 'checkbox check-all-item', id: nil
   - if check_box_padding

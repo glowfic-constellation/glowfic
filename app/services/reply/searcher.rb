@@ -88,7 +88,7 @@ class Reply::Searcher < Generic::Searcher
 
   def construct_query(params, page)
     @search_results = @search_results
-      .select('replies.*, characters.name, characters.screenname, users.username, users.deleted as user_deleted')
+      .select('replies.*, characters.name, characters.screenname, users.username, users.deleted as user_deleted, users.moiety as user_moiety')
       .visible_to(@current_user)
       .joins(:user)
       .left_outer_joins(:character)

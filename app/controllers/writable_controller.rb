@@ -84,7 +84,7 @@ class WritableController < ApplicationController
     select = <<~SQL.squish
       replies.*, characters.name, characters.screenname,
       icons.keyword, icons.url,
-      users.username, users.deleted as user_deleted,
+      users.username, users.deleted as user_deleted, users.moiety as user_moiety,
       character_aliases.name as alias
     SQL
 

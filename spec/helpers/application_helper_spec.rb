@@ -101,6 +101,36 @@ RSpec.describe ApplicationHelper do
     end
   end
 
+  describe "#user_mem_link" do
+    it "links the plain username without a moiety" do
+      expect(helper.user_mem_link(5, 'name', false)).to eq(link_to('name', user_path(5)))
+    end
+
+    it "links the colored username with a moiety" do
+      html = link_to(tag.span('name', style: "font-weight: bold; color: #abcdef"), user_path(5))
+      expect(helper.user_mem_link(5, 'name', false, moiety: 'abcdef')).to eq(html)
+    end
+
+    it "hides deleted users even with a moiety" do
+      expect(helper.user_mem_link(5, 'name', true, moiety: 'abcdef')).to eq('(deleted user)')
+    end
+  end
+
+  describe "#colored_names?" do
+    it "is false when logged out" do
+      without_partial_double_verification { allow(helper).to receive(:current_user).and_return(nil) }
+      expect(helper.colored_names?).to be(false)
+    end
+
+    it "follows the user's preference" do
+      user = create(:user, moiety_colors_unread: true)
+      without_partial_double_verification { allow(helper).to receive(:current_user).and_return(user) }
+      expect(helper.colored_names?).to be(true)
+      user.update!(moiety_colors_unread: false)
+      expect(helper.colored_names?).to be(false)
+    end
+  end
+
   shared_examples "link_img" do
     let(:user) { create(:user) }
 

@@ -49,6 +49,11 @@
       .sub= f.label :layout
       %div{class: cycle('even', 'odd')}= f.select :layout, layout_options(current_user.layout)
     %div
+      .sub Moiety colors
+      .checkbox-field{class: cycle('even', 'odd')}
+        = f.check_box :moiety_colors_unread
+        = f.label :moiety_colors_unread, "Show moiety colors on author names in post lists and replies"
+    %div
       .sub Default view
       %div{class: cycle('even', 'odd')}
         = f.select(:default_view, options_for_select({ Icon: 'icon', List: 'list' }, current_user.default_view))
@@ -65,8 +70,6 @@
         = f.label :visible_unread, "Outline when jumping to unread"
         = f.check_box :hide_from_all
         = f.label :hide_from_all, "Hide hidden posts from recently updated and other post lists"
-        = f.check_box :moiety_colors_unread
-        = f.label :moiety_colors_unread, "Show moiety colors on author names"
     %div
       .sub Replies Owed
       .checkbox-field{class: cycle('even', 'odd')}
