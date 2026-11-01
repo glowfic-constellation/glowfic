@@ -31,6 +31,7 @@ jobs:
       - name: Open pull request if CIDRs changed
         uses: peter-evans/create-pull-request@v8
         with:
+          add-paths: config/blocked_asn_cidrs.yml
           commit-message: "chore: refresh blocked ASN CIDRs"
           title: "Refresh blocked ASN CIDRs"
           body: |
