@@ -4,6 +4,7 @@
   = icon_tag f.object, id: "icon-#{f.object.id}"
   = f.hidden_field :id
   = loading_tag class: 'hidden', id: "loading-#{f.object.id}"
+  = reverse_image_search_links(f.object.url, id: "reverse-search-#{f.object.id}")
 .form-table.icon-edit-table
   .gallery-icon-url{id: "icon-row-#{f.object.id}"}
     - klass = cycle('even', 'odd')

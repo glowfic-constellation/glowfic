@@ -165,4 +165,28 @@ RSpec.describe CharacterHelper do
       expect(helper.characters_list(assoc, true)).to match_array(expected)
     end
   end
+
+  describe "#character_facecast_image_url" do
+    let(:user) { create(:user) }
+
+    it "prefers the character's default icon" do
+      default_icon = create(:icon, user: user)
+      gallery_icon = create(:icon, user: user)
+      gallery = create(:gallery, icons: [gallery_icon], user: user)
+      character = create(:character, user: user, galleries: [gallery], default_icon: default_icon)
+      expect(helper.character_facecast_image_url(character)).to eq(default_icon.url)
+    end
+
+    it "falls back to the first gallery icon" do
+      icon = create(:icon, user: user)
+      gallery = create(:gallery, icons: [icon], user: user)
+      character = create(:character, user: user, galleries: [gallery])
+      expect(helper.character_facecast_image_url(character)).to eq(icon.url)
+    end
+
+    it "is nil when the character has no icons" do
+      character = create(:character, user: user)
+      expect(helper.character_facecast_image_url(character)).to be_nil
+    end
+  end
 end

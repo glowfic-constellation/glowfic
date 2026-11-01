@@ -100,4 +100,46 @@ RSpec.describe IconHelper do
       expect(helper.dropdown_icons(post)).to eq(html)
     end
   end
+
+  describe "#reverse_image_search_links" do
+    it "renders a link per engine with the encoded url filled in" do
+      url = 'https://example.com/a b.png?x=1'
+      html = helper.reverse_image_search_links(url)
+      doc = Nokogiri::HTML.fragment(html)
+
+      container = doc.at_css('.reverse-image-search')
+      expect(container).to be_present
+      expect(container['class']).not_to include('hidden')
+      expect(container['data-image-url']).to eq(url)
+
+      links = container.css('a.reverse-image-search-link')
+      expect(links.size).to eq(IconHelper::REVERSE_IMAGE_SEARCH_ENGINES.size)
+      links.each do |link|
+        expect(link['target']).to eq('_blank')
+        expect(link['rel']).to eq('noopener noreferrer')
+        expect(link['data-search-template']).to include('{url}')
+        expect(link['href']).to include(CGI.escape(url))
+        expect(link['href']).not_to include('{url}')
+      end
+    end
+
+    it "hides the container and leaves placeholder hrefs when there is no url" do
+      html = helper.reverse_image_search_links(nil)
+      doc = Nokogiri::HTML.fragment(html)
+
+      container = doc.at_css('.reverse-image-search')
+      expect(container['class']).to include('hidden')
+      expect(container['data-image-url']).to be_nil
+      container.css('a.reverse-image-search-link').each do |link|
+        expect(link['href']).to eq('#')
+        expect(link['data-search-template']).to include('{url}')
+      end
+    end
+
+    it "accepts an html id" do
+      html = helper.reverse_image_search_links(nil, id: 'reverse-search-5')
+      doc = Nokogiri::HTML.fragment(html)
+      expect(doc.at_css('.reverse-image-search')['id']).to eq('reverse-search-5')
+    end
+  end
 end

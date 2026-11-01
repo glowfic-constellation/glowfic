@@ -83,3 +83,11 @@
 }
 
 #character-editor #create_template.hidden { display: none; }
+
+#identify-facecast { margin-left: 5px; }
+#identify-facecast-status {
+  margin-left: 5px;
+  font-size: 0.85em;
+  font-style: italic;
+  &.hidden { display: none; }
+}
