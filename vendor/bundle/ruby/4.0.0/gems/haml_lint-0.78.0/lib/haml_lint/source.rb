@@ -1,0 +1,25 @@
+# frozen_string_literal: true
+
+module HamlLint
+  # Wrapper class representing a single target for HamlLint::Runner to run against, comprised of a file path to
+  # eventually read from, and an optional IO argument to override with.
+  class Source
+    # @return [String] File path associated with the given IO object.
+    attr_reader :path
+
+    # Wraps an optional IO object and file path to a source object.
+    #
+    # @param [String] path
+    # @param [IO] io
+    def initialize(path: nil, io: nil)
+      @path = path
+      @file_path = File.expand_path(path) if path
+      @io = io
+    end
+
+    # @return [String] Contents of the given IO object.
+    def contents
+      @contents ||= @io&.read || File.read(@file_path)
+    end
+  end
+end

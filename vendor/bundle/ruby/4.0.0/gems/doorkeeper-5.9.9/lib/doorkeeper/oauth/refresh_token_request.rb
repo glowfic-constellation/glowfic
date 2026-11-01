@@ -1,0 +1,144 @@
+# frozen_string_literal: true
+
+module Doorkeeper
+  module OAuth
+    class RefreshTokenRequest < BaseRequest
+      include OAuth::Helpers
+
+      validate :token_presence, error: Errors::InvalidRequest
+      validate :token,        error: Errors::InvalidGrant
+      validate :client,       error: Errors::InvalidClient
+      validate :client_match, error: Errors::InvalidGrant
+      validate :scope,        error: Errors::InvalidScope
+
+      attr_reader :access_token, :client, :credentials, :refresh_token
+      attr_reader :missing_param
+
+      def initialize(server, refresh_token, credentials, parameters = {})
+        @server = server
+        @refresh_token = refresh_token
+        @credentials = credentials
+        @grant_type = Doorkeeper::OAuth::REFRESH_TOKEN
+        @original_scopes = parameters[:scope] || parameters[:scopes]
+        @refresh_token_parameter = parameters[:refresh_token]
+        @client = load_client(credentials) if credentials
+      end
+
+      private
+
+      def load_client(credentials)
+        Doorkeeper.config.application_model.by_uid_and_secret(credentials.uid, credentials.secret)
+      end
+
+      def before_successful_response
+        if refresh_token_revoked_on_use?
+          # No locking needed when refresh tokens are revoked on use
+          # because the old token is revoked later when the new token is used.
+          # This allows multiple concurrent refresh requests to succeed during the
+          # transition period, after which the old refresh token will be revoked.
+          raise Errors::InvalidGrantReuse if refresh_token.revoked?
+
+          create_access_token
+        else
+          # Use locking when refresh tokens are revoked immediately
+          # to prevent race conditions where multiple tokens could be created
+          refresh_token.with_lock do
+            raise Errors::InvalidGrantReuse if refresh_token.revoked?
+
+            refresh_token.revoke
+            create_access_token
+          end
+        end
+        super
+      end
+
+      def refresh_token_revoked_on_use?
+        Doorkeeper.config.access_token_model.refresh_token_revoked_on_use?
+      end
+
+      def default_scopes
+        refresh_token.scopes
+      end
+
+      def create_access_token
+        attributes = {}.merge(custom_token_attributes_with_data)
+
+        resource_owner =
+          if Doorkeeper.config.polymorphic_resource_owner?
+            refresh_token.resource_owner
+          else
+            refresh_token.resource_owner_id
+          end
+
+        if refresh_token_revoked_on_use?
+          attributes[:previous_refresh_token] = refresh_token.refresh_token
+        end
+
+        # RFC6749
+        # 1.5.  Refresh Token
+        #
+        # Refresh tokens are issued to the client by the authorization server and are
+        # used to obtain a new access token when the current access token
+        # becomes invalid or expires, or to obtain additional access tokens
+        # with identical or narrower scope (access tokens may have a shorter
+        # lifetime and fewer permissions than authorized by the resource
+        # owner).
+        #
+        # Here we assume that TTL of the token received after refreshing should be
+        # the same as that of the original token.
+        #
+        @access_token = Doorkeeper.config.access_token_model.create_for(
+          application: refresh_token.application,
+          resource_owner: resource_owner,
+          scopes: scopes,
+          expires_in: refresh_token.expires_in,
+          use_refresh_token: true,
+          **attributes,
+        )
+      end
+
+      def validate_token_presence
+        @missing_param = :refresh_token if refresh_token.blank? && @refresh_token_parameter.blank?
+
+        @missing_param.nil?
+      end
+
+      def validate_token
+        refresh_token.present? && !refresh_token.revoked?
+      end
+
+      def validate_client
+        return true if credentials.blank?
+
+        client.present?
+      end
+
+      # @see https://datatracker.ietf.org/doc/html/rfc6749#section-1.5
+      #
+      def validate_client_match
+        return true if refresh_token.application_id.blank?
+
+        client && refresh_token.application_id == client.id
+      end
+
+      def validate_scope
+        if @original_scopes.present?
+          ScopeChecker.valid?(
+            scope_str: @original_scopes,
+            server_scopes: refresh_token.scopes,
+          )
+        else
+          true
+        end
+      end
+
+      def custom_token_attributes_with_data
+        refresh_token
+          .attributes
+          .with_indifferent_access
+          .slice(*Doorkeeper.config.custom_access_token_attributes)
+          .symbolize_keys
+      end
+    end
+  end
+end

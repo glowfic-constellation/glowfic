@@ -1,0 +1,56 @@
+<ul class='breadcrumb'>
+  <li class='active'><a href='<%= @doc[:doc_url] %><%= @doc[:link_extension] %>'><%= @doc[:name] %> <%= @doc[:resources].values.first && @doc[:resources].values.first[:version] %></a></li>
+  <%= render(:partial => "languages", :locals => {:doc_url => @doc[:doc_url]}) %>
+  <% if @versions && @versions.size > 1 %>
+  <li class='pull-right'>
+    <%= @versions.collect { |v| link_to v, Apipie.full_url(v+@doc[:link_extension]) }.join(' / ').html_safe %>
+  </li>
+  <% end %>
+</ul>
+
+<div><%= raw @doc[:info] %></div>
+
+<h1 class='page-header'><%= t('apipie.resources') %></h1>
+
+<% @doc[:resources].sort_by(&:first).each do |key, api| %>
+  <h2>
+    <a href='<%= api[:doc_url] %><%= @doc[:link_extension] %>'>
+      <%= api[:name] %>
+    </a>
+    <% if api[:deprecated] %>
+        <code>DEPRECATED</code>
+    <% end %>
+    <br>
+    <small><%= api[:short_description] %></small>
+  </h2>
+  <table class='table'>
+    <thead>
+      <tr>
+        <th><%= t('apipie.resource') %></th>
+        <th><%= t('apipie.description') %></th>
+      </tr>
+    </thead>
+    <tbody>
+      <% api[:methods].each do |m| %>
+        <% if !m[:show] %>
+          <% next %>
+        <% end %>
+        <% m[:apis].each do |a| %>
+          <tr>
+            <td>
+              <a href='<%= m[:doc_url] %><%= @doc[:link_extension] %>'><%= a[:http_method] %> <%= a[:api_url] %></a>
+              <% if a[:deprecated] %>
+                <code>DEPRECATED</code>
+              <% end %>
+            </td>
+            <td width='60%'><%= a[:short_description] %></td>
+          </tr>
+        <% end %>
+      <% end %>
+    </tbody>
+  </table>
+<% end %>
+
+<% unless content_for(:apipie_footer) == @doc[:copyright] %>
+  <%= content_for :apipie_footer, raw(@doc[:copyright]) %>
+<% end %>

@@ -1,0 +1,98 @@
+# frozen_string_literal: true
+
+module SimpleCov
+  # Static enumeration of the branches and methods Ruby's `Coverage` library
+  # would have reported if a file had been loaded with `branches: true` /
+  # `methods: true`. Used by `SimulateCoverage` to backfill data for files
+  # added via `cover` / `track_files` that were never required during the run,
+  # so unloaded files contribute to the branch/method denominators
+  # symmetrically with their line coverage (#1059).
+  #
+  # The emitted shape mirrors `Coverage.result[path]` for the same file.
+  # Position info comes from Prism's reported source locations; it doesn't
+  # always match `Coverage`'s byte-for-byte, but lines are reliable and
+  # downstream consumers that key off line numbers see the data they expect.
+  #
+  # Prism loads on the first extraction rather than with SimpleCov, so a
+  # line-only run never needs it. Where it cannot load at all (JRuby on
+  # Windows, whose FFI backend fails to open libprism), extraction answers nil
+  # like any other failure.
+  module StaticCoverageExtractor
+    extend self
+
+    # Parse `source` and return `{"branches" => {...}, "methods" => {...}}`
+    # matching the shape `Coverage.result[path]` produces. Returns nil when
+    # Prism cannot load or parsing fails, which callers treat as "couldn't
+    # extract, fall back to empty hashes".
+    def call(source)
+      return nil unless prism_loaded?
+
+      result = Prism.parse(source)
+      return nil if result.failure?
+
+      visitor = Visitor.new
+      visitor.visit(result.value)
+      {"branches" => visitor.branches, "methods" => visitor.methods}
+    rescue
+      # Parser errors beyond the .failure? check, unsupported AST shapes, or
+      # anything else: fall back to empty hashes rather than crashing the whole
+      # report.
+      nil
+    end
+
+    # Summarize a source file's real branch and method positions, for the
+    # `:eval_generated` filter (#1046). Answers:
+    #
+    #   {
+    #     branches: Set[start_line, ...],         # e.g., [3, 12, 20]
+    #     methods:  Set[[name, start_line], ...]  # e.g., [[:foo, 7], [:bar, 13]]
+    #   }
+    #
+    # Branch matching is start_line-only rather than by the full tuple. Static
+    # extraction and Coverage can still disagree on a branch's exact column
+    # positions, so matching on start_line alone tolerates those differences.
+    # Coincidental line-sharing between a real branch and an eval-generated one
+    # keeps both, an acceptable false-negative for an opt-in filter.
+    #
+    # Returns nil when Prism cannot load or parsing fails, signaling callers to
+    # keep every Coverage entry.
+    def real_source_positions(source)
+      extracted = call(source)
+      return nil unless extracted
+
+      {
+        branches: extracted.fetch("branches").keys.to_set { |tuple| branch_start_line(*tuple) },
+        methods: extracted.fetch("methods").keys.to_set { |tuple| method_identity(*tuple) }
+      }
+    end
+
+    # Memoized, because a failed load leaves nothing in $LOADED_FEATURES and
+    # would otherwise be retried for every file.
+    def prism_loaded?
+      return @prism_loaded if instance_variable_defined?(:@prism_loaded)
+
+      @prism_loaded = load_prism
+    end
+
+    # Both keys carry their start line third, after the parts that vary between
+    # recordings. Read through a parameter list rather than an index, because
+    # every spelling of an index answers the same for a tuple of this fixed
+    # shape. Binding an argument has only the one spelling.
+    def branch_start_line(_type, _id, start_line, *)
+      start_line
+    end
+
+    def method_identity(_class_name, name, start_line, *)
+      [name, start_line]
+    end
+
+    private
+
+    def load_prism
+      require_relative "static_coverage_extractor/visitor"
+      true
+    rescue LoadError
+      false
+    end
+  end
+end

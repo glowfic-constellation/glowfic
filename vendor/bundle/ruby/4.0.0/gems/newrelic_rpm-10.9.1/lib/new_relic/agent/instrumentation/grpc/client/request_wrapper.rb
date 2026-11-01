@@ -1,0 +1,31 @@
+# This file is distributed under New Relic's license terms.
+# See https://github.com/newrelic/newrelic-ruby-agent/blob/main/LICENSE for complete details.
+# frozen_string_literal: true
+
+module NewRelic
+  module Agent
+    module Instrumentation
+      module GRPC
+        module Client
+          class RequestWrapper
+            attr_reader :newrelic_metadata
+
+            def initialize(host)
+              @host = host
+              @newrelic_metadata = {}
+            end
+
+            def host_from_header
+              @host
+            end
+
+            # gRPC raises ArgumentError on non-lowercase metadata keys.
+            def []=(key, value)
+              @newrelic_metadata[key.to_s.downcase] = value
+            end
+          end
+        end
+      end
+    end
+  end
+end

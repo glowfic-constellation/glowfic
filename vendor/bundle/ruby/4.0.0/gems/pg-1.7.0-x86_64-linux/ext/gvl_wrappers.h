@@ -1,0 +1,177 @@
+/*
+ * gvl_wrappers.h - Wrapper functions for locking/unlocking the Ruby GVL
+ *
+ * These are some obscure preprocessor directives that allow to generate
+ * drop-in replacement wrapper functions in a declarative manner.
+ * These wrapper functions ensure that ruby's GVL is released on each
+ * function call and reacquired at the end of the call or in callbacks.
+ * This way blocking functions calls don't block concurrent ruby threads.
+ *
+ * The wrapper of each function is prefixed by "gvl_".
+ *
+ * Use "gcc -E" to retrieve the generated code.
+ */
+
+#ifndef __gvl_wrappers_h
+#define __gvl_wrappers_h
+
+#include <ruby/version.h>
+#include <ruby/thread.h>
+
+#ifdef RUBY_EXTCONF_H
+#	include RUBY_EXTCONF_H
+#endif
+
+#if RUBY_API_VERSION_MAJOR < 4
+extern int ruby_thread_has_gvl_p(void);
+#endif
+
+#ifndef LIBPQ_HAS_CHUNK_MODE
+typedef struct pg_cancel_conn PGcancelConn;
+#endif
+
+#define DEFINE_PARAM_LIST1(type, name) \
+	name,
+
+#define DEFINE_PARAM_LIST2(type, name) \
+	p->params.name,
+
+#define DEFINE_PARAM_LIST3(type, name) \
+	type name,
+
+#define DEFINE_PARAM_DECL(type, name) \
+	type name;
+
+#define DEFINE_GVL_WRAPPER_STRUCT(name, when_non_void, rettype, lastparamtype, lastparamname) \
+	struct gvl_wrapper_##name##_params { \
+		struct { \
+			FOR_EACH_PARAM_OF_##name(DEFINE_PARAM_DECL) \
+			lastparamtype lastparamname; \
+		} params; \
+		when_non_void( rettype retval; ) \
+	};
+
+#define DEFINE_GVL_SKELETON(name, when_non_void, rettype, lastparamtype, lastparamname) \
+	static void * gvl_##name##_skeleton( void *data ){ \
+		struct gvl_wrapper_##name##_params *p = (struct gvl_wrapper_##name##_params*)data; \
+		when_non_void( p->retval = ) \
+			name( FOR_EACH_PARAM_OF_##name(DEFINE_PARAM_LIST2) p->params.lastparamname ); \
+		return NULL; \
+	}
+
+#ifdef ENABLE_GVL_UNLOCK
+#define DEFINE_GVL_STUB(name, when_non_void, rettype, lastparamtype, lastparamname) \
+	rettype gvl_##name(FOR_EACH_PARAM_OF_##name(DEFINE_PARAM_LIST3) lastparamtype lastparamname){ \
+		struct gvl_wrapper_##name##_params params = { \
+			{FOR_EACH_PARAM_OF_##name(DEFINE_PARAM_LIST1) lastparamname}, when_non_void((rettype)0) \
+		}; \
+		rb_thread_call_without_gvl(gvl_##name##_skeleton, &params, RUBY_UBF_IO, 0); \
+		when_non_void( return params.retval; ) \
+	}
+#else
+#define DEFINE_GVL_STUB(name, when_non_void, rettype, lastparamtype, lastparamname) \
+	rettype gvl_##name(FOR_EACH_PARAM_OF_##name(DEFINE_PARAM_LIST3) lastparamtype lastparamname){ \
+		when_non_void( return ) \
+			name( FOR_EACH_PARAM_OF_##name(DEFINE_PARAM_LIST1) lastparamname ); \
+	}
+#endif
+
+#define DEFINE_GVL_STUB_DECL(name, when_non_void, rettype, lastparamtype, lastparamname) \
+	rettype gvl_##name(FOR_EACH_PARAM_OF_##name(DEFINE_PARAM_LIST3) lastparamtype lastparamname);
+
+#define DEFINE_GVLCB_SKELETON(name, when_non_void, rettype, lastparamtype, lastparamname) \
+	static void * gvl_##name##_skeleton( void *data ){ \
+		struct gvl_wrapper_##name##_params *p = (struct gvl_wrapper_##name##_params*)data; \
+		when_non_void( p->retval = ) \
+			name( FOR_EACH_PARAM_OF_##name(DEFINE_PARAM_LIST2) p->params.lastparamname ); \
+		return NULL; \
+	}
+
+#ifdef ENABLE_GVL_UNLOCK
+	#if RUBY_API_VERSION_MAJOR >= 4 || defined(TRUFFLERUBY)
+		#define DEFINE_GVLCB_STUB(name, when_non_void, rettype, lastparamtype, lastparamname) \
+			rettype gvl_##name(FOR_EACH_PARAM_OF_##name(DEFINE_PARAM_LIST3) lastparamtype lastparamname){ \
+				struct gvl_wrapper_##name##_params params = { \
+					{FOR_EACH_PARAM_OF_##name(DEFINE_PARAM_LIST1) lastparamname}, when_non_void((rettype)0) \
+				}; \
+				rb_thread_call_with_gvl(gvl_##name##_skeleton, &params); \
+				when_non_void( return params.retval; ) \
+			}
+	#else
+		#define DEFINE_GVLCB_STUB(name, when_non_void, rettype, lastparamtype, lastparamname) \
+			rettype gvl_##name(FOR_EACH_PARAM_OF_##name(DEFINE_PARAM_LIST3) lastparamtype lastparamname){ \
+				struct gvl_wrapper_##name##_params params = { \
+					{FOR_EACH_PARAM_OF_##name(DEFINE_PARAM_LIST1) lastparamname}, when_non_void((rettype)0) \
+				}; \
+				if (ruby_thread_has_gvl_p()) { \
+					gvl_##name##_skeleton(&params); \
+				} else { \
+					rb_thread_call_with_gvl(gvl_##name##_skeleton, &params); \
+				} \
+				when_non_void( return params.retval; ) \
+			}
+	#endif
+#else
+	#define DEFINE_GVLCB_STUB(name, when_non_void, rettype, lastparamtype, lastparamname) \
+		rettype gvl_##name(FOR_EACH_PARAM_OF_##name(DEFINE_PARAM_LIST3) lastparamtype lastparamname){ \
+			when_non_void( return ) \
+				name( FOR_EACH_PARAM_OF_##name(DEFINE_PARAM_LIST1) lastparamname ); \
+		}
+#endif
+
+#define GVL_TYPE_VOID(string)
+#define GVL_TYPE_NONVOID(string) string
+
+
+/*
+ * Definitions of blocking functions and their parameters
+ *
+ * ATTENTION:
+ * Do not GVL-release functions that take pointers to ruby objects.
+ * If the ruby object is relocated by `GC.compact` from a second thread, before the pointer is used, it is no longer valid.
+ * That can lead to a crash or to wrong data.
+ * This issue has been raised in https://github.com/ged/ruby-pg/issues/738 and https://github.com/ged/ruby-pg/issues/721 .
+ */
+
+#define FOR_EACH_PARAM_OF_PQconnectStart(param)
+#define FOR_EACH_PARAM_OF_PQconnectPoll(param)
+
+#define FOR_EACH_PARAM_OF_PQresetStart(param)
+#define FOR_EACH_PARAM_OF_PQresetPoll(param)
+
+#define FOR_EACH_PARAM_OF_PQping(param)
+
+#define FOR_EACH_PARAM_OF_PQcancelStart(param)
+#define FOR_EACH_PARAM_OF_PQcancelPoll(param)
+
+/* function( name, void_or_nonvoid, returntype, lastparamtype, lastparamname ) */
+#define FOR_EACH_BLOCKING_FUNCTION(function) \
+	function(PQconnectStart, GVL_TYPE_NONVOID, PGconn *, const char *, conninfo) \
+	function(PQconnectPoll, GVL_TYPE_NONVOID, PostgresPollingStatusType, PGconn *, conn) \
+	function(PQresetStart, GVL_TYPE_NONVOID, int, PGconn *, conn) \
+	function(PQresetPoll, GVL_TYPE_NONVOID, PostgresPollingStatusType, PGconn *, conn) \
+	function(PQping, GVL_TYPE_NONVOID, PGPing, const char *, conninfo) \
+	function(PQcancelStart, GVL_TYPE_NONVOID, int, PGcancelConn *, conn) \
+	function(PQcancelPoll, GVL_TYPE_NONVOID, PostgresPollingStatusType, PGcancelConn *, conn) \
+
+FOR_EACH_BLOCKING_FUNCTION( DEFINE_GVL_STUB_DECL );
+
+
+/*
+ * Definitions of callback functions and their parameters
+ */
+
+#define FOR_EACH_PARAM_OF_notice_processor_proxy(param) \
+	param(void *, arg)
+
+#define FOR_EACH_PARAM_OF_notice_receiver_proxy(param) \
+	param(void *, arg)
+
+/* function( name, void_or_nonvoid, returntype, lastparamtype, lastparamname ) */
+#define FOR_EACH_CALLBACK_FUNCTION(function) \
+	function(notice_processor_proxy, GVL_TYPE_VOID, void, const char *, message) \
+	function(notice_receiver_proxy, GVL_TYPE_VOID, void, const PGresult *, result) \
+
+FOR_EACH_CALLBACK_FUNCTION( DEFINE_GVL_STUB_DECL );
+
+#endif /* end __gvl_wrappers_h */

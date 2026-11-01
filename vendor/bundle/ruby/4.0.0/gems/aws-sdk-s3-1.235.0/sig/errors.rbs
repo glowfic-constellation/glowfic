@@ -1,0 +1,58 @@
+# WARNING ABOUT GENERATED CODE
+#
+# This file is generated. See the contributing guide for more information:
+# https://github.com/aws/aws-sdk-ruby/blob/version-3/CONTRIBUTING.md
+#
+# WARNING ABOUT GENERATED CODE
+
+module Aws
+  module S3
+    module Errors
+      class ServiceError < ::Aws::Errors::ServiceError
+      end
+
+      class AccessDenied < ServiceError
+      end
+      class AnnotationLimitExceeded < ServiceError
+      end
+      class AnnotationNameTooLong < ServiceError
+      end
+      class BucketAlreadyExists < ServiceError
+      end
+      class BucketAlreadyOwnedByYou < ServiceError
+      end
+      class EncryptionTypeMismatch < ServiceError
+      end
+      class IdempotencyParameterMismatch < ServiceError
+      end
+      class InvalidAnnotationName < ServiceError
+      end
+      class InvalidObjectState < ServiceError
+        def storage_class: () -> ::String
+        def access_tier: () -> ::String
+      end
+      class InvalidPrefix < ServiceError
+      end
+      class InvalidRequest < ServiceError
+      end
+      class InvalidWriteOffset < ServiceError
+      end
+      class NoSuchAnnotation < ServiceError
+      end
+      class NoSuchBucket < ServiceError
+      end
+      class NoSuchKey < ServiceError
+      end
+      class NoSuchUpload < ServiceError
+      end
+      class ObjectAlreadyInActiveTierError < ServiceError
+      end
+      class ObjectNotInActiveTierError < ServiceError
+      end
+      class TooManyParts < ServiceError
+      end
+      class UnsupportedMediaType < ServiceError
+      end
+    end
+  end
+end

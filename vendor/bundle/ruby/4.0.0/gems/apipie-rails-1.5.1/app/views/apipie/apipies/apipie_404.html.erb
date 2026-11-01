@@ -1,0 +1,17 @@
+<h1 class='page-header'>
+  <%= t('apipie.oops') %>
+  <small>
+  <% if params[:method].blank? %>
+    <%= t('apipie.resource_not_found_html', :resource => "<code>#{h(params[:resource])}</code>".html_safe) %>
+  <% else %>
+    <%= t('apipie.method_not_found_html', :resource => "<code>#{h(params[:resource])}</code>".html_safe,
+        :method => "<code>#{h(params[:method])}</code>".html_safe) %>
+  <% end %>
+  </small>
+</h1>
+
+<% if @doc %>
+  <%= t('apipie.goto_homepage_html', :href => link_to(
+    t('apipie.goto_homepage_href', :app_name => @doc[:name]),
+    File.join(@doc[:doc_url], @doc[:link_extension]))) %>
+<% end %>

@@ -1,0 +1,791 @@
+//! This file provides the C API for Cypher query parsing, schema, and structured execution.
+//! It connects to the graph through `graph_api::with_graph`.
+
+use crate::declaration_api::CDeclaration;
+use crate::definition_api::map_definition_to_kind;
+use crate::graph_api::{GraphPointer, with_graph};
+use crate::utils;
+use libc::{c_char, c_void};
+use rubydex::model::graph::Graph;
+use rubydex::query::cypher::schema::NodeRef;
+use rubydex::query::cypher::{self, CypherValue, OutputFormat};
+use std::ffi::CString;
+use std::ptr;
+
+/// Which layer of the Cypher pipeline rejected a call, so callers can raise a matching error class.
+#[repr(C)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum CQueryErrorKind {
+    /// No failure: the `error` field of the containing struct is null.
+    None,
+    /// The caller passed an invalid argument, such as a null pointer or a string that is not UTF-8.
+    Argument,
+    /// The query text is not valid Cypher.
+    Syntax,
+    /// The query parsed, but it failed while it ran against the graph.
+    Execution,
+}
+
+impl CQueryErrorKind {
+    fn of(error: &cypher::CypherError) -> Self {
+        match error {
+            cypher::CypherError::Syntax { .. } => Self::Syntax,
+            cypher::CypherError::Execution { .. } => Self::Execution,
+        }
+    }
+}
+
+/// The formatted output of a Cypher result set, or the argument error that prevented it.
+#[repr(C)]
+pub struct CQueryResult {
+    /// Non-null on success; null on error. Caller must free with `free_c_string`.
+    pub output: *const c_char,
+    /// Non-null on error; null on success. Caller must free with `free_c_string`.
+    pub error: *const c_char,
+}
+
+impl CQueryResult {
+    #[must_use]
+    pub fn success(output: &str) -> Self {
+        match CString::new(output) {
+            Ok(c_string) => Self {
+                output: c_string.into_raw().cast_const(),
+                error: ptr::null(),
+            },
+            Err(_) => Self::error("query output contained an interior NUL byte"),
+        }
+    }
+
+    #[must_use]
+    pub fn error(message: &str) -> Self {
+        Self {
+            output: ptr::null(),
+            error: utils::cstring_raw(message),
+        }
+    }
+}
+
+/// The result of parsing a Cypher query into an opaque, reusable parsed-query object.
+#[repr(C)]
+pub struct CParseResult {
+    /// Non-null on success: a heap-allocated parsed query. Free with `rdx_cypher_query_free`.
+    pub query: *mut c_void,
+    /// Non-null on error; null on success. Caller must free with `free_c_string`.
+    pub error: *const c_char,
+    /// Which kind of failure `error` describes; `None` when `error` is null.
+    pub error_kind: CQueryErrorKind,
+}
+
+/// Parses a Cypher query string into an opaque parsed-query object, without needing a graph.
+///
+/// On success, `query` is a heap-allocated parsed query that can be executed against a graph with
+/// `rdx_query_execute` and must eventually be freed with `rdx_cypher_query_free`. On failure,
+/// `error` holds the message and `error_kind` tells the caller which error to raise.
+///
+/// # Safety
+///
+/// - `query` must be a valid, null-terminated UTF-8 string.
+#[unsafe(no_mangle)]
+pub unsafe extern "C" fn rdx_cypher_parse(query: *const c_char) -> CParseResult {
+    let Ok(query_str) = (unsafe { utils::convert_char_ptr_to_string(query) }) else {
+        return CParseResult {
+            query: ptr::null_mut(),
+            error: utils::cstring_raw("query is not valid UTF-8"),
+            error_kind: CQueryErrorKind::Argument,
+        };
+    };
+
+    match cypher::parse(&query_str) {
+        Ok(parsed) => CParseResult {
+            query: Box::into_raw(Box::new(parsed)).cast::<c_void>(),
+            error: ptr::null(),
+            error_kind: CQueryErrorKind::None,
+        },
+        Err(error) => CParseResult {
+            query: ptr::null_mut(),
+            error: utils::cstring_raw(&error.to_string()),
+            error_kind: CQueryErrorKind::of(&error),
+        },
+    }
+}
+
+/// Frees a parsed query previously returned by `rdx_cypher_parse`.
+///
+/// # Safety
+///
+/// - `query` must be a pointer returned by `rdx_cypher_parse`, or null. It must not be used after.
+#[unsafe(no_mangle)]
+pub unsafe extern "C" fn rdx_cypher_query_free(query: *mut c_void) {
+    if query.is_null() {
+        return;
+    }
+    let _ = unsafe { Box::from_raw(query.cast::<cypher::Query>()) };
+}
+
+/// Returns a description of the queryable Cypher schema (node labels, relationship types, and
+/// properties) in the given format (`"table"` or `"json"`). The schema is static and requires no
+/// graph. Caller must free the returned pointer with `free_c_string`.
+///
+/// # Safety
+///
+/// - `format` must be a valid, null-terminated UTF-8 string.
+#[unsafe(no_mangle)]
+pub unsafe extern "C" fn rdx_cypher_schema(format: *const c_char) -> *const c_char {
+    let format_str = unsafe { utils::convert_char_ptr_to_string(format) }.unwrap_or_else(|_| "table".to_string());
+    let output_format = if format_str == "json" {
+        OutputFormat::Json
+    } else {
+        OutputFormat::Table
+    };
+
+    utils::cstring_raw(&cypher::schema(output_format))
+}
+
+// ---------------------------------------------------------------------------
+// Structured result types (object-returning query execution)
+// ---------------------------------------------------------------------------
+
+/// Tag for a structured result cell.
+#[repr(C)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum CCellTag {
+    Null = 0,
+    Bool = 1,
+    Int = 2,
+    Str = 3,
+    Node = 4,
+    List = 5,
+    Map = 6,
+}
+
+/// Which family of graph node a `Node` cell refers to (selects the Ruby handle class family).
+#[repr(C)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum CNodeCategory {
+    Declaration = 0,
+    Definition = 1,
+    Document = 2,
+}
+
+/// `Node` cell payload: which handle family to build, the kind value, and the entity id.
+#[repr(C)]
+#[derive(Debug, Clone, Copy)]
+pub struct CNode {
+    /// Which handle family to build.
+    pub category: CNodeCategory,
+    /// The `CDeclarationKind`/`DefinitionKind` value (ignored for documents).
+    pub kind: u32,
+    /// The entity id to build the handle from.
+    pub id: u64,
+}
+
+/// `List` cell payload: a heap array of nested cells (freed by `rdx_rows_iter_free`).
+#[repr(C)]
+#[derive(Debug, Clone, Copy)]
+pub struct CList {
+    pub items: *mut CCell,
+    pub len: usize,
+}
+
+/// `Map` cell payload: parallel heap arrays of owned key strings and their value cells, in order
+/// (both `len` long, freed by `rdx_rows_iter_free`). Stored as separate arrays rather than an
+/// entry struct so no `CCell` is embedded by value (keeping the generated header well-ordered).
+#[repr(C)]
+#[derive(Debug, Clone, Copy)]
+pub struct CMap {
+    pub keys: *mut *const c_char,
+    pub values: *mut CCell,
+    pub len: usize,
+}
+
+/// Payload of a `CCell`. The active field is selected by the cell's `tag`; reading any other field
+/// is undefined. `Null` carries no payload.
+#[repr(C)]
+#[derive(Clone, Copy)]
+pub union CCellPayload {
+    /// `Bool`.
+    pub bool_val: bool,
+    /// `Int`.
+    pub int_val: i64,
+    /// `Str`: owned C string (freed by `rdx_rows_iter_free`).
+    pub str_val: *const c_char,
+    /// `Node`.
+    pub node: CNode,
+    /// `List`.
+    pub list: CList,
+    /// `Map`.
+    pub map: CMap,
+}
+
+/// A single structured result value: a `tag` discriminant plus a `payload` union whose active
+/// field the tag selects.
+#[repr(C)]
+pub struct CCell {
+    pub tag: CCellTag,
+    pub payload: CCellPayload,
+}
+
+impl CCell {
+    fn new(tag: CCellTag, payload: CCellPayload) -> Self {
+        Self { tag, payload }
+    }
+
+    fn null() -> Self {
+        Self {
+            tag: CCellTag::Null,
+            payload: CCellPayload { int_val: 0 },
+        }
+    }
+}
+
+/// One row of structured cells.
+#[repr(C)]
+#[derive(Clone, Copy)]
+pub struct CResultRow {
+    pub cells: *mut CCell,
+    pub len: usize,
+}
+
+/// The outcome of one `rdx_rows_iter_next` call.
+#[repr(C)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum CRowsNextStatus {
+    /// `out` holds the next row.
+    Row,
+    /// The cursor reached the end of the result set.
+    Done,
+    /// The graph no longer holds a node that the row returned, so the row cannot be built.
+    /// `rdx_rows_iter_error` names the node.
+    MissingNode,
+}
+
+/// A cursor over an executed result set's rows. It converts one row per `rdx_rows_iter_next` call,
+/// so a caller can walk a large result set without a copy of every cell in memory at once. Opaque
+/// from the C side — use the `rdx_rows_iter_*` methods to work with it.
+pub struct CRowsIter {
+    /// Borrowed from the caller, which must keep it alive for the whole life of the cursor.
+    result_set: *const CResultSet,
+    graph: GraphPointer,
+    columns: Box<[*const c_char]>,
+    /// Cells of the row that the last `rdx_rows_iter_next` call produced.
+    current: Vec<CCell>,
+    /// Name of the node that the last `rdx_rows_iter_next` call could not resolve.
+    error: Option<CString>,
+    index: usize,
+}
+
+/// An executed query's result set: the column names and rows that `rdx_query_execute` produced.
+/// Opaque from the C side — use `rdx_result_set_*` methods to work with it.
+pub struct CResultSet(cypher::ResultSet);
+
+/// The result of executing a parsed query against a graph.
+#[repr(C)]
+pub struct CExecuteResult {
+    /// Non-null on success; free with `rdx_result_set_free`.
+    pub result_set: *mut CResultSet,
+    /// Non-null on error; null on success. Caller must free with `free_c_string`.
+    pub error: *const c_char,
+    /// Which kind of failure `error` describes; `None` when `error` is null.
+    pub error_kind: CQueryErrorKind,
+}
+
+/// Converts a `CypherValue` into a `CCell`, resolving node identity to a handle-buildable category +
+/// kind + id.
+///
+/// # Errors
+///
+/// Returns the node's display name when the graph no longer holds a node that the result set
+/// returned, or when its id cannot be decoded. The caller must treat the whole row as stale,
+/// because a fallback would silently change the column's type from a handle to a string. Cells that
+/// this function already built are freed before it returns.
+fn build_cell(graph: &Graph, value: &CypherValue) -> Result<CCell, String> {
+    match value {
+        CypherValue::Null => Ok(CCell::null()),
+        CypherValue::Bool(b) => Ok(CCell::new(CCellTag::Bool, CCellPayload { bool_val: *b })),
+        CypherValue::Int(i) => Ok(CCell::new(CCellTag::Int, CCellPayload { int_val: *i })),
+        CypherValue::Str(s) => Ok(CCell::new(
+            CCellTag::Str,
+            CCellPayload {
+                str_val: utils::cstring_raw(s),
+            },
+        )),
+        CypherValue::List(items) => {
+            let mut cells: Vec<CCell> = Vec::with_capacity(items.len());
+
+            for item in items {
+                match build_cell(graph, item) {
+                    Ok(cell) => cells.push(cell),
+                    Err(node) => {
+                        // SAFETY: `cells` holds only what this loop built, and nothing else owns it.
+                        unsafe { free_cells(&cells) };
+                        return Err(node);
+                    }
+                }
+            }
+
+            let len = cells.len();
+            let items = if cells.is_empty() {
+                ptr::null_mut()
+            } else {
+                Box::into_raw(cells.into_boxed_slice()).cast::<CCell>()
+            };
+            Ok(CCell::new(
+                CCellTag::List,
+                CCellPayload {
+                    list: CList { items, len },
+                },
+            ))
+        }
+        CypherValue::Map(pairs) => {
+            let len = pairs.len();
+            let mut keys: Vec<*const c_char> = Vec::with_capacity(len);
+            let mut values: Vec<CCell> = Vec::with_capacity(len);
+
+            for (key, val) in pairs {
+                match build_cell(graph, val) {
+                    Ok(cell) => {
+                        keys.push(utils::cstring_raw(key));
+                        values.push(cell);
+                    }
+                    Err(node) => {
+                        // SAFETY: both vectors hold only what this loop built.
+                        unsafe { free_cells(&values) };
+                        for key in keys {
+                            let _ = unsafe { CString::from_raw(key.cast_mut()) };
+                        }
+                        return Err(node);
+                    }
+                }
+            }
+
+            let (keys, values) = if len == 0 {
+                (ptr::null_mut(), ptr::null_mut())
+            } else {
+                (
+                    Box::into_raw(keys.into_boxed_slice()).cast::<*const c_char>(),
+                    Box::into_raw(values.into_boxed_slice()).cast::<CCell>(),
+                )
+            };
+            Ok(CCell::new(
+                CCellTag::Map,
+                CCellPayload {
+                    map: CMap { keys, values, len },
+                },
+            ))
+        }
+        CypherValue::Node { id, name, .. } => build_node_cell(graph, id).ok_or_else(|| name.clone()),
+    }
+}
+
+/// Builds a `Node` cell by decoding the opaque node id and looking up its kind in the graph.
+fn build_node_cell(graph: &Graph, encoded_id: &str) -> Option<CCell> {
+    match NodeRef::decode(encoded_id)? {
+        NodeRef::Declaration(id) => {
+            let kind = CDeclaration::kind_from_declaration(graph.declarations().get(&id)?);
+            Some(CCell::new(
+                CCellTag::Node,
+                CCellPayload {
+                    node: CNode {
+                        category: CNodeCategory::Declaration,
+                        kind: kind as u32,
+                        id: *id,
+                    },
+                },
+            ))
+        }
+        NodeRef::Definition(id) => {
+            let kind = map_definition_to_kind(graph.definitions().get(&id)?);
+            Some(CCell::new(
+                CCellTag::Node,
+                CCellPayload {
+                    node: CNode {
+                        category: CNodeCategory::Definition,
+                        kind: kind as u32,
+                        id: *id,
+                    },
+                },
+            ))
+        }
+        NodeRef::Document(id) => graph.documents().contains_key(&id).then(|| {
+            CCell::new(
+                CCellTag::Node,
+                CCellPayload {
+                    node: CNode {
+                        category: CNodeCategory::Document,
+                        kind: 0,
+                        id: *id,
+                    },
+                },
+            )
+        }),
+    }
+}
+
+/// Executes a previously parsed query against the graph and returns its result set. Format the
+/// result set with `rdx_result_set_format`, or read it as structured rows with
+/// `rdx_result_set_rows`; either way the query runs only once.
+///
+/// # Safety
+///
+/// - `query` must be a valid pointer returned by `rdx_cypher_parse`.
+/// - `pointer` must be a valid `GraphPointer` previously returned by this crate.
+#[unsafe(no_mangle)]
+pub unsafe extern "C" fn rdx_query_execute(query: *const c_void, pointer: GraphPointer) -> CExecuteResult {
+    if query.is_null() {
+        return CExecuteResult {
+            result_set: ptr::null_mut(),
+            error: utils::cstring_raw("query is null"),
+            error_kind: CQueryErrorKind::Argument,
+        };
+    }
+
+    let parsed = unsafe { &*query.cast::<cypher::Query>() };
+
+    with_graph(pointer, |graph| match cypher::execute(graph, parsed) {
+        Ok(result_set) => CExecuteResult {
+            result_set: Box::into_raw(Box::new(CResultSet(result_set))),
+            error: ptr::null(),
+            error_kind: CQueryErrorKind::None,
+        },
+        Err(error) => CExecuteResult {
+            result_set: ptr::null_mut(),
+            error: utils::cstring_raw(&error.to_string()),
+            error_kind: CQueryErrorKind::of(&error),
+        },
+    })
+}
+
+/// Formats an executed result set as `format` (`"table"` or `"json"`) without running the query
+/// again. A non-null `error` always describes an invalid argument.
+///
+/// # Safety
+///
+/// - `result_set` must be a valid pointer returned by `rdx_query_execute`, or null.
+/// - `format` must be a valid, null-terminated UTF-8 string.
+#[unsafe(no_mangle)]
+pub unsafe extern "C" fn rdx_result_set_format(result_set: *const CResultSet, format: *const c_char) -> CQueryResult {
+    if result_set.is_null() {
+        return CQueryResult::error("result set is null");
+    }
+
+    let Ok(format_str) = (unsafe { utils::convert_char_ptr_to_string(format) }) else {
+        return CQueryResult::error("format is not valid UTF-8");
+    };
+
+    let output_format = match format_str.as_str() {
+        "table" => OutputFormat::Table,
+        "json" => OutputFormat::Json,
+        other => {
+            return CQueryResult::error(&format!("unknown query format `{other}` (expected `table` or `json`)"));
+        }
+    };
+
+    let result_set = unsafe { &*result_set };
+    CQueryResult::success(&cypher::render(&result_set.0, output_format))
+}
+
+/// Returns the number of columns in an executed result set.
+///
+/// # Safety
+///
+/// - `result_set` must be a valid pointer returned by `rdx_query_execute`, or null.
+#[unsafe(no_mangle)]
+pub unsafe extern "C" fn rdx_result_set_column_count(result_set: *const CResultSet) -> usize {
+    if result_set.is_null() {
+        return 0;
+    }
+
+    unsafe { &*result_set }.0.columns.len()
+}
+
+/// Returns the name of the column at `index`, or null when `index` is out of range. The caller must
+/// free the returned string with `free_c_string`.
+///
+/// # Safety
+///
+/// - `result_set` must be a valid pointer returned by `rdx_query_execute`, or null.
+#[unsafe(no_mangle)]
+pub unsafe extern "C" fn rdx_result_set_column(result_set: *const CResultSet, index: usize) -> *const c_char {
+    if result_set.is_null() {
+        return ptr::null();
+    }
+
+    match unsafe { &*result_set }.0.columns.get(index) {
+        Some(name) => utils::cstring_raw(name),
+        None => ptr::null(),
+    }
+}
+
+/// Returns the number of rows in an executed result set.
+///
+/// # Safety
+///
+/// - `result_set` must be a valid pointer returned by `rdx_query_execute`, or null.
+#[unsafe(no_mangle)]
+pub unsafe extern "C" fn rdx_result_set_row_count(result_set: *const CResultSet) -> usize {
+    if result_set.is_null() {
+        return 0;
+    }
+
+    unsafe { &*result_set }.0.rows.len()
+}
+
+/// Opens a cursor over the rows of an executed result set, so callers can build their own
+/// value/handle objects instead of formatted text. The cursor converts a row only when
+/// `rdx_rows_iter_next` asks for it. Returns null when `result_set` is null.
+///
+/// # Safety
+///
+/// - `result_set` must be a valid pointer returned by `rdx_query_execute`, or null. It must stay
+///   alive until `rdx_rows_iter_free` releases the cursor.
+/// - `pointer` must be a valid `GraphPointer` previously returned by this crate. It must stay valid
+///   for the same span.
+#[unsafe(no_mangle)]
+pub unsafe extern "C" fn rdx_result_set_rows(result_set: *const CResultSet, pointer: GraphPointer) -> *mut CRowsIter {
+    if result_set.is_null() {
+        return ptr::null_mut();
+    }
+
+    let columns: Box<[*const c_char]> = unsafe { &*result_set }
+        .0
+        .columns
+        .iter()
+        .map(|name| utils::cstring_raw(name))
+        .collect();
+
+    Box::into_raw(Box::new(CRowsIter {
+        result_set,
+        graph: pointer,
+        columns,
+        current: Vec::new(),
+        error: None,
+        index: 0,
+    }))
+}
+
+/// Frees a result set previously returned by `rdx_query_execute`.
+///
+/// # Safety
+///
+/// - `result_set` must be a pointer returned by `rdx_query_execute`, or null. It must not be used
+///   after.
+#[unsafe(no_mangle)]
+pub unsafe extern "C" fn rdx_result_set_free(result_set: *mut CResultSet) {
+    if result_set.is_null() {
+        return;
+    }
+
+    let _ = unsafe { Box::from_raw(result_set) };
+}
+
+/// Returns the number of columns in the result set.
+///
+/// # Safety
+///
+/// - `iter` must be a valid pointer returned by `rdx_result_set_rows`, or null.
+#[unsafe(no_mangle)]
+pub unsafe extern "C" fn rdx_rows_iter_column_count(iter: *const CRowsIter) -> usize {
+    if iter.is_null() {
+        return 0;
+    }
+    let iter = unsafe { &*iter };
+    iter.columns.len()
+}
+
+/// Returns a pointer to the array of column name C strings. The array has
+/// `rdx_rows_iter_column_count(iter)` entries and is valid for the lifetime of the iterator.
+///
+/// # Safety
+///
+/// - `iter` must be a valid pointer returned by `rdx_result_set_rows`, or null.
+#[unsafe(no_mangle)]
+pub unsafe extern "C" fn rdx_rows_iter_columns(iter: *const CRowsIter) -> *const *const c_char {
+    if iter.is_null() {
+        return ptr::null();
+    }
+    let iter = unsafe { &*iter };
+    iter.columns.as_ptr()
+}
+
+/// Returns the number of rows in the result set.
+///
+/// # Safety
+///
+/// - `iter` must be a valid pointer returned by `rdx_result_set_rows`, or null.
+#[unsafe(no_mangle)]
+pub unsafe extern "C" fn rdx_rows_iter_len(iter: *const CRowsIter) -> usize {
+    if iter.is_null() {
+        return 0;
+    }
+    let iter = unsafe { &*iter };
+    unsafe { &*iter.result_set }.0.rows.len()
+}
+
+/// Converts the next row and copies a view of it into `out`. The cells belong to the cursor, so the
+/// copied `CResultRow` stays valid only until the next `rdx_rows_iter_next` call or
+/// `rdx_rows_iter_free`, whichever comes first. Read the row's values before calling either.
+///
+/// Returns `MissingNode` when the graph no longer holds a node that the row returned. That happens
+/// when the graph changed after the query ran. The cursor keeps the node's name for
+/// `rdx_rows_iter_error`, and the caller should stop the walk.
+///
+/// The graph read lock is taken for the conversion of one row and released before this function
+/// returns, so a caller may run arbitrary code, including code that writes to the graph, between
+/// two calls.
+///
+/// # Safety
+///
+/// - `iter` must be a valid pointer returned by `rdx_result_set_rows`, or null.
+/// - `out` must be a valid, writable pointer, or null.
+#[unsafe(no_mangle)]
+pub unsafe extern "C" fn rdx_rows_iter_next(iter: *mut CRowsIter, out: *mut CResultRow) -> CRowsNextStatus {
+    if iter.is_null() || out.is_null() {
+        return CRowsNextStatus::Done;
+    }
+
+    let it = unsafe { &mut *iter };
+
+    // The previous row is out of scope for the caller now, so release its cells before the next one.
+    unsafe { free_cells(&it.current) };
+    it.current.clear();
+    it.error = None;
+
+    let result_set = unsafe { &*it.result_set };
+    let Some(row) = result_set.0.rows.get(it.index) else {
+        return CRowsNextStatus::Done;
+    };
+    it.index += 1;
+
+    let built = with_graph(it.graph, |graph| {
+        let mut cells: Vec<CCell> = Vec::with_capacity(row.len());
+
+        for value in row {
+            match build_cell(graph, value) {
+                Ok(cell) => cells.push(cell),
+                Err(node) => {
+                    // SAFETY: `cells` holds only what this loop built, and nothing else owns it.
+                    unsafe { free_cells(&cells) };
+                    return Err(node);
+                }
+            }
+        }
+
+        Ok(cells)
+    });
+
+    match built {
+        Ok(cells) => {
+            it.current = cells;
+            unsafe {
+                *out = CResultRow {
+                    cells: it.current.as_mut_ptr(),
+                    len: it.current.len(),
+                };
+            }
+            CRowsNextStatus::Row
+        }
+        Err(node) => {
+            it.error = CString::new(node).ok();
+            CRowsNextStatus::MissingNode
+        }
+    }
+}
+
+/// Returns the name of the node that the last `rdx_rows_iter_next` call could not resolve, or null
+/// when it resolved every node. The string belongs to the cursor, so it stays valid only until the
+/// next `rdx_rows_iter_next` call or `rdx_rows_iter_free`.
+///
+/// # Safety
+///
+/// - `iter` must be a valid pointer returned by `rdx_result_set_rows`, or null.
+#[unsafe(no_mangle)]
+pub unsafe extern "C" fn rdx_rows_iter_error(iter: *const CRowsIter) -> *const c_char {
+    if iter.is_null() {
+        return ptr::null();
+    }
+
+    match unsafe { &*iter }.error.as_ref() {
+        Some(name) => name.as_ptr(),
+        None => ptr::null(),
+    }
+}
+
+/// Recursively frees a `CCell`'s owned allocations (its string, or its nested list cells).
+unsafe fn free_cell(cell: &CCell) {
+    match cell.tag {
+        // SAFETY: the tag selects the active union field.
+        CCellTag::Str => {
+            let str_val = unsafe { cell.payload.str_val };
+            if !str_val.is_null() {
+                let _ = unsafe { CString::from_raw(str_val.cast_mut()) };
+            }
+        }
+        // SAFETY: the tag selects the active union field.
+        CCellTag::List => {
+            let list = unsafe { cell.payload.list };
+            if !list.items.is_null() && list.len > 0 {
+                let slice = unsafe { Box::from_raw(ptr::slice_from_raw_parts_mut(list.items, list.len)) };
+                for nested in &slice {
+                    unsafe { free_cell(nested) };
+                }
+            }
+        }
+        // SAFETY: the tag selects the active union field.
+        CCellTag::Map => {
+            let map = unsafe { cell.payload.map };
+            if map.len > 0 {
+                if !map.keys.is_null() {
+                    let keys = unsafe { Box::from_raw(ptr::slice_from_raw_parts_mut(map.keys, map.len)) };
+                    for key in &keys {
+                        if !key.is_null() {
+                            let _ = unsafe { CString::from_raw(key.cast_mut()) };
+                        }
+                    }
+                }
+                if !map.values.is_null() {
+                    let values = unsafe { Box::from_raw(ptr::slice_from_raw_parts_mut(map.values, map.len)) };
+                    for nested in &values {
+                        unsafe { free_cell(nested) };
+                    }
+                }
+            }
+        }
+        _ => {}
+    }
+}
+
+/// Frees every cell of one row.
+///
+/// # Safety
+///
+/// - `cells` must come from `build_cell`, and nothing else may own their allocations.
+unsafe fn free_cells(cells: &[CCell]) {
+    for cell in cells {
+        unsafe { free_cell(cell) };
+    }
+}
+
+/// Frees a `CRowsIter` previously returned by `rdx_result_set_rows`, including its column strings
+/// and the cells of the row it converted last.
+///
+/// # Safety
+///
+/// - `iter` must be a pointer returned by `rdx_result_set_rows`, or null. It must not be used after.
+#[unsafe(no_mangle)]
+pub unsafe extern "C" fn rdx_rows_iter_free(iter: *mut CRowsIter) {
+    if iter.is_null() {
+        return;
+    }
+
+    let it = unsafe { Box::from_raw(iter) };
+
+    // The cursor owns the cells of the last row it produced. The `Vec` and the boxed slice of
+    // column pointers drop with `it`; their contents do not.
+    unsafe { free_cells(&it.current) };
+
+    for &col in &it.columns {
+        if !col.is_null() {
+            let _ = unsafe { CString::from_raw(col.cast_mut()) };
+        }
+    }
+}

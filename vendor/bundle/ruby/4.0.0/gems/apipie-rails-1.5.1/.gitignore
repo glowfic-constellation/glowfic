@@ -1,0 +1,16 @@
+.bundle/
+log/*.log
+pkg/
+coverage
+spec/dummy/db/*.sqlite3
+spec/dummy/log/*.log
+spec/dummy/tmp/
+.idea
+Gemfile*.lock
+Gemfile.local
+.rvmrc
+.ruby-version
+.ruby-gemset
+
+.DS_Store
+rel-eng/.ipynb_checkpoints

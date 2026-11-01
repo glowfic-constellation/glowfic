@@ -1,0 +1,41 @@
+PATH
+  remote: .
+  specs:
+    unicode-emoji (4.3.0)
+
+GEM
+  remote: https://rubygems.org/
+  specs:
+    drb (2.2.3)
+    io-console (0.6.0)
+    irb (1.8.1)
+      rdoc
+      reline (>= 0.3.8)
+    minitest (6.0.6)
+      drb (~> 2.0)
+      prism (~> 1.5)
+    mutex_m (0.3.0)
+    ostruct (0.6.3)
+    prism (1.9.0)
+    psych (5.1.0)
+      stringio
+    rake (13.0.6)
+    rdoc (6.5.0)
+      psych (>= 4.0.0)
+    reline (0.3.8)
+      io-console (~> 0.5)
+    stringio (3.0.8)
+
+PLATFORMS
+  ruby
+
+DEPENDENCIES
+  irb
+  minitest
+  mutex_m
+  ostruct
+  rake
+  unicode-emoji!
+
+BUNDLED WITH
+  4.1.0.beta1

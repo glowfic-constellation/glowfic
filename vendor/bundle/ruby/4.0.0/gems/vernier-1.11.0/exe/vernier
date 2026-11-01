@@ -1,0 +1,113 @@
+#!/usr/bin/env ruby
+
+$LOAD_PATH.unshift File.expand_path("../../lib", __FILE__)
+
+require "optparse"
+require "vernier/version"
+
+module Vernier
+  module CLI
+    class Metadata < Array
+      require 'json'
+
+      def to_s
+        [to_json].pack("m")
+      end
+    end
+
+    def self.run(options)
+      banner = <<-END
+Usage: vernier run [FLAGS] -- COMMAND
+
+FLAGS:
+      END
+
+      OptionParser.new(banner) do |o|
+        o.version = Vernier::VERSION
+
+        o.on('--output [FILENAME]', String, "output filename") do |s|
+          options[:output] = s
+        end
+        o.on('--output-dir [DIRECTORY]', String, "output directory (default .)") do |s|
+          options[:output_dir] = s
+        end
+        o.on('--interval [MICROSECONDS]', Integer, "sampling interval (default 500)") do |i|
+          options[:interval] = i
+        end
+        o.on('--allocation-interval [ALLOCATIONS]', Integer, "allocation sampling interval (default 0 disabled)") do |i|
+          options[:allocation_interval] = i
+        end
+        o.on('--signal [NAME]', String, "specify a signal to start and stop the profiler") do |s|
+          options[:signal] = s
+        end
+        o.on('--start-paused', "don't automatically start the profiler") do
+          options[:start_paused] = true
+        end
+        o.on('--hooks [HOOKS]', String, "enable instrumentation hooks, currently supported: rails") do |s|
+          options[:hooks] = s
+        end
+        o.on("--metadata KEY=VALUE", String, "Set metadata key-value pairs (can be specified multiple times)") do |kv|
+          key, value = kv.split('=')
+          options[:metadata] ||= Metadata.new
+          options[:metadata] << [key, value]
+        end
+        o.on('--format [FORMAT]', String, "output format: firefox (default) or cpuprofile") do |output_format|
+          options[:format] = output_format
+        end
+      end
+    end
+
+    def self.view(options)
+      banner = <<-END
+Usage: vernier view [FLAGS] -- FILENAME
+
+FLAGS:
+      END
+
+      OptionParser.new(banner) do |o|
+        o.on('--top [COUNT]', Integer, "number of frames to show (default 20)") do |i|
+          options[:top] = i
+        end
+      end
+    end
+
+    def self.inverted_tree(top, file)
+      # Print the inverted tree from a Vernier profile
+      require "vernier/parsed_profile"
+      require "vernier/output/top"
+      require "vernier/output/file_listing"
+
+      parsed_profile = Vernier::ParsedProfile.read_file(file)
+
+      puts Vernier::Output::Top.new(parsed_profile, top).output
+      puts Vernier::Output::FileListing.new(parsed_profile).output
+    end
+  end
+end
+
+options = {}
+run = Vernier::CLI.run(options)
+view = Vernier::CLI.view(options)
+
+case ARGV.shift
+when "-v", "--version"
+  puts Vernier::VERSION
+when "run"
+  run.parse!
+  run.abort(run.help) if ARGV.empty?
+
+  env = {}
+  options.each do |k, v|
+    env["VERNIER_#{k.to_s.upcase}"] = v.to_s
+  end
+  vernier_path = File.expand_path('../lib', __dir__)
+  env['RUBYOPT'] = "-I #{vernier_path} -r vernier/autorun #{ENV['RUBYOPT']}"
+
+  Kernel.exec(env, *ARGV)
+when "view"
+  view.parse!
+  view.abort(view.help) if ARGV.empty?
+  Vernier::CLI.inverted_tree(options[:top] || 20, ARGV.shift)
+else
+  run.abort(run.help + "\n" + view.help)
+end

@@ -1,0 +1,660 @@
+# frozen_string_literal: true
+
+require "json"
+require "rbconfig"
+
+require_relative "filename_filter"
+require_relative "../output_helpers"
+
+module Vernier
+  module Output
+    # https://profiler.firefox.com/
+    # https://github.com/firefox-devtools/profiler/blob/main/src/types/profile.ts
+    class Firefox
+      class Categorizer
+        RAILS_COMPONENTS = %w[ activesupport activemodel activerecord actionview
+                               actionpack activejob actionmailer actioncable
+                               activestorage actionmailbox actiontext railties ]
+
+        AVAILABLE_COLORS = %w[ transparent purple green orange yellow lightblue
+                               blue brown magenta red lightred darkgrey grey ]
+
+        ORDERED_CATEGORIES = %w[ Kernel Rails gem Ruby ] # This is in the order of preference
+
+        attr_reader :categories
+
+        def initialize
+          @categories = []
+          @categories_by_name = {}
+
+          add_category(name: "Kernel", color: "magenta") do |c|
+            c.add_subcategory(
+              name: "Kernel",
+              matcher: starts_with("<internal")
+            )
+          end
+
+          add_category(name: "gem", color: "lightblue") do |c|
+            c.add_subcategory(
+              name: "gem",
+              matcher: starts_with(*Gem.path)
+            )
+          end
+
+          add_category(name: "Rails", color: "red") do |c|
+            RAILS_COMPONENTS.each do |subcategory|
+              c.add_subcategory(
+                name: subcategory,
+                matcher: gem_path(subcategory)
+              )
+            end
+          end
+
+          add_category(name: "Ruby", color: "purple") do |c|
+            c.add_subcategory(
+              name: "stdlib",
+              matcher: starts_with(RbConfig::CONFIG["rubylibdir"])
+            )
+          end
+
+          add_category(name: "Idle", color: "transparent")
+          add_category(name: "Stalled", color: "transparent")
+
+          add_category(name: "GC", color: "red")
+
+          add_category(name: "cfunc", color: "yellow", matcher: "<cfunc>")
+
+          add_category(name: "Thread", color: "grey")
+        end
+
+        def add_category(name:, **kw)
+          category = Category.new(@categories.length, name: name, **kw)
+          @categories << category
+          @categories_by_name[name] = category
+          category.add_subcategory(name: "Other")
+          yield category if block_given?
+          category
+        end
+
+        def get_category(name)
+          @categories_by_name[name]
+        end
+
+        def starts_with(*paths)
+          %r{\A#{Regexp.union(paths)}}
+        end
+
+        def gem_path(*names)
+          %r{\A#{Regexp.union(Gem.path)}/gems/#{Regexp.union(names)}}
+        end
+
+        def categorize(path)
+          @categories.detect { |category| category.matches?(path) } || @categories.first
+        end
+
+        class Category
+          attr_reader :idx, :name, :color, :matcher, :subcategories
+
+          def initialize(idx, name:, color:, matcher: nil)
+            raise ArgumentError, "invalid color: #{color}" if color && AVAILABLE_COLORS.none?(color)
+
+            @idx = idx
+            @name = name
+            @color = color
+            @matcher = matcher
+            @subcategories = []
+          end
+
+          def add_subcategory(**args)
+            @subcategories << Category.new(@subcategories.size, color: nil, **args)
+          end
+
+          def matches?(path)
+            @matcher && @matcher === path
+          end
+        end
+      end
+
+      def initialize(profile)
+        @profile = profile
+        @categorizer = Categorizer.new
+      end
+
+      def output(gzip: false)
+        result = ::JSON.generate(data)
+        if gzip
+          require "zlib"
+          result = Zlib.gzip(result)
+        end
+        result
+      end
+
+      private
+
+      attr_reader :profile
+
+      def data
+        #markers_by_thread = profile.markers.group_by { |marker| marker[0] }
+
+        threads = profile.threads.map do |ruby_thread_id, thread_info|
+          #markers = markers_by_thread[ruby_thread_id] || []
+          Thread.new(
+            ruby_thread_id,
+            profile,
+            @categorizer,
+            #markers: markers,
+            **thread_info,
+          )
+        end
+
+        {
+          meta: {
+            interval: 1, # FIXME: memory vs wall
+            startTime: profile.started_at / 1_000_000.0,
+            #endTime: (profile.timestamps&.max || 0) / 1_000_000.0,
+            processType: 0,
+            product: "Ruby/Vernier",
+            stackwalk: 1,
+            version: 28,
+            preprocessedProfileVersion: 48,
+            symbolicated: true,
+            markerSchema: marker_schema,
+            sampleUnits: {
+              time: "ms",
+              eventDelay: "ms",
+              threadCPUDelta: "µs"
+            }, # FIXME: memory vs wall
+            categories: @categorizer.categories.map do |category|
+              {
+                name: category.name,
+                color: category.color,
+                subcategories: category.subcategories.map(&:name)
+              }
+            end,
+            sourceCodeIsNotOnSearchfox: true,
+            initialVisibleThreads: threads.each_index.to_a,
+            initialSelectedThreads: Array(threads.find_index(&:is_start)),
+            vernierUserMetadata: profile.meta[:user_metadata],
+            extra: [
+              label: "User-Supplied Metadata",
+              entries: profile.meta[:user_metadata].map do |k, v|
+                {
+                  label: k,
+                  format: "string",
+                  value: v
+                }
+              end
+            ]
+          },
+          counters: counter_data,
+          libs: [],
+          threads: threads.map(&:data)
+        }
+      end
+
+      def counter_data
+        profile.hooks.flat_map do |hook|
+          if hook.respond_to?(:firefox_counters)
+            hook.firefox_counters
+          end
+        end.compact
+      end
+
+      def marker_schema
+        hook_additions = profile.hooks.flat_map do |hook|
+          if hook.respond_to?(:firefox_marker_schema)
+            hook.firefox_marker_schema
+          end
+        end.compact
+
+        [
+          {
+            name: "THREAD_RUNNING",
+            display: [ "marker-chart" ],
+            data: [
+              {
+                label: "Description",
+                value: "The thread has acquired the GVL and is executing"
+              }
+            ]
+          },
+          {
+            name: "THREAD_STALLED",
+            display: [ "marker-chart" ],
+            data: [
+              {
+                label: "Description",
+                value: "The thread is ready, but stalled waiting for the GVL to be available"
+              }
+            ]
+          },
+          {
+            name: "THREAD_SUSPENDED",
+            display: [ "marker-chart" ],
+            data: [
+              {
+                label: "Description",
+                value: "The thread has voluntarily released the GVL (ex. to sleep, for I/O, waiting on a lock)"
+              }
+            ]
+          },
+          {
+            name: "GC_PAUSE",
+            display: [ "marker-chart", "marker-table", "timeline-overview" ],
+            tooltipLabel: "{marker.name} - {marker.data.state}",
+            data: [
+              {
+                label: "Description",
+                value: "All threads are paused as GC is performed"
+              },
+              { key: "state", format: "string" },
+              { key: "gc_by", format: "string" },
+            ]
+          },
+          {
+            name: "FIBER_SWITCH",
+            display: [ "marker-chart", "marker-table", "timeline-overview" ],
+            tooltipLabel: "{marker.name} - {marker.data.fiber_id}",
+            data: [
+              {
+                label: "Description",
+                value: "Switch running Fiber"
+              },
+              { key: "fiber_id", format: "integer" },
+            ]
+          },
+          *hook_additions
+        ]
+      end
+
+      class Thread
+        include OutputHelpers
+
+        SAMPLE_CATEGORY_NAMES = {
+          1 => "Idle",
+          2 => "Stalled"
+        }.freeze
+
+        attr_reader :profile, :is_start
+
+        def initialize(ruby_thread_id, profile, categorizer, name:, tid:, samples:, weights:, timestamps: nil, sample_categories: nil, markers:, started_at:, stopped_at: nil, allocations: nil, is_main: nil, is_start: nil)
+          @ruby_thread_id = ruby_thread_id
+          @profile = profile
+          @categorizer = categorizer
+          @tid = tid
+          @name = name
+          @is_main = is_main
+          if is_main.nil?
+            @is_main = @ruby_thread_id == ::Thread.main.object_id
+          end
+          @is_main = true if profile.threads.size == 1
+          @is_start = is_start.nil? ? @is_main : is_start
+
+          @stack_table = Vernier::StackTable.new
+          samples = samples.map { |sample| @stack_table.convert(profile._stack_table, sample) }
+
+          @samples = samples
+
+          if allocations
+            allocation_samples = allocations[:samples].dup
+            allocation_samples.map! do |sample|
+              @stack_table.convert(profile._stack_table, sample)
+            end
+            allocations = allocations.merge(samples: allocation_samples)
+          end
+          @allocations = allocations
+
+          timestamps ||= [0] * samples.size
+          @weights, @timestamps = weights, timestamps
+          @sample_categories = sample_categories || ([0] * samples.size)
+          @markers = markers.map do |marker|
+            if stack_idx = marker[5]&.dig(:cause, :stack)
+              marker = marker.dup
+              new_idx = @stack_table.convert(profile._stack_table, stack_idx)
+              marker[5] = marker[5].merge({ cause: { stack: new_idx }})
+            end
+            marker
+          end
+
+          @started_at, @stopped_at = started_at, stopped_at
+
+          @stack_table_hash = @stack_table.to_h
+          names = @stack_table_hash[:func_table].fetch(:name)
+          filenames = @stack_table_hash[:func_table].fetch(:filename)
+
+          stacks_size = @stack_table.stack_count
+          @categorized_stacks = Hash.new do |h, k|
+            h[k] = h.size + stacks_size
+          end
+
+          @strings = Hash.new { |h, k| h[k] = h.size }
+          @func_names = names.map do |name|
+            @strings[name]
+          end
+
+          @filenames = filter_filenames(filenames).map do |filename|
+            @strings[filename]
+          end
+
+          func_implementations = filenames.map do |filename|
+            # Must match strings in `src/profile-logic/profile-data.js`
+            # inside the firefox profiler. See `getFriendlyStackTypeName`
+            if filename == "<cfunc>"
+              @strings["native"]
+            else
+              # nil means interpreter
+              nil
+            end
+          end
+          @frame_implementations = @stack_table_hash[:frame_table].fetch(:func).map do |func_idx|
+            func_implementations[func_idx]
+          end
+
+          func_categories, func_subcategories = [], []
+          filenames.each do |filename|
+            category, subcategory = categorize_filename(filename)
+            func_categories << category
+            func_subcategories << subcategory
+          end
+
+          @frame_categories = @stack_table_hash[:frame_table].fetch(:func).map do |func_idx|
+            func_categories[func_idx]
+          end
+          @frame_subcategories = @stack_table_hash[:frame_table].fetch(:func).map do |func_idx|
+            func_subcategories[func_idx]
+          end
+
+          @sample_category_idx = SAMPLE_CATEGORY_NAMES.transform_values do |name|
+            @categorizer.get_category(name).idx
+          end
+
+          @samples.zip(@sample_categories).each do |sample, raw_category|
+            next if raw_category == 0
+
+            @categorized_stacks[[sample, raw_category]]
+          end
+
+          base_stack_frames = @stack_table_hash[:stack_table].fetch(:frame)
+          base_frame_count = @stack_table_hash[:frame_table].fetch(:func).size
+          @extra_frames = []
+          @categorized_frame_map = {}
+
+          @categorized_stacks.each_key do |(stack, raw_category)|
+            original_frame_idx = base_stack_frames[stack]
+            key = [original_frame_idx, raw_category]
+            next if @categorized_frame_map.key?(key)
+
+            new_frame_idx = base_frame_count + @extra_frames.size
+            @categorized_frame_map[key] = new_frame_idx
+            @extra_frames << [original_frame_idx, @sample_category_idx[raw_category]]
+          end
+        end
+
+        def categorize_filename(filename)
+          return cfunc_category_and_subcategory if filename == "<cfunc>"
+
+          category, subcategory = find_category_and_subcategory(filename, Categorizer::ORDERED_CATEGORIES)
+          return category, subcategory if subcategory
+
+          ruby_category_and_subcategory
+        end
+
+        def cfunc_category_and_subcategory
+          [@categorizer.get_category("cfunc"), 0]
+        end
+
+        def ruby_category_and_subcategory
+          [@categorizer.get_category("Ruby"), 0]
+        end
+
+        def find_category_and_subcategory(filename, categories)
+          categories.each do |category_name|
+            category = @categorizer.get_category(category_name)
+            subcategory = category.subcategories.detect { |c| c.matches?(filename) }&.idx
+            return category, subcategory if subcategory
+          end
+          [nil, nil]
+        end
+
+        def filter_filenames(filenames)
+          filter = FilenameFilter.new
+          filenames.map do |filename|
+            filter.call(filename)
+          end
+        end
+
+        def data
+          started_at = (@started_at - 0) / 1_000_000.0
+          stopped_at = (@stopped_at - 0) / 1_000_000.0 if @stopped_at
+
+          {
+            name: @name,
+            isMainThread: @is_main,
+            processStartupTime: started_at,
+            processShutdownTime: stopped_at,
+            registerTime: started_at,
+            unregisterTime: stopped_at,
+            pausedRanges: [],
+            pid: profile.pid || Process.pid,
+            tid: @tid,
+            frameTable: frame_table,
+            funcTable: func_table,
+            nativeSymbols: {},
+            samples: samples_table,
+            jsAllocations: allocations_table,
+            stackTable: stack_table,
+            resourceTable: {
+              length: 0,
+              lib: [],
+              name: [],
+              host: [],
+              type: []
+            },
+            markers: markers_table,
+            stringArray: string_table
+          }.compact
+        end
+
+        def markers_table
+          string_indexes = []
+          start_times = []
+          end_times = []
+          phases = []
+          categories = []
+          data = []
+
+          @markers.each do |(_, name, start, finish, phase, datum)|
+            string_indexes << @strings[name]
+            start_times << (start / 1_000_000.0)
+
+            # Please don't hate me. Divide by 1,000,000 only if finish is not nil
+            end_times << (finish&./(1_000_000.0))
+            phases << phase
+
+            category =
+              if name.start_with?("GC")
+                gc_category.idx
+              elsif name.start_with?("Thread")
+                thread_category.idx
+              else
+                0
+              end
+
+            categories << category
+            data << datum
+          end
+
+          {
+            data: data,
+            name: string_indexes,
+            startTime: start_times,
+            endTime: end_times,
+            phase: phases,
+            category: categories,
+            length: start_times.size
+          }
+        end
+
+        def allocations_table
+          return nil unless @allocations
+
+          samples, weights, timestamps = @allocations.values_at(:samples, :weights, :timestamps)
+          return nil if samples.empty?
+
+          size = samples.size
+          timestamps = timestamps.map { _1 / 1_000_000.0 }
+          {
+            "time": timestamps,
+            "className": ["Object"]*size,
+            "typeName": ["JSObject"]*size,
+            "coarseType": ["Object"]*size,
+            "weight": weights,
+            "inNursery": [false] * size,
+            "stack": samples,
+            "length": size
+          }
+        end
+
+        def samples_table
+          samples = @samples
+          weights = @weights
+          categories = @sample_categories
+          size = samples.size
+          if categories.empty?
+            categories = [0] * size
+          end
+
+          if @timestamps
+            times = @timestamps.map { _1 / 1_000_000.0 }
+          else
+            # FIXME: record timestamps for memory samples
+            times = (0...size).to_a
+          end
+
+          raise unless weights.size == size
+          raise unless times.size == size
+
+          samples = samples.zip(categories).map do |sample, category|
+            if category == 0
+              sample
+            else
+              @categorized_stacks[[sample, category]]
+            end
+          end
+
+          {
+            stack: samples,
+            time: times,
+            weight: weights,
+            weightType: profile.meta[:mode] == :retained ? "bytes" : "samples",
+            length: samples.length
+          }
+        end
+
+        def stack_table
+          base_frames = @stack_table_hash[:stack_table].fetch(:frame)
+          frames = base_frames.dup
+          prefixes = @stack_table_hash[:stack_table].fetch(:parent).dup
+          categories = frames.map { |idx| @frame_categories[idx].idx }
+          subcategories = frames.map { |idx| @frame_subcategories[idx] }
+
+          @categorized_stacks.each_key do |(stack, raw_category)|
+            original_frame_idx = base_frames[stack]
+            frames << @categorized_frame_map[[original_frame_idx, raw_category]]
+            prefixes << prefixes[stack]
+            categories << @sample_category_idx[raw_category]
+            subcategories << 0
+          end
+
+          raise unless prefixes.size == frames.size
+
+          {
+            frame: frames,
+            category: categories,
+            subcategory: subcategories,
+            prefix: prefixes,
+            length: prefixes.length
+          }
+        end
+
+        def frame_table
+          funcs = @stack_table_hash[:frame_table].fetch(:func).dup
+          lines = @stack_table_hash[:frame_table].fetch(:line).dup
+          raise unless lines.size == funcs.size
+
+          categories = @frame_categories.map(&:idx)
+          subcategories = @frame_subcategories.dup
+          implementations = @frame_implementations.dup
+
+          @extra_frames.each do |(frame_idx, category_idx)|
+            funcs << funcs[frame_idx]
+            lines << lines[frame_idx]
+            categories << category_idx
+            subcategories << 0
+            implementations << implementations[frame_idx]
+          end
+
+          size = funcs.size
+          none = [nil] * size
+          default = [0] * size
+          unidentified = [-1] * size
+
+          {
+            address: unidentified,
+            inlineDepth: default,
+            category: categories,
+            subcategory: subcategories,
+            func: funcs,
+            nativeSymbol: none,
+            innerWindowID: none,
+            implementation: implementations,
+            line: lines,
+            column: none,
+            length: size
+          }
+        end
+
+        def func_table
+          size = @func_names.size
+
+          cfunc_idx = @strings["<cfunc>"]
+          is_js = @filenames.map { |fn| fn != cfunc_idx }
+          line_numbers = @stack_table_hash[:func_table].fetch(:first_line).map.with_index do |line, i|
+            if is_js[i] || line != 0
+              line
+            else
+              nil
+            end
+          end
+          {
+            name: @func_names,
+            isJS: is_js,
+            relevantForJS: is_js,
+            resource: [-1] * size, # set to unidentified for now
+            fileName: @filenames,
+            lineNumber: line_numbers,
+            columnNumber: [nil] * size,
+            #columnNumber: functions.map { _1.column },
+            length: size
+          }
+        end
+
+        def string_table
+          @strings.keys.map do |string|
+            sanitize_string(string)
+          end
+        end
+
+        private
+
+        def gc_category
+          @categorizer.get_category("GC")
+        end
+
+        def thread_category
+          @categorizer.get_category("Thread")
+        end
+      end
+    end
+  end
+end

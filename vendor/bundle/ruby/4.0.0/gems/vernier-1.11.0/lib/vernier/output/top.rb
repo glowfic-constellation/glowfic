@@ -1,0 +1,88 @@
+# frozen_string_literal: true
+
+require_relative "../output_helpers"
+
+module Vernier
+  module Output
+    class Top
+      include OutputHelpers
+
+      def initialize(profile, row_limit)
+        @profile = profile
+        @row_limit = row_limit
+      end
+
+      class Table
+        def initialize(header, row_limit)
+          @header = header
+          @rows = []
+          @row_limit = row_limit
+          yield self
+        end
+
+        def <<(row)
+          @rows << row
+        end
+
+        def to_s
+          (
+            [
+              row_separator,
+              format_row(@header),
+              row_separator
+            ] + @rows.first(@row_limit).map do |row|
+              format_row(row)
+            end + [row_separator]
+          ).join("\n")
+        end
+
+        def widths
+          @widths ||=
+            (@rows + [@header]).transpose.map do |col|
+              col.map(&:size).max
+            end
+        end
+
+        def row_separator
+          @row_separator = "+" + widths.map { |i| "-" * (i + 2) }.join("+") + "+"
+        end
+
+        def format_row(row)
+          "|" + row.map.with_index { |str, i| " " + str.ljust(widths[i] + 1) }.join("|") + "|"
+        end
+      end
+
+      def output
+        thread = @profile.main_thread
+        stack_table =
+          if thread.respond_to?(:stack_table)
+            thread.stack_table
+          else
+            @profile._stack_table
+          end
+
+        samples = thread[:samples]
+        weights = thread[:weights]
+
+        stack_weights = collapse_stack_weights(samples, weights)
+
+        total = stack_weights.values.sum
+
+        top_by_self = Hash.new(0)
+        stack_weights.each do |stack_idx, weight|
+          frame_idx = stack_table.stack_frame_idx(stack_idx)
+          func_idx = stack_table.frame_func_idx(frame_idx)
+          name = stack_table.func_name(func_idx)
+          top_by_self[name] += weight
+        end
+
+        Table.new %w[Samples % name], @row_limit do |t|
+          top_by_self.sort_by(&:last).reverse.each do |frame, samples|
+            pct = 100.0 * samples / total
+            t << [samples.to_s, pct.round(1).to_s, frame]
+          end
+        end.to_s
+      end
+    end
+  end
+end

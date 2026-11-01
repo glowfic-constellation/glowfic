@@ -1,0 +1,94 @@
+# frozen_string_literal: true
+
+require 'base64'
+require 'bigdecimal'
+
+module Aws
+  module Json
+    class Builder
+
+      include Seahorse::Model::Shapes
+
+      def initialize(rules, _options = {})
+        @rules = rules
+      end
+
+      def to_json(params)
+        Json.dump(format(@rules, params))
+      end
+      alias serialize to_json
+
+      private
+
+      def structure(ref, values)
+        return nil if values.nil?
+
+        shape = ref.shape
+        values.each_pair.with_object({}) do |(key, value), data|
+          if shape.member?(key) && !value.nil?
+            member_ref = shape.member(key)
+            member_name = member_ref.location_name || key
+            data[member_name] = format(member_ref, value)
+          end
+        end
+      end
+
+      def list(ref, values)
+        return nil if values.nil?
+
+        member_ref = ref.shape.member
+        values.collect { |value| format(member_ref, value) }
+      end
+
+      def map(ref, values)
+        return nil if values.nil?
+
+        value_ref = ref.shape.value
+        values.each.with_object({}) do |(key, value), data|
+          data[key] = format(value_ref, value)
+        end
+      end
+
+      def format(ref, value)
+        case ref.shape
+        when StructureShape then structure(ref, value)
+        when ListShape      then list(ref, value)
+        when MapShape       then map(ref, value)
+        when TimestampShape then timestamp(ref, value)
+        when BlobShape      then encode(value)
+        when FloatShape     then Util.serialize_number(value)
+        when DocumentShape  then document(value)
+        else value
+        end
+      end
+
+      def document(value)
+        case value
+        when Hash
+          value.transform_values { |v| document(v) }
+        when Array
+          value.map { |v| document(v) }
+        when BigDecimal, Float
+          Util.serialize_number(value.to_f)
+        else
+          value
+        end
+      end
+
+      def encode(blob)
+        Base64.strict_encode64(String === blob ? blob : blob.read)
+      end
+
+      def timestamp(ref, value)
+        case ref['timestampFormat'] || ref.shape['timestampFormat']
+        when 'iso8601' then Util.serialize_date_time(value)
+        when 'rfc822' then value.utc.httpdate
+        else
+          # rest-json and jsonrpc default to unixTimestamp
+          Util.serialize_epoch_seconds(value)
+        end
+      end
+
+    end
+  end
+end

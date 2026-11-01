@@ -1,0 +1,2 @@
+jQuery UI is licensed under the MIT license (see jquery-ui/MIT-LICENSE.txt).
+This gem is licensed under the Apache 2.0 License

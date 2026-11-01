@@ -1,0 +1,95 @@
+# frozen_string_literal: true
+
+module Doorkeeper::Orm::ActiveRecord::Mixins
+  module AccessToken
+    extend ActiveSupport::Concern
+
+    included do
+      self.table_name = compute_doorkeeper_table_name
+      self.strict_loading_by_default = false if respond_to?(:strict_loading_by_default)
+
+      include ::Doorkeeper::AccessTokenMixin
+      include ::Doorkeeper::Models::PolymorphicResourceOwner::ForAccessToken
+
+      belongs_to :application, class_name: Doorkeeper.config.application_class.to_s,
+                               inverse_of: :access_tokens,
+                               optional: true
+
+      validates :token, presence: true, uniqueness: { case_sensitive: true }
+      validates :refresh_token, uniqueness: { case_sensitive: true }, if: :use_refresh_token?
+
+      # @attr_writer [Boolean, nil] use_refresh_token
+      #   indicates the possibility of using refresh token
+      attr_writer :use_refresh_token
+
+      before_validation :generate_token, on: :create
+      before_validation :generate_refresh_token,
+                        on: :create, if: :use_refresh_token?
+    end
+
+    module ClassMethods
+      # Searches for not revoked Access Tokens associated with the
+      # specific Resource Owner.
+      #
+      # @param resource_owner [ActiveRecord::Base]
+      #   Resource Owner model instance
+      #
+      # @return [ActiveRecord::Relation]
+      #   active Access Tokens for Resource Owner
+      #
+      def active_for(resource_owner)
+        by_resource_owner(resource_owner).where(revoked_at: nil)
+      end
+
+      # Determines if refresh tokens should be revoked only when the new access token is used,
+      # rather than immediately upon refresh. This is based on the presence of the
+      # `previous_refresh_token` column in the database.
+      #
+      # When true (column exists):
+      # - Refresh tokens are NOT immediately revoked
+      # - New access token stores the old refresh token value in `previous_refresh_token`
+      # - Old refresh token is revoked later when the new access token is first used
+      # - Multiple concurrent refresh requests can succeed (no database locks)
+      # - Better database performance and lower latency
+      #
+      # When false (column does not exist):
+      # - Refresh tokens are immediately revoked using database locks
+      # - Only one concurrent refresh request can succeed
+      # - May experience database lock contention under high load
+      #
+      # To enable the revoke-on-use feature and improve performance:
+      #   rails generate doorkeeper:previous_refresh_token
+      #   rails db:migrate
+      #
+      # @return [Boolean] true if previous_refresh_token column exists
+      #
+      def refresh_token_revoked_on_use?
+        column_names.include?("previous_refresh_token")
+      end
+
+      # Returns non-expired and non-revoked access tokens
+      def not_expired
+        relation = where(revoked_at: nil)
+
+        if supports_expiration_time_math?
+          # have not reached the expiration time or it never expires
+          relation.where("#{expiration_time_sql} > ?", Time.now.utc).or(
+            relation.where(expires_in: nil),
+          )
+        else
+          ::Kernel.warn(::Doorkeeper::Models::ExpirationTimeSqlMath::WARNING_MESSAGE)
+
+          relation
+        end
+      end
+
+      private
+
+      def compute_doorkeeper_table_name
+        table_name = "oauth_access_token"
+        table_name = table_name.pluralize if pluralize_table_names
+        "#{table_name_prefix}#{table_name}#{table_name_suffix}"
+      end
+    end
+  end
+end

@@ -1,0 +1,777 @@
+## Rails 8.1.4 (September 24, 2026) ##
+
+*   Fix the debug error page rendering for `SyntaxError`s with multi-line messages.
+
+    *Marco Roth*
+
+*   Make `ActiveSupport::JSON.decode` compatible with the upcoming `json` 3.0 gem.
+
+    *Earlopain*
+
+*   Fix `number_to_human_size` crashing for sizes above a terabyte by supporting
+    petabyte, exabyte, and zettabyte storage units.
+
+    *Kenta Ishizaki*
+
+*   Fix `Range#sole` raising `NoMethodError` when the enumerable core extension
+    isn't already loaded.
+
+    *Kenta Ishizaki*
+
+*   Fix `ActiveSupport::Cache::FileStore` raising `NameError` for `FileUtils`
+    when `fileutils` isn't already loaded.
+
+    *Kenta Ishizaki*
+
+*   Fix `Enumerable#in_order_of` with `filter: true` dropping `nil` elements
+    explicitly named in the series.
+
+    *Kenta Ishizaki*
+
+*   Keep `HashWithIndifferentAccess#filter` returning a `HashWithIndifferentAccess`
+    instead of a plain `Hash`.
+
+    *Kenta Ishizaki*
+
+*   Fix `number_to_human` and `number_to_human_size` crashing when `:precision` is `nil`.
+
+    *Kenta Ishizaki*
+
+*   Fix `ActiveSupport::InheritableOptions#to_h` to recursively flatten nested
+    `InheritableOptions` parents.
+
+    *Andrew Novoselac*
+
+*   Fix `ActiveSupport::StructuredEventSubscriber.debug_only` leaking debug-only
+    methods across subscriber subclasses.
+
+    *Kenta Ishizaki*
+
+*   Fix `ActiveSupport::Inflector#transliterate` mutating the caller's string.
+
+    *Kenta Ishizaki*
+
+*   Fix `Hash.from_xml` raising `Date::Error` on `type="date"` values surrounded
+    by whitespace.
+
+    *Kenta Ishizaki*
+
+*   Fix `Time#advance` and `DateTime#advance` mutating the options hash passed
+    by the caller.
+
+    *Kenta Ishizaki*
+
+*   Fix `ActiveSupport::Cache::MemoryStore#cleanup` raising `NoMethodError` when
+    used with a non-`DupCoder` serializer.
+
+    *Kenta Ishizaki*
+
+*   Fix `String#truncate` with `:separator` misbehaving when the `:omission` is
+    longer than the target length.
+
+    *Kenta Ishizaki*
+
+*   Fix `ActiveSupport::Cache::Store#delete_multi` mutating the names array passed
+    by the caller.
+
+    *Kenta Ishizaki*
+
+*   Fix `number_to_currency` crashing on a negative number when `:precision` is `nil`.
+
+    *Kenta Ishizaki*
+
+*   Fix `TimeZone#strptime` with `%s` dropping the sub-second fraction of the timestamp.
+
+    *Kenta Ishizaki*
+
+*   Fix `HashWithIndifferentAccess.new` dropping a falsy (`false` or `0`) default
+    value from the source hash.
+
+    *Kenta Ishizaki*
+
+*   Fix `Range#include?` and `Range#===` raising on exclusive non-integer sub-ranges.
+
+    *Kenta Ishizaki*
+
+*   Fix `number_to_delimited` corrupting numbers that begin with a `+` or `-` sign.
+
+    *Kenta Ishizaki*
+
+*   Fix `ActiveSupport::InheritableOptions#==` raising `NoMethodError` when compared
+    with a non-Hash object.
+
+    *Kenta Ishizaki*
+
+*   Fix `Enumerable#in_order_of` with `filter: false` dropping elements whose keyed
+    value is `nil`.
+
+    *Hammad Khan*
+
+*   Stop the DRb service when shutting down parallel test workers, preventing it
+    from lingering after the test run.
+
+    *Shuta Mugikura*
+
+*   Preserve the encoding of `ActiveSupport::SafeBuffer` values round-tripped through
+    `ActiveSupport::MessagePack`.
+
+    *Rafael Mendonça França*
+
+*   Fix `number_to_phone` without an area code stripping a leading delimiter when the
+    number itself coincidentally starts with the delimiter string.
+
+    *Tahsin Hasan*
+
+*   Update `ActiveSupport::TimeZone` mappings to use the current IANA identifiers
+    `Europe/Kyiv` (was `Europe/Kiev`) and `Asia/Yangon` (was `Asia/Rangoon`).
+
+    *tsymbalenkovlad*
+
+*   Use the faster string-based delimiter logic by default in `number_to_delimited`,
+    instead of the regular expression fallback.
+
+    *Shinichi Maeshima*
+
+*   Preserve the requested key order in `ActiveSupport::Cache::Store#fetch_multi`
+    when a local cache is active.
+
+    Previously, if some keys were served from the local cache and others from the
+    underlying store, `fetch_multi` returned the local cache hits first instead of
+    following the order of the requested keys.
+
+    *Mueez Afzal*
+
+*   Fix `String#parameterize` raising `TypeError` when `separator` is `nil`.
+
+    `parameterize` already treats a `nil` separator the same as an empty one when
+    squeezing and trimming separators, but raised `TypeError` before reaching that
+    point. A `nil` separator now behaves like `""`, removing the unwanted characters.
+
+    ```ruby
+    "Donald E. Knuth".parameterize(separator: nil) # => "donaldeknuth"
+    ```
+
+    *Hammad Khan*
+
+*   Add `RedisClient::Error` to `ActiveSupport::Cache::RedisCacheStore`'s failsafe rescue list.
+
+    The redis-rb gem normally translates `RedisClient::*` errors into `Redis::*` errors but in
+    some rare cases, such as when using sentinels, `RedisClient::*` errors may slip through.
+
+    *David Arrunategui*
+
+*   Fix `ActiveSupport::Duration#in_minutes`, `#in_hours`, `#in_days`,
+    `#in_weeks`, `#in_months`, and `#in_years` truncating sub-second precision.
+
+    These methods divided the duration's integer second count (`in_seconds`,
+    aliased to `to_i`) instead of its exact value, so any fractional second was
+    silently dropped before the conversion.
+
+    ```ruby
+    # Before
+    90.5.seconds.in_minutes # => 1.5
+
+    # After
+    90.5.seconds.in_minutes # => 1.5083333333333333
+    ```
+
+    *Kenta Ishizaki*
+
+*   Fix JSON encoding of non-String Hash keys.
+
+    The old encoder would simply call `to_s` on them, the newer encoder
+    would incorrectly call `as_json` instead.
+
+    In the case of `Time`, `DateTime` and `TimeWithZone` this would result
+    in different serialization of time keys: `"2009-01-01T12:30:00.000Z"` (arguably better)
+    instead of `"2009-01-01 12:30:00 UTC"` (how it used to be).
+
+    *Kenta Ishizaki*
+
+*   Fix `number_to_phone` dropping only the first character of a
+    multi-character `:delimiter` when no area code is present.
+
+    The leading delimiter produced by an empty first capture group was
+    stripped with `slice!(0, 1)`, which assumed a single-character
+    delimiter. Multi-character (and multibyte) delimiters now work:
+
+        number_to_phone(5551234, delimiter: " - ")  # => "555 - 1234"
+        # was "- 555 - 1234"
+
+    *Kenta Ishizaki*
+
+*   Fix `titleize` inflector to consider Unicode characters
+
+    ```ruby
+    "ćasim đipa".titleize # => "Ćasim Đipa"
+    ```
+
+    *Eldin Guzin*
+
+
+## Rails 8.1.3.1 (July 29, 2026) ##
+
+*   No changes.
+
+
+## Rails 8.1.3 (March 24, 2026) ##
+
+*   Fix `JSONGemCoderEncoder` to correctly serialize custom object hash keys.
+
+    When hash keys are custom objects whose `as_json` returns a Hash,
+    the encoder now calls `to_s` on the original key object instead of
+    on the `as_json` result.
+
+    Before:
+        hash = {CustomKey.new(123) => "value"}
+        hash.to_json  # => {"{:id=>123}":"value"}
+
+    After:
+        hash.to_json  # => {"custom_123":"value"}
+
+    *Dan Sharp*
+
+*   Fix inflections to better handle overlapping acronyms.
+
+    ```ruby
+    ActiveSupport::Inflector.inflections(:en) do |inflect|
+      inflect.acronym "USD"
+      inflect.acronym "USDC"
+    end
+
+    "USDC".underscore # => "usdc"
+    ```
+
+    *Said Kaldybaev*
+
+*   Silence Dalli 4.0+ warning when using `ActiveSupport::Cache::MemCacheStore`.
+
+    *zzak*
+
+
+## Rails 8.1.2.1 (March 23, 2026) ##
+
+*   Reject scientific notation in NumberConverter
+
+    [CVE-2026-33176]
+
+    *Jean Boussier*
+
+*   Fix `SafeBuffer#%` to preserve unsafe status
+
+    [CVE-2026-33170]
+
+    *Jean Boussier*
+
+*   Improve performance of NumberToDelimitedConverter
+
+    [CVE-2026-33169]
+
+    *Jean Boussier*
+
+
+## Rails 8.1.2 (January 08, 2026) ##
+
+*   Make `delegate` and `delegate_missing_to` work in BasicObject subclasses.
+
+    *Rafael Mendonça França*
+
+*   Fix Inflectors when using a locale that fallbacks to `:en`.
+
+    *Said Kaldybaev*
+
+*   Fix `ActiveSupport::TimeWithZone#as_json` to consistently return UTF-8 strings.
+
+    Previously the returned string would sometime be encoded in US-ASCII, which in
+    some cases may be problematic.
+
+    Now the method consistently always return UTF-8 strings.
+
+    *Jean Boussier*
+
+*   Fix `TimeWithZone#xmlschema` when wrapping a `DateTime` instance in local time.
+
+    Previously it would return an invalid time.
+
+    *Dmytro Rymar*
+
+*   Implement LocalCache strategy on `ActiveSupport::Cache::MemoryStore`. The memory store
+    needs to respond to the same interface as other cache stores (e.g. `ActiveSupport::NullStore`).
+
+    *Mikey Gough*
+
+*   Fix `ActiveSupport::Inflector.humanize` with international characters.
+
+    ```ruby
+    ActiveSupport::Inflector.humanize("áÉÍÓÚ")  # => "Áéíóú"
+    ActiveSupport::Inflector.humanize("аБВГДЕ") # => "Абвгде"
+    ```
+
+    *Jose Luis Duran*
+
+
+## Rails 8.1.1 (October 28, 2025) ##
+
+*   No changes.
+
+
+## Rails 8.1.0 (October 22, 2025) ##
+
+*   Remove deprecated passing a Time object to `Time#since`.
+
+    *Rafael Mendonça França*
+
+*   Remove deprecated `Benchmark.ms` method. It is now defined in the `benchmark` gem.
+
+    *Rafael Mendonça França*
+
+*   Remove deprecated addition for `Time` instances with `ActiveSupport::TimeWithZone`.
+
+    *Rafael Mendonça França*
+
+*   Remove deprecated support for `to_time` to preserve the system local time. It will now always preserve the receiver
+    timezone.
+
+    *Rafael Mendonça França*
+
+*   Deprecate `config.active_support.to_time_preserves_timezone`.
+
+    *Rafael Mendonça França*
+
+*   Standardize event name formatting in `assert_event_reported` error messages.
+
+    The event name in failure messages now uses `.inspect` (e.g., `name: "user.created"`)
+    to match `assert_events_reported` and provide type clarity between strings and symbols.
+    This only affects tests that assert on the failure message format itself.
+
+    *George Ma*
+
+*   Fix `Enumerable#sole` to return the full tuple instead of just the first element of the tuple.
+
+    *Olivier Bellone*
+
+*   Fix parallel tests hanging when worker processes die abruptly.
+
+    Previously, if a worker process was killed (e.g., OOM killed, `kill -9`) during parallel
+    test execution, the test suite would hang forever waiting for the dead worker.
+
+    *Joshua Young*
+
+*   Add `config.active_support.escape_js_separators_in_json`.
+
+    Introduce a new framework default to skip escaping LINE SEPARATOR (U+2028) and PARAGRAPH SEPARATOR (U+2029) in JSON.
+
+    Historically these characters were not valid inside JavaScript literal strings but that changed in ECMAScript 2019.
+    As such it's no longer a concern in modern browsers: https://caniuse.com/mdn-javascript_builtins_json_json_superset.
+
+    *Étienne Barrié*, *Jean Boussier*
+
+*   Fix `NameError` when `class_attribute` is defined on instance singleton classes.
+
+    Previously, calling `class_attribute` on an instance's singleton class would raise
+    a `NameError` when accessing the attribute through the instance.
+
+    ```ruby
+    object = MyClass.new
+    object.singleton_class.class_attribute :foo, default: "bar"
+    object.foo # previously raised NameError, now returns "bar"
+    ```
+
+    *Joshua Young*
+
+*   Introduce `ActiveSupport::Testing::EventReporterAssertions#with_debug_event_reporting`
+    to enable event reporter debug mode in tests.
+
+    The previous way to enable debug mode is by using `#with_debug` on the
+    event reporter itself, which is too verbose. This new helper will help
+    clear up any confusion on how to test debug events.
+
+    *Gannon McGibbon*
+
+*   Add `ActiveSupport::StructuredEventSubscriber` for consuming notifications and
+    emitting structured event logs. Events may be emitted with the `#emit_event`
+    or `#emit_debug_event` methods.
+
+    ```ruby
+    class MyStructuredEventSubscriber < ActiveSupport::StructuredEventSubscriber
+      def notification(event)
+        emit_event("my.notification", data: 1)
+      end
+    end
+    ```
+
+    *Adrianna Chang*
+
+*   `ActiveSupport::FileUpdateChecker` does not depend on `Time.now` to prevent unecessary reloads with time travel test helpers
+
+    *Jan Grodowski*
+
+*   Add `ActiveSupport::Cache::Store#namespace=` and `#namespace`.
+
+    Can be used as an alternative to `Store#clear` in some situations such as parallel
+    testing.
+
+    *Nick Schwaderer*
+
+*   Create `parallel_worker_id` helper for running parallel tests. This allows users to
+    know which worker they are currently running in.
+
+    *Nick Schwaderer*
+
+*   Make the cache of `ActiveSupport::Cache::Strategy::LocalCache::Middleware` updatable.
+
+    If the cache client at `Rails.cache` of a booted application changes, the corresponding
+    mounted middleware needs to update in order for request-local caches to be setup properly.
+    Otherwise, redundant cache operations will erroneously hit the datastore.
+
+    *Gannon McGibbon*
+
+*   Add `assert_events_reported` test helper for `ActiveSupport::EventReporter`.
+
+    This new assertion allows testing multiple events in a single block, regardless of order:
+
+    ```ruby
+    assert_events_reported([
+      { name: "user.created", payload: { id: 123 } },
+      { name: "email.sent", payload: { to: "user@example.com" } }
+    ]) do
+      create_user_and_send_welcome_email
+    end
+    ```
+
+    *George Ma*
+
+*   Add `ActiveSupport::TimeZone#standard_name` method.
+
+    ``` ruby
+    zone = ActiveSupport::TimeZone['Hawaii']
+    # Old way
+    ActiveSupport::TimeZone::MAPPING[zone.name]
+    # New way
+    zone.standard_name # => 'Pacific/Honolulu'
+    ```
+
+    *Bogdan Gusiev*
+
+*   Add Structured Event Reporter, accessible via `Rails.event`.
+
+    The Event Reporter provides a unified interface for producing structured events in Rails
+    applications:
+
+    ```ruby
+    Rails.event.notify("user.signup", user_id: 123, email: "user@example.com")
+    ```
+
+    It supports adding tags to events:
+
+    ```ruby
+    Rails.event.tagged("graphql") do
+      # Event includes tags: { graphql: true }
+      Rails.event.notify("user.signup", user_id: 123, email: "user@example.com")
+    end
+    ```
+
+    As well as context:
+    ```ruby
+    # All events will contain context: {request_id: "abc123", shop_id: 456}
+    Rails.event.set_context(request_id: "abc123", shop_id: 456)
+    ```
+
+    Events are emitted to subscribers. Applications register subscribers to
+    control how events are serialized and emitted. Subscribers must implement
+    an `#emit` method, which receives the event hash:
+
+    ```ruby
+    class LogSubscriber
+      def emit(event)
+        payload = event[:payload].map { |key, value| "#{key}=#{value}" }.join(" ")
+        source_location = event[:source_location]
+        log = "[#{event[:name]}] #{payload} at #{source_location[:filepath]}:#{source_location[:lineno]}"
+        Rails.logger.info(log)
+      end
+    end
+    ```
+
+    *Adrianna Chang*
+
+*   Make `ActiveSupport::Logger` `#freeze`-friendly.
+
+    *Joshua Young*
+
+*   Make `ActiveSupport::Gzip.compress` deterministic based on input.
+
+    `ActiveSupport::Gzip.compress` used to include a timestamp in the output,
+    causing consecutive calls with the same input data to have different output
+    if called during different seconds. It now always sets the timestamp to `0`
+    so that the output is identical for any given input.
+
+    *Rob Brackett*
+
+*   Given an array of `Thread::Backtrace::Location` objects, the new method
+    `ActiveSupport::BacktraceCleaner#clean_locations` returns an array with the
+    clean ones:
+
+    ```ruby
+    clean_locations = backtrace_cleaner.clean_locations(caller_locations)
+    ```
+
+    Filters and silencers receive strings as usual. However, the `path`
+    attributes of the locations in the returned array are the original,
+    unfiltered ones, since locations are immutable.
+
+    *Xavier Noria*
+
+*   Improve `CurrentAttributes` and `ExecutionContext` state managment in test cases.
+
+    Previously these two global state would be entirely cleared out whenever calling
+    into code that is wrapped by the Rails executor, typically Action Controller or
+    Active Job helpers:
+
+    ```ruby
+    test "#index works" do
+      CurrentUser.id = 42
+      get :index
+      CurrentUser.id == nil
+    end
+    ```
+
+    Now re-entering the executor properly save and restore that state.
+
+    *Jean Boussier*
+
+*   The new method `ActiveSupport::BacktraceCleaner#first_clean_location`
+    returns the first clean location of the caller's call stack, or `nil`.
+    Locations are `Thread::Backtrace::Location` objects. Useful when you want to
+    report the application-level location where something happened as an object.
+
+    *Xavier Noria*
+
+*   FileUpdateChecker and EventedFileUpdateChecker ignore changes in Gem.path now.
+
+    *Ermolaev Andrey*, *zzak*
+
+*   The new method `ActiveSupport::BacktraceCleaner#first_clean_frame` returns
+    the first clean frame of the caller's backtrace, or `nil`. Useful when you
+    want to report the application-level frame where something happened as a
+    string.
+
+    *Xavier Noria*
+
+*   Always clear `CurrentAttributes` instances.
+
+    Previously `CurrentAttributes` instance would be reset at the end of requests.
+    Meaning its attributes would be re-initialized.
+
+    This is problematic because it assume these objects don't hold any state
+    other than their declared attribute, which isn't always the case, and
+    can lead to state leak across request.
+
+    Now `CurrentAttributes` instances are abandoned at the end of a request,
+    and a new instance is created at the start of the next request.
+
+    *Jean Boussier*, *Janko Marohnić*
+
+*   Add public API for `before_fork_hook` in parallel testing.
+
+    Introduces a public API for calling the before fork hooks implemented by parallel testing.
+
+    ```ruby
+    parallelize_before_fork do
+        # perform an action before test processes are forked
+    end
+    ```
+
+    *Eileen M. Uchitelle*
+
+*   Implement ability to skip creating parallel testing databases.
+
+    With parallel testing, Rails will create a database per process. If this isn't
+    desirable or you would like to implement databases handling on your own, you can
+    now turn off this default behavior.
+
+    To skip creating a database per process, you can change it via the
+    `parallelize` method:
+
+    ```ruby
+    parallelize(workers: 10, parallelize_databases: false)
+    ```
+
+    or via the application configuration:
+
+    ```ruby
+    config.active_support.parallelize_databases = false
+    ```
+
+    *Eileen M. Uchitelle*
+
+*   Allow to configure maximum cache key sizes
+
+    When the key exceeds the configured limit (250 bytes by default), it will be truncated and
+    the digest of the rest of the key appended to it.
+
+    Note that previously `ActiveSupport::Cache::RedisCacheStore` allowed up to 1kb cache keys before
+    truncation, which is now reduced to 250 bytes.
+
+    ```ruby
+    config.cache_store = :redis_cache_store, { max_key_size: 64 }
+    ```
+
+    *fatkodima*
+
+*   Use `UNLINK` command instead of `DEL` in `ActiveSupport::Cache::RedisCacheStore` for non-blocking deletion.
+
+    *Aron Roh*
+
+*   Add `Cache#read_counter` and `Cache#write_counter`
+
+    ```ruby
+    Rails.cache.write_counter("foo", 1)
+    Rails.cache.read_counter("foo") # => 1
+    Rails.cache.increment("foo")
+    Rails.cache.read_counter("foo") # => 2
+    ```
+
+    *Alex Ghiculescu*
+
+*   Introduce ActiveSupport::Testing::ErrorReporterAssertions#capture_error_reports
+
+    Captures all reported errors from within the block that match the given
+    error class.
+
+    ```ruby
+    reports = capture_error_reports(IOError) do
+      Rails.error.report(IOError.new("Oops"))
+      Rails.error.report(IOError.new("Oh no"))
+      Rails.error.report(StandardError.new)
+    end
+
+    assert_equal 2, reports.size
+    assert_equal "Oops", reports.first.error.message
+    assert_equal "Oh no", reports.last.error.message
+    ```
+
+    *Andrew Novoselac*
+
+*   Introduce ActiveSupport::ErrorReporter#add_middleware
+
+    When reporting an error, the error context middleware will be called with the reported error
+    and base execution context. The stack may mutate the context hash. The mutated context will
+    then be passed to error subscribers. Middleware receives the same parameters as `ErrorReporter#report`.
+
+    *Andrew Novoselac*, *Sam Schmidt*
+
+*   Change execution wrapping to report all exceptions, including `Exception`.
+
+    If a more serious error like `SystemStackError` or `NoMemoryError` happens,
+    the error reporter should be able to report these kinds of exceptions.
+
+    *Gannon McGibbon*
+
+*   `ActiveSupport::Testing::Parallelization.before_fork_hook` allows declaration of callbacks that
+    are invoked immediately before forking test workers.
+
+    *Mike Dalessio*
+
+*   Allow the `#freeze_time` testing helper to accept a date or time argument.
+
+    ```ruby
+    Time.current # => Sun, 09 Jul 2024 15:34:49 EST -05:00
+    freeze_time Time.current + 1.day
+    sleep 1
+    Time.current # => Mon, 10 Jul 2024 15:34:49 EST -05:00
+    ```
+
+    *Joshua Young*
+
+*   `ActiveSupport::JSON` now accepts options
+
+    It is now possible to pass options to `ActiveSupport::JSON`:
+    ```ruby
+    ActiveSupport::JSON.decode('{"key": "value"}', symbolize_names: true) # => { key: "value" }
+    ```
+
+    *matthaigh27*
+
+*   `ActiveSupport::Testing::NotificationAssertions`'s `assert_notification` now matches against payload subsets by default.
+
+    Previously the following assertion would fail due to excess key vals in the notification payload. Now with payload subset matching, it will pass.
+
+    ```ruby
+    assert_notification("post.submitted", title: "Cool Post") do
+      ActiveSupport::Notifications.instrument("post.submitted", title: "Cool Post", body: "Cool Body")
+    end
+    ```
+
+    Additionally, you can now persist a matched notification for more customized assertions.
+
+    ```ruby
+    notification = assert_notification("post.submitted", title: "Cool Post") do
+      ActiveSupport::Notifications.instrument("post.submitted", title: "Cool Post", body: Body.new("Cool Body"))
+    end
+
+    assert_instance_of(Body, notification.payload[:body])
+    ```
+
+    *Nicholas La Roux*
+
+*   Deprecate `String#mb_chars` and `ActiveSupport::Multibyte::Chars`.
+
+    These APIs are a relic of the Ruby 1.8 days when Ruby strings weren't encoding
+    aware. There is no legitimate reasons to need these APIs today.
+
+    *Jean Boussier*
+
+*   Deprecate `ActiveSupport::Configurable`
+
+    *Sean Doyle*
+
+*   `nil.to_query("key")` now returns `key`.
+
+    Previously it would return `key=`, preventing round tripping with `Rack::Utils.parse_nested_query`.
+
+    *Erol Fornoles*
+
+*   Avoid wrapping redis in a `ConnectionPool` when using `ActiveSupport::Cache::RedisCacheStore` if the `:redis`
+    option is already a `ConnectionPool`.
+
+    *Joshua Young*
+
+*   Alter `ERB::Util.tokenize` to return :PLAIN token with full input string when string doesn't contain ERB tags.
+
+    *Martin Emde*
+
+*   Fix a bug in `ERB::Util.tokenize` that causes incorrect tokenization when ERB tags are preceded by multibyte characters.
+
+    *Martin Emde*
+
+*   Add `ActiveSupport::Testing::NotificationAssertions` module to help with testing `ActiveSupport::Notifications`.
+
+    *Nicholas La Roux*, *Yishu See*, *Sean Doyle*
+
+*   `ActiveSupport::CurrentAttributes#attributes` now will return a new hash object on each call.
+
+    Previously, the same hash object was returned each time that method was called.
+
+    *fatkodima*
+
+*   `ActiveSupport::JSON.encode` supports CIDR notation.
+
+    Previously:
+
+    ```ruby
+    ActiveSupport::JSON.encode(IPAddr.new("172.16.0.0/24")) # => "\"172.16.0.0\""
+    ```
+
+    After this change:
+
+    ```ruby
+    ActiveSupport::JSON.encode(IPAddr.new("172.16.0.0/24")) # => "\"172.16.0.0/24\""
+    ```
+
+    *Taketo Takashima*
+
+*   Make `ActiveSupport::FileUpdateChecker` faster when checking many file-extensions.
+
+    *Jonathan del Strother*
+
+Please check [8-0-stable](https://github.com/rails/rails/blob/8-0-stable/activesupport/CHANGELOG.md) for previous changes.

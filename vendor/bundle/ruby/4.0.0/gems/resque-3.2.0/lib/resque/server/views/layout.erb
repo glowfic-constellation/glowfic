@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <title>Resque</title>
+  <%= link_tag 'reset.css' %>
+  <%= link_tag 'style.css' %>
+  <%= script_tag 'jquery-3.6.0.min.js' %>
+  <%= script_tag 'jquery.relatize_date.js' %>
+  <%= script_tag 'ranger.js' %>
+  <%= script_tag 'main.js' %>
+</head>
+<body>
+  <div class="header">
+    <ul class='nav'>
+      <% tabs.each do |tab_name| %>
+        <%= tab tab_name %>
+      <% end %>
+    </ul>
+    <button class="theme-toggle" title="Toggle dark/light mode" aria-label="Toggle dark/light mode">
+      <span class="sun">&#9728;</span>
+      <span class="moon">&#9790;</span>
+    </button>
+    <% if Resque.redis.namespace != :resque %>
+      <abbr class="namespace" title="Resque's Redis Namespace">
+       <%= h Resque.redis.namespace %>
+      </abbr>
+    <% end %>
+  </div>
+
+  <% if defined?(@subtabs) && @subtabs %>
+    <ul class='subnav'>
+      <% for subtab in @subtabs %>
+        <li <%= class_if_current "#{current_section}/#{subtab}" %>><a href="<%= h current_section %>/<%= h subtab %>"><span><%= h subtab %></span></a></li>
+      <% end %>
+    </ul>
+  <% end %>
+
+<div id="main">
+  <%= yield %>
+</div>
+
+<div id="footer">
+  <p>Powered by <a href="http://github.com/resque/resque">Resque</a> v<%=Resque::VERSION%></p>
+  <p>Connected to Redis namespace <%= h Resque.redis.namespace %> on <%= h Resque.redis_id %></p>
+</div>
+
+</body>
+</html>

@@ -1,0 +1,71 @@
+[package]
+name = "rubydex"
+version.workspace = true
+edition = "2024"
+rust-version = "1.89.0"
+license = "MIT"
+description = "High-performance Ruby code indexing and static analysis library."
+homepage = "https://github.com/Shopify/rubydex"
+repository = "https://github.com/Shopify/rubydex"
+readme = "README.md"
+keywords = ["ruby", "indexing", "static-analysis"]
+categories = ["development-tools"]
+
+[[bin]]
+name = "rubydex_cli"
+path = "src/main.rs"
+
+[[bin]]
+name = "generate_ruby_rules"
+path = "src/bin/generate_ruby_rules.rs"
+
+[lib]
+crate-type = ["rlib"]
+
+[features]
+jemalloc = ["dep:tikv-jemallocator"]
+# The Ruby native extension uses a dlopen to load the rubydex shared object. In these scenarios, jemalloc must be linked
+# dynamically or else the process crashes. This has a small performance cost, which we don't need to pay when using the
+# Rust crate by itself, so we gate it with a feature
+jemalloc_dylib = ["jemalloc", "tikv-jemallocator/disable_initial_exec_tls"]
+test_utils = ["dep:tempfile"]
+
+[dependencies]
+cypher-parser = "0.8.1"
+ruby-prism = "2.0.0-rc.2"
+ruby-rbs = "0.3"
+url = "2.5.4"
+xxhash-rust = { version = "0.8.15", features = ["xxh3"] }
+clap = { version = "4.5.16", features = ["derive"] }
+glob = "0.3.2"
+bitflags = "2.9"
+bytecount = "0.6.9"
+libc = "0.2"
+line-index = "0.1.2"
+serde = { version = "1.0", features = ["derive"] }
+tempfile = { version = "3.0", optional = true }
+crossbeam-deque = "0.8"
+crossbeam-utils = "0.8"
+crossbeam-channel = "0.5"
+toml = "1.1.2"
+
+[target.'cfg(not(target_os = "windows"))'.dependencies]
+tikv-jemallocator = { version = "0.7.0", optional = true }
+
+[dev-dependencies]
+rubydex = { path = ".", features = ["test_utils", "jemalloc"] }
+tempfile = "3.0"
+assert_cmd = "2.0"
+predicates = "3.1"
+regex = "1.10"
+
+[target.'cfg(not(target_os = "windows"))'.dev-dependencies]
+tikv-jemallocator = { version = "0.7.0", features = ["stats"] }
+tikv-jemalloc-ctl = { version = "0.7.0", features = ["stats"] }
+
+[[bench]]
+name = "graph_memory"
+harness = false
+
+[lints]
+workspace = true

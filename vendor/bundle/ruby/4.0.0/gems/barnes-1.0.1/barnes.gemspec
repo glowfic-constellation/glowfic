@@ -1,0 +1,35 @@
+# coding: utf-8
+lib = File.expand_path("../lib", __FILE__)
+$LOAD_PATH.unshift(lib) unless $LOAD_PATH.include?(lib)
+require "barnes/version"
+
+Gem::Specification.new do |spec|
+  spec.name          = "barnes"
+  spec.version       = Barnes::VERSION
+  spec.authors       = ["schneems"]
+  spec.email         = ["richard.schneeman@gmail.com"]
+
+  spec.summary       = 'Report Ruby runtime metrics to Heroku'
+  spec.description   = 'Collect Ruby GC, ObjectSpace, and Puma metrics and report them directly to Heroku Runtime Metrics via HTTP.'
+  spec.homepage      = 'https://github.com/heroku/barnes'
+  spec.license       = "MIT"
+
+  spec.files         = `git ls-files -z`.split("\x0").reject do |f|
+    f.match(%r{^(test|spec|features)/})
+  end
+  spec.bindir        = "exe"
+  spec.executables   = spec.files.grep(%r{^exe/}) { |f| File.basename(f) }
+  spec.require_paths = ["lib"]
+
+  spec.required_ruby_version = '>= 3.1.0'
+
+  spec.add_runtime_dependency 'json'
+  spec.add_runtime_dependency 'logger'
+  spec.add_runtime_dependency 'ostruct'
+
+  spec.add_development_dependency 'rack',     '~> 2'
+  spec.add_development_dependency 'rake',     '>= 10'
+  spec.add_development_dependency 'minitest', '~> 5.3'
+  spec.add_development_dependency "puma",     '~> 5.6'
+  spec.add_development_dependency "wait_for_it",     '~> 0.1'
+end

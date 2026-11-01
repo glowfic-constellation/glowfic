@@ -1,0 +1,523 @@
+#include "declaration.h"
+#include "definition.h"
+#include "graph.h"
+#include "handle.h"
+#include "rustbindings.h"
+#include "utils.h"
+
+/*
+ * RDoc parser workaround for https://github.com/ruby/rdoc/issues/1744:
+ * mRubydex = rb_define_module("Rubydex")
+ */
+
+VALUE cDeclaration;
+VALUE cNamespace;
+VALUE cClass;
+VALUE cModule;
+VALUE cSingletonClass;
+VALUE cTodo;
+VALUE cConstant;
+VALUE cConstantAlias;
+VALUE cMethod;
+VALUE cGlobalVariable;
+VALUE cInstanceVariable;
+VALUE cClassVariable;
+
+// Keep this in sync with declaration_api.rs
+VALUE rdxi_declaration_class_for_kind(CDeclarationKind kind) {
+    switch (kind) {
+    case CDeclarationKind_Class:
+        return cClass;
+    case CDeclarationKind_Module:
+        return cModule;
+    case CDeclarationKind_SingletonClass:
+        return cSingletonClass;
+    case CDeclarationKind_Todo:
+        return cTodo;
+    case CDeclarationKind_Constant:
+        return cConstant;
+    case CDeclarationKind_ConstantAlias:
+        return cConstantAlias;
+    case CDeclarationKind_Method:
+        return cMethod;
+    case CDeclarationKind_GlobalVariable:
+        return cGlobalVariable;
+    case CDeclarationKind_InstanceVariable:
+        return cInstanceVariable;
+    case CDeclarationKind_ClassVariable:
+        return cClassVariable;
+    default:
+        rb_raise(rb_eRuntimeError, "Unknown CDeclarationKind: %d", kind);
+    }
+}
+
+/*
+ * call-seq:
+ *   name -> String?
+ *
+ * Returns the fully qualified declaration name.
+ */
+static VALUE rdxr_declaration_name(VALUE self) {
+    HandleData *data;
+    void *graph = rdxi_graph_from_handle(self, &data);
+    const char *name = rdx_declaration_name(graph, data->id);
+
+    return rdxi_owned_c_string_to_ruby(name);
+}
+
+/*
+ * call-seq:
+ *   unqualified_name -> String?
+ *
+ * Returns the declaration name without namespace qualification.
+ */
+static VALUE rdxr_declaration_unqualified_name(VALUE self) {
+    HandleData *data;
+    void *graph = rdxi_graph_from_handle(self, &data);
+    const char *name = rdx_declaration_unqualified_name(graph, data->id);
+
+    return rdxi_owned_c_string_to_ruby(name);
+}
+
+// Body function for rb_ensure in Declaration#definitions
+static VALUE declaration_definitions_yield(VALUE args) {
+    VALUE self = rb_ary_entry(args, 0);
+    void *iter = (void *)(uintptr_t)NUM2ULL(rb_ary_entry(args, 1));
+
+    HandleData *data;
+    TypedData_Get_Struct(self, HandleData, &handle_type, data);
+
+    CDefinition defn;
+    while (rdx_definitions_iter_next(iter, &defn)) {
+        VALUE argv[] = {data->graph_obj, ULL2NUM(defn.id)};
+        VALUE defn_class = rdxi_definition_class_for_kind(defn.kind);
+        VALUE handle = rb_class_new_instance(2, argv, defn_class);
+        rb_yield(handle);
+    }
+
+    return Qnil;
+}
+
+// Ensure function for rb_ensure in Declaration#definitions to always free the
+// iterator
+static VALUE declaration_definitions_ensure(VALUE args) {
+    void *iter = (void *)(uintptr_t)NUM2ULL(rb_ary_entry(args, 1));
+    rdx_definitions_iter_free(iter);
+
+    return Qnil;
+}
+
+// Size function for the Declaration#definitions enumerator
+static VALUE declaration_definitions_size(VALUE self, VALUE _args, VALUE _eobj) {
+    HandleData *data;
+    void *graph = rdxi_graph_from_handle(self, &data);
+    struct DefinitionsIter *iter = rdx_declaration_definitions_iter_new(graph, data->id);
+    size_t len = rdx_definitions_iter_len(iter);
+    rdx_definitions_iter_free(iter);
+
+    return SIZET2NUM(len);
+}
+
+/*
+ * call-seq:
+ *   definitions -> Enumerator[Rubydex::Definition]
+ *
+ * Returns an enumerator that yields all definitions for this declaration lazily.
+ */
+static VALUE rdxr_declaration_definitions(VALUE self) {
+    if (!rb_block_given_p()) {
+        return rb_enumeratorize_with_size(self, rb_str_new2("definitions"), 0, NULL, declaration_definitions_size);
+    }
+
+    HandleData *data;
+    void *graph = rdxi_graph_from_handle(self, &data);
+
+    void *iter = rdx_declaration_definitions_iter_new(graph, data->id);
+    VALUE args = rb_ary_new_from_args(2, self, ULL2NUM((uintptr_t)iter));
+    rb_ensure(declaration_definitions_yield, args, declaration_definitions_ensure, args);
+
+    return self;
+}
+
+/*
+ * call-seq:
+ *   member(name) -> Rubydex::Declaration?
+ *
+ * Returns a declaration handle for the named member, or nil if no member exists.
+ */
+static VALUE rdxr_declaration_member(VALUE self, VALUE name) {
+    HandleData *data;
+    void *graph = rdxi_graph_from_handle(self, &data);
+
+    if (TYPE(name) != T_STRING) {
+        rb_raise(rb_eTypeError, "expected String");
+    }
+
+    const CDeclaration *decl = rdx_declaration_member(graph, data->id, StringValueCStr(name));
+    if (decl == NULL) {
+        return Qnil;
+    }
+
+    VALUE decl_class = rdxi_declaration_class_for_kind(decl->kind);
+    VALUE argv[] = {data->graph_obj, ULL2NUM(decl->id)};
+    free_c_declaration(decl);
+
+    return rb_class_new_instance(2, argv, decl_class);
+}
+
+/*
+ * call-seq:
+ *   find_member(name, only_inherited: false) -> Rubydex::Declaration?
+ *
+ * Searches for a member in the declaration's ancestor chain.
+ */
+static VALUE rdxr_declaration_find_member(int argc, VALUE *argv, VALUE self) {
+    VALUE member, opts;
+    rb_scan_args(argc, argv, "1:", &member, &opts);
+    Check_Type(member, T_STRING);
+
+    bool only_inherited = false;
+    if (!NIL_P(opts)) {
+        ID kwarg_id = rb_intern("only_inherited");
+        VALUE kwarg_val;
+        rb_get_kwargs(opts, &kwarg_id, 0, 1, &kwarg_val);
+
+        if (kwarg_val != Qundef) {
+            only_inherited = RTEST(kwarg_val);
+        }
+    }
+
+    HandleData *data;
+    void *graph = rdxi_graph_from_handle(self, &data);
+
+    const CDeclaration *decl = rdx_declaration_find_member(graph, data->id, StringValueCStr(member), only_inherited);
+    if (decl == NULL) {
+        return Qnil;
+    }
+
+    VALUE decl_class = rdxi_declaration_class_for_kind(decl->kind);
+    VALUE result_argv[] = {data->graph_obj, ULL2NUM(decl->id)};
+    free_c_declaration(decl);
+
+    return rb_class_new_instance(2, result_argv, decl_class);
+}
+
+/*
+ * call-seq:
+ *   singleton_class -> Rubydex::SingletonClass?
+ *
+ * Returns the singleton class declaration, or nil if none exists.
+ */
+static VALUE rdxr_declaration_singleton_class(VALUE self) {
+    HandleData *data;
+    void *graph = rdxi_graph_from_handle(self, &data);
+    const CDeclaration *decl = rdx_declaration_singleton_class(graph, data->id);
+
+    if (decl == NULL) {
+        return Qnil;
+    }
+
+    VALUE decl_class = rdxi_declaration_class_for_kind(decl->kind);
+    VALUE argv[] = {data->graph_obj, ULL2NUM(decl->id)};
+    free_c_declaration(decl);
+
+    return rb_class_new_instance(2, argv, decl_class);
+}
+
+/*
+ * call-seq:
+ *   owner -> Rubydex::Declaration
+ *
+ * Returns the owner declaration.
+ */
+static VALUE rdxr_declaration_owner(VALUE self) {
+    HandleData *data;
+    void *graph = rdxi_graph_from_handle(self, &data);
+    const CDeclaration *decl = rdx_declaration_owner(graph, data->id);
+
+    if (decl == NULL) {
+        rb_raise(rb_eRuntimeError, "Declaration must exist for a valid id");
+    }
+
+    VALUE decl_class = rdxi_declaration_class_for_kind(decl->kind);
+    VALUE argv[] = {data->graph_obj, ULL2NUM(decl->id)};
+    free_c_declaration(decl);
+
+    return rb_class_new_instance(2, argv, decl_class);
+}
+
+/*
+ * call-seq:
+ *   ancestors -> Enumerator[Rubydex::Namespace]
+ *
+ * Returns an enumerator that yields ancestor namespaces.
+ */
+static VALUE rdxr_declaration_ancestors(VALUE self) {
+    if (!rb_block_given_p()) {
+        return rb_enumeratorize(self, rb_str_new2("ancestors"), 0, NULL);
+    }
+
+    HandleData *data;
+    void *graph = rdxi_graph_from_handle(self, &data);
+
+    void *iter = rdx_declaration_ancestors(graph, data->id);
+    if (iter == NULL) {
+        rb_raise(rb_eRuntimeError, "failed to create iterator");
+    }
+
+    VALUE args = rb_ary_new_from_args(2, data->graph_obj, ULL2NUM((uintptr_t)iter));
+    rb_ensure(rdxi_declarations_yield, args, rdxi_declarations_ensure, args);
+
+    return self;
+}
+
+/*
+ * call-seq:
+ *   descendants -> Enumerator[Rubydex::Namespace]
+ *
+ * Returns an enumerator that yields descendant namespaces.
+ */
+static VALUE rdxr_declaration_descendants(VALUE self) {
+    if (!rb_block_given_p()) {
+        return rb_enumeratorize(self, rb_str_new2("descendants"), 0, NULL);
+    }
+
+    HandleData *data;
+    void *graph = rdxi_graph_from_handle(self, &data);
+
+    void *iter = rdx_declaration_descendants(graph, data->id);
+    if (iter == NULL) {
+        rb_raise(rb_eRuntimeError, "failed to create iterator");
+    }
+
+    VALUE args = rb_ary_new_from_args(2, data->graph_obj, ULL2NUM((uintptr_t)iter));
+    rb_ensure(rdxi_declarations_yield, args, rdxi_declarations_ensure, args);
+
+    return self;
+}
+
+/*
+ * call-seq:
+ *   members -> Enumerator[Rubydex::Declaration]
+ *
+ * Returns an enumerator that yields member declarations.
+ */
+static VALUE rdxr_declaration_members(VALUE self) {
+    if (!rb_block_given_p()) {
+        return rb_enumeratorize(self, rb_str_new2("members"), 0, NULL);
+    }
+
+    HandleData *data;
+    void *graph = rdxi_graph_from_handle(self, &data);
+
+    void *iter = rdx_declaration_members(graph, data->id);
+    if (iter == NULL) {
+        rb_raise(rb_eRuntimeError, "failed to create iterator");
+    }
+
+    VALUE args = rb_ary_new_from_args(2, data->graph_obj, ULL2NUM((uintptr_t)iter));
+    rb_ensure(rdxi_declarations_yield, args, rdxi_declarations_ensure, args);
+
+    return self;
+}
+
+// Size function for constant declaration references enumerator
+static VALUE constant_declaration_references_size(VALUE self, VALUE _args, VALUE _eobj) {
+    HandleData *data;
+    void *graph = rdxi_graph_from_handle(self, &data);
+
+    struct ConstantReferencesIter *iter = rdx_declaration_constant_references_iter_new(graph, data->id);
+    if (iter == NULL) {
+        rb_raise(rb_eRuntimeError, "Declaration not found");
+    }
+
+    size_t len = rdx_constant_references_iter_len(iter);
+    rdx_constant_references_iter_free(iter);
+    return SIZET2NUM(len);
+}
+
+/*
+ * call-seq:
+ *   references -> Enumerator[Rubydex::ConstantReference]
+ *
+ * Returns an enumerator that yields constant references to this declaration.
+ */
+static VALUE rdxr_constant_declaration_references(VALUE self) {
+    if (!rb_block_given_p()) {
+        return rb_enumeratorize_with_size(self, rb_str_new2("references"), 0, NULL,
+                                          constant_declaration_references_size);
+    }
+
+    HandleData *data;
+    void *graph = rdxi_graph_from_handle(self, &data);
+
+    void *iter = rdx_declaration_constant_references_iter_new(graph, data->id);
+    if (iter == NULL) {
+        rb_raise(rb_eRuntimeError, "Declaration not found");
+    }
+
+    VALUE args = rb_ary_new_from_args(2, data->graph_obj, ULL2NUM((uintptr_t)iter));
+    rb_ensure(rdxi_constant_references_yield, args, rdxi_constant_references_ensure, args);
+
+    return self;
+}
+
+// Size function for method declaration references enumerator
+static VALUE method_declaration_references_size(VALUE self, VALUE _args, VALUE _eobj) {
+    HandleData *data;
+    void *graph = rdxi_graph_from_handle(self, &data);
+
+    struct MethodReferencesIter *iter = rdx_declaration_method_references_iter_new(graph, data->id);
+    if (iter == NULL) {
+        rb_raise(rb_eRuntimeError, "Declaration not found");
+    }
+
+    size_t len = rdx_method_references_iter_len(iter);
+    rdx_method_references_iter_free(iter);
+    return SIZET2NUM(len);
+}
+
+/*
+ * call-seq:
+ *   references -> Enumerator[Rubydex::MethodReference]
+ *
+ * Returns an enumerator that yields method references to this declaration.
+ */
+static VALUE rdxr_method_declaration_references(VALUE self) {
+    if (!rb_block_given_p()) {
+        return rb_enumeratorize_with_size(self, rb_str_new2("references"), 0, NULL,
+                                          method_declaration_references_size);
+    }
+
+    HandleData *data;
+    void *graph = rdxi_graph_from_handle(self, &data);
+
+    void *iter = rdx_declaration_method_references_iter_new(graph, data->id);
+    if (iter == NULL) {
+        rb_raise(rb_eRuntimeError, "Declaration not found");
+    }
+
+    VALUE args = rb_ary_new_from_args(2, data->graph_obj, ULL2NUM((uintptr_t)iter));
+    rb_ensure(rdxi_method_references_yield, args, rdxi_method_references_ensure, args);
+
+    return self;
+}
+
+/*
+ * call-seq:
+ *   references -> Array[untyped]
+ *
+ * Returns an empty array because variable declarations do not yet support reference lookup.
+ */
+static VALUE rdxr_variable_declaration_references(VALUE self) {
+    return rb_ary_new();
+}
+
+static VALUE rdxi_visibility_to_symbol(CVisibility visibility) {
+    switch (visibility) {
+    case CVisibility_Public:
+        return ID2SYM(rb_intern("public"));
+    case CVisibility_Protected:
+        return ID2SYM(rb_intern("protected"));
+    case CVisibility_Private:
+        return ID2SYM(rb_intern("private"));
+    default:
+        rb_raise(rb_eRuntimeError, "Unknown CVisibility: %d", visibility);
+    }
+}
+
+/*
+ * call-seq:
+ *   visibility -> Symbol
+ *
+ * Returns the declaration visibility.
+ */
+static VALUE rdxr_declaration_visibility(VALUE self) {
+    HandleData *data;
+    void *graph = rdxi_graph_from_handle(self, &data);
+
+    const CVisibility *visibility = rdx_graph_visibility(graph, data->id);
+    if (visibility == NULL) {
+        rb_raise(rb_eRuntimeError, "declaration has no visibility");
+    }
+
+    VALUE symbol = rdxi_visibility_to_symbol(*visibility);
+    free_c_visibility(visibility);
+
+    return symbol;
+}
+
+/*
+ * call-seq:
+ *   target -> Rubydex::Declaration?
+ *
+ * Returns the first resolved target declaration for this constant alias, or nil if none of its definitions resolved to
+ * a target.
+ */
+static VALUE rdxr_constant_alias_target(VALUE self) {
+    HandleData *data;
+    void *graph = rdxi_graph_from_handle(self, &data);
+
+    const CDeclaration *decl = rdx_constant_alias_target(graph, data->id);
+    if (decl == NULL) {
+        return Qnil;
+    }
+
+    VALUE decl_class = rdxi_declaration_class_for_kind(decl->kind);
+    VALUE argv[] = {data->graph_obj, ULL2NUM(decl->id)};
+    free_c_declaration(decl);
+
+    return rb_class_new_instance(2, argv, decl_class);
+}
+
+void rdxi_initialize_declaration(VALUE mRubydex) {
+    cDeclaration = rb_define_class_under(mRubydex, "Declaration", rb_cObject);
+    cNamespace = rb_define_class_under(mRubydex, "Namespace", cDeclaration);
+    cClass = rb_define_class_under(mRubydex, "Class", cNamespace);
+    cModule = rb_define_class_under(mRubydex, "Module", cNamespace);
+    cSingletonClass = rb_define_class_under(mRubydex, "SingletonClass", cNamespace);
+    cTodo = rb_define_class_under(mRubydex, "Todo", cNamespace);
+    cConstant = rb_define_class_under(mRubydex, "Constant", cDeclaration);
+    cConstantAlias = rb_define_class_under(mRubydex, "ConstantAlias", cDeclaration);
+    cMethod = rb_define_class_under(mRubydex, "Method", cDeclaration);
+    cGlobalVariable = rb_define_class_under(mRubydex, "GlobalVariable", cDeclaration);
+    cInstanceVariable = rb_define_class_under(mRubydex, "InstanceVariable", cDeclaration);
+    cClassVariable = rb_define_class_under(mRubydex, "ClassVariable", cDeclaration);
+
+    rb_define_alloc_func(cDeclaration, rdxr_handle_alloc);
+    rb_define_method(cDeclaration, "initialize", rdxr_handle_initialize, 2);
+    rb_define_method(cDeclaration, "name", rdxr_declaration_name, 0);
+    rb_define_method(cDeclaration, "unqualified_name", rdxr_declaration_unqualified_name, 0);
+    rb_define_method(cDeclaration, "definitions", rdxr_declaration_definitions, 0);
+    rb_define_method(cDeclaration, "owner", rdxr_declaration_owner, 0);
+
+    // Namespace only methods
+    rb_define_method(cNamespace, "references", rdxr_constant_declaration_references, 0);
+    rb_define_method(cNamespace, "member", rdxr_declaration_member, 1);
+    rb_define_method(cNamespace, "find_member", rdxr_declaration_find_member, -1);
+    rb_define_method(cNamespace, "singleton_class", rdxr_declaration_singleton_class, 0);
+    rb_define_method(cNamespace, "ancestors", rdxr_declaration_ancestors, 0);
+    rb_define_method(cNamespace, "descendants", rdxr_declaration_descendants, 0);
+    rb_define_method(cNamespace, "members", rdxr_declaration_members, 0);
+
+    rb_define_method(cClass, "visibility", rdxr_declaration_visibility, 0);
+    rb_define_method(cModule, "visibility", rdxr_declaration_visibility, 0);
+
+    // Constant and ConstantAlias have constant references
+    rb_define_method(cConstant, "references", rdxr_constant_declaration_references, 0);
+    rb_define_method(cConstant, "visibility", rdxr_declaration_visibility, 0);
+    rb_define_method(cConstantAlias, "references", rdxr_constant_declaration_references, 0);
+    rb_define_method(cConstantAlias, "target", rdxr_constant_alias_target, 0);
+    rb_define_method(cConstantAlias, "visibility", rdxr_declaration_visibility, 0);
+
+    // Method has method references
+    rb_define_method(cMethod, "references", rdxr_method_declaration_references, 0);
+    rb_define_method(cMethod, "visibility", rdxr_declaration_visibility, 0);
+
+    // Variable declarations don't yet support references
+    rb_define_method(cGlobalVariable, "references", rdxr_variable_declaration_references, 0);
+    rb_define_method(cInstanceVariable, "references", rdxr_variable_declaration_references, 0);
+    rb_define_method(cClassVariable, "references", rdxr_variable_declaration_references, 0);
+
+    rb_funcall(rb_singleton_class(cDeclaration), rb_intern("private"), 1, ID2SYM(rb_intern("new")));
+}

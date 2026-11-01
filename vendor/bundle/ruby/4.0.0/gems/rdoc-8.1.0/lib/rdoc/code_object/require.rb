@@ -1,0 +1,35 @@
+# frozen_string_literal: true
+module RDoc
+  ##
+  # A file loaded by \#require
+
+  class Require < CodeObject
+
+    ##
+    # Name of the required file
+
+    attr_accessor :name
+
+    ##
+    # Creates a new Require that loads +name+ with +comment+
+
+    def initialize(name, comment)
+      super()
+      @name = name.gsub(/'|"/, "")
+      self.comment = comment
+    end
+
+    def inspect # :nodoc:
+      "#<%s:0x%x require '%s' in %s>" % [
+        self.class,
+        object_id,
+        @name,
+        @parent ? @parent.base_name : '(unknown)'
+      ]
+    end
+
+    def to_s # :nodoc:
+      "require #{name} in: #{parent}"
+    end
+  end
+end

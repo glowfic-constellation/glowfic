@@ -1,0 +1,160 @@
+# WARNING ABOUT GENERATED CODE
+#
+# This file is generated. See the contributing guide for more information:
+# https://github.com/aws/aws-sdk-ruby/blob/version-3/CONTRIBUTING.md
+#
+# WARNING ABOUT GENERATED CODE
+
+module Aws
+  module KMS
+    module Errors
+      class ServiceError < ::Aws::Errors::ServiceError
+      end
+
+      class AlreadyExistsException < ServiceError
+        def message: () -> ::String
+      end
+      class CloudHsmClusterInUseException < ServiceError
+        def message: () -> ::String
+      end
+      class CloudHsmClusterInvalidConfigurationException < ServiceError
+        def message: () -> ::String
+      end
+      class CloudHsmClusterNotActiveException < ServiceError
+        def message: () -> ::String
+      end
+      class CloudHsmClusterNotFoundException < ServiceError
+        def message: () -> ::String
+      end
+      class CloudHsmClusterNotRelatedException < ServiceError
+        def message: () -> ::String
+      end
+      class ConflictException < ServiceError
+        def message: () -> ::String
+      end
+      class CustomKeyStoreHasCMKsException < ServiceError
+        def message: () -> ::String
+      end
+      class CustomKeyStoreInvalidStateException < ServiceError
+        def message: () -> ::String
+      end
+      class CustomKeyStoreNameInUseException < ServiceError
+        def message: () -> ::String
+      end
+      class CustomKeyStoreNotFoundException < ServiceError
+        def message: () -> ::String
+      end
+      class DependencyTimeoutException < ServiceError
+        def message: () -> ::String
+      end
+      class DisabledException < ServiceError
+        def message: () -> ::String
+      end
+      class DryRunOperationException < ServiceError
+        def message: () -> ::String
+      end
+      class ExpiredImportTokenException < ServiceError
+        def message: () -> ::String
+      end
+      class IncorrectKeyException < ServiceError
+        def message: () -> ::String
+      end
+      class IncorrectKeyMaterialException < ServiceError
+        def message: () -> ::String
+      end
+      class IncorrectTrustAnchorException < ServiceError
+        def message: () -> ::String
+      end
+      class InvalidAliasNameException < ServiceError
+        def message: () -> ::String
+      end
+      class InvalidArnException < ServiceError
+        def message: () -> ::String
+      end
+      class InvalidCiphertextException < ServiceError
+        def message: () -> ::String
+      end
+      class InvalidGrantIdException < ServiceError
+        def message: () -> ::String
+      end
+      class InvalidGrantTokenException < ServiceError
+        def message: () -> ::String
+      end
+      class InvalidImportTokenException < ServiceError
+        def message: () -> ::String
+      end
+      class InvalidKeyUsageException < ServiceError
+        def message: () -> ::String
+      end
+      class InvalidMarkerException < ServiceError
+        def message: () -> ::String
+      end
+      class KMSInternalException < ServiceError
+        def message: () -> ::String
+      end
+      class KMSInvalidMacException < ServiceError
+        def message: () -> ::String
+      end
+      class KMSInvalidSignatureException < ServiceError
+        def message: () -> ::String
+      end
+      class KMSInvalidStateException < ServiceError
+        def message: () -> ::String
+      end
+      class KeyUnavailableException < ServiceError
+        def message: () -> ::String
+      end
+      class LimitExceededException < ServiceError
+        def message: () -> ::String
+      end
+      class MalformedPolicyDocumentException < ServiceError
+        def message: () -> ::String
+      end
+      class NotFoundException < ServiceError
+        def message: () -> ::String
+      end
+      class TagException < ServiceError
+        def message: () -> ::String
+      end
+      class UnsupportedOperationException < ServiceError
+        def message: () -> ::String
+      end
+      class XksKeyAlreadyInUseException < ServiceError
+        def message: () -> ::String
+      end
+      class XksKeyInvalidConfigurationException < ServiceError
+        def message: () -> ::String
+      end
+      class XksKeyNotFoundException < ServiceError
+        def message: () -> ::String
+      end
+      class XksProxyIncorrectAuthenticationCredentialException < ServiceError
+        def message: () -> ::String
+      end
+      class XksProxyInvalidConfigurationException < ServiceError
+        def message: () -> ::String
+      end
+      class XksProxyInvalidResponseException < ServiceError
+        def message: () -> ::String
+      end
+      class XksProxyUriEndpointInUseException < ServiceError
+        def message: () -> ::String
+      end
+      class XksProxyUriInUseException < ServiceError
+        def message: () -> ::String
+      end
+      class XksProxyUriUnreachableException < ServiceError
+        def message: () -> ::String
+      end
+      class XksProxyVpcEndpointServiceInUseException < ServiceError
+        def message: () -> ::String
+      end
+      class XksProxyVpcEndpointServiceInvalidConfigurationException < ServiceError
+        def message: () -> ::String
+      end
+      class XksProxyVpcEndpointServiceNotFoundException < ServiceError
+        def message: () -> ::String
+      end
+    end
+  end
+end

@@ -1,0 +1,140 @@
+#include "utils.h"
+#include "declaration.h"
+#include "reference.h"
+#include "rustbindings.h"
+
+// Convert a Ruby array of strings into a double char pointer so that we can pass that to Rust.
+// This copies the data so it must be freed.
+char **rdxi_str_array_to_char(VALUE array, size_t length) {
+    // Validate every element before allocating so StringValueCStr cannot strand a partially built array.
+    for (size_t i = 0; i < length; i++) {
+        VALUE item = rb_ary_entry(array, i);
+        Check_Type(item, T_STRING);
+        (void)StringValueCStr(item);
+    }
+
+    char **converted_array = malloc(length * sizeof(char *));
+
+    for (size_t i = 0; i < length; i++) {
+        VALUE item = rb_ary_entry(array, i);
+        size_t string_length = (size_t)RSTRING_LEN(item);
+
+        converted_array[i] = malloc(string_length + 1);
+        memcpy(converted_array[i], RSTRING_PTR(item), string_length + 1);
+    }
+
+    return converted_array;
+}
+
+// Free a char** array allocated by rdxi_str_array_to_char
+void rdxi_free_str_array(char **array, size_t length) {
+    if (array != NULL) {
+        for (size_t i = 0; i < length; i++) {
+            free(array[i]);
+        }
+        free(array);
+    }
+}
+
+// Verify that the Ruby object is an array of strings or raise `TypeError`
+void rdxi_check_array_of_strings(VALUE array) {
+    Check_Type(array, T_ARRAY);
+
+    for (long i = 0; i < RARRAY_LEN(array); i++) {
+        VALUE item = rb_ary_entry(array, i);
+        Check_Type(item, T_STRING);
+    }
+}
+
+// Convert a Rust-owned C string to a Ruby string and release it with free_c_string.
+// Returns nil when the Rust side returned NULL.
+VALUE rdxi_owned_c_string_to_ruby(const char *string) {
+    if (string == NULL) {
+        return Qnil;
+    }
+
+    VALUE value = rb_utf8_str_new_cstr(string);
+    free_c_string(string);
+
+    return value;
+}
+
+// Coerce an optional String, Symbol, or nil to a C string, defaulting to `default_value` for nil.
+const char *rdxi_symbol_or_string_cstr(VALUE value, const char *default_value) {
+    if (NIL_P(value)) {
+        return default_value;
+    }
+    if (RB_TYPE_P(value, T_SYMBOL)) {
+        value = rb_sym2str(value);
+    }
+    Check_Type(value, T_STRING);
+    return StringValueCStr(value);
+}
+
+// Yield body for iterating over declarations
+VALUE rdxi_declarations_yield(VALUE args) {
+    VALUE self = rb_ary_entry(args, 0);
+    void *iter = (void *)(uintptr_t)NUM2ULL(rb_ary_entry(args, 1));
+
+    CDeclaration decl;
+    while (rdx_graph_declarations_iter_next(iter, &decl)) {
+        VALUE decl_class = rdxi_declaration_class_for_kind(decl.kind);
+        VALUE argv[] = {self, ULL2NUM(decl.id)};
+        VALUE handle = rb_class_new_instance(2, argv, decl_class);
+        rb_yield(handle);
+    }
+
+    return Qnil;
+}
+
+// Ensure function for iterating over declarations to always free the iterator
+VALUE rdxi_declarations_ensure(VALUE args) {
+    void *iter = (void *)(uintptr_t)NUM2ULL(rb_ary_entry(args, 1));
+    rdx_graph_declarations_iter_free(iter);
+    return Qnil;
+}
+
+// Yield body for iterating over constant references
+VALUE rdxi_constant_references_yield(VALUE args) {
+    VALUE graph_obj = rb_ary_entry(args, 0);
+    void *iter = (void *)(uintptr_t)NUM2ULL(rb_ary_entry(args, 1));
+
+    CConstantReference cref;
+    while (rdx_constant_references_iter_next(iter, &cref)) {
+        VALUE ref_class = (cref.declaration_id == 0)
+            ? cUnresolvedConstantReference
+            : cResolvedConstantReference;
+        VALUE argv[] = {graph_obj, ULL2NUM(cref.id)};
+        VALUE obj = rb_class_new_instance(2, argv, ref_class);
+        rb_yield(obj);
+    }
+    return Qnil;
+}
+
+// Ensure function for iterating over constant references to always free the iterator
+VALUE rdxi_constant_references_ensure(VALUE args) {
+    void *iter = (void *)(uintptr_t)NUM2ULL(rb_ary_entry(args, 1));
+    rdx_constant_references_iter_free(iter);
+    return Qnil;
+}
+
+// Yield body for iterating over method references
+VALUE rdxi_method_references_yield(VALUE args) {
+    VALUE graph_obj = rb_ary_entry(args, 0);
+    void *iter = (void *)(uintptr_t)NUM2ULL(rb_ary_entry(args, 1));
+
+    CMethodReference cref;
+    while (rdx_method_references_iter_next(iter, &cref)) {
+        VALUE argv[] = {graph_obj, ULL2NUM(cref.id)};
+        VALUE obj = rb_class_new_instance(2, argv, cMethodReference);
+        rb_yield(obj);
+    }
+    return Qnil;
+}
+
+// Ensure function for iterating over method references to always free the iterator
+VALUE rdxi_method_references_ensure(VALUE args) {
+    void *iter = (void *)(uintptr_t)NUM2ULL(rb_ary_entry(args, 1));
+    rdx_method_references_iter_free(iter);
+    return Qnil;
+}

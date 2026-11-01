@@ -1,0 +1,80 @@
+<ul class='breadcrumb'>
+  <li>
+    <a href='<%= @doc[:doc_url] %><%= @doc[:link_extension] %>'><%= @doc[:name] %> <%= @resource[:version] %></a>
+    <span class='divider'>/</span>
+  </li>
+  <li class='active'>
+    <%= @resource[:name] %>
+    <% if @resource[:version] %><% end %>
+  </li>
+  <%= render(:partial => "languages", :locals => {:doc_url => @resource[:doc_url]}) %>
+</ul>
+
+<div class='page-header'>
+  <h1>
+    <%= @resource[:name] %>
+    <% if @resource[:deprecated] %>
+        <code>DEPRECATED</code>
+    <% end %>
+    <br>
+    <small><%= raw @resource[:short_description] %></small>
+  </h1>
+</div>
+
+<% unless @resource[:full_description].blank? %>
+  <div><%= raw @resource[:full_description] %></div>
+<% end %>
+
+<% unless @resource[:metadata].blank? %>
+  <h2>Metadata</h2>
+  <%= render(:partial => "metadata", :locals => {:meta => @resource[:metadata]}) %>
+<% end %>
+
+<% unless @resource[:formats].blank? %>
+  <h2>Supported Formats</h2>
+  <%= @resource[:formats].join(', ') %>
+<% end %>
+
+<%= render(:partial => 'headers', :locals => { headers: @resource[:headers], h_level: 2 }) %>
+
+<div class='accordion' id='accordion'>
+
+  <% @resource[:methods].each do |m| %>
+    <% if !m[:show] %>
+      <% next %>
+    <% end %>
+    <hr>
+    <div class='pull-right small'>
+      <a href='<%= m[:doc_url] %><%= @doc[:link_extension] %>'> >>> </a>
+    </div>
+    <div>
+      <% m[:apis].each do |api| %>
+        <h2>
+          <a href='#description-<%= m[:name] %>'
+           class='accordion-toggle'
+           data-toggle='collapse'
+           data-parent='#accordion'>
+            <%= api[:http_method] %> <%= api[:api_url] %>
+          </a>
+          <% if api[:deprecated] %>
+            <code>DEPRECATED</code>
+          <% end %>
+          <br>
+          <small><%= raw api[:short_description] %></small>
+        </h2>
+      <% end %>
+    </div>
+
+    <% unless m[:see].empty? %>
+      Also see <%= m[:see].map { |s| link_to(s[:description], "#{s[:link]}#{@doc[:link_extension]}") }.to_sentence.html_safe %>.
+    <% end %>
+
+    <div id='description-<%= m[:name] %>' class='collapse accordion-body'>
+      <%= render(:partial => "method_detail", :locals => {:method => m, :h_level => 3}) %>
+    </div>
+  <% end %>
+</div>
+
+<% unless content_for(:apipie_footer) == @doc[:copyright] %>
+  <%= content_for :apipie_footer, raw(@doc[:copyright]) %>
+<% end %>

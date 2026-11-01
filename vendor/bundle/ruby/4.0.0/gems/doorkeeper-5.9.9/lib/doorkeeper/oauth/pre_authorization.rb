@@ -1,0 +1,214 @@
+# frozen_string_literal: true
+
+module Doorkeeper
+  module OAuth
+    class PreAuthorization
+      include Validations
+
+      # The validations that identify the client and its redirect URI. None of
+      # them depend on the resource owner, and none of their failures leaves a
+      # redirect target worth trusting: RFC 6749 Section 4.1.2.1 (Section
+      # 4.2.2.1 for the implicit flow) asks for the resource owner to be
+      # informed when the client_id is missing or invalid, and Section 3.1.2.4
+      # asks the same for the redirect URI.
+      CLIENT_VALIDATIONS = %i[client_id client redirect_uri].freeze
+
+      validate :client_id, error: Errors::InvalidRequest
+      validate :client, error: Errors::InvalidClient
+      validate :client_supports_grant_flow, error: Errors::UnauthorizedClient
+      validate :resource_owner_authorize_for_client, error: Errors::InvalidClient
+      validate :redirect_uri, error: Errors::InvalidRedirectUri
+      validate :params, error: Errors::InvalidRequest
+      validate :response_type, error: Errors::UnsupportedResponseType
+      validate :response_mode, error: Errors::UnsupportedResponseMode
+      validate :scopes, error: Errors::InvalidScope
+      validate :code_challenge, error: Errors::InvalidRequest
+      validate :code_challenge_method, error: Errors::InvalidCodeChallengeMethod
+
+      attr_reader :client, :code_challenge, :code_challenge_method, :missing_param,
+                  :redirect_uri, :resource_owner, :response_type, :state,
+                  :authorization_response_flow, :response_mode, :custom_access_token_attributes,
+                  :invalid_request_reason
+
+      def initialize(server, parameters = {}, resource_owner = nil)
+        @server = server
+        @client_id = parameters[:client_id]
+        @response_type = parameters[:response_type]
+        @response_mode = parameters[:response_mode]
+        @redirect_uri = parameters[:redirect_uri]
+        @scope = parameters[:scope]
+        @state = parameters[:state]
+        @code_challenge = parameters[:code_challenge]
+        @code_challenge_method = parameters[:code_challenge_method]
+        @resource_owner = resource_owner
+        @custom_access_token_attributes = parameters.slice(*Doorkeeper.config.custom_access_token_attributes).to_h
+      end
+
+      def authorizable?
+        valid?
+      end
+
+      # Runs only CLIENT_VALIDATIONS, in declared order, so a request naming an
+      # unknown client or an invalid redirect URI can be refused on its own -
+      # the validations in between (client_supports_grant_flow,
+      # resource_owner_authorize_for_client) answer a different question and
+      # are left to a full #validate run.
+      def client_valid?
+        @error = nil
+        @missing_param = nil
+
+        self.class.validations.each do |validation|
+          next unless CLIENT_VALIDATIONS.include?(validation[:attribute])
+
+          @error = validation[:options][:error] unless send("validate_#{validation[:attribute]}")
+          break if @error
+        end
+
+        @error.nil?
+      end
+
+      def scopes
+        Scopes.from_string(scope)
+      end
+
+      def scope
+        @scope.presence || (server.default_scopes.presence && build_scopes)
+      end
+
+      def error_response
+        if error == Errors::InvalidRequest
+          OAuth::InvalidRequestResponse.from_request(
+            self,
+            response_on_fragment: response_on_fragment?,
+          )
+        else
+          OAuth::ErrorResponse.from_request(self, response_on_fragment: response_on_fragment?)
+        end
+      end
+
+      def as_json(_options = nil)
+        pre_auth_hash
+      end
+
+      def form_post_response?
+        response_mode == "form_post"
+      end
+
+      private
+
+      attr_reader :client_id, :server
+
+      def build_scopes
+        client_scopes = client.scopes
+        if client_scopes.blank?
+          server.default_scopes.to_s
+        else
+          server.default_scopes.allowed(client_scopes).to_s
+        end
+      end
+
+      def validate_client_id
+        @missing_param = :client_id if client_id.blank?
+        @missing_param.nil?
+      end
+
+      def validate_client
+        @client = OAuth::Client.find(client_id)
+        @client.present?
+      end
+
+      def validate_client_supports_grant_flow
+        Doorkeeper.config.allow_grant_flow_for_client?(grant_type, client.application)
+      end
+
+      def validate_resource_owner_authorize_for_client
+        # The `authorize_resource_owner_for_client` config option is used for this validation
+        client.application.authorized_for_resource_owner?(@resource_owner)
+      end
+
+      def validate_redirect_uri
+        return false if redirect_uri.blank?
+
+        Helpers::URIChecker.valid_for_authorization?(
+          redirect_uri,
+          client.redirect_uri,
+        )
+      end
+
+      def validate_params
+        @missing_param = if response_type.blank?
+                           :response_type
+                         elsif @scope.blank? && server.default_scopes.blank?
+                           :scope
+                         end
+
+        @missing_param.nil?
+      end
+
+      def validate_response_type
+        server.authorization_response_flows.any? do |flow|
+          if flow.matches_response_type?(response_type)
+            @authorization_response_flow = flow
+            true
+          end
+        end
+      end
+
+      def validate_response_mode
+        if response_mode.blank?
+          @response_mode = authorization_response_flow.default_response_mode
+          return true
+        end
+
+        authorization_response_flow.matches_response_mode?(response_mode)
+      end
+
+      def validate_scopes
+        Helpers::ScopeChecker.valid?(
+          scope_str: scope,
+          server_scopes: server.scopes,
+          app_scopes: client.scopes,
+          grant_type: grant_type,
+        )
+      end
+
+      def validate_code_challenge
+        return true unless Doorkeeper.config.force_pkce?
+        return true if client.confidential
+        return true if code_challenge.present?
+
+        @invalid_request_reason = :invalid_code_challenge
+        false
+      end
+
+      def validate_code_challenge_method
+        return true unless Doorkeeper.config.access_grant_model.pkce_supported?
+
+        code_challenge.blank? ||
+          (code_challenge_method.present? && Doorkeeper.config.pkce_code_challenge_methods_supported.include?(code_challenge_method))
+      end
+
+      def response_on_fragment?
+        return response_type == "token" if response_mode.nil?
+
+        response_mode == "fragment"
+      end
+
+      def grant_type
+        response_type == "code" ? AUTHORIZATION_CODE : IMPLICIT
+      end
+
+      def pre_auth_hash
+        {
+          client_id: client.uid,
+          redirect_uri: redirect_uri,
+          state: state,
+          response_type: response_type,
+          scope: scope,
+          client_name: client.name,
+          status: I18n.t("doorkeeper.pre_authorization.status"),
+        }
+      end
+    end
+  end
+end

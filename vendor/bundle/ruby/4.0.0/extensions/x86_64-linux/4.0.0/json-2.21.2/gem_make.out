@@ -1,0 +1,34 @@
+current directory: /home/runner/work/glowfic/glowfic/vendor/bundle/ruby/4.0.0/gems/json-2.21.2/ext/json/ext/parser
+/opt/hostedtoolcache/Ruby/4.0.9/x64/bin/ruby extconf.rb
+checking for rb_enc_interned_str() in ruby/encoding.h... yes
+checking for rb_str_to_interned_str() in ruby.h... yes
+checking for rb_hash_new_capa() in ruby.h... yes
+checking for rb_hash_bulk_insert() in ruby.h... yes
+checking for ruby_xfree_sized() in ruby.h... no
+checking for x86intrin.h... yes
+checking for _lzcnt_u64() in x86intrin.h... no
+checking for intrin.h... no
+checking for RUBY_TYPED_EMBEDDABLE in ruby.h... yes
+checking for whether -std=c99 is accepted as CFLAGS... yes
+checking for whether -mno-outline is accepted as CFLAGS... no
+checking for x86intrin.h... yes
+checking for cpuid.h... yes
+creating Makefile
+
+current directory: /home/runner/work/glowfic/glowfic/vendor/bundle/ruby/4.0.0/gems/json-2.21.2/ext/json/ext/parser
+make -j3 DESTDIR\= sitearchdir\=./.gem.20261024-3502-6g3r4j sitelibdir\=./.gem.20261024-3502-6g3r4j clean
+make: warning: -j3 forced in submake: resetting jobserver mode.
+
+current directory: /home/runner/work/glowfic/glowfic/vendor/bundle/ruby/4.0.0/gems/json-2.21.2/ext/json/ext/parser
+make -j3 DESTDIR\= sitearchdir\=./.gem.20261024-3502-6g3r4j sitelibdir\=./.gem.20261024-3502-6g3r4j
+make: warning: -j3 forced in submake: resetting jobserver mode.
+compiling parser.c
+linking shared-object json/ext/parser.so
+
+current directory: /home/runner/work/glowfic/glowfic/vendor/bundle/ruby/4.0.0/gems/json-2.21.2/ext/json/ext/parser
+make -j3 DESTDIR\= sitearchdir\=./.gem.20261024-3502-6g3r4j sitelibdir\=./.gem.20261024-3502-6g3r4j install
+make: warning: -j3 forced in submake: resetting jobserver mode.
+/usr/bin/install -c -m 0755 parser.so ./.gem.20261024-3502-6g3r4j/json/ext
+
+current directory: /home/runner/work/glowfic/glowfic/vendor/bundle/ruby/4.0.0/gems/json-2.21.2/ext/json/ext/parser
+make DESTDIR\= sitearchdir\=./.gem.20261024-3502-6g3r4j sitelibdir\=./.gem.20261024-3502-6g3r4j clean

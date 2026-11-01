@@ -1,0 +1,86 @@
+# frozen_string_literal: true
+
+module TestProf
+  module TPSProf
+    class RSpecListener # :nodoc:
+      include Logging
+
+      NOTIFICATIONS = %i[
+        example_group_started
+        example_group_finished
+        example_started
+        example_finished
+      ].freeze
+
+      attr_reader :reporter, :profiler
+
+      def initialize
+        @profiler = Profiler.new(TPSProf.config.top_count, TPSProf.config)
+        @reporter = TPSProf.config.reporter
+
+        conf = TPSProf.config
+        if conf.mode == :strict
+          config_parts = []
+
+          if conf.custom_strict_handler
+            config_parts << "custom handler"
+          else
+            config_parts << "max examples: #{conf.max_examples_count}" if conf.max_examples_count
+            config_parts << "max group time: #{conf.max_group_time}" if conf.max_group_time
+            config_parts << "min tps: #{conf.min_tps}" if conf.min_tps
+          end
+
+          log :info, "TPSProf strict enabled (#{config_parts.join(", ")})"
+        else
+          log :info, "TPSProf enabled (top-#{TPSProf.config.top_count})"
+        end
+      end
+
+      def example_group_started(notification)
+        return unless notification.group.top_level?
+        return if notification.group.metadata[:tps_prof] == :ignore
+
+        profiler.group_started notification.group
+      end
+
+      def example_group_finished(notification)
+        return unless notification.group.top_level?
+        return if notification.group.metadata[:tps_prof] == :ignore
+
+        profiler.group_finished notification.group
+      end
+
+      def example_started(notification)
+        return if notification.example.metadata[:tps_prof] == :ignore
+
+        profiler.example_started notification.example
+      end
+
+      def example_finished(notification)
+        return if notification.example.metadata[:tps_prof] == :ignore
+
+        profiler.example_finished notification.example
+      end
+
+      def print
+        reporter.print(profiler)
+      end
+    end
+  end
+end
+
+# Register TPSProf listener
+TestProf.activate("TPS_PROF") do
+  RSpec.configure do |config|
+    listener = nil
+
+    config.before(:suite) do
+      listener = TestProf::TPSProf::RSpecListener.new
+      config.reporter.register_listener(
+        listener, *TestProf::TPSProf::RSpecListener::NOTIFICATIONS
+      )
+    end
+
+    config.after(:suite) { listener&.print }
+  end
+end

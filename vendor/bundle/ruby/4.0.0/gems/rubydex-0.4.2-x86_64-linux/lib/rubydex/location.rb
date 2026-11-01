@@ -1,0 +1,117 @@
+# frozen_string_literal: true
+
+module Rubydex
+  # A zero based internal location. Intended to be used for tool-to-tool communication, such as a language server
+  # communicating with an editor.
+  class Location
+    class NotFileUriError < StandardError; end
+
+    include Comparable
+
+    #: String
+    attr_reader :uri
+
+    #: Integer
+    attr_reader :start_line, :end_line, :start_column, :end_column
+
+    class << self
+      #: (Prism::Location prism_location, uri: String) -> Location
+      def from_prism(prism_location, uri:)
+        Location.new(
+          uri: uri,
+          start_line: prism_location.start_line - 1,
+          start_column: prism_location.start_column,
+          end_line: prism_location.end_line - 1,
+          end_column: prism_location.end_column,
+        )
+      end
+    end
+
+    #: (?uri: String, ?start_line: Integer, ?end_line: Integer, ?start_column: Integer, ?end_column: Integer) -> void
+    def initialize(uri:, start_line:, end_line:, start_column:, end_column:)
+      @uri = uri
+      @start_line = start_line
+      @end_line = end_line
+      @start_column = start_column
+      @end_column = end_column
+    end
+
+    #: () -> String
+    def to_file_path
+      uri = URI(@uri)
+      raise NotFileUriError, "URI is not a file:// URI: #{@uri}" unless uri.scheme == "file"
+
+      path = uri.path
+      raise NotFileUriError, "URI has no file path: #{@uri}" if path.nil? || path.empty?
+
+      path = URI.decode_uri_component(path)
+      # TODO: This has to go away once we have a proper URI abstraction
+      path.delete_prefix!("/") if Gem.win_platform?
+      path
+    end
+
+    #: (other: BasicObject) -> Integer
+    def <=>(other)
+      return -1 unless other.is_a?(Location)
+
+      comparable_values <=> other.comparable_values
+    end
+
+    #: () -> [String, Integer, Integer, Integer, Integer]
+    def comparable_values
+      [@uri, @start_line, @start_column, @end_line, @end_column]
+    end
+
+    # Turns this zero based location into a one based location for display purposes.
+    #
+    #: () -> DisplayLocation
+    def to_display
+      DisplayLocation.new(
+        uri: @uri,
+        start_line: @start_line + 1,
+        end_line: @end_line + 1,
+        start_column: @start_column + 1,
+        end_column: @end_column + 1,
+      )
+    end
+
+    #: -> String
+    def to_s
+      "#{to_file_path}:#{@start_line + 1}:#{@start_column + 1}-#{@end_line + 1}:#{@end_column + 1}"
+    end
+  end
+
+  # A one based location intended for display purposes. This is what should be used when displaying a location to users,
+  # like in CLIs
+  class DisplayLocation < Location
+    class << self
+      #: (Prism::Location prism_location, uri: String) -> Location
+      def from_prism(prism_location, uri:)
+        raise NotImplementedError, <<~MESSAGE
+          Cannot convert Prism::Location directly to a Rubydex::DisplayLocation.
+          Start with `Rubydex::Location.from_prism(...)` and then convert the resulting
+          location with `to_display`
+        MESSAGE
+      end
+    end
+
+    # Returns itself
+    #
+    #: () -> DisplayLocation
+    def to_display
+      self
+    end
+
+    # Normalize to zero-based for comparison with Location
+    #
+    #: () -> [String, Integer, Integer, Integer, Integer]
+    def comparable_values
+      [@uri, @start_line - 1, @start_column - 1, @end_line - 1, @end_column - 1]
+    end
+
+    #: -> String
+    def to_s
+      "#{to_file_path}:#{@start_line}:#{@start_column}-#{@end_line}:#{@end_column}"
+    end
+  end
+end

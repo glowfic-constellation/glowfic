@@ -1,0 +1,29 @@
+current directory: /home/runner/work/glowfic/glowfic/vendor/bundle/ruby/4.0.0/gems/vernier-1.11.0/ext/vernier
+/opt/hostedtoolcache/Ruby/4.0.9/x64/bin/ruby extconf.rb
+checking for ruby/thread.h... yes
+checking for rb_internal_thread_event_data_t.thread in ruby/thread.h... yes
+checking for rb_profile_thread_frames() in ruby/debug.h... yes
+checking for pthread_setname_np()... yes
+checking for pthread_condattr_setclock()... yes
+creating Makefile
+
+current directory: /home/runner/work/glowfic/glowfic/vendor/bundle/ruby/4.0.0/gems/vernier-1.11.0/ext/vernier
+make -j3 DESTDIR\= sitearchdir\=./.gem.20261024-3502-64wae sitelibdir\=./.gem.20261024-3502-64wae clean
+make: warning: -j3 forced in submake: resetting jobserver mode.
+
+current directory: /home/runner/work/glowfic/glowfic/vendor/bundle/ruby/4.0.0/gems/vernier-1.11.0/ext/vernier
+make -j3 DESTDIR\= sitearchdir\=./.gem.20261024-3502-64wae sitelibdir\=./.gem.20261024-3502-64wae
+make: warning: -j3 forced in submake: resetting jobserver mode.
+compiling heap_tracker.cc
+compiling memory.cc
+compiling stack_table.cc
+compiling vernier.cc
+linking shared-object vernier/vernier.so
+
+current directory: /home/runner/work/glowfic/glowfic/vendor/bundle/ruby/4.0.0/gems/vernier-1.11.0/ext/vernier
+make -j3 DESTDIR\= sitearchdir\=./.gem.20261024-3502-64wae sitelibdir\=./.gem.20261024-3502-64wae install
+make: warning: -j3 forced in submake: resetting jobserver mode.
+/usr/bin/install -c -m 0755 vernier.so ./.gem.20261024-3502-64wae/vernier
+
+current directory: /home/runner/work/glowfic/glowfic/vendor/bundle/ruby/4.0.0/gems/vernier-1.11.0/ext/vernier
+make DESTDIR\= sitearchdir\=./.gem.20261024-3502-64wae sitelibdir\=./.gem.20261024-3502-64wae clean

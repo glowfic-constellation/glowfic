@@ -1,0 +1,142 @@
+# frozen_string_literal: true
+
+module RuboCop
+  module Cop
+    module RSpecRails
+      # Checks for time travel helpers in `around` hooks.
+      #
+      # In Rails example groups, `freeze_time` in a `before` hook does not need
+      # a block: Rails' `after_teardown` calls `travel_back` after each example.
+      # This also allows an example to use block-form time travel, which Rails
+      # does not allow inside another time travel block.
+      # See https://api.rubyonrails.org/classes/ActiveSupport/Testing/TimeHelpers.html
+      #
+      # @safety
+      #   The automatic `travel_back` requires both
+      #   `ActiveSupport::Testing::TimeHelpers` and RSpec Rails' lifecycle
+      #   hooks. RSpec Rails applies those hooks to example groups with Rails
+      #   `type:` metadata. File paths set that metadata only when
+      #   `infer_spec_type_from_file_location!` is enabled. In a plain RSpec
+      #   group that only includes TimeHelpers, use a block or call
+      #   `travel_back` explicitly.
+      #   See https://rspec.info/features/7-1/rspec-rails/directory-structure/
+      #
+      #   Autocorrection can change execution order: `around` starts before
+      #   all `before` hooks, while `before` runs in normal hook order.
+      #
+      # @example
+      #   # bad
+      #   around do |example|
+      #     freeze_time do
+      #       example.run
+      #     end
+      #   end
+      #
+      #   # bad
+      #   around do |example|
+      #     freeze_time(&example)
+      #   end
+      #
+      #   # good
+      #   before { freeze_time }
+      #
+      class TravelAround < RuboCop::Cop::Base
+        extend AutoCorrector
+
+        MSG = 'Prefer to travel in `before` rather than `around`.'
+
+        TRAVEL_METHOD_NAMES = %i[
+          freeze_time
+          travel
+          travel_to
+        ].to_set.freeze
+
+        # @!method extract_run_in_travel(node)
+        def_node_matcher :extract_run_in_travel, <<~PATTERN
+          (block
+            $(send nil? TRAVEL_METHOD_NAMES ...)
+            (args ...)
+            (send (lvar _) :run)
+          )
+        PATTERN
+
+        # @!method extract_travel_with_block_pass(node)
+        def_node_search :extract_travel_with_block_pass, <<~PATTERN
+          $(send _ TRAVEL_METHOD_NAMES
+            (block_pass $lvar)
+          )
+        PATTERN
+
+        # @!method match_around_each?(node)
+        def_node_matcher :match_around_each?, <<~PATTERN
+          (block
+            (send _ :around (sym :each)?)
+            ...
+          )
+        PATTERN
+
+        def on_block(node) # rubocop:disable InternalAffairs/ItblockHandler
+          extract_run_in_travel(node) do |run_node|
+            run_in_travel(node, run_node)
+          end
+          extract_travel_with_block_pass(node) do |travel_node, lvar|
+            travel_with_block_pass(travel_node, lvar)
+          end
+        end
+        alias on_numblock on_block
+
+        private
+
+        def run_in_travel(node, travel_node)
+          around_node = extract_surrounding_around_block(node)
+          return unless around_node
+          return unless matching_run_receiver?(node.body, around_node)
+
+          add_offense(node) do |corrector|
+            corrector.replace(node, node.body.source)
+            corrector.insert_before(
+              around_node,
+              "before { #{travel_node.source} }\n\n#{indent(around_node)}"
+            )
+          end
+        end
+
+        def travel_with_block_pass(node, lvar)
+          around_node = extract_surrounding_around_block(node)
+          return unless around_node
+          return unless lvar.name == around_argument_name(around_node)
+
+          add_offense(node) do |corrector|
+            corrector.replace(node, "#{lvar.name}.run")
+            corrector.insert_before(
+              around_node,
+              "before { #{node.method_name} }\n\n#{indent(around_node)}"
+            )
+          end
+        end
+
+        # @param node [RuboCop::AST::BlockNode]
+        # @return [RuboCop::AST::BlockNode, nil]
+        def extract_surrounding_around_block(node)
+          node.each_ancestor(:block).find do |ancestor|
+            match_around_each?(ancestor) &&
+              direct_child_of_around_body?(node, ancestor)
+          end
+        end
+
+        def direct_child_of_around_body?(node, around_node)
+          node.parent == around_node ||
+            (node.parent.begin_type? && node.parent.parent == around_node)
+        end
+
+        def matching_run_receiver?(run_node, around_node)
+          run_node.receiver.children.first == around_argument_name(around_node)
+        end
+
+        def around_argument_name(around_node)
+          around_node.first_argument&.name
+        end
+      end
+    end
+  end
+end

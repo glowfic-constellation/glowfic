@@ -1,0 +1,188 @@
+# frozen_string_literal: true
+
+# Makes writing tests for linters a lot DRYer by taking any currently `haml`
+# variable defined via `let` and normalizing it and running the linter against
+# it, allowing specs to simply specify whether a lint was reported.
+
+module HamlLint
+  module Spec
+    module SharedRubocopAutocorrectContext
+      RSpec.shared_context 'rubocop_autocorrect' do
+        # Setting ENV['STUB_RUBOCOP'] to 1 or true makes rubocop tests faster by not involving rubocop.
+        # It is sometimes automatically activated for tests which need a different Rubocop version
+        stub_rubocop_env_result = %w[1 true].include?(ENV['STUB_RUBOCOP'])
+
+        let(:stub_rubocop?) do |example|
+          # Tries to match `{% rubocop_version <= '1.2' %}`, extracting the operator and the "number"
+          rubocop_version_regex = /\{%\s*rubocop_version\s*([^\w\s]+?)\s*['"]?(\d+(\.\d+)*)['"]?\s*%\}/
+          requirements = example.metadata[:full_description].scan(rubocop_version_regex)
+
+          # This can be used by the requirements in eval
+          rubocop_version = HamlLint::VersionComparer.for_rubocop
+
+          accepted = requirements.all? do |(operator, version)|
+            rubocop_version.send(operator, version)
+          end
+
+          next true unless accepted
+
+          # Doing this last so that exceptions in the requirements always fail
+          next true if stub_rubocop_env_result
+
+          false
+        end
+
+        let(:supported_haml?) do |example|
+          # Tries to match `{% haml_version >= '5' %}`, extracting the operator and the "number"
+          haml_version_regex = /\{%\s*haml_version\s*([^\w\s]+?)\s*['"]?(\d+(\.\d+)*)['"]?\s*%\}/
+          requirements = example.metadata[:full_description].scan(haml_version_regex)
+
+          # This can be used by the requirements in eval
+          haml_version = HamlLint::VersionComparer.for_haml
+
+          requirements.all? do |(operator, version)|
+            haml_version.send(operator, version)
+          end
+        end
+
+        before do
+          if stub_rubocop?
+            skip if end_ruby.include?('SKIP')
+            subject.stub(:process_ruby_source).and_return(end_ruby)
+          end
+          subject.stub(:transfer_corrections?).and_return(true)
+        end
+
+        include_context 'linter'
+        # The goal is not to test rubocop the gem, so no need to test the details using both
+        # :safe and :all
+        let(:autocorrect) { :all }
+
+        # We want want to do error handling ourself
+        let(:run_method_to_use) { nil }
+
+        let(:steps_parts) do
+          parts = steps_string.split(/^[ \t]*---[ \t]*\n/, -1)
+          raise "Expected 4 steps, got: #{parts.size}" if parts.size != 4
+          parts
+        end
+
+        let(:start_haml) { steps_parts[0] }
+
+        let(:start_ruby) do
+          lines = steps_parts[1].split("\n", -1)
+          current_matching_line = 1
+          @source_map = {}
+          lines.each.with_index do |line, i|
+            next unless /\S/.match?(line)
+            mo = line.match(/^(.*?)\$?\s*\$\$(\d+)$/)
+            if mo
+              lines[i] = mo[1]
+              current_matching_line = Integer(mo[2])
+            end
+            @source_map[i + 1] = current_matching_line
+          end
+          lines.join("\n")
+        end
+
+        let(:source_map) do
+          start_ruby
+          @source_map
+        end
+
+        let(:end_ruby) { steps_parts[2] }
+
+        let(:end_haml) { steps_parts[3] }
+
+        # Used by the 'linter' context
+        let(:haml) { start_haml }
+
+        # steps_string is string of multiple lines describing the steps that
+        # the code will take:
+        # 1) input haml
+        # 2) extracted ruby
+        # 3) the corrected ruby
+        # 4) the corrected haml
+        # Each steps is delimited by a line with ---
+        def follows_steps # rubocop:disable Metrics
+          skip unless supported_haml?
+
+          begin
+            subject.run_or_raise(document, autocorrect: autocorrect)
+          rescue StandardError => e
+            exception_while_running = e
+          end
+
+          syntax_lints = subject.lints.select { |lint| lint.message =~ %r{Lint/Syntax} }
+
+          if start_ruby.strip != 'SKIP' && subject.last_extracted_source && ENV['UPDATE_EXAMPLES'] != '1'
+            matcher = eq(start_ruby)
+            subject.last_extracted_source.source.should(
+              matcher,
+              -> { "Extracted Ruby is different from expected. #{matcher.failure_message}\n#{format_lints}" }
+            )
+          end
+
+          syntax_lints.should(be_empty, "Generated Ruby has Syntax Lints:\n#{format_lints(syntax_lints)}")
+
+          if end_ruby.strip != 'SKIP' && subject.last_new_ruby_source && ENV['UPDATE_EXAMPLES'] != '1'
+            matcher = eq(end_ruby)
+            subject.last_new_ruby_source.should(
+              matcher,
+              -> { "Ruby generated by RuboCop is different from expected. #{matcher.failure_message}\n#{format_lints}" }
+            )
+          end
+
+          raise exception_while_running if exception_while_running
+
+          matcher = eq(end_haml)
+          document.source.should(
+            matcher,
+            -> { "Final HAML is different from expected. #{matcher.failure_message}\n#{format_lints}" }
+          )
+
+          if subject.last_extracted_source && start_ruby.strip != 'SKIP' && ENV['UPDATE_EXAMPLES'] != '1'
+            subject.last_extracted_source.source_map.should == source_map
+          end
+
+          if ENV['UPDATE_EXAMPLES'] == '1' && respond_to?(:example_first_line_no) &&
+              start_ruby.strip != 'SKIP' && end_ruby.strip != 'SKIP'
+            original_content = File.read(example_path)
+            old_steps_string = '---' + steps_string.partition('---').last.rpartition('---').first + '---'
+
+            if old_steps_string.scan(/\$\$\d+/).tally.values.any? { |v| v > 1 }
+              # If the $$3 was there twice, let's not update the example
+              return
+            end
+            original_content.scan(old_steps_string).count
+
+            new_generated_ruby_lines = subject.last_extracted_source.source.split("\n", -1)
+            last_seen_haml_line_no = 1
+            subject.last_extracted_source.source_map.each do |ruby_line_no, haml_line_no|
+              if haml_line_no != last_seen_haml_line_no
+                last_seen_haml_line_no = haml_line_no
+                new_generated_ruby_lines[ruby_line_no - 1] += " $$#{haml_line_no}"
+              end
+            end
+
+            new_steps_string = <<~NEW.chop # Chop to remove the added newlines
+              ---
+              #{new_generated_ruby_lines.join("\n")}---
+              #{subject.last_new_ruby_source}---
+            NEW
+
+            new_content = original_content.gsub(old_steps_string, new_steps_string)
+            File.write(example_path, new_content)
+          end
+
+          haml_different = start_haml != end_haml
+          document.source_was_changed.should == haml_different
+        end
+
+        def format_lints(lints = subject.lints)
+          lints.map { |lint| "#{lint.line}:#{lint.message}" }.join("\n")
+        end
+      end
+    end
+  end
+end

@@ -1,0 +1,459 @@
+Upgrading? [Migration from Old Versions](https://github.com/doorkeeper-gem/doorkeeper-openid_connect/wiki/Migration-from-Old-Versions) walks through every breaking change and the steps it asks for, and the rest of the [wiki](https://github.com/doorkeeper-gem/doorkeeper-openid_connect/wiki) documents the configuration and behavior the entries below refer to.
+
+## Unreleased
+
+- Add entry here
+
+## v2.0.0 (2026-09-22)
+
+>[!IMPORTANT]
+>
+>- **Breaking (class overrides):** a configured `id_token_class` / `user_info_class` must now inherit from `Doorkeeper::OpenidConnect::IdToken` / `UserInfo` ([#364])
+>- **Breaking (settings removed):** the deprecated `jws_private_key` / `jws_public_key` initializer settings are gone ([#387])
+>- **Breaking (constant renamed):** `Doorkeeper::OpenidConnect::HybridIdTokenConcern` is now `AtHashConcern`, with no alias for the old name ([#399])
+>
+>**Coming from 1.10.x?** Every breaking change listed under 2.0.0.beta1 below applies as well — the `post_logout_redirect_uris` migration ([#243]), the `id_token token` response type change ([#337]), the removal of `IdTokenToken` ([#338]) and the Dynamic Client Registration defaults ([#350]). Those notes name `HybridIdTokenConcern`; read them as `AtHashConcern`, which is what 2.0.0 ships.
+>
+>[Migration from Old Versions](https://github.com/doorkeeper-gem/doorkeeper-openid_connect/wiki/Migration-from-Old-Versions) walks through each one.
+
+- **Security:** Register a dynamically registered client with the server's `default_scopes` when the registration request omits `scope`, instead of persisting an empty scope set. Only deployments that enable `dynamic_client_registration` are affected.
+- [#364] **Breaking:** Require `id_token_class` / `user_info_class` overrides to inherit from `Doorkeeper::OpenidConnect::IdToken` / `UserInfo` ([#344](https://github.com/doorkeeper-gem/doorkeeper-openid_connect/issues/344)). Adds an `IdToken#select_key` hook returning the signing key and its algorithm together (`IdToken::SigningKey`) for per-client, rotating or multi-tenant keys, and binds the `at_hash` digest to that algorithm (OIDC Core §3.2.2.10) rather than the global `signing_algorithm`
+- [#387] **Breaking:** Remove the deprecated `jws_private_key` and `jws_public_key` initializer settings
+- [#399] **Breaking:** Rename `Doorkeeper::OpenidConnect::HybridIdTokenConcern` to `AtHashConcern`. The old name described the `id_token token` response type as a hybrid flow, but OpenID Connect Core defines that response type under the Implicit Flow (§3.2) — the Hybrid Flow response types of §3.3 are not implemented by this gem. Removed without an alias: the constant only ever shipped in 2.0.0.beta1
+
+## v2.0.0.beta1 (2026-08-20)
+
+>[!IMPORTANT]
+>
+>- **This is a prerelease.** RubyGems does not resolve prereleases from an unqualified requirement, so it must be requested explicitly: `gem "doorkeeper-openid_connect", "2.0.0.beta1"`
+>- **Migration required:** existing installations must add the `post_logout_redirect_uris` column — `rails generate doorkeeper:openid_connect:add_post_logout_redirect_uris` followed by `rails db:migrate` ([#243])
+>- **Breaking (hybrid response type):** the `id_token token` response object is now the configured `id_token_class` extended with `HybridIdTokenConcern`, and a custom `id_token_class` must expose an `#access_token` reader ([#337])
+>- **Breaking (constant removed):** `Doorkeeper::OpenidConnect::IdTokenToken` is gone — custom subclasses must subclass `IdToken` and include `HybridIdTokenConcern` ([#338])
+>- **Breaking (Dynamic Client Registration):** a registration request that omits `response_types` / `grant_types` now defaults to `["code"]` / `["authorization_code"]` per RFC 7591 §2, instead of inheriting the server's global configuration ([#350])
+>
+>[Migration from Old Versions](https://github.com/doorkeeper-gem/doorkeeper-openid_connect/wiki/Migration-from-Old-Versions) walks through each one.
+
+- [#243] Add per-client `post_logout_redirect_uris` for RP-Initiated Logout, exposed via `Doorkeeper::Application#post_logout_redirect_uris` and `#valid_post_logout_redirect_uri?(uri)`. URIs are validated with the same rules as `redirect_uri`; Dynamic Client Registration accepts and echoes them back
+- [#320] Support mounting the engine under multiple named scopes — `use_doorkeeper_openid_connect as: :users` makes each mount's discovery document advertise its own endpoints ([#192])
+- [#322] Fall back to Doorkeeper's `issuer` configuration when the OpenID Connect `issuer` is not set. The OpenID Connect value still takes precedence ([#321])
+- [#323] Resolve `token_endpoint_auth_methods_supported` from Doorkeeper's client authentication methods registry when available, falling back to legacy `client_credentials_methods` on older versions
+- [#332] Fix `grant_types_supported` listing `refresh_token` twice when enabled via both `grant_flows` and `use_refresh_token`
+- [#333] Emit the RFC 9207 `iss` parameter on `id_token` / `id_token token` authorization responses and on OIDC error redirects, and advertise `authorization_response_iss_parameter_supported` in the discovery document. No behavior change until Doorkeeper is configured with an `issuer`
+- [#334] Allow Doorkeeper 6.0 (`>= 5.5, < 7.0`). Note: Doorkeeper 6.0's `force_pkce` applies to confidential clients too — `id_token` / `id_token token` authorization requests are rejected unless they carry a `code_challenge`
+- [#335] Add `id_token_class` and `user_info_class` config options for custom ID Token / UserInfo response objects
+- [#337] Rework `id_token_class` / `user_info_class` internals — lazy-resolve and validate configured classes at first use (fixes zeitwerk on Rails 7+) — and deprecate `Doorkeeper::OpenidConnect::IdTokenToken`. A custom `id_token_class` must now expose an `#access_token` reader. **Breaking (type change):** the hybrid response token is now the configured `id_token_class` extended with `HybridIdTokenConcern` — see the [migration guide](https://github.com/doorkeeper-gem/doorkeeper-openid_connect/wiki/Migration-from-Old-Versions)
+- [#338] **Breaking:** Remove the deprecated `IdTokenToken` class. Custom subclasses must subclass `IdToken` and include `HybridIdTokenConcern` instead
+- [#341] Fix dynamic client registration to respect the `application_class` configuration
+- [#347] Omit symmetric (`oct`) keys from the JWKS endpoint when signing with an HMAC algorithm (RFC 7517)
+- [#348] Authorization endpoint hardening:
+  - Treat a malformed `max_age` parameter (e.g. `max_age[]=1`) as absent instead of a 500
+  - Build `prompt=login` / `prompt=select_account` return URLs without mutating the shared `request.query_parameters` hash
+  - Route internal errors (e.g. `InvalidConfiguration`) to a 500 instead of leaking them as authorization error redirects
+- [#349] Fix several 500 errors in the claims pipeline: gracefully omit `id_token` when the access token has no resource owner, no application, or an owner that no longer resolves; return `401 invalid_token` at userinfo for the same cases. Also dispatch claims whose `response:` option is configured with strings (e.g. `response: ["id_token"]`), which were previously dropped from every response
+- [#350] Discovery / Dynamic Client Registration spec compliance:
+  - Advertise the standard `implicit` grant type instead of the internal `implicit_oidc` name (RFC 7591 §2)
+  - **Breaking:** omitted `response_types` / `grant_types` in a registration request now default to `["code"]` / `["authorization_code"]` per RFC 7591 §2
+  - Use RFC 7591 §3.2.2 error codes (`invalid_redirect_uri` / `invalid_client_metadata`) instead of the invented `invalid_client_params`
+  - Serve WebFinger as `application/jrd+json` with `Access-Control-Allow-Origin: *` (RFC 7033)
+  - Create dynamically registered clients through `application_model` so custom models work with DCR
+- [#351] Align OpenID Connect token/authorization responses with Doorkeeper's response contract: return the plaintext access token from the `id_token token` implicit response (fixes `hash_token_secrets`), define `#issued_token` on OIDC responses, and attach the ID token before `after_successful_strategy_response` fires
+- [#353] Enrich Doorkeeper 6.0's RFC 8414 metadata document (`/.well-known/oauth-authorization-server`) with the OpenID Connect fields (`jwks_uri`, `userinfo_endpoint`, signing algs, claims) via the `custom_metadata` seam; app-configured `custom_metadata` keeps precedence. No behavior change on Doorkeeper < 6.0
+- [#355] Compute `at_hash` from the plaintext access token instead of the stored value, fixing ID Token validation when `hash_token_secrets` is enabled
+- [#360] Load the OpenID Connect constants with `autoload` instead of `require`, including the requests and responses this gem contributes to Doorkeeper's own namespace. No public constant changes name or moves ([#362])
+- [#363] Extend [#349]'s `id_token` guard to the password grant with `skip_client_authentication_for_password_grant` — previously returned an unhandled 500
+- [#370] Correct the stale `rake db:migrate` command to `rails db:migrate` in the README, the [#243] migration note, and the `post_logout_redirect_uris` missing-column error message
+- [#372] Fix duplicate entries in the discovery document's `claims_supported` when a custom claim shadows a base claim (`iss`/`sub`/`aud`/`exp`/`iat`)
+- [#373] Fix `prompt=consent` under Doorkeeper's `api_only` mode — the consent step now returns the pre-authorization as JSON instead of attempting to render a template that `ActionController::API` cannot serve
+- [#381] Echo the registered `client_name` in the Dynamic Client Registration response, as RFC 7591 §3.2.1 requires the response to include all registered client metadata
+
+## v1.10.5 (2026-07-09)
+
+- [#329] Restore compatibility with the full `doorkeeper >= 5.5` range declared in the gemspec ([#328](https://github.com/doorkeeper-gem/doorkeeper-openid_connect/issues/328)). Doorkeeper 5.5.x raised `NameError: uninitialized constant Doorkeeper::Orm::ActiveRecord::Mixins` at load time (the mixin file ships since 5.5.0 but is only autoloadable since 5.6.0 — it is now required explicitly when absent), and Doorkeeper 5.6/5.7 broke the discovery endpoint because `pkce_code_challenge_methods` only exists since 5.8.0 (the discovery response now falls back to `plain S256`, which is what those versions accept). CI now exercises the oldest supported Doorkeeper series via `gemfiles/doorkeeper_5.{5,6,7}.gemfile`
+- [#325] Remove the dead `Claims::AggregatedClaim` and `Claims::DistributedClaim` classes. They have never been required, instantiated, or reachable through the claims DSL (`ClaimsBuilder` only builds `NormalClaim`), and the discovery document only advertises `claim_types_supported: ["normal"]` — the files just shipped in the gem unused since 2016
+- [#324] Split `Helpers::Controller` (294 lines, one module) into focused submodules — `Prompt`, `MaxAge`, `ErrorResponse`, `TokenMatching` — and decompose the two most complex methods (`handle_oidc_prompt_param!`, `handle_oidc_max_age_param!`). This is a behavior-preserving refactor that allows dropping the `Metrics/ModuleLength`, `Metrics/CyclomaticComplexity` and `Metrics/PerceivedComplexity` overrides from `.rubocop_todo.yml`; the codebase now passes those cops at RuboCop's default thresholds
+- [#326] Make the dynamic client registration spec robust against pre-existing `Doorkeeper::Application` rows: replace absolute `Application.count` assertions and `Application.first` lookups with relative `change` matchers and `Application.find_by(uid:)` lookups keyed on the `client_id` returned by each request. With a polluted `test.sqlite3` (e.g. left behind by a `rake server` session against the same dummy app) 12 of the 20 examples failed spuriously; they now pass regardless of prior DB state
+- [#327] Document previously-undocumented config options in the generated initializer template: `authorize_dynamic_client_registration` (DCR endpoint authorization gate), `apply_prompt_to_non_oidc_requests`, `end_session_endpoint`, `discovery_url_options`, and the `response:` option for claims (controlling whether a claim appears in the ID Token, UserInfo, or both). No behavior change
+
+## v1.10.4 (2026-07-07)
+
+- Validate the `scope` supplied to Dynamic Client Registration against the server's configured scopes (`default_scopes` + `optional_scopes`) before persisting it. Unrecognized scopes are silently dropped and the confirmed set is echoed in the registration response (RFC 7591 §2); a request whose scopes are all unsupported is rejected with `invalid_client_metadata` instead of being registered with an empty scope set.
+
+## v1.10.3 (2026-06-23)
+
+- [#308] Fix `NameError: uninitialized constant Auth::ApplicationRecord` on boot when using a namespaced custom access grant model (e.g. `Auth::OAuthAccessGrant < ApplicationRecord`). Since v1.10.0 ([#241]) the `openid_request` association was wired inside an `ActiveSupport.on_load(:active_record)` block, which fires while `ActiveRecord::Base` is first loaded and constantizes the grant model too early. The association is now added from Doorkeeper's `AccessGrant` mixin `included` callback — at the model's own load time, without constantizing — mirroring the fix doorkeeper made in [#1830](https://github.com/doorkeeper-gem/doorkeeper/pull/1830) ([#306](https://github.com/doorkeeper-gem/doorkeeper-openid_connect/issues/306))
+
+## v1.10.2 (2026-06-22)
+
+- [#315] Drop support for EOL Ruby 3.1 (EOL 2025-03-25) and require Ruby `>= 3.2`. `i18n 1.15.0` uses the `Fiber[]` storage API which only exists on Ruby 3.2+, so the Ruby 3.1 CI row no longer loads; the matrix now tests Ruby 3.2 as the minimum
+- [#316] Set `fail-fast: false` in CI matrix so a single failing job no longer cancels the rest
+- [#303] execute account selection even without owner, and `select_account_for_resource_owner` can now receive `nil` as the first argument.
+- [#304] allow handle auth_time per grant
+- [#305] Document the `auth_time_from_access_token` config option in the README (per-grant `auth_time`), clarifying that it only affects the ID Token `auth_time` claim and not `max_age` enforcement
+- [#307] Fix `bundle exec rake server` for the test application
+- [#313] Move Configuration documentation from README to Wiki
+- [#312] Raise `Errors::MissingRequiredClaim` instead of silently dropping a blank REQUIRED ID Token claim (`iss`/`sub`/`aud`/`exp`/`iat`) in `IdToken#as_json`, which previously could emit a non-conformant ID Token (OIDC Core 1.0 §2). OPTIONAL claims such as `nonce`/`auth_time` are still omitted when blank
+- [#311] Include the REQUIRED `client_secret_expires_at` member (value `0`, never expires) in the Dynamic Client Registration response whenever a `client_secret` is issued (RFC 7591 §3.2.1 / OpenID Connect Dynamic Client Registration 1.0 §3.2)
+- [#309] Add a browser dashboard to the test application (`spec/dummy`) for exercising the OpenID Connect endpoints by hand — replacing the rails console + curl workflow with forms for Setup, Discovery, Authorization (code / implicit / PKCE / nonce / prompt / `max_age`), token exchange, UserInfo, introspection and revocation
+
+## v1.10.1 (2026-06-03)
+
+- [#294] Drop stale `Metrics/ClassLength` and `Metrics/BlockLength` overrides from `.rubocop_todo.yml`
+- [#293] Drop `Naming/VariableNumber` from `.rubocop_todo.yml` and normalise test variable names
+- [#291] Document multi-namespace mount pattern for multiple resource owner models ([#192](https://github.com/doorkeeper-gem/doorkeeper-openid_connect/issues/192))
+- [#292] Drop formatting cops from `.rubocop_todo.yml` and align trailing-comma style with upstream doorkeeper
+- [#296] Fix the `prompt` parameter being rejected with `invalid_request` when it contains leading or duplicate spaces (e.g. `prompt=%20none`) — blank entries in the space-delimited value are now ignored
+- [#299] Raise `InvalidConfiguration` when the `issuer` config resolves to a blank value instead of silently advertising an empty `issuer` in the discovery document. Since v1.10.0 an arity-2 `issuer` block receives `(resource_owner, application)` — both `nil` in the discovery context — so a block relying on the old v1.9.0 request argument could return `nil` and produce a discovery `issuer` that mismatched the ID token `iss` ([#298](https://github.com/doorkeeper-gem/doorkeeper-openid_connect/issues/298))
+
+## v1.10.0 (2026-06-01)
+
+>[!IMPORTANT]
+>
+>- **Breaking (arity-2 issuer blocks):** `resolve_issuer` now dispatches arity-2 blocks with `(resource_owner, application)` in all contexts, including discovery. In v1.9.0 `DiscoveryController` passed `request` as the first argument; existing arity-2 blocks that relied on this receive `(nil, nil)` in v1.10.0 and should migrate to arity-3 — see [#298](https://github.com/doorkeeper-gem/doorkeeper-openid_connect/issues/298) for details and migration examples
+
+- [#241] Fix NameError on doorkeeper master by deferring AR model loading in run_hooks (see [Doorkeeper PR](https://github.com/doorkeeper-gem/doorkeeper/pull/1804))
+- [#242] Fix `NoMethodError` for openid_request in testing environments.
+- [#246] Fix `at_hash` to use correct hash algorithm based on `signing_algorithm`
+- [#250] Return configured `issuer` instead of `root_url` in WebFinger response (thanks to @sato11 for the original work in #172)
+- [#248] Fix `max_age` always triggering reauthentication when `auth_time_from_resource_owner` returns Integer
+- [#254] **Breaking:** Omit `expires_in` from the `response_type=id_token` response (OIDC Core §3.2.2.5 — `expires_in` represents the Access Token lifetime; it is still returned for `response_type=id_token token`)
+- [#252] Treat `auth_time_from_resource_owner` as optional in `IdToken` — omit `auth_time` claim when unconfigured instead of raising `InvalidConfiguration`
+- [#256] Accept non-callable values (symbol / string) for the `protocol` config option, matching the pattern used by `issuer` / `signing_algorithm` / `signing_key` / `expiration`
+- [#258] Skip `IdToken` construction on password grants without the `openid` scope
+- [#259] Skip `IdToken` construction on authorization code grants without the `openid` scope
+- [#261] Fix obsolete RuboCop configuration (`require:` → `plugins:`, `RSpec/FilePath` split, remove `Capybara/FeatureMethods`)
+- [#263] **Security/Breaking:** Determine dynamically registered client's `confidential` flag from `token_endpoint_auth_method` per RFC 7591 — previously every dynamically registered client was created as public (`confidential: false`), which let callers authenticate with only `client_id` (`by_uid_and_secret(uid, nil)` bypass). Default is now `client_secret_basic` (confidential); `none` produces a public client; unsupported values (e.g. `private_key_jwt`) are rejected with `invalid_client_metadata`. Also derive `token_endpoint_auth_methods_supported` in the response from `Doorkeeper.configuration.client_credentials_methods` instead of a hardcoded list, matching #236
+- [#264] Apply safe RuboCop autocorrections and fix resulting artifacts
+- [#265] Add Dynamic Client Registration section to README
+- [#266] Validate `application_type`, `response_types`, and `grant_types` parameters in dynamic client registration per RFC 7591 — reject unsupported values with `invalid_client_metadata` and echo the requested values back in the registration response, instead of silently ignoring them and returning the server's global configuration
+- [#267] Add `authorize_dynamic_client_registration` config option to gate the dynamic client registration endpoint per RFC 7591 §3.1 — when set to a callable, the block is evaluated in the controller scope (with access to `request`, `params`, `request.headers`, etc.) and falsy return values reject the request with `401 invalid_token`. Default is `nil` so the endpoint remains open for backward compatibility; consumers should configure this to validate an Initial Access Token (or any other authorization scheme) before allowing client registration
+- [#268] Update Dynamic Client Registration README for validated metadata parameters
+- [#269] Document `authorize_dynamic_client_registration` in README
+- [#270] Document the unified issuer block signature in README
+- [#278] Test against Ruby 4.0.
+- [#271] **Security:** Add `auth_time_from_session` config for per-session `max_age` enforcement. The legacy `auth_time_from_resource_owner` cannot distinguish between concurrent sessions and is now deprecated for `max_age` use (see [#150](https://github.com/doorkeeper-gem/doorkeeper-openid_connect/issues/150))
+- [#272] Document `auth_time_from_session` in README (follow-up to [#271](https://github.com/doorkeeper-gem/doorkeeper-openid_connect/pull/271))
+- [#273] **Security/Hardening:** Merge framework-controlled registered claims last — `iss`/`sub`/`aud`/`exp`/`iat`/`nonce`/`auth_time` for the ID Token and `sub` for UserInfo — so a custom claim block can no longer override security-critical values. No legitimate configuration relied on this; custom claims that intentionally shadowed a registered claim name will now be ignored for that key (OIDC Core §2 / §3.1.3.7 / §5.3.2).
+- [#276] Get RuboCop to zero offenses: fix `Lint/MissingSuper` in `IdTokenResponse`, replace `puts` with `warn` for deprecation notices, and modernise spec style
+- [#277] Fix README inaccuracies (`signing_algorithm` description and link, `discovery_url_options` endpoint list, `oauth-authorization-server` route) and use constant-time comparison in the DCR authorization example to prevent timing attacks on the Initial Access Token
+- [#279] Return `account_selection_required` when a `prompt=select_account` handler does not generate a response, per [OIDC Core 1.0 §3.1.2.6](https://openid.net/specs/openid-connect-core-1_0.html#AuthError) — previously the authorization silently continued without account selection. Adds the missing `Errors::AccountSelectionRequired` class, mirroring the existing `login_required` backstop for `reauthenticate_resource_owner`
+- [#275] Return `login_required` for `max_age` reauthentication when `prompt=none`, instead of triggering the interactive `reauthenticate_resource_owner` flow (OIDC Core §3.1.2.1)
+- [#284] Document `acr` / `amr` claims in README — show how to expose Authentication Context Class Reference and Authentication Methods References via the `claim` DSL, with callouts for the `response:` and `scope:` defaults that silently bite
+- [#288] Document `offline_access` scope recipe in README — show how to wire `use_refresh_token` with scope-based filtering for OIDC offline access
+- [#281] Fix `NoMethodError` / `DoubleRenderError` when `resource_owner_authenticator` redirects with a truthy non-model value (e.g. `current_user || redirect_to(login_url)`). Normalize the leaked value to `nil` when `performed?` and add missing `if owner` guard on `select_account`.
+- [#285] Document custom `jwks_uri` path pattern in README — show how to advertise a non-default path in the discovery document using Rails' `direct` URL helper
+- [#283] Support multiple signing keys in the JWKS response — `signing_key` now also accepts an array (and callables returning an array). The first entry is the active key used to sign new ID tokens; the remaining entries are published in the JWKS so clients can still validate tokens signed with a retired key during a rotation window. Single-value and callable forms continue to work unchanged
+- [#286] Allow claims to be assigned to multiple scopes via `scope: [:profile, :all_data]` — the claim is returned whenever the access token grants any of the listed scopes. **Note:** the previously implicit `Claim#scope=` writer (from `attr_accessor :scope`) is no longer provided; rebuild the claim instead of mutating it
+- [#287] Add `apply_prompt_to_non_oidc_requests` option to honor the `prompt` parameter on plain OAuth requests that do not include the `openid` scope
+- [#282] Allow `prompt=none` reauthorization with a narrower subset of previously-granted scopes (issue #63). Per RFC 6749 §1.5, narrower-or-equal scopes do not require fresh user consent; previously these requests returned `consent_required`.
+- [#290] Freeze `Claim#scopes` and `Claim#response` arrays at construction so callers can't accidentally mutate the claim's internal state from outside
+- [#297] Fix the generated initializer's `issuer` example referencing an undefined `request` local (the block parameter is `_request`), which raised `NameError` when copied verbatim
+
+## v1.9.0 (2026-03-16)
+
+- [#229] Allow to application manage signing key and algorithm
+- [#230] Add dynamic client registration
+- [#233] fix: handle `DoubleRenderError` in library instead of requiring consumer workaround
+- [#232] Implements customizable OpenID request class
+- [#236] Derive `token_endpoint_auth_methods_supported` from Doorkeeper's client_credentials config
+- [#225] Allow configuration of id_token expiration using a block.
+- [#237] Fix dynamic client registration returning hashed secret when `hash_application_secrets` is enabled
+- [#226] Respect Doorkeeper's configured `pkce_code_challenge_methods`
+
+## v1.8.11 (2025-02-10)
+
+- [#219] Test against Ruby 3.4.
+- [#216] Test against Rails 7.1, 7.2, 8.0.
+- [#222] Support max_age=0
+- [#221] Avoid raising invalid_request error on prompt=create
+- [#220] Define priority on possible prompt values to statically & successfully process multiple prompt values
+- [#224] Define priority between max_age & prompt
+
+## v1.8.10 (2024-11-29)
+
+- [#215] Drop support for Ruby 2.7, 3.0 and Rails 6.
+- [#209] Configuration per IdToken expiration (thanks to @martinezcoder)
+
+## v1.8.9 (2024-05-07)
+
+- Support Doorkeeper 5.7
+
+## v1.8.8 (2024-02-26)
+
+- [#201] Add back typ=JWT to header
+
+## v1.8.7 (2023-05-18)
+
+- [#198] Fully qualify `JWT::JWK::Thumbprint` constant with :: (thanks to @stanhu)
+
+## v1.8.6 (2023-05-12)
+
+- [#194] Default to RFC 7638 kid fingerprint generation (thanks to @stanhu).
+
+## v1.8.5 (2023-02-02)
+
+- [#186] Simplify gem configuration reusing Doorkeeper configuration option DSL (thanks to @nbulaj).
+- [#182] Drop support for Ruby 2.6 and Rails 5 (thanks to @sato11).
+- [#188] Fix dookeeper-jwt compatibility (thanks to @zavan).
+
+## v1.8.4 (2023-02-01)
+
+Note that v1.8.4 changed the default kid fingerprint generation from RFC 7638 to a format
+based on the SHA256 digest of the key element. To restore the previous behavior, upgrade to v1.8.6.
+
+- [#177] Replace `json-jwt` with `ruby-jwt` to align with doorkeeper-jwt (thanks to @kristof-mattei).
+- [#185] Don't call active_record_options for Doorkeeper >= 5.6.3 (thanks to @zavan).
+- [#183] Stop render consent screen when user is not logged-in (thanks to @nov).
+
+## v1.8.3 (2022-12-02)
+
+- [#180] Add PKCE support to OpenID discovery endpoint (thanks to @stanhu).
+
+## v1.8.2 (2022-07-13)
+
+- [#168] Allow to use custom doorkeeper access grant model (thanks @nov).
+- [#170] Controllers inherit `Doorkeeper::AppliactionMetalController` (thanks @sato11).
+- [#171] Correctly override `AuthorizationsController` params (thanks to @nbulaj).
+
+## v1.8.1 (2022-02-09)
+
+- [#153] Fix ArgumentError caused by client credential validation introduced in Doorkeeper 5.5.1 (thanks to @CircumnavigatingFlatEarther)
+- [#161] Fix .well-known/openid-connect issuer (respond to block if provided) (thanks to @fkowal).
+- [#152] Expose oauth-authorization-server in routes (thanks to @mitar)
+
+## v1.8.0 (2021-05-11)
+
+No changes from v1.8.0-rc1.
+
+## v1.8.0-rc1 (2021-04-20)
+
+### Upgrading
+
+This gem now requires Doorkeeper 5.5 and Ruby 2.5.
+
+### Changes
+
+- [#138] Support form_post response mode (thanks to @linhdangduy)
+- [#144] Support block syntax for `issuer` configuration (thanks to @maxxsnake)
+- [#145] Register token flows with the strategy instead of the token class (thanks to @paukul)
+
+## v1.7.5 (2020-12-15)
+
+### Changes
+
+- [#126] Add discovery_url_options option for discovery endpoints URL generation (thanks to @phlegx)
+
+### Bugfixes
+
+- [#123] Remove reference to ApplicationRecord (thanks to @wheeyls)
+- [#124] Clone doorkeeper.grant_flows array before appending 'refresh_token' (thanks to @davidbasalla)
+- [#129] Avoid to use the config alias while supporting Doorkeeper 5.2 (thanks to @kymmt90)
+
+## v1.7.4 (2020-07-06)
+
+- [#119] Execute end_session_endpoint in the controllers context (thanks to @joeljunstrom)
+
+## v1.7.3 (2020-07-06)
+
+- [#111] Add configuration callback `select_account_for_resource_owner` to support the `prompt=select_account` param
+- [#112] Add grant_types_supported to discovery response
+- [#114] Fix user_info endpoint when used in api mode
+- [#116] Support Doorkeeper API (> 5.4) for registering custom grant flows.
+- [#117] Fix migration template to use Rails migrations DSL for association.
+- [#118] Use fragment urls for implicit flow error redirects (thanks to @joeljunstrom)
+
+## v1.7.2 (2020-05-20)
+
+### Changes
+
+- [#108] Add support for Doorkeeper 5.4
+- [#103] Add support for end_session_endpoint
+- [#109] Test against Ruby 2.7 & Rails 6.x
+
+## v1.7.1 (2020-02-07)
+
+### Upgrading
+
+This version adds `on_delete: :cascade` to the migration template for the `oauth_openid_requests` table, in order to fix #82.
+
+For existing installations, you should add a new migration in your application to drop the existing foreign key and replace it with a new one with `on_delete: :cascade` included. Depending on the database you're using and the size of your application this might bring up some concerns, but in most cases the following should be sufficient:
+
+```ruby
+class UpdateOauthOpenIdRequestsForeignKeys < ActiveRecord::Migration[5.2]
+  def up
+    remove_foreign_key(:oauth_openid_requests, column: :access_grant_id)
+    add_foreign_key(:oauth_openid_requests, :oauth_access_grants, column: :access_grant_id, on_delete: :cascade)
+  end
+
+  def down
+    remove_foreign_key(:oauth_openid_requests, column: :access_grant_id)
+    add_foreign_key(:oauth_openid_requests, :oauth_access_grants, column: :access_grant_id)
+  end
+end
+```
+
+### Bugfixes
+
+- [#96] Bump `json-jwt` because of CVE-2019-18848 (thanks to @leleabhinav)
+- [#97] Fixes for compatibility with Doorkeeper 5.2 (thanks to @linhdangduy)
+- [#98] Cascade deletes from `oauth_openid_requests` to `oauth_access_grants` (thanks to @manojmj92)
+- [#99] Fix `audience` claim when application is not set on access token (thanks to @ionut998)
+
+## v1.7.0 (2019-11-04)
+
+### Changes
+
+- [#85] This gem now requires Doorkeeper 5.2, Rails 5, and Ruby 2.4
+
+## v1.6.3 (2019-09-24)
+
+### Changes
+
+- [#81] Allow silent authentication without user consent (thanks to @jarosan)
+- Don't support Doorkeeper >= 5.2 due to breaking changes
+
+## v1.6.2 (2019-08-09)
+
+### Bugfixes
+
+- [#80] Check for client presence in controller, fixes a 500 error when `client_id` is missing (thanks to @cincospenguinos @urnf @isabellechalhoub)
+
+## v1.6.1 (2019-06-07)
+
+### Bugfixes
+
+- [#75] Fix return value for `after_successful_response` (thanks to @daveed)
+
+### Changes
+
+- [#72] Add `revocation_endpoint` and `introspection_endpoint` to discovery response (thanks to @scarfacedeb)
+
+## v1.6.0 (2019-03-06)
+
+### Changes
+
+- [#70] This gem now requires Doorkeeper 5.0, and actually has done so since v1.5.4 (thanks to @michaelglass)
+
+## v1.5.5 (2019-03-03)
+
+- [#69] Return `crv` parameter for EC keys (thanks to @marco-nicola)
+
+## v1.5.4 (2019-02-15)
+
+### Bugfixes
+
+- [#66] Fix an open redirect vulnerability ([CVE-2019-9837](https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-9837), thanks to @meagar)
+- [#67] Don't delete existing tokens with `prompt=consent` (thanks to @nov)
+
+### Changes
+
+- [#62] Support customization of redirect params in `id_token` and `id_token token` responses (thanks to @meagar)
+
+## v1.5.3 (2019-01-19)
+
+### Bugfixes
+
+- [#60] Don't break native authorization in Doorkeeper 5.x
+
+### Changes
+
+- [#58] Use versioned migrations for Rails 5.x (thanks to @tvongaza)
+
+## v1.5.2 (2018-09-04)
+
+### Changes
+
+- [#56] The previous release was a bit premature, this fixes some compatibility issues with Doorkeeper 5.x
+
+## v1.5.1 (2018-09-04)
+
+### Changes
+
+- [#55] This gem is now compatible with Doorkeeper 5.x
+
+## v1.5.0 (2018-06-27)
+
+### Features
+
+- [#52] Custom claims can now also be returned directly in the ID token, see the updated README for usage instructions
+
+## v1.4.0 (2018-05-31)
+
+### Upgrading
+
+- Support for Ruby versions older than 2.3 was dropped
+
+### Features
+
+- Redirect errors per Section 3.1.2.6 of OpenID Connect 1.0 (by @ryands)
+- Set `id_token` when it's nil in token response (it's used in `refresh_token` requests) (by @Miouge1)
+
+## v1.3.0 (2018-03-05)
+
+### Features
+
+- Support for Implicit Flow (`response_type=id_token` and `response_type=id_token token`),
+  see the updated README for usage instructions (by @nashby, @nhance and @stevenvegt)
+
+## v1.2.0 (2017-08-31)
+
+### Upgrading
+
+- The configuration setting `jws_private_key` was renamed to `signing_key`, you can still use the old name until it's removed in the next major release
+
+### Features
+
+- Support for pairwise subject identifiers (by @travisofthenorth)
+- Support for EC and HMAC signing algorithms (by @110y)
+- Claims now receive an optional third `access_token` argument which allow you to dynamically adjust claim values based on the client's token (by @gigr)
+
+### Bugfixes
+
+## v1.1.2 (2017-01-18)
+
+### Bugfixes
+
+- Fixes the `undefined local variable or method 'pre_auth'` error
+
+## v1.1.1 (2017-01-18)
+
+#### Upgrading
+
+- The configuration setting `jws_public_key` wasn't actually used, it's deprecated now and will be removed in the next major release
+- The undocumented shorthand `to_proc` syntax for defining claims (`claim :user, &:name`) is not supported anymore
+
+#### Features
+
+- Claims now receive an optional second `scopes` argument which allow you to dynamically adjust claim values based on the requesting applications' scopes (by @nbibler)
+- The `prompt` parameter values `login` and `consent` are now supported
+- The configuration setting `protocol` was added (by @gigr)
+
+#### Bugfixes
+
+- Standard Claims are now mapped correctly to their default scopes (by @tylerhunt)
+- Blank `nonce` parameters are now ignored
+
+#### Changes
+
+- `nil` values and empty strings are now removed from the UserInfo and IdToken responses
+- Allow `json-jwt` dependency at ~> 1.6. (by @nbibler)
+- Configuration blocks no longer internally use `instance_eval` which previously gave undocumented and unexpected `self` access to the caller (by @nbibler)
+
+## v1.1.0 (2016-11-30)
+
+This release is a general clean-up and adds support for some advanced OpenID Connect features.
+
+#### Upgrading
+
+- This version adds a table to store temporary nonces, use the generator `doorkeeper:openid_connect:migration` to create a migration
+- Implement the new configuration callbacks `auth_time_from_resource_owner` and `reauthenticate_resource_owner` to support advanced features
+
+#### Features
+
+- Add discovery endpoint	 ([a16caa8](/../../commit/a16caa8))
+- Add webfinger and keys endpoints for discovery	 ([f70898b](/../../commit/f70898b))
+- Add supported claims to discovery response	 ([1d8f9ea](/../../commit/1d8f9ea))
+- Support prompt=none parameter	 ([c775d8b](/../../commit/c775d8b))
+- Store and return nonces in IdToken responses	 ([d28ca8c](/../../commit/d28ca8c))
+- Add generator for initializer	 ([80399fd](/../../commit/80399fd))
+- Support max_age parameter	 ([aabe3aa](/../../commit/aabe3aa))
+- Respect scope grants in UserInfo response	 ([25f2170](/../../commit/25f2170))

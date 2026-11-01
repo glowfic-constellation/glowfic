@@ -1,0 +1,26 @@
+current directory: /home/runner/work/glowfic/glowfic/vendor/bundle/ruby/4.0.0/gems/date-3.6.0/ext/date
+/opt/hostedtoolcache/Ruby/4.0.9/x64/bin/ruby extconf.rb
+checking for rb_category_warn()... yes
+checking for timezone in time.h with -Werror... yes
+checking for altzone in time.h with -Werror... no
+checking for rb_gc_mark_movable() in ruby.h... yes
+checking for RUBY_TYPED_EMBEDDABLE in ruby.h... yes
+creating Makefile
+
+current directory: /home/runner/work/glowfic/glowfic/vendor/bundle/ruby/4.0.0/gems/date-3.6.0/ext/date
+make DESTDIR\= sitearchdir\=./.gem.20261024-3502-12wpe2 sitelibdir\=./.gem.20261024-3502-12wpe2 clean
+
+current directory: /home/runner/work/glowfic/glowfic/vendor/bundle/ruby/4.0.0/gems/date-3.6.0/ext/date
+make DESTDIR\= sitearchdir\=./.gem.20261024-3502-12wpe2 sitelibdir\=./.gem.20261024-3502-12wpe2
+compiling date_core.c
+compiling date_parse.c
+compiling date_strftime.c
+compiling date_strptime.c
+linking shared-object date_core.so
+
+current directory: /home/runner/work/glowfic/glowfic/vendor/bundle/ruby/4.0.0/gems/date-3.6.0/ext/date
+make DESTDIR\= sitearchdir\=./.gem.20261024-3502-12wpe2 sitelibdir\=./.gem.20261024-3502-12wpe2 install
+/usr/bin/install -c -m 0755 date_core.so ./.gem.20261024-3502-12wpe2
+
+current directory: /home/runner/work/glowfic/glowfic/vendor/bundle/ruby/4.0.0/gems/date-3.6.0/ext/date
+make DESTDIR\= sitearchdir\=./.gem.20261024-3502-12wpe2 sitelibdir\=./.gem.20261024-3502-12wpe2 clean

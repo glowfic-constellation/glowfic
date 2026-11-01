@@ -1,0 +1,41 @@
+# frozen_string_literal: true
+
+module SimpleCov
+  module ExitCodes
+    SUCCESS = 0
+    EXCEPTION = 1
+    MINIMUM_COVERAGE = 2
+    MAXIMUM_COVERAGE_DROP = 3
+    MAXIMUM_COVERAGE = 4
+
+    # The plural unit each criterion's misses count in, for the checks that report
+    # counts rather than percents.
+    UNITS = {line: "lines", branch: "branches", method: "methods"}.freeze
+
+    # Threshold-violation reports and exit-status notices are the output of the
+    # enforcement feature, not Ruby warnings: routing them through `Kernel#warn`
+    # made `-W0` swallow the explanation for a failing exit code, let
+    # `Warning.warn` hooks intercept them mid-at_exit, and fed colorized text to
+    # warning logs. `print_errors false` remains the intended opt-out.
+    #
+    # A parallel runner can close a worker's stderr before its at_exit hooks
+    # run, hence the rescue.
+    def self.print_error(message)
+      $stderr.puts message # rubocop:disable Style/StderrPuts
+    rescue IOError
+      # The violation still has to set the exit status even when its
+      # explanation cannot be printed.
+    end
+  end
+end
+
+require_relative "exit_codes/check"
+require_relative "exit_codes/baseline_check"
+require_relative "exit_codes/exit_code_handling"
+require_relative "exit_codes/maximum_coverage_drop_check"
+require_relative "exit_codes/maximum_missed_check"
+require_relative "exit_codes/maximum_missed_per_file_check"
+require_relative "exit_codes/maximum_overall_coverage_check"
+require_relative "exit_codes/minimum_coverage_by_file_check"
+require_relative "exit_codes/minimum_coverage_by_group_check"
+require_relative "exit_codes/minimum_overall_coverage_check"

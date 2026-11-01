@@ -1,0 +1,33 @@
+#include "config.h"
+#include "declaration.h"
+#include "definition.h"
+#include "diagnostic.h"
+#include "document.h"
+#include "graph.h"
+#include "location.h"
+#include "query.h"
+#include "reference.h"
+#include "signature.h"
+
+VALUE mRubydex;
+
+void Init_rubydex(void) {
+    rb_ext_ractor_safe(true);
+
+    /*
+     * Document-module: Rubydex
+     *
+     * Namespace for Rubydex's Ruby API.
+     */
+    mRubydex = rb_define_module("Rubydex");
+    rdxi_initialize_graph(mRubydex);
+    rdxi_initialize_config(mRubydex);
+    rdxi_initialize_query(mRubydex);
+    rdxi_initialize_declaration(mRubydex);
+    rdxi_initialize_document(mRubydex);
+    rdxi_initialize_definition(mRubydex);
+    rdxi_initialize_location(mRubydex);
+    rdxi_initialize_diagnostic(mRubydex);
+    rdxi_initialize_reference(mRubydex);
+    rdxi_initialize_signature(mRubydex);
+}

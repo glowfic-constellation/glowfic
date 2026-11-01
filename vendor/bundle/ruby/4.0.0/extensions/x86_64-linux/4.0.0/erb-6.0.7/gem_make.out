@@ -1,0 +1,19 @@
+current directory: /home/runner/work/glowfic/glowfic/vendor/bundle/ruby/4.0.0/gems/erb-6.0.7/ext/erb/escape
+/opt/hostedtoolcache/Ruby/4.0.9/x64/bin/ruby extconf.rb
+checking for rb_ext_ractor_safe() in ruby.h... yes
+creating Makefile
+
+current directory: /home/runner/work/glowfic/glowfic/vendor/bundle/ruby/4.0.0/gems/erb-6.0.7/ext/erb/escape
+make DESTDIR\= sitearchdir\=./.gem.20261024-3502-oj1rl sitelibdir\=./.gem.20261024-3502-oj1rl clean
+
+current directory: /home/runner/work/glowfic/glowfic/vendor/bundle/ruby/4.0.0/gems/erb-6.0.7/ext/erb/escape
+make DESTDIR\= sitearchdir\=./.gem.20261024-3502-oj1rl sitelibdir\=./.gem.20261024-3502-oj1rl
+compiling escape.c
+linking shared-object erb/escape.so
+
+current directory: /home/runner/work/glowfic/glowfic/vendor/bundle/ruby/4.0.0/gems/erb-6.0.7/ext/erb/escape
+make DESTDIR\= sitearchdir\=./.gem.20261024-3502-oj1rl sitelibdir\=./.gem.20261024-3502-oj1rl install
+/usr/bin/install -c -m 0755 escape.so ./.gem.20261024-3502-oj1rl/erb
+
+current directory: /home/runner/work/glowfic/glowfic/vendor/bundle/ruby/4.0.0/gems/erb-6.0.7/ext/erb/escape
+make DESTDIR\= sitearchdir\=./.gem.20261024-3502-oj1rl sitelibdir\=./.gem.20261024-3502-oj1rl clean

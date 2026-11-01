@@ -1,0 +1,81 @@
+name: build
+
+on:
+  push:
+    branches:
+      - master
+      - github-actions
+  pull_request:
+  schedule:
+    - cron: "0 18 * * 6" # Saturdays at 12pm CST
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+jobs:
+  test:
+    name: Ruby ${{ matrix.ruby-version }} / Active Record ${{ matrix.active-record.label }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    services:
+      postgres:
+        image: postgres:latest
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 5432:5432
+    env:
+      CI: true
+      PGHOST: 127.0.0.1
+      PGUSER: postgres
+    strategy:
+      fail-fast: false
+      matrix:
+        ruby-version: ["3.3", "3.4", "4.0"]
+        active-record:
+          - { label: "8.0", env: "ACTIVE_RECORD_VERSION=~> 8.0.0" }
+          - { label: "8.1", env: "ACTIVE_RECORD_VERSION=~> 8.1.0" }
+        allow-failure: [false]
+        include:
+          - ruby-version: "4.0"
+            active-record: { label: "main", env: "ACTIVE_RECORD_BRANCH=main" }
+            allow-failure: true
+          - ruby-version: "4.0"
+            active-record: { label: "8-1-stable", env: "ACTIVE_RECORD_BRANCH=8-1-stable" }
+            allow-failure: true
+          - ruby-version: "4.0"
+            active-record: { label: "8-0-stable", env: "ACTIVE_RECORD_BRANCH=8-0-stable" }
+            allow-failure: true
+          - ruby-version: "ruby-head"
+            active-record: { label: "8.1", env: "ACTIVE_RECORD_VERSION=~> 8.1.0" }
+            allow-failure: true
+    continue-on-error: ${{ matrix.allow-failure }}
+    steps:
+      - uses: actions/checkout@v6
+      - name: Select ActiveRecord version
+        env:
+          ACTIVE_RECORD_ENV: ${{ matrix.active-record.env }}
+        run: echo "$ACTIVE_RECORD_ENV" >> "$GITHUB_ENV"
+      - name: Set up Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: ${{ matrix.ruby-version }}
+          bundler-cache: true
+          cache-version: ${{ matrix.active-record.env }}
+      - name: Set up test database
+        env:
+          PGPASSWORD: postgres
+        run: createdb pg_search_test
+      - name: Run tests
+        run: bundle exec rake

@@ -1,0 +1,130 @@
+---
+Capybara:
+  Enabled: true
+  DocumentationBaseURL: https://docs.rubocop.org/rubocop-capybara
+  Include: &1
+    - "**/*_spec.rb"
+    - "**/spec/**/*"
+    - "**/test/**/*"
+    - "**/*_steps.rb"
+    - "**/features/step_definitions/**/*"
+
+Capybara/AmbiguousClick:
+  Description: Specify the exact target to click on.
+  Enabled: false
+  VersionAdded: '2.22'
+  Reference: https://www.rubydoc.info/gems/rubocop-capybara/RuboCop/Cop/Capybara/AmbiguousClick
+
+Capybara/AssertStyle:
+  Description: Checks for usage of deprecated assert style method.
+  Enabled: true
+  VersionAdded: '2.23'
+  VersionChanged: '3.0'
+  Reference: https://www.rubydoc.info/gems/rubocop-capybara/RuboCop/Cop/Capybara/AssertStyle
+
+Capybara/FindAllFirst:
+  Description: Enforces use of `first` instead of `all` with `first` or `[0]`.
+  Enabled: true
+  SafeAutoCorrect: false
+  VersionAdded: '2.22'
+  VersionChanged: '3.0'
+  Reference: https://www.rubydoc.info/gems/rubocop-capybara/RuboCop/Cop/Capybara/FindAllFirst
+
+Capybara/RedundantWithinFind:
+  Description: Checks for redundant `within find(...)` calls.
+  Enabled: true
+  VersionAdded: '2.20'
+  VersionChanged: '3.0'
+  Reference: https://www.rubydoc.info/gems/rubocop-capybara/RuboCop/Cop/Capybara/RedundantWithinFind
+
+Capybara/SpecificActions:
+  Description: Checks for there is a more specific actions offered by Capybara.
+  Enabled: true
+  VersionAdded: '2.14'
+  VersionChanged: '3.0'
+  Reference: https://www.rubydoc.info/gems/rubocop-capybara/RuboCop/Cop/Capybara/SpecificActions
+
+Capybara/SpecificFinders:
+  Description: Checks if there is a more specific finder offered by Capybara.
+  Enabled: true
+  VersionAdded: '2.13'
+  VersionChanged: '3.0'
+  Reference: https://www.rubydoc.info/gems/rubocop-capybara/RuboCop/Cop/Capybara/SpecificFinders
+
+Capybara/RSpec:
+  Enabled: true
+  Include: *1
+
+Capybara/RSpec/CurrentPathExpectation:
+  Description: Checks that no expectations are set on Capybara's `current_path`.
+  Enabled: true
+  VersionAdded: '1.18'
+  VersionChanged: '3.0'
+  Reference: https://www.rubydoc.info/gems/rubocop-capybara/RuboCop/Cop/Capybara/RSpec/CurrentPathExpectation
+
+Capybara/RSpec/HaveContent:
+  Description: Checks for usage of `have_content` and `have_no_content`.
+  Enabled: true
+  VersionAdded: '2.23'
+  VersionChanged: '3.0'
+  Reference: https://www.rubydoc.info/gems/rubocop-capybara/RuboCop/Cop/Capybara/RSpec/HaveContent
+
+Capybara/RSpec/HaveSelector:
+  Description: Use `have_css` or `have_xpath` instead of `have_selector`.
+  Enabled: true
+  DefaultSelector: css
+  VersionAdded: '2.19'
+  VersionChanged: '3.0'
+  Reference: https://www.rubydoc.info/gems/rubocop-capybara/RuboCop/Cop/Capybara/RSpec/HaveSelector
+
+Capybara/RSpec/MatchStyle:
+  Description: Checks for usage of deprecated style methods in RSpec matchers.
+  Enabled: true
+  VersionAdded: '2.23'
+  VersionChanged: '3.0'
+  Reference: https://www.rubydoc.info/gems/rubocop-capybara/RuboCop/Cop/Capybara/RSpec/MatchStyle
+
+Capybara/RSpec/NegationMatcher:
+  Description: Enforces use of `have_no_*` or `not_to` for negated expectations.
+  Enabled: true
+  VersionAdded: '2.14'
+  VersionChanged: '3.0'
+  EnforcedStyle: have_no
+  SupportedStyles:
+    - have_no
+    - not_to
+  Reference: https://www.rubydoc.info/gems/rubocop-capybara/RuboCop/Cop/Capybara/RSpec/NegationMatcher
+
+Capybara/RSpec/NegationMatcherAfterVisit:
+  Description: Do not allow negative matchers to be used immediately after `visit`.
+  Enabled: true
+  VersionAdded: '2.22'
+  VersionChanged: '3.0'
+  Reference: https://www.rubydoc.info/gems/rubocop-capybara/RuboCop/Cop/Capybara/RSpec/NegationMatcherAfterVisit
+
+Capybara/RSpec/PredicateMatcher:
+  Description: Prefer using predicate matcher over using predicate method directly.
+  Enabled: true
+  Strict: true
+  EnforcedStyle: inflected
+  AllowedExplicitMatchers: []
+  SupportedStyles:
+    - inflected
+    - explicit
+  VersionAdded: '2.19'
+  VersionChanged: '3.0'
+  Reference: https://www.rubydoc.info/gems/rubocop-capybara/RuboCop/Cop/Capybara/RSpec/PredicateMatcher
+
+Capybara/RSpec/SpecificMatcher:
+  Description: Checks for there is a more specific matcher offered by Capybara.
+  Enabled: true
+  VersionAdded: '2.12'
+  VersionChanged: '3.0'
+  Reference: https://www.rubydoc.info/gems/rubocop-capybara/RuboCop/Cop/Capybara/RSpec/SpecificMatcher
+
+Capybara/RSpec/VisibilityMatcher:
+  Description: Checks for boolean visibility in Capybara finders.
+  Enabled: true
+  VersionAdded: '1.39'
+  VersionChanged: '3.0'
+  Reference: https://www.rubydoc.info/gems/rubocop-capybara/RuboCop/Cop/Capybara/RSpec/VisibilityMatcher
