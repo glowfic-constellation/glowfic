@@ -119,7 +119,8 @@ class ApplicationController < ActionController::Base
         max(boards.name) as board_name,
         max(users.username) as last_user_name,
         bool_or(users.deleted) as last_user_deleted,
-        max(board_sections.name) as section_name
+        max(board_sections.name) as section_name,
+        max(board_sections.section_order) as board_section_order
         #{select}
       SQL
     else
@@ -128,7 +129,8 @@ class ApplicationController < ActionController::Base
         boards.name as board_name,
         users.username as last_user_name,
         users.deleted as last_user_deleted,
-        board_sections.name as section_name
+        board_sections.name as section_name,
+        board_sections.section_order as board_section_order
         #{select}
       SQL
     end

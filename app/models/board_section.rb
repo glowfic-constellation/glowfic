@@ -3,6 +3,8 @@ class BoardSection < ApplicationRecord
   include Orderable
   include Presentable
 
+  PER_PAGE = 25
+
   belongs_to :board, inverse_of: :board_sections, optional: false
   has_many :posts, inverse_of: :section, foreign_key: :section_id, dependent: false # This is handled in callbacks
 
