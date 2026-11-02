@@ -125,13 +125,28 @@ RSpec.describe IndexPostsController do
       expect(flash[:error]).to eq("You do not have permission to modify this index.")
     end
 
-    it "requires access to the post" do
-      index = create(:index)
-      index_post = create(:index_post, index: index, post: create(:post, privacy: :private))
-      login_as(index.user)
-      get :edit, params: { id: index_post.id }
-      expect(response).to redirect_to(index_url(index))
-      expect(flash[:error]).to eq("You do not have permission to modify this index.")
+    context "with a post the user cannot see" do
+      let(:index) { create(:index, authors_locked: false) }
+      let(:index_post) { create(:index_post, index: index, post: create(:post, privacy: :private)) }
+
+      it "requires access to the post for other editors" do
+        login
+        get :edit, params: { id: index_post.id }
+        expect(response).to redirect_to(index_url(index))
+        expect(flash[:error]).to eq("You do not have permission to modify this index.")
+      end
+
+      it "works for the index's owner, who was shown the post" do
+        login_as(index.user)
+        get :edit, params: { id: index_post.id }
+        expect(response).to have_http_status(200)
+      end
+
+      it "works for admins" do
+        login_as(create(:admin_user))
+        get :edit, params: { id: index_post.id }
+        expect(response).to have_http_status(200)
+      end
     end
 
     it "works" do
@@ -247,6 +262,16 @@ RSpec.describe IndexPostsController do
       index.posts << create(:post, user: index.user)
       login_as(index.user)
       delete :destroy, params: { id: index.index_posts.first.id }
+      expect(response).to redirect_to(index_url(index))
+      expect(flash[:success]).to eq("Post removed from index.")
+      expect(IndexPost.count).to eq(0)
+    end
+
+    it "lets any editor remove a post they cannot see" do
+      index = create(:index, authors_locked: false)
+      index_post = create(:index_post, index: index, post: create(:post, privacy: :private))
+      login
+      delete :destroy, params: { id: index_post.id }
       expect(response).to redirect_to(index_url(index))
       expect(flash[:success]).to eq("Post removed from index.")
       expect(IndexPost.count).to eq(0)

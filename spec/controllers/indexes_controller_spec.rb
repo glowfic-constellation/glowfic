@@ -196,14 +196,29 @@ RSpec.describe IndexesController do
       expect(flash[:error]).to eq('You do not have permission to modify this index.')
     end
 
-    it "lists only posts the editor can see" do
-      index = create(:index, authors_locked: false)
-      visible = create(:index_post, index: index).post
-      create(:index_post, index: index, post: create(:post, privacy: :private))
-      login
-      get :edit, params: { id: index.id }
-      expect(response).to have_http_status(200)
-      expect(assigns(:unsectioned_posts)).to eq([visible])
+    context "with a post the editor cannot see" do
+      let(:index) { create(:index, authors_locked: false) }
+      let!(:visible) { create(:index_post, index: index).post }
+      let!(:hidden) { create(:index_post, index: index, post: create(:post, privacy: :private)).post }
+
+      it "lists only posts other editors can see" do
+        login
+        get :edit, params: { id: index.id }
+        expect(response).to have_http_status(200)
+        expect(assigns(:unsectioned_posts)).to eq([visible])
+      end
+
+      it "lists all posts for the owner" do
+        login_as(index.user)
+        get :edit, params: { id: index.id }
+        expect(assigns(:unsectioned_posts)).to match_array([visible, hidden])
+      end
+
+      it "lists all posts for admins" do
+        login_as(create(:admin_user))
+        get :edit, params: { id: index.id }
+        expect(assigns(:unsectioned_posts)).to match_array([visible, hidden])
+      end
     end
 
     it "works" do

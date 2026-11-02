@@ -86,7 +86,10 @@ class IndexPostsController < ApplicationController
       redirect_to indexes_path and return
     end
 
-    return if @index_post.index.editable_by?(current_user) && @index_post.post.visible_to?(current_user)
+    index = @index_post.index
+    # anyone who can edit the index can remove a post, but only those who were shown it can see it
+    can_see = index.managed_by?(current_user) || @index_post.post.visible_to?(current_user)
+    return if index.editable_by?(current_user) && (action_name == 'destroy' || can_see)
     flash[:error] = "You do not have permission to modify this index."
     redirect_to @index_post.index
   end

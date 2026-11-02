@@ -102,7 +102,8 @@ class IndexesController < ApplicationController
     @page_title = "Edit Index: #{@index.name}"
     use_javascript('posts/index_edit')
     @index_sections = @index.index_sections.ordered
-    @unsectioned_posts = @index.posts.where(index_posts: { index_section_id: nil }).visible_to(current_user)
+    @unsectioned_posts = @index.posts.where(index_posts: { index_section_id: nil })
+    @unsectioned_posts = @unsectioned_posts.visible_to(current_user) unless @index.managed_by?(current_user)
     @unsectioned_posts = @unsectioned_posts.select("posts.*, index_posts.id as index_post_id, index_posts.section_order as section_order")
     @unsectioned_posts = @unsectioned_posts.order('index_posts.section_order ASC')
   end
