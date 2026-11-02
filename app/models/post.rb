@@ -124,6 +124,18 @@ class Post < ApplicationRecord
     where(character_id: character_ids).or(where(id: Reply.where(character_id: character_ids).select(:post_id)))
   }
 
+  # Posts shown on the given user's Favorites page: posts the user favorited, posts in
+  # continuities the user favorited, and posts where a favorited user is a joined author.
+  # Does not apply visibility, block, ignore or Site testing filtering.
+  def self.favorited_by(user)
+    favorites = user.favorites
+    user_favorites = favorites.where(favorite_type: User.to_s).select(:favorite_id)
+    author_posts = Post::Author.where(user_id: user_favorites, joined: true).select(:post_id)
+    board_favorites = favorites.where(favorite_type: Board.to_s).select(:favorite_id)
+    post_favorites = favorites.where(favorite_type: Post.to_s).select(:favorite_id)
+    Post.where(id: author_posts).or(Post.where(id: post_favorites)).or(Post.where(board_id: board_favorites))
+  end
+
   # Posts on which the given user owes a reply, as shown on the Replies Owed page:
   # the user is an author who has not opted out (or, with hidden: true, has opted out),
   # and the post is neither complete nor abandoned. Unless hidden, posts where the user
