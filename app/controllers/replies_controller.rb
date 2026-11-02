@@ -234,9 +234,12 @@ class RepliesController < WritableController
 
   # New replies, previews and drafts are only for posts the user can see, and new replies only for posts they can tag
   def require_post_permission
-    return if editing_multi_reply?
+    editing = editing_multi_reply?
 
-    post_ids = (@multi_replies.map(&:post_id) + [permitted_params[:post_id]]).compact_blank.map(&:to_i).uniq
+    # when editing, everything stays in the edited reply's post, whose access was checked above
+    post_ids = @multi_replies.map(&:post_id) + [permitted_params[:post_id]]
+    post_ids << @reply.post_id if editing
+    post_ids = post_ids.compact_blank.map(&:to_i).uniq
     if post_ids.size > 1
       flash[:error] = "Replies must all be in the same post."
       redirect_to posts_path and return
@@ -250,7 +253,8 @@ class RepliesController < WritableController
       redirect_to continuities_path and return
     end
 
-    return if params[:button_preview] || params[:button_add_more] || params[:button_discard_multi_reply]
+    # editing a reply needs no tagging rights, as with update
+    return if editing || params[:button_preview] || params[:button_add_more] || params[:button_discard_multi_reply]
     return if reply_post.taggable_by?(current_user)
     flash[:error] = "You do not have permission to reply to this post."
     redirect_to post_path(reply_post)

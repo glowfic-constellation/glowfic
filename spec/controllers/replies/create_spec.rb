@@ -666,5 +666,29 @@ RSpec.describe RepliesController, 'POST create' do
       expect(added.user).to eq(reply.user)
       expect(added.content).to eq('added reply')
     end
+
+    context "when the editor names a post the user cannot see" do
+      let(:reply) { create(:reply, content: 'original') }
+      let(:hidden_post) { create(:post, privacy: :private) }
+      let(:editor_params) { { post_id: hidden_post.id, content: 'test', editor_mode: 'html' } }
+      let(:multi_replies_json) { [{ id: reply.id, post_id: reply.post_id, content: 'changed', editor_mode: 'html' }].to_json }
+
+      before(:each) do
+        create(:reply, post: hidden_post, content: 'secret reply')
+        login_as(reply.user)
+      end
+
+      [:button_preview, :button_add_more, :button_submit_previewed_multi_reply].each do |button|
+        it "does not handle #{button}" do
+          expect {
+            post :create, params: { button => true, multi_replies_json: multi_replies_json, reply: editor_params }
+          }.not_to change { [Reply.count, ReplyDraft.count, hidden_post.replies.count] }
+
+          expect(response).to redirect_to(posts_url)
+          expect(flash[:error]).to eq("Replies must all be in the same post.")
+          expect(reply.reload.content).to eq('original')
+        end
+      end
+    end
   end
 end
