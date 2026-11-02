@@ -145,6 +145,7 @@ Rails.application.routes.draw do
       resources :icons, only: [] do
         collection { post :s3_delete }
       end
+      resources :indexes, only: [:index, :show]
       resources :index_posts, only: [] do
         collection { post :reorder }
       end
