@@ -64,8 +64,7 @@ RSpec.describe "Creating posts" do
   end
 
   scenario "User creates a post with a new NPC", :js do
-    user = login
-    create(:character, user: user) # user must have at least 1 character to be able to pick a character
+    login
 
     visit new_post_path
 
@@ -106,7 +105,6 @@ RSpec.describe "Creating posts" do
 
   scenario "User creates a post with an existing NPC", :js do
     user = login
-    create(:character, user: user) # user must have at least 1 character to be able to pick a character
     npc = create(:character, user: user, name: "Fred", nickname: "Another post", npc: true)
 
     visit new_post_path

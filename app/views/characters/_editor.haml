@@ -4,8 +4,8 @@
   .sub= f.label :name
   %div{class: cycle('even', 'odd')}= f.text_field :name, placeholder: "Character Name"
 %div
-  .sub= f.label :nickname
-  %div{class: cycle('even', 'odd')}= f.text_field :nickname, placeholder: "Template Nickname"
+  .sub= f.label :nickname, f.object.npc? ? "Original post" : "Nickname"
+  %div{class: cycle('even', 'odd')}= f.text_field :nickname, placeholder: f.object.npc? ? "Original Post" : "Template Nickname"
 %div
   .sub= f.label :screenname
   %div{class: cycle('even', 'odd')}= f.text_field :screenname, placeholder: "Screen Name"
