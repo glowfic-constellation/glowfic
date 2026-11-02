@@ -178,10 +178,26 @@ RSpec.describe IndexPostsController do
       index = create(:index)
       index.posts << create(:post, user: index.user)
       login_as(index.user)
-      patch :update, params: { id: index.index_posts.first.id, index_post: { post_id: nil } }
+      patch :update, params: { id: index.index_posts.first.id, index_post: { index_section_id: create(:index_section).id } }
       expect(response).to have_http_status(200)
       expect(assigns(:page_title)).to eq("Edit Post in Index")
       expect(flash[:error][:message]).to eq("Index could not be updated because of the following problems:")
+    end
+
+    it "does not move the post or index" do
+      index = create(:index)
+      post = create(:post, user: index.user)
+      index.posts << post
+      index_post = index.index_posts.first
+      hidden_post = create(:post, privacy: :private)
+      other_index = create(:index)
+      login_as(index.user)
+      patch :update, params: { id: index_post.id, index_post: { post_id: hidden_post.id, index_id: other_index.id, description: 'some text' } }
+      expect(response).to redirect_to(index_url(index))
+      index_post.reload
+      expect(index_post.description).to eq('some text')
+      expect(index_post.post).to eq(post)
+      expect(index_post.index).to eq(index)
     end
 
     it "works" do

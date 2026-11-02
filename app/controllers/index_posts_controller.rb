@@ -52,7 +52,8 @@ class IndexPostsController < ApplicationController
   end
 
   def update
-    unless @index_post.update(permitted_params)
+    # an index post stays on its post and index; moving it would skip the checks on the new ones
+    unless @index_post.update(permitted_params.except(:post_id, :index_id))
       render_errors(@index_post, action: 'updated', now: true, class_name: 'Index')
       @page_title = "Edit Post in Index"
       render action: :edit and return
