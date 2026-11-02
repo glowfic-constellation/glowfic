@@ -52,6 +52,16 @@ class Reply < ApplicationRecord
     self.reply_order = val
   end
 
+  DUPLICATE_ATTRS = ['content', 'icon_id', 'character_id', 'character_alias_id'].freeze
+
+  # The user's latest reply in the post, if this reply would repeat it exactly
+  def duplicated_reply
+    last_by_user = post.replies.where(user_id: user_id).ordered.last
+    return unless last_by_user
+    return unless last_by_user.attributes.slice(*DUPLICATE_ATTRS) == attributes.slice(*DUPLICATE_ATTRS)
+    last_by_user
+  end
+
   def assign_default_icon(user)
     if character_id.nil?
       self.icon_id = user.avatar_id

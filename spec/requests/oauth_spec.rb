@@ -87,6 +87,16 @@ RSpec.describe 'OAuth authorization' do
       expect(Bookmark.find_by(reply: reply).user).to eq(user)
     end
 
+    it 'lets an api token create a reply as the user' do
+      token = Doorkeeper::AccessToken.create!(application: application, resource_owner_id: user.id, scopes: 'api')
+      reply_post = create(:post)
+      reply_post.mark_read(user)
+
+      post "/api/v1/posts/#{reply_post.id}/replies", params: { content: 'test' }, headers: { Authorization: "Bearer #{token.plaintext_token}" }
+      expect(response).to have_http_status(200)
+      expect(Reply.find(response.parsed_body['id']).user).to eq(user)
+    end
+
     it 'issues the token and releases the cleanup lock when the enqueue fails' do
       allow(CleanOauthRecordsJob).to receive(:perform_later).and_raise(RuntimeError, 'queue down')
       post '/oauth/authorize', params: authorize_params
