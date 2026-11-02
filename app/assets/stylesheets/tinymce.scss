@@ -30,4 +30,22 @@ body {
       background-color: calculate-transparent-color(#4D4D4D, #3E3E3E, 0.12);
     }
   }
+
+  @media (prefers-color-scheme: dark) {
+    background-color: #4D4D4D;
+    color: #DADADA;
+
+    blockquote {
+      background-color: calculate-transparent-color(#4D4D4D, #3E3E3E, 0.12);
+    }
+
+    &.layout_starry, &.layout_starrylight {
+      background-color: #4D4B5B;
+      color: #DADADA;
+
+      blockquote {
+        background-color: calculate-transparent-color(#4D4B5B, #31323B, 0.12);
+      }
+    }
+  }
 }
