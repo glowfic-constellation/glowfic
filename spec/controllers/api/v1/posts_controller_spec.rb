@@ -142,6 +142,210 @@ RSpec.describe Api::V1::PostsController do
         expect(result_ids).to eq([post_a.id, post_c.id, post_b.id])
       end
 
+      context "with subject search" do
+        let!(:plain) { create(:post, subject: 'A dragon tale') }
+        let!(:plural) { create(:post, subject: 'Dragons') }
+        let!(:compound) { create(:post, subject: 'Dragonfly') }
+
+        before(:each) { create(:post, subject: 'unrelated', content: 'a dragon') }
+
+        it "matches the subject text and its words by default, as on the search page", :show_in_doc do
+          get :index, params: { subject: 'dragon', min: 'true' }
+          expect(response).to have_http_status(200)
+          expect(result_ids).to eq([plain.id, plural.id])
+        end
+
+        it "can match the words in the content when the subject contains the text" do
+          compound.update!(content: 'one small dragon')
+          get :index, params: { subject: 'dragon', min: 'true' }
+          expect(result_ids).to eq([plain.id, compound.id, plural.id])
+        end
+
+        it "does not change q" do
+          get :index, params: { q: 'dragon', min: 'true' }
+          expect(result_ids).to eq([plain.id, compound.id, plural.id])
+        end
+
+        it "matches the subject text only with exact", :show_in_doc do
+          get :index, params: { subject: 'dragon', exact: true, min: 'true' }
+          expect(response).to have_http_status(200)
+          expect(result_ids).to eq([plain.id, compound.id, plural.id])
+        end
+
+        it "ignores exact=false" do
+          get :index, params: { subject: 'dragon', exact: false, min: 'true' }
+          expect(result_ids).to eq([plain.id, plural.id])
+        end
+
+        it "matches acronyms with abbrev", :show_in_doc do
+          acronym = create(:post, subject: 'Case starlight')
+          create(:post, subject: 'Cast')
+          get :index, params: { subject: 'cs', abbrev: true, min: 'true' }
+          expect(response).to have_http_status(200)
+          expect(result_ids).to eq([acronym.id])
+        end
+
+        it "prefers abbrev to exact" do
+          acronym = create(:post, subject: 'Daring Quest')
+          get :index, params: { subject: 'dq', abbrev: true, exact: true, min: 'true' }
+          expect(result_ids).to eq([acronym.id])
+        end
+
+        it "falls back to the subject text when every word is a stop word" do
+          the_post = create(:post, subject: 'The Other Thing')
+          get :index, params: { subject: 'the', min: 'true' }
+          expect(result_ids).to eq([the_post.id])
+        end
+
+        it "ignores stop words when other words are present" do
+          get :index, params: { subject: 'a dragon', min: 'true' }
+          expect(result_ids).to eq([plain.id])
+        end
+
+        it "orders by subject rather than by rank" do
+          ranked = create(:post, subject: 'Zebra dragon', content: 'dragon dragon dragon')
+          get :index, params: { subject: 'dragon', min: 'true' }
+          expect(result_ids).to eq([plain.id, plural.id, ranked.id])
+        end
+
+        it "orders by tagged_at rather than by rank" do
+          ranked = create(:post, subject: 'Zebra dragon', content: 'dragon dragon dragon')
+          plain.update_columns(tagged_at: 1.hour.ago) # rubocop:disable Rails/SkipsModelValidations
+          plural.update_columns(tagged_at: 2.hours.ago) # rubocop:disable Rails/SkipsModelValidations
+          ranked.update_columns(tagged_at: 3.hours.ago) # rubocop:disable Rails/SkipsModelValidations
+          get :index, params: { subject: 'dragon', order: 'tagged_at', min: 'true' }
+          expect(result_ids).to eq([plain.id, plural.id, ranked.id])
+        end
+
+        it "combines with q" do
+          get :index, params: { subject: 'dragon', q: 'tale', min: 'true' }
+          expect(result_ids).to eq([plain.id])
+        end
+
+        it "counts only matching posts in the pagination headers" do
+          get :index, params: { subject: 'dragon', min: 'true' }
+          expect(response.headers['Total'].to_i).to eq(2)
+        end
+      end
+
+      context "with multiple authors" do
+        let(:author1) { create(:user) }
+        let(:author2) { create(:user) }
+        let!(:post1) { create(:post, user: author1) }
+        let!(:post2) { create(:post, user: author2) }
+        let!(:both) { create(:post, user: author1, unjoined_authors: [author2]) }
+        let!(:both_replies) { create(:post) }
+
+        before(:each) do
+          create(:post)
+          create(:reply, post: both_replies, user: author1)
+          create(:reply, post: both_replies, user: author2)
+        end
+
+        it "returns posts where every given user is an author", :show_in_doc do
+          get :index, params: { author_id: [author1.id, author2.id], min: 'true' }
+          expect(response).to have_http_status(200)
+          expect(result_ids).to contain_exactly(both.id, both_replies.id)
+        end
+
+        it "accepts an array with one user" do
+          get :index, params: { author_id: [author1.id], min: 'true' }
+          expect(result_ids).to contain_exactly(post1.id, both.id, both_replies.id)
+        end
+
+        it "ignores repeated users" do
+          get :index, params: { author_id: [author2.id, author2.id], min: 'true' }
+          expect(result_ids).to contain_exactly(post2.id, both.id, both_replies.id)
+        end
+
+        it "still accepts a single value" do
+          get :index, params: { author_id: author2.id, min: 'true' }
+          expect(result_ids).to contain_exactly(post2.id, both.id, both_replies.id)
+        end
+      end
+
+      it "filters by setting", :show_in_doc do
+        setting = create(:setting)
+        setting_post = create(:post, settings: [setting])
+        create(:post, settings: [create(:setting)])
+        create(:post)
+        get :index, params: { setting_id: setting.id, min: 'true' }
+        expect(response).to have_http_status(200)
+        expect(result_ids).to eq([setting_post.id])
+      end
+
+      it "excludes continuities", :show_in_doc do
+        excluded1 = create(:board)
+        excluded2 = create(:board)
+        kept = create(:post)
+        create(:post, board: excluded1)
+        create(:post, board: excluded2)
+        get :index, params: { exclude_board_ids: [excluded1.id, excluded2.id], min: 'true' }
+        expect(response).to have_http_status(200)
+        expect(result_ids).to eq([kept.id])
+      end
+
+      it "can exclude Site testing as the search page does" do
+        kept = create(:post)
+        create(:post, board: create(:board, id: Board::ID_SITETESTING))
+        get :index, params: { exclude_board_ids: [Board::ID_SITETESTING], min: 'true' }
+        expect(result_ids).to eq([kept.id])
+      end
+
+      context "with hide_ignored" do
+        let(:viewer) { create(:user) }
+        let(:ignored_board) { create(:board) }
+        let!(:ignored_post) { create(:post) }
+        let!(:ignored_board_post) { create(:post, board: ignored_board) }
+        let!(:normal_post) { create(:post) }
+
+        before(:each) do
+          api_login_as(viewer)
+          ignored_post.ignore(viewer)
+          ignored_board.ignore(viewer)
+        end
+
+        it "hides ignored posts and continuities when the user hides them from all lists" do
+          viewer.update!(hide_from_all: true)
+          get :index, params: { hide_ignored: true, min: 'true' }
+          expect(response).to have_http_status(200)
+          expect(result_ids).to eq([normal_post.id])
+          expect(response.headers['Total'].to_i).to eq(1)
+        end
+
+        it "does nothing when the user does not hide them from all lists" do
+          get :index, params: { hide_ignored: true, min: 'true' }
+          expect(result_ids).to contain_exactly(ignored_post.id, ignored_board_post.id, normal_post.id)
+        end
+
+        it "shows ignored posts without the param" do
+          viewer.update!(hide_from_all: true)
+          get :index, params: { min: 'true' }
+          expect(result_ids).to contain_exactly(ignored_post.id, ignored_board_post.id, normal_post.id)
+        end
+      end
+
+      it "combines search page filters" do
+        author1 = create(:user)
+        author2 = create(:user)
+        board = create(:board)
+        excluded = create(:board)
+        setting = create(:setting)
+        attrs = { user: author1, unjoined_authors: [author2], board: board, settings: [setting], subject: 'dragon hunt', status: :complete }
+        match = create(:post, **attrs)
+        create(:post, **attrs, subject: 'dragonfly hunt') # no full-text match
+        create(:post, **attrs, unjoined_authors: []) # one author only
+        create(:post, **attrs, settings: []) # no setting
+        create(:post, **attrs, board: excluded) # excluded continuity
+        create(:post, **attrs, status: :active) # wrong status
+        get :index, params: {
+          subject: 'dragon', author_id: [author1.id, author2.id], setting_id: setting.id,
+          exclude_board_ids: [excluded.id], status: 'complete', min: 'true',
+        }
+        expect(response).to have_http_status(200)
+        expect(result_ids).to eq([match.id])
+      end
+
       context "with invalid parameters" do
         it "rejects non-numeric IDs", :show_in_doc do
           get :index, params: { author_id: 'abc' }
@@ -153,6 +357,38 @@ RSpec.describe Api::V1::PostsController do
           get :index, params: { author_id: 0 }
           expect(response).to have_http_status(422)
           expect(response.parsed_body['errors'][0]['message']).to eq('User could not be found.')
+        end
+
+        it "rejects non-numeric IDs in an author array" do
+          user = create(:user)
+          get :index, params: { author_id: [user.id, 'abc'] }
+          expect(response).to have_http_status(422)
+          expect(response.parsed_body['errors'][0]['message']).to include('author_id')
+        end
+
+        it "rejects missing users in an author array" do
+          user = create(:user)
+          get :index, params: { author_id: [user.id, 0] }
+          expect(response).to have_http_status(422)
+          expect(response.parsed_body['errors'][0]['message']).to eq('User could not be found.')
+        end
+
+        it "rejects missing settings" do
+          get :index, params: { setting_id: 0 }
+          expect(response).to have_http_status(422)
+          expect(response.parsed_body['errors'][0]['message']).to eq('Setting could not be found.')
+        end
+
+        it "rejects non-numeric excluded continuities" do
+          get :index, params: { exclude_board_ids: ['abc'] }
+          expect(response).to have_http_status(422)
+          expect(response.parsed_body['errors'][0]['message']).to include('exclude_board_ids')
+        end
+
+        it "rejects non-boolean exact" do
+          get :index, params: { subject: 'dragon', exact: 'maybe' }
+          expect(response).to have_http_status(422)
+          expect(response.parsed_body['errors'][0]['message']).to include('exact')
         end
 
         it "rejects missing continuities" do
@@ -227,6 +463,52 @@ RSpec.describe Api::V1::PostsController do
           api_login_as(author)
           get :index, params: { author_id: author.id }
           expect(response.headers['Total'].to_i).to eq(4)
+        end
+
+        it "keeps subject search results visible to the user" do
+          Post.where(user: author).find_each { |post| post.update_columns(subject: 'dragon') } # rubocop:disable Rails/SkipsModelValidations
+          viewer = api_login
+          access_post = Post.privacy_access_list.first
+          PostViewer.create!(post: access_post, user: viewer)
+          get :index, params: { subject: 'dragon', author_id: [author.id] }
+          expect(result_ids).to match_array([public_post.id, Post.privacy_registered.first.id, access_post.id])
+        end
+
+        it "keeps subject search results public when logged out" do
+          Post.where(user: author).find_each { |post| post.update_columns(subject: 'dragon') } # rubocop:disable Rails/SkipsModelValidations
+          get :index, params: { subject: 'dragon' }
+          expect(result_ids).to eq([public_post.id])
+          expect(response.headers['Total'].to_i).to eq(1)
+        end
+      end
+
+      context "with blocks" do
+        let(:viewer) { create(:user) }
+        let(:blocking_user) { create(:user) }
+        let(:blocked_user) { create(:user) }
+        let!(:blocking_post) { create(:post, user: blocking_user, authors_locked: true, subject: 'dragon blocking') }
+        let!(:blocked_post) { create(:post, user: blocked_user, authors_locked: true, subject: 'dragon blocked') }
+        let!(:other_post) { create(:post, subject: 'dragon other') }
+
+        before(:each) do
+          create(:block, blocking_user: blocking_user, blocked_user: viewer, hide_me: :posts)
+          create(:block, blocking_user: viewer, blocked_user: blocked_user, hide_them: :posts)
+          api_login_as(viewer)
+        end
+
+        it "hides posts whose authors block the user in a subject search" do
+          get :index, params: { subject: 'dragon', min: 'true' }
+          expect(result_ids).not_to include(blocking_post.id)
+          expect(result_ids).to include(other_post.id)
+        end
+
+        it "handles posts by users the user blocks the same as without a search" do
+          get :index, params: { min: 'true' }
+          without_search = response.parsed_body['results'].pluck('id')
+          get :index, params: { subject: 'dragon', min: 'true' }
+          with_search = response.parsed_body['results'].pluck('id')
+          expect(with_search).to match_array(without_search)
+          expect(with_search).to include(blocked_post.id)
         end
       end
 
