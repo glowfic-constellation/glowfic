@@ -19,6 +19,7 @@ Rails.application.routes.draw do
     resources :boards, only: :index
     collection do
       get :search
+      get :moieties
     end
     member do
       put :password

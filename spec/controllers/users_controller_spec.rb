@@ -29,6 +29,69 @@ RSpec.describe UsersController do
         expect(response.body).to include('fed123')
       end
     end
+
+    context "sorted by moiety" do
+      it "lists only users with moieties, in hue order, on one page" do
+        blue = create(:user, moiety: '4d7fff')
+        red = create(:user, moiety: 'ff0000')
+        gray = create(:user, moiety: '808080')
+        green = create(:user, moiety: '0f0')
+        create(:user, moiety: nil)
+        create(:user, moiety: 'aaaaaa', deleted: true)
+        create_list(:user, 26, moiety: 'cccccc') # lighter grays sort ahead of 808080
+        get :index, params: { sort: 'moiety' }
+        expect(assigns(:users).total_pages).to eq(1)
+        expect(assigns(:users).length).to eq(30)
+        expect(assigns(:users).first(3)).to eq([red, green, blue])
+        expect(assigns(:users).last).to eq(gray)
+      end
+
+      it "copes with no moieties" do
+        create(:user)
+        get :index, params: { sort: 'moiety' }
+        expect(response).to have_http_status(200)
+        expect(assigns(:users)).to be_empty
+      end
+
+      context "with views" do
+        render_views
+
+        it "shows hex codes" do
+          create(:user, moiety: 'fed123')
+          get :index, params: { sort: 'moiety' }
+          expect(response.body).to include('#fed123')
+        end
+      end
+    end
+  end
+
+  describe "GET moieties" do
+    render_views
+
+    it "succeeds when logged out" do
+      get :moieties
+      expect(response).to have_http_status(200)
+      expect(response.body).to include('moiety-wheel')
+    end
+
+    it "passes active users' moieties to the page" do
+      user = create(:user, moiety: 'fed123', moiety_name: 'moietycolor')
+      create(:user, moiety: nil)
+      create(:user, moiety: 'aaaaaa', deleted: true)
+      login
+      get :moieties
+      expected = { id: user.id, username: user.username, moiety: 'fed123', moiety_name: 'moietycolor', total: 0, recent: 0 }
+      expect(controller.gon.moieties).to eq([expected])
+    end
+
+    it "counts each author's posts and replies, overall and in the past year" do
+      user = create(:user, moiety: 'fed123')
+      post = create(:post, user: user)
+      create(:reply, post: post, user: user)
+      Timecop.freeze(2.years.ago) { create(:reply, post: post, user: user) }
+      get :moieties
+      expect(controller.gon.moieties.first).to include(total: 3, recent: 2)
+    end
   end
 
   describe "GET new" do
