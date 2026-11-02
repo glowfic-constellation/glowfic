@@ -9,6 +9,16 @@ class Index < ApplicationRecord
 
   validates :name, presence: true
 
+  # keep in sync with Concealable#visible_to?
+  scope :visible_to, ->(user) {
+    return where(privacy: :public) unless user
+    return all if user.admin?
+
+    privacies = [:public, :registered]
+    return where(privacy: privacies) if user.read_only?
+    where(privacy: privacies + [:full_accounts]).or(where(user_id: user.id))
+  }
+
   def editable_by?(user)
     return false unless user
     return false if user.read_only?

@@ -1,6 +1,4 @@
 # frozen_string_literal: true
-require 'will_paginate/array'
-
 class IndexesController < ApplicationController
   before_action :login_required, except: [:index, :show]
   before_action :find_model, except: [:index, :new, :create]
@@ -10,7 +8,7 @@ class IndexesController < ApplicationController
 
   def index
     @page_title = "Indexes"
-    @indexes = Index.order(:id).select { |index| index.visible_to?(current_user) }.paginate(page: page)
+    @indexes = Index.visible_to(current_user).order(:id).paginate(page: page)
   end
 
   def new

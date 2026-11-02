@@ -53,4 +53,20 @@ RSpec.describe Index do
       expect(index.editable_by?(index.user)).to eq(true)
     end
   end
+
+  describe ".visible_to" do
+    it "matches #visible_to? for every privacy and kind of user" do
+      owner = create(:user)
+      reader_owner = create(:reader_user)
+      viewers = [nil, create(:user), create(:reader_user), create(:admin_user), owner, reader_owner]
+      indexes = Index.privacies.keys.flat_map do |privacy|
+        [create(:index, privacy: privacy, user: owner), create(:index, privacy: privacy, user: reader_owner)]
+      end
+
+      viewers.each do |viewer|
+        expected = indexes.select { |index| index.visible_to?(viewer) }
+        expect(Index.visible_to(viewer)).to match_array(expected)
+      end
+    end
+  end
 end
