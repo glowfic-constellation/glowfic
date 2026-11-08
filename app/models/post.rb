@@ -140,6 +140,30 @@ class Post < ApplicationRecord
     posts.where.not(status: [:complete, :abandoned])
   end
 
+  # Posts with content the given user has not read, as shown on the Unread page.
+  # The user must not have ignored the post or its continuity. A post counts as unread
+  # if it was updated after the user last read it. A post the user never opened is
+  # unread unless the user marked its continuity read after the post's last update.
+  # With opened: true, only posts the user has opened before are included.
+  # Does not apply visibility, block or site testing filtering.
+  def self.unread_by(user, opened: false)
+    posts = not_ignored_by(user)
+    posts = posts.where.not(post_views: { read_at: nil }) if opened
+
+    # post view does not exist and (board view does not exist or post has updated since board view read_at)
+    no_post_view = posts.where(post_views: { id: nil })
+    updated_since_board_read = no_post_view.where(board_views: { read_at: nil })
+      .or(no_post_view.where("date_trunc('second', board_views.read_at) < date_trunc('second', posts.tagged_at)"))
+    no_post_view = no_post_view.where(board_views: { user_id: nil }).or(updated_since_board_read)
+
+    # post view exists and post has updated since post view read_at
+    with_post_view = posts.where.not(post_views: { id: nil })
+    with_post_view = with_post_view.where(post_views: { read_at: nil }) # possible if someone ignores and then unignores a post
+      .or(with_post_view.where("date_trunc('second', post_views.read_at) < date_trunc('second', posts.tagged_at)"))
+
+    with_post_view.or(no_post_view)
+  end
+
   def visible_to?(user)
     return false if user&.author_blocking?(self, author_ids)
     return false if self.class.posts_fulllocked?(user)

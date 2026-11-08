@@ -190,6 +190,18 @@ RSpec.describe Api::V1::PostsController do
           expect(response).to have_http_status(422)
           expect(response.parsed_body['errors'][0]['message']).to include('owed')
         end
+
+        it "rejects non-boolean unread" do
+          get :index, params: { unread: 'maybe' }
+          expect(response).to have_http_status(422)
+          expect(response.parsed_body['errors'][0]['message']).to include('unread')
+        end
+
+        it "rejects non-boolean opened" do
+          get :index, params: { opened: 'maybe' }
+          expect(response).to have_http_status(422)
+          expect(response.parsed_body['errors'][0]['message']).to include('opened')
+        end
       end
 
       context "with privacy" do
@@ -317,6 +329,133 @@ RSpec.describe Api::V1::PostsController do
           create(:reply, post: board_post, user: other_user)
           get :index, params: { owed: true, board_id: board_post.board_id }
           expect(result_ids).to eq([board_post.id])
+        end
+      end
+
+      context "with unread" do
+        let(:user) { create(:user) }
+        let(:time) { 10.minutes.ago }
+        let!(:unread_post) { create(:post, subject: 'unread') }
+        let!(:opened_post) { Timecop.freeze(time) { create(:post, subject: 'opened') } }
+        let!(:read_post) { Timecop.freeze(time) { create(:post, subject: 'read') } }
+
+        before(:each) do
+          opened_post.mark_read(user, at_time: time)
+          read_post.mark_read(user, at_time: time)
+          Timecop.freeze(time + 5.minutes) { create(:reply, post: opened_post) }
+        end
+
+        it "requires login", :show_in_doc do
+          get :index, params: { unread: true }
+          expect(response).to have_http_status(401)
+          expect(response.parsed_body['errors'][0]['message']).to eq("You must be logged in to view that page.")
+        end
+
+        it "ignores unread=false when logged out" do
+          get :index, params: { unread: false, min: 'true' }
+          expect(response).to have_http_status(200)
+          expect(result_ids).to contain_exactly(unread_post.id, opened_post.id, read_post.id)
+        end
+
+        it "returns unopened and updated posts", :show_in_doc do
+          api_login_as(user)
+          get :index, params: { unread: true }
+          expect(response).to have_http_status(200)
+          expect(result_ids).to eq([opened_post.id, unread_post.id])
+          expect(response.headers['Total'].to_i).to eq(2)
+        end
+
+        it "returns only opened posts with opened=true" do
+          api_login_as(user)
+          get :index, params: { unread: true, opened: true }
+          expect(result_ids).to eq([opened_post.id])
+        end
+
+        it "respects the opened threads preference" do
+          user.update!(unread_opened: true)
+          api_login_as(user)
+          get :index, params: { unread: true }
+          expect(result_ids).to eq([opened_post.id])
+        end
+
+        it "lets opened=false override the opened threads preference" do
+          user.update!(unread_opened: true)
+          api_login_as(user)
+          get :index, params: { unread: true, opened: false }
+          expect(result_ids).to eq([opened_post.id, unread_post.id])
+        end
+
+        it "treats unopened posts as read when the continuity was marked read later" do
+          api_login_as(user)
+          unread_post.board.mark_read(user)
+          get :index, params: { unread: true }
+          expect(result_ids).to eq([opened_post.id])
+        end
+
+        it "excludes hidden posts and continuities" do
+          api_login_as(user)
+          unread_post.ignore(user)
+          ignored_board_post = create(:post)
+          ignored_board_post.board.ignore(user)
+          get :index, params: { unread: true }
+          expect(result_ids).to eq([opened_post.id])
+        end
+
+        it "excludes posts by blocked users" do
+          api_login_as(user)
+          blocked_user = create(:user)
+          create(:block, blocking_user: user, blocked_user: blocked_user, hide_them: :posts)
+          create(:post, user: blocked_user, authors_locked: true)
+          get :index, params: { unread: true }
+          expect(result_ids).to eq([opened_post.id, unread_post.id])
+        end
+
+        it "excludes site testing posts" do
+          api_login_as(user)
+          unread_post.update!(board: create(:board, id: Board::ID_SITETESTING))
+          get :index, params: { unread: true }
+          expect(result_ids).to eq([opened_post.id])
+        end
+
+        it "excludes posts the user cannot see" do
+          api_login_as(user)
+          create(:post, privacy: :private)
+          create(:post, privacy: :access_list)
+          get :index, params: { unread: true }
+          expect(result_ids).to eq([opened_post.id, unread_post.id])
+          expect(response.headers['Total'].to_i).to eq(2)
+        end
+
+        it "includes access-listed posts the user can see" do
+          api_login_as(user)
+          access_post = create(:post, privacy: :access_list)
+          PostViewer.create!(post: access_post, user: user)
+          get :index, params: { unread: true }
+          expect(result_ids).to contain_exactly(access_post.id, opened_post.id, unread_post.id)
+        end
+
+        it "supports tagged_at ordering" do
+          api_login_as(user)
+          get :index, params: { unread: true, order: 'tagged_at' }
+          expect(result_ids).to eq([unread_post.id, opened_post.id])
+        end
+
+        it "combines with other filters" do
+          api_login_as(user)
+          get :index, params: { unread: true, board_id: opened_post.board_id }
+          expect(result_ids).to eq([opened_post.id])
+        end
+
+        it "combines with owed" do
+          api_login_as(user)
+          other_user = create(:user)
+          owed_unread = create(:post, user: user, unjoined_authors: [other_user])
+          create(:reply, post: owed_unread, user: other_user)
+          owed_read = create(:post, user: user, unjoined_authors: [other_user])
+          create(:reply, post: owed_read, user: other_user)
+          owed_read.mark_read(user)
+          get :index, params: { unread: true, owed: true }
+          expect(result_ids).to eq([owed_unread.id])
         end
       end
     end
