@@ -6,8 +6,8 @@ class ReplyPresenter
     @reply = reply
   end
 
-  def as_json(_options={})
-    {
+  def as_json(options={})
+    reply_json = {
       id: reply.id,
       content: reply.content,
       created_at: reply.created_at,
@@ -17,6 +17,11 @@ class ReplyPresenter
       icon: icon(reply),
       user: user(reply),
     }
+    includes = (options || {})[:include] || []
+    reply_json[:post] = post(reply) if includes.include?(:post)
+    # the matching excerpts from a content search, as the HTML reply search shows them
+    reply_json[:highlight] = Glowfic::Sanitizers.written(reply.pg_search_highlight) if includes.include?(:highlight)
+    reply_json
   end
 
   def character(reply)
@@ -34,6 +39,13 @@ class ReplyPresenter
       id: reply.icon_id,
       url: reply.url,
       keyword: reply.keyword,
+    }
+  end
+
+  def post(reply)
+    {
+      id: reply.post_id,
+      subject: reply.post.subject,
     }
   end
 
