@@ -3,26 +3,39 @@ class Api::V1::PostsController < Api::ApiController
   before_action :login_required, except: [:index, :show]
   before_action :find_post, only: [:show, :update]
 
+  # author_id takes one user ID, or an array of them as the post search page sends
+  NUMBER_OR_NUMBERS = lambda do |value|
+    values = value.is_a?(Array) ? value : [value]
+    next true if values.any? && values.all? { |v| Apipie::Validator::NumberValidator.validate(v) }
+    'Must be a number or an array of numbers.'
+  end
+
   resource_description do
     description 'Viewing and editing posts'
   end
 
   api :GET, '/posts', 'Load all posts, optionally filtered. Results are ordered by subject unless otherwise specified.'
   header 'Authorization', 'Authorization token for a user in the format "Authorization" : "Bearer [token]". Required only when owed is true.', required: false
-  param :q, String, required: false, desc: 'Subject search term'
+  param :q, String, required: false, desc: 'Subject search term. Returns only posts whose subject contains this text (case-insensitive).'
+  param :subject, String, required: false, desc: "Subject search, matched as on the post search page. By default, returns only posts whose subject contains this text (case-insensitive) and whose subject or content also matches its words in an english full-text search. If every word is too common for full-text search (such as 'the'), only the subject must contain the text. Can be combined with q."
+  param :exact, :boolean, required: false, desc: 'If true, subject only has to appear in the subject (case-insensitive), with no full-text match. Same as the "Exact string match" box on the post search page.'
+  param :abbrev, :boolean, required: false, desc: 'If true, subject is an acronym: "cs" matches "Case starlight". Same as the "Search for acronym" box on the post search page. Takes precedence over exact.'
   param :min, String, required: false, desc: 'If present, returns only ID and subject per post'
   param :page, :number, required: false, desc: 'Page in results (25 per page)'
-  param :author_id, :number, required: false, desc: 'If provided, returns only posts where the given user is an author'
+  param :author_id, NUMBER_OR_NUMBERS, required: false, desc: 'A user ID, or an array of user IDs (author_id[]=1&author_id[]=2). If provided, returns only posts where every given user is an author.'
   param :board_id, :number, required: false, desc: 'If provided, returns only posts in the given continuity'
+  param :exclude_board_ids, Array, of: :number, required: false, desc: 'If provided, leaves out posts in the given continuities'
+  param :setting_id, :number, required: false, desc: 'If provided, returns only posts tagged with the given setting'
   param :character_id, :number, required: false, desc: 'If provided, returns only posts where the given character appears, in the post itself or in any reply'
   param :template_id, :number, required: false, desc: 'If provided, returns only posts where any character in the given template appears, in the post itself or in any reply'
-  param :status, Post.statuses.keys, required: false, desc: 'If provided, returns only posts with the given status'
+  param :status, Post.statuses.keys, required: false, desc: "If provided, returns only posts with the given status. 'complete' is the same as the \"Completed Only\" box on the post search page."
+  param :hide_ignored, :boolean, required: false, desc: "If true, leaves out posts and continuities the current user has ignored. As on the post search page, this only applies when the user has turned on hiding ignored posts from all lists."
   param :owed, :boolean, required: false, desc: "If true, returns only posts on which the current user owes a reply, as on the Replies Owed page (including the user's preference for hiding hiatused posts there). Requires authentication."
   param :order, ['subject', 'tagged_at'], required: false, desc: "Result ordering: 'subject' (default, alphabetical) or 'tagged_at' (most recently updated first)"
   error 401, "You must be logged in to request owed posts"
   error 422, "Invalid parameters provided"
   def index
-    owed = ActiveModel::Type::Boolean.new.cast(params[:owed])
+    owed = cast_boolean(params[:owed])
     if owed && !logged_in?
       login_required
       return
@@ -30,12 +43,28 @@ class Api::V1::PostsController < Api::ApiController
 
     queryset = owed ? owed_posts : Post.all
     queryset = queryset.where('subject ILIKE ?', "%#{params[:q]}%") if params[:q].present?
+    if params[:subject].present?
+      queryset = queryset.matching_subject(params[:subject], abbrev: cast_boolean(params[:abbrev]), exact: cast_boolean(params[:exact]))
+    end
     queryset = queryset.where(status: params[:status]) if params[:status].present?
 
     if params[:author_id].present?
-      return unless (author = find_object(User, param: :author_id, status: :unprocessable_content))
-      queryset = queryset.where(id: Post::Author.where(user_id: author.id).select(:post_id))
+      author_ids = Array(params[:author_id]).map(&:to_i).uniq
+      unless User.where(id: author_ids).count == author_ids.length
+        error = { message: "User could not be found." }
+        render json: { errors: [error] }, status: :unprocessable_content
+        return
+      end
+      queryset = queryset.with_all_authors(author_ids)
     end
+
+    if params[:setting_id].present?
+      return unless (setting = find_object(Setting, param: :setting_id, status: :unprocessable_content))
+      queryset = queryset.with_setting(setting.id)
+    end
+
+    queryset = queryset.where.not(board_id: params[:exclude_board_ids]) if params[:exclude_board_ids].present?
+    queryset = queryset.not_ignored_by(current_user) if current_user&.hide_from_all && cast_boolean(params[:hide_ignored])
 
     if params[:board_id].present?
       return unless (board = find_object(Board, param: :board_id, status: :unprocessable_content))
@@ -54,10 +83,11 @@ class Api::V1::PostsController < Api::ApiController
 
     # filter visibility before paginating so the pagination headers only count visible posts
     queryset = queryset.visible_to(current_user)
+    # reorder drops the rank ordering that a full-text subject search adds
     queryset = if params[:order] == 'tagged_at'
-      queryset.ordered
+      queryset.reorder(nil).ordered
     else
-      queryset.order(Arel.sql('LOWER(subject) asc'), id: :asc)
+      queryset.reorder(Arel.sql('LOWER(subject) asc'), id: :asc)
     end
 
     posts = paginate queryset, per_page: 25
@@ -188,6 +218,10 @@ class Api::V1::PostsController < Api::ApiController
     posts = Post.replies_owed_by(current_user)
     posts = posts.not_on_hiatus if current_user.hide_hiatused_tags_owed?
     posts.where.not(id: current_user.hidden_posts).no_tests
+  end
+
+  def cast_boolean(value)
+    ActiveModel::Type::Boolean.new.cast(value)
   end
 
   def find_post

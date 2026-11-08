@@ -290,33 +290,17 @@ class PostsController < WritableController
     @search_results = Post.ordered
     @search_results = @search_results.where(board_id: params[:board_id]) if params[:board_id].present?
     @search_results = @search_results.where.not(board_id: params[:exclude_board_ids]) if params[:exclude_board_ids].present?
-    @search_results = @search_results.where(id: Setting.find(params[:setting_id]).post_tags.pluck(:post_id)) if params[:setting_id].present?
+    @search_results = @search_results.with_setting(Setting.find(params[:setting_id]).id) if params[:setting_id].present?
     if params[:subject].present?
-      if params[:abbrev].present?
-        search = params[:subject].chars.join('% ')
-        @search_results = @search_results.where('subject ILIKE ?', "%#{search}%")
-      elsif params[:exact].present?
-        @search_results = @search_results.where('subject ILIKE ?', "%#{params[:subject]}%")
-      else
-        pruned = detect_pruned_words(params[:subject])
-        if pruned[:all_pruned]
-          @search_results = @search_results.where('subject ILIKE ?', "%#{params[:subject]}%")
-          @pruned_words = pruned[:pruned_words]
-          @all_pruned = true
-        else
-          @search_results = @search_results.search(params[:subject]).where('subject ILIKE ?', "%#{params[:subject]}%")
-          @pruned_words = pruned[:pruned_words] if pruned[:pruned_words].any?
-        end
+      @search_results = @search_results.matching_subject(params[:subject], abbrev: params[:abbrev].present?, exact: params[:exact].present?)
+      if params[:abbrev].blank? && params[:exact].blank?
+        pruned = Post.pruned_search_words(params[:subject])
+        @pruned_words = pruned[:pruned_words] if pruned[:pruned_words].any?
+        @all_pruned = true if pruned[:all_pruned]
       end
     end
     @search_results = @search_results.complete if params[:completed].present?
-    if params[:author_id].present?
-      # get author matches for posts that have at least one
-      author_posts = Post::Author.where(user_id: params[:author_id]).group(:post_id)
-      # select posts that have all of them
-      author_posts = author_posts.having('COUNT(post_authors.user_id) = ?', params[:author_id].length).pluck(:post_id)
-      @search_results = @search_results.where(id: author_posts)
-    end
+    @search_results = @search_results.with_all_authors(params[:author_id]) if params[:author_id].present?
     @search_results = @search_results.with_character(params[:character_id]) if params[:character_id].present?
     @search_results = @search_results.not_ignored_by(current_user) if current_user&.hide_from_all && params[:hide_ignored].present?
     @search_results = posts_from_relation(@search_results, show_blocked: !!params[:show_blocked], no_tests: no_tests)
@@ -363,26 +347,7 @@ class PostsController < WritableController
     redirect_to post_path(@post)
   end
 
-  # Postgres's built-in english tsearch dictionary (tsearch_data/english.stop).
-  POSTGRES_ENGLISH_STOP_WORDS = Set.new(%w[
-    i me my myself we our ours ourselves you your yours yourself yourselves
-    he him his himself she her hers herself it its itself they them their
-    theirs themselves what which who whom this that these those am is are
-    was were be been being have has had having do does did doing a an the
-    and but if or because as until while of at by for with about against
-    between into through during before after above below to from up down in
-    out on off over under again further then once here there when where why
-    how all any both each few more most other some such no nor not only own
-    same so than too very s t can will just don should now
-  ]).freeze
-
   private
-
-  def detect_pruned_words(query)
-    words = query.split(/\s+/).compact_blank
-    pruned_words = words.select { |word| POSTGRES_ENGLISH_STOP_WORDS.include?(word.downcase) }
-    { pruned_words: pruned_words, all_pruned: pruned_words.length == words.length && words.any? }
-  end
 
   def preview
     @post ||= Post.new(user: current_user)
