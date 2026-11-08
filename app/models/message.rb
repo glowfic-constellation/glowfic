@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 class Message < ApplicationRecord
+  include Presentable
+
   # TODO drop marked_*
   belongs_to :sender, class_name: 'User', inverse_of: :sent_messages, optional: true
   belongs_to :recipient, class_name: 'User', inverse_of: :messages, optional: false
@@ -20,6 +22,21 @@ class Message < ApplicationRecord
   scope :unread, -> { where(unread: true) }
 
   CACHE_VERSION = 2
+
+  # The newest message in each thread that is listed in the user's inbox or outbox.
+  # Excludes messages the user deleted from that box, messages with users the user
+  # has blocked, and messages with deleted users.
+  def self.box_threads_for(user, box)
+    blocked_ids = Block.where(blocking_user: user).pluck(:blocked_user_id)
+    messages = if box == 'outbox'
+      user.sent_messages.where(visible_outbox: true)
+        .where.not(recipient_id: blocked_ids).joins(:recipient).where.not(users: { deleted: true })
+    else
+      user.messages.where(visible_inbox: true)
+        .where.not(sender_id: blocked_ids).left_outer_joins(:sender).where('users.deleted IS NULL OR users.deleted = false')
+    end
+    messages.ordered_by_thread.select('distinct on (thread_id) messages.*')
+  end
 
   def visible_to?(user)
     user_ids.include?(user.id)
