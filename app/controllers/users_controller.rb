@@ -3,8 +3,10 @@ class UsersController < ApplicationController
   include DateSelectable
   include Taggable
 
+  MOIETY_ACTIVITY_CACHE_KEY = 'users/moieties/activity'
+
   before_action :signup_prep, only: :new
-  before_action :login_required, except: [:index, :show, :new, :create, :search]
+  before_action :login_required, except: [:index, :moieties, :show, :new, :create, :search]
   before_action :logout_required, only: [:new, :create]
   before_action :require_own_user, only: [:edit, :update, :password, :upgrade, :profile_edit]
   before_action :require_readonly_user, only: :upgrade
@@ -12,7 +14,24 @@ class UsersController < ApplicationController
 
   def index
     @page_title = 'Users'
-    @users = User.active.ordered.paginate(page: page)
+    if params[:sort] == 'moiety'
+      # Everyone with a moiety on one page, in rainbow order, so neighboring colors can be compared
+      users = moiety_users.sort_by { |user| MoietyColor.sort_key_for(user.moiety) }
+      @users = WillPaginate::Collection.create(1, [users.size, 1].max, users.size) { |pager| pager.replace(users) }
+    else
+      @users = User.active.ordered.paginate(page: page)
+    end
+  end
+
+  def moieties
+    @page_title = 'Moiety Explorer'
+    use_javascript('users/moieties')
+    users = moiety_users.to_a
+    activity = moiety_activity
+    gon.moieties = users.map do |user|
+      total, recent = activity.fetch(user.id, [0, 0])
+      { id: user.id, username: user.username, moiety: user.moiety, moiety_name: user.moiety_name, total: total, recent: recent }
+    end
   end
 
   def new
@@ -194,6 +213,27 @@ class UsersController < ApplicationController
   end
 
   private
+
+  def moiety_users
+    User.active.where.not(moiety: nil).ordered
+  end
+
+  # { user_id => [posts and replies written, those from the past year] } for everyone with a moiety. Counting
+  # means scanning every reply, so it's cached; the explorer only uses it to size dots.
+  def moiety_activity
+    Rails.cache.fetch(MOIETY_ACTIVITY_CACHE_KEY, expires_in: 1.day) do
+      user_ids = moiety_users.pluck(:id)
+      counts = {}
+      [Post, Reply].each do |klass|
+        klass.where(user_id: user_ids).group(:user_id).pluck(
+          :user_id, Arel.sql('COUNT(*)'), Arel.sql("COUNT(*) FILTER (WHERE created_at > NOW() - INTERVAL '1 year')"),
+        ).each do |user_id, total, recent|
+          counts[user_id] = (counts[user_id] || [0, 0]).zip([total, recent]).map(&:sum)
+        end
+      end
+      counts
+    end
+  end
 
   def require_own_user
     return if params[:id] == current_user.id.to_s
