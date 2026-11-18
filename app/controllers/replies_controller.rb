@@ -112,6 +112,8 @@ class RepliesController < WritableController
       render :edit and return
     end
 
+    @reply.skip_post_update = true if params[:minor].present?
+
     edit_reply(false)
   end
 
