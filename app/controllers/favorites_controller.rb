@@ -15,8 +15,10 @@ class FavoritesController < ApplicationController
     author_posts = Post::Author.where(user_id: user_favorites, joined: true).select(:post_id)
     board_favorites = @favorites.where(favorite_type: Board.to_s).select(:favorite_id)
     post_favorites = @favorites.where(favorite_type: Post.to_s).select(:favorite_id)
+    character_favorites = @favorites.where(favorite_type: Character.to_s).select(:favorite_id)
+    character_posts = Reply.where(character_id: character_favorites).select(:post_id)
 
-    @posts = Post.where(id: author_posts).or(Post.where(id: post_favorites)).or(Post.where(board_id: board_favorites))
+    @posts = Post.where(id: author_posts).or(Post.where(id: post_favorites)).or(Post.where(id: character_posts)).or(Post.where(board_id: board_favorites))
     @posts = @posts.not_ignored_by(current_user) if current_user&.hide_from_all
     @posts = posts_from_relation(@posts.ordered, with_unread: true)
     @hide_quicklinks = true
@@ -37,6 +39,12 @@ class FavoritesController < ApplicationController
         redirect_to continuities_path and return
       end
       fav_path = continuity_path(favorite)
+    elsif params[:character_id].present?
+      unless (favorite = Character.find_by_id(params[:character_id]))
+        flash[:error] = "Character could not be found."
+        redirect_to characters_path and return
+      end
+      fav_path = favorite
     elsif params[:post_id].present?
       unless (favorite = Post.find_by(id: params[:post_id]))
         flash[:error] = "Post could not be found."
