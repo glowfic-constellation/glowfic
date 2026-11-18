@@ -1,3 +1,4 @@
+/* global updateReverseImageSearch */
 /* exported addUploadedIcon, setLoadingIcon */
 
 function addUploadedIcon(url, s3Key, _data, _fileInput) {
@@ -8,6 +9,7 @@ function addUploadedIcon(url, s3Key, _data, _fileInput) {
   const iconID= $("#icon_id").val();
   $("#loading-"+iconID).hide();
   $("#icon-"+iconID).attr('src', url).show().removeClass('uploading-icon');
+  updateReverseImageSearch("#reverse-search-"+iconID, url);
 }
 
 function setLoadingIcon(_fileInput) {

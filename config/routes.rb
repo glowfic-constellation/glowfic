@@ -47,6 +47,7 @@ Rails.application.routes.draw do
       get :replace
       post :do_replace
       post :duplicate
+      post :identify_facecast
     end
     collection do
       get :search

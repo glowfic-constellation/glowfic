@@ -4,10 +4,10 @@ class CharactersController < ApplicationController
   include CharacterFilter
 
   before_action :login_required, except: [:index, :show, :facecasts, :search]
-  before_action :find_model, only: [:show, :edit, :update, :duplicate, :destroy, :replace, :do_replace]
+  before_action :find_model, only: [:show, :edit, :update, :duplicate, :destroy, :replace, :do_replace, :identify_facecast]
   before_action :find_group, only: :index
   before_action :require_create_permission, only: [:new, :create]
-  before_action :require_edit_permission, only: [:edit, :update, :duplicate, :replace, :do_replace]
+  before_action :require_edit_permission, only: [:edit, :update, :duplicate, :replace, :do_replace, :identify_facecast]
   before_action :editor_setup, only: [:new, :edit]
 
   def index
@@ -166,6 +166,21 @@ class CharactersController < ApplicationController
     end
 
     @pbs.sort_by! { |x| x.to_h.values_at(*keys).map(&:downcase) }
+  end
+
+  # Reverse image searches the character's icon and suggests a facecast for the
+  # pb field. The image is resolved server-side from the character's own icons
+  # so callers can't proxy arbitrary urls through our SauceNAO quota.
+  def identify_facecast
+    image_url = @character.default_icon&.url || @character.icons.first&.url
+    name = FacecastIdentifier.new(image_url).identify
+    if name.present?
+      render json: { name: name }
+    else
+      render json: { error: "Couldn't confidently identify a facecast from this character's icon." }, status: :unprocessable_content
+    end
+  rescue FacecastIdentifier::Error => e
+    render json: { error: e.message }, status: :service_unavailable
   end
 
   def replace
