@@ -25,14 +25,13 @@ module Owable
 
     def opt_out_of_owed(user)
       return unless (author = author_for(user))
-      author.destroy and return true unless author.joined?
-      author.update(can_owe: false)
+      change_owed { author.joined? ? author.update(can_owe: false) : author.destroy } # rubocop:disable Rails/SaveBang
     end
 
     def opt_in_to_owed(user)
       return unless (author = author_for(user))
       return if author.can_owe?
-      author.update(can_owe: true)
+      change_owed { author.update(can_owe: true) }
     end
 
     def author_for(user)
@@ -41,12 +40,31 @@ module Owable
 
     private
 
+    def change_owed
+      success = yield
+      errors.merge(errors) unless success
+      success
+    end
+
     def add_creator_to_authors
       if author_ids.include?(user_id)
-        author_for(user).update(joined: true, joined_at: created_at, private_note: private_note)
+        update_author
       else
-        post_authors.create(user: user, joined: true, joined_at: created_at, private_note: private_note)
+        create_author
       end
+    end
+
+    def create_author
+      author = post_authors.create(user: user, joined: true, joined_at: created_at, private_note: private_note)
+      errors.merge(author.errors) unless author.persisted?
+      author.persisted?
+    end
+
+    def update_author
+      author = author_for(user)
+      status = author.update(joined: true, joined_at: created_at, private_note: private_note)
+      errors.merge(author.errors) unless status
+      status
     end
 
     def update_board_cameos
