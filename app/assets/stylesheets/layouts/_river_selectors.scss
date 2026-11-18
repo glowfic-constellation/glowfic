@@ -18,7 +18,7 @@ a:visited { color: $font_color_link_visited; }
 .flash.success { background-color: $bg_color_flash_success; }
 
 /* - content headers */
-.sub { background-color: $bg_color_sub; }
+.sub, .paginator { background-color: $bg_color_sub; }
 .subber { background-color: $bg_color_subber; }
 .form-table-ender { background-color: $bg_color_ender; }
 
