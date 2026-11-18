@@ -37,6 +37,7 @@ $font_color_link_hover: $colors_narvik !default; // link (hovered)
 // these are the notifications that appear when you submit a form or get a message
 $bg_color_flash_error: #FFDDDD !default; // error
 $font_color_flash_error: $colors_black !default;
+$font_color_field_warning: $colors_red !default; // inline warning beneath a form field
 $bg_color_flash_success: #DDEEDD !default; // success
 $font_color_flash_success: $colors_black !default;
 $bg_color_flash_breadcrumbs: $colors_greybrown !default; // breadcrumbs ("Continuities » Effulgence » make a wish » one enormous bruise")

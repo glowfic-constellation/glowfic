@@ -3,6 +3,11 @@
 
 let tinyMCEInit = false;
 
+// The link dialog's Title field only sets a hover tooltip, but people sometimes paste the
+// web address into it by mistake; flag values that look like one (scheme, "www.", "domain.tld").
+const URL_LIKE_PATTERN = /^\s*((https?|ftp):\/\/|www\.|[a-z0-9][a-z0-9-]*\.[a-z]{2,}([/?#]|\s|$))/i;
+const TITLE_URL_MESSAGE = 'This looks like a URL. The Title field only sets a hover tooltip — put the web address in the URL field above.';
+
 function tinyMCEConfig(selector) {
   const height = ($(selector).height() || 150) + 15;
   return {
@@ -35,7 +40,39 @@ function tinyMCEConfig(selector) {
     // plugin configs
     // - autoresize
     autoresize_bottom_margin: 5,
+    setup: setupLinkTitleWarning,
   };
+}
+
+function setupLinkTitleWarning(editor) {
+  editor.on('OpenWindow', function(evt) {
+    // Only the link dialog has both a URL field and a Title field.
+    const data = evt.dialog.getData ? evt.dialog.getData() : {};
+    if (!('url' in data && 'title' in data)) return;
+    const titleInput = findDialogField('Title');
+    if (titleInput) warnWhenMatching(titleInput, URL_LIKE_PATTERN, TITLE_URL_MESSAGE);
+  });
+}
+
+// Finds the form control labelled `labelText` in the most recently opened TinyMCE dialog.
+function findDialogField(labelText) {
+  const dialog = Array.from(document.querySelectorAll('.tox-dialog')).pop();
+  const labels = dialog ? Array.from(dialog.querySelectorAll('label')) : [];
+  const label = labels.find(el => el.textContent.trim() === labelText);
+  return label ? label.control : null;
+}
+
+// Shows `message` beneath `input` for as long as its value matches `pattern`.
+function warnWhenMatching(input, pattern, message) {
+  const warning = document.createElement('div');
+  warning.className = 'field-warning';
+  warning.setAttribute('role', 'alert');
+  warning.textContent = message;
+  input.after(warning);
+
+  const update = () => { warning.hidden = !pattern.test(input.value); };
+  input.addEventListener('input', update);
+  update();
 }
 
 function setupEditorHelpBox() {
