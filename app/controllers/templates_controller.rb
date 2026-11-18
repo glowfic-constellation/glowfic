@@ -41,7 +41,7 @@ class TemplatesController < ApplicationController
   end
 
   def edit
-    @page_title = 'Edit Template: ' + @template.name
+    @page_title = "Edit Template: #{@template.name}"
   end
 
   def update
@@ -51,7 +51,7 @@ class TemplatesController < ApplicationController
       render_errors(@template, action: 'updated', now: true, err: e)
 
       editor_setup
-      @page_title = 'Edit Template: ' + @template.name_was
+      @page_title = "Edit Template: #{@template.name_was}"
       render :edit
     else
       flash[:success] = "Template updated."

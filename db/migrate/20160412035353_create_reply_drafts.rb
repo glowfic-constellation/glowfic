@@ -1,8 +1,8 @@
 class CreateReplyDrafts < ActiveRecord::Migration[4.2]
   def change
     create_table :reply_drafts do |t|
-      t.integer :post_id, :null => false
-      t.integer :user_id, :null => false
+      t.integer :post_id, null: false
+      t.integer :user_id, null: false
       t.text :content
       t.integer :character_id
       t.integer :icon_id
