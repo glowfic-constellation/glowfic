@@ -11,7 +11,8 @@ class Api::V1::TemplatesController < Api::ApiController
   param :dropdown, String, required: false, desc: 'If present, includes display text for a template dropdown'
   error 422, "Invalid parameters provided"
   def index
-    queryset = Template.where("name ILIKE ?", params[:q].to_s + '%').ordered
+    queryset = Template.all
+    queryset = queryset.where("name ILIKE ?", params[:q].to_s + '%').ordered if params[:q].present?
 
     if params[:user_id].present?
       return unless find_object(User, param: :user_id, status: :unprocessable_entity)
