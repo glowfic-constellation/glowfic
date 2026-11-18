@@ -15,7 +15,7 @@ RSpec.describe AliasesController do
 
     it "requires full account" do
       login_as(reader)
-      get :new, params: { character_id: -1 }
+      get :new, params: { character_id: create(:character) }
       expect(response).to redirect_to(continuities_path)
       expect(flash[:error]).to eq("You do not have permission to create aliases.")
     end
@@ -53,7 +53,7 @@ RSpec.describe AliasesController do
 
     it "requires full account" do
       login_as(reader)
-      post :create, params: { character_id: -1 }
+      post :create, params: { character_id: create(:character) }
       expect(response).to redirect_to(continuities_path)
       expect(flash[:error]).to eq("You do not have permission to create aliases.")
     end
@@ -238,7 +238,7 @@ RSpec.describe AliasesController do
 
     it "requires full account" do
       login_as(reader)
-      delete :destroy, params: { id: -1, character_id: -1 }
+      delete :destroy, params: { id: -1, character_id: create(:character) }
       expect(response).to redirect_to(continuities_path)
       expect(flash[:error]).to eq("You do not have permission to create aliases.")
     end

@@ -1,9 +1,10 @@
 # frozen_string_literal: true
 class AliasesController < ApplicationController
   before_action :login_required
-  before_action :require_permission
-  before_action :find_character
+  before_action :find_parent
   before_action :find_model, only: [:edit, :update, :destroy]
+  before_action :require_create_permission, only: [:new, :create]
+  before_action :require_edit_permission, only: [:new, :create, :edit, :update, :destroy]
 
   def new
     @page_title = "New Alias: " + @character.name
@@ -58,20 +59,21 @@ class AliasesController < ApplicationController
 
   private
 
-  def require_permission
+  def require_create_permission
     return unless current_user&.read_only?
     flash[:error] = "You do not have permission to create aliases."
     redirect_to continuities_path
   end
 
-  def find_character
-    unless (@character = Character.find_by(id: params[:character_id]))
-      flash[:error] = "Character could not be found."
-      redirect_to user_characters_path(current_user) and return
-    end
-
+  def require_edit_permission
     return if @character.user == current_user
     flash[:error] = "You do not have permission to modify this character."
+    redirect_to user_characters_path(current_user)
+  end
+
+  def find_parent
+    return if (@character = Character.find_by(id: params[:character_id]))
+    flash[:error] = "Character could not be found."
     redirect_to user_characters_path(current_user)
   end
 
