@@ -9,7 +9,20 @@
           = text_field_tag :username, params[:username], style: 'margin: 0px 5px;', id: :search_username
           = submit_tag "Search", class: 'button'
     %tr
+      %th.subber.padding-10{colspan: 3}
+        Sort:
+        - if params[:sort] == 'moiety'
+          = link_to 'Name', users_path
+          &bull;
+          %b Color
+        - else
+          %b Name
+          &bull;
+          = link_to 'Color', users_path(sort: 'moiety')
+        &bull;
+        = link_to 'Moiety explorer', moieties_users_path
+    %tr
       %th.sub Name
       %th.width-70.sub.centered Moiety
       %th.sub Date Joined
-  = render 'list', users: @users
+  = render 'list', users: @users, show_hex: params[:sort] == 'moiety'

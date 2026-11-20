@@ -1,0 +1,31 @@
+%table.moiety-explorer
+  %thead
+    %tr
+      %th.table-title{colspan: 2}
+        Moiety Explorer
+        = link_to 'List by color', users_path(sort: 'moiety'), class: 'moiety-list-link'
+  %tbody
+    %tr
+      %td.even.moiety-explorer-cell.moiety-wheel-cell
+        %noscript The moiety explorer needs JavaScript.
+        .moiety-wheel-wrapper
+          %canvas#moiety-wheel
+          #moiety-hover
+        .moiety-lightness
+          = label_tag :moiety_lightness, 'Lightness'
+          %input#moiety_lightness{type: 'range', min: 0, max: 100, step: 1, value: 60}
+        .moiety-size
+          = label_tag :moiety_size, 'Size by'
+          = select_tag :moiety_size, options_for_select({ 'Posts and replies this year' => 'recent', 'Posts and replies ever' => 'total', 'Nothing' => 'none' })
+      %td.even.moiety-explorer-cell
+        .moiety-pick
+          %span#moiety-swatch
+          .moiety-pick-fields
+            .moiety-hex-field
+              \#
+              = text_field_tag :moiety_hex, nil, maxlength: 6, placeholder: 'pick a color', 'aria-label': 'Hex code'
+            #moiety-sample-name= current_user&.username || 'Your Name'
+            #moiety-hsluv
+        #moiety-nearest.hidden
+          .moiety-nearest-title Nearest moieties
+          %ol#moiety-nearest-list
