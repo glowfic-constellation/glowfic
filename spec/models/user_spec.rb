@@ -4,7 +4,7 @@ RSpec.describe User do
   describe "password encryption" do
     it "should support nil salt_uuid" do
       user = create(:user)
-      user.update_columns(salt_uuid: nil, crypted: user.send(:old_crypted_password, 'test')) # rubocop:disable Rails/SkipsModelValidations
+      user.update_columns(salt_uuid: nil, crypted: user.send(:legacy_username_salted_sha1, 'test')) # rubocop:disable Rails/SkipsModelValidations
       user.reload
       expect(user.authenticate('test')).to eq(true)
     end
@@ -13,6 +13,39 @@ RSpec.describe User do
       user = create(:user, password: 'testpass')
       expect(user.salt_uuid).not_to be_nil
       expect(user.authenticate('testpass')).to eq(true)
+    end
+  end
+
+  describe "bcrypt hashing" do
+    it "stores new passwords as bcrypt and rejects wrong ones" do
+      user = create(:user, password: 'testpass')
+      expect(user.crypted).to start_with('$2')
+      expect(user.reload.authenticate('testpass')).to eq(true)
+      expect(user.authenticate('wrong')).to eq(false)
+    end
+
+    it "still accepts a legacy salted-SHA1 hash" do
+      user = create(:user, password: 'testpass')
+      user.update_columns(crypted: user.send(:legacy_salted_sha1, 'testpass')) # rubocop:disable Rails/SkipsModelValidations
+      expect(user.reload.bcrypt_hash?).to eq(false)
+      expect(user.authenticate('testpass')).to eq(true)
+      expect(user.authenticate('wrong')).to eq(false)
+    end
+
+    it "upgrades a legacy hash to bcrypt on login" do
+      user = create(:user, password: 'testpass')
+      user.update_columns(crypted: user.send(:legacy_salted_sha1, 'testpass')) # rubocop:disable Rails/SkipsModelValidations
+      auth = Authentication.new
+      expect(auth.authenticate(user.username, 'testpass')).to be_truthy
+      user.reload
+      expect(user.bcrypt_hash?).to eq(true)
+      expect(user.authenticate('testpass')).to eq(true)
+    end
+
+    it "does not authenticate a malformed bcrypt hash" do
+      user = create(:user, password: 'testpass')
+      user.update_columns(crypted: '$2a$garbage') # rubocop:disable Rails/SkipsModelValidations
+      expect(user.authenticate('testpass')).to eq(false)
     end
   end
 
@@ -37,7 +70,7 @@ RSpec.describe User do
   describe "emails" do
     def generate_emailless_user
       user = build(:user, email: nil)
-      user.send(:encrypt_password)
+      user.send(:hash_password)
       user.save!(validate: false)
       user
     end

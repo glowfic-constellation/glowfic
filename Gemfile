@@ -42,6 +42,7 @@ gem 'pg', '~> 1.7'
 gem 'pg_search'
 gem 'rack-pratchett'
 gem 'rails', '~> 8.1.4'
+gem 'bcrypt', '~> 3.1' # password hashing
 gem "redcarpet", "~> 3.6"
 gem 'redis', '~> 6.0'
 gem 'request_store', '~> 1.7'
