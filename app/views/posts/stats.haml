@@ -33,7 +33,7 @@
     %tr
       %th.sub.width-150 Audience
       %td{class: cycle('odd', 'even')}
-        = privacy_state(@post.privacy, dark_layout: current_user&.layout_darkmode?)
+        = privacy_state(@post.privacy, dark_layout: current_user&.layout_darkmode?, auto_layout: current_user&.layout_auto?)
         - if @post.privacy_access_list?
           \-
           = safe_join(@post.post_viewers.map(&:user).map { |u| user_link(u) }, ', ')
