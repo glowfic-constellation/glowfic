@@ -2,6 +2,10 @@
 class PostsController < WritableController
   include Taggable
 
+  # Co-authors may edit a post's metadata but not the opening post's own text, character or icon;
+  # that is the poster's (or an editing moderator's) to change, as the edit form already reflects.
+  CONTENT_PARAMS = %w(content character_id icon_id character_alias_id editor_mode).freeze
+
   before_action :login_required, except: [:index, :show, :history, :warnings, :search, :stats]
   before_action :readonly_forbidden, only: [:owed]
   before_action :find_model, only: [:show, :history, :delete_history, :stats, :warnings, :edit, :update, :destroy, :split, :do_split, :preview_split]
@@ -216,7 +220,7 @@ class PostsController < WritableController
     change_authors_locked and return if params[:authors_locked].present?
     preview and return if params[:button_preview].present?
 
-    @post.assign_attributes(permitted_params)
+    @post.assign_attributes(update_params)
     @post.board ||= Board.find_by(id: Board::ID_SANDBOX)
     settings = process_tags(Setting, obj_param: :post, id_param: :setting_ids)
     warnings = process_tags(ContentWarning, obj_param: :post, id_param: :content_warning_ids)
@@ -530,6 +534,12 @@ class PostsController < WritableController
     return if @post.authors_locked
     flash[:error] = "Post must be locked to current authors to be split."
     redirect_to @post
+  end
+
+  def update_params
+    permitted = permitted_params
+    return permitted if @post.editable_by?(current_user) || current_user.has_permission?(:edit_posts)
+    permitted.except(*CONTENT_PARAMS)
   end
 
   def permitted_params(include_associations=true)

@@ -270,6 +270,25 @@ RSpec.describe PostsController, 'PUT update' do
     end
   end
 
+  context "co-author editing" do
+    let(:post) { create(:post, content: 'original text', subject: 'original subject') }
+    let(:coauthor) { create(:reply, post: post).user }
+
+    it "lets a co-author change metadata but not the opening post's content" do
+      login_as(coauthor)
+      put :update, params: { id: post.id, post: { subject: 'new subject', content: 'defaced' } }
+      post.reload
+      expect(post.subject).to eq('new subject')
+      expect(post.content).to eq('original text')
+    end
+
+    it "lets the poster change the content" do
+      login_as(post.user)
+      put :update, params: { id: post.id, post: { content: 'edited' } }
+      expect(post.reload.content).to eq('edited')
+    end
+  end
+
   context "author lock" do
     context "locking" do
       let(:post) { create(:post, authors_locked: false) }
