@@ -94,11 +94,21 @@ class UsersController < ApplicationController
 
     params[:user][:per_page] = -1 if params[:user].try(:[], :per_page) == 'all'
 
+    # Email is the account-recovery channel, so changing it needs the current password
+    old_email = current_user.email
+    if email_change_requested? && !current_user.authenticate(params[:old_password])
+      flash.now[:error] = "Incorrect password entered."
+      use_javascript('users/edit')
+      @page_title = 'Edit Account'
+      render :edit and return
+    end
+
     begin
       if params.fetch(:user, {}).key?(:content_warning_ids)
         current_user.content_warnings = process_tags(ContentWarning, obj_param: :user, id_param: :content_warning_ids)
       end
-      current_user.update!(user_params)
+      # the password changes only through #password, which checks the old one
+      current_user.update!(user_params.except(:password, :password_confirmation))
     rescue ActiveRecord::RecordInvalid => e
       render_errors(current_user, action: 'saved', now: true, class_name: 'Changes', err: e)
 
@@ -106,6 +116,7 @@ class UsersController < ApplicationController
       @page_title = 'Edit Account'
       render :edit
     else
+      UserMailer.email_changed(current_user.id, old_email).deliver_later if current_user.saved_change_to_email?
       flash[:success] = "Changes saved."
       if params[:button_submit_profile]
         redirect_to user_path(current_user)
@@ -240,6 +251,11 @@ class UsersController < ApplicationController
       }
     end
     data
+  end
+
+  def email_change_requested?
+    new_email = params.fetch(:user, {})[:email]
+    new_email.present? && new_email.to_s.strip != current_user.email
   end
 
   def user_params

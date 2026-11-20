@@ -9,6 +9,10 @@
       .sub= f.label :email
       %div{class: cycle('even', 'odd')}= f.text_field :email, placeholder: "Email address"
     %div
+      .sub= label_tag :email_old_password, 'Password'
+      %div{class: cycle('even', 'odd')}
+        = password_field_tag :old_password, nil, id: 'email_old_password', placeholder: "Current password (only needed to change your email address)", autocomplete: 'current-password'
+    %div
       .sub Author profile
       %div{class: cycle('even', 'odd')}
         = link_to profile_edit_user_path(current_user) do
