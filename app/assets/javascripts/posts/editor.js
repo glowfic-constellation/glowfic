@@ -332,14 +332,14 @@ function setInfoBoxFields(characterId, name, screenname) {
     characterNameBox.hide();
   }
   characterNameBox.data('character-id', characterId);
-  $("#post-editor .post-character #name").html(name);
+  $("#post-editor .post-character #name").text(name);
 
   const screennameBox = $("#post-editor .post-screenname");
   if (screenname) {
-    screennameBox.show().html(screenname);
+    screennameBox.show().text(screenname);
     resizeScreenname(screennameBox);
   } else {
-    screennameBox.hide().html(screenname);
+    screennameBox.hide().text(screenname || '');
   }
 }
 
