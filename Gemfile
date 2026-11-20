@@ -21,6 +21,7 @@ gem 'aws-actionmailer-ses', '~> 1'
 gem 'aws-sdk-s3', '~> 1'
 gem 'aws-sdk-ses', '~> 1'
 gem 'barnes' # heroku ruby-specific metrics
+gem 'bcrypt', '~> 3.1' # password hashing
 gem 'bootstrap', '~> 5.3' # pin until major version is handled
 gem 'connection_pool', '~> 2.0' # pin until version 3.x is supported by Rails (https://github.com/glowfic-constellation/glowfic/pull/2616)
 gem 'dartsass-sprockets'
@@ -42,7 +43,6 @@ gem 'pg', '~> 1.7'
 gem 'pg_search'
 gem 'rack-pratchett'
 gem 'rails', '~> 8.1.4'
-gem 'bcrypt', '~> 3.1' # password hashing
 gem "redcarpet", "~> 3.6"
 gem 'redis', '~> 6.0'
 gem 'request_store', '~> 1.7'
