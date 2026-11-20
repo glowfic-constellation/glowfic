@@ -32,6 +32,13 @@ class UsersController < ApplicationController
     end
     @user.tos_version = User::CURRENT_TOS_VERSION
 
+    # Hidden honeypot field (people never see or fill it) and a signed form timestamp (see SignupFormToken)
+    if params[:contact_url].present? || !SignupFormToken.valid?(params[:form_token])
+      signup_prep
+      flash.now[:error] = "Something went wrong submitting the form. Please reload the page and try again."
+      render :new and return
+    end
+
     if params[:addition].to_i != 14
       signup_prep
       flash.now[:error] = "Please check your math and try again."
