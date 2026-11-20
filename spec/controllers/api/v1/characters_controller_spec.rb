@@ -318,6 +318,25 @@ RSpec.describe Api::V1::CharactersController do
       expect(character.reload.default_icon_id).to eq(icon.id)
     end
 
+    it "does not change template if someone else's template provided" do
+      character = create(:character)
+      template = create(:template, characters: [character])
+      api_login_as(character.user)
+      put :update, params: { id: character.id, character: { template_id: create(:template).id } }
+      expect(response).to have_http_status(422)
+      expect(response.parsed_body['errors'][0]['message']).to eq("Template must be yours")
+      expect(character.reload.template_id).to eq(template.id)
+    end
+
+    it "changes template to one of the user's own" do
+      character = create(:character)
+      template = create(:template, user: character.user)
+      api_login_as(character.user)
+      put :update, params: { id: character.id, character: { template_id: template.id } }
+      expect(response).to have_http_status(200)
+      expect(character.reload.template_id).to eq(template.id)
+    end
+
     it "removes icon successfully with empty icon_id" do
       icon = create(:icon)
       character = create(:character, user: icon.user, default_icon_id: icon.id)

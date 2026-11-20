@@ -19,6 +19,13 @@ class UserMailer < ApplicationMailer
     mail(to: @password_reset.user.email, subject: @subject)
   end
 
+  # Sent to the previous address when an account's email address is changed
+  def email_changed(user_id, old_email)
+    @user = User.find(user_id)
+    @subject = "Your Glowfic email address was changed"
+    mail(to: old_email, subject: @subject)
+  end
+
   def new_message(message_id)
     @message = Message.find(message_id)
     @subject = "New message from #{@message.sender_name}: #{@message.unempty_subject}"

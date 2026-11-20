@@ -31,6 +31,19 @@ RSpec.describe PostImporter do
         expect(ScrapePostJob).not_to have_been_enqueued
       end
 
+      it "raises error when the host merely ends with dreamwidth.org" do
+        ['http://evildreamwidth.org/1.html', 'https://dreamwidth.org.evil.com/1.html', 'ftp://x.dreamwidth.org/1.html'].each do |bad_url|
+          importer = PostImporter.new(bad_url)
+          expect { importer.import({}, user: nil) }.to raise_error(InvalidDreamwidthURL)
+        end
+        expect(ScrapePostJob).not_to have_been_enqueued
+      end
+
+      it "accepts dreamwidth.org and its subdomains" do
+        expect(PostImporter.valid_dreamwidth_url?('https://dreamwidth.org/foo')).to eq(true)
+        expect(PostImporter.valid_dreamwidth_url?('http://wild-pegasus-appeared.dreamwidth.org/403.html')).to eq(true)
+      end
+
       it "raises error on malformed url" do
         importer = PostImporter.new('http://localhostdreamwidth:3000index')
         expect { importer.import({}, user: nil) }.to raise_error(InvalidDreamwidthURL)

@@ -60,6 +60,9 @@ class Api::V1::CharactersController < Api::ApiController
       errors << { message: "Default icon could not be found" }
     end
 
+    template_id = params[:character][:template_id]
+    errors << { message: "Template must be yours" } if template_id.present? && !Template.exists?(id: template_id, user_id: @character.user_id)
+
     @character.assign_attributes(character_params)
     errors += @character.errors.full_messages.map { |msg| { message: msg } } unless @character.valid?
     render json: { errors: errors }, status: :unprocessable_content and return unless errors.empty?

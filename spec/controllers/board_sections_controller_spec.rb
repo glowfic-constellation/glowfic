@@ -210,6 +210,17 @@ RSpec.describe BoardSectionsController do
   end
 
   describe "PUT update" do
+    it "does not allow moving a section out of a board the user cannot edit" do
+      user = create(:user)
+      own_board = create(:board, creator: user)
+      board_section = create(:board_section)
+      other_board = board_section.board
+      expect(other_board).not_to be_editable_by(user)
+      login_as(user)
+      put :update, params: { id: board_section.id, board_section: { board_id: own_board.id } }
+      expect(board_section.reload.board_id).to eq(other_board.id)
+    end
+
     it "requires login" do
       put :update, params: { id: -1 }
       expect(response).to redirect_to(root_url)

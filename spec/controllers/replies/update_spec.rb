@@ -73,10 +73,23 @@ RSpec.describe RepliesController, 'PUT update' do
   it "fails when invalid" do
     reply = create(:reply)
     login_as(reply.user)
-    put :update, params: { id: reply.id, reply: { post_id: nil } }
+    put :update, params: { id: reply.id, reply: { character_id: create(:character).id } }
     expect(response).to render_template(:edit)
     expect(flash[:error][:message]).to eq("Reply could not be updated because of the following problems:")
-    expect(flash[:error][:array]).to eq(["Post must exist"])
+    expect(flash[:error][:array]).to eq(["Character must be yours"])
+  end
+
+  it "does not move the reply to another post" do
+    reply = create(:reply)
+    original_post = reply.post
+    other_post = create(:post, privacy: :private)
+    login_as(reply.user)
+    put :update, params: { id: reply.id, reply: { post_id: other_post.id, content: 'new content' } }
+    expect(flash[:success]).to eq("Reply updated.")
+    reply.reload
+    expect(reply.content).to eq('new content')
+    expect(reply.post).to eq(original_post)
+    expect(other_post.replies).to be_empty
   end
 
   it "succeeds" do

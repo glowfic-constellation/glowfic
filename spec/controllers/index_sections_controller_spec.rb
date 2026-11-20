@@ -112,6 +112,14 @@ RSpec.describe IndexSectionsController do
       expect(response).to have_http_status(200)
       expect(assigns(:page_title)).to eq(section.name)
     end
+
+    it "requires permission to view the index" do
+      section.index.update!(privacy: :private)
+      login
+      get :show, params: { id: section.id }
+      expect(response).to redirect_to(indexes_url)
+      expect(flash[:error]).to eq("You do not have permission to view this index.")
+    end
   end
 
   describe "GET edit" do
@@ -153,6 +161,16 @@ RSpec.describe IndexSectionsController do
   end
 
   describe "PUT update" do
+    it "does not allow moving a section into an index the user cannot edit" do
+      user = create(:user)
+      index_section = create(:index_section, index: create(:index, user: user))
+      locked_index = create(:index, authors_locked: true)
+      expect(locked_index).not_to be_editable_by(user)
+      login_as(user)
+      put :update, params: { id: index_section.id, index_section: { index_id: locked_index.id } }
+      expect(locked_index.reload.index_sections).to be_empty
+    end
+
     it "requires login" do
       put :update, params: { id: -1 }
       expect(response).to redirect_to(root_url)

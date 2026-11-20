@@ -7,6 +7,8 @@ class RepliesController < WritableController
   before_action :find_model, only: [:show, :history, :edit, :update, :destroy]
   before_action :editor_setup, only: [:edit]
   before_action :require_create_permission, only: [:create]
+  before_action :require_multi_reply_edit_permission, only: [:create]
+  before_action :require_post_permission, only: [:create]
   before_action :require_edit_permission, only: [:edit, :update]
 
   def search
@@ -97,7 +99,7 @@ class RepliesController < WritableController
   end
 
   def update
-    @reply.assign_attributes(permitted_params)
+    @reply.assign_attributes(permitted_params.except(:post_id))
     process_npc(@reply, permitted_character_params)
     if params[:button_preview]
       preview_reply(@reply) and return
@@ -137,7 +139,7 @@ class RepliesController < WritableController
   end
 
   def restore
-    audit = Audited::Audit.where(action: 'destroy').order(id: :desc).find_by(auditable_id: params[:id])
+    audit = Audited::Audit.where(action: 'destroy').order(id: :desc).find_by(auditable_type: 'Reply', auditable_id: params[:id])
     unless audit
       flash[:error] = "Reply could not be found."
       redirect_to continuities_path and return
@@ -149,7 +151,7 @@ class RepliesController < WritableController
     end
 
     new_reply = Reply.new(audit.audited_changes)
-    new_reply.created_at = Audited::Audit.order(id: :asc).find_by(action: 'create', auditable_id: params[:id]).created_at
+    new_reply.created_at = Audited::Audit.order(id: :asc).find_by(action: 'create', auditable_type: 'Reply', auditable_id: params[:id]).created_at
     unless new_reply.editable_by?(current_user)
       flash[:error] = "You do not have permission to modify this reply."
       redirect_to post_path(new_reply.post) and return
@@ -222,10 +224,47 @@ class RepliesController < WritableController
     redirect_to post_path(@reply.post)
   end
 
+  # Saving an edited multi reply goes through create, not update, so it needs the same checks as update
+  def require_multi_reply_edit_permission
+    return unless editing_multi_reply?
+    return if @reply.post.visible_to?(current_user) && @reply.editable_by?(current_user)
+    flash[:error] = "You do not have permission to modify this reply."
+    redirect_to continuities_path
+  end
+
+  # New replies, previews and drafts are only for posts the user can see, and new replies only for posts they can tag
+  def require_post_permission
+    editing = editing_multi_reply?
+
+    # when editing, everything stays in the edited reply's post, whose access was checked above
+    post_ids = @multi_replies.map(&:post_id) + [permitted_params[:post_id]]
+    post_ids << @reply.post_id if editing
+    post_ids = post_ids.compact_blank.map(&:to_i).uniq
+    if post_ids.size > 1
+      flash[:error] = "Replies must all be in the same post."
+      redirect_to posts_path and return
+    end
+
+    # a missing post is reported by the reply's own validation
+    return unless (reply_post = Post.find_by(id: post_ids.first))
+
+    unless reply_post.visible_to?(current_user)
+      flash[:error] = "You do not have permission to view this post."
+      redirect_to continuities_path and return
+    end
+
+    # editing a reply needs no tagging rights, as with update
+    return if editing || params[:button_preview] || params[:button_add_more] || params[:button_discard_multi_reply]
+    return if reply_post.taggable_by?(current_user)
+    flash[:error] = "You do not have permission to reply to this post."
+    redirect_to post_path(reply_post)
+  end
+
   def get_multi_replies
     # Get the multi replies stored in the page JSON
-    @multi_replies_params = JSON.parse(params.fetch(:multi_replies_json, "[]")).map do |reply_json|
-      permitted_params(ActionController::Parameters.new({ reply: reply_json }), [:id])
+    # Only the first reply can have an ID, the one being edited; the rest are new
+    @multi_replies_params = JSON.parse(params.fetch(:multi_replies_json, "[]")).map.with_index do |reply_json, idx|
+      permitted_params(ActionController::Parameters.new({ reply: reply_json }), idx.zero? ? [:id] : [])
     end
     @multi_replies = @multi_replies_params.map do |reply_params|
       Reply.new(reply_params).tap { |r| r.user = current_user }
@@ -300,7 +339,7 @@ class RepliesController < WritableController
       @unseen_replies = replies_post.replies.ordered.paginate(page: 1, per_page: 10)
       if last_seen_reply_order.present?
         @unseen_replies = @unseen_replies.where('reply_order > ?', last_seen_reply_order)
-        @audits = Audited::Audit.where(auditable_id: @unseen_replies.map(&:id)).group(:auditable_id).count
+        @audits = Audited::Audit.where(auditable_type: 'Reply', auditable_id: @unseen_replies.map(&:id)).group(:auditable_id).count
       end
       most_recent_unseen_reply = @unseen_replies.last
 

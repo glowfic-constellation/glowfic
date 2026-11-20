@@ -68,8 +68,10 @@ Rack::Attack.cache.store = ActiveSupport::Cache::RedisCacheStore.new(url: url, s
 # dropdown opened and one per keystroke - which is fundamentally different from
 # normal page browsing (~1 request per navigation). They get their own, more
 # generous bucket below so a search doesn't exhaust the general per-IP limit.
+# The reply search API is not autocomplete: one request costs the same as one
+# /replies/search page, so it stays in the same bucket as that page.
 def autocomplete_api_request?(req)
-  req.get? && req.path.start_with?('/api/v1/')
+  req.get? && req.path.start_with?('/api/v1/') && ['/api/v1/replies', '/api/v1/replies.json'].exclude?(req.path.chomp('/'))
 end
 
 # Calls an OAuth client makes from its own server: the token and OpenID Connect endpoints,
@@ -116,6 +118,31 @@ end
 # Key: "rack::attack:#{Time.now.to_i/:period}:logins/ip:#{req.ip}"
 Rack::Attack.throttle('logins/ip', limit: 5, period: 20.seconds) do |req|
   req.ip if req.path == '/login' && req.post?
+end
+
+# Same limit for the API login, which issues the same credentials as the form.
+# Key: "rack::attack:#{Time.now.to_i/:period}:api_logins/ip:#{req.ip}"
+Rack::Attack.throttle('api_logins/ip', limit: 5, period: 20.seconds) do |req|
+  req.ip if req.path == '/api/v1/login' && req.post?
+end
+
+# Slow down password guessing against a single account from many IPs. The window is short so
+# that locking a victim out is limited to a few minutes.
+# Key: "rack::attack:#{Time.now.to_i/:period}:logins/username:#{username}"
+Rack::Attack.throttle('logins/username', limit: 20, period: 5.minutes) do |req|
+  req.params['username'].to_s.strip.downcase.presence if req.post? && ['/login', '/api/v1/login'].include?(req.path)
+end
+
+# Password reset requests send email and are keyed on a guessable username and address pair.
+# Key: "rack::attack:#{Time.now.to_i/:period}:password_resets/ip:#{req.ip}"
+Rack::Attack.throttle('password_resets/ip', limit: 5, period: 1.hour) do |req|
+  req.ip if req.path == '/password_resets' && req.post?
+end
+
+# Sign-ups, applying to logged-in clients too (the general limits above are far looser).
+# Key: "rack::attack:#{Time.now.to_i/:period}:signups/ip:#{req.ip}"
+Rack::Attack.throttle('signups/ip', limit: 5, period: 1.hour) do |req|
+  req.ip if req.path == '/users' && req.post?
 end
 
 # Tell every throttled client how long to wait. See the responders at the top

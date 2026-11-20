@@ -41,6 +41,18 @@ RSpec.describe UserMailer do
     end
   end
 
+  describe "#email_changed" do
+    it "sends email to the old address" do
+      mail = UserMailer.email_changed(user.id, 'old@example.com')
+
+      expect(mail.subject).to eq('Your Glowfic email address was changed')
+      expect(mail.to).to eq(['old@example.com'])
+      expect(mail.text_part.body.to_s).to include("was just changed")
+      expect(mail.text_part.body.to_s).to include(user.username)
+      expect(html_text(mail.html_part)).to include("was just changed")
+    end
+  end
+
   describe "#password_reset_link" do
     it "sends email" do
       mail = UserMailer.password_reset_link(create(:password_reset, user: user).id)

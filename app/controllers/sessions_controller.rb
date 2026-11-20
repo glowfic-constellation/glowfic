@@ -1,5 +1,8 @@
 # frozen_string_literal: true
 class SessionsController < ApplicationController
+  # Remember-me cookies are not revocable server-side, so keep their lifetime bounded
+  REMEMBER_ME_DURATION = 1.year
+
   before_action :logout_required, only: [:new, :create, :confirm_tos]
   before_action :login_required, only: [:destroy]
 
@@ -20,7 +23,7 @@ class SessionsController < ApplicationController
         "value"   => auth.api_token,
         "expires" => Authentication::EXPIRY.from_now.to_i,
       }
-      cookies.permanent.signed[:user_id] = cookie_hash(user.id) if params[:remember_me].present?
+      cookies.signed[:user_id] = remember_me_cookie(user.id) if params[:remember_me].present?
       @current_user = user
       redirect_to continuities_path and return if session[:previous_url] == '/login'
     else
@@ -42,6 +45,10 @@ class SessionsController < ApplicationController
   end
 
   private
+
+  def remember_me_cookie(user_id)
+    cookie_hash(user_id).merge(httponly: true, expires: REMEMBER_ME_DURATION.from_now)
+  end
 
   def cookie_hash(value)
     return { value: value, domain: 'glowfic-staging.herokuapp.com' } if request.host.include?('staging')

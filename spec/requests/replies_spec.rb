@@ -33,4 +33,16 @@ RSpec.describe "Reply" do
       end
     end
   end
+
+  describe "API search" do
+    it "does not run a query per reply" do
+      add_reply = lambda do
+        calias = create(:alias)
+        create(:reply, user: calias.character.user, character: calias.character, character_alias: calias, with_icon: true, content: 'a seagull')
+      end
+      add_reply.call
+      expect_constant_queries("/api/v1/replies?subj_content=seagull") { 2.times { add_reply.call } }
+      expect(response.parsed_body['results'].size).to eq(3)
+    end
+  end
 end

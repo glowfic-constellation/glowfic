@@ -394,7 +394,7 @@ RSpec.describe UsersController do
     end
 
     it "updates settings with valid params" do
-      user = create(:user)
+      user = create(:user, password: 'testpass123')
       login_as(user)
 
       user_details = {
@@ -410,7 +410,7 @@ RSpec.describe UsersController do
         expect(user.public_send(key)).not_to eq(value)
       end
 
-      put :update, params: { id: user.id, user: user_details }
+      put :update, params: { id: user.id, old_password: 'testpass123', user: user_details }
       expect(response).to redirect_to(edit_user_url(user))
       expect(flash[:success]).to eq('Changes saved.')
 

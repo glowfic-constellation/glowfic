@@ -121,6 +121,9 @@ class TemplatesController < ApplicationController
   end
 
   def permitted_params
-    params.fetch(:template, {}).permit(:name, :description, :retired, character_ids: [])
+    permitted = params.fetch(:template, {}).permit(:name, :description, :retired, character_ids: [])
+    # only the user's own characters can be put in a template
+    permitted[:character_ids] &= current_user.characters.ids.map(&:to_s) if permitted.key?(:character_ids)
+    permitted
   end
 end
