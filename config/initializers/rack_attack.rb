@@ -145,6 +145,16 @@ Rack::Attack.throttle('signups/ip', limit: 5, period: 1.hour) do |req|
   req.ip if req.path == '/users' && req.post?
 end
 
+# Guessing the shared account secret through upgrades (sign-ups are covered by signups/ip above).
+# Key: "rack::attack:#{Time.now.to_i/:period}:upgrades/user:#{user_id}" and ".../upgrades/ip:#{req.ip}"
+UPGRADE_PATH = /\A\/users\/\d+\/upgrade\z/
+Rack::Attack.throttle('upgrades/user', limit: 5, period: 1.hour) do |req|
+  RequestUser.id(req.env) if req.put? && req.path.match?(UPGRADE_PATH)
+end
+Rack::Attack.throttle('upgrades/ip', limit: 10, period: 1.hour) do |req|
+  req.ip if req.put? && req.path.match?(UPGRADE_PATH)
+end
+
 # Tell every throttled client how long to wait. See the responders at the top
 # of this file for why Retry-After cannot be left to rack-attack's own setting.
 Rack::Attack.throttled_responder = RackAttackResponders::THROTTLED
