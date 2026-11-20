@@ -40,21 +40,7 @@ class PostsController < WritableController
 
   def unread
     @started = (params[:started] == 'true') || (params[:started].nil? && current_user.unread_opened)
-    @posts = Post.not_ignored_by(current_user)
-    @posts = @posts.where.not(post_views: { read_at: nil }) if @started
-
-    # post view does not exist and (board view does not exist or post has updated since board view read_at)
-    no_post_view = @posts.where(post_views: { id: nil })
-    updated_since_board_read = no_post_view.where(board_views: { read_at: nil })
-      .or(no_post_view.where("date_trunc('second', board_views.read_at) < date_trunc('second', posts.tagged_at)"))
-    no_post_view = no_post_view.where(board_views: { user_id: nil }).or(updated_since_board_read)
-
-    # post view exists and post has updated since post view read_at
-    with_post_view = @posts.where.not(post_views: { id: nil })
-    with_post_view = with_post_view.where(post_views: { read_at: nil }) # possible if someone ignores and then unignores a post
-      .or(with_post_view.where("date_trunc('second', post_views.read_at) < date_trunc('second', posts.tagged_at)"))
-
-    @posts = with_post_view.or(no_post_view)
+    @posts = Post.unread_by(current_user, opened: @started)
     @posts = posts_from_relation(@posts.ordered, with_unread: true, show_blocked: !!params[:show_blocked])
 
     @hide_quicklinks = true

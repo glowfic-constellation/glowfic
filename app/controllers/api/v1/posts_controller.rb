@@ -8,7 +8,7 @@ class Api::V1::PostsController < Api::ApiController
   end
 
   api :GET, '/posts', 'Load all posts, optionally filtered. Results are ordered by subject unless otherwise specified.'
-  header 'Authorization', 'Authorization token for a user in the format "Authorization" : "Bearer [token]". Required only when owed is true.', required: false
+  header 'Authorization', 'Authorization token for a user in the format "Authorization" : "Bearer [token]". Required only when owed or unread is true.', required: false
   param :q, String, required: false, desc: 'Subject search term'
   param :min, String, required: false, desc: 'If present, returns only ID and subject per post'
   param :page, :number, required: false, desc: 'Page in results (25 per page)'
@@ -18,17 +18,21 @@ class Api::V1::PostsController < Api::ApiController
   param :template_id, :number, required: false, desc: 'If provided, returns only posts where any character in the given template appears, in the post itself or in any reply'
   param :status, Post.statuses.keys, required: false, desc: 'If provided, returns only posts with the given status'
   param :owed, :boolean, required: false, desc: "If true, returns only posts on which the current user owes a reply, as on the Replies Owed page (including the user's preference for hiding hiatused posts there). Requires authentication."
+  param :unread, :boolean, required: false, desc: "If true, returns only posts with content the current user has not read, as on the Unread page (excluding posts and continuities the user has hidden from it). Requires authentication."
+  param :opened, :boolean, required: false, desc: "Only used when unread is true. If true, returns only unread posts the user has opened before; if false, also returns posts the user has never opened. Defaults to the user's 'Display opened threads only' preference, as on the Unread page."
   param :order, ['subject', 'tagged_at'], required: false, desc: "Result ordering: 'subject' (default, alphabetical) or 'tagged_at' (most recently updated first)"
-  error 401, "You must be logged in to request owed posts"
+  error 401, "You must be logged in to request owed or unread posts"
   error 422, "Invalid parameters provided"
   def index
     owed = ActiveModel::Type::Boolean.new.cast(params[:owed])
-    if owed && !logged_in?
+    unread = ActiveModel::Type::Boolean.new.cast(params[:unread])
+    if (owed || unread) && !logged_in?
       login_required
       return
     end
 
     queryset = owed ? owed_posts : Post.all
+    queryset = unread_posts(queryset) if unread
     queryset = queryset.where('subject ILIKE ?', "%#{params[:q]}%") if params[:q].present?
     queryset = queryset.where(status: params[:status]) if params[:status].present?
 
@@ -188,6 +192,16 @@ class Api::V1::PostsController < Api::ApiController
     posts = Post.replies_owed_by(current_user)
     posts = posts.not_on_hiatus if current_user.hide_hiatused_tags_owed?
     posts.where.not(id: current_user.hidden_posts).no_tests
+  end
+
+  # matches PostsController#unread
+  def unread_posts(posts)
+    opened = if params[:opened].nil?
+      current_user.unread_opened
+    else
+      ActiveModel::Type::Boolean.new.cast(params[:opened])
+    end
+    posts.unread_by(current_user, opened: opened).where.not(id: current_user.hidden_posts).no_tests
   end
 
   def find_post
