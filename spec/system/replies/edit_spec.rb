@@ -393,7 +393,7 @@ RSpec.describe "Editing replies" do
       find('.select2-container--open .select2-search__field').set(new_npc_name)
       find('li', exact_text: "Create New: #{new_npc_name}").click
 
-      allow(reply_stub).to receive(:post).and_return(reply.post)
+      allow(reply_stub).to receive_messages(post: reply.post, post_id: reply.post_id)
       allow(Reply).to receive(:new).and_return(reply_stub)
       allow(npc).to receive_messages(new_record?: true, save: false)
 
@@ -429,7 +429,7 @@ RSpec.describe "Editing replies" do
 
       allow(Reply).to receive_messages(find_by: reply, new: reply_stub)
       allow(reply).to receive(:dup).and_return(reply_stub)
-      allow(reply_stub).to receive_messages(post: reply.post, dup: reply_stub)
+      allow(reply_stub).to receive_messages(post: reply.post, post_id: reply.post_id, dup: reply_stub)
       allow(reply_stub).to receive(:save!).and_raise(ActiveRecord::RecordInvalid)
 
       within('#post-editor') do

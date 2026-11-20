@@ -15,7 +15,7 @@
       - klass = cycle('even', 'odd')
       %tr
         %td{class: klass}= link_to index.name, index_path(index)
-        %td{class: klass}= index.posts.count
+        %td{class: klass}= index.posts.visible_to(current_user).count
         %td.width-70.right-align{class: klass}
           - if index.editable_by?(current_user)
             = link_to edit_index_path(index) do

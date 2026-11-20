@@ -44,6 +44,22 @@ RSpec.describe Api::ApiController do
         expect(response).to have_http_status(200)
         expect(response.parsed_body['results'].size).to eq(3)
       end
+
+      it "does not authenticate a suspended user" do
+        user = api_login
+        user.update!(role_id: Permissible::SUSPENDED)
+        get :show, params: { id: 1 }
+        expect(response).to have_http_status(401)
+        expect(response.parsed_body['errors'][0]['message']).to eq("You must be logged in to view that page.")
+      end
+
+      it "does not authenticate a deleted user" do
+        user = api_login
+        user.archive
+        get :show, params: { id: 1 }
+        expect(response).to have_http_status(401)
+        expect(response.parsed_body['errors'][0]['message']).to eq("You must be logged in to view that page.")
+      end
     end
 
     context "without login_required but with mixed data" do
@@ -75,6 +91,14 @@ RSpec.describe Api::ApiController do
         get :index
         expect(response).to have_http_status(200)
         expect(response.parsed_body['results'].size).to eq(2)
+      end
+
+      it "displays only logged-out data to a suspended user" do
+        user = api_login
+        user.update!(role_id: Permissible::SUSPENDED)
+        get :index
+        expect(response).to have_http_status(200)
+        expect(response.parsed_body['results'].size).to eq(1)
       end
     end
   end

@@ -74,6 +74,17 @@ RSpec.describe IndexPostsController do
       expect(flash[:error][:message]).to eq("Post could not be added to index because of the following problems:")
     end
 
+    it "requires access to the post" do
+      index = create(:index)
+      add_post = create(:post, privacy: :private)
+      login_as(index.user)
+      expect {
+        post :create, params: { index_post: { index_id: index.id, post_id: add_post.id } }
+      }.not_to change { IndexPost.count }
+      expect(response).to redirect_to(index_url(index))
+      expect(flash[:error]).to eq("You do not have permission to view this post.")
+    end
+
     it "succeeds" do
       index = create(:index)
       add_post = create(:post)
@@ -112,6 +123,30 @@ RSpec.describe IndexPostsController do
       get :edit, params: { id: index.index_posts.first.id }
       expect(response).to redirect_to(index_url(index))
       expect(flash[:error]).to eq("You do not have permission to modify this index.")
+    end
+
+    context "with a post the user cannot see" do
+      let(:index) { create(:index, authors_locked: false) }
+      let(:index_post) { create(:index_post, index: index, post: create(:post, privacy: :private)) }
+
+      it "requires access to the post for other editors" do
+        login
+        get :edit, params: { id: index_post.id }
+        expect(response).to redirect_to(index_url(index))
+        expect(flash[:error]).to eq("You do not have permission to modify this index.")
+      end
+
+      it "works for the index's owner, who was shown the post" do
+        login_as(index.user)
+        get :edit, params: { id: index_post.id }
+        expect(response).to have_http_status(200)
+      end
+
+      it "works for admins" do
+        login_as(create(:admin_user))
+        get :edit, params: { id: index_post.id }
+        expect(response).to have_http_status(200)
+      end
     end
 
     it "works" do
@@ -158,10 +193,26 @@ RSpec.describe IndexPostsController do
       index = create(:index)
       index.posts << create(:post, user: index.user)
       login_as(index.user)
-      patch :update, params: { id: index.index_posts.first.id, index_post: { post_id: nil } }
+      patch :update, params: { id: index.index_posts.first.id, index_post: { index_section_id: create(:index_section).id } }
       expect(response).to have_http_status(200)
       expect(assigns(:page_title)).to eq("Edit Post in Index")
       expect(flash[:error][:message]).to eq("Index could not be updated because of the following problems:")
+    end
+
+    it "does not move the post or index" do
+      index = create(:index)
+      post = create(:post, user: index.user)
+      index.posts << post
+      index_post = index.index_posts.first
+      hidden_post = create(:post, privacy: :private)
+      other_index = create(:index)
+      login_as(index.user)
+      patch :update, params: { id: index_post.id, index_post: { post_id: hidden_post.id, index_id: other_index.id, description: 'some text' } }
+      expect(response).to redirect_to(index_url(index))
+      index_post.reload
+      expect(index_post.description).to eq('some text')
+      expect(index_post.post).to eq(post)
+      expect(index_post.index).to eq(index)
     end
 
     it "works" do
@@ -211,6 +262,16 @@ RSpec.describe IndexPostsController do
       index.posts << create(:post, user: index.user)
       login_as(index.user)
       delete :destroy, params: { id: index.index_posts.first.id }
+      expect(response).to redirect_to(index_url(index))
+      expect(flash[:success]).to eq("Post removed from index.")
+      expect(IndexPost.count).to eq(0)
+    end
+
+    it "lets any editor remove a post they cannot see" do
+      index = create(:index, authors_locked: false)
+      index_post = create(:index_post, index: index, post: create(:post, privacy: :private))
+      login
+      delete :destroy, params: { id: index_post.id }
       expect(response).to redirect_to(index_url(index))
       expect(flash[:success]).to eq("Post removed from index.")
       expect(IndexPost.count).to eq(0)

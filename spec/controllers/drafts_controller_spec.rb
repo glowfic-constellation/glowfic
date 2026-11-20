@@ -1,5 +1,24 @@
 RSpec.describe DraftsController do
   describe 'POST create' do
+    it "requires login" do
+      post :create, params: { reply: { post_id: create(:post).id } }
+      expect(response).to redirect_to(root_url)
+      expect(flash[:error]).to eq("You must be logged in to view that page.")
+    end
+
+    it "requires post access" do
+      reply_post = create(:post, privacy: :private)
+      login
+      expect {
+        post :create, params: {
+          reply: { post_id: reply_post.id, content: 'test', editor_mode: 'html' },
+          character: { name: 'NPC', npc: true },
+        }
+      }.not_to change { [ReplyDraft.count, Character.count] }
+      expect(response).to redirect_to(continuities_url)
+      expect(flash[:error]).to eq("You do not have permission to view this post.")
+    end
+
     it "displays errors if relevant" do
       draft = create(:reply_draft)
       login_as(draft.user)

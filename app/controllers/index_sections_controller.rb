@@ -42,6 +42,11 @@ class IndexSectionsController < ApplicationController
   end
 
   def show
+    unless @section.index.visible_to?(current_user)
+      flash[:error] = "You do not have permission to view this index."
+      redirect_to indexes_path and return
+    end
+
     @page_title = @section.name
   end
 

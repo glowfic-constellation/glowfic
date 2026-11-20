@@ -31,6 +31,11 @@ class IndexPostsController < ApplicationController
       redirect_to @index_post.index and return
     end
 
+    if @index_post.post && !@index_post.post.visible_to?(current_user)
+      flash[:error] = "You do not have permission to view this post." # rubocop:disable Rails/ActionControllerFlashBeforeRender
+      redirect_to @index_post.index and return
+    end
+
     unless @index_post.save
       render_errors(@index_post, now: true, action: 'added', msg: 'Post could not be added to index')
       @page_title = 'Add Posts to Index'
@@ -47,7 +52,8 @@ class IndexPostsController < ApplicationController
   end
 
   def update
-    unless @index_post.update(permitted_params)
+    # an index post stays on its post and index; moving it would skip the checks on the new ones
+    unless @index_post.update(permitted_params.except(:post_id, :index_id))
       render_errors(@index_post, action: 'updated', now: true, class_name: 'Index')
       @page_title = "Edit Post in Index"
       render action: :edit and return
@@ -80,7 +86,10 @@ class IndexPostsController < ApplicationController
       redirect_to indexes_path and return
     end
 
-    return if @index_post.index.editable_by?(current_user)
+    index = @index_post.index
+    # anyone who can edit the index can remove a post, but only those who were shown it can see it
+    can_see = index.managed_by?(current_user) || @index_post.post.visible_to?(current_user)
+    return if index.editable_by?(current_user) && (action_name == 'destroy' || can_see)
     flash[:error] = "You do not have permission to modify this index."
     redirect_to @index_post.index
   end
