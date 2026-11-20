@@ -161,6 +161,16 @@ RSpec.describe IndexSectionsController do
   end
 
   describe "PUT update" do
+    it "does not allow moving a section into an index the user cannot edit" do
+      user = create(:user)
+      index_section = create(:index_section, index: create(:index, user: user))
+      locked_index = create(:index, authors_locked: true)
+      expect(locked_index).not_to be_editable_by(user)
+      login_as(user)
+      put :update, params: { id: index_section.id, index_section: { index_id: locked_index.id } }
+      expect(locked_index.reload.index_sections).to be_empty
+    end
+
     it "requires login" do
       put :update, params: { id: -1 }
       expect(response).to redirect_to(root_url)

@@ -55,8 +55,15 @@ class IndexSectionsController < ApplicationController
   end
 
   def update
+    @section.assign_attributes(permitted_params)
+    # require_permission checked the original index; also check the one it is being moved to
+    if @section.index && !@section.index.editable_by?(current_user)
+      flash[:error] = "You do not have permission to modify this index." # rubocop:disable Rails/ActionControllerFlashBeforeRender
+      redirect_to index_path(@section.index_id_was) and return
+    end
+
     begin
-      @section.update!(permitted_params)
+      @section.save!
     rescue ActiveRecord::RecordInvalid => e
       render_errors(@section, action: 'updated', now: true, err: e)
       @page_title = "Edit Index Section: #{@section.name}"
