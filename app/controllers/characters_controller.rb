@@ -406,6 +406,12 @@ class CharactersController < ApplicationController
       permitted.last[:template_attributes] = [:name, :id]
       permitted.insert(0, :default_icon_id)
     end
-    params.fetch(:character, {}).permit(permitted)
+    permitted_params = params.fetch(:character, {}).permit(permitted)
+    # a character can only go in one of its owner's own templates
+    template_owner_id = @character&.user_id || current_user.id
+    if permitted_params[:template_id].present? && !Template.exists?(id: permitted_params[:template_id], user_id: template_owner_id)
+      permitted_params.delete(:template_id)
+    end
+    permitted_params
   end
 end
