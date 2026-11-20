@@ -141,6 +141,7 @@ Rails.application.routes.draw do
       resources :characters, only: [:index, :show, :update] do
         collection { post :reorder }
       end
+      resources :favorites, only: :index
       resources :galleries, only: :show
       resources :icons, only: [] do
         collection { post :s3_delete }

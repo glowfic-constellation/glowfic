@@ -319,6 +319,146 @@ RSpec.describe Api::V1::PostsController do
           expect(result_ids).to eq([board_post.id])
         end
       end
+
+      context "with favorites" do
+        let(:user) { create(:user) }
+        let(:favorited_user) { create(:user) }
+        let(:board) { create(:board) }
+        let!(:user_post) { create(:post, user: favorited_user, subject: 'user post') }
+        let!(:board_post) { create(:post, board: board, subject: 'board post') }
+        let!(:favorited_post) { create(:post, subject: 'post') }
+
+        before(:each) do
+          create(:post) # not favorited
+          create(:favorite, user: user, favorite: favorited_user)
+          create(:favorite, user: user, favorite: board)
+          create(:favorite, user: user, favorite: favorited_post)
+          create(:favorite, favorite: create(:post)) # another user's favorite
+        end
+
+        it "requires login", :show_in_doc do
+          get :index, params: { favorites: true }
+          expect(response).to have_http_status(401)
+          expect(response.parsed_body['errors'][0]['message']).to eq("You must be logged in to view that page.")
+        end
+
+        it "ignores favorites=false when logged out" do
+          get :index, params: { favorites: false }
+          expect(response).to have_http_status(200)
+          expect(response.headers['Total'].to_i).to eq(5)
+        end
+
+        it "rejects non-boolean favorites" do
+          api_login_as(user)
+          get :index, params: { favorites: 'maybe' }
+          expect(response).to have_http_status(422)
+          expect(response.parsed_body['errors'][0]['message']).to include('favorites')
+        end
+
+        it "returns empty with no favorites" do
+          api_login
+          get :index, params: { favorites: true }
+          expect(response).to have_http_status(200)
+          expect(result_ids).to be_empty
+        end
+
+        it "returns posts from favorited users, continuities and posts", :show_in_doc do
+          api_login_as(user)
+          get :index, params: { favorites: true }
+          expect(response).to have_http_status(200)
+          expect(result_ids).to eq([board_post.id, favorited_post.id, user_post.id])
+          expect(response.headers['Total'].to_i).to eq(3)
+        end
+
+        it "includes posts the favorited user joined but not posts they were only invited to" do
+          joined = create(:post, unjoined_authors: [favorited_user])
+          create(:reply, post: joined, user: favorited_user)
+          invited = create(:post, unjoined_authors: [favorited_user])
+          api_login_as(user)
+          get :index, params: { favorites: true }
+          expect(result_ids).to include(joined.id)
+          expect(result_ids).not_to include(invited.id)
+        end
+
+        it "does not duplicate posts" do
+          create(:favorite, user: user, favorite: user_post)
+          both = create(:post, board: board, user: favorited_user, subject: 'both')
+          api_login_as(user)
+          get :index, params: { favorites: true }
+          expect(result_ids).to eq([board_post.id, both.id, favorited_post.id, user_post.id])
+          expect(response.headers['Total'].to_i).to eq(4)
+        end
+
+        it "orders by tagged_at" do
+          user_post.update!(tagged_at: 2.minutes.ago)
+          board_post.update!(tagged_at: 5.minutes.ago)
+          favorited_post.update!(tagged_at: Time.zone.now)
+          api_login_as(user)
+          get :index, params: { favorites: true, order: 'tagged_at' }
+          expect(result_ids).to eq([favorited_post.id, user_post.id, board_post.id])
+        end
+
+        it "hides posts the user cannot view" do
+          board_post.update!(privacy: :private)
+          create(:post, user: favorited_user, authors_locked: true) # blocked
+          create(:block, blocking_user: favorited_user, blocked_user: user, hide_me: :posts)
+          api_login_as(user)
+          get :index, params: { favorites: true }
+          expect(result_ids).to eq([favorited_post.id, user_post.id])
+          expect(response.headers['Total'].to_i).to eq(2)
+        end
+
+        it "hides posts hidden by the user's blocks" do
+          blocked_author = create(:user)
+          create(:post, user: blocked_author, board: board, authors_locked: true) # hidden
+          create(:block, blocking_user: user, blocked_user: blocked_author, hide_them: :posts)
+          api_login_as(user)
+          get :index, params: { favorites: true }
+          expect(result_ids).to eq([board_post.id, favorited_post.id, user_post.id])
+        end
+
+        it "excludes site testing posts" do
+          favorited_post.update!(board: create(:board, id: Board::ID_SITETESTING))
+          api_login_as(user)
+          get :index, params: { favorites: true }
+          expect(result_ids).to eq([board_post.id, user_post.id])
+        end
+
+        it "shows ignored posts by default" do
+          favorited_post.ignore(user)
+          board.ignore(user)
+          api_login_as(user)
+          get :index, params: { favorites: true }
+          expect(result_ids).to eq([board_post.id, favorited_post.id, user_post.id])
+        end
+
+        it "hides ignored posts when the user hides them from all lists" do
+          user.update!(hide_from_all: true)
+          favorited_post.ignore(user)
+          board.ignore(user)
+          api_login_as(user)
+          get :index, params: { favorites: true }
+          expect(result_ids).to eq([user_post.id])
+          expect(response.headers['Total'].to_i).to eq(1)
+        end
+
+        it "combines with other filters" do
+          api_login_as(user)
+          get :index, params: { favorites: true, author_id: favorited_user.id, q: 'user' }
+          expect(result_ids).to eq([user_post.id])
+        end
+
+        it "combines with owed" do
+          other_user = create(:user)
+          owed_post = create(:post, user: user, unjoined_authors: [favorited_user])
+          create(:reply, post: owed_post, user: favorited_user)
+          unfavorited = create(:post, user: user, unjoined_authors: [other_user])
+          create(:reply, post: unfavorited, user: other_user)
+          api_login_as(user)
+          get :index, params: { favorites: true, owed: true }
+          expect(result_ids).to eq([owed_post.id])
+        end
+      end
     end
   end
 
