@@ -22,6 +22,16 @@ RSpec.describe BookmarksController, 'POST create' do
     expect(flash[:error]).to eq("Reply not found.")
   end
 
+  it "does not reveal or bookmark replies in posts the user cannot see" do
+    private_reply = create(:reply, post: create(:post, privacy: :private))
+    login
+    expect {
+      post :create, params: { at_id: private_reply.id }
+    }.not_to change { Bookmark.count }
+    expect(response).to redirect_to(posts_path)
+    expect(flash[:error]).to eq("Reply not found.")
+  end
+
   it "succeeds with a valid reply" do
     login_as(user)
     post :create, params: { at_id: reply.id }
