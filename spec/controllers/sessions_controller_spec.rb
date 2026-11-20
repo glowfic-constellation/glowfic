@@ -157,6 +157,18 @@ RSpec.describe SessionsController do
       expect(cookies.signed[:user_id]).to eq(user.id)
     end
 
+    it "makes the remember me cookie HttpOnly with a one-year expiry" do
+      password = 'password'
+      user = create(:user, password: password)
+      post :create, params: { username: user.username, password: password, remember_me: true }
+      header = Array(response.headers['Set-Cookie']).join("\n")
+      cookie = header.lines.find { |l| l.start_with?('user_id=') }
+      expect(cookie).to be_present
+      expect(cookie.downcase).to include('httponly')
+      expires = Time.zone.parse(cookie[/expires=([^;]+)/i, 1])
+      expect(expires).to be_within(1.day).of(1.year.from_now)
+    end
+
     it "disallows logins from deleted users" do
       user = create(:user, deleted: true)
       post :create, params: { username: user.username }
