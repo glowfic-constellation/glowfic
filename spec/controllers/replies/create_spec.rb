@@ -667,6 +667,28 @@ RSpec.describe RepliesController, 'POST create' do
       expect(added.content).to eq('added reply')
     end
 
+    it "does not give added replies an ID from the request" do
+      reply = create(:reply, content: 'original')
+      other_reply = create(:reply, post: reply.post, user: reply.user, content: 'other')
+      login_as(reply.user)
+
+      [other_reply.id, other_reply.id + 1000].each do |requested_id|
+        expect {
+          post :create, params: {
+            button_submit_previewed_multi_reply: true,
+            multi_replies_json: [
+              { id: reply.id, post_id: reply.post_id, content: 'changed', editor_mode: 'html' },
+              { id: requested_id, post_id: reply.post_id, content: 'added reply', editor_mode: 'html' },
+            ].to_json,
+          }
+        }.to change { Reply.count }.by(1)
+
+        expect(response).to redirect_to(reply_url(reply, anchor: "reply-#{reply.id}"))
+        expect(other_reply.reload.content).to eq('other')
+        expect(Reply.where(content: 'added reply').last.id).not_to eq(requested_id)
+      end
+    end
+
     context "when the editor names a post the user cannot see" do
       let(:reply) { create(:reply, content: 'original') }
       let(:hidden_post) { create(:post, privacy: :private) }

@@ -262,8 +262,9 @@ class RepliesController < WritableController
 
   def get_multi_replies
     # Get the multi replies stored in the page JSON
-    @multi_replies_params = JSON.parse(params.fetch(:multi_replies_json, "[]")).map do |reply_json|
-      permitted_params(ActionController::Parameters.new({ reply: reply_json }), [:id])
+    # Only the first reply can have an ID, the one being edited; the rest are new
+    @multi_replies_params = JSON.parse(params.fetch(:multi_replies_json, "[]")).map.with_index do |reply_json, idx|
+      permitted_params(ActionController::Parameters.new({ reply: reply_json }), idx.zero? ? [:id] : [])
     end
     @multi_replies = @multi_replies_params.map do |reply_params|
       Reply.new(reply_params).tap { |r| r.user = current_user }
