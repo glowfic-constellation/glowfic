@@ -40,7 +40,16 @@ class RepliesController < WritableController
 
     response.headers['X-Robots-Tag'] = 'noindex'
 
-    @search_results = searcher.search(params, page: page)
+    begin
+      @search_results = searcher.search(params, page: page)
+      # Run the page query and the total count here rather than lazily in the view, so a statement
+      # timeout can be reported to the person searching instead of being a 500 page.
+      @search_results.load
+      @search_results.total_entries
+    rescue ActiveRecord::QueryCanceled
+      flash.now[:error] = "That search took too long. Try narrowing it, for example to one continuity, author or character."
+      @search_results = Reply.none.paginate(page: 1)
+    end
     @templates = searcher.templates
     @audits = []
     @reply_bookmarks = {}
