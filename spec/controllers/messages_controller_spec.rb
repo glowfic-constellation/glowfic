@@ -126,8 +126,16 @@ RSpec.describe MessagesController do
       end
     end
 
-    it "orders messages correctly" do
-      skip "TODO: test ordering"
+    it "orders threads by their newest message" do
+      user = create(:user)
+      other = create(:user)
+      first = create(:message, sender: other, recipient: user)
+      second = create(:message, sender: other, recipient: user)
+      reply = create(:message, sender: other, recipient: user, thread_id: first.id)
+      login_as(user)
+
+      get :index
+      expect(assigns(:messages).map(&:id)).to eq([reply.id, second.id])
     end
   end
 
