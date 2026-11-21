@@ -11,7 +11,7 @@ class ReportsController < ApplicationController
     @report_type = REPORT_TYPES.detect { |x| x == params[:id] }
     unless @report_type
       flash[:error] = "Could not identify the type of report."
-      redirect_to reports_path
+      redirect_to reports_path and return
     end
 
     @page_title = params[:id].capitalize + " Report"

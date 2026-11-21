@@ -61,7 +61,17 @@ Rack::Attack.blocklist('bad ips') { |req| RackAttackIpList.bad?(req.ip) }
 # each worker keeps its own in-process counter and the configured limit is
 # multiplied by `WEB_CONCURRENCY * dyno_count`.
 url = ENV.fetch("HEROKU_REDIS_TEAL_URL", nil)
-Rack::Attack.cache.store = ActiveSupport::Cache::RedisCacheStore.new(url: url, ssl_params: { verify_mode: OpenSSL::SSL::VERIFY_NONE }) if url
+# The pool is capped at 2 connections per process: the Mini Redis plan allows 20 clients in total, and
+# with the default pool (5, created lazily) 4 dynos x 2 workers x 3 threads can ask for up to 24.
+# Each throttle check is a ~1 ms command, so threads rarely wait; if one does, the store fails open
+# (the request is simply not counted) rather than raising.
+if url
+  Rack::Attack.cache.store = ActiveSupport::Cache::RedisCacheStore.new(
+    url: url,
+    pool: { size: 2, timeout: 0.2 },
+    ssl_params: { verify_mode: OpenSSL::SSL::VERIFY_NONE },
+  )
+end
 
 # Read-only API GETs power the search forms' autocomplete dropdowns (select2).
 # A single search interaction fans out into many of these requests - one per
@@ -72,6 +82,10 @@ Rack::Attack.cache.store = ActiveSupport::Cache::RedisCacheStore.new(url: url, s
 # /replies/search page, so it stays in the same bucket as that page.
 def autocomplete_api_request?(req)
   req.get? && req.path.start_with?('/api/v1/') && ['/api/v1/replies', '/api/v1/replies.json'].exclude?(req.path.chomp('/'))
+end
+
+def csp_report_request?(req)
+  req.post? && req.path == '/csp_reports'
 end
 
 # Calls an OAuth client makes from its own server: the token and OpenID Connect endpoints,
@@ -87,7 +101,14 @@ end
 # Autocomplete API GETs are excluded here and counted under 'api/ip' instead,
 # and OAuth client requests under 'oauth/ip'.
 Rack::Attack.throttle('req/ip', limit: ENV.fetch("RACK_ATTACK_IP_LIMIT", 25).to_i, period: 5.minutes) do |req|
-  req.ip if !req_logged_in?(req) && !autocomplete_api_request?(req) && !oauth_client_request?(req)
+  req.ip if !req_logged_in?(req) && !autocomplete_api_request?(req) && !oauth_client_request?(req) && !csp_report_request?(req)
+end
+
+# Browsers send CSP violation reports on their own (often because of extensions), so they must not eat
+# the visitor's page-view budget above; they get a small budget of their own.
+# Key: "rack::attack:#{Time.now.to_i/:period}:csp_reports/ip:#{req.ip}"
+Rack::Attack.throttle('csp_reports/ip', limit: 20, period: 5.minutes) do |req|
+  req.ip if csp_report_request?(req)
 end
 
 # Throttle the read-only autocomplete API GETs by IP, with a higher limit since
@@ -143,6 +164,16 @@ end
 # Key: "rack::attack:#{Time.now.to_i/:period}:signups/ip:#{req.ip}"
 Rack::Attack.throttle('signups/ip', limit: 5, period: 1.hour) do |req|
   req.ip if req.path == '/users' && req.post?
+end
+
+# Guessing the shared account secret through upgrades (sign-ups are covered by signups/ip above).
+# Key: "rack::attack:#{Time.now.to_i/:period}:upgrades/user:#{user_id}" and ".../upgrades/ip:#{req.ip}"
+UPGRADE_PATH = /\A\/users\/\d+\/upgrade\z/
+Rack::Attack.throttle('upgrades/user', limit: 5, period: 1.hour) do |req|
+  RequestUser.id(req.env) if req.put? && req.path.match?(UPGRADE_PATH)
+end
+Rack::Attack.throttle('upgrades/ip', limit: 10, period: 1.hour) do |req|
+  req.ip if req.put? && req.path.match?(UPGRADE_PATH)
 end
 
 # Tell every throttled client how long to wait. See the responders at the top

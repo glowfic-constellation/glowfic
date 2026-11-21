@@ -90,6 +90,31 @@ RSpec.describe Icon do
     end
   end
 
+  describe "uploaded file type" do
+    it "allows new uploads with an image extension" do
+      icon = build(:uploaded_icon)
+      icon.s3_key = "users/#{icon.user.id}/icons/photo.JPG"
+      icon.url = "https://d1anwqy6ci9o1i.cloudfront.net/users%2F#{icon.user.id}%2Ficons%2Fphoto.JPG"
+      expect(icon).to be_valid
+    end
+
+    it "rejects new uploads without an image extension" do
+      icon = build(:uploaded_icon)
+      icon.s3_key = "users/#{icon.user.id}/icons/page.svg"
+      icon.url = "https://d1anwqy6ci9o1i.cloudfront.net/users%2F#{icon.user.id}%2Ficons%2Fpage.svg"
+      expect(icon).not_to be_valid
+      expect(icon.errors[:url]).to include('must be an image file (png, jpg, gif or webp)')
+    end
+
+    it "does not re-check existing uploads" do
+      icon = create(:uploaded_icon)
+      icon.s3_key = "users/#{icon.user.id}/icons/old.xyz"
+      icon.save!(validate: false)
+      icon.keyword = 'renamed'
+      expect(icon).to be_valid
+    end
+  end
+
   describe "#delete_from_s3" do
     before(:each) { clear_enqueued_jobs }
 

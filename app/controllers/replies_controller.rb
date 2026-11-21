@@ -212,7 +212,7 @@ class RepliesController < WritableController
   # Only skips auto-advancing when the permalink jumps ahead of the unread boundary; mark_read's own regression guard already covers the reverse case.
   def check_permalink_read_position
     @permalink_reply = @reply
-    cur_page = params[:page].to_i
+    cur_page = params[:page].to_s.to_i
     return if cur_page <= 0
 
     unread = @post.first_unread_for(current_user)

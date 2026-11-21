@@ -113,21 +113,22 @@ You should now be able to execute the server, as before but now with the latest 
 
 ### Validation tools
 
-We use the following tools to make sure our code is clean and standards-ctompliant:
+We use the following tools to make sure our code is clean and standards-compliant:
 
 * The [W3 HTML validator](https://validator.w3.org/)
 * [traceroute](https://github.com/amatsuda/traceroute)
 * [rails_best_practices](https://github.com/flyerhzm/rails_best_practices)
-* [sass-lint](https://github.com/sasstools/sass-lint)
 
 We run the following tools through github actions:
 * [brakeman](https://github.com/presidentbeef/brakeman)
 * [ESLint](https://eslint.org/)
 * [haml-lint](https://github.com/sds/haml-lint)
 * [Rubocop](https://github.com/rubocop-hq/rubocop)
+* [stylelint](https://stylelint.io/)
+* [bundler-audit](https://github.com/rubysec/bundler-audit) (its own workflow)
+* [CodeQL](https://codeql.github.com/)
 
 CodeClimate runs the following tools automatically:
-* [bundler-audit](https://github.com/rubysec/bundler-audit)
 * [duplication](https://github.com/codeclimate/codeclimate-duplication)
 * [fixme](https://github.com/codeclimate/codeclimate-fixme)
 

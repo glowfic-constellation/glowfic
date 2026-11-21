@@ -392,6 +392,15 @@ RSpec.describe TagsController do
       expect(flash[:error][:message]).to eq("Setting could not be updated because of the following problems:")
     end
 
+    it "does not allow changing the tag type" do
+      tag = create(:setting, owned: false)
+      login
+      put :update, params: { id: tag.id, tag: { type: 'ContentWarning', description: 'new description' } }
+      expect(response).to redirect_to(tag_url(tag))
+      expect(Tag.find(tag.id)).to be_a(Setting)
+      expect(tag.reload.description).to eq('new description')
+    end
+
     it "allows admin to update the tag" do
       tag = create(:label)
       name = tag.name + 'Edited'

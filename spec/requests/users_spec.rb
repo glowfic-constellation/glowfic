@@ -1,4 +1,6 @@
 RSpec.describe "Users" do
+  include ActiveSupport::Testing::TimeHelpers
+
   describe "creation" do
     it "creates a new reader-mode user, logs in, and has profile page" do
       get "/users/new"
@@ -8,8 +10,13 @@ RSpec.describe "Users" do
         expect(response.body).to include("Sign Up")
       end
 
+      form_token = response.body[/name="form_token"[^>]*value="([^"]+)"/, 1] || response.body[/value="([^"]+)"[^>]*name="form_token"/, 1]
+      expect(form_token).to be_present
+
+      travel_to(10.seconds.from_now) # the form must have been open for a few seconds
       expect {
         post "/users", params: {
+          form_token: form_token,
           user: {
             username: "John Doe",
             email: "john.doe@example.com",

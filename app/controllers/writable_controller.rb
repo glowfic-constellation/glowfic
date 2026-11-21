@@ -51,12 +51,12 @@ class WritableController < ApplicationController
         @paginate_params['at_id'] = @unread.try(:id)
         @unread
       else
-        Reply.find_by(id: params[:at_id].to_i)
+        Reply.find_by(id: params[:at_id].to_s.to_i)
       end
 
       if reply && reply.post_id == @post.id
         @replies = @replies.where('replies.reply_order >= ?', reply.reply_order)
-        self.page = cur_page = cur_page.to_i
+        self.page = cur_page = cur_page.to_s.to_i.clamp(1, MAX_PAGE)
       else
         flash[:error] = "Could not locate specified reply, defaulting to first page."
         self.page = cur_page = 1
@@ -78,7 +78,7 @@ class WritableController < ApplicationController
         self.page = cur_page = 1
       end
     else
-      self.page = cur_page = cur_page.to_i
+      self.page = cur_page = cur_page.to_s.to_i.clamp(1, MAX_PAGE)
     end
 
     select = <<~SQL.squish

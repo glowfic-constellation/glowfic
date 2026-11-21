@@ -1,5 +1,8 @@
 # frozen_string_literal: true
 class UploadingController < ApplicationController
+  # generous: the uploader resizes most images client-side, this only stops absurd uploads
+  MAX_UPLOAD_SIZE = 10.megabytes
+
   protected
 
   def set_s3_url
@@ -22,6 +25,7 @@ class UploadingController < ApplicationController
       success_action_status: '201',
       acl: 'public-read',
       content_type_starts_with: 'image/',
+      content_length_range: 0..MAX_UPLOAD_SIZE,
       cache_control: 'public, max-age=31536000',
       **presign_conf,
     )

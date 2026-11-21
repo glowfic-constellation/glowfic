@@ -37,13 +37,14 @@ class Api::V1::BoardsController < Api::ApiController
       render json: { errors: [error] }, status: :not_found and return
     end
 
-    queryset = board.posts
-      .visible_to(current_user)
+    # Paginate the bare ids first: with the correlated reply count in the select list, Postgres
+    # evaluates it for every row skipped by OFFSET, which makes deep pages of big continuities slow.
+    page_ids = paginate(board.posts.visible_to(current_user).ordered_by_id, per_page: 25).pluck(:id)
+    posts = Post.where(id: page_ids)
       .ordered_by_id
       .with_reply_count
       .select('posts.*')
       .includes(:board, :joined_authors, :section)
-    posts = paginate(queryset, per_page: 25)
     render json: { results: posts }
   end
 end
