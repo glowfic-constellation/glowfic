@@ -125,6 +125,13 @@ user: { username: user.username, email: user.email, password: 'password1', passw
       expect(assigns(:page_title)).to eq('Sign Up')
     end
 
+    it "creates a reader account when no secret is configured" do
+      stub_env('ACCOUNT_SECRET', nil)
+      user = build(:user).attributes.with_indifferent_access.merge(password: 'password', password_confirmation: 'password')
+      post :create, params: { tos: true, addition: '14', user: user }
+      expect(User.find_by(username: user[:username])).to be_read_only
+    end
+
     it "signs you up" do
       stub_env('ACCOUNT_SECRET', 'ALLHAILTHECOIN')
       pass = 'testpassword'
@@ -636,6 +643,16 @@ user: { username: user.username, email: user.email, password: 'password1', passw
       put :upgrade, params: { id: user.id, secret: 'vanilla' }
       expect(response).to render_template(:edit)
       expect(flash[:error]).to eq("That is not the correct secret. Please ask someone in the community for help.")
+    end
+
+    it "does not upgrade when no secret is configured" do
+      stub_env('ACCOUNT_SECRET', nil)
+      user = create(:user, role_id: Permissible::READONLY)
+      login_as(user)
+      put :upgrade, params: { id: user.id }
+      expect(response).to render_template(:edit)
+      expect(flash[:error]).to eq("That is not the correct secret. Please ask someone in the community for help.")
+      expect(user.reload.role_id).to eq(Permissible::READONLY)
     end
 
     it "handles update failures" do
