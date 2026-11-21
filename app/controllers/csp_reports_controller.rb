@@ -3,7 +3,7 @@
 # and writes one short warn-level log line per report, so they can be searched in the logs. Nothing is stored.
 class CspReportsController < ActionController::API
   MAX_BODY_BYTES = 4096
-  FIELDS = %w(violated-directive effective-directive blocked-uri document-uri source-file line-number disposition).freeze
+  FIELDS = %w(violated-directive effective-directive blocked-uri document-uri source-file line-number disposition script-sample).freeze
 
   def create
     body = request.body.read(MAX_BODY_BYTES).to_s

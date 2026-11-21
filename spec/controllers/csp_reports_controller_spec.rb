@@ -11,6 +11,14 @@ RSpec.describe CspReportsController do
       expect(logged).not_to include('secret')
     end
 
+    it "includes the script sample of a blocked inline handler" do
+      report = { 'csp-report' => { 'violated-directive' => 'script-src-attr', 'blocked-uri' => 'inline', 'script-sample' => 'this.form.submit()' } }
+      logged = nil
+      allow(Rails.logger).to receive(:warn) { |line| logged = line }
+      post :create, body: report.to_json, as: :json
+      expect(logged).to include('script-sample="this.form.submit()"')
+    end
+
     it "rejects bodies that are not JSON" do
       post :create, body: 'nope'
       expect(response).to have_http_status(400)
