@@ -774,7 +774,7 @@ RSpec.describe GalleriesController do
       allow(ENV).to receive(:key?).with("LOCAL_S3_ENDPOINT_EXTERNAL").and_return(true)
       allow(ENV).to receive(:fetch).with("LOCAL_S3_ENDPOINT", nil).and_return("http://old-url.example.com/")
       allow(ENV).to receive(:fetch).with("LOCAL_S3_ENDPOINT_EXTERNAL", nil).and_return("http://updated-url.example.com/")
-      expect(fake_bucket).to receive(:presigned_post).with(hash_including(url: "http://updated-url.example.com/my-bucket"))
+      expect(fake_bucket).to receive(:presigned_post).with(hash_including(url: "http://updated-url.example.com/my-bucket", content_length_range: 0..UploadingController::MAX_UPLOAD_SIZE))
       login
       get :add, params: { id: 0 }
     end
