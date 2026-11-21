@@ -13,6 +13,8 @@ module Owable
     # quick way to pull author list without calculating from post + replies
     has_many :joined_post_authors, -> { where(joined: true) }, class_name: 'Post::Author', inverse_of: :post
     has_many :joined_authors, class_name: 'User', through: :joined_post_authors, source: :user, dependent: :destroy
+    # API lists preload this: ordering the plain association (joined_authors.ordered) would query per post
+    has_many :ordered_joined_authors, -> { ordered }, class_name: 'User', through: :joined_post_authors, source: :user, inverse_of: false
 
     # used in the post#write UI to handle inviting users
     has_many :unjoined_post_authors, -> { where(joined: false) }, class_name: 'Post::Author', inverse_of: :post

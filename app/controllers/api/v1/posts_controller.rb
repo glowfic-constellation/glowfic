@@ -63,7 +63,10 @@ class Api::V1::PostsController < Api::ApiController
       queryset.order(Arel.sql('LOWER(subject) asc'), id: :asc)
     end
 
-    posts = paginate queryset, per_page: 25
+    # Load the page's ids first, then the posts with their reply counts and associations in a few
+    # queries, instead of one reply count, author and section query per post (see boards#posts).
+    page_ids = paginate(queryset, per_page: 25).pluck(:id)
+    posts = Post.where(id: page_ids).with_reply_count.select('posts.*').includes(:board, :ordered_joined_authors, :section).index_by(&:id).values_at(*page_ids)
     render json: { results: posts.as_json(min: params[:min].present?) }
   end
 
