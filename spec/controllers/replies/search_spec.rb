@@ -229,6 +229,7 @@ RSpec.describe RepliesController, 'GET search' do
       allow(Reply::Searcher).to receive(:new).and_return(searcher)
       allow(searcher).to receive(:search).and_return(results)
       allow(results).to receive(:load).and_raise(ActiveRecord::QueryCanceled)
+      expect(Rails.logger).to receive(:warn).with(/\[reply_search_timeout\]/)
 
       get :search, params: { commit: true, subj_content: 'content' }
 

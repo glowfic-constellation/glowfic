@@ -47,6 +47,13 @@ class RepliesController < WritableController
       @search_results.load
       @search_results.total_entries
     rescue ActiveRecord::QueryCanceled
+      # Logged with a fixed prefix so it can be found in the logs (it no longer raises an error report).
+      # Only the shape of the search is recorded, not what was searched for.
+      Rails.logger.warn(
+        "[reply_search_timeout] page=#{page} user_id=#{current_user&.id.inspect} post_id=#{@post&.id.inspect} " \
+        "filters=#{params.slice(:subj_content, :author_id, :character_id, :board_id, :template_id, :sort, :condensed).keys.sort.join(',')} " \
+        "term_length=#{params[:subj_content].to_s.length}",
+      )
       flash.now[:error] = "That search took too long. Try narrowing it, for example to one continuity, author or character."
       @search_results = Reply.none.paginate(page: 1)
     end
