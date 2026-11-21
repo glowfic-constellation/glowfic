@@ -59,6 +59,19 @@ RSpec.describe RepliesController, 'GET show' do
     expect(assigns(:javascripts)).to include('posts/show')
   end
 
+  context "with malformed paging params" do
+    let(:reply) { create(:reply) }
+
+    it "does not error on zero, negative, array or oversized values" do
+      ['0', '-3', 'abc', '99999999999999999999', ['1']].each do |page|
+        get :show, params: { id: reply.id, page: page }
+        expect(response.status).to be < 500
+      end
+      get :show, params: { id: reply.id, per_page: '-5' }
+      expect(response).to have_http_status(200)
+    end
+  end
+
   it "has more tests" do
     skip
   end

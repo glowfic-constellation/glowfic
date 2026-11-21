@@ -19,6 +19,13 @@ RSpec.describe ReportsController do
       expect(flash[:error]).to eq("Could not identify the type of report.")
     end
 
+    it "does no further work for an invalid type" do
+      login
+      expect(controller).not_to receive(:calculate_day)
+      get :show, params: { id: 'bogus' }
+      expect(response).to redirect_to(reports_url)
+    end
+
     it "succeeds with daily" do
       get :show, params: { id: 'daily' }
       expect(response).to have_http_status(200)

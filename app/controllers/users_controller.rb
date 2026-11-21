@@ -32,13 +32,20 @@ class UsersController < ApplicationController
     end
     @user.tos_version = User::CURRENT_TOS_VERSION
 
+    # Hidden honeypot field (people never see or fill it) and a signed form timestamp (see SignupFormToken)
+    if params[:contact_url].present? || !SignupFormToken.valid?(params[:form_token])
+      signup_prep
+      flash.now[:error] = "Something went wrong submitting the form. Please reload the page and try again."
+      render :new and return
+    end
+
     if params[:addition].to_i != 14
       signup_prep
       flash.now[:error] = "Please check your math and try again."
       render :new and return
     end
 
-    if params[:secret] != ENV["ACCOUNT_SECRET"]
+    if !account_secret_matches?
       @user.role_id = Permissible::READONLY
     elsif ENV.fetch("UPGRADES_LOCKED", nil).present?
       flash.now[:error] = "We're sorry, full accounts are currently unavailable."
@@ -157,7 +164,7 @@ class UsersController < ApplicationController
       render :edit and return
     end
 
-    unless params[:secret] == ENV["ACCOUNT_SECRET"]
+    unless account_secret_matches?
       flash.now[:error] = "That is not the correct secret. Please ask someone in the community for help."
       @page_title = 'Edit Account'
       render :edit and return
@@ -205,6 +212,13 @@ class UsersController < ApplicationController
   end
 
   private
+
+  # The shared secret that turns a reader account into a full one. An unset or blank secret matches nothing.
+  def account_secret_matches?
+    secret = ENV['ACCOUNT_SECRET'].presence
+    return false unless secret
+    ActiveSupport::SecurityUtils.secure_compare(params[:secret].to_s, secret)
+  end
 
   def require_own_user
     return if params[:id] == current_user.id.to_s

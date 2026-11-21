@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 source 'https://rubygems.org'
 
-ruby '4.0.9'
+ruby '4.0.10'
 
 gem 'api-pagination'
 gem 'apipie-rails'
@@ -23,12 +23,12 @@ gem 'aws-sdk-ses', '~> 1'
 gem 'barnes' # heroku ruby-specific metrics
 gem 'bcrypt', '~> 3.1' # password hashing
 gem 'bootstrap', '~> 5.3' # pin until major version is handled
-gem 'connection_pool', '~> 2.0' # pin until version 3.x is supported by Rails (https://github.com/glowfic-constellation/glowfic/pull/2616)
+gem 'connection_pool', '~> 3.0'
 gem 'dartsass-sprockets'
 gem 'doorkeeper', '~> 5.9'
 gem 'doorkeeper-openid_connect', '~> 2.1'
 gem 'exception_notification'
-gem 'gon', '~> 7.1'
+gem 'gon', '~> 8.0'
 gem 'haml-rails'
 gem 'httparty'
 gem 'jquery-fileupload-rails'

@@ -139,7 +139,7 @@ class RepliesController < WritableController
   end
 
   def restore
-    audit = Audited::Audit.where(action: 'destroy').order(id: :desc).find_by(auditable_id: params[:id])
+    audit = Audited::Audit.where(action: 'destroy').order(id: :desc).find_by(auditable_type: 'Reply', auditable_id: params[:id])
     unless audit
       flash[:error] = "Reply could not be found."
       redirect_to continuities_path and return
@@ -151,7 +151,7 @@ class RepliesController < WritableController
     end
 
     new_reply = Reply.new(audit.audited_changes)
-    new_reply.created_at = Audited::Audit.order(id: :asc).find_by(action: 'create', auditable_id: params[:id]).created_at
+    new_reply.created_at = Audited::Audit.order(id: :asc).find_by(action: 'create', auditable_type: 'Reply', auditable_id: params[:id]).created_at
     unless new_reply.editable_by?(current_user)
       flash[:error] = "You do not have permission to modify this reply."
       redirect_to post_path(new_reply.post) and return
@@ -196,7 +196,7 @@ class RepliesController < WritableController
   # Only skips auto-advancing when the permalink jumps ahead of the unread boundary; mark_read's own regression guard already covers the reverse case.
   def check_permalink_read_position
     @permalink_reply = @reply
-    cur_page = params[:page].to_i
+    cur_page = params[:page].to_s.to_i
     return if cur_page <= 0
 
     unread = @post.first_unread_for(current_user)
@@ -339,7 +339,7 @@ class RepliesController < WritableController
       @unseen_replies = replies_post.replies.ordered.paginate(page: 1, per_page: 10)
       if last_seen_reply_order.present?
         @unseen_replies = @unseen_replies.where('reply_order > ?', last_seen_reply_order)
-        @audits = Audited::Audit.where(auditable_id: @unseen_replies.map(&:id)).group(:auditable_id).count
+        @audits = Audited::Audit.where(auditable_type: 'Reply', auditable_id: @unseen_replies.map(&:id)).group(:auditable_id).count
       end
       most_recent_unseen_reply = @unseen_replies.last
 

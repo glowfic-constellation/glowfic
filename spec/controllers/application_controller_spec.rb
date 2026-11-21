@@ -108,6 +108,20 @@ RSpec.describe ApplicationController do
       expect(fetched_posts.total_pages).to eq(2)
     end
 
+    it "loads reply counts for the page after the page query, not in it" do
+      post = create(:post)
+      create_list(:reply, 2, post: post)
+      relation = Post.where(id: post.id)
+
+      paginated = controller.send(:posts_from_relation, relation)
+      expect(paginated.to_sql).not_to include('reply_count')
+      expect(paginated.first.reply_count).to eq(2)
+
+      unpaginated = controller.send(:posts_from_relation, relation, with_pagination: false)
+      expect(unpaginated.to_sql).to include('reply_count')
+      expect(unpaginated.first.reply_count).to eq(2)
+    end
+
     it "allows pagination to be disabled" do
       relation = Post.where(id: default_post_ids)
       fetched_posts = controller.send(:posts_from_relation, relation, with_pagination: false)

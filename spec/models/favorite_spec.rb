@@ -43,6 +43,15 @@ RSpec.describe Favorite do
       expect(f2.save).to eq(true)
     end
 
-    skip "should allow you to favorite multiple things"
+    it "should allow you to favorite multiple things" do
+      user = create(:user)
+      favorites = [create(:post), create(:user), create(:board)].map do |favorite|
+        Favorite.new(user: user, favorite: favorite)
+      end
+
+      expect(favorites).to all(be_valid)
+      expect(favorites.map(&:save)).to all(eq(true))
+      expect(user.favorites.count).to eq(3)
+    end
   end
 end
