@@ -41,7 +41,7 @@ services:
       RESQUE_TERM_TIMEOUT: 7
       QUEUES: mailer,notifier,high,*
   redis:
-    image: redis:7.2-alpine
+    image: redis:8.10-alpine
     ports:
       - 6379:6379
   postgres:
