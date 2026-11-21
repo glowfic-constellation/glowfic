@@ -310,7 +310,11 @@ class Post < ApplicationRecord
     content_warnings.exists?
   end
 
+  # set by lists that load counts for a page of posts in one query
+  attr_writer :reply_count
+
   def reply_count
+    return @reply_count if defined?(@reply_count) && !@reply_count.nil?
     return read_attribute(:reply_count) if has_attribute?(:reply_count)
     replies.count
   end

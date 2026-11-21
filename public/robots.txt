@@ -13,6 +13,7 @@ Disallow: /
 
 User-agent: *
 Disallow: /replies/
+Disallow: /posts/*/warnings
 Disallow: /posts/*reply_id
 Disallow: /posts/*at_id
 Disallow: /*/search*?

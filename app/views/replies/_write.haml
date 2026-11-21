@@ -63,7 +63,7 @@
           - else
             %em (You haven't written a note yet!)
         .private-note-editor.hidden
-          = text_area_tag :private_note, params[:private_note] || reply.post.author_for(current_user).private_note, id: 'post_private_note'
+          = text_area_tag :private_note, params[:private_note] || reply.post.author_for(current_user).private_note, id: 'post_private_note', 'aria-label': 'Private notes'
           = submit_tag 'Save', class: 'save-private-note button'
           = submit_tag 'Discard Changes', class: 'discard-private-note button'
         #dialog-confirm{title: "Your author note has unsaved changes!"}

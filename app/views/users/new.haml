@@ -35,6 +35,10 @@
         .even
           = text_field_tag :secret, params[:secret], placeholder: "Secret"
           %span.details (If you don't know what this is, please leave it blank!)
+    -# Honeypot: hidden from people and assistive tech; bots that fill every field are rejected
+    .hidden{'aria-hidden': 'true'}
+      = text_field_tag :contact_url, nil, tabindex: -1, autocomplete: 'off'
+    = hidden_field_tag :form_token, SignupFormToken.generate
     #signup-captcha
       .sub.vtop Captcha
       .odd

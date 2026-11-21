@@ -3,6 +3,7 @@ class Icon < ApplicationRecord
   include Presentable
 
   S3_DOMAIN = '.s3.amazonaws.com'
+  UPLOAD_EXTENSIONS = /\.(png|jpe?g|jpe|jfif|gif|apng|webp|avif|bmp|ico)\z/i
 
   belongs_to :user, optional: false
   has_one :avatar_user, inverse_of: :avatar, class_name: 'User', foreign_key: :avatar_id, dependent: :nullify
@@ -19,6 +20,7 @@ class Icon < ApplicationRecord
   validates :credit, length: { maximum: 255 }
   validate :url_is_url
   validate :uploaded_url_yours
+  validate :uploaded_file_is_image
   nilify_blanks
 
   before_validation :use_icon_host
@@ -84,6 +86,14 @@ class Icon < ApplicationRecord
     return if url.include?("users%2F#{user_id}%2Ficons%2F") &&
               s3_key.starts_with?("users/#{user_id}/icons/")
     errors.add(:url, :invalid, message: 'is invalid')
+  end
+
+  # S3 post policies can only prefix-match the content type, so check the extension of new uploads here
+  # (new uploads only, so existing icons with other keys stay editable)
+  def uploaded_file_is_image
+    return unless uploaded? && will_save_change_to_s3_key?
+    return if s3_key.match?(UPLOAD_EXTENSIONS)
+    errors.add(:url, :invalid, message: 'must be an image file (png, jpg, gif or webp)')
   end
 
   def clear_icon_ids

@@ -131,7 +131,8 @@ class TagsController < ApplicationController
   end
 
   def permitted_params
-    permitted = [:type, :description, :owned]
+    # :type is deliberately not permitted: it is the STI column, and the editor has no field for it.
+    permitted = [:description, :owned]
     permitted.insert(0, :name, :user_id) if current_user.admin? || @tag.user == current_user
     params.fetch(:tag, {}).permit(permitted)
   end
