@@ -31,6 +31,15 @@ class Reply < ApplicationRecord
     using: { tsearch: { dictionary: "english", highlight: { MaxFragments: 10 } } },
   )
 
+  # Same match as :search, but newest replies first instead of by ts_rank. Ranking has to re-tokenise every
+  # matching reply, which for very common words takes longer than the statement timeout.
+  pg_search_scope(
+    :search_newest_first,
+    against: %i(content),
+    using: { tsearch: { dictionary: "english", highlight: { MaxFragments: 10 } } },
+    ranked_by: "replies.created_at",
+  )
+
   scope :visible_to, ->(user) { where(post_id: Post.visible_to(user).select(:id)) }
   scope :bookmark_visible_to, ->(bookmark_owner, viewing_user) { where(bookmarks: bookmark_owner.bookmarks.visible_to(viewing_user)) }
 
