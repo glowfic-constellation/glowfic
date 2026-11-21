@@ -10,10 +10,15 @@ Resque.after_fork do
 end
 
 if Rails.env.production?
+  # Fail closed: without both variables set, nobody gets in (a built-in default would be a known password).
   Resque::Server.use(Rack::Auth::Basic) do |user, password|
-    username = ENV.fetch('RESQUE_WEB_HTTP_BASIC_AUTH_USER', 'user')
-    pw = ENV.fetch('RESQUE_WEB_HTTP_BASIC_AUTH_PASSWORD', 'secret')
-    [user, password] == [username, pw]
+    username = ENV['RESQUE_WEB_HTTP_BASIC_AUTH_USER'].presence
+    pw = ENV['RESQUE_WEB_HTTP_BASIC_AUTH_PASSWORD'].presence
+    next false unless username && pw
+
+    user_ok = ActiveSupport::SecurityUtils.secure_compare(user.to_s, username)
+    pass_ok = ActiveSupport::SecurityUtils.secure_compare(password.to_s, pw)
+    user_ok && pass_ok
   end
 end
 
