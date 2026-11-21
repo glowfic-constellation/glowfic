@@ -57,6 +57,9 @@ class RepliesController < WritableController
       flash.now[:error] = "That search took too long. Try narrowing it, for example to one continuity, author or character."
       @search_results = Reply.none.paginate(page: 1)
     end
+    if searcher.sorted_by_date && flash.now[:error].blank?
+      flash.now[:notice] = "That word is very common, so results are sorted newest first instead of by relevance."
+    end
     @templates = searcher.templates
     @audits = []
     @reply_bookmarks = {}
