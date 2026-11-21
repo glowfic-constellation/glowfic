@@ -10,7 +10,15 @@ RSpec.describe RepliesController, 'POST restore' do
   end
 
   it "requires full account" do
-    skip "TODO Currently relies on inability to create replies"
+    reply = create(:reply)
+    user = reply.user
+    user.update!(role_id: Permissible::READONLY)
+    reply.destroy!
+    login_as(user)
+    post :restore, params: { id: reply.id }
+    expect(response).to redirect_to(post_path(reply.post))
+    expect(flash[:error]).to eq("You do not have permission to modify this reply.")
+    expect(Reply.find_by(id: reply.id)).to be_nil
   end
 
   it "must find the reply" do

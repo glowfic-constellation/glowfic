@@ -12,7 +12,12 @@ RSpec.describe PostsController, 'GET delete_history' do
   end
 
   it "requires full account" do
-    skip "TODO Currently relies on inability to create posts"
+    user = post.user
+    user.update!(role_id: Permissible::READONLY)
+    login_as(user)
+    get :delete_history, params: { id: post.id }
+    expect(response).to redirect_to(post_url(post))
+    expect(flash[:error]).to eq("You do not have permission to modify this post.")
   end
 
   it "requires post" do
