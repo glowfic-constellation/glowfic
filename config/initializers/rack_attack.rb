@@ -61,7 +61,17 @@ Rack::Attack.blocklist('bad ips') { |req| RackAttackIpList.bad?(req.ip) }
 # each worker keeps its own in-process counter and the configured limit is
 # multiplied by `WEB_CONCURRENCY * dyno_count`.
 url = ENV.fetch("HEROKU_REDIS_TEAL_URL", nil)
-Rack::Attack.cache.store = ActiveSupport::Cache::RedisCacheStore.new(url: url, ssl_params: { verify_mode: OpenSSL::SSL::VERIFY_NONE }) if url
+# The pool is capped at 2 connections per process: the Mini Redis plan allows 20 clients in total, and
+# with the default pool (5, created lazily) 4 dynos x 2 workers x 3 threads can ask for up to 24.
+# Each throttle check is a ~1 ms command, so threads rarely wait; if one does, the store fails open
+# (the request is simply not counted) rather than raising.
+if url
+  Rack::Attack.cache.store = ActiveSupport::Cache::RedisCacheStore.new(
+    url: url,
+    pool: { size: 2, timeout: 0.2 },
+    ssl_params: { verify_mode: OpenSSL::SSL::VERIFY_NONE },
+  )
+end
 
 # Read-only API GETs power the search forms' autocomplete dropdowns (select2).
 # A single search interaction fans out into many of these requests - one per
