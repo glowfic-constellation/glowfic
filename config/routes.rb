@@ -10,6 +10,7 @@ Rails.application.routes.draw do
   # Accounts
   get '/login' => 'sessions#new', as: :login
   post '/login' => 'sessions#create'
+  post '/csp_reports' => 'csp_reports#create'
   delete '/logout' => 'sessions#destroy', as: :logout
   patch '/confirm_tos' => 'sessions#confirm_tos', as: :confirm_tos
   get '/users/:id/templates' => redirect('/users/%{id}/characters')

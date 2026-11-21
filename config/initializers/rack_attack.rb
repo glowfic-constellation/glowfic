@@ -74,6 +74,10 @@ def autocomplete_api_request?(req)
   req.get? && req.path.start_with?('/api/v1/') && ['/api/v1/replies', '/api/v1/replies.json'].exclude?(req.path.chomp('/'))
 end
 
+def csp_report_request?(req)
+  req.post? && req.path == '/csp_reports'
+end
+
 # Calls an OAuth client makes from its own server: the token and OpenID Connect endpoints,
 # and API calls with a bearer token. See app/services/oauth_request.rb.
 def oauth_client_request?(req)
@@ -87,7 +91,14 @@ end
 # Autocomplete API GETs are excluded here and counted under 'api/ip' instead,
 # and OAuth client requests under 'oauth/ip'.
 Rack::Attack.throttle('req/ip', limit: ENV.fetch("RACK_ATTACK_IP_LIMIT", 25).to_i, period: 5.minutes) do |req|
-  req.ip if !req_logged_in?(req) && !autocomplete_api_request?(req) && !oauth_client_request?(req)
+  req.ip if !req_logged_in?(req) && !autocomplete_api_request?(req) && !oauth_client_request?(req) && !csp_report_request?(req)
+end
+
+# Browsers send CSP violation reports on their own (often because of extensions), so they must not eat
+# the visitor's page-view budget above; they get a small budget of their own.
+# Key: "rack::attack:#{Time.now.to_i/:period}:csp_reports/ip:#{req.ip}"
+Rack::Attack.throttle('csp_reports/ip', limit: 20, period: 5.minutes) do |req|
+  req.ip if csp_report_request?(req)
 end
 
 # Throttle the read-only autocomplete API GETs by IP, with a higher limit since
