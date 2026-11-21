@@ -114,6 +114,25 @@ RSpec.describe Api::V1::BoardsController do
       expect(response.parsed_body['results'][0]['section']['id']).to eq(user_post.section_id)
     end
 
+    it 'includes reply counts, in id order' do
+      board = create(:board)
+      first_post = create(:post, board: board)
+      second_post = create(:post, board: board)
+      create_list(:reply, 2, post: second_post)
+      get :posts, params: { id: board.id }
+      results = response.parsed_body['results']
+      expect(results.pluck('id')).to eq([first_post.id, second_post.id])
+      expect(results.pluck('num_replies')).to eq([0, 2])
+    end
+
+    it 'sets pagination headers from the visible posts' do
+      board = create(:board)
+      create_list(:post, 26, board: board)
+      create(:post, board: board, privacy: :private)
+      get :posts, params: { id: board.id }
+      expect(response.headers['Total']).to eq('26')
+    end
+
     it 'paginates results' do
       board = create(:board)
       create_list(:post, 26, board: board)
