@@ -128,7 +128,7 @@ user: { username: user.username, email: user.email, password: 'password1', passw
     it "creates a reader account when no secret is configured" do
       stub_env('ACCOUNT_SECRET', nil)
       user = build(:user).attributes.with_indifferent_access.merge(password: 'password', password_confirmation: 'password')
-      post :create, params: { tos: true, addition: '14', user: user }
+      post :create, params: { tos: true, form_token: signup_token, addition: '14', user: user }
       expect(User.find_by(username: user[:username])).to be_read_only
     end
 
