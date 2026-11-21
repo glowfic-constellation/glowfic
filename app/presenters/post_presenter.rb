@@ -24,7 +24,7 @@ class PostPresenter
     post_json.merge({
       board: post.board,
       section: post.section,
-      authors: post.joined_authors.ordered,
+      authors: post.ordered_joined_authors,
       num_replies: post.reply_count,
     })
   end

@@ -42,4 +42,35 @@ RSpec.describe "Post" do
       end
     end
   end
+
+  describe "API lists" do
+    let(:board) { create(:board) }
+    let(:add_post) do
+      lambda do
+        post = create(:post, board: board, unjoined_authors: [create(:user)])
+        create_list(:reply, 2, post: post)
+      end
+    end
+
+    before(:each) { add_post.call }
+
+    it "does not run a query per post on /api/v1/posts" do
+      expect_constant_queries("/api/v1/posts") { 2.times { add_post.call } }
+      expect(response.parsed_body['results'].size).to eq(3)
+      expect(response.parsed_body['results'].pluck('num_replies')).to all(eq(2))
+    end
+
+    it "does not run a query per post on /api/v1/boards/:id/posts" do
+      expect_constant_queries("/api/v1/boards/#{board.id}/posts") { 2.times { add_post.call } }
+      expect(response.parsed_body['results'].size).to eq(3)
+    end
+
+    it "does not run a query per post on /api/v1/users/:id/posts" do
+      user = create(:user)
+      add_user_post = -> { create(:post, user: user, board: board, unjoined_authors: [create(:user)]) }
+      add_user_post.call
+      expect_constant_queries("/api/v1/users/#{user.id}/posts") { 2.times { add_user_post.call } }
+      expect(response.parsed_body['results'].size).to eq(3)
+    end
+  end
 end
