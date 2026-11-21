@@ -99,10 +99,19 @@ class ApplicationController < ActionController::Base
     # the DISTINCT and use a plain COUNT, which PG can answer from the index.
     count_target = (posts.joins_values + posts.left_outer_joins_values).any? ? 'DISTINCT posts.id' : :all
     posts_count = posts.except(:select, :order, :group).count(count_target)
-    posts = posts_list_relation(posts, select: select, max: max)
+    # A reply count in the select list is evaluated for every row skipped by OFFSET, so on paginated
+    # lists it is loaded for the page's posts only, after the page query (see #attach_reply_counts).
+    posts = posts_list_relation(posts, select: select, max: max, reply_count: !with_pagination)
     posts = posts.paginate(page: page, total_entries: posts_count) if with_pagination
+    attach_reply_counts(posts) if with_pagination
     calculate_view_status(posts, with_unread: with_unread) if logged_in?
     posts
+  end
+
+  def attach_reply_counts(posts)
+    loaded = posts.to_a
+    counts = Reply.where(post_id: loaded.map(&:id)).group(:post_id).count
+    loaded.each { |post| post.reply_count = counts.fetch(post.id, 0) }
   end
   helper_method :posts_from_relation
 
@@ -112,7 +121,7 @@ class ApplicationController < ActionController::Base
     posts.visible_to(current_user)
   end
 
-  def posts_list_relation(relation, select: '', max: false)
+  def posts_list_relation(relation, select: '', max: false, reply_count: true)
     select = if max
       <<~SQL.squish
         posts.*,
@@ -135,14 +144,14 @@ class ApplicationController < ActionController::Base
       SQL
     end
 
-    relation
+    relation = relation
       .select(select)
       .joins(:board)
       .left_joins(:section)
       .joins(:last_user)
       .includes(:authors)
       .with_has_content_warnings
-      .with_reply_count
+    reply_count ? relation.with_reply_count : relation
   end
 
   def calculate_view_status(posts, with_unread: false)
