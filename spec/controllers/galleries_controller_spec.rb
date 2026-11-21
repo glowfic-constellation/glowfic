@@ -229,6 +229,22 @@ RSpec.describe GalleriesController do
           expect(assigns(:page_title)).to eq('Galleryless Icons')
           expect(assigns(:user)).to eq(user)
         end
+
+        context "with views" do
+          render_views
+
+          it "tells the owner how to move icons into a gallery" do
+            user = create(:user)
+            login_as(user)
+            get :show, params: { id: '0', user_id: user.id }
+            expect(response.body).to include('then Add Existing Icons')
+          end
+
+          it "does not show the hint to other users" do
+            get :show, params: { id: '0', user_id: create(:user).id }
+            expect(response.body).not_to include('then Add Existing Icons')
+          end
+        end
       end
 
       context "without user id" do
