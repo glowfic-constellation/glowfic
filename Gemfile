@@ -21,6 +21,7 @@ gem 'aws-actionmailer-ses', '~> 1'
 gem 'aws-sdk-s3', '~> 1'
 gem 'aws-sdk-ses', '~> 1'
 gem 'barnes' # heroku ruby-specific metrics
+gem 'bcrypt', '~> 3.1' # password hashing
 gem 'bootstrap', '~> 5.3' # pin until major version is handled
 gem 'connection_pool', '~> 3.0'
 gem 'dartsass-sprockets'

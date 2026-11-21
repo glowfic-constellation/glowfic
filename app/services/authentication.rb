@@ -22,7 +22,7 @@ class Authentication < Object
       return false
     end
 
-    ensure_uuid_set(user, password)
+    upgrade_password_hash(user, password)
     @user = user
   end
 
@@ -91,11 +91,13 @@ class Authentication < Object
     ExceptionNotifier.notify_exception(e)
   end
 
-  def ensure_uuid_set(user, password)
-    return if user.salt_uuid.present?
+  # Replaces a legacy salted-SHA1 hash with bcrypt now that we have the plaintext password.
+  def upgrade_password_hash(user, password)
+    return if user.bcrypt_hash? && user.salt_uuid.present?
 
-    user.salt_uuid = SecureRandom.uuid
-    user.crypted = user.send(:crypted_password, password)
+    # Not used by bcrypt (it stores its own salt in the hash); see User#hash_password
+    user.salt_uuid ||= SecureRandom.uuid
+    user.crypted = BCrypt::Password.create(password)
     user.save!
   end
 end
