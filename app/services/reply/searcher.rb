@@ -2,9 +2,10 @@
 class Reply::Searcher < Generic::Searcher
   attr_reader :users, :characters, :templates, :boards, :exclude_boards, :sorted_by_date
 
-  # Ranking by relevance costs time proportional to the number of matching replies (about 25 microseconds
-  # each in production), so searches the planner expects to match more than this many are sorted newest first.
-  COMMON_TERM_ROW_ESTIMATE = 50_000
+  # Ranking by relevance costs time proportional to the number of matching replies: measured in production
+  # (2026-11), about 1.6 s for 42k matches, 2.2 s for 35k and 2.4 s for 40k, and over 10 s for 250k. Searches the
+  # planner expects to match more than this many are sorted newest first, keeping the ranked search to roughly 5 s.
+  COMMON_TERM_ROW_ESTIMATE = 70_000
 
   def initialize(search=Reply.unscoped, current_user: nil, post: nil)
     @current_user = current_user

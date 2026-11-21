@@ -58,7 +58,7 @@ class RepliesController < WritableController
       @search_results = Reply.none.paginate(page: 1)
     end
     if searcher.sorted_by_date && flash.now[:error].blank?
-      flash.now[:notice] = "That word is very common, so results are sorted newest first instead of by relevance."
+      flash.now[:notice] = "This search matches a very large number of replies, so results are sorted newest first instead of by relevance. Add more words or filters to rank by relevance."
     end
     @templates = searcher.templates
     @audits = []
