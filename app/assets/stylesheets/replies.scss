@@ -163,7 +163,9 @@ div.post-subheader { width: 100%; }
 .post-content, .written-content, .message-content {
   // User HTML may carry inline styles (position: fixed/absolute, z-index, opacity: 0). Contain paint so
   // such elements stay inside (and are clipped to) their own post instead of covering the whole page.
+  // The clip margin keeps focus rings and text shadows of edge-hugging links visible (Chromium, Firefox).
   contain: paint;
+  overflow-clip-margin: 8px;
 
   blockquote {
     margin: 0.5em 1.5em;
@@ -184,7 +186,10 @@ div.post-subheader { width: 100%; }
 }
 
 // Index section descriptions are user HTML in a table header cell without the classes above.
-.index-description { contain: paint; }
+.index-description {
+  contain: paint;
+  overflow-clip-margin: 8px;
+}
 
 /* Post-specific content & editor */
 #content > .post-container, .flat-post-replies .post-container {
