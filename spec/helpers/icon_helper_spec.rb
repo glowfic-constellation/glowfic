@@ -60,7 +60,7 @@ RSpec.describe IconHelper do
     it "returns avatar with no character" do
       avatar = create(:icon)
       user.update!(avatar: avatar)
-      html = select_tag :icon_dropdown, options_for_select([[avatar.keyword, avatar.id]], avatar.id), prompt: "No Icon"
+      html = select_tag :icon_dropdown, options_for_select([[avatar.keyword, avatar.id]], avatar.id), prompt: "No Icon", 'aria-label': 'Icon'
       expect(helper.dropdown_icons(post)).to eq(html)
     end
 
@@ -70,7 +70,7 @@ RSpec.describe IconHelper do
       character.galleries << create(:gallery, user: user, icons: [icons.last])
       icons = Icon.where(id: icons.map(&:id))
       post.character = character
-      html = select_tag :icon_dropdown, options_for_select(icons.ordered.map { |i| [i.keyword, i.id] }, nil), prompt: "No Icon"
+      html = select_tag :icon_dropdown, options_for_select(icons.ordered.map { |i| [i.keyword, i.id] }, nil), prompt: "No Icon", 'aria-label': 'Icon'
       expect(helper.dropdown_icons(post, character.galleries)).to eq(html)
     end
 
@@ -80,7 +80,7 @@ RSpec.describe IconHelper do
       post.character = character
       post.icon = icons[0]
       icons = Icon.where(id: icons.map(&:id)).ordered
-      html = select_tag :icon_dropdown, options_for_select(icons.map { |i| [i.keyword, i.id] }, post.icon_id), prompt: "No Icon"
+      html = select_tag :icon_dropdown, options_for_select(icons.map { |i| [i.keyword, i.id] }, post.icon_id), prompt: "No Icon", 'aria-label': 'Icon'
       expect(helper.dropdown_icons(post)).to eq(html)
     end
 
@@ -88,7 +88,7 @@ RSpec.describe IconHelper do
       icon = create(:icon, user: user)
       character.update!(default_icon: icon)
       post.character = character
-      html = select_tag :icon_dropdown, options_for_select([[icon.keyword, icon.id]], nil), prompt: "No Icon"
+      html = select_tag :icon_dropdown, options_for_select([[icon.keyword, icon.id]], nil), prompt: "No Icon", 'aria-label': 'Icon'
       expect(helper.dropdown_icons(post)).to eq(html)
     end
 
@@ -96,7 +96,7 @@ RSpec.describe IconHelper do
       icon = create(:icon, user: user)
       post.character = character
       post.icon = icon
-      html = select_tag :icon_dropdown, options_for_select([[icon.keyword, icon.id]], icon.id), prompt: "No Icon"
+      html = select_tag :icon_dropdown, options_for_select([[icon.keyword, icon.id]], icon.id), prompt: "No Icon", 'aria-label': 'Icon'
       expect(helper.dropdown_icons(post)).to eq(html)
     end
   end

@@ -20,7 +20,7 @@
     = select_tag :orig_alias, (options_for_select({ '— Any Alias —': 'all' }, 'all') + collection), prompt: '— No alias —'
 
 - content_for :options do
-  = select_tag :icon_dropdown, options_for_select(@alt_dropdown, @alt.try(:id)), prompt: "No Character"
+  = select_tag :icon_dropdown, options_for_select(@alt_dropdown, @alt.try(:id)), prompt: "No Character", 'aria-label': 'Replace with character'
   = select_tag :alias_dropdown, options_from_collection_for_select(@alt.try(:aliases), :id, :name), prompt: '— No alias —', class: ('hidden' unless @alt.try(:aliases).present?)
 
 = form_for @character, url: do_replace_character_path(@character), method: :post do
