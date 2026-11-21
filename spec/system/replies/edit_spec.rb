@@ -325,6 +325,9 @@ RSpec.describe "Editing replies" do
       end
 
       find('li', exact_text: char4.name).click
+      # Selecting a character loads its aliases and icons asynchronously; wait for that before submitting, or the
+      # form can still carry the previous character's alias id
+      expect(page).to have_selector('.post-character #name', exact_text: char4.name)
       click_button "HTML" # Just to force the editor to update
       click_button "Add More Replies"
 
