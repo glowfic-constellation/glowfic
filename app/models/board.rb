@@ -37,6 +37,7 @@ class Board < ApplicationRecord
 
   def editable_by?(user)
     return false unless user
+    return false if user.read_only?
     return true if creator_id == user.id
     return true if user.has_permission?(:edit_continuities)
     return false if creator.deleted?

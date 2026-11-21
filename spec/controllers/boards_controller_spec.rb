@@ -328,7 +328,12 @@ RSpec.describe BoardsController do
     end
 
     it "requires full account" do
-      skip "TODO Currently relies on inability to create continuities"
+      user = create(:user, role_id: Permissible::READONLY)
+      board = create(:board, creator: user)
+      login_as(user)
+      get :edit, params: { id: board.id }
+      expect(response).to redirect_to(continuity_path(board))
+      expect(flash[:error]).to eq("You do not have permission to modify this continuity.")
     end
 
     it "requires valid board" do
@@ -388,7 +393,13 @@ RSpec.describe BoardsController do
     end
 
     it "requires full account" do
-      skip "TODO Currently relies on inability to create continuities"
+      user = create(:user, role_id: Permissible::READONLY)
+      board = create(:board, creator: user)
+      login_as(user)
+      put :update, params: { id: board.id, board: { name: 'Renamed' } }
+      expect(response).to redirect_to(continuity_path(board))
+      expect(flash[:error]).to eq("You do not have permission to modify this continuity.")
+      expect(board.reload.name).not_to eq('Renamed')
     end
 
     it "requires valid board" do
@@ -456,7 +467,13 @@ RSpec.describe BoardsController do
     end
 
     it "requires full account" do
-      skip "TODO Currently relies on inability to create continuities"
+      user = create(:user, role_id: Permissible::READONLY)
+      board = create(:board, creator: user)
+      login_as(user)
+      delete :destroy, params: { id: board.id }
+      expect(response).to redirect_to(continuity_path(board))
+      expect(flash[:error]).to eq("You do not have permission to modify this continuity.")
+      expect(Board.find_by(id: board.id)).to be_present
     end
 
     it "requires valid board" do
