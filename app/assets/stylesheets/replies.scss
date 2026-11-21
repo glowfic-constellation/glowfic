@@ -161,6 +161,10 @@ div.post-subheader { width: 100%; }
 .single-description blockquote { background-color: rgba($bg_color_descriptions_blockquote, 0.3); }
 
 .post-content, .written-content, .message-content {
+  // User HTML may carry inline styles (position: fixed/absolute, z-index, opacity: 0). Contain paint so
+  // such elements stay inside (and are clipped to) their own post instead of covering the whole page.
+  contain: paint;
+
   blockquote {
     margin: 0.5em 1.5em;
     padding: 0.5em;
