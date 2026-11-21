@@ -41,7 +41,7 @@ services:
       RESQUE_TERM_TIMEOUT: 7
       QUEUES: mailer,notifier,high,*
   redis:
-    image: redis:7.2-alpine
+    image: valkey/valkey:9-alpine # production runs Valkey 9.x
     ports:
       - 6379:6379
   postgres:
