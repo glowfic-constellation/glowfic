@@ -222,6 +222,22 @@ RSpec.describe RepliesController, 'GET search' do
       expect(assigns(:search_results)).to eq([reply, reply2])
     end
 
+    it "shows a message instead of erroring when the search times out" do
+      create(:reply)
+      results = Reply.all
+      searcher = Reply::Searcher.new
+      allow(Reply::Searcher).to receive(:new).and_return(searcher)
+      allow(searcher).to receive(:search).and_return(results)
+      allow(results).to receive(:load).and_raise(ActiveRecord::QueryCanceled)
+      expect(Rails.logger).to receive(:warn).with(/\[reply_search_timeout\]/)
+
+      get :search, params: { commit: true, subj_content: 'content' }
+
+      expect(response).to have_http_status(200)
+      expect(flash[:error]).to include('took too long')
+      expect(assigns(:search_results)).to be_empty
+    end
+
     it "does not include audits" do
       Reply.auditing_enabled = true
       user = create(:user)
