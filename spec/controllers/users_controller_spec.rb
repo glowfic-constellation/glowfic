@@ -62,6 +62,8 @@ RSpec.describe UsersController do
   end
 
   describe "POST create" do
+    let(:signup_token) { SignupFormToken.generate(issued: 1.minute.ago) }
+
     it "can be disabled" do
       allow(ENV).to receive(:fetch).with('SIGNUPS_LOCKED', nil).and_return('yep')
       post :create
@@ -84,8 +86,19 @@ RSpec.describe UsersController do
       expect(assigns(:page_title)).to eq('Sign Up')
     end
 
+    it "rejects sign-ups without a form token, with a fresh one, or with the honeypot filled" do
+      user = build(:user)
+      attrs = { tos: true, addition: '14',
+user: { username: user.username, email: user.email, password: 'password1', password_confirmation: 'password1' } }
+      [{}, { form_token: SignupFormToken.generate }, { form_token: signup_token, contact_url: 'http://spam.example' }].each do |extra|
+        expect { post :create, params: attrs.merge(extra) }.not_to change { User.count }
+        expect(response).to render_template(:new)
+        expect(flash[:error]).to eq("Something went wrong submitting the form. Please reload the page and try again.")
+      end
+    end
+
     it "requires stupid captcha" do
-      post :create, params: { tos: true }
+      post :create, params: { tos: true, form_token: signup_token }
       expect(response).to render_template(:new)
       expect(flash[:error]).to eq("Please check your math and try again.")
       expect(assigns(:user)).not_to be_valid
@@ -94,7 +107,7 @@ RSpec.describe UsersController do
 
     it "requires valid fields" do
       stub_env('ACCOUNT_SECRET', 'ALLHAILTHECOIN')
-      post :create, params: { secret: "ALLHAILTHECOIN", tos: true, addition: '14' }
+      post :create, params: { secret: "ALLHAILTHECOIN", tos: true, form_token: signup_token, addition: '14' }
       expect(response).to render_template(:new)
       expect(flash[:error][:message]).to eq("There was a problem completing your sign up.")
       expect(assigns(:user)).not_to be_valid
@@ -104,12 +117,19 @@ RSpec.describe UsersController do
     it "rejects short passwords" do
       stub_env('ACCOUNT_SECRET', 'ALLHAILTHECOIN')
       user = build(:user).attributes.with_indifferent_access.merge(password: 'short', password_confirmation: 'short')
-      post :create, params: { secret: 'ALLHAILTHECOIN', tos: true, addition: '14' }.merge(user: user)
+      post :create, params: { secret: 'ALLHAILTHECOIN', tos: true, form_token: signup_token, addition: '14' }.merge(user: user)
       expect(response).to render_template(:new)
       expect(flash[:error][:message]).to eq('There was a problem completing your sign up.')
       expect(flash[:error][:array]).to eq(['Password is too short (minimum is 6 characters)'])
       expect(assigns(:user)).not_to be_valid
       expect(assigns(:page_title)).to eq('Sign Up')
+    end
+
+    it "creates a reader account when no secret is configured" do
+      stub_env('ACCOUNT_SECRET', nil)
+      user = build(:user).attributes.with_indifferent_access.merge(password: 'password', password_confirmation: 'password')
+      post :create, params: { tos: true, form_token: signup_token, addition: '14', user: user }
+      expect(User.find_by(username: user[:username])).to be_read_only
     end
 
     it "signs you up" do
@@ -118,7 +138,7 @@ RSpec.describe UsersController do
       user = build(:user).attributes.with_indifferent_access.merge(password: pass, password_confirmation: pass, email: 'testemail@example.com')
 
       expect {
-        post :create, params: { secret: "ALLHAILTHECOIN", tos: true, addition: '14' }.merge(user: user)
+        post :create, params: { secret: "ALLHAILTHECOIN", tos: true, form_token: signup_token, addition: '14' }.merge(user: user)
       }.to change { User.count }.by(1)
       expect(response).to redirect_to(root_url)
       expect(flash[:success]).to eq("User created! You have been logged in.")
@@ -136,7 +156,7 @@ RSpec.describe UsersController do
       pass = 'testpassword'
       user = build(:user).attributes.with_indifferent_access.merge(password: pass, password_confirmation: pass, email: 'testemail@example.com')
 
-      post :create, params: { tos: true, addition: '14' }.merge(user: user)
+      post :create, params: { tos: true, form_token: signup_token, addition: '14' }.merge(user: user)
 
       expect(response).to redirect_to(root_url)
       expect(flash[:success]).to eq("User created! You have been logged in.")
@@ -150,7 +170,7 @@ RSpec.describe UsersController do
       pass = 'testpassword'
       user = build(:user).attributes.with_indifferent_access.merge(password: pass, password_confirmation: pass, email: 'testemail@example.com')
 
-      post :create, params: { secret: "ALLHAILTHECOIN", tos: true, addition: '14' }.merge(user: user)
+      post :create, params: { secret: "ALLHAILTHECOIN", tos: true, form_token: signup_token, addition: '14' }.merge(user: user)
 
       expect(response).to redirect_to(root_url)
       expect(flash[:success]).to eq("User created! You have been logged in.")
@@ -163,7 +183,7 @@ RSpec.describe UsersController do
       pass = 'this is a long password to test the password validation feature and to see if it accepts this'
       user = build(:user).attributes.with_indifferent_access.merge(password: pass, password_confirmation: pass)
       expect {
-        post :create, params: { secret: 'ALLHAILTHECOIN', tos: true, addition: '14' }.merge(user: user)
+        post :create, params: { secret: 'ALLHAILTHECOIN', tos: true, form_token: signup_token, addition: '14' }.merge(user: user)
       }.to change { User.count }.by(1)
       expect(response).to redirect_to(root_url)
       expect(flash[:success]).to eq("User created! You have been logged in.")
@@ -176,7 +196,7 @@ RSpec.describe UsersController do
       stub_env('ACCOUNT_SECRET', 'ALLHAILTHECOIN')
       user = build(:user, username: 'withspace ').attributes
       user = user.with_indifferent_access.merge(password: 'password', password_confirmation: 'password')
-      post :create, params: { secret: 'ALLHAILTHECOIN', tos: true, addition: '14' }.merge(user: user)
+      post :create, params: { secret: 'ALLHAILTHECOIN', tos: true, form_token: signup_token, addition: '14' }.merge(user: user)
       expect(flash[:success]).to eq("User created! You have been logged in.")
       expect(assigns(:current_user).username).to eq('withspace')
     end
@@ -623,6 +643,16 @@ RSpec.describe UsersController do
       put :upgrade, params: { id: user.id, secret: 'vanilla' }
       expect(response).to render_template(:edit)
       expect(flash[:error]).to eq("That is not the correct secret. Please ask someone in the community for help.")
+    end
+
+    it "does not upgrade when no secret is configured" do
+      stub_env('ACCOUNT_SECRET', nil)
+      user = create(:user, role_id: Permissible::READONLY)
+      login_as(user)
+      put :upgrade, params: { id: user.id }
+      expect(response).to render_template(:edit)
+      expect(flash[:error]).to eq("That is not the correct secret. Please ask someone in the community for help.")
+      expect(user.reload.role_id).to eq(Permissible::READONLY)
     end
 
     it "handles update failures" do

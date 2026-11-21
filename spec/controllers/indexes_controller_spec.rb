@@ -170,7 +170,12 @@ RSpec.describe IndexesController do
     end
 
     it "requires full account" do
-      skip "TODO relies on inability to create indexes"
+      index = create(:index)
+      index.user.update!(role_id: Permissible::READONLY)
+      login_as(index.user)
+      get :edit, params: { id: index.id }
+      expect(response).to redirect_to(index_url(index))
+      expect(flash[:error]).to eq('You do not have permission to modify this index.')
     end
 
     it "requires valid index" do
@@ -238,7 +243,13 @@ RSpec.describe IndexesController do
     end
 
     it "requires full account" do
-      skip "TODO Currently relies on inability to create indexes"
+      index = create(:index)
+      index.user.update!(role_id: Permissible::READONLY)
+      login_as(index.user)
+      put :update, params: { id: index.id, index: { name: 'Renamed' } }
+      expect(response).to redirect_to(index_url(index))
+      expect(flash[:error]).to eq('You do not have permission to modify this index.')
+      expect(index.reload.name).not_to eq('Renamed')
     end
 
     it "requires valid index" do
@@ -284,7 +295,13 @@ RSpec.describe IndexesController do
     end
 
     it "requires full account" do
-      skip "TODO Currently relies on inability to create indexes"
+      index = create(:index)
+      index.user.update!(role_id: Permissible::READONLY)
+      login_as(index.user)
+      delete :destroy, params: { id: index.id }
+      expect(response).to redirect_to(index_url(index))
+      expect(flash[:error]).to eq('You do not have permission to modify this index.')
+      expect(Index.find_by(id: index.id)).to be_present
     end
 
     it "requires valid index" do
