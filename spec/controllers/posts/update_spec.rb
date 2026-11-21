@@ -44,7 +44,14 @@ RSpec.describe PostsController, 'PUT update' do
   end
 
   it "requires full account" do
-    skip "TODO Currently relies on inability to create posts"
+    post = create(:post)
+    user = post.user
+    user.update!(role_id: Permissible::READONLY)
+    login_as(user)
+    put :update, params: { id: post.id, post: { content: 'changed' } }
+    expect(response).to redirect_to(post_path(post))
+    expect(flash[:error]).to eq("You do not have permission to modify this post.")
+    expect(post.reload.content).not_to eq('changed')
   end
 
   it "requires valid post" do

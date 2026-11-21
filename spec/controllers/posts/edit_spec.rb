@@ -6,7 +6,13 @@ RSpec.describe PostsController, 'GET edit' do
   end
 
   it "requires full account" do
-    skip "TODO Currently relies on inability to create posts"
+    post = create(:post)
+    user = post.user
+    user.update!(role_id: Permissible::READONLY)
+    login_as(user)
+    get :edit, params: { id: post.id }
+    expect(response).to redirect_to(post_path(post))
+    expect(flash[:error]).to eq("You do not have permission to modify this post.")
   end
 
   it "requires post" do

@@ -6,7 +6,13 @@ RSpec.describe RepliesController, 'GET edit' do
   end
 
   it "requires full account" do
-    skip "TODO Currently relies on inability to create replies"
+    reply = create(:reply)
+    user = reply.user
+    user.update!(role_id: Permissible::READONLY)
+    login_as(user)
+    get :edit, params: { id: reply.id }
+    expect(response).to redirect_to(post_path(reply.post))
+    expect(flash[:error]).to eq("You do not have permission to modify this reply.")
   end
 
   it "requires valid reply" do
