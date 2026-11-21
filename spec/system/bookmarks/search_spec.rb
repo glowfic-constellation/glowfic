@@ -149,7 +149,7 @@ RSpec.describe "Searching bookmarks" do
 
     # Can toggle bookmark name editor
     first_bookmark = private_bookmarks.first
-    first_bookmark_name_text_field = find(".bookmark-name-text-field[data-bookmark-id='#{first_bookmark.id}']", visible: false)
+    first_bookmark_name_text_field = find(".bookmark-name-text-field[data-bookmark-id='#{first_bookmark.id}']", visible: :all)
     first_bookmark_edit_button = find(".edit-bookmark[data-bookmark-id='#{first_bookmark.id}']")
     expect(first_bookmark_name_text_field).not_to be_visible
     first_bookmark_edit_button.click
@@ -159,7 +159,7 @@ RSpec.describe "Searching bookmarks" do
 
     # Toggling one bookmark untoggles another
     last_bookmark = private_bookmarks.last
-    last_bookmark_name_text_field = find(".bookmark-name-text-field[data-bookmark-id='#{last_bookmark.id}']", visible: false)
+    last_bookmark_name_text_field = find(".bookmark-name-text-field[data-bookmark-id='#{last_bookmark.id}']", visible: :all)
     last_bookmark_edit_button = find(".edit-bookmark[data-bookmark-id='#{last_bookmark.id}']")
     expect(last_bookmark_name_text_field).not_to be_visible
     last_bookmark_edit_button.click
