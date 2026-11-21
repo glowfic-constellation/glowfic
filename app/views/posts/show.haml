@@ -15,10 +15,10 @@
   - content_for :flashes do
     .flash.error
       - if logged_in?
-        = link_to warnings_post_path(@post, page: page, per_page: per_page), method: :post do
+        = link_to warnings_post_path(@post, page: page, per_page: per_page), method: :post, rel: 'nofollow' do
           .link-box.action-dismiss.float-right Dismiss for this post
       - else
-        = link_to warnings_post_path(@post, page: page, per_page: per_page), method: :post, data: { confirm: 'Are you sure? You will not see content warnings again until you restart your browser!'.freeze } do
+        = link_to warnings_post_path(@post, page: page, per_page: per_page), method: :post, rel: 'nofollow', data: { confirm: 'Are you sure? You will not see content warnings again until you restart your browser!'.freeze } do
           .link-box.action-dismiss.float-right Dismiss all content warnings
 
       .flash-margin
