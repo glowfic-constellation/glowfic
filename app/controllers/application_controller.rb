@@ -46,13 +46,15 @@ class ApplicationController < ActionController::Base
   end
 
   VALID_PAGES = ['last', 'unread']
+  # keeps OFFSET and page arithmetic inside Postgres' integer range for absurd ?page= values
+  MAX_PAGE = 1_000_000_000
   def page(allow_special: false)
     return @page if @page
     return (@page = 1) unless params[:page]
-    @page = params[:page]
+    @page = params[:page].to_s
     return @page if allow_special && VALID_PAGES.include?(@page)
     @page = @page.to_i
-    return @page if @page > 0
+    return @page = [@page, MAX_PAGE].min if @page > 0
     flash.now[:error] = "Page not recognized, defaulting to page 1."
     @page = 1
   end
@@ -62,9 +64,9 @@ class ApplicationController < ActionController::Base
 
   def per_page
     default = 25 # browser.mobile? ? -1 : 25
-    per = params[:per_page] || current_user.try(:per_page) || default
+    per = params[:per_page].to_s.presence || current_user.try(:per_page) || default
     per = 100 if per == 'all' || per.to_i > 100
-    per = default if per.to_i.zero?
+    per = default if per.to_i < 1
     @per_page ||= per.to_i
   end
   helper_method :per_page

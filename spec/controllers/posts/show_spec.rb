@@ -103,6 +103,35 @@ RSpec.describe PostsController, 'GET show' do
     end
   end
 
+  context "with an invalid per_page" do
+    it "falls back to the default for zero and negative values" do
+      create_list(:reply, 3, post: post)
+      ['-5', '-1', '0'].each do |per_page|
+        get :show, params: { id: post.id, per_page: per_page }
+        expect(response).to have_http_status(200)
+        expect(assigns(:replies).per_page).to eq(25)
+      end
+    end
+
+    it "falls back to the default for a negative per_page saved on the user" do
+      user = create(:user, per_page: -1)
+      login_as(user)
+      get :show, params: { id: post.id }
+      expect(response).to have_http_status(200)
+      expect(assigns(:replies).per_page).to eq(25)
+    end
+  end
+
+  context "with malformed paging params" do
+    it "does not error on array or oversized values" do
+      create_list(:reply, 3, post: post)
+      [{ page: ['1'] }, { page: '99999999999999999999' }, { per_page: ['5'] }, { at_id: ['1'] }].each do |extra|
+        get :show, params: { id: post.id }.merge(extra)
+        expect(response.status).to be < 500
+      end
+    end
+  end
+
   context "handles page=last" do
     it "with replies" do
       create_list(:reply, 5, post: post)
