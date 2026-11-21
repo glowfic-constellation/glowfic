@@ -183,6 +183,9 @@ div.post-subheader { width: 100%; }
   }
 }
 
+// Index section descriptions are user HTML in a table header cell without the classes above.
+.index-description { contain: paint; }
+
 /* Post-specific content & editor */
 #content > .post-container, .flat-post-replies .post-container {
   padding: 0;
