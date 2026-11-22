@@ -6,8 +6,8 @@ $(document).ready(function() {
     minimumResultsForSearch: 20
   });
 
-  $(".message-collapse").click(function() { swapView(this, 'collapsed', 'expanded'); });
-  $(".message-menu").click(function() { swapView(this, 'expanded', 'collapsed'); });
+  $(".message-collapse").on('click', function() { swapView(this, 'collapsed', 'expanded'); });
+  $(".message-menu").on('click', function() { swapView(this, 'expanded', 'collapsed'); });
 });
 
 function swapView(cur, hide, other) {

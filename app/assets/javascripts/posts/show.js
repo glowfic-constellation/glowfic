@@ -8,20 +8,20 @@ $(document).ready(function() {
   if (window.location.hash === "#unread" && unreadElem.length > 0)
     shouldScrollToUnread = Math.abs(unreadElem.offset().top - $(window).scrollTop()) < 50;
 
-  $(".post-expander:not(.post-editor-expander)").click(function() {
+  $(".post-expander:not(.post-editor-expander)").on('click', function() {
     $(this).children(".info").remove();
     $(this).get(0).outerHTML = $(this).children('.hidden').html();
   });
 
   // Dropdown menu code
   if ($("#post-menu").length > 0) {
-    $("#post-menu").click(function() {
+    $("#post-menu").on('click', function() {
       $(this).toggleClass('selected');
       $("#post-menu-box").toggle();
     });
 
     // Hides selectors when you hit the escape key
-    $(document).bind("keydown", function(e) {
+    $(document).on("keydown", function(e) {
       e = e || window.event; // FIXME: event is deprecated
       const charCode = e.which || e.keyCode;
       if (charCode === 27) {
@@ -31,7 +31,7 @@ $(document).ready(function() {
     });
 
     // Hides selectors when you click outside them
-    $(document).click(function(e) {
+    $(document).on('click', function(e) {
       const target = e.target;
 
       if (!$(target).is('#post-menu-box') && !$(target).parents().is('#post-menu-box')
@@ -54,7 +54,7 @@ $(document).ready(function() {
     const paginators = $('.paginator');
     paginators.each(function() { reflowPaginator(this); });
     let resizeDebounce = null;
-    $(window).resize(function() {
+    $(window).on('resize', function() {
       window.cancelAnimationFrame(resizeDebounce);
       resizeDebounce = window.requestAnimationFrame(function() {
         paginators.each(function() { reflowPaginator(this); });

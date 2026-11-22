@@ -26,7 +26,7 @@ $(document).ready(function() {
   bindIcons();
 
   oldTemplate = $("#character_template_id").val();
-  $("#new_template").change(function() {
+  $("#new_template").on('change', function() {
     $("#character_template_attributes_name").val('');
     $("#character_template_attributes_id").val('');
 
@@ -40,12 +40,12 @@ $(document).ready(function() {
     }
   });
 
-  $("#character_template_id").change(function() {
+  $("#character_template_id").on('change', function() {
     $("#character_template_attributes_id").val('');
     $("#character_template_attributes_name").val('');
   });
 
-  $("#character_ungrouped_gallery_ids").change(function() {
+  $("#character_ungrouped_gallery_ids").on('change', function() {
     $("#character_default_icon_id").val('');
 
     const newGalleryIds = $(this).val() || [];
@@ -72,7 +72,7 @@ $(document).ready(function() {
     if (characterIconsBox.find("#gallery" + newId).length === 0) displayGallery(newId);
   });
 
-  $("#character_gallery_group_ids").change(function() {
+  $("#character_gallery_group_ids").on('change', function() {
     $("#character_default_icon_id").val('');
 
     const newGalleryGroupIds = $(this).val() || [];
@@ -134,7 +134,7 @@ $(document).ready(function() {
     width: '300px'
   });
 
-  $("#character_npc").change(function() {
+  $("#character_npc").on('change', function() {
     disableNPCBoxes($(this).is(":checked"));
   });
   disableNPCBoxes($("#character_npc").is(":checked"));
@@ -193,7 +193,7 @@ function displayGallery(newId) {
 function bindIcons(obj) {
   if (gon.mod_editing) return; // Mods can't change icons, so don't present the UI
   obj = obj || window.body;
-  $(".character-icon", obj).click(function() {
+  $(".character-icon", obj).on('click', function() {
     if ($(this).hasClass('selected-icon')) {
       $(this).removeClass('selected-icon');
       updateIcon('');

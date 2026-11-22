@@ -5,7 +5,7 @@ $(document).ready(function() {
     $("#content").hide();
     $("#tos").show();
   }
-  $("#tos_form").submit(function() {
+  $("#tos_form").on('submit', function() {
     /* save fragment (e.g. #reply-1234) for redirect */
     if (location.hash) {
       sessionStorage.setItem("tos.old_path", location.pathname);

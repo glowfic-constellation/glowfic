@@ -1,5 +1,5 @@
 $(document).ready(function() {
-  $(".expanddesc").click(function() {
+  $(".expanddesc").on('click', function() {
     const id = $(this).attr('id').substring(11);
     if ($(this).text()[0] === "m") {
       $("#desc-"+id).show();

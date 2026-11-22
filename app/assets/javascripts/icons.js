@@ -2,8 +2,8 @@
 $(document).ready(function() {
   // Bind both change() and keyup() in the icon keyword dropdown because Firefox doesn't
   // respect up/down key selections in a dropdown as a valid change() trigger
-  $("#icon_dropdown").change(function() { setIconFromId($(this).val()); });
-  $("#icon_dropdown").keyup(function() { setIconFromId($(this).val()); });
+  $("#icon_dropdown").on('change', function() { setIconFromId($(this).val()); });
+  $("#icon_dropdown").on('keyup', function() { setIconFromId($(this).val()); });
 });
 
 function setIconFromId(id) {

@@ -13,7 +13,7 @@ function setupWritableEditor() {
     setupTinyMCE();
   }
 
-  $('#rtf, #html, #md').click(function() { toggleEditor(this, 'profile_editor_mode', ['user_profile']); });
+  $('#rtf, #html, #md').on('click', function() { toggleEditor(this, 'profile_editor_mode', ['user_profile']); });
 
   setupEditorHelpBox();
 }

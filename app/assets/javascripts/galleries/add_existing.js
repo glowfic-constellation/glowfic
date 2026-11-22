@@ -3,7 +3,7 @@ let skipWarning = false;
 $(document).ready(function() {
   bindGalleryIcons(".add-gallery-icon");
 
-  $(".select-all").click(function() {
+  $(".select-all").on('click', function() {
     const galleryId = $(this).val();
     const icons = $("#icons-"+galleryId+" .gallery-icon img");
     $.each(icons, function(index, icon) {
@@ -11,14 +11,14 @@ $(document).ready(function() {
     });
   });
 
-  $("#add-gallery-icons").submit(function() {
+  $("#add-gallery-icons").on('submit', function() {
     if (imageIds.length < 1) return false;
     $("#image_ids").val(imageIds);
     skipWarning = true;
     return true;
   });
 
-  $(".gallery-minmax").click(function() {
+  $(".gallery-minmax").on('click', function() {
     const galleryId = $(this).data('id');
 
     // Hide icons if they're already visible
@@ -54,7 +54,7 @@ $(window).on('beforeunload', function() {
 });
 
 function bindGalleryIcons(selector) {
-  $(selector).click(function() {
+  $(selector).on('click', function() {
     selectIcon(this);
   });
 }

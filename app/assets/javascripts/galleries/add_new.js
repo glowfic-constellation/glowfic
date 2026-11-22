@@ -15,7 +15,7 @@ const emptyGif = "data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEA
 $(document).ready(function() {
   fixButtons();
   $(".icon-row .input-cell").each(function() {
-    $(this).keydown(processDirectionalKey);
+    $(this).on('keydown', processDirectionalKey);
   });
 });
 
@@ -39,11 +39,11 @@ function processDirectionalKey(event) {
     consume = processKeyRight(divBinding, caret, input.val().length);
     break;
   case keyUp:
-    divBinding.closest('.icon-row').prev('.icon-row').children().eq(index).find('input').focus();
+    divBinding.closest('.icon-row').prev('.icon-row').children().eq(index).find('input').trigger('focus');
     consume = true;
     break;
   case keyDown:
-    divBinding.closest('.icon-row').next('.icon-row').children().eq(index).find('input').focus();
+    divBinding.closest('.icon-row').next('.icon-row').children().eq(index).find('input').trigger('focus');
     consume = true;
     break;
   }
@@ -52,18 +52,18 @@ function processDirectionalKey(event) {
 
 function processKeyLeft(binding, caret) {
   if (caret !== 0) { return false; }
-  binding.closest('.input-cell').prev().find('input').focus();
+  binding.closest('.input-cell').prev().find('input').trigger('focus');
   return true;
 }
 
 function processKeyRight(binding, caret, length) {
   if (caret < length) { return false; }
-  binding.closest('.input-cell').next().find('input').focus();
+  binding.closest('.input-cell').next().find('input').trigger('focus');
   return true;
 }
 
 function fixButtons() {
-  $(".icon-row-add").hide().unbind();
+  $(".icon-row-add").hide().off();
   $(".icon-row-add").last().show();
   $(".icon-row-rem").show();
   $(".icon-row-rem").first().hide();
@@ -74,7 +74,7 @@ function fixButtons() {
 }
 
 function bindAdd() {
-  $(".icon-row-add").click(function() {
+  $(".icon-row-add").on('click', function() {
     addNewRow();
     fixButtons();
   });
@@ -105,13 +105,13 @@ function addNewRow() {
 
   newRow.insertAfter(oldRow);
   $(".input-cell", newRow).each(function() {
-    $(this).keydown(processDirectionalKey);
+    $(this).on('keydown', processDirectionalKey);
   });
   return index;
 }
 
 function bindRem() {
-  $(".icon-row-rem").click(function() {
+  $(".icon-row-rem").on('click', function() {
     const remRow = $(this).parents('.icon-row');
     const removingKey = $(remRow.find('input')[1]).val();
     remRow.remove();

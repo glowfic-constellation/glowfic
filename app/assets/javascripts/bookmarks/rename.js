@@ -13,7 +13,7 @@ $(document).ready(function() {
 
   if (!$(".edit-bookmark").length) return;
 
-  $(".edit-bookmark").click(function() {
+  $(".edit-bookmark").on('click', function() {
     /* Button to rename a bookmark */
     const bookmarkId = this.dataset.bookmarkId;
     const editors = $(`.bookmark-editor`);
@@ -34,7 +34,7 @@ $(document).ready(function() {
     return false;
   });
 
-  $(".save-bookmark").click(function() {
+  $(".save-bookmark").on('click', function() {
     $(".loading").show();
 
     const bookmarkId = this.dataset.bookmarkId;
@@ -63,7 +63,7 @@ $(document).ready(function() {
     return false;
   });
 
-  $(".discard-bookmark-changes").click(function() {
+  $(".discard-bookmark-changes").on('click', function() {
     const bookmarkId = this.dataset.bookmarkId;
     if (confirm('Are you sure you wish to discard your changes?')) {
       $(`.bookmark-name-text-field[data-bookmark-id="${bookmarkId}"]`).val(originalNameTextboxes[bookmarkId]);
