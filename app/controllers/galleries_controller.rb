@@ -76,6 +76,7 @@ class GalleriesController < UploadingController
     @page_title = 'Edit Gallery: ' + @gallery.name
     use_javascript('galleries/uploader')
     use_javascript('galleries/edit')
+    load_editable_galleries_icons
   end
 
   def update
@@ -94,10 +95,11 @@ class GalleriesController < UploadingController
       use_javascript('galleries/edit')
       editor_setup
       set_s3_url
+      load_editable_galleries_icons
       render :edit
     else
       flash[:success] = "Gallery updated."
-      redirect_to edit_gallery_path(@gallery)
+      redirect_to edit_gallery_path(@gallery, page: params[:page])
     end
   end
 
@@ -235,6 +237,18 @@ class GalleriesController < UploadingController
   def editor_setup
     use_javascript('galleries/editor')
     gon.user_id = current_user.id
+  end
+
+  # Default per_page is 25 site-wide. Most galleries are small enough to fit
+  # comfortably and the form is more useful when whole; pick a higher
+  # threshold (100) so only the truly big galleries get paginated. The
+  # bimodal 6.3s p99 we were seeing on this action came from galleries with
+  # 200-500 icons.
+  def load_editable_galleries_icons
+    @editable_galleries_icons = @gallery.galleries_icons
+      .joins(:icon)
+      .order(Arel.sql('LOWER(keyword)'))
+      .paginate(page: page, per_page: 100)
   end
 
   def og_data
