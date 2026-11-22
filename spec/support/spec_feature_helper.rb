@@ -28,13 +28,24 @@ module SpecSystemHelper
   # Clicks a button that submits a form, then waits until the browser has replaced the page. Without the wait,
   # the next query can match an element of the page being unloaded (e.g. #post-editor exists on both the reply
   # form and the multi reply editor); Chrome then raises "Node with given id does not belong to the document",
-  # an UnknownError that Capybara does not retry like a stale element.
+  # an UnknownError that Capybara does not retry like a stale element. The wait itself only evaluates scripts
+  # (no element handles), retrying while the old document is being torn down.
   def click_button_and_wait_for_new_page(locator, **options)
     # rack_test has no JavaScript and loads the next page synchronously, so there is nothing to wait for
     return click_button(locator, **options) if page.driver.is_a?(Capybara::RackTest::Driver)
 
     page.execute_script("document.documentElement.dataset.oldPage = 'true'")
     click_button(locator, **options)
-    page.document.assert_no_selector(:css, 'html[data-old-page]', visible: :all)
+    deadline = Process.clock_gettime(Process::CLOCK_MONOTONIC) + Capybara.default_max_wait_time
+    loop do
+      script = "document.readyState === 'complete' && !document.documentElement.dataset.oldPage"
+      break if begin
+        page.evaluate_script(script)
+      rescue Selenium::WebDriver::Error::WebDriverError
+        false # the old document is going away; ask again
+      end
+      raise "No new page loaded after clicking #{locator.inspect}" if Process.clock_gettime(Process::CLOCK_MONOTONIC) > deadline
+      sleep 0.05
+    end
   end
 end
