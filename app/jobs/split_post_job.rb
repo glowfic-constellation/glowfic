@@ -4,7 +4,8 @@ class SplitPostJob < ApplicationJob
 
   REPLY_ATTRS = [:character_id, :icon_id, :character_alias_id, :user_id, :content, :created_at, :updated_at, :editor_mode].map(&:to_s)
   POST_ATTRS = [:board_id, :section_id, :privacy, :status, :authors_locked].map(&:to_s)
-  POST_ASSOCS = [:setting_ids, :label_ids, :content_warning_ids].map(&:to_s) # Associations aren't attributes so they're handled separately
+  # Associations aren't attributes so they're handled separately
+  POST_ASSOCS = [:setting_ids, :label_ids, :content_warning_ids, :viewer_ids].map(&:to_s)
 
   def perform(reply_id, new_subject)
     raise RuntimeError, "Invalid subject" if new_subject.blank?
@@ -83,7 +84,7 @@ class SplitPostJob < ApplicationJob
         updated_at: [existing.updated_at, timestamp].max,
         joined_at: timestamp,
       }
-      data.merge!(existing.attributes.slice([:can_owe, :can_reply, :joined]))
+      data.merge!(existing.attributes.slice('can_owe', 'can_reply', 'joined'))
       new_post.post_authors.create!(data)
     end
     still_valid = (old_post.replies.distinct.pluck(:user_id) + [old_post.user_id]).uniq

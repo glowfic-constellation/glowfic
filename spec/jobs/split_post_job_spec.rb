@@ -105,6 +105,37 @@ RSpec.describe SplitPostJob do
     expect(new_post.label_ids).to match_array([label.id])
   end
 
+  it "keeps the authors' settings" do
+    user = create(:user)
+    coauthor = create(:user)
+    post = create(:post, user: user, unjoined_authors: [coauthor])
+    create(:reply, post: post, user: coauthor)
+    reply = create(:reply, post: post, user: user)
+    create(:reply, post: post, user: coauthor)
+    post.author_for(coauthor).update!(can_owe: false)
+
+    SplitPostJob.perform_now(reply.id, title)
+
+    author = Post.last.author_for(coauthor)
+    expect(author.joined).to be(true)
+    expect(author.can_owe).to be(false)
+    expect(author.can_reply).to be(true)
+  end
+
+  it "keeps the access list of an access-listed post" do
+    user = create(:user)
+    viewer = create(:user)
+    post = create(:post, user: user, privacy: :access_list, viewers: [viewer])
+    reply = create(:reply, post: post, user: user)
+
+    SplitPostJob.perform_now(reply.id, title)
+
+    new_post = Post.last
+    expect(new_post).to be_privacy_access_list
+    expect(new_post.viewers).to eq([viewer])
+    expect(new_post.visible_to?(viewer)).to be(true)
+  end
+
   it "does not affect other posts" do
     user = create(:user)
     coauthor = create(:user)
