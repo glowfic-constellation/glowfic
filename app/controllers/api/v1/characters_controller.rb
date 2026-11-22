@@ -139,7 +139,7 @@ class Api::V1::CharactersController < Api::ApiController
   end
 
   def require_permission
-    access_denied unless @character.user == current_user
+    access_denied unless @character.user == current_user && !current_user.read_only?
   end
 
   def character_params

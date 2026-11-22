@@ -142,7 +142,7 @@ class GalleriesController < UploadingController
   end
 
   def require_edit_permission
-    return if @gallery.user_id == current_user.id
+    return if @gallery.user_id == current_user.id && !current_user.read_only?
     flash[:error] = "You do not have permission to modify this gallery."
     redirect_to user_galleries_path(current_user)
   end

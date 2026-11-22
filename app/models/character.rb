@@ -56,6 +56,7 @@ class Character < ApplicationRecord
 
   def self.editable_by?(user, user_id)
     return false unless user
+    return false if user.read_only?
     return true if user_id == user.id
     user.has_permission?(:edit_characters)
   end
@@ -66,6 +67,7 @@ class Character < ApplicationRecord
 
   def self.deletable_by?(user, user_id)
     return false unless user
+    return false if user.read_only?
     return true if user_id == user.id
     user.has_permission?(:delete_characters)
   end

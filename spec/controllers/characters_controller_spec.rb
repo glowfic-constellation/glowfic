@@ -440,7 +440,12 @@ RSpec.describe CharactersController do
     end
 
     it "requires full account" do
-      skip "TODO Currently relies on inability to create characters"
+      user = create(:user, role_id: Permissible::READONLY)
+      character = create(:character, user: user)
+      login_as(user)
+      get :edit, params: { id: character.id }
+      expect(response).to redirect_to(user_characters_url(user))
+      expect(flash[:error]).to eq("You do not have permission to modify this character.")
     end
 
     it "requires valid character id" do
@@ -526,7 +531,13 @@ RSpec.describe CharactersController do
     end
 
     it "requires full account" do
-      skip "TODO Currently relies on inability to create characters"
+      user = create(:user, role_id: Permissible::READONLY)
+      character = create(:character, user: user)
+      login_as(user)
+      put :update, params: { id: character.id, character: { name: 'Renamed' } }
+      expect(response).to redirect_to(user_characters_url(user))
+      expect(flash[:error]).to eq("You do not have permission to modify this character.")
+      expect(character.reload.name).not_to eq('Renamed')
     end
 
     it "requires valid character id" do
@@ -937,7 +948,13 @@ RSpec.describe CharactersController do
     end
 
     it "requires full account" do
-      skip "TODO Currently relies on inability to create characters"
+      user = create(:user, role_id: Permissible::READONLY)
+      character = create(:character, user: user)
+      login_as(user)
+      delete :destroy, params: { id: character.id }
+      expect(response).to redirect_to(user_characters_url(user))
+      expect(flash[:error]).to eq("You do not have permission to modify this character.")
+      expect(Character.find_by(id: character.id)).to be_present
     end
 
     it "requires valid character" do
@@ -992,7 +1009,12 @@ RSpec.describe CharactersController do
     end
 
     it "requires full account" do
-      skip "TODO Currently relies on inability to create characters"
+      user = create(:user, role_id: Permissible::READONLY)
+      character = create(:character, user: user)
+      login_as(user)
+      get :replace, params: { id: character.id }
+      expect(response).to redirect_to(user_characters_url(user))
+      expect(flash[:error]).to eq("You do not have permission to modify this character.")
     end
 
     it "requires valid character" do
@@ -1099,7 +1121,12 @@ RSpec.describe CharactersController do
     end
 
     it "requires full account" do
-      skip "TODO Currently relies on inability to create characters"
+      user = create(:user, role_id: Permissible::READONLY)
+      character = create(:character, user: user)
+      login_as(user)
+      post :do_replace, params: { id: character.id }
+      expect(response).to redirect_to(user_characters_url(user))
+      expect(flash[:error]).to eq("You do not have permission to modify this character.")
     end
 
     it "requires valid character" do
@@ -1468,7 +1495,13 @@ RSpec.describe CharactersController do
     end
 
     it "requires full account" do
-      skip "TODO Currently relies on inability to create characters"
+      user = create(:user, role_id: Permissible::READONLY)
+      character = create(:character, user: user)
+      login_as(user)
+      post :duplicate, params: { id: character.id }
+      expect(response).to redirect_to(user_characters_url(user))
+      expect(flash[:error]).to eq("You do not have permission to modify this character.")
+      expect(user.characters.count).to eq(1)
     end
 
     it "requires valid character id" do

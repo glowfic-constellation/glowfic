@@ -298,6 +298,16 @@ RSpec.describe Api::V1::CharactersController do
       expect(response.parsed_body['errors'][0]['message']).to eq("You do not have permission to perform this action.")
     end
 
+    it "requires full account" do
+      user = create(:user, role_id: Permissible::READONLY)
+      character = create(:character, user: user)
+      api_login_as(user)
+      put :update, params: { id: character.id, character: { name: 'Renamed' } }
+      expect(response).to have_http_status(403)
+      expect(response.parsed_body['errors'][0]['message']).to eq("You do not have permission to perform this action.")
+      expect(character.reload.name).not_to eq('Renamed')
+    end
+
     it "does not change icon if invalid icon provided" do
       icon = create(:icon)
       character = create(:character, user: icon.user, default_icon_id: icon.id)

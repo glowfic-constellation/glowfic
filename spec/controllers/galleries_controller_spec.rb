@@ -384,7 +384,12 @@ RSpec.describe GalleriesController do
     end
 
     it "requires full account" do
-      skip "TODO Currently relies on inability to create galleries"
+      user = create(:user, role_id: Permissible::READONLY)
+      gallery = create(:gallery, user: user)
+      login_as(user)
+      get :edit, params: { id: gallery.id }
+      expect(response).to redirect_to(user_galleries_url(user))
+      expect(flash[:error]).to eq("You do not have permission to modify this gallery.")
     end
 
     it "requires valid gallery" do
@@ -424,7 +429,13 @@ RSpec.describe GalleriesController do
     end
 
     it "requires full account" do
-      skip "TODO Currently relies on inability to create galleries"
+      user = create(:user, role_id: Permissible::READONLY)
+      gallery = create(:gallery, user: user)
+      login_as(user)
+      put :update, params: { id: gallery.id, gallery: { name: 'Renamed' } }
+      expect(response).to redirect_to(user_galleries_url(user))
+      expect(flash[:error]).to eq("You do not have permission to modify this gallery.")
+      expect(gallery.reload.name).not_to eq('Renamed')
     end
 
     it "requires valid gallery" do
@@ -632,7 +643,13 @@ RSpec.describe GalleriesController do
     end
 
     it "requires full account" do
-      skip "TODO Currently relies on inability to create galleries"
+      user = create(:user, role_id: Permissible::READONLY)
+      gallery = create(:gallery, user: user)
+      login_as(user)
+      delete :destroy, params: { id: gallery.id }
+      expect(response).to redirect_to(user_galleries_url(user))
+      expect(flash[:error]).to eq("You do not have permission to modify this gallery.")
+      expect(Gallery.find_by(id: gallery.id)).to be_present
     end
 
     it "requires valid gallery" do
