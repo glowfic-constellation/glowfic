@@ -24,4 +24,17 @@ module SpecSystemHelper
   def table_titled(title)
     find('table') { |x| x.has_selector?('.table-title', text: title) }
   end
+
+  # Clicks a button that submits a form, then waits until the browser has replaced the page. Without the wait,
+  # the next query can match an element of the page being unloaded (e.g. #post-editor exists on both the reply
+  # form and the multi reply editor); Chrome then raises "Node with given id does not belong to the document",
+  # an UnknownError that Capybara does not retry like a stale element.
+  def click_button_and_wait_for_new_page(locator, **options)
+    # rack_test has no JavaScript and loads the next page synchronously, so there is nothing to wait for
+    return click_button(locator, **options) if page.driver.is_a?(Capybara::RackTest::Driver)
+
+    page.execute_script("document.documentElement.dataset.oldPage = 'true'")
+    click_button(locator, **options)
+    page.document.assert_no_selector(:css, 'html[data-old-page]', visible: :all)
+  end
 end

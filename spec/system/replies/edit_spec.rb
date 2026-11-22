@@ -116,7 +116,7 @@ RSpec.describe "Editing replies" do
 
       within('#post-editor') do
         fill_in 'reply_content', with: 'other text 1'
-        click_button 'Add More Replies'
+        click_button_and_wait_for_new_page 'Add More Replies'
       end
 
       expect(page).to have_selector('.content-header', exact_text: 'Editing reply and adding more')
@@ -125,7 +125,7 @@ RSpec.describe "Editing replies" do
 
       within('#post-editor') do
         fill_in 'reply_content', with: 'other text 2'
-        click_button 'Add More Replies'
+        click_button_and_wait_for_new_page 'Add More Replies'
       end
 
       expect(page).to have_selector('.content-header', exact_text: 'Editing reply and adding more')
@@ -168,11 +168,11 @@ RSpec.describe "Editing replies" do
       end
       within('#post-editor') do
         fill_in 'reply_content', with: 'other text 4'
-        click_button 'Add More Replies'
+        click_button_and_wait_for_new_page 'Add More Replies'
       end
       within('#post-editor') do
         fill_in 'reply_content', with: 'other text 5'
-        click_button 'Add More Replies'
+        click_button_and_wait_for_new_page 'Add More Replies'
       end
       within('#post-editor') do
         fill_in 'reply_content', with: 'other text 6'
@@ -193,7 +193,7 @@ RSpec.describe "Editing replies" do
       end
       within('#post-editor') do
         fill_in 'reply_content', with: 'text to discard 1'
-        click_button 'Add More Replies'
+        click_button_and_wait_for_new_page 'Add More Replies'
       end
       within('#post-editor') do
         fill_in 'reply_content', with: 'text to discard 2'
@@ -220,11 +220,11 @@ RSpec.describe "Editing replies" do
       # add extra replies
       within('#post-editor') do
         fill_in 'reply_content', with: 'other text 1'
-        click_button 'Add More Replies'
+        click_button_and_wait_for_new_page 'Add More Replies'
       end
       within('#post-editor') do
         fill_in 'reply_content', with: 'other text 2'
-        click_button 'Add More Replies'
+        click_button_and_wait_for_new_page 'Add More Replies'
       end
       within('#post-editor') do
         fill_in 'reply_content', with: 'other text 3'
@@ -294,7 +294,7 @@ RSpec.describe "Editing replies" do
 
       # Change the character's alias and submit to multi-reply editor
       find('li', exact_text: char1_alias.name).click
-      click_button "Add More Replies"
+      click_button_and_wait_for_new_page "Add More Replies"
 
       within('#post-editor') do
         # Check that the switcher has the correct characters in the right order
@@ -329,7 +329,7 @@ RSpec.describe "Editing replies" do
       # form can still carry the previous character's alias id
       expect(page).to have_selector('.post-character #name', exact_text: char4.name)
       click_button "HTML" # Just to force the editor to update
-      click_button "Add More Replies"
+      click_button_and_wait_for_new_page "Add More Replies"
 
       within('#post-editor') do
         # Check that the switcher has the correct characters in the right order
@@ -360,7 +360,7 @@ RSpec.describe "Editing replies" do
 
       # Change the character's alias and submit to multi-reply editor
       find('li', exact_text: char4_alias.name).click
-      click_button "Add More Replies"
+      click_button_and_wait_for_new_page "Add More Replies"
       expect(page).to have_selector('#post-editor .post-character #name', exact_text: char4_alias.name)
     end
 
@@ -382,7 +382,7 @@ RSpec.describe "Editing replies" do
 
       within('#post-editor') do
         fill_in 'reply_content', with: 'other text 1'
-        click_button 'Add More Replies'
+        click_button_and_wait_for_new_page 'Add More Replies'
       end
 
       within('#post-editor') do
@@ -401,7 +401,7 @@ RSpec.describe "Editing replies" do
       allow(npc).to receive_messages(new_record?: true, save: false)
 
       within('#post-editor') do
-        click_button 'Add More Replies'
+        click_button_and_wait_for_new_page 'Add More Replies'
       end
 
       expect(page).to have_selector('.flash.error', text: "There was a problem persisting your new NPC.")
@@ -423,7 +423,7 @@ RSpec.describe "Editing replies" do
 
       within('#post-editor') do
         fill_in 'reply_content', with: 'other text 1'
-        click_button 'Add More Replies'
+        click_button_and_wait_for_new_page 'Add More Replies'
       end
 
       within('#post-editor') do

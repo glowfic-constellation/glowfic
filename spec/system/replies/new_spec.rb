@@ -276,7 +276,7 @@ RSpec.describe "Creating replies" do
 
         within('#post-editor') do
           fill_in "reply_content", with: "test reply 1"
-          click_button "Add More Replies"
+          click_button_and_wait_for_new_page "Add More Replies"
         end
 
         expect(page).to have_selector('.content-header', exact_text: 'Adding multiple replies')
@@ -296,7 +296,7 @@ RSpec.describe "Creating replies" do
         expect(page).to have_selector('#name', exact_text: npc_name)
 
         fill_in "reply_content", with: "test reply 2"
-        click_button "Add More Replies"
+        click_button_and_wait_for_new_page "Add More Replies"
 
         expect(page).to have_selector('.flash.success', exact_text: 'Your new NPC has been persisted!')
         expect(page).to have_no_selector('.flash.error')
@@ -313,7 +313,7 @@ RSpec.describe "Creating replies" do
         expect(page).to have_selector('.post-container', count: 3)
         expect(page).to have_no_selector('.flash.error')
         expect(page).to have_text("test reply 3", count: 2)
-        click_button "Add More Replies"
+        click_button_and_wait_for_new_page "Add More Replies"
 
         expect(page).to have_selector('.content-header', exact_text: 'Adding multiple replies')
         expect(page).to have_no_selector('.content-header', exact_text: 'Previewing')
@@ -335,7 +335,7 @@ RSpec.describe "Creating replies" do
         within('#post-editor') do
           click_button "HTML"
           fill_in "reply_content", with: "test reply 5"
-          click_button "Add More Replies"
+          click_button_and_wait_for_new_page "Add More Replies"
         end
 
         expect(page).to have_selector('.content-header', exact_text: 'Adding multiple replies')
@@ -344,7 +344,7 @@ RSpec.describe "Creating replies" do
         expect(page).to have_selector('#post-editor')
 
         fill_in "reply_content", with: "test reply 6"
-        click_button "Add More Replies"
+        click_button_and_wait_for_new_page "Add More Replies"
 
         expect(page).to have_selector('.content-header', exact_text: 'Adding multiple replies')
         expect(page).to have_no_selector('.flash.error')
@@ -367,7 +367,7 @@ RSpec.describe "Creating replies" do
         within('#post-editor') do
           click_button "HTML"
           fill_in "reply_content", with: "test reply 8"
-          click_button "Add More Replies"
+          click_button_and_wait_for_new_page "Add More Replies"
         end
 
         expect(page).to have_selector('.content-header', exact_text: 'Adding multiple replies')
@@ -375,7 +375,7 @@ RSpec.describe "Creating replies" do
         expect(page).to have_selector('.post-container', count: 1)
         expect(page).to have_selector('#post-editor')
         fill_in "reply_content", with: "test reply 9"
-        click_button "Add More Replies"
+        click_button_and_wait_for_new_page "Add More Replies"
         accept_alert { click_button "Discard Replies" }
 
         expect(page).to have_no_selector('.flash.error')
@@ -392,7 +392,7 @@ RSpec.describe "Creating replies" do
         # Will try to add a reply whose content is duplicated
         within('#post-editor') do
           fill_in "reply_content", with: reply.content
-          click_button "Add More Replies"
+          click_button_and_wait_for_new_page "Add More Replies"
         end
 
         expect(page).to have_selector('.content-header', exact_text: 'Adding multiple replies')
@@ -400,7 +400,7 @@ RSpec.describe "Creating replies" do
 
         within('#post-editor') do
           fill_in 'reply_content', with: 'new reply 1'
-          click_button 'Add More Replies'
+          click_button_and_wait_for_new_page 'Add More Replies'
         end
 
         expect(page).to have_selector('.content-header', exact_text: 'Adding multiple replies')
@@ -422,11 +422,11 @@ RSpec.describe "Creating replies" do
         # Will add more unseen replies after clicking "Add More Replies"
         within('#post-editor') do
           fill_in 'reply_content', with: 'new reply 3'
-          click_button "Add More Replies"
+          click_button_and_wait_for_new_page "Add More Replies"
         end
         within('#post-editor') do
           fill_in 'reply_content', with: 'new reply 4'
-          click_button "Add More Replies"
+          click_button_and_wait_for_new_page "Add More Replies"
         end
 
         create(:reply, post: post)
@@ -454,7 +454,7 @@ RSpec.describe "Creating replies" do
 
         within('#post-editor') do
           fill_in 'reply_content', with: 'new reply 3'
-          click_button "Add More Replies"
+          click_button_and_wait_for_new_page "Add More Replies"
           fill_in 'reply_content', with: 'reply I do not want to duplicate'
           click_button 'Post All'
         end
