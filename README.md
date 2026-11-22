@@ -142,6 +142,12 @@ Tools we do not currently use but are interested in evaluating:
 We use [BackstopJS](https://github.com/garris/BackstopJS) to run regression tests on the UI + CSS.
 
 Before each test, we automatically run `script/before_backstop.rb` to set up a consistent environment.
+It expects the `db:seed` data (it renders the seeded posts' flat posts itself, so no Resque worker is needed).
+Remote images are answered locally so captures don't depend on the network: the seeded icons with `backstop/engine_scripts/imageStub.jpg` (100x100, like the icons), and images whose size matters to the layout with a same-size copy in `backstop/engine_scripts/images/` (see `interceptImages.js`).
+In development the first requests after the server starts compile assets and are slow enough to give half-loaded captures,
+so load a page or two (or run the command once and discard the result) before taking references.
+`bin-docker/backstop reference` and `approve` losslessly shrink the reference images they changed with oxipng (in Docker) before you commit them.
+
 To perform a test:
 
 ```bash

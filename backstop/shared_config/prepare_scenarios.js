@@ -2,7 +2,7 @@ const domain = "http://web:3000/";
 
 module.exports = function prepareScenarios(scenarioOriginal) {
   const scenario = Object.assign({}, scenarioOriginal); // clone to prevent mutating original
-  scenario.cookiePath = "engine_scripts/cookies.json";
+  scenario.cookiePath = "engine_scripts/cookies.local.json";
 
   // path -> url
   scenario.url = domain.concat(scenario.path);
