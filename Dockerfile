@@ -13,7 +13,7 @@ RUN apt-get update \
 RUN CHROME_PATH=$(npx -y @puppeteer/browsers install chrome@stable --install-deps --path /opt/chrome-for-testing | awk '{print $2}') \
   && ln -sf "$CHROME_PATH" /usr/local/bin/google-chrome
 
-ARG bundler_version=2.7.2
+ARG bundler_version=4.0.20
 
 RUN gem install bundler -v $bundler_version
 

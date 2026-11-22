@@ -20,11 +20,19 @@ Rails.application.configure do
     policy.style_src   :self, :unsafe_inline, *asset_host
     policy.font_src    :self, :data, *asset_host
     policy.img_src     :self, :https, :data, :blob
-    policy.connect_src :self, *s3_hosts, *icon_host
+    # New Relic's browser agent beacons (seen in the first production violation reports)
+    policy.connect_src :self, *s3_hosts, *icon_host, 'https://bam.nr-data.net', 'https://bam-cell.nr-data.net'
     policy.media_src   :self
+    # manifest-src falls back to default-src 'self', but the favicon manifest is served from the asset host
+    policy.manifest_src :self, *asset_host
     policy.object_src  :none
     policy.frame_src   :none
-    policy.base_uri    :self
+    # Inline event-handler attributes (onclick etc.) are blocked (reported only): the first production reports show
+    # some, attributed to application.js although none are in our own views or JS. :report_sample makes the report
+    # carry the first 40 characters of the handler (script-sample) so the source can be found. If they turn out to be
+    # unavoidable, use :unsafe_inline here before enforcing.
+    policy.script_src_attr :report_sample
+    policy.base_uri :self
     policy.frame_ancestors :self
     policy.report_uri "/csp_reports"
   end

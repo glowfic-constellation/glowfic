@@ -1,6 +1,11 @@
 # frozen_string_literal: true
 class Reply::Searcher < Generic::Searcher
-  attr_reader :users, :characters, :templates, :boards, :exclude_boards
+  attr_reader :users, :characters, :templates, :boards, :exclude_boards, :sorted_by_date
+
+  # Ranking by relevance costs time proportional to the number of matching replies: measured in production
+  # (2026-11), about 1.6 s for 42k matches, 2.2 s for 35k and 2.4 s for 40k, and over 10 s for 250k. Searches the
+  # planner expects to match more than this many are sorted newest first, keeping the ranked search to roughly 5 s.
+  COMMON_TERM_ROW_ESTIMATE = 70_000
 
   def initialize(search=Reply.unscoped, current_user: nil, post: nil)
     @current_user = current_user
@@ -41,7 +46,12 @@ class Reply::Searcher < Generic::Searcher
   private
 
   def search_content(search)
-    @search_results = @search_results.search(search).with_pg_search_highlight
+    if estimated_matches(@search_results.search_newest_first(search)) > COMMON_TERM_ROW_ESTIMATE
+      @sorted_by_date = true
+      @search_results = @search_results.search_newest_first(search).with_pg_search_highlight
+    else
+      @search_results = @search_results.search(search).with_pg_search_highlight
+    end
     exact_phrases = search.scan(/"([^"]*)"/)
     return unless exact_phrases.present?
     exact_phrases.each do |phrase|
@@ -49,6 +59,13 @@ class Reply::Searcher < Generic::Searcher
       next if phrase.blank?
       @search_results = @search_results.where("replies.content ILIKE ?", "%#{phrase}%")
     end
+  end
+
+  # The planner's row estimate for the relation, without running it (the index lookup alone can take seconds
+  # for a very common word).
+  def estimated_matches(relation)
+    plan = JSON.parse(relation.connection.select_value("EXPLAIN (FORMAT JSON) #{relation.to_sql}"))
+    plan.first.dig('Plan', 'Plan Rows').to_i
   end
 
   def sort_results(sort, content_search)

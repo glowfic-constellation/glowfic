@@ -411,6 +411,9 @@ RSpec/SubjectDeclaration:
 
 ################## Capybara ####################################
 
+Capybara:
+  NewCops: '3.1'
+
 ################## Capybara/RSpec ##############################
 
 Capybara/RSpec/HaveSelector:

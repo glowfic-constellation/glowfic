@@ -59,7 +59,7 @@ class User < ApplicationRecord
   validates :password, :password_confirmation, presence: { if: :validate_password? }
   validate :username_not_reserved
 
-  before_validation :encrypt_password, :strip_spaces
+  before_validation :hash_password, :strip_spaces
   after_update :update_flat_posts
   after_save :clear_password
 
@@ -69,9 +69,16 @@ class User < ApplicationRecord
 
   nilify_blanks
 
+  # New and re-hashed passwords are bcrypt hashes in `crypted`. Older accounts still hold a
+  # salted SHA1 hash there until their next login (see Authentication#upgrade_password_hash).
   def authenticate(password)
-    return crypted == crypted_password(password) if salt_uuid.present?
-    crypted == old_crypted_password(password)
+    return bcrypt_matches?(password) if bcrypt_hash?
+    return crypted == legacy_salted_sha1(password) if salt_uuid.present?
+    crypted == legacy_username_salted_sha1(password)
+  end
+
+  def bcrypt_hash?
+    crypted.to_s.start_with?('$2')
   end
 
   def gon_attributes
@@ -135,19 +142,30 @@ class User < ApplicationRecord
     self.username = self.username.strip if self.username.present?
   end
 
-  def encrypt_password
+  def hash_password
     return unless password.present?
+    # bcrypt does NOT use this salt: BCrypt::Password.create generates its own random salt and stores it
+    # inside the hash string in `crypted`. salt_uuid only salted the legacy SHA1 hash; we keep setting it
+    # because ApplicationController#show_password_warning logs out any user whose salt_uuid is nil.
     self.salt_uuid ||= SecureRandom.uuid
-    self.crypted = crypted_password(password)
+    self.crypted = BCrypt::Password.create(password)
   end
 
-  def crypted_password(unencrypted)
+  def bcrypt_matches?(unencrypted)
+    BCrypt::Password.new(crypted) == unencrypted
+  rescue BCrypt::Errors::InvalidHash
+    false
+  end
+
+  # Legacy hash (17 rounds of SHA1 with the per-user salt_uuid), only used to verify and upgrade old passwords
+  def legacy_salted_sha1(unencrypted)
     crypted = "Adding #{salt_uuid} to #{unencrypted}"
     17.times { crypted = Digest::SHA1.hexdigest(crypted) }
     crypted
   end
 
-  def old_crypted_password(unencrypted)
+  # Older legacy hash, salted with a constant plus the username
+  def legacy_username_salted_sha1(unencrypted)
     crypted = "Adding #{old_salt} to #{unencrypted}"
     17.times { crypted = Digest::SHA1.hexdigest(crypted) }
     crypted
