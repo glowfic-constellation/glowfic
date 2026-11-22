@@ -416,6 +416,9 @@ Capybara:
 
 ################## Capybara/RSpec ##############################
 
+Capybara/RSpec:
+  NewCops: '3.1'
+
 Capybara/RSpec/HaveSelector:
   Enabled: false
 
