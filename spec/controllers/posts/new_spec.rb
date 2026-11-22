@@ -53,6 +53,31 @@ RSpec.describe PostsController, 'GET new' do
     expect(templateless.plucked_characters).to eq([[char1.id, char1.name], [char2.id, char2.name]])
   end
 
+  context "with views rendered" do
+    render_views
+
+    # Controller specs stub out templates by default, so a template that fails to compile (e.g. a Haml parser
+    # regression, as with prism 2.x on the writable editor partial) is otherwise never caught.
+    it "renders the editor with a character selected" do
+      char = create(:character, user: user, name: 'renderchar')
+      user.update!(active_character: char)
+      login_as(user.reload)
+
+      get :new
+
+      expect(response).to have_http_status(200)
+      expect(response.body).to include('post-character')
+      expect(response.body).to include('renderchar')
+    end
+
+    it "renders the editor without a character" do
+      login_as(user)
+      get :new
+      expect(response).to have_http_status(200)
+      expect(response.body).to include('post-editor')
+    end
+  end
+
   context "import" do
     before(:each) { login_as(user) }
 

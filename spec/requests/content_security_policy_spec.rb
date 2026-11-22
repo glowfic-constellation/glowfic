@@ -5,6 +5,7 @@ RSpec.describe "Content-Security-Policy" do
     expect(response.headers['Content-Security-Policy']).to be_nil
     policy = response.headers['Content-Security-Policy-Report-Only']
     expect(policy).to include("default-src 'self'", "object-src 'none'", "report-uri /csp_reports")
+    expect(policy).to include("connect-src 'self'", "https://bam.nr-data.net", "manifest-src 'self'", "script-src-attr 'report-sample'")
     nonce = policy[/script-src [^;]*'nonce-([^']+)'/, 1]
     expect(nonce).to be_present
     expect(response.body).to include("nonce=\"#{nonce}\"")
