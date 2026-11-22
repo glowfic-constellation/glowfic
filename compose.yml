@@ -41,7 +41,7 @@ services:
       RESQUE_TERM_TIMEOUT: 7
       QUEUES: mailer,notifier,high,*
   redis:
-    image: redis:7.2-alpine
+    image: valkey/valkey:9-alpine # production runs Valkey 9.x
     ports:
       - 6379:6379
   postgres:
@@ -59,7 +59,7 @@ services:
   # /data must be a named volume: the image runs as uid 10001 and can't
   # write a host directory owned by someone else.
   s3:
-    image: rustfs/rustfs:1.0.0-rc.6
+    image: rustfs/rustfs:1.0.6
     environment:
       - RUSTFS_ACCESS_KEY=glowfic_s3
       - RUSTFS_SECRET_KEY=glowfic_s3

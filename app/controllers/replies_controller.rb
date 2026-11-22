@@ -40,7 +40,27 @@ class RepliesController < WritableController
 
     response.headers['X-Robots-Tag'] = 'noindex'
 
-    @search_results = searcher.search(params, page: page)
+    begin
+      @search_results = searcher.search(params, page: page)
+      # Run the page query and the total count here rather than lazily in the view, so a statement
+      # timeout can be reported to the person searching instead of being a 500 page.
+      @search_results.load
+      @search_results.total_entries
+    rescue ActiveRecord::QueryCanceled
+      # Logged with a fixed prefix so it can be found in the logs (it no longer raises an error report).
+      # Only the shape of the search is recorded, not what was searched for.
+      Rails.logger.warn(
+        "[reply_search_timeout] page=#{page} user_id=#{current_user&.id.inspect} post_id=#{@post&.id.inspect} " \
+        "filters=#{params.slice(:subj_content, :author_id, :character_id, :board_id, :template_id, :sort, :condensed).keys.sort.join(',')} " \
+        "term_length=#{params[:subj_content].to_s.length}",
+      )
+      flash.now[:error] = "That search took too long. Try narrowing it, for example to one continuity, author or character."
+      @search_results = Reply.none.paginate(page: 1)
+    end
+    if searcher.sorted_by_date && flash.now[:error].blank?
+      flash.now[:notice] = "This search matches a very large number of replies, so results are sorted newest first instead of by relevance. " \
+                           "Add more words or filters to rank by relevance."
+    end
     @templates = searcher.templates
     @audits = []
     @reply_bookmarks = {}

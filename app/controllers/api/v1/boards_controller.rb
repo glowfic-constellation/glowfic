@@ -44,7 +44,7 @@ class Api::V1::BoardsController < Api::ApiController
       .ordered_by_id
       .with_reply_count
       .select('posts.*')
-      .includes(:board, :joined_authors, :section)
+      .includes(:board, :ordered_joined_authors, :section)
     render json: { results: posts }
   end
 end

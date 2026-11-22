@@ -24,8 +24,7 @@ RSpec.describe "Reply permalinks" do
     target = replies[10]
 
     visit reply_path(target, anchor: "reply-#{target.id}", per_page: 5)
-    click_link 'Mark read here'
-    page.accept_confirm
+    accept_confirm { click_link 'Mark read here' }
 
     expect(page).to have_selector('.table-title', text: 'Unread Posts')
     expect(post.reload.first_unread_for(user)).to eq(target)
@@ -35,8 +34,7 @@ RSpec.describe "Reply permalinks" do
     target = replies[10]
 
     visit reply_path(target, anchor: "reply-#{target.id}", per_page: 5)
-    click_link 'Mark read here'
-    page.dismiss_confirm
+    dismiss_confirm { click_link 'Mark read here' }
 
     expect(page).to have_selector('.permalink-read-notice')
     expect(post.reload.first_unread_for(user)).to eq(post) # still fully unread, untouched

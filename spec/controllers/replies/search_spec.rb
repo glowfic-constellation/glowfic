@@ -133,6 +133,28 @@ RSpec.describe RepliesController, 'GET search' do
       expect(assigns(:search_results)).to match_array([reply, cap_reply])
     end
 
+    it "ranks by relevance for ordinary words" do
+      get :search, params: { commit: true, subj_content: 'seagull' }
+      expect(assigns(:search_results).to_sql).to include('ts_rank')
+      expect(flash[:notice]).to be_nil
+    end
+
+    context "with a very common word" do
+      before(:each) { stub_const("Reply::Searcher::COMMON_TERM_ROW_ESTIMATE", -1) }
+
+      it "sorts newest first instead of ranking, and says so" do
+        old = create(:reply, content: 'seagull seagull seagull seagull', created_at: 2.days.ago)
+        recent = create(:reply, content: 'a seagull', created_at: 1.day.ago)
+        create(:reply, content: 'nope')
+
+        get :search, params: { commit: true, subj_content: 'seagull' }
+
+        expect(assigns(:search_results).to_a).to eq([recent, old])
+        expect(assigns(:search_results).to_sql).not_to include('ts_rank')
+        expect(flash[:notice]).to include('sorted newest first')
+      end
+    end
+
     it "filters by exact match case insensitively" do
       create(:reply, content: 'contains forks')
       create(:reply, content: 'Forks is capital')
@@ -220,6 +242,22 @@ RSpec.describe RepliesController, 'GET search' do
       end
       get :search, params: { commit: true, sort: 'created_old' }
       expect(assigns(:search_results)).to eq([reply, reply2])
+    end
+
+    it "shows a message instead of erroring when the search times out" do
+      create(:reply)
+      results = Reply.all
+      searcher = Reply::Searcher.new
+      allow(Reply::Searcher).to receive(:new).and_return(searcher)
+      allow(searcher).to receive(:search).and_return(results)
+      allow(results).to receive(:load).and_raise(ActiveRecord::QueryCanceled)
+      expect(Rails.logger).to receive(:warn).with(/\[reply_search_timeout\]/)
+
+      get :search, params: { commit: true, subj_content: 'content' }
+
+      expect(response).to have_http_status(200)
+      expect(flash[:error]).to include('took too long')
+      expect(assigns(:search_results)).to be_empty
     end
 
     it "does not include audits" do
