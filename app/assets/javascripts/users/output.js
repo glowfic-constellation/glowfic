@@ -1,5 +1,5 @@
 $(document).ready(function() {
-  $("#select-output").click(function() {
+  $("#select-output").on('click', function() {
     copyToClipboard($("#copy-output"));
     return false;
   });
@@ -10,7 +10,7 @@ function copyToClipboard(elem) {
   const currentFocus = document.activeElement;
   const inserted = $("<textarea id='_hiddenCopyText_'>").insertAfter(elem);
   const target = inserted[0]; // must be DOM not JQuery object for select range functions
-  target.textContent = $.trim(elem.text());
+  target.textContent = elem.text().trim();
 
   // select the content
   selectContent(target);

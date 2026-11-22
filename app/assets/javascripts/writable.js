@@ -49,7 +49,7 @@ function setupEditorHelpBox() {
     height: defaultHelpHeight
   });
 
-  $('#editor-help').click(function() {
+  $('#editor-help').on('click', function() {
     if (editorHelp.dialog('isOpen')) {
       editorHelp.dialog('close');
     } else {

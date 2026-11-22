@@ -1,5 +1,5 @@
 $(document).ready(function() {
-  $('.gallery-minmax').click(function(event) {
+  $('.gallery-minmax').on('click', function(event) {
     const elem = $('a', this);
     const id = $(this).data('id');
     if (elem.html().trim() === '-') {

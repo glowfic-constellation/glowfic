@@ -64,9 +64,9 @@ function setupMetadataEditor() {
   }
 
   if ($("#post_section_id").val() === '') setSections();
-  $("#post_board_id").change(function() { setSections(); });
+  $("#post_board_id").on('change', function() { setSections(); });
 
-  $("#post_privacy").change(function() {
+  $("#post_privacy").on('change', function() {
     if ($(this).val() === 'access_list') {
       $("#access_list").show();
     } else {
@@ -74,7 +74,7 @@ function setupMetadataEditor() {
     }
   });
 
-  $("#post_unjoined_author_ids").change(function() {
+  $("#post_unjoined_author_ids").on('change', function() {
     const numAuthors = $("#post_unjoined_author_ids :selected").length;
     $("#post_authors_locked").prop('checked', (numAuthors > 0));
   });
@@ -100,7 +100,7 @@ function findMultiReplyAlias(characterId) {
 }
 
 function setupWritableEditor() {
-  $('.post-editor-expander').click(function() {
+  $('.post-editor-expander').on('click', function() {
     $(this).children(".info").hide();
     $(this).children(".hidden").show();
   });
@@ -127,19 +127,19 @@ function setupWritableEditor() {
 
   // Bind both change() and keyup() in the icon keyword dropdown because Firefox doesn't
   // respect up/down key selections in a dropdown as a valid change() trigger
-  $("#icon_dropdown").change(function() { setIconFromId($(this).val()); });
-  $("#icon_dropdown").keyup(function() { setIconFromId($(this).val()); });
+  $("#icon_dropdown").on('change', function() { setIconFromId($(this).val()); });
+  $("#icon_dropdown").on('keyup', function() { setIconFromId($(this).val()); });
 
-  $('#rtf, #html, #md').click(function() { toggleEditor(this, 'editor_mode', ['post_content', 'reply_content']); });
+  $('#rtf, #html, #md').on('click', function() { toggleEditor(this, 'editor_mode', ['post_content', 'reply_content']); });
   setupEditorHelpBox();
 
-  $("#swap-character").click(function() {
+  $("#swap-character").on('click', function() {
     $('#character-selector').toggle();
     $('#alias-selector').hide();
     $('html, body').scrollTop($("#post-editor").offset().top);
   });
 
-  $("#swap-alias").click(function() {
+  $("#swap-alias").on('click', function() {
     $('#alias-selector').toggle();
     $('#character-selector').hide();
     $('html, body').scrollTop($("#post-editor").offset().top);
@@ -149,13 +149,13 @@ function setupWritableEditor() {
     $('html, body').scrollTop($("#post-editor").offset().top);
   });
 
-  $("#active_character").change(function() {
+  $("#active_character").on('change', function() {
     const id = $(this).val();
     $("#reply_character_id").val(id);
     getAndSetCharacterData({ id: id }, { aliasOverride: findMultiReplyAlias(id) });
   });
 
-  $("#active_npc").change(function() {
+  $("#active_npc").on('change', function() {
     let id = $(this).val();
     const item = $("option:selected", this);
     let name = item.text();
@@ -165,13 +165,13 @@ function setupWritableEditor() {
     getAndSetCharacterData({ id: id, name: name, npc: true });
   });
 
-  $(".char-access-icon").click(function() {
+  $(".char-access-icon").on('click', function() {
     const id = $(this).data('character-id');
     $("#reply_character_id").val(id);
     getAndSetCharacterData({ id: id }, { updateCharDropdowns: true, aliasOverride: findMultiReplyAlias(id)});
   });
 
-  $("#character_alias").change(function() {
+  $("#character_alias").on('change', function() {
     const id = $(this).val();
     $("#reply_character_alias_id").val(id);
     $("#post-editor .post-character #name").text($('#character_alias option:selected').text());
@@ -179,10 +179,10 @@ function setupWritableEditor() {
     $("#post-editor .post-character").data('alias-id', id);
   });
 
-  $('#select-character, #select-npc').click(toggleNPC);
+  $('#select-character, #select-npc').on('click', toggleNPC);
 
   // Hides selectors when you hit the escape key
-  $(document).bind("keydown", function(e) {
+  $(document).on("keydown", function(e) {
     e = e || window.event; // FIXME: event is deprecated
     const charCode = e.which || e.keyCode;
     if (charCode === 27) {
@@ -193,7 +193,7 @@ function setupWritableEditor() {
   });
 
   // Hides selectors when you click outside them
-  $(document).click(function(e) {
+  $(document).on('click', function(e) {
     const target = e.target;
     hideSelect(target, iconSelectBox, '#current-icon-holder');
     hideSelect(target, $('#character-selector'), '#swap-character');
@@ -235,14 +235,14 @@ function fixWritableFormCaching() {
 }
 
 function bindGallery() {
-  iconSelectBox.find('img').click(function() {
+  iconSelectBox.find('img').on('click', function() {
     const id = $(this).data('icon-id');
     setIconFromId(id, $(this));
   });
 }
 
 function bindIcon() {
-  $('#current-icon-holder').click(function() {
+  $('#current-icon-holder').on('click', function() {
     $('#icon-overlay').toggle();
     iconSelectBox.toggle();
     $('html, body').scrollTop($("#post-editor").offset().top);
@@ -370,7 +370,7 @@ function setAliasFromID(selectedAliasID) {
 function setGalleriesAndDefault(galleries, defaultIcon) {
   shownIcons = [];
 
-  $("#current-icon-holder").unbind();
+  $("#current-icon-holder").off();
   $("#icon_dropdown").empty().append('<option value="">No Icon</option>');
 
   iconSelectBox.html('');

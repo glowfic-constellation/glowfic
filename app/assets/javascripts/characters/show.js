@@ -9,7 +9,7 @@ $(document).ready(function() {
 
 // override standard reorder
 function bindArrows(orderBox, path, param) {
-  $(".section-up", orderBox).click(function() {
+  $(".section-up", orderBox).on('click', function() {
     const sourceRow = $(this).closest('.section-ordered');
     const targetRow = sourceRow.prevUntil('.section-ordered').last().prev();
     if (targetRow.length === 0) return false;
@@ -17,7 +17,7 @@ function bindArrows(orderBox, path, param) {
     return false;
   }).addClass('pointer').removeClass('disabled-arrow');
 
-  $(".section-down", orderBox).click(function() {
+  $(".section-down", orderBox).on('click', function() {
     const sourceRow = $(this).closest('.section-ordered');
     const targetRow = sourceRow.nextUntil('.section-ordered').last().next();
     if (targetRow.length === 0) return false;

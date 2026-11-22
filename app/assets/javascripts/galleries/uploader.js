@@ -14,7 +14,7 @@ $(document).ready(function() {
     bindFileInput($(fileInput), form, submitButton, formData);
   });
 
-  $("form.icon-upload").submit(function() {
+  $("form.icon-upload").on('submit', function() {
     const usedUrls = $.map($('form.icon-upload').find('input[id$=_url]'), function(input) { return $(input).val(); });
     const uploadedUrls = $.map(uploadedIcons, function(value, key) { return key; });
     const unusedUrls = uploadedUrls.filter(function(x) { return usedUrls.indexOf(x) < 0; });

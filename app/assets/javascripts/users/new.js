@@ -1,27 +1,27 @@
 /* global gon */
 let duplicateUsername = false;
 $(document).ready(function() {
-  $("#user_username").blur(function() {
+  $("#user_username").on('blur', function() {
     $("#signup-username .user-alert").addClass('hidden');
     validateUsername();
   });
 
-  $("#user_email").blur(function() {
+  $("#user_email").on('blur', function() {
     $("#signup-email .user-alert").addClass('hidden');
     validateEmail();
   });
 
-  $("#user_password").blur(function() {
+  $("#user_password").on('blur', function() {
     $("#signup-password .user-alert").addClass('hidden');
     validatePassword();
   });
 
-  $("#user_password_confirmation").blur(function() {
+  $("#user_password_confirmation").on('blur', function() {
     $("#signup-password-confirmation .user-alert").addClass('hidden');
     validateConfirmation();
   });
 
-  $("#new_user").submit(function() {
+  $("#new_user").on('submit', function() {
     // Clear existing alerts before validating
     $(".user-alert").addClass('hidden');
 

@@ -3,7 +3,7 @@
 // orderBox is the box the ordering is scoped to
 // so that a single page can have multiple separate ordering structures
 function bindArrows(orderBox, path, param) {
-  $(".section-up", orderBox).click(function() {
+  $(".section-up", orderBox).on('click', function() {
     const sourceRow = $(this).closest('.section-ordered');
     const targetRow = sourceRow.prev('.section-ordered');
     if (targetRow.length === 0) return false;
@@ -11,7 +11,7 @@ function bindArrows(orderBox, path, param) {
     return false;
   }).addClass('pointer').removeClass('disabled-arrow');
 
-  $(".section-down", orderBox).click(function() {
+  $(".section-down", orderBox).on('click', function() {
     const sourceRow = $(this).closest('.section-ordered');
     const targetRow = sourceRow.next('.section-ordered');
     if (targetRow.length === 0) return false;
@@ -24,8 +24,8 @@ function bindArrows(orderBox, path, param) {
 }
 
 function unbindArrows(orderBox) {
-  $(".section-down", orderBox).unbind().addClass('disabled-arrow').removeClass('pointer');
-  $(".section-up", orderBox).unbind().addClass('disabled-arrow').removeClass('pointer');
+  $(".section-down", orderBox).off().addClass('disabled-arrow').removeClass('pointer');
+  $(".section-up", orderBox).off().addClass('disabled-arrow').removeClass('pointer');
 }
 
 function bindSortable(orderBox, path, param) {

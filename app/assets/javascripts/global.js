@@ -8,7 +8,7 @@ $(document).ready(function() {
     minimumResultsForSearch: 10,
   });
 
-  $(".flash-dismiss").click(function() {
+  $(".flash-dismiss").on('click', function() {
     $(this).closest('.flash').slideUp(200);
     return false;
   });
@@ -53,7 +53,7 @@ $(document).ready(function() {
     let warningBox = $('#login_status_warning');
     if (warningBox.length === 0) {
       warningBox = $('<div class="flash error pointer" id="login_status_warning">');
-      warningBox.click(function() { $(this).remove(); });
+      warningBox.on('click', function() { $(this).remove(); });
       $('#header').after(warningBox);
     }
 
@@ -189,7 +189,7 @@ function createTagSelect(tagType, selector, formType, scope) {
       },
     },
     createTag: function(params) {
-      const term = $.trim(params.term);
+      const term = (params.term || '').trim();
       if (term === '') return null;
 
       for (let i = 0; i < foundTags[selector].length; i++) {

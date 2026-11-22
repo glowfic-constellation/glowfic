@@ -7,18 +7,18 @@ $(document).ready(function() {
   // If not on the reply page or otherwise not live editing notes
   if (!$(".edit-private-notes").length) return;
 
-  $(".edit-private-notes").click(function() {
+  $(".edit-private-notes").on('click', function() {
     $(".private-note").toggle();
     $(".private-note-editor").toggle();
     return false;
   });
 
-  $(".save-private-note").click(function() {
+  $(".save-private-note").on('click', function() {
     saveNoteChanges();
     return false;
   });
 
-  $(".discard-private-note").click(function() {
+  $(".discard-private-note").on('click', function() {
     if (confirm('Are you sure you wish to discard your changes?')) {
       $("#post_private_note").val(originalValue);
     }
@@ -35,12 +35,12 @@ $(document).ready(function() {
     buttons: {
       "Save Changes": function() {
         $(this).dialog("close");
-        saveNoteChanges(function() { $(submittedButton).click(); });
+        saveNoteChanges(function() { $(submittedButton).trigger('click'); });
       },
       "Discard Changes": function() {
         $(this).dialog("close");
         $("#post_private_note").val(originalValue);
-        $(submittedButton).click();
+        $(submittedButton).trigger('click');
       },
       "Cancel": function() {
         $(this).dialog("close");
@@ -49,7 +49,7 @@ $(document).ready(function() {
   });
 
   const formButtons = $("#submit_button, #draft_button, #preview_button");
-  formButtons.click(function() {
+  formButtons.on('click', function() {
     submittedButton = "#" + $(this).attr('id');
     formButtons.not(this).prop('disabled', true);
     if ($("#post_private_note").val() === originalValue) { return true; }
