@@ -48,6 +48,7 @@ end
 require 'factory_bot_rails'
 require 'rails_helper'
 require 'support/spec_feature_helper'
+require 'support/js_error_helper'
 require 'support/spec_request_helper'
 require 'support/spec_test_helper'
 require 'support/api_test_helper'
@@ -87,6 +88,7 @@ RSpec.configure do |config|
   config.include SpecRequestHelper, type: :request
   config.include QueryCountHelper, type: :request
   config.include SpecSystemHelper, type: :system
+  config.include JsErrorHelper, type: :system
 
   config.filter_run show_in_doc: true if ENV['APIPIE_RECORD']
 
@@ -170,6 +172,17 @@ RSpec.configure do |config|
       options.add_argument("--user-data-dir=#{ENV['CHROMEDRIVER_CONFIG']}") if ENV['CHROMEDRIVER_CONFIG']
       options.add_argument('--window-size=1366,768')
     end
+  end
+
+  config.before(:each, :js, type: :system) do |example|
+    install_js_error_collector unless example.metadata[:js_errors] == :allow
+  end
+
+  config.after(:each, :js, type: :system) do |example|
+    next if example.metadata[:js_errors] == :allow || example.exception
+
+    errors = collected_js_errors
+    expect(errors).to be_empty, "uncaught JavaScript errors on the page:\n  #{errors.uniq.join("\n  ")}"
   end
 
   if ENV['APIPIE_RECORD']
