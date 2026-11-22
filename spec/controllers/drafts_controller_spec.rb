@@ -19,6 +19,19 @@ RSpec.describe DraftsController do
       expect(flash[:error]).to eq("You do not have permission to view this post.")
     end
 
+    it "requires a full account" do
+      reply_post = create(:post)
+      login_as(create(:reader_user))
+      expect {
+        post :create, params: {
+          reply: { post_id: reply_post.id, content: 'test', editor_mode: 'html' },
+          character: { name: 'NPC', npc: true },
+        }
+      }.not_to change { [ReplyDraft.count, Character.count] }
+      expect(response).to redirect_to(continuities_url)
+      expect(flash[:error]).to eq("This feature is not available to read-only accounts.")
+    end
+
     it "displays errors if relevant" do
       draft = create(:reply_draft)
       login_as(draft.user)
