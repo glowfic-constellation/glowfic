@@ -343,7 +343,15 @@ GEM
     pp (0.6.4)
       prettyprint
     prettyprint (0.2.1)
-    prism (1.9.0)
+    prism (2.1.0)
+    prism (2.1.0-aarch64-linux-gnu)
+    prism (2.1.0-aarch64-linux-musl)
+    prism (2.1.0-arm-linux-gnu)
+    prism (2.1.0-arm-linux-musl)
+    prism (2.1.0-arm64-darwin)
+    prism (2.1.0-x86_64-darwin)
+    prism (2.1.0-x86_64-linux-gnu)
+    prism (2.1.0-x86_64-linux-musl)
     public_suffix (7.0.5)
     puma (8.1.2)
       nio4r (~> 2.0)
@@ -648,7 +656,7 @@ DEPENDENCIES
   parallel_tests
   pg (~> 1.7)
   pg_search
-  prism (~> 1.9)
+  prism (~> 2.1)
   puma
   rack-attack
   rack-cors
