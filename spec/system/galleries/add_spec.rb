@@ -80,7 +80,7 @@ RSpec.describe "Adding icons to a gallery" do
     expect(page).to have_selector('.content-header', text: 'Add Existing Icons to Gallery')
     expect(page).to have_selector('.icon-keyword', exact_text: 'test icon 1')
 
-    find('.gallery-icon', text: 'test icon 1').find('img').click
+    within('.gallery-icon', text: 'test icon 1') { find('img').click }
     first(:button, 'Add Icons to Gallery').click
 
     expect(page).to have_selector('.flash.success', exact_text: 'Icons added to gallery.')

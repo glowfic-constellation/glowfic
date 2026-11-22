@@ -2,8 +2,7 @@ RSpec.describe "Logging out" do
   scenario "Log out while correctly logged in", :js do
     user = login
     expect(page).to have_selector('#user-info', text: user.username)
-    click_button "Log out"
-    page.accept_confirm
+    accept_confirm { click_button "Log out" }
 
     expect(page).to have_selector('.flash.success', text: 'You have been logged out.')
     expect(page).to have_no_selector('#user-info')

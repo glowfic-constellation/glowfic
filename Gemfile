@@ -34,13 +34,14 @@ gem 'httparty'
 gem 'jquery-fileupload-rails'
 gem 'jquery-rails', '~> 4.6'
 gem 'jquery-ui-rails-dox-fork', require: 'jquery-ui-rails'
-gem 'json', '~> 2.20'
+gem 'json', '~> 3.1'
 gem 'jwt'
 gem 'newrelic_rpm'
 gem 'nilify_blanks'
 gem 'nokogiri'
 gem 'pg', '~> 1.7'
 gem 'pg_search'
+gem 'prism', '~> 1.9' # prism 2.x breaks Haml 7.5.1's attribute-hash parsing (post editor 500s); remove once haml supports it
 gem 'rack-pratchett'
 gem 'rails', '~> 8.1.4'
 gem "redcarpet", "~> 3.6"
@@ -53,7 +54,7 @@ gem 'sprockets'
 gem 'sprockets-rails'
 gem 'terser'
 gem 'test-unit', '~> 3.7' # required by Heroku for production console
-gem 'tinymce-rails', '~> 7.8' # when upgrading, bump cache_suffix in app/assets/javascripts/writable.js
+gem 'tinymce-rails', '~> 8.10' # when upgrading, bump cache_suffix in app/assets/javascripts/writable.js
 gem 'vernier', '~> 1.12' # sampled request profiling
 gem 'will_paginate'
 
@@ -71,8 +72,8 @@ group :development do
   gem 'listen'
   gem 'memory_profiler'
   gem 'rack-mini-profiler'
-  gem 'rubocop', '~> 1.92.2', require: false
-  gem 'rubocop-capybara', '~> 3.0.0', require: false
+  gem 'rubocop', '~> 1.92.3', require: false
+  gem 'rubocop-capybara', '~> 3.1.0', require: false
   gem 'rubocop-factory_bot', '~> 2.28.0', require: false
   gem 'rubocop-performance', '~> 1.27.0', require: false
   gem 'rubocop-rails', '~> 2.38.0', require: false
