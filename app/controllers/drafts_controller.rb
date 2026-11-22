@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 class DraftsController < WritableController
   before_action :login_required
+  before_action :readonly_forbidden, only: :create
   before_action :require_post_access, only: :create
 
   def create
