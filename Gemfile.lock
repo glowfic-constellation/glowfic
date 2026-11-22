@@ -215,7 +215,7 @@ GEM
     google-protobuf (4.35.1-x86_64-linux-musl)
       bigdecimal
       rake (~> 13.3)
-    haml (7.5.1)
+    haml (7.5.2)
       prism (>= 1.1.0)
       temple (>= 0.8.2)
       thor
