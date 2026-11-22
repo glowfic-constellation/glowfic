@@ -14,7 +14,7 @@ class ReportsController < ApplicationController
       redirect_to reports_path and return
     end
 
-    @page_title = params[:id].capitalize + " Report"
+    @page_title = "#{params[:id].capitalize} Report"
     @hide_quicklinks = true
     @day = calculate_day
 
