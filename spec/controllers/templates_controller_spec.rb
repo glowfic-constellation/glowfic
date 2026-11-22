@@ -132,7 +132,12 @@ RSpec.describe TemplatesController do
     end
 
     it "requires full account" do
-      skip "TODO Currently relies on inability to create templates"
+      user = create(:user, role_id: Permissible::READONLY)
+      template = create(:template, user: user)
+      login_as(user)
+      get :edit, params: { id: template.id }
+      expect(response).to redirect_to(user_characters_url(user))
+      expect(flash[:error]).to eq("You do not have permission to modify this template.")
     end
 
     it "requires valid template" do
@@ -168,7 +173,13 @@ RSpec.describe TemplatesController do
     end
 
     it "requires full account" do
-      skip "TODO Currently relies on inability to create templates"
+      user = create(:user, role_id: Permissible::READONLY)
+      template = create(:template, user: user)
+      login_as(user)
+      put :update, params: { id: template.id, template: { name: 'Renamed' } }
+      expect(response).to redirect_to(user_characters_url(user))
+      expect(flash[:error]).to eq("You do not have permission to modify this template.")
+      expect(template.reload.name).not_to eq('Renamed')
     end
 
     it "requires valid template" do
@@ -230,7 +241,13 @@ RSpec.describe TemplatesController do
     end
 
     it "requires full account" do
-      skip "TODO Currently relies on inability to create templates"
+      user = create(:user, role_id: Permissible::READONLY)
+      template = create(:template, user: user)
+      login_as(user)
+      delete :destroy, params: { id: template.id }
+      expect(response).to redirect_to(user_characters_url(user))
+      expect(flash[:error]).to eq("You do not have permission to modify this template.")
+      expect(Template.find_by(id: template.id)).to be_present
     end
 
     it "requires valid template" do

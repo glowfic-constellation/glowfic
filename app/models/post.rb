@@ -271,6 +271,7 @@ class Post < ApplicationRecord
 
   def metadata_editable_by?(user)
     return false unless user
+    return false if user.read_only?
     return true if user == self.user
     return true if user.has_permission?(:edit_posts)
     author_ids.include?(user.id)

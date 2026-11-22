@@ -6,7 +6,14 @@ RSpec.describe RepliesController, 'DELETE destroy' do
   end
 
   it "requires full account" do
-    skip "TODO Currently relies on inability to create replies"
+    reply = create(:reply)
+    user = reply.user
+    user.update!(role_id: Permissible::READONLY)
+    login_as(user)
+    delete :destroy, params: { id: reply.id }
+    expect(response).to redirect_to(post_path(reply.post))
+    expect(flash[:error]).to eq("You do not have permission to modify this reply.")
+    expect(Reply.find_by(id: reply.id)).to be_present
   end
 
   it "requires valid reply" do

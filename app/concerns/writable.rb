@@ -31,12 +31,14 @@ module Writable
 
     def editable_by?(editor)
       return false unless editor
+      return false if editor.read_only?
       return true if editor.id == user_id
       editor.has_permission?(:edit_replies)
     end
 
     def deletable_by?(editor)
       return false unless editor
+      return false if editor.read_only?
       return true if editor.id == user_id
       editor.has_permission?(:delete_replies)
     end

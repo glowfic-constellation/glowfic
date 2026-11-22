@@ -9,7 +9,14 @@ RSpec.describe PostsController, 'DELETE destroy' do
   end
 
   it "requires full account" do
-    skip "TODO Currently relies on inability to create replies"
+    post = create(:post)
+    user = post.user
+    user.update!(role_id: Permissible::READONLY)
+    login_as(user)
+    delete :destroy, params: { id: post.id }
+    expect(response).to redirect_to(post_path(post))
+    expect(flash[:error]).to eq("You do not have permission to modify this post.")
+    expect(Post.find_by(id: post.id)).to be_present
   end
 
   it "requires valid post" do

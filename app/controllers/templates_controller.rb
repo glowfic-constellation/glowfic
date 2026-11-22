@@ -101,7 +101,7 @@ class TemplatesController < ApplicationController
   end
 
   def require_edit_permission
-    return true if @template.user_id == current_user.id
+    return true if @template.user_id == current_user.id && !current_user.read_only?
     flash[:error] = "You do not have permission to modify this template."
     redirect_to user_characters_path(current_user)
   end
