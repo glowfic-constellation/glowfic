@@ -41,7 +41,7 @@ gem 'nilify_blanks'
 gem 'nokogiri'
 gem 'pg', '~> 1.7'
 gem 'pg_search'
-gem 'prism', '~> 2.1' # prism 2.x needs Haml >= 7.5.2 (haml/haml#1224); 7.5.1 broke attribute-hash parsing (post editor 500s)
+gem 'prism', '~> 2.1'
 gem 'rack-pratchett'
 gem 'rails', '~> 8.1.4'
 gem "redcarpet", "~> 3.6"
