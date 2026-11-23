@@ -299,20 +299,21 @@ class PostsController < WritableController
     @search_results = @search_results.where(board_id: params[:board_id]) if params[:board_id].present?
     @search_results = @search_results.where.not(board_id: params[:exclude_board_ids]) if params[:exclude_board_ids].present?
     @search_results = @search_results.where(id: Setting.find(params[:setting_id]).post_tags.pluck(:post_id)) if params[:setting_id].present?
-    if params[:subject].present?
+    subject = params[:subject].to_s.strip
+    if subject.present?
       if params[:abbrev].present?
-        search = params[:subject].chars.join('% ')
+        search = subject.chars.join('% ')
         @search_results = @search_results.where('subject ILIKE ?', "%#{search}%")
       elsif params[:exact].present?
-        @search_results = @search_results.where('subject ILIKE ?', "%#{params[:subject]}%")
+        @search_results = @search_results.where('subject ILIKE ?', "%#{subject}%")
       else
-        pruned = detect_pruned_words(params[:subject])
+        pruned = detect_pruned_words(subject)
         if pruned[:all_pruned]
-          @search_results = @search_results.where('subject ILIKE ?', "%#{params[:subject]}%")
+          @search_results = @search_results.where('subject ILIKE ?', "%#{subject}%")
           @pruned_words = pruned[:pruned_words]
           @all_pruned = true
         else
-          @search_results = @search_results.search(params[:subject]).where('subject ILIKE ?', "%#{params[:subject]}%")
+          @search_results = @search_results.search(subject).where('subject ILIKE ?', "%#{subject}%")
           @pruned_words = pruned[:pruned_words] if pruned[:pruned_words].any?
         end
       end
