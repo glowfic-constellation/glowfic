@@ -24,6 +24,25 @@ RSpec.describe "Query counts" do
       get "/posts/#{post.id}"
       expect(count_queries(matching: /FROM "audits"/) { get "/posts/#{post.id}" }).to eq(1)
     end
+
+    it "shows the post's icon, character and author without loading them separately" do
+      user = create(:user)
+      character = create(:character, user: user, screenname: 'postscreenname')
+      calias = create(:alias, character: character)
+      icon = create(:icon, user: user)
+      post = create(:post, user: user, character: character, character_alias: calias, icon: icon)
+      create(:reply, post: post)
+      get "/posts/#{post.id}"
+      expect(response.body).to include(calias.name, 'postscreenname', icon.keyword, icon.url, user.username)
+      expect(count_queries(matching: /FROM "(icons|characters|character_aliases)" WHERE "\w+"."id" = /) { get "/posts/#{post.id}" }).to eq(0)
+      expect(count_queries(matching: /FROM "users" WHERE "users"."id" = /) { get "/posts/#{post.id}" }).to eq(0)
+
+      reply = post.replies.first
+      get "/replies/#{reply.id}"
+      expect(response.body).to include(calias.name, 'postscreenname', icon.keyword, icon.url, user.username)
+      expect(count_queries(matching: /FROM "(icons|characters|character_aliases)" WHERE "\w+"."id" = /) { get "/replies/#{reply.id}" }).to eq(0)
+      expect(count_queries(matching: /FROM "posts" WHERE "posts"."id" = /) { get "/replies/#{reply.id}" }).to eq(0)
+    end
   end
 
   describe "continuity page" do
