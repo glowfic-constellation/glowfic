@@ -326,9 +326,10 @@ RSpec.describe PostsController, 'GET show' do
     end
 
     it "sets reply variable using build_new_reply_for" do
-      # mock Post.find_by_id so we can mock post.build_new_reply_for
-      allow(Post).to receive(:find_by).and_call_original
-      allow(Post).to receive(:find_by).with({ id: post.id.to_s }).and_return(post)
+      # mock the post lookup so we can mock post.build_new_reply_for
+      relation = Post.with_display_attributes
+      allow(Post).to receive(:with_display_attributes).and_return(relation)
+      allow(relation).to receive(:find_by).with({ id: post.id.to_s }).and_return(post)
 
       allow(post).to receive(:build_new_reply_for).and_call_original
       expect(post).to receive(:build_new_reply_for).with(user, an_instance_of(ActionController::Parameters).and(be_empty))
@@ -352,9 +353,10 @@ RSpec.describe PostsController, 'GET show' do
     end
 
     it "sets reply variable using build_new_reply_for" do
-      # mock Post.find_by_id so we can mock post.build_new_reply_for
-      allow(Post).to receive(:find_by).and_call_original
-      allow(Post).to receive(:find_by).with({ id: post.id.to_s }).and_return(post)
+      # mock the post lookup so we can mock post.build_new_reply_for
+      relation = Post.with_display_attributes
+      allow(Post).to receive(:with_display_attributes).and_return(relation)
+      allow(relation).to receive(:find_by).with({ id: post.id.to_s }).and_return(post)
 
       allow(post).to receive(:build_new_reply_for).and_call_original
       expect(post).to receive(:build_new_reply_for).with(user, an_instance_of(ActionController::Parameters).and(be_empty)).and_call_original
@@ -369,9 +371,10 @@ RSpec.describe PostsController, 'GET show' do
     it "works and does not call build_new_reply_for" do
       post = create(:post, authors_locked: true)
 
-      # mock Post.find_by_id so we can mock post.build_new_reply_for
-      allow(Post).to receive(:find_by).and_call_original
-      allow(Post).to receive(:find_by).with({ id: post.id.to_s }).and_return(post)
+      # mock the post lookup so we can mock post.build_new_reply_for
+      relation = Post.with_display_attributes
+      allow(Post).to receive(:with_display_attributes).and_return(relation)
+      allow(relation).to receive(:find_by).with({ id: post.id.to_s }).and_return(post)
 
       login_as(user)
       expect(post).not_to receive(:build_new_reply_for)

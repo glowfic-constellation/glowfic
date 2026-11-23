@@ -204,7 +204,13 @@ class RepliesController < WritableController
       redirect_to continuities_path and return
     end
 
-    @post = @reply.post
+    if action_name == 'show'
+      # show renders the post itself through replies/_single, so fetch its display fields in the same query
+      @post = Post.with_display_attributes.find(@reply.post_id)
+      @reply.association(:post).target = @post
+    else
+      @post = @reply.post
+    end
     unless @post.visible_to?(current_user)
       flash[:error] = "You do not have permission to view this post."
       redirect_to continuities_path and return

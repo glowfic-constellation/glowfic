@@ -501,7 +501,8 @@ class PostsController < WritableController
   end
 
   def find_model
-    @post = Post.find_by(id: params[:id])
+    # show renders the post itself through replies/_single, so fetch its display fields in the same query
+    @post = (action_name == 'show' ? Post.with_display_attributes : Post).find_by(id: params[:id])
 
     unless @post
       flash[:error] = "Post could not be found."
