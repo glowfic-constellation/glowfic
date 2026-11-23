@@ -6,11 +6,11 @@ class Api::V1::BoardsController < Api::ApiController
   end
 
   api :GET, '/boards', 'Load all the continuities that match the given query, results ordered by name'
-  param :q, String, required: false, desc: "Query string"
+  param :q, String, required: false, desc: "If provided, will return only continuities with q anywhere in their name (case-insensitive)"
   param :page, :number, required: false, desc: 'Page in results (25 per page)'
   error 422, "Invalid parameters provided"
   def index
-    queryset = Board.where("name ILIKE ?", params[:q].to_s + '%').ordered
+    queryset = Board.where("name ILIKE ?", "%#{Board.sanitize_sql_like(params[:q].to_s)}%").ordered
     boards = paginate queryset, per_page: 25
     render json: { results: boards }
   end
