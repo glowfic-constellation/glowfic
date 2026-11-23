@@ -55,7 +55,10 @@
                 = group.name
   - if !gallery && is_owner
     %tr.gallery-subheader
-      %th.sub Unsorted icons without a gallery will appear here. They can still be individually assigned to a character with no galleries.
+      %th.sub
+        Unsorted icons without a gallery will appear here. They can still be individually assigned to a character with no galleries.
+        %br
+        To move them into a gallery, open that gallery, choose + Add Icons, then Add Existing Icons.
   - icons ||= gallery ? gallery.icons : @user.galleryless_icons
   - icons = icons.pluck(:id, :keyword, :url, :credit)
   - if page_view == 'list' && icons.present?
