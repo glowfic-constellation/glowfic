@@ -43,6 +43,15 @@ RSpec.describe "Query counts" do
       expect(count_queries(matching: /FROM "(icons|characters|character_aliases)" WHERE "\w+"."id" = /) { get "/replies/#{reply.id}" }).to eq(0)
       expect(count_queries(matching: /FROM "posts" WHERE "posts"."id" = /) { get "/replies/#{reply.id}" }).to eq(0)
     end
+
+    it "loads authors and checks section order without extra queries" do
+      board = create(:board)
+      post = create(:post, board: board, section: create(:board_section, board: board))
+      create(:reply, post: post)
+      get "/posts/#{post.id}"
+      expect(count_queries(matching: /SELECT COUNT\(\*\) FROM "users"/) { get "/posts/#{post.id}" }).to eq(0)
+      expect(count_queries(matching: /FROM "board_sections" WHERE "board_sections"."board_id"/) { get "/posts/#{post.id}" }).to eq(0)
+    end
   end
 
   describe "continuity page" do
