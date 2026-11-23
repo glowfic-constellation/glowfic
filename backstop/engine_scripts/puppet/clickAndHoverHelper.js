@@ -3,6 +3,8 @@ module.exports = async (page, givenScenario) => {
     hoverSelectors: [],
     clickSelectors: [],
     keyPressSelectors: [],
+    // clickNavigates: the clicks submit a form or follow a link; wait for the new page to load
+    clickNavigates: false,
     // postInteractionWait: ms [int]
     postInteractionWait: null,
     scrollToSelector: null,
@@ -21,11 +23,15 @@ module.exports = async (page, givenScenario) => {
 
   for (const clickSelectorItem of config.clickSelectors) {
     await page.waitForSelector(clickSelectorItem);
-    await page.click(clickSelectorItem);
+    if (config.clickNavigates) {
+      await Promise.all([page.waitForNavigation({ waitUntil: 'networkidle0' }), page.click(clickSelectorItem)]);
+    } else {
+      await page.click(clickSelectorItem);
+    }
   }
 
   if (config.postInteractionWait) {
-    await page.waitForTimeout(config.postInteractionWait);
+    await new Promise((resolve) => setTimeout(resolve, config.postInteractionWait)); // page.waitForTimeout was removed in Puppeteer 22 (BackstopJS 6)
   }
 
   if (config.scrollToSelector) {

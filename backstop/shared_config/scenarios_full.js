@@ -9,6 +9,7 @@ module.exports = [
     path: "characters/27/edit",
     selectors: [".flash.success"],
     clickSelectors: ["input.button"],
+    clickNavigates: true,
     delay: 0,
     postInteractionWait: 200
   },

@@ -45,3 +45,4 @@ backstop/reports/*
 /.gems
 /.envrc
 dump.rdb
+backstop/engine_scripts/cookies.local.json

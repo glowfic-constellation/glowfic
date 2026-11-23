@@ -1,6 +1,8 @@
 const loadCookies = require('./loadCookies');
+const interceptImages = require('./interceptImages');
 module.exports = async (page, scenario, _vp) => {
   await loadCookies(page, scenario);
+  await interceptImages(page);
 
   // skip spam messages in console
   const oldLog = console.log;

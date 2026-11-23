@@ -1,6 +1,6 @@
 services:
   backstop:
-    image: backstopjs/backstopjs:5.4.4
+    image: backstopjs/backstopjs:6.3.25
     working_dir: /src
     volumes:
       - "./backstop/:/src"
