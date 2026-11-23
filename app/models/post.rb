@@ -349,10 +349,10 @@ class Post < ApplicationRecord
     cached + uncached
   end
 
-  # Posts in a section are always ordered (the board has a section). Unsectioned posts are ordered only on
-  # locked boards without sections. Checking section_id first skips the board_sections lookup.
+  # A post in a section is always on an ordered board (the board has a section), so checking section_id first
+  # skips the board_sections lookup. An unsectioned post has neighbours only on an ordered board without sections.
   def adjacent_posts_for(user)
-    return if section_id.nil? && !(board.authors_locked? && board.board_sections.empty?)
+    return unless section_id.present? || (board.ordered? && board.board_sections.empty?)
     yield Post.where(board_id: self.board_id, section_id: self.section_id).visible_to(user).ordered_in_section
   end
 
