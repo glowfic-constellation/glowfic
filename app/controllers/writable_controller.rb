@@ -108,8 +108,14 @@ class WritableController < ApplicationController
     redirect_to post_path(@post, page: @replies.total_pages, per_page: per) and return if cur_page > @replies.total_pages
     use_javascript('paginator')
 
-    @audits = @post.associated_audits.where(auditable_type: 'Reply', auditable_id: @replies.map(&:id)).group(:auditable_id).count
-    @audits[:post] = @post.audits.count
+    # One query for the edit-history counts of the page's replies and of the post itself, on auditable_index alone.
+    # Counts every audit of each reply, as its history page lists them (also those from before a split moved it).
+    audit_counts = Audited::Audit
+      .where(auditable_type: 'Reply', auditable_id: @replies.map(&:id))
+      .or(Audited::Audit.where(auditable_type: 'Post', auditable_id: @post.id))
+      .group(:auditable_type, :auditable_id).count
+    @audits = audit_counts.to_h { |(type, id), count| [type == 'Post' ? :post : id, count] }
+    @audits[:post] ||= 0
 
     calculate_reply_bookmarks(@replies)
 
