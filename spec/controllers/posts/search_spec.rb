@@ -104,7 +104,24 @@ RSpec.describe PostsController, 'GET search' do
       end
 
       it "exact match" do
-        skip "TODO not yet implemented"
+        create(:post, subject: 'stars contains')
+        get :search, params: { commit: true, subject: 'contains stars', exact: true }
+        expect(assigns(:search_results)).to match_array([post1, post2])
+      end
+
+      it "ignores surrounding whitespace" do
+        get :search, params: { commit: true, subject: "  stars \n" }
+        expect(assigns(:search_results)).to match_array([post1, post2])
+      end
+
+      it "ignores surrounding whitespace in exact mode" do
+        get :search, params: { commit: true, subject: 'contains stars ', exact: true }
+        expect(assigns(:search_results)).to match_array([post1, post2])
+      end
+
+      it "ignores surrounding whitespace in acronym mode" do
+        get :search, params: { commit: true, subject: ' cs ', abbrev: true }
+        expect(assigns(:search_results)).to match_array([post1, post2])
       end
     end
 
