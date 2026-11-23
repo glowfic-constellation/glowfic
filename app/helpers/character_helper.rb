@@ -18,4 +18,10 @@ module CharacterHelper
     link_params = params.permit(:character_split, :retired, :view).to_h.merge(link_params)
     url_for(**link_params.symbolize_keys)
   end
+
+  # The icon a facecast reverse image search should run against: the character's
+  # default icon, falling back to the first icon in its galleries.
+  def character_facecast_image_url(character)
+    (character.default_icon || character.icons.first)&.url
+  end
 end

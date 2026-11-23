@@ -1,4 +1,4 @@
-/* global deleteUnusedIcons */
+/* global deleteUnusedIcons, updateReverseImageSearch */
 /* exported addUploadedIcon, addCallback, failCallback */
 
 let done = 0;
@@ -92,6 +92,7 @@ function addNewRow() {
 
   // clear preview icon
   newRow.find(".preview-icon").attr('src', emptyGif).attr('title', '').attr('alt', '');
+  updateReverseImageSearch(newRow.find(".reverse-image-search"), '');
 
   // handle the URL field specially
   // because uploads have special UI
@@ -160,6 +161,7 @@ function addUploadedIcon(url, key, data, _fileInput) {
 
   // Display a preview of the uploaded icon for the user
   row.find(".preview-icon").attr('src', url).attr('title', keyword).attr('alt', keyword);
+  updateReverseImageSearch(row.find(".reverse-image-search"), url);
 
   // Update and display confirmation box
   row.find("input[id$='_filename']").val(data.files[0].name);

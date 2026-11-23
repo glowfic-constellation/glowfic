@@ -37,7 +37,9 @@
         - pkey = keyword
       .icon-row{data: { index: i }}
         - empty_gif = 'data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw=='
-        .preview-icon-cell{class: klass}= icon_mem_tag purl || empty_gif, pkey || '', class: 'preview-icon'
+        .preview-icon-cell{class: klass}
+          = icon_mem_tag purl || empty_gif, pkey || '', class: 'preview-icon'
+          = reverse_image_search_links(purl)
         .url-cell.input-cell{class: klass}
           %span.conf{class: ('hidden' unless s3_key.present?)}
             = image_tag "icons/accept.png", alt: ''
