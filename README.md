@@ -111,20 +111,6 @@ And finally, run any database migrations that might have been added in the meant
 
 You should now be able to execute the server, as before but now with the latest updates.
 
-#### Upgrading Postgres
-
-The compose file runs the same major Postgres version as production (now 18). A new major version can't read the old one's data, so after a pull that changes the `postgres` image you either start from fresh sample data (`bin-docker/rake db:setup`) or copy your old data across.
-
-To copy it across from the old Postgres 16 volume (the one compose used before Postgres 18; its name ends in `_postgres-data`, see `docker volume ls`):
-
-*   `docker compose stop postgres`
-*   `docker run -d --rm --name pg-old -v glowfic_postgres-data:/var/lib/postgresql/data postgres:16-alpine`
-*   `docker exec pg-old pg_dumpall -U postgres > pg-old.sql` (wait a few seconds after the previous step for it to start)
-*   `docker stop pg-old`
-*   `docker compose up -d postgres`, then `docker compose exec -T postgres psql -q -d postgres < pg-old.sql` (an error saying role "postgres" already exists is expected)
-
-Once you're happy, delete the old volume (`docker volume rm glowfic_postgres-data`) and `pg-old.sql`.
-
 ### Validation tools
 
 We use the following tools to make sure our code is clean and standards-compliant:
