@@ -17,6 +17,13 @@ RSpec.describe "Query counts" do
 
       expect_constant_queries("/posts/#{post.id}") { 3.times { add_reply.call } }
     end
+
+    it "counts the post's and replies' edit history in one query" do
+      post = create(:post)
+      create(:reply, post: post)
+      get "/posts/#{post.id}"
+      expect(count_queries(matching: /FROM "audits"/) { get "/posts/#{post.id}" }).to eq(1)
+    end
   end
 
   describe "continuity page" do
