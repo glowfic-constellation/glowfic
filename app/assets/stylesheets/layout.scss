@@ -706,6 +706,13 @@ The copy box can't be invisible/hidden or copy fails but opacity works
   }
 }
 
+// TinyMCE dialogs render outside #content, at the end of <body>
+.tox-dialog .field-warning {
+  margin-top: 4px;
+  font-size: $font_size_smaller;
+  color: $font_color_field_warning;
+}
+
 #news-table {
   width: 100%;
   grid-template-columns: minmax(min-content, 150px) auto;
