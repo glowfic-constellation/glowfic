@@ -22,7 +22,20 @@ RSpec.describe Api::V1::BoardsController do
       create_search_boards
       get :index, params: { q: 'b' }
       expect(response).to have_http_status(200)
-      expect(response.parsed_body['results'].count).to eq(2)
+      expect(response.parsed_body['results'].count).to eq(6)
+    end
+
+    it "matches the query anywhere in the name" do
+      create_search_boards
+      get :index, params: { q: 'Ab' }
+      expect(response.parsed_body['results'].pluck('name')).to match_array(['aba', 'aab', 'ABAc', 'AABc'])
+    end
+
+    it "treats LIKE wildcards in the query literally" do
+      board = create(:board, name: '100% Chelcon')
+      create(:board, name: '100 Chelcon')
+      get :index, params: { q: '0%' }
+      expect(response.parsed_body['results'].pluck('id')).to eq([board.id])
     end
 
     it "raises error on invalid page", :show_in_doc do
