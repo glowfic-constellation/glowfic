@@ -87,17 +87,6 @@ class Post < ApplicationRecord
     )
   }
 
-  # The fields replies/_single reads through Writable (#url, #keyword, #name, #screenname, #username), joined in so
-  # rendering the post itself doesn't load its icon, character, alias and user one query each.
-  scope :with_display_attributes, -> {
-    select(
-      <<~SQL.squish,
-        posts.*, characters.name, characters.screenname, icons.keyword, icons.url,
-        users.username, users.deleted AS user_deleted, character_aliases.name AS alias
-      SQL
-    ).joins(:user).left_outer_joins(:character, :icon, :character_alias)
-  }
-
   scope :with_reply_count, -> {
     select('(SELECT COUNT(*) FROM replies WHERE replies.post_id = posts.id) AS reply_count')
   }

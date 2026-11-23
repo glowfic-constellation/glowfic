@@ -81,24 +81,13 @@ class WritableController < ApplicationController
       self.page = cur_page = cur_page.to_s.to_i.clamp(1, MAX_PAGE)
     end
 
-    select = <<~SQL.squish
-      replies.*, characters.name, characters.screenname,
-      icons.keyword, icons.url,
-      users.username, users.deleted as user_deleted,
-      character_aliases.name as alias
-    SQL
-
     reply_count = @replies.count
 
     # OFFSET on the joined query reads every skipped row, so deep pages of long
     # posts were slow. Find the page's first reply_order from the index alone.
     first_order = @replies.ordered.offset((cur_page - 1) * per).pick(:reply_order)
     page_replies = @replies
-      .select(select)
-      .joins(:user)
-      .left_outer_joins(:character)
-      .left_outer_joins(:icon)
-      .left_outer_joins(:character_alias)
+      .with_display_attributes
       .ordered
       .where('replies.reply_order >= ?', first_order)
       .limit(per)

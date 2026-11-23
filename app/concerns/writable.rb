@@ -17,6 +17,17 @@ module Writable
 
     accepts_nested_attributes_for :character
 
+    # The fields #url, #keyword, #name, #screenname, #username and #user_deleted? read when present, joined in so
+    # displaying a post or a page of replies doesn't load each one's icon, character, alias and user separately.
+    scope :with_display_attributes, -> {
+      select(
+        <<~SQL.squish,
+          #{table_name}.*, characters.name, characters.screenname, icons.keyword, icons.url,
+          users.username, users.deleted AS user_deleted, character_aliases.name AS alias
+        SQL
+      ).joins(:user).left_outer_joins(:character, :icon, :character_alias)
+    }
+
     validate :character_ownership, :icon_ownership
     # Edit forms submit a nil editor_mode back as a blank hidden field
     normalizes :editor_mode, with: ->(mode) { mode.presence }
