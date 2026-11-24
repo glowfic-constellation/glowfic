@@ -9,15 +9,14 @@
 #
 {
   pkgs ? import (fetchTarball {
-    # nixpkgs-unstable - latest for Ruby 3.4.x
-    url = "https://github.com/NixOS/nixpkgs/archive/76eec3925eb9bbe193934987d3285473dbcfad50.tar.gz";
-    sha256 = "12ifsbmygs4wp1bifaknk2p9gdy203mjzjidi77vl61w0hbnhflh";
+    # nixpkgs-unstable; pick a commit whose ruby_4_0 matches .ruby-version
+    url = "https://github.com/NixOS/nixpkgs/archive/619c39f6eac5d1ed6b8f073a9414baf7034b2356.tar.gz";
+    sha256 = "1m4bsj927vplp8rd4fgb789cf897frgvcnp8q8w51bsycvjqzbd1";
   }) {}
 }:
 
 let
-  # Ruby 3.4.x
-  ruby = pkgs.ruby_3_4;
+  ruby = pkgs.ruby_4_0;
 
   # Chrome path - only evaluated on Linux
   chromePath = if pkgs.stdenv.isLinux then "${pkgs.chromium}/bin/chromium" else "";
@@ -31,10 +30,10 @@ pkgs.mkShell {
     pkgs.nodejs_24
 
     # PostgreSQL client and server for local dev
-    pkgs.postgresql_16
+    pkgs.postgresql_18
 
-    # Redis for background jobs
-    pkgs.redis
+    # Valkey (Redis-compatible) for caching and background jobs
+    pkgs.valkey
 
     # Native gem dependencies
     pkgs.libxml2
@@ -69,7 +68,7 @@ pkgs.mkShell {
     export GLOWFIC_DATABASE_USER="$(whoami)"
 
     # For pg gem - ensure pg_config is in PATH
-    export PATH="${pkgs.postgresql_16}/bin:$PATH"
+    export PATH="${pkgs.postgresql_18}/bin:$PATH"
 
     # For Chrome/Selenium tests
     # On macOS, use system Chrome; on Linux, use nix chromium
@@ -81,7 +80,7 @@ pkgs.mkShell {
     export PUPPETEER_EXECUTABLE_PATH="$CHROME_BIN"
 
     # Bundler config for native extensions
-    bundle config build.pg --with-pg-config=${pkgs.postgresql_16}/bin/pg_config 2>/dev/null || true
+    bundle config build.pg --with-pg-config=${pkgs.postgresql_18}/bin/pg_config 2>/dev/null || true
     bundle config build.nokogiri --use-system-libraries 2>/dev/null || true
 
     echo ""
@@ -109,10 +108,10 @@ pkgs.mkShell {
       pg_ctl start -l .postgres/postgres.log -w
     fi
 
-    # Start Redis if not running
-    if ! redis-cli ping >/dev/null 2>&1; then
-      echo "Starting Redis..."
-      redis-server --daemonize yes
+    # Start Valkey if not running
+    if ! valkey-cli ping >/dev/null 2>&1; then
+      echo "Starting Valkey..."
+      valkey-server --daemonize yes
     fi
 
     # Create databases if they don't exist
