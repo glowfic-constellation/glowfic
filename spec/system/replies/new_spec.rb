@@ -122,7 +122,6 @@ RSpec.describe "Creating replies" do
 
     scenario "User creates a reply with a new NPC", :js do
       post.update!(settings: [create(:setting, name: "Settingsverse")])
-      char # user must have at least 1 character to be able to pick a character
 
       visit post_path(post)
       find('.post-expander', text: 'Join Thread').click
@@ -159,7 +158,6 @@ RSpec.describe "Creating replies" do
     end
 
     scenario "User creates a reply with an existing NPC", :js do
-      char # user must have at least 1 character to be able to pick a character
       npc = create(:character, user: user, name: "Janet", nickname: "Post number 1", npc: true)
 
       visit post_path(post)
