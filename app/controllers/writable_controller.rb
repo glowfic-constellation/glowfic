@@ -97,13 +97,17 @@ class WritableController < ApplicationController
     redirect_to post_path(@post, page: @replies.total_pages, per_page: per) and return if cur_page > @replies.total_pages
     use_javascript('paginator')
 
-    # One query for the edit-history counts of the page's replies and of the post itself, on auditable_index alone.
-    # Counts every audit of each reply, as its history page lists them (also those from before a split moved it).
-    audit_counts = Audited::Audit
-      .where(auditable_type: 'Reply', auditable_id: @replies.map(&:id))
-      .or(Audited::Audit.where(auditable_type: 'Post', auditable_id: @post.id))
-      .group(:auditable_type, :auditable_id).count
-    @audits = audit_counts.to_h { |(type, id), count| [type == 'Post' ? :post : id, count] }
+    # One query for the edit-history counts of the page's replies and of the post itself, answered from auditable_index
+    # alone. Counts every audit of each reply, as its history page lists them (also those from before a split moved it).
+    # UNION ALL rather than OR: Postgres can only combine OR'd index conditions with a bitmap scan, which reads the
+    # table's pages; each half on its own is an index-only scan.
+    count_columns = [:auditable_type, :auditable_id, Arel.sql('COUNT(*) AS audit_count')]
+    reply_counts = Audited::Audit.where(auditable_type: 'Reply', auditable_id: @replies.map(&:id))
+    post_counts = Audited::Audit.where(auditable_type: 'Post', auditable_id: @post.id)
+    reply_counts, post_counts = [reply_counts, post_counts].map { |audits| audits.group(:auditable_type, :auditable_id).select(count_columns).arel }
+    union = Arel::Nodes::TableAlias.new(Arel::Nodes::UnionAll.new(reply_counts, post_counts), 'audits')
+    audit_counts = Audited::Audit.from(union).pluck(:auditable_type, :auditable_id, :audit_count)
+    @audits = audit_counts.to_h { |type, id, count| [type == 'Post' ? :post : id, count] }
     @audits[:post] ||= 0
 
     calculate_reply_bookmarks(@replies)
