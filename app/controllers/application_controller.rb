@@ -21,6 +21,17 @@ class ApplicationController < ActionController::Base
     NewRelic::Agent.add_custom_attributes(logged_in: logged_in?) if defined?(NewRelic::Agent)
   end
 
+  # Names (never values) of the search filters this request used, sorted and comma-separated, e.g. "author_id,sort".
+  def used_search_filters(names)
+    names.select { |name| params[name].present? }.map(&:to_s).sort.join(',')
+  end
+
+  # Records the shape of a search on its New Relic transaction (which filters, which page; not what was searched for),
+  # so slow searches can be told apart by kind. New Relic doesn't record query strings.
+  def record_search_shape(filters)
+    NewRelic::Agent.add_custom_attributes(search_filters: filters, search_page: page.to_i) if defined?(NewRelic::Agent)
+  end
+
   def login_required
     return if logged_in?
     flash[:error] = "You must be logged in to view that page."

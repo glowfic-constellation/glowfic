@@ -6,6 +6,9 @@ class PostsController < WritableController
   # that is the poster's (or an editing moderator's) to change, as the edit form already reflects.
   CONTENT_PARAMS = %w(content character_id icon_id character_alias_id editor_mode).freeze
 
+  # Post search parameters that change the query, recorded by name for monitoring (see record_search_shape).
+  SEARCH_FILTERS = %i(subject abbrev exact board_id exclude_board_ids setting_id completed author_id character_id hide_ignored show_blocked).freeze
+
   before_action :login_required, except: [:index, :show, :history, :warnings, :search, :stats]
   before_action :readonly_forbidden, only: [:owed]
   before_action :find_model, only: [:show, :history, :delete_history, :stats, :warnings, :edit, :update, :destroy, :split, :do_split, :preview_split]
@@ -295,6 +298,7 @@ class PostsController < WritableController
     return unless params[:commit].present?
 
     response.headers['X-Robots-Tag'] = 'noindex'
+    record_search_shape(used_search_filters(SEARCH_FILTERS))
     @search_results = Post.ordered
     @search_results = @search_results.where(board_id: params[:board_id]) if params[:board_id].present?
     @search_results = @search_results.where.not(board_id: params[:exclude_board_ids]) if params[:exclude_board_ids].present?

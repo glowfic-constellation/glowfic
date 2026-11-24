@@ -33,6 +33,14 @@ RSpec.describe PostsController, 'GET search' do
       expect(assigns(:search_results)).to match_array(Post.all)
     end
 
+    it "records which filters were used, not their values, on the New Relic transaction" do
+      allow(NewRelic::Agent).to receive(:add_custom_attributes)
+      expect(NewRelic::Agent).to receive(:add_custom_attributes).with(search_filters: 'board_id,subject', search_page: 1)
+      board = create(:board)
+
+      get :search, params: { commit: true, board_id: board.id, subject: 'a title', completed: '' }
+    end
+
     it "filters by continuity" do
       board = create(:board)
       posts = create_list(:post, 2, board: board)

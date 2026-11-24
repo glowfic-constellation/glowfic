@@ -251,13 +251,21 @@ RSpec.describe RepliesController, 'GET search' do
       allow(Reply::Searcher).to receive(:new).and_return(searcher)
       allow(searcher).to receive(:search).and_return(results)
       allow(results).to receive(:load).and_raise(ActiveRecord::QueryCanceled)
-      expect(Rails.logger).to receive(:warn).with(/\[reply_search_timeout\]/)
+      expect(Rails.logger).to receive(:warn).with(/\[reply_search_timeout\] page=1 .* filters=subj_content term_length=7/)
 
-      get :search, params: { commit: true, subj_content: 'content' }
+      get :search, params: { commit: true, subj_content: 'content', author_id: '' }
 
       expect(response).to have_http_status(200)
       expect(flash[:error]).to include('took too long')
       expect(assigns(:search_results)).to be_empty
+    end
+
+    it "records which filters were used, not their values, on the New Relic transaction" do
+      allow(NewRelic::Agent).to receive(:add_custom_attributes)
+      expect(NewRelic::Agent).to receive(:add_custom_attributes).with(search_filters: 'author_id,sort', search_page: 2)
+      user = create(:user)
+
+      get :search, params: { commit: true, author_id: user.id, sort: 'created_new', subj_content: '', page: 2 }
     end
 
     it "does not include audits" do

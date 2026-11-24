@@ -2,6 +2,9 @@
 require 'will_paginate/array'
 
 class RepliesController < WritableController
+  # Reply search parameters that change the query, recorded by name for monitoring (see record_search_shape).
+  SEARCH_FILTERS = %i(subj_content author_id character_id icon_id template_id board_id exclude_board_ids post_id sort condensed).freeze
+
   before_action :login_required, except: [:search, :show, :history]
   before_action :get_multi_replies, only: [:create, :update]
   before_action :find_model, only: [:show, :history, :edit, :update, :destroy]
@@ -39,6 +42,8 @@ class RepliesController < WritableController
     return unless params[:commit].present?
 
     response.headers['X-Robots-Tag'] = 'noindex'
+    filters = used_search_filters(SEARCH_FILTERS)
+    record_search_shape(filters)
 
     begin
       @search_results = searcher.search(params, page: page)
@@ -51,7 +56,7 @@ class RepliesController < WritableController
       # Only the shape of the search is recorded, not what was searched for.
       Rails.logger.warn(
         "[reply_search_timeout] page=#{page} user_id=#{current_user&.id.inspect} post_id=#{@post&.id.inspect} " \
-        "filters=#{params.slice(:subj_content, :author_id, :character_id, :board_id, :template_id, :sort, :condensed).keys.sort.join(',')} " \
+        "filters=#{filters} " \
         "term_length=#{params[:subj_content].to_s.length}",
       )
       flash.now[:error] = "That search took too long. Try narrowing it, for example to one continuity, author or character."
