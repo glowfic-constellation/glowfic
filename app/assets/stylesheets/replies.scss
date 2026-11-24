@@ -175,6 +175,13 @@ div.post-subheader { width: 100%; }
   clip-path: inset(-8px);
 }
 
+// The transform puts the text in a later paint layer, and its box runs underneath the floats beside it; lift the
+// floated icon box and buttons above it so they stay visible and clickable (also above any positioned user HTML).
+.post-info-box, .post-edit-box {
+  position: relative;
+  z-index: 1;
+}
+
 .post-content, .written-content, .message-content {
   blockquote {
     margin: 0.5em 1.5em;
