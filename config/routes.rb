@@ -168,6 +168,7 @@ Rails.application.routes.draw do
         member do
           get :posts
           get :bookmarks
+          get :galleries
         end
       end
 
