@@ -41,7 +41,7 @@ services:
       RESQUE_TERM_TIMEOUT: 7
       QUEUES: mailer,notifier,high,*
   redis:
-    image: valkey/valkey:9-alpine # production runs Valkey 9.x
+    image: valkey/valkey:9-alpine
     ports:
       - 6379:6379
   postgres:
@@ -50,7 +50,7 @@ services:
       - POSTGRES_PASSWORD=postgres
       - PGUSER=postgres
       - PGPASSWORD=postgres
-    image: postgres:18-alpine # production runs Postgres 18 (AWS RDS)
+    image: postgres:18-alpine
     volumes:
       # 18+ images keep data in /var/lib/postgresql/<major>/docker and refuse to
       # start with a mount at /var/lib/postgresql/data. The old postgres-data
