@@ -19,7 +19,7 @@ jobs:
     services:
       postgres:
         # reference: https://github.com/actions/example-services/blob/master/.github/workflows/postgres-service.yml
-        image: postgres:16
+        image: postgres:18
         env:
           POSTGRES_USER: postgres
           POSTGRES_PASSWORD: postgres
@@ -32,9 +32,9 @@ jobs:
         options: --health-cmd pg_isready --health-interval 2s --health-timeout 3s --health-retries 15
       redis:
         # reference: https://docs.github.com/en/actions/guides/creating-redis-service-containers#running-jobs-in-containers
-        image: redis:7.2
+        image: valkey/valkey:9
         ports: ["6379:6379"]
-        options: --health-cmd "redis-cli ping" --health-interval 2s --health-timeout 3s --health-retries 15
+        options: --health-cmd "valkey-cli ping" --health-interval 2s --health-timeout 3s --health-retries 15
       s3:
         image: rustfs/rustfs:1.0.0-rc.6
         env:
