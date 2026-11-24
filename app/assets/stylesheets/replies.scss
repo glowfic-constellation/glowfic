@@ -160,13 +160,22 @@ div.post-subheader { width: 100%; }
 
 .single-description blockquote { background-color: rgba($bg_color_descriptions_blockquote, 0.3); }
 
-.post-content, .written-content, .message-content {
-  // User HTML may carry inline styles (position: fixed/absolute, z-index, opacity: 0). Contain paint so
-  // such elements stay inside (and are clipped to) their own post instead of covering the whole page.
-  // The clip margin keeps focus rings and text shadows of edge-hugging links visible (Chromium, Firefox).
+// User HTML may carry inline styles (position: fixed/absolute, z-index, opacity: 0); keep such elements inside (and
+// clipped to) their own post instead of covering the whole page, with 8px spare for focus rings and text shadows.
+.written-content {
   contain: paint;
   overflow-clip-margin: 8px;
+}
 
+// Post, reply and message text wraps around the floated icon box and buttons, so it can't use paint containment
+// (which makes a box ignore floats). A transform makes the box the containing block for positioned descendants,
+// fixed ones included, and clip-path clips them, without changing layout.
+.post-content, .message-content {
+  transform: translate(0);
+  clip-path: inset(-8px);
+}
+
+.post-content, .written-content, .message-content {
   blockquote {
     margin: 0.5em 1.5em;
     padding: 0.5em;
