@@ -89,6 +89,13 @@ Rails.application.configure do
   # Only use :id for inspections in production.
   config.active_record.attributes_for_inspect = [:id]
 
+  # Append the controller and action, or the job, that ran each SQL statement as a comment, so database-side views
+  # (pg_stat_activity, RDS Database Insights, slow-query logs) show where a query came from. Keep the tags static per
+  # request or job: a per-request tag such as request_id would make every statement's text unique and defeat the
+  # prepared statement cache. Caching the comment builds it once per request or job.
+  config.active_record.query_log_tags_enabled = true
+  config.active_record.cache_query_log_tags = true
+
   # Enable DNS rebinding protection and other `Host` header attacks.
   # config.hosts = [
   #   "example.com",     # Allow requests from example.com
