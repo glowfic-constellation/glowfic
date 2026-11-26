@@ -545,7 +545,7 @@ GEM
       activerecord (>= 4)
       activesupport (>= 4)
     select2-rails (4.0.13)
-    selenium-webdriver (4.53.0)
+    selenium-webdriver (4.54.0)
       base64 (~> 0.2)
       logger (~> 1.4)
       rubyzip (>= 1.2.2, < 4.0)
