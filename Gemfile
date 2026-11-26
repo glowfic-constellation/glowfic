@@ -45,7 +45,7 @@ gem 'prism', '~> 2.1'
 gem 'rack-pratchett'
 gem 'rails', '~> 8.1.4'
 gem "redcarpet", "~> 3.6"
-gem 'redis', '~> 6.0'
+gem 'redis', '~> 6.1'
 gem 'request_store', '~> 1.7'
 gem 'resque'
 gem 'sanitize'
